@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry path="" kind="src"/>
+	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" kind="con"/>
+	<classpathentry path="C:/Program Files/JMF2.1.1e/lib/jmf.jar" kind="lib"/>
+	<classpathentry path="C:/Program Files/Java/jogl/lib/gluegen-rt.jar" kind="lib"/>
+	<classpathentry path="C:/Program Files/Java/jogl/lib/jogl.jar" kind="lib"/>
+	<classpathentry path="/NyARJMF" combineaccessrules="false" kind="src"/>
+	<classpathentry path="/NyARToolkit" combineaccessrules="false" kind="src"/>
+	<classpathentry path="" kind="output"/>
+</classpath>
