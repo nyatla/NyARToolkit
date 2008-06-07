@@ -63,7 +63,7 @@ public class NyARMatchPatt_Color_WITH_PCA implements ARMatchPatt{
     {
 	width=i_target_patt.getWidth();
 	height=i_target_patt.getHeight();
-	short[][][] data=i_target_patt.getPatArray();
+	int[][][] data=i_target_patt.getPatArray();
  	
 	input=new int[height][width][3];
 	evec=new double[EVEC_MAX][height][width][3];//static double evec[EVEC_MAX][AR_PATT_SIZE_Y*AR_PATT_SIZE_X*3];

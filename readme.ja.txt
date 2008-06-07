@@ -1,7 +1,7 @@
 ﻿ARToolkit Java class library NyARToolkit.
 Copyright (C)2008 R.Iizuka
 
-version Alpha 0.8.20080412.0
+version 1.0.0.20080428.0
 
 http://nyatla.jp/
 airmail(at)ebony.plala.or.jp
@@ -112,7 +112,9 @@ sampleディレクトリ以下にあるソースはAPIは仕様が固まって�
 クラスは関数機能毎にまとめた作りになっていますので、オリジナルの
 コード読んだことがあれば、なんとなく判ると思います。
 
-
+演算性能は、Windows環境下でVCリリース版の約85％です。
+マーカー認識部分はネイティブ版よりも低速ですが、変換行列計算部分
+はネイティブ版よりも高速に動作します。
 
 
 ・足りない機能等
@@ -140,4 +142,4 @@ NyARToolkitを使って面白いものが出来たら、是非教えてくださ
 
 ではでは、楽しく遊んでくださいネ。
 
-2008.03.29 R.Iizuka A虎＠nyatla.jp
+2008.04.28 R.Iizuka A虎＠nyatla.jp

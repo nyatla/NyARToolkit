@@ -126,12 +126,12 @@ public class Param {
 		NyARMat.matrixTrans(mat_at, mat_a );//if( arMatrixTrans( mat_at, mat_a ) < 0 ){
 
 		NyARException.trap("未チェックのパス");
-		NyARMat.matrixMul( mat_wm1, mat_at, mat_a );//if( arMatrixMul( mat_wm1, mat_at, mat_a ) < 0 ) {
+		mat_wm1.matrixMul(mat_at, mat_a );//if( arMatrixMul( mat_wm1, mat_at, mat_a ) < 0 ) {
 		NyARException.trap("未チェックのパス");
 		mat_wm1.matrixSelfInv();//if( arMatrixSelfInv( mat_wm1 ) < 0 ) {
 
 		NyARException.trap("未チェックのパス");
-		NyARMat.matrixMul( mat_wm2, mat_wm1, mat_at );//if( arMatrixMul( mat_wm2, mat_wm1, mat_at ) < 0 ) {
+		mat_wm2.matrixMul(mat_wm1, mat_at );//if( arMatrixMul( mat_wm2, mat_wm1, mat_at ) < 0 ) {
 
 		//mat_cpara.row = AR_PARAM_CDMIN-1;//mat_cpara.row = AR_PARAM_CDMIN-1;
 		//mat_cpara.clm = 1;
@@ -140,7 +140,7 @@ public class Param {
 		NyARMat mat_cpara=new NyARMat(arParamGet_AR_PARAM_CDMIN-1,1);
 		double[][] mat_cpara_array=mat_cpara.getArray();
 		NyARException.trap("未チェックのパス");
-		NyARMat.matrixMul(mat_cpara, mat_wm2, mat_r );//if( arMatrixMul( &mat_cpara, mat_wm2, mat_r ) < 0 ) {
+		mat_cpara.matrixMul(mat_wm2, mat_r );//if( arMatrixMul( &mat_cpara, mat_wm2, mat_r ) < 0 ) {
 
 		for(int i2=0;i<3;i++){
 		    for(int i3=0;i3<4;i3++){

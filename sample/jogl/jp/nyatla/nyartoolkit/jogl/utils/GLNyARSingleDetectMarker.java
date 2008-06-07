@@ -15,7 +15,7 @@ import jp.nyatla.nyartoolkit.detector.*;
 public class GLNyARSingleDetectMarker extends NyARSingleDetectMarker
 {
     private double view_scale_factor=0.025;//#define VIEW_SCALEFACTOR		0.025		// 1.0 ARToolKit unit becomes 0.025 of my OpenGL units.
-    public GLNyARSingleDetectMarker(NyARParam i_param,NyARCode i_code,double i_marker_width)
+    public GLNyARSingleDetectMarker(NyARParam i_param,NyARCode i_code,double i_marker_width) throws NyARException
     {
 	super(i_param,i_code,i_marker_width);	
     }

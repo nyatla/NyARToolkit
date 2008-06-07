@@ -50,6 +50,12 @@ public class NyARRaster_Blank implements NyARRaster
     {
 	return 0;
     }
+    public void getPixelTotalRowLine(int i_row,int[] o_line)
+    {
+        for(int i=this.width-1;i>=0;i--){
+	    o_line[i]=0;
+	}
+    }    
     public int getWidth()
     {
 	return width;
@@ -58,10 +64,18 @@ public class NyARRaster_Blank implements NyARRaster
     {
 	return height;
     }
-    public void pickRgbArray(int i_x,int i_y,int[] i_rgb)
+    public void getPixel(int i_x,int i_y,int[] i_rgb)
     {
         i_rgb[0]=0;
         i_rgb[1]=0;
         i_rgb[2]=0;
     }
+    public void getPixelSet(int[] i_x,int i_y[],int i_num,int[] o_rgb)
+    {
+	for(int i=i_num-1;i>=0;i--){
+	    o_rgb[i*3+0]=0;//R
+	    o_rgb[i*3+1]=0;//G
+	    o_rgb[i*3+2]=0;//B
+	}	
+    }    
 }

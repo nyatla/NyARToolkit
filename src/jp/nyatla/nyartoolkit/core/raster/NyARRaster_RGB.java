@@ -48,9 +48,19 @@ public class NyARRaster_RGB implements NyARRaster
     //RGBの合計値を返す
     public int getPixelTotal(int i_x,int i_y)
     {
-        int bp=(i_x+i_y*width)*3;
-        return (ref_buf[bp] & 0xff)+(ref_buf[bp+1] & 0xff)+(ref_buf[bp+2] & 0xff);
+	byte[] ref=this.ref_buf;
+        int bp=(i_x+i_y*this.width)*3;
+        return (ref[bp] & 0xff)+(ref[bp+1] & 0xff)+(ref[bp+2] & 0xff);
     }
+    public void getPixelTotalRowLine(int i_row,int[] o_line)
+    {
+        final byte[] ref=this.ref_buf;
+        int bp=(i_row+1)*this.width*3-3;
+        for(int i=this.width-1;i>=0;i--){
+	    o_line[i]=(ref[bp] & 0xff)+(ref[bp+1] & 0xff)+(ref[bp+2] & 0xff);
+	    bp-=3;
+	}
+    }    
     public int getWidth()
     {
         return width;
@@ -59,12 +69,25 @@ public class NyARRaster_RGB implements NyARRaster
     {
         return height;
     }
-    public void pickRgbArray(int i_x,int i_y,int[] i_rgb)
+    public void getPixel(int i_x,int i_y,int[] i_rgb)
     {
-        int bp=(i_x+i_y*width)*3;
-        i_rgb[0]=(ref_buf[bp+0] & 0xff);//R
-        i_rgb[1]=(ref_buf[bp+1] & 0xff);//G
-        i_rgb[2]=(ref_buf[bp+2] & 0xff);//B
+        int bp=(i_x+i_y*this.width)*3;
+        byte[] ref=this.ref_buf;
+        i_rgb[0]=(ref[bp+0] & 0xff);//R
+        i_rgb[1]=(ref[bp+1] & 0xff);//G
+        i_rgb[2]=(ref[bp+2] & 0xff);//B
+    }
+    public void getPixelSet(int[] i_x,int i_y[],int i_num,int[] o_rgb)
+    {
+	int width=this.width;
+	byte[] ref=this.ref_buf;
+	int bp;
+	for(int i=i_num-1;i>=0;i--){
+	    bp=(i_x[i]+i_y[i]*width)*3;
+	    o_rgb[i*3+0]=(ref[bp+0] & 0xff);//R
+	    o_rgb[i*3+1]=(ref[bp+1] & 0xff);//G
+	    o_rgb[i*3+2]=(ref[bp+2] & 0xff);//B
+	}	
     }
 }
 

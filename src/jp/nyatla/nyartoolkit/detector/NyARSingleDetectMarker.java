@@ -40,9 +40,10 @@ import jp.nyatla.nyartoolkit.core.raster.*;
  *
  */
 public class NyARSingleDetectMarker{
-    private static final int AR_SQUARE_MAX=10;
-    private NyARParam param;
+    private static final int AR_SQUARE_MAX=100;
+    private NyARMatchPatt_Color_WITHOUT_PCA match_patt;
     private NyARDetectSquare square;
+    private final NyARSquareList square_list=new NyARSquareList(AR_SQUARE_MAX);
     private NyARCode code;
     protected NyARTransMat transmat;
     private double marker_width;
@@ -51,18 +52,18 @@ public class NyARSingleDetectMarker{
     private double detected_confidence;
     private NyARSquare detected_square;
     private NyARColorPatt patt;
-    public NyARSingleDetectMarker(NyARParam i_param,NyARCode i_code,double i_marker_width)
+    public NyARSingleDetectMarker(NyARParam i_param,NyARCode i_code,double i_marker_width) throws NyARException
     {
-	param=i_param;
 	//解析オブジェクトを作る
-	square=new NyARDetectSquare(AR_SQUARE_MAX,i_param);
-	transmat=new NyARTransMat(param);
+	this.square=new NyARDetectSquare(i_param);
+	this.transmat=new NyARTransMat(i_param);
 	//比較コードを保存
-	code=i_code;
-	marker_width=i_marker_width;
+	this.code=i_code;
+	this.marker_width=i_marker_width;
 	//評価パターンのホルダを作る
-	patt=new NyARColorPatt(code.getWidth(),code.getHeight());
-	
+	this.patt=new NyARColorPatt_O3(code.getWidth(),code.getHeight());
+	//評価器を作る。
+	this.match_patt=new NyARMatchPatt_Color_WITHOUT_PCA();	
     }
     /**
      * i_imageにマーカー検出処理を実行して、結果を保持します。
@@ -75,49 +76,48 @@ public class NyARSingleDetectMarker{
     public boolean detectMarkerLite(NyARRaster i_image,int i_thresh) throws NyARException
     {
 	detected_square=null;
+	NyARSquareList l_square_list=this.square_list;
 	//スクエアコードを探す
-	square.detectSquare(i_image, i_thresh);
-	int number_of_square=square.getSquareCount();
+	square.detectSquare(i_image, i_thresh,l_square_list);
+	
+	int number_of_square=l_square_list.getSquareNum();
 	//コードは見つかった？
 	if(number_of_square<1){
 	    return false;
 	}
 
 	//コードの一致度を調べる準備
-	NyARSquare[] squares=square.getSquareArray();
+//	NyARSquare[] squares=square.getSquareArray();
 	//評価基準になるパターンをイメージから切り出す
-	patt.pickFromRaster(i_image,squares[0].getMarker());
-	
-	//パターンの評価オブジェクトを作る。
-	NyARMatchPatt_Color_WITHOUT_PCA eva=new NyARMatchPatt_Color_WITHOUT_PCA();
+	patt.pickFromRaster(i_image,l_square_list.getSquare(0));
 	//パターンを評価器にセット
-	if(!eva.setPatt(patt)){
+	if(!this.match_patt.setPatt(patt)){
 	    //計算に失敗した。
-	    return false;
+	    throw new NyARException();
 	}
 	//コードと比較する
-	eva.evaluate(code);
+	match_patt.evaluate(code);
 	int square_index=0;
-	int direction=eva.getDirection();
-	double confidence=eva.getConfidence();
+	int direction=match_patt.getDirection();
+	double confidence=match_patt.getConfidence();
 	for(int i=1;i<number_of_square;i++){
 	    //次のパターンを取得
-	    patt.pickFromRaster(i_image,squares[i].getMarker());
+	    patt.pickFromRaster(i_image,l_square_list.getSquare(i));
 	    //評価器にセットする。
-	    eva.setPatt(patt);
+	    match_patt.setPatt(patt);
             //コードと比較する
-            eva.evaluate(code);
-	    double c2=eva.getConfidence();
+	    match_patt.evaluate(code);
+	    double c2=match_patt.getConfidence();
 	    if(confidence>c2){
 		continue;
 	    }
 	    //もっと一致するマーカーがあったぽい
 	    square_index=i;
-	    direction=eva.getDirection();
+	    direction=match_patt.getDirection();
 	    confidence=c2;
 	}
 	//マーカー情報を保存
-	detected_square=squares[square_index];
+	detected_square=l_square_list.getSquare(square_index);
 	detected_direction=direction;
 	detected_confidence=confidence;
 	return true;

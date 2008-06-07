@@ -34,9 +34,28 @@ package jp.nyatla.nyartoolkit.core.raster;
 public interface NyARRaster{
     //RGBの合計値を返す
     public int getPixelTotal(int i_x,int i_y);
+    /**
+     * 一行単位でi_row番目の合計値配列を計算して返す。
+     * @param i_row
+     * @param o_line
+     * getWidth()の戻り値以上のサイズが必要。
+     */
+    public void getPixelTotalRowLine(int i_row,int[] o_line);
     public int getWidth();
     public int getHeight();
-    public void pickRgbArray(int i_x,int i_y,int[] i_rgb);
+    public void getPixel(int i_x,int i_y,int[] i_rgb);
+    /**
+     * 複数のピクセル値をi_rgbへ返します。
+     * @param i_x
+     * xのインデックス配列
+     * @param i_y
+     * yのインデックス配列
+     * @param i_num
+     * 返すピクセル値の数
+     * @param i_rgb
+     * ピクセル値を返すバッファ
+     */
+    public void getPixelSet(int[] i_x,int i_y[],int i_num,int[] o_rgb);
 }
 
 

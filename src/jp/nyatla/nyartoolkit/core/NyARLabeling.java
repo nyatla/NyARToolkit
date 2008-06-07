@@ -35,20 +35,186 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 
 
+interface NyARLabeling{
+    /**
+     * 検出したラベルの数を返す
+     * @return
+     */
+    public int getLabelNum();
+    /**
+     * 
+     * @return
+     * @throws NyARException
+     */
+    public int[] getLabelRef() throws NyARException;
+    /**
+     * 検出したラベル配列
+     * @return
+     * @throws NyARException
+     */
+    public NyARLabel[] getLabel() throws NyARException;
+    /**
+     * ラベリング済みイメージを返す
+     * @return
+     * @throws NyARException
+     */
+    public int[][] getLabelImg() throws NyARException;
+    /**
+     * static ARInt16 *labeling2( ARUint8 *image, int thresh,int *label_num, int **area, double **pos, int **clip,int **label_ref, int LorR )
+     * 関数の代替品
+     * ラスタimageをラベリングして、結果を保存します。
+     * Optimize:STEP[1514->1493]
+     * @param image
+     * @param thresh
+     * @throws NyARException
+     */
+    public void labeling(NyARRaster image,int thresh) throws NyARException;
+}
+
+
+
+
+/**
+ * NyARLabeling_O2のworkとwork2を可変長にするためのクラス
+ * 
+ *
+ */
+class NyARWorkHolder
+{
+    private final static int ARRAY_APPEND_STEP=256;
+    public final int[] work;
+    public final int[][] work2;
+    private int allocate_size;
+    /**
+     * 最大i_holder_size個の動的割り当てバッファを準備する。
+     * @param i_holder_size
+     */
+    public NyARWorkHolder(int i_holder_size)
+    {
+	//ポインタだけははじめに確保しておく
+	this.work=new int[i_holder_size];
+	this.work2=new int[i_holder_size][];
+	this.allocate_size=0;
+    }
+    /**
+     * i_indexで指定した番号までのバッファを準備する。
+     * @param i_index
+     */
+    public final void reserv(int i_index) throws NyARException
+    {
+	//アロケート済みなら即リターン
+	if(this.allocate_size>i_index){
+	    return;
+	}
+	//要求されたインデクスは範囲外
+	if(i_index>=this.work.length){
+	    throw new NyARException();
+	}	
+	//追加アロケート範囲を計算
+	int range=i_index+ARRAY_APPEND_STEP;
+	if(range>=this.work.length){
+	    range=this.work.length;
+	}
+	//アロケート
+	for(int i=this.allocate_size;i<range;i++)
+	{
+	    this.work2[i]=new int[7];
+	}
+	this.allocate_size=range;
+    }
+}
+
+class NyARLabel
+{
+    public int area;
+    public int clip0;
+    public int clip1;
+    public int clip2;
+    public int clip3;
+    public double pos_x;
+    public double pos_y;
+}
+
+
+class NyARLabelHolder
+{
+    private final static int ARRAY_APPEND_STEP=128;
+    public final NyARLabel[] labels;
+    private int allocate_size;
+    /**
+     * 最大i_holder_size個の動的割り当てバッファを準備する。
+     * @param i_holder_size
+     */
+    public NyARLabelHolder(int i_holder_size)
+    {
+	//ポインタだけははじめに確保しておく
+	this.labels=new NyARLabel[i_holder_size];
+	this.allocate_size=0;
+    }
+    /**
+     * i_indexで指定した番号までのバッファを準備する。
+     * @param i_index
+     */
+    private final void reserv(int i_index) throws NyARException
+    {
+	//アロケート済みなら即リターン
+	if(this.allocate_size>i_index){
+	    return;
+	}
+	//要求されたインデクスは範囲外
+	if(i_index>=this.labels.length){
+	    throw new NyARException();
+	}	
+	//追加アロケート範囲を計算
+	int range=i_index+ARRAY_APPEND_STEP;
+	if(range>=this.labels.length){
+	    range=this.labels.length;
+	}
+	//アロケート
+	for(int i=this.allocate_size;i<range;i++)
+	{
+	    this.labels[i]=new NyARLabel();
+	}
+	this.allocate_size=range;
+    }
+    /**
+     * i_reserv_sizeまでのバッファを、初期条件i_lxsizeとi_lysizeで初期化する。
+     * @param i_reserv_size
+     * @param i_lxsize
+     * @param i_lysize
+     * @throws NyARException
+     */
+    public final void init(int i_reserv_size,int i_lxsize,int i_lysize) throws NyARException
+    {
+	reserv(i_reserv_size);
+	NyARLabel l;
+	for(int i=0;i<i_reserv_size;i++){
+	    l=this.labels[i];
+	    l.area=0;
+	    l.pos_x=0;
+	    l.pos_y=0;
+	    l.clip0= i_lxsize;//wclip[i*4+0] = lxsize;
+	    l.clip1= 0;//wclip[i*4+0] = lxsize;
+	    l.clip2= i_lysize;//wclip[i*4+2] = lysize;
+	    l.clip3= 0;//wclip[i*4+3] = 0;
+	}	
+    }
+}
 
 
 /**
  * ラベリングクラス。NyARRasterをラベリングして、結果値を保持します。
+ * 構造を維持して最適化をしたバージョン
  *
  */
-public class NyARLabeling{
-    private final int WORK_SIZE=1024*32;//#define WORK_SIZE   1024*32
-    private short[][] label_img;//static ARInt16 l_imageL[HARDCODED_BUFFER_WIDTH*HARDCODED_BUFFER_HEIGHT];
-    private int[] work=new int[WORK_SIZE];//static int workL[WORK_SIZE];
-    private int[] work2=new int[WORK_SIZE*7];//static int work2L[WORK_SIZE*7];
-    private int[] area=new int[WORK_SIZE];//static int          wareaL[WORK_SIZE];
-    private int[][] clip=new int[WORK_SIZE][4];//static int          wclipL[WORK_SIZE*4];
-    private double[] pos=new double[WORK_SIZE*2];//static double       wposL[WORK_SIZE*2];
+class NyARLabeling_O2 implements NyARLabeling
+{
+    private static final int WORK_SIZE=1024*32;//#define WORK_SIZE   1024*32
+    private final int[][] glabel_img;//static ARInt16 l_imageL[HARDCODED_BUFFER_WIDTH*HARDCODED_BUFFER_HEIGHT];
+
+    private final NyARWorkHolder work_holder=new NyARWorkHolder(WORK_SIZE);
+    private final NyARLabelHolder label_holder=new NyARLabelHolder(WORK_SIZE);
+
     private int label_num;
     //
     private int width;
@@ -59,11 +225,11 @@ public class NyARLabeling{
      * @param i_height
      * ラベリング画像の高さ。解析するラスタの高さより大きいこと。
      */
-    public NyARLabeling(int i_width,int i_height)
+    public NyARLabeling_O2(int i_width,int i_height)
     {
 	width =i_width;
 	height=i_height;
-	label_img=new short[height][width];
+	glabel_img=new int[height][width];
 	label_num=0;
     }
     /**
@@ -75,6 +241,18 @@ public class NyARLabeling{
 	return label_num;
     }
     /**
+     * 検出したエリア配列？
+     * @return
+     * @throws NyARException
+     */
+    public NyARLabel[] getLabel() throws NyARException
+    {
+	if(label_num<1){
+	    throw new NyARException();
+	}
+	return this.label_holder.labels;
+    }    
+    /**
      * 
      * @return
      * @throws NyARException
@@ -84,259 +262,224 @@ public class NyARLabeling{
 	if(label_num<1){
 	    throw new NyARException();
 	}
-	return work;
-    }
-    /**
-     * 検出したエリア配列？
-     * @return
-     * @throws NyARException
-     */
-    public int[] getArea() throws NyARException
-    {
-	if(label_num<1){
-	    throw new NyARException();
-	}
-	return area;
-    }
-    /**
-     * 検出したクリップ配列？
-     * @return
-     * @throws NyARException
-     */
-    public int[][] getClip() throws NyARException
-    {
-	if(label_num<1){
-	    throw new NyARException();
-	}
-	return clip;
-    }
-    /**
-     * 検出した位置配列？
-     * @return
-     * @throws NyARException
-     */
-    public double[] getPos() throws NyARException
-    {
-	if(label_num<1){
-	    throw new NyARException();
-	}
-	return pos;
+	return work_holder.work;
     }
     /**
      * ラベリング済みイメージを返す
      * @return
      * @throws NyARException
      */
-    public short[][] getLabelImg() throws NyARException
+    public int[][] getLabelImg() throws NyARException
     {
-	if(label_num<1){
-	    throw new NyARException();
+	return glabel_img;
+    }
+    
+    private int[] wk_reservLineBuffer_buf=null;
+    /**
+     * ラベリング関数から使うラインスキャン用メモリの予約関数です。
+     * i_widthピクセル分のラインスキャン用バッファを保障します。
+     * @param i_width
+     * @return
+     */
+    private int[] reservWorkLineBuffer(int i_width)
+    {
+	int[] buf=this.wk_reservLineBuffer_buf;
+	if(buf==null){
+	    buf=new int[i_width];
+	    this.wk_reservLineBuffer_buf=buf;
+	}else{
+	    if(buf.length<i_width){
+		buf=new int[i_width];
+		this.wk_reservLineBuffer_buf=buf;
+	    }
+	    //十分なら何もしない。
 	}
-	return label_img;
-    }
-    /**
-     * 配列の先頭からsize個をゼロクリアする
-     * @param array
-     * @param size
-     */
-    private void putZero(int[] array,int size)
-    {
-    	for(int i=0;i<size;i++){
-            array[i]=0;
-    	}
-    }
-    /**
-     * 配列の先頭からsize個をゼロクリアする
-     * @param array
-     * @param size
-     */
-    private void putZero(double[] array,int size)
-    {
-    	for(int i=0;i<size;i++){
-            array[i]=0;
-    	}
+	return buf;
     }
     /**
      * static ARInt16 *labeling2( ARUint8 *image, int thresh,int *label_num, int **area, double **pos, int **clip,int **label_ref, int LorR )
      * 関数の代替品
      * ラスタimageをラベリングして、結果を保存します。
+     * Optimize:STEP[1514->1493]
      * @param image
      * @param thresh
      * @throws NyARException
      */
     public void labeling(NyARRaster image,int thresh) throws NyARException
     {
-        int       wk_max;                   /*  work                */
-        int       m,n;                      /*  work                */
-        int       lxsize, lysize;
-        int[] warea;//int       *warea;
-        int[][] wclip;//int       *wclip;
-        double[] wpos;//double    *wpos;
-        int		  thresht3 = thresh * 3;
-        
-        //ラベル数を0に初期化
-        label_num=0;
-    
-        warea=area;//warea   = &wareaL[0];
-        wclip=clip;//wclip   = &wclipL[0];
-        wpos=pos;//wpos    = &wposL[0];
-    
-        lxsize=image.getWidth();//lxsize = arUtil_c.arImXsize;
-        lysize=image.getHeight();//lysize = arUtil_c.arImYsize;
-    
-        for(int i = 0; i < lxsize; i++){
-            label_img[0][i]=0;
-            label_img[lysize-1][i]=0;
-        }
-        for(int i = 0; i < lysize; i++) {
-            label_img[i][0]=0;
-            label_img[i][lxsize-1]=0;			    
-        }
-        int nya_pnt_start_x_start,nya_pnt_start_y_start;
-        int nya_poff_step;//スキャンステップ
+	int wk_max;                   /*  work                */
+	int m,n;                      /*  work                */
+	int lxsize, lysize;
+	int thresht3 = thresh * 3;
+	int i,j,k;
 
-        wk_max = 0;
-        nya_pnt_start_y_start=1;
-        nya_pnt_start_x_start=1;
-        nya_poff_step=1;//スキャンステップ
-        int nya_pnt_start_y=nya_pnt_start_y_start;
-        for (int j = 1; j < lysize - 1; j++, nya_pnt_start_y++) {//for (int j = 1; j < lysize - 1; j++, pnt += poff*2, pnt2 += 2) {
-            int nya_pnt_start_x=nya_pnt_start_x_start;
-            int p1=j-1;
-            int p2=j;
-	    for(int i = 1; i < lxsize-1; i++, nya_pnt_start_x+=nya_poff_step) {//for(int i = 1; i < lxsize-1; i++, pnt+=poff, pnt2++) {
+	//ラベル数を0に初期化
+	this.label_num=0;
+//	int[][] work2=this.wk_labeling_work2;
+//	int[] work=this.gwork;
+
+	int[][] label_img=this.glabel_img;
+	
+	lxsize=image.getWidth();//lxsize = arUtil_c.arImXsize;
+	lysize=image.getHeight();//lysize = arUtil_c.arImYsize;
+
+	int[] label_img_pt0,label_img_pt1;
+	
+	//<Optimize>label_img_pt0,label_img_pt1
+	label_img_pt0=label_img[0];
+	label_img_pt1=label_img[lysize-1];
+	for(i = 0; i < lxsize; i++){
+	    label_img_pt0[i]=0;
+	    label_img_pt1[i]=0;
+	}
+	//</Optimize>
+	for(i = 0; i < lysize; i++) {
+	    label_img[i][0]=0;
+	    label_img[i][lxsize-1]=0;			    
+	}
+
+	int[] work2_pt;
+	wk_max = 0;
+
+	int label_pixel;
+	
+	int[] work=this.work_holder.work;
+	int[][] work2=this.work_holder.work2;
+	//1ライン分のメモリを予約
+	int[] line_bufferr=reservWorkLineBuffer(lxsize);
+
+	for(j = 1; j < lysize - 1; j++) {//for (int j = 1; j < lysize - 1; j++, pnt += poff*2, pnt2 += 2) {
+            label_img_pt0=label_img[j];
+            label_img_pt1=label_img[j-1];
+            image.getPixelTotalRowLine(j,line_bufferr);
+
+	    for(i = 1; i < lxsize-1; i++) {//for(int i = 1; i < lxsize-1; i++, pnt+=poff, pnt2++) {
 		//RGBの合計値が閾値より大きいかな？
-		if(image.getPixelTotal(nya_pnt_start_x,nya_pnt_start_y)<=thresht3){
+		if(line_bufferr[i]<=thresht3){
 		    //pnt1 = ShortPointer.wrap(pnt2, -lxsize);//pnt1 = &(pnt2[-lxsize]);
-		    if(label_img[p1][i]>0){//if( *pnt1 > 0 ) {
-			label_img[p2][i]=label_img[p1][i];//*pnt2 = *pnt1;
+		    if(label_img_pt1[i]>0){//if( *pnt1 > 0 ) {
+			label_pixel=label_img_pt1[i];//*pnt2 = *pnt1;
 
 
-			int p2_index=(label_img[p2][i]-1)*7;
-			work2[p2_index+0]++;//work2[((*pnt2)-1)*7+0] ++;
-			work2[p2_index+1]+=i;//work2[((*pnt2)-1)*7+1] += i;
-			work2[p2_index+2]+=j;//work2[((*pnt2)-1)*7+2] += j;
-			work2[p2_index+6]=j;//work2[((*pnt2)-1)*7+6] = j;
-		    }else if(label_img[p1][i+1]> 0 ) {//}else if( *(pnt1+1) > 0 ) {
-			if(label_img[p1][i-1] > 0 ) {//if( *(pnt1-1) > 0 ) {
-			    m = work[label_img[p1][i+1]-1];//m = work[*(pnt1+1)-1];
-			    n = work[label_img[p1][i-1]-1];//n = work[*(pnt1-1)-1];
+			work2_pt=work2[label_pixel-1];
+			work2_pt[0]++;//work2[((*pnt2)-1)*7+0] ++;
+			work2_pt[1]+=i;//work2[((*pnt2)-1)*7+1] += i;
+			work2_pt[2]+=j;//work2[((*pnt2)-1)*7+2] += j;
+			work2_pt[6]=j;//work2[((*pnt2)-1)*7+6] = j;
+		    }else if(label_img_pt1[i+1]> 0 ) {//}else if( *(pnt1+1) > 0 ) {
+			if(label_img_pt1[i-1] > 0 ) {//if( *(pnt1-1) > 0 ) {
+			    m = work[label_img_pt1[i+1]-1];//m = work[*(pnt1+1)-1];
+			    n = work[label_img_pt1[i-1]-1];//n = work[*(pnt1-1)-1];
 			    if( m > n ){
-				//JartkException.trap("未チェックのパス");
-				label_img[p2][i]=(short)n;//*pnt2 = n;
+				label_pixel=n;//*pnt2 = n;
 				//wk=IntPointer.wrap(work, 0);//wk = &(work[0]);
-				for(int k = 0; k < wk_max; k++) {
-				    //JartkException.trap("未チェックのパス");
+				for(k = 0; k < wk_max; k++) {
 				    if(work[k] == m ){//if( *wk == m ) 
-					//JartkException.trap("未チェックのパス");
 					work[k]=n;//*wk = n;
 				    }
 				}
 			    }else if( m < n ) {
-				//JartkException.trap("未チェックのパス");
-				label_img[p2][i]=(short)m;//*pnt2 = m;
+				label_pixel=m;//*pnt2 = m;
 				//wk=IntPointer.wrap(work,0);//wk = &(work[0]);
-				for(int k = 0; k < wk_max; k++){
-				    //JartkException.trap("未チェックのパス");
+				for(k = 0; k < wk_max; k++){
 				    if(work[k]==n){//if( *wk == n ){
-					//JartkException.trap("未チェックのパス");
 					work[k]=m;//*wk = m;
 				    }
 				}
 			    }else{
-				label_img[p2][i]=(short)m;//*pnt2 = m;
+				label_pixel=m;//*pnt2 = m;
 			    }
-
-			    int p2_index=(label_img[p2][i]-1)*7;
-			    work2[p2_index+0] ++;
-			    work2[p2_index+1] += i;
-			    work2[p2_index+2] += j;
-			    work2[p2_index+6] = j;
-			}else if( (label_img[p2][i-1]) > 0 ) {//}else if( *(pnt2-1) > 0 ) {
-			    m = work[(label_img[p1][i+1])-1];//m = work[*(pnt1+1)-1];
-			    n = work[(label_img[p2][i-1])-1];//n = work[*(pnt2-1)-1];
+			    work2_pt=work2[label_pixel-1];
+			    work2_pt[0] ++;
+			    work2_pt[1] += i;
+			    work2_pt[2] += j;
+			    work2_pt[6] = j;
+			}else if( (label_img_pt0[i-1]) > 0 ) {//}else if( *(pnt2-1) > 0 ) {
+			    m = work[(label_img_pt1[i+1])-1];//m = work[*(pnt1+1)-1];
+			    n = work[label_img_pt0[i-1]-1];//n = work[*(pnt2-1)-1];
 			    if( m > n ) {
 
-				label_img[p2][i]=(short)n;//*pnt2 = n;
-				for(int k = 0; k < wk_max; k++) {
+				label_pixel=n;//*pnt2 = n;
+				for(k = 0; k < wk_max; k++) {
 				    if(work[k]==m){//if( *wk == m ){
 					work[k]=n;//*wk = n;
 				    }
 				}
 			    }else if( m < n ) {
-				label_img[p2][i]=(short)m;//*pnt2 = m;
-				for(int k = 0; k < wk_max; k++) {
+				label_pixel=m;//*pnt2 = m;
+				for(k = 0; k < wk_max; k++) {
 				    if(work[k]==n){//if( *wk == n ){
 					work[k]=m;//*wk = m;
 				    }
 				}
 			    }else{
-				label_img[p2][i]=(short)m;//*pnt2 = m;
+				label_pixel=m;//*pnt2 = m;
 			    }
-
-
-			    int p2_index=((label_img[p2][i])-1)*7;
-			    work2[p2_index+0] ++;//work2[((*pnt2)-1)*7+0] ++;
-			    work2[p2_index+1] += i;//work2[((*pnt2)-1)*7+1] += i;
-			    work2[p2_index+2] += j;//work2[((*pnt2)-1)*7+2] += j;
+			    work2_pt=work2[label_pixel-1];
+			    work2_pt[0] ++;//work2[((*pnt2)-1)*7+0] ++;
+			    work2_pt[1] += i;//work2[((*pnt2)-1)*7+1] += i;
+			    work2_pt[2] += j;//work2[((*pnt2)-1)*7+2] += j;
 			}else{
 
-			    label_img[p2][i]=label_img[p1][i+1];//*pnt2 = *(pnt1+1);
-			    
-			    int p2_index=((label_img[p2][i])-1)*7;
-			    work2[p2_index+0] ++;//work2[((*pnt2)-1)*7+0] ++;
-			    work2[p2_index+1] += i;//work2[((*pnt2)-1)*7+1] += i;
-			    work2[p2_index+2] += j;//work2[((*pnt2)-1)*7+2] += j;
-			    if( work2[p2_index+3] > i ){//if( work2[((*pnt2)-1)*7+3] > i ){		
-				work2[p2_index+3] = i;//	work2[((*pnt2)-1)*7+3] = i;
+			    label_pixel=label_img_pt1[i+1];//*pnt2 = *(pnt1+1);
+
+			    work2_pt=work2[label_pixel-1];
+			    work2_pt[0] ++;//work2[((*pnt2)-1)*7+0] ++;
+			    work2_pt[1] += i;//work2[((*pnt2)-1)*7+1] += i;
+			    work2_pt[2] += j;//work2[((*pnt2)-1)*7+2] += j;
+			    if( work2_pt[3] > i ){//if( work2[((*pnt2)-1)*7+3] > i ){		
+				work2_pt[3] = i;//	work2[((*pnt2)-1)*7+3] = i;
 			    }
-			    work2[p2_index+6] = j;//work2[((*pnt2)-1)*7+6] = j;
+			    work2_pt[6] = j;//work2[((*pnt2)-1)*7+6] = j;
 			}
-		    }else if( (label_img[p1][i-1]) > 0 ) {//}else if( *(pnt1-1) > 0 ) {
-			label_img[p2][i]=label_img[p1][i-1];//*pnt2 = *(pnt1-1);
+		    }else if( (label_img_pt1[i-1]) > 0 ) {//}else if( *(pnt1-1) > 0 ) {
+			label_pixel=label_img_pt1[i-1];//*pnt2 = *(pnt1-1);
 
-			int p2_index=((label_img[p2][i])-1)*7;
-			work2[p2_index+0] ++;//work2[((*pnt2)-1)*7+0] ++;
-			work2[p2_index+1] += i;//work2[((*pnt2)-1)*7+1] += i;
-			work2[p2_index+2] += j;//work2[((*pnt2)-1)*7+2] += j;
-			if( work2[p2_index+4] < i ){//if( work2[((*pnt2)-1)*7+4] < i ){
-			    work2[p2_index+4] = i;//	work2[((*pnt2)-1)*7+4] = i;
+			work2_pt=work2[label_pixel-1];
+			work2_pt[0] ++;//work2[((*pnt2)-1)*7+0] ++;
+			work2_pt[1] += i;//work2[((*pnt2)-1)*7+1] += i;
+			work2_pt[2] += j;//work2[((*pnt2)-1)*7+2] += j;
+			if( work2_pt[4] < i ){//if( work2[((*pnt2)-1)*7+4] < i ){
+			    work2_pt[4] = i;//	work2[((*pnt2)-1)*7+4] = i;
 			}
-			work2[p2_index+6] = j;//work2[((*pnt2)-1)*7+6] = j;
-		    }else if(label_img[p2][i-1] > 0) {//}else if( *(pnt2-1) > 0) {
-			label_img[p2][i]=label_img[p2][i-1];//*pnt2 = *(pnt2-1);
+			work2_pt[6] = j;//work2[((*pnt2)-1)*7+6] = j;
+		    }else if(label_img_pt0[i-1] > 0) {//}else if( *(pnt2-1) > 0) {
+			label_pixel=label_img_pt0[i-1];//*pnt2 = *(pnt2-1);
 
-			int p2_index=((label_img[p2][i])-1)*7;
-			work2[p2_index+0] ++;//work2[((*pnt2)-1)*7+0] ++;
-			work2[p2_index+1] += i;//work2[((*pnt2)-1)*7+1] += i;
-			work2[p2_index+2] += j;//work2[((*pnt2)-1)*7+2] += j;
-			if( work2[p2_index+4] < i ){//if( work2[((*pnt2)-1)*7+4] < i ){
-			    work2[p2_index+4] = i;//	work2[((*pnt2)-1)*7+4] = i;
+			work2_pt=work2[label_pixel-1];
+			work2_pt[0] ++;//work2[((*pnt2)-1)*7+0] ++;
+			work2_pt[1] += i;//work2[((*pnt2)-1)*7+1] += i;
+			work2_pt[2] += j;//work2[((*pnt2)-1)*7+2] += j;
+			if(work2_pt[4] < i ){//if( work2[((*pnt2)-1)*7+4] < i ){
+			    work2_pt[4] = i;//	work2[((*pnt2)-1)*7+4] = i;
 			}
 		    }else{
+			//現在地までの領域を予約
+			this.work_holder.reserv(wk_max);
 			wk_max++;
-			if( wk_max > WORK_SIZE ) {
-			    throw new NyARException();//return (0);
-			}
-			work[wk_max-1] = wk_max;label_img[p2][i]=(short)wk_max;//work[wk_max-1] = *pnt2 = wk_max;
-			work2[(wk_max-1)*7+0] = 1;
-			work2[(wk_max-1)*7+1] = i;
-			work2[(wk_max-1)*7+2] = j;
-			work2[(wk_max-1)*7+3] = i;
-			work2[(wk_max-1)*7+4] = i;
-			work2[(wk_max-1)*7+5] = j;
-			work2[(wk_max-1)*7+6] = j;
+			work[wk_max-1] = wk_max;
+			label_pixel=wk_max;//work[wk_max-1] = *pnt2 = wk_max;
+			work2_pt=work2[wk_max-1];
+			work2_pt[0] = 1;
+			work2_pt[1] = i;
+			work2_pt[2] = j;
+			work2_pt[3] = i;
+			work2_pt[4] = i;
+			work2_pt[5] = j;
+			work2_pt[6] = j;
 		    }
+		    label_img_pt0[i]=label_pixel;
 		}else {
-		    label_img[p2][i]=0;//*pnt2 = 0;
+		    label_img_pt0[i]=0;//*pnt2 = 0;
 		}
+		
 	    }
 	}
-	int j = 1;
-	for(int i = 0; i < wk_max; i++){//for(int i = 1; i <= wk_max; i++, wk++) {
+	j = 1;
+	for(i = 0; i < wk_max; i++){//for(int i = 1; i <= wk_max; i++, wk++) {
 	    work[i]=(work[i]==i+1)? j++: work[work[i]-1];//*wk = (*wk==i)? j++: work[(*wk)-1];
 	}
-	
+
 	int wlabel_num=j - 1;//*label_num = *wlabel_num = j - 1;
 
 	if(wlabel_num==0){//if( *label_num == 0 ) {
@@ -344,38 +487,67 @@ public class NyARLabeling{
 	    return;
 	}
 
-	putZero(warea,wlabel_num);//put_zero( (ARUint8 *)warea, *label_num *     sizeof(int) );
-	putZero(wpos,wlabel_num*2);//put_zero( (ARUint8 *)wpos,  *label_num * 2 * sizeof(double) );
-	for(int i = 0; i < wlabel_num; i++) {//for(i = 0; i < *label_num; i++) {
-	    wclip[i][0] = lxsize;//wclip[i*4+0] = lxsize;
-	    wclip[i][1] = 0;//wclip[i*4+1] = 0;
-	    wclip[i][2] = lysize;//wclip[i*4+2] = lysize;
-	    wclip[i][3] = 0;//wclip[i*4+3] = 0;
-	}
-	for(int i = 0; i < wk_max; i++) {
-	    j = work[i] - 1;
-	    warea[j]    += work2[i*7+0];
-	    wpos[j*2+0] += work2[i*7+1];
-	    wpos[j*2+1] += work2[i*7+2];
-	    if( wclip[j][0] > work2[i*7+3] ){
-		wclip[j][0] = work2[i*7+3];
+	
+	
+	//ラベルバッファを予約&初期化
+	this.label_holder.init(wlabel_num, lxsize, lysize);
+//	
+//	putZero(warea,wlabel_num);//put_zero( (ARUint8 *)warea, *label_num *     sizeof(int) );
+//	for(i=0;i<wlabel_num;i++){
+//	    wpos[i*2+0]=0;
+//	    wpos[i*2+1]=0;
+//	}
+//	for(i = 0; i < wlabel_num; i++) {//for(i = 0; i < *label_num; i++) {
+//	    wclip[i][0] = lxsize;//wclip[i*4+0] = lxsize;
+//	    wclip[i][1] = 0;//wclip[i*4+1] = 0;
+//	    wclip[i][2] = lysize;//wclip[i*4+2] = lysize;
+//	    wclip[i][3] = 0;//wclip[i*4+3] = 0;
+//	}
+	NyARLabel label_pt;
+	NyARLabel[] labels=this.label_holder.labels;
+	
+	for(i = 0; i < wk_max; i++){
+	    label_pt=labels[work[i] - 1];
+	    work2_pt=work2[i];
+	    label_pt.area  += work2_pt[0];
+	    label_pt.pos_x += work2_pt[1];
+	    label_pt.pos_y += work2_pt[2];
+	    if( label_pt.clip0 > work2_pt[3] ){
+		label_pt.clip0 = work2_pt[3];
 	    }
-	    if( wclip[j][1] < work2[i*7+4] ){
-		wclip[j][1] = work2[i*7+4];
+	    if( label_pt.clip1 < work2_pt[4] ){
+		label_pt.clip1 = work2_pt[4];
 	    }
-	    if( wclip[j][2] > work2[i*7+5] ){
-		wclip[j][2] = work2[i*7+5];
+	    if(label_pt.clip2 > work2_pt[5] ){
+		label_pt.clip2 = work2_pt[5];
 	    }
-	    if( wclip[j][3] < work2[i*7+6] ){
-		wclip[j][3] = work2[i*7+6];
+	    if( label_pt.clip3 < work2_pt[6] ){
+		label_pt.clip3 = work2_pt[6];
 	    }
+	    
+//	    warea[j]    += work2_pt[0];
+//	    wpos[j*2+0] += work2_pt[1];
+//	    wpos[j*2+1] += work2_pt[2];
+//	    if( wclip[j][0] > work2_pt[3] ){
+//		wclip[j][0] = work2_pt[3];
+//	    }
+//	    if( wclip[j][1] < work2_pt[4] ){
+//		wclip[j][1] = work2_pt[4];
+//	    }
+//	    if( wclip[j][2] > work2_pt[5] ){
+//		wclip[j][2] = work2_pt[5];
+//	    }
+//	    if( wclip[j][3] < work2_pt[6] ){
+//		wclip[j][3] = work2_pt[6];
+//	    }
 	}
 
-	for(int i = 0; i < wlabel_num; i++ ) {//for(int i = 0; i < *label_num; i++ ) {
-	    wpos[i*2+0] /= warea[i];
-	    wpos[i*2+1] /= warea[i];
+	for(i = 0; i < wlabel_num; i++ ) {//for(int i = 0; i < *label_num; i++ ) {
+	    label_pt=labels[i];
+	    label_pt.pos_x /= label_pt.area;
+	    label_pt.pos_y /= label_pt.area;
 	}
-	
+
 	label_num=wlabel_num;
 	return;
     }

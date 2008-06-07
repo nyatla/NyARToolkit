@@ -51,7 +51,7 @@ public class NyARMatchPatt_BlackWhite implements ARMatchPatt{
     {
 	width=i_target_patt.getWidth();
 	height=i_target_patt.getHeight();
-	short[][][] data=i_target_patt.getPatArray(); 	
+	int[][][] data=i_target_patt.getPatArray(); 	
 	input=new int[height][width][3];
  
         int sum = ave = 0;

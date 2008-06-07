@@ -147,7 +147,6 @@ class NyARBehavior extends Behavior
 	    listener=i_listener;
 	}
     }
-
     /**
      * いわゆるイベントハンドラ
      */
@@ -158,7 +157,8 @@ class NyARBehavior extends Behavior
         	Transform3D t3d=null;
         	boolean is_marker_exist=false;
         	if(back_ground!=null){
-                    back_ground.setImage(raster.getImageComponent2D());        	    
+        	    raster.renewImageComponent2D();/*DirectXモードのときの対策*/
+                    back_ground.setImage(raster.getImageComponent2D());
         	}
                 if(raster.hasData()){
                     is_marker_exist=related_nya.detectMarkerLite(raster, 100);
