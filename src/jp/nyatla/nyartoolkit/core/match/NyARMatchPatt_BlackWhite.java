@@ -39,7 +39,7 @@ import jp.nyatla.nyartoolkit.core.*;
  * マーカーを評価します。
  *
  */
-public class NyARMatchPatt_BlackWhite implements ARMatchPatt{
+public class NyARMatchPatt_BlackWhite implements NyARMatchPatt{
     private double datapow;
     private int width;
     private int height;

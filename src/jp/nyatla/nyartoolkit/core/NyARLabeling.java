@@ -217,8 +217,8 @@ class NyARLabeling_O2 implements NyARLabeling
 
     private int label_num;
     //
-    private int width;
-    private int height;
+    private final int width;
+    private final int height;
     /**
      * @param i_width
      * ラベリング画像の幅。解析するラスタの幅より大きいこと。
@@ -230,7 +230,25 @@ class NyARLabeling_O2 implements NyARLabeling
 	width =i_width;
 	height=i_height;
 	glabel_img=new int[height][width];
+	this.wk_reservLineBuffer_buf=new int[width];
 	label_num=0;
+
+
+	//ワークイメージに枠を書く
+	int[][] label_img=this.glabel_img;
+	for(int i = 0; i < i_width; i++){
+	    label_img[0][i]=0;
+	    label_img[i_height-1][i]=0;
+	}
+	//</Optimize>
+	for(int i = 0; i < i_height; i++) {
+	    label_img[i][0]=0;
+	    label_img[i][i_width-1]=0;			    
+	}
+	
+	
+	
+	
     }
     /**
      * 検出したラベルの数を返す
@@ -273,29 +291,9 @@ class NyARLabeling_O2 implements NyARLabeling
     {
 	return glabel_img;
     }
-    
+    //コンストラクタで作ること
     private int[] wk_reservLineBuffer_buf=null;
-    /**
-     * ラベリング関数から使うラインスキャン用メモリの予約関数です。
-     * i_widthピクセル分のラインスキャン用バッファを保障します。
-     * @param i_width
-     * @return
-     */
-    private int[] reservWorkLineBuffer(int i_width)
-    {
-	int[] buf=this.wk_reservLineBuffer_buf;
-	if(buf==null){
-	    buf=new int[i_width];
-	    this.wk_reservLineBuffer_buf=buf;
-	}else{
-	    if(buf.length<i_width){
-		buf=new int[i_width];
-		this.wk_reservLineBuffer_buf=buf;
-	    }
-	    //十分なら何もしない。
-	}
-	return buf;
-    }
+
     /**
      * static ARInt16 *labeling2( ARUint8 *image, int thresh,int *label_num, int **area, double **pos, int **clip,int **label_ref, int LorR )
      * 関数の代替品
@@ -312,32 +310,22 @@ class NyARLabeling_O2 implements NyARLabeling
 	int lxsize, lysize;
 	int thresht3 = thresh * 3;
 	int i,j,k;
-
+	lxsize=image.getWidth();//lxsize = arUtil_c.arImXsize;
+	lysize=image.getHeight();//lysize = arUtil_c.arImYsize;
+	//画素数の一致チェック
+	if(lxsize!=this.width || lysize!=this.height){
+	    throw new NyARException();
+	}	
 	//ラベル数を0に初期化
 	this.label_num=0;
-//	int[][] work2=this.wk_labeling_work2;
-//	int[] work=this.gwork;
+
+
 
 	int[][] label_img=this.glabel_img;
 	
-	lxsize=image.getWidth();//lxsize = arUtil_c.arImXsize;
-	lysize=image.getHeight();//lysize = arUtil_c.arImYsize;
 
-	int[] label_img_pt0,label_img_pt1;
+	//枠作成はインスタンスを作った直後にやってしまう。
 	
-	//<Optimize>label_img_pt0,label_img_pt1
-	label_img_pt0=label_img[0];
-	label_img_pt1=label_img[lysize-1];
-	for(i = 0; i < lxsize; i++){
-	    label_img_pt0[i]=0;
-	    label_img_pt1[i]=0;
-	}
-	//</Optimize>
-	for(i = 0; i < lysize; i++) {
-	    label_img[i][0]=0;
-	    label_img[i][lxsize-1]=0;			    
-	}
-
 	int[] work2_pt;
 	wk_max = 0;
 
@@ -345,9 +333,9 @@ class NyARLabeling_O2 implements NyARLabeling
 	
 	int[] work=this.work_holder.work;
 	int[][] work2=this.work_holder.work2;
-	//1ライン分のメモリを予約
-	int[] line_bufferr=reservWorkLineBuffer(lxsize);
-
+	int[] line_bufferr=this.wk_reservLineBuffer_buf;
+	
+	int[] label_img_pt0,label_img_pt1;
 	for(j = 1; j < lysize - 1; j++) {//for (int j = 1; j < lysize - 1; j++, pnt += poff*2, pnt2 += 2) {
             label_img_pt0=label_img[j];
             label_img_pt1=label_img[j-1];
@@ -524,22 +512,6 @@ class NyARLabeling_O2 implements NyARLabeling
 	    if( label_pt.clip3 < work2_pt[6] ){
 		label_pt.clip3 = work2_pt[6];
 	    }
-	    
-//	    warea[j]    += work2_pt[0];
-//	    wpos[j*2+0] += work2_pt[1];
-//	    wpos[j*2+1] += work2_pt[2];
-//	    if( wclip[j][0] > work2_pt[3] ){
-//		wclip[j][0] = work2_pt[3];
-//	    }
-//	    if( wclip[j][1] < work2_pt[4] ){
-//		wclip[j][1] = work2_pt[4];
-//	    }
-//	    if( wclip[j][2] > work2_pt[5] ){
-//		wclip[j][2] = work2_pt[5];
-//	    }
-//	    if( wclip[j][3] < work2_pt[6] ){
-//		wclip[j][3] = work2_pt[6];
-//	    }
 	}
 
 	for(i = 0; i < wlabel_num; i++ ) {//for(int i = 0; i < *label_num; i++ ) {

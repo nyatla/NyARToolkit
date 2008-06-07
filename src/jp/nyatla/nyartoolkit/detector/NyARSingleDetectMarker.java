@@ -56,7 +56,7 @@ public class NyARSingleDetectMarker{
     {
 	//解析オブジェクトを作る
 	this.square=new NyARDetectSquare(i_param);
-	this.transmat=new NyARTransMat(i_param);
+	this.transmat=new NyARTransMat_O2(i_param);
 	//比較コードを保存
 	this.code=i_code;
 	this.marker_width=i_marker_width;

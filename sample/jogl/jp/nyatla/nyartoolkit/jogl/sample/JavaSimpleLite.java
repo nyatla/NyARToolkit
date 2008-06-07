@@ -127,7 +127,7 @@ public class JavaSimpleLite implements GLEventListener,JmfCaptureListener
         //NyARToolkitの準備
         try{
             //キャプチャの準備
-            capture=new JmfCameraCapture(320,240,15f,JmfCameraCapture.PIXEL_FORMAT_RGB);
+            capture=new JmfCameraCapture(SCREEN_X,SCREEN_Y,15f,JmfCameraCapture.PIXEL_FORMAT_RGB);
             capture.setCaptureListener(this);
             //NyARToolkitの準備
             ar_param=new GLNyARParam();

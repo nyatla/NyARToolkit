@@ -66,6 +66,7 @@ public class NyARDetectSquare
     public void detectSquare(NyARRaster i_image,int i_thresh,NyARSquareList o_square_holder) throws NyARException
     {
 //	number_of_square=0;
+	
 	labeling.labeling(i_image, i_thresh);
 	if(labeling.getLabelNum()<1){
 	    return;

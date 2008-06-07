@@ -116,7 +116,7 @@ class NyARMarker
     /**
      * static int arDetectMarker2_check_square( int area, ARMarkerInfo2 *marker_info2, double factor )
      * 関数の代替関数
-     * OPTIMIZED STEP [450->397]
+     * OPTIMIZED STEP [450->415]
      * @param i_area
      * @param i_factor
      * @return
@@ -128,33 +128,33 @@ class NyARMarker
 	final int[] l_y_coord=y_coord;
 	final NyARVertexCounter wv1=wk_checkSquare_wv1;
 	final NyARVertexCounter wv2=wk_checkSquare_wv2;
-	int             sx, sy;
-	int             dmax, d, v1;
+	int             sx,sy;
+	int             dmax,d,v1;
 	
 	int v2;//	    int   wvnum1,wvnum2,v2;
-	double          thresh;
-	int             i;
+	int i;
 	
+	final int L_coord_num_m1=this.coord_num-1;
 	dmax = 0;
 	v1 = 0;
 	sx = l_x_coord[0];//sx = marker_info2->x_coord[0];
 	sy = l_y_coord[0];//sy = marker_info2->y_coord[0];
-	for(i=1;i<this.coord_num-1;i++){//for(i=1;i<marker_info2->coord_num-1;i++) {
-	    d = (l_x_coord[i]-sx)*(l_x_coord[i]-sx)+ (l_y_coord[i]-sy)*(l_y_coord[i]-sy);
+	for(i=1;i<L_coord_num_m1;i++){//for(i=1;i<marker_info2->coord_num-1;i++) {
+            d = (l_x_coord[i]-sx)*(l_x_coord[i]-sx)+ (l_y_coord[i]-sy)*(l_y_coord[i]-sy);
 	    if( d > dmax ) {
 		dmax = d;
 		v1 = i;
 	    }
 	}
 
-	thresh = (i_area/0.75) * 0.01 * i_factor;
+	final double thresh = (i_area/0.75) * 0.01 * i_factor;
 
 	l_vertex[0] = 0;
 
 	if(!wv1.getVertex(l_x_coord,l_y_coord, 0,  v1,thresh)){	    //if( get_vertex(marker_info2->x_coord, marker_info2->y_coord, 0,  v1,thresh, wv1, &wvnum1) < 0 ) {
 	    return false;
 	}
-	if(!wv2.getVertex(l_x_coord,l_y_coord,v1,  this.coord_num-1, thresh)) {//if(get_vertex(marker_info2->x_coord, marker_info2->y_coord,v1,  marker_info2->coord_num-1, thresh, wv2, &wvnum2) < 0 ) {
+	if(!wv2.getVertex(l_x_coord,l_y_coord,v1,L_coord_num_m1, thresh)) {//if(get_vertex(marker_info2->x_coord, marker_info2->y_coord,v1,  marker_info2->coord_num-1, thresh, wv2, &wvnum2) < 0 ) {
 	    return false;
 	}
 
@@ -183,7 +183,7 @@ class NyARMarker
 	    if(!wv1.getVertex(l_x_coord,l_y_coord,v1, v2, thresh)) {
 		return false;
 	    }
-	    if(!wv2.getVertex(l_x_coord,l_y_coord,v2, this.coord_num-1, thresh)) {
+	    if(!wv2.getVertex(l_x_coord,l_y_coord,v2,L_coord_num_m1, thresh)) {
 		return false;
 	    }
 	    if( wv1.number_of_vertex==1 && wv2.number_of_vertex==1 ) {
@@ -198,7 +198,7 @@ class NyARMarker
 	else {
 	    return false;
 	}
-	l_vertex[4] = this.coord_num-1;//この値使ってるの？
+	l_vertex[4] =L_coord_num_m1;//この値使ってるの？
 	//
 	area   = i_area;
 	pos[0] = i_pos_x;
@@ -207,6 +207,7 @@ class NyARMarker
 	return true;
     }        
 }
+
 
 
 /**

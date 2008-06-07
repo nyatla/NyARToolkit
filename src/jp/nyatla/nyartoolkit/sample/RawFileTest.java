@@ -51,50 +51,50 @@ public class RawFileTest {
     }
     public void Test_arDetectMarkerLite() throws Exception
     {
-        //AR用カメラパラメタファイルをロード
-        NyARParam ap	=new NyARParam();
-        ap.loadFromARFile(camera_file);
-        ap.changeSize(320,240);
-        
-        //AR用のパターンコードを読み出し	
-        NyARCode code=new NyARCode(16,16);
-        code.loadFromARFile(code_file);
-        
-        //試験イメージの読み出し(320x240 BGRAのRAWデータ)
-        File f=new File(data_file);
-        FileInputStream fs=new FileInputStream(data_file);
-        byte[] buf=new byte[(int)f.length()];
-        fs.read(buf);
-        NyARRaster_BGRA ra=NyARRaster_BGRA.wrap(buf, 320, 240);
-        //		Blank_Raster ra=new Blank_Raster(320, 240);
-        
-        //１パターンのみを追跡するクラスを作成
-        NyARSingleDetectMarker ar=new NyARSingleDetectMarker(ap,code,80.0);
-        ar.detectMarkerLite(ra,100);
-        ar.getTransmationMatrix();
-    
-        //マーカーを検出
-        double[][] tm;
-        Date d2=new Date();
-        for(int i=0;i<1000;i++){
-            //変換行列を取得
-            ar.detectMarkerLite(ra,100);
-            ar.getTransmationMatrix();
-        }
-        Date d=new Date();
-        tm=null;
-        System.out.println(d.getTime()-d2.getTime()); 
+	//AR用カメラパラメタファイルをロード
+	NyARParam ap	=new NyARParam();
+	ap.loadFromARFile(camera_file);
+	ap.changeSize(320,240);
+
+	//AR用のパターンコードを読み出し	
+	NyARCode code=new NyARCode(16,16);
+	code.loadFromARFile(code_file);
+
+	//試験イメージの読み出し(320x240 BGRAのRAWデータ)
+	File f=new File(data_file);
+	FileInputStream fs=new FileInputStream(data_file);
+	byte[] buf=new byte[(int)f.length()];
+	fs.read(buf);
+	NyARRaster_BGRA ra=NyARRaster_BGRA.wrap(buf, 320, 240);
+	//		Blank_Raster ra=new Blank_Raster(320, 240);
+
+	//１パターンのみを追跡するクラスを作成
+	NyARSingleDetectMarker ar=new NyARSingleDetectMarker(ap,code,80.0);
+	ar.detectMarkerLite(ra,100);
+	ar.getTransmationMatrix();
+
+	//マーカーを検出
+	double[][] tm;
+	Date d2=new Date();
+	for(int i=0;i<1000;i++){
+	    //変換行列を取得
+	    ar.detectMarkerLite(ra,100);
+	    ar.getTransmationMatrix();
+	}
+	Date d=new Date();
+	tm=null;
+	System.out.println(d.getTime()-d2.getTime()); 
     }
     public static void main(String[] args)
     {
-    	
-    	try{
-    		RawFileTest t=new RawFileTest();
-    		//t.Test_arGetVersion();
-    		t.Test_arDetectMarkerLite();
-    	}catch(Exception e){
-    		e.printStackTrace();
-    	}
+
+	try{
+	    RawFileTest t=new RawFileTest();
+	    //t.Test_arGetVersion();
+	    t.Test_arDetectMarkerLite();
+	}catch(Exception e){
+	    e.printStackTrace();
+	}
     }
-	
+
 }

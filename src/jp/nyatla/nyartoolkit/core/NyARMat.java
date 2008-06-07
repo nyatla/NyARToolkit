@@ -151,7 +151,6 @@ public class NyARMat{
 	//double epsl;
 	double p,pbuf,work;
 
-//	epsl = 1.0e-10;         /* Threshold value      */
 	/* check size */
 	switch(dimen){
 	case 0:
@@ -170,15 +169,12 @@ public class NyARMat{
          * ループ内で0初期化していいかが判らない。
          */
        	ip=0;
-//       	int wap_ptr,wbp_ptr;
 	//For順変更禁止
         for(int n=0; n<dimen;n++)
         {
             ap_n =ap[n];//wcp = ap + n * rowa;
             p=0.0;
-//            wap_ptr=0;//wap = DoublePointer.wrap(wcp);
             for(int i = n; i<dimen ; i++){//for(i = n, wap = wcp, p = 0.0; i < dimen ; i++, wap += rowa)
-//        	wap=ap[i];
         	if( p < ( pbuf = Math.abs(ap[i][0]))) {
         	    p = pbuf;
         	    ip = i;
@@ -193,37 +189,24 @@ public class NyARMat{
             nos[n] = nwork;
             
             ap_ip=ap[ip];
-//            wbp=ap_n;
-//            wap_ptr=0;
-//            wbp_ptr=0;
             for(j=0; j< dimen ; j++){//for(j = 0, wap = ap + ip * rowa, wbp = wcp; j < dimen ; j++) {
             	work = ap_ip[j];               //work = *wap;
             	ap_ip[j]=ap_n[j];
-//            	wap_ptr++;//*wap++ = *wbp;
             	ap_n[j]=work;
-//                wbp_ptr++;     //*wbp++ = work;
             }
             
-//            wap=ap_n;
-//            wap_ptr=0;
             work=ap_n[0];
             for(j = 0; j < dimen_1 ; j++){//for(j = 1, wap = wcp, work = *wcp; j < dimen ; j++, wap++)
         	ap_n[j]=ap_n[j+1]/work;//*wap = *(wap + 1) / work;
-//            	wap_ptr++;
             }
             ap_n[j]=1.0/work;//*wap = 1.0 / work;
-//            wbp=ap_n;
             for(int i = 0; i < dimen ; i++) {
                 if(i != n) {
                     ap_i =ap[i];//wap = ap + i * rowa;
 
-//                    wap_ptr=0;
-//                    wbp_ptr=0;
                     work=ap_i[0];
                     for(j = 0;j < dimen_1 ; j++){//for(j = 1, wbp = wcp, work = *wap;j < dimen ; j++, wap++, wbp++)
                 	ap_i[j]=ap_i[j+1]-work*ap_n[j];//wap = *(wap + 1) - work * (*wbp);
-//                        wap_ptr++;
-//                        wbp_ptr++;
                     }
                     ap_i[j]=-work*ap_n[j];//*wap = -work * (*wbp);
                 }
@@ -239,7 +222,6 @@ public class NyARMat{
             nos[j] = nos[n];
             for(int i = 0; i < dimen ;i++){//for(i = 0, wap = ap + j, wbp = ap + n; i < dimen ;i++, wap += rowa, wbp += rowa) {
         	ap_i=ap[i];
-//        	wbp=ap[i];
                 work  =ap_i[j];//work = *wap;
                 ap_i[j]=ap_i[n];//*wap = *wbp;
                 ap_i[n]=work;//*wbp = work;
@@ -439,14 +421,37 @@ public class NyARMat{
         if(mean.getClm()!= clm){
 	    throw new NyARException();
         }
-        
+        double[][] im=inout.m;
+        double[] im_i;
+        double w0,w1;
         v = mean.getArray();
-        for(int i = 0; i < row; i++ ) {
-            for(int j = 0; j < clm; j++ ){
-            	//*(m++) -= *(v++);
-            	inout.m[i][j]-=v[j];
+	//特にパフォーマンスが劣化するclm=1と2ときだけ、別パスで処理します。
+        switch(clm){
+        case 1:
+            w0=v[0];
+            for(int i = 0; i < row; i++ ){
+        	im[i][0]-=w0;
+            }
+            break;
+        case 2:
+            w0=v[0];
+            w1=v[1];
+            for(int i = 0; i < row; i++ ){
+        	im_i=im[i];
+        	im_i[0]-=w0;
+        	im_i[1]-=w1;
+            }
+            break;
+        default:
+            for(int i = 0; i < row; i++ ){
+        	im_i=im[i];
+        	for(int j = 0; j < clm; j++ ){
+        	    //*(m++) -= *(v++);
+        	    im_i[j]-=v[j];
+        	}
             }
         }
+        return;
     }
     /**
      * int x_by_xt( ARMat *input, ARMat *output )の代替関数
@@ -551,7 +556,7 @@ public class NyARMat{
 	if( ev == null ){
 	    throw new NyARException();
 	}
-
+	final double[][] L_m=this.m;
 	this.vecTridiagonalize(dv,ev,1);
 
 	ev_array[0]=0.0;//ev->v[0] = 0.0;
@@ -604,10 +609,10 @@ public class NyARMat{
 		    ev_array[k+1]+=s * (c * w - 2 * s * ev_array[k+1]);//ev->v[k+1] += s * (c * w - 2 * s * ev->v[k+1]);
 
 		    for(int i = 0; i < dim; i++ ){
-			x = this.m[k][i];//x = a->m[k*dim+i];
-			y = this.m[k+1][i];//y = a->m[(k+1)*dim+i];
-			this.m[k][i]=c * x - s * y;//a->m[k*dim+i]     = c * x - s * y;
-			this.m[k+1][i]=s * x + c * y;//a->m[(k+1)*dim+i] = s * x + c * y;
+			x = L_m[k][i];//x = a->m[k*dim+i];
+			y = L_m[k+1][i];//y = a->m[(k+1)*dim+i];
+			L_m[k][i]=c * x - s * y;//a->m[k*dim+i]     = c * x - s * y;
+			L_m[k+1][i]=s * x + c * y;//a->m[(k+1)*dim+i] = s * x + c * y;
 		    }
 		    if( k < h-1 ) {
 			NyARException.trap("未チェックパス");{

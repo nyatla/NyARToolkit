@@ -40,7 +40,7 @@ import jp.nyatla.nyartoolkit.core.NyARColorPatt;
  * マーカーを評価します。
  *
  */
-public class NyARMatchPatt_Color_WITH_PCA implements ARMatchPatt{
+public class NyARMatchPatt_Color_WITH_PCA implements NyARMatchPatt{
     private final int		EVEC_MAX=10;//#define   EVEC_MAX     10
     private int		evec_dim;//static int    evec_dim;
     private int[][][]	input;

@@ -14,7 +14,7 @@ interface NyARTransRot
      * @return
      * @throws NyARException
      */
-    public double modifyMatrix(double trans[],double vertex[], double pos2d[]) throws NyARException;
+    public double modifyMatrix(double trans[],double vertex[][], double pos2d[][]) throws NyARException;
     public void initRot(NyARSquare marker_info,int i_direction) throws NyARException;    
 }
 
@@ -388,7 +388,7 @@ abstract class NyARTransRot_OptimizeCommon implements NyARTransRot
      */
     protected final int arGetAngle(double[] o_abc)
     {
-	double      a, b, c;
+	double      a, b, c,tmp;
 	double      sina, cosa, sinb, cosb, sinc, cosc;
 	double[] rot=array;
 	if( rot[8] > 1.0 ) {//<Optimize/>if( rot[2][2] > 1.0 ) {
@@ -429,8 +429,9 @@ abstract class NyARTransRot_OptimizeCommon implements NyARTransRot
 	    //<Optimize>
 	    //sinc =  (rot[2][1]*rot[0][2]-rot[2][0]*rot[1][2])/ (rot[0][2]*rot[0][2]+rot[1][2]*rot[1][2]);
 	    //cosc =  -(rot[0][2]*rot[2][0]+rot[1][2]*rot[2][1])/ (rot[0][2]*rot[0][2]+rot[1][2]*rot[1][2]);
-	    sinc =  (rot[7]*rot[2]-rot[6]*rot[5])/ (rot[2]*rot[2]+rot[5]*rot[5]);
-	    cosc =  -(rot[2]*rot[6]+rot[5]*rot[7])/ (rot[2]*rot[2]+rot[5]*rot[5]);
+	    tmp = (rot[2]*rot[2]+rot[5]*rot[5]);
+	    sinc =  (rot[7]*rot[2]-rot[6]*rot[5])/ tmp;
+	    cosc =  -(rot[2]*rot[6]+rot[5]*rot[7])/ tmp;
 	    //</Optimize>
 
 	    if( cosc > 1.0 ) {
@@ -600,7 +601,7 @@ class NyARTransRot_O1 extends NyARTransRot_OptimizeCommon
      * @param num
      * @return
      */
-    public final double modifyMatrix(double trans[],double vertex[], double pos2d[]) throws NyARException
+    public final double modifyMatrix(double trans[],double vertex[][], double pos2d[][]) throws NyARException
     {
 	int num=this.number_of_vertex;
 	double    factor;
@@ -633,12 +634,12 @@ class NyARTransRot_O1 extends NyARTransRot_OptimizeCommon
 			arGetNewMatrix(rot,trans, null, combo );
 			err = 0.0;
 			for( i = 0; i < num; i++ ) {
-			    hx = combo[0] * vertex[i*3+0]+ combo[1] * vertex[i*3+1]+ combo[2] * vertex[i*3+2]+ combo[3];
-			    hy = combo[4] * vertex[i*3+0]+ combo[5] * vertex[i*3+1]+ combo[6] * vertex[i*3+2]+ combo[7];
-			    h  = combo[8] * vertex[i*3+0]+ combo[9] * vertex[i*3+1]+ combo[10] * vertex[i*3+2]+ combo[11];
+			    hx = combo[0] * vertex[i][0]+ combo[1] * vertex[i][1]+ combo[2] * vertex[i][2]+ combo[3];
+			    hy = combo[4] * vertex[i][0]+ combo[5] * vertex[i][1]+ combo[6] * vertex[i][2]+ combo[7];
+			    h  = combo[8] * vertex[i][0]+ combo[9] * vertex[i][1]+ combo[10] * vertex[i][2]+ combo[11];
 			    x = hx / h;
 			    y = hy / h;
-			    err += (pos2d[i*2+0] - x) * (pos2d[i*2+0] - x)+ (pos2d[i*2+1] - y) * (pos2d[i*2+1] - y);
+			    err += (pos2d[i][0] - x) * (pos2d[i][0] - x)+ (pos2d[i][1] - y) * (pos2d[i][1] - y);
 			}
 			if( err < minerr ) {
 			    minerr = err;
@@ -858,7 +859,7 @@ class NyARTransRot_O2 extends NyARTransRot_OptimizeCommon
      * @return
      * @throws NyARException
      */
-    public double modifyMatrix(double trans[],double vertex[], double pos2d[]) throws NyARException
+    public double modifyMatrix(double trans[],double vertex[][], double pos2d[][]) throws NyARException
     {
 	int num=this.number_of_vertex;
 	double    factor;
@@ -896,12 +897,12 @@ class NyARTransRot_O2 extends NyARTransRot_OptimizeCommon
 			nyatla_arGetNewMatrix_row012(rot,trans,combo);//第二パラメタは常にnull//arGetNewMatrix(trans, null, combo );
 			err = 0.0;
 			for( i = 0; i < num; i++ ) {
-			    hx = combo[0] * vertex[i*3+0]+ combo[1] * vertex[i*3+1]+ combo[2] * vertex[i*3+2]+ combo[3];
-			    hy = combo[4] * vertex[i*3+0]+ combo[5] * vertex[i*3+1]+ combo[6] * vertex[i*3+2]+ combo[7];
-			    h  = combo[8] * vertex[i*3+0]+ combo[9] * vertex[i*3+1]+ combo[10] * vertex[i*3+2]+ combo[11];
+			    hx = combo[0] * vertex[i][0]+ combo[1] * vertex[i][1]+ combo[2] * vertex[i][2]+ combo[3];
+			    hy = combo[4] * vertex[i][0]+ combo[5] * vertex[i][1]+ combo[6] * vertex[i][2]+ combo[7];
+			    h  = combo[8] * vertex[i][0]+ combo[9] * vertex[i][1]+ combo[10] * vertex[i][2]+ combo[11];
 			    x = hx / h;
 			    y = hy / h;
-			    err += (pos2d[i*2+0] - x) * (pos2d[i*2+0] - x)+ (pos2d[i*2+1] - y) * (pos2d[i*2+1] - y);
+			    err += (pos2d[i][0] - x) * (pos2d[i][0] - x)+ (pos2d[i][1] - y) * (pos2d[i][1] - y);
 			}
 			if( err < minerr ) {
 			    minerr = err;
@@ -974,6 +975,7 @@ class NyARTransRot_O2 extends NyARTransRot_OptimizeCommon
 
 /**
  * NyARModifyMatrixの最適化バージョン3
+ * O3版の演算テーブル版
  * 計算速度のみを追求する
  *
  */
@@ -1049,136 +1051,174 @@ class NyARTransRot_O3 extends NyARTransRot_OptimizeCommon
 	rot[8] = wdir[2][2];
 	//</Optimize>    
     }
-    private final double[] wk_arModifyMatrix_abc=new double[3];
+    private final double[][] wk_arModifyMatrix_double1D=new double[8][3];
     /**
      * arGetRot計算を階層化したModifyMatrix
      * 896
      * @param nyrot
      * @param trans
      * @param vertex
+     * [m][3]
      * @param pos2d
-     * @param num
+     * [n][2]
      * @return
      * @throws NyARException
      */
-    public double modifyMatrix(double trans[],double vertex[], double pos2d[]) throws NyARException
+    public double modifyMatrix(double trans[],double vertex[][], double pos2d[][]) throws NyARException
     {
-        double CACA,SASA,SACA,CA,SA;
-        double CACACB,SACACB,SASACB,CASB,SASB;
-        double SACASC,SACACBSC,SACACBCC,SACACC;        
 	double    factor;
-	double    a1, b1, c1;
 	double    a2, b2, c2;
 	double    ma = 0.0, mb = 0.0, mc = 0.0;
 	double    h, x, y;
 	double    err, minerr=0;
 	int       t1, t2, t3;
 	int       s1 = 0, s2 = 0, s3 = 0;
-	int       i;
-	final double[] abc=wk_arModifyMatrix_abc;
 
-	arGetAngle(abc);//arGetAngle( rot, &a, &b, &c );
-	a2 = abc[0];
-	b2 = abc[1];
-	c2 = abc[2];
 	factor = 10.0*Math.PI/180.0;
 	double rot0,rot1,rot3,rot4,rot6,rot7;
 	double combo00,combo01,combo02,combo03,combo10,combo11,combo12,combo13,combo20,combo21,combo22,combo23;
 	double combo02_2,combo02_5,combo02_8,combo02_11;
 	double combo22_2,combo22_5,combo22_8,combo22_11;
 	double combo12_2,combo12_5,combo12_8,combo12_11;
+	//vertex展開
+	final double VX00,VX01,VX02,VX10,VX11,VX12,VX20,VX21,VX22,VX30,VX31,VX32;
+	double[] d_pt;
+	d_pt=vertex[0];VX00=d_pt[0];VX01=d_pt[1];VX02=d_pt[2];
+	d_pt=vertex[1];VX10=d_pt[0];VX11=d_pt[1];VX12=d_pt[2];
+	d_pt=vertex[2];VX20=d_pt[0];VX21=d_pt[1];VX22=d_pt[2];
+	d_pt=vertex[3];VX30=d_pt[0];VX31=d_pt[1];VX32=d_pt[2];
+	final double P2D00,P2D01,P2D10,P2D11,P2D20,P2D21,P2D30,P2D31;
+	d_pt=pos2d[0];P2D00=d_pt[0];P2D01=d_pt[1];
+	d_pt=pos2d[1];P2D10=d_pt[0];P2D11=d_pt[1];
+	d_pt=pos2d[2];P2D20=d_pt[0];P2D21=d_pt[1];
+	d_pt=pos2d[3];P2D30=d_pt[0];P2D31=d_pt[1];
 	final double cpara[]=cparam.get34Array();
-        combo03 = cpara[0] * trans[0]+ cpara[1] * trans[1]+ cpara[2] * trans[2]+ cpara[3];
-        combo13 = cpara[4] * trans[0]+ cpara[5] * trans[1]+ cpara[6] * trans[2]+ cpara[7];
-        combo23 = cpara[8] * trans[0]+ cpara[9] * trans[1]+ cpara[10] * trans[2]+ cpara[11];
+	final double CP0,CP1,CP2,CP3,CP4,CP5,CP6,CP7,CP8,CP9,CP10;
+	CP0=cpara[0];CP1=cpara[1];CP2=cpara[2];CP3=cpara[3];
+	CP4=cpara[4];CP5=cpara[5];CP6=cpara[6];CP7=cpara[7];
+	CP8=cpara[8];CP9=cpara[9];CP10=cpara[10];
+	combo03 = CP0 * trans[0]+ CP1 * trans[1]+ CP2 * trans[2]+ CP3;
+	combo13 = CP4 * trans[0]+ CP5 * trans[1]+ CP6 * trans[2]+ CP7;
+	combo23 = CP8 * trans[0]+ CP9 * trans[1]+ CP10 * trans[2]+ cpara[11];
+	double CACA,SASA,SACA,CA,SA;
+	double CACACB,SACACB,SASACB,CASB,SASB;
+	double SACASC,SACACBSC,SACACBCC,SACACC;        
+	final double[][] double1D=this.wk_arModifyMatrix_double1D;
+
+	final double[] abc     =double1D[0];
+	final double[] a_factor=double1D[1];
+	final double[] sinb    =double1D[2];
+	final double[] cosb    =double1D[3];
+	final double[] b_factor=double1D[4];
+	final double[] sinc    =double1D[5];
+	final double[] cosc    =double1D[6];
+	final double[] c_factor=double1D[7];
+	double w,w2;
 	double wsin,wcos;
+
+	arGetAngle(abc);//arGetAngle( rot, &a, &b, &c );
+	a2 = abc[0];
+	b2 = abc[1];
+	c2 = abc[2];
+	
 	//comboの3行目を先に計算
-	for( i = 0; i < 10; i++ ) {
+	for(int i = 0; i < 10; i++ ) {
 	    minerr = 1000000000.0;
-	    for(t1=-1;t1<=1;t1++) {
-                a1 = a2 + factor*t1;
-		wsin = Math.sin(a1);
-		wcos = Math.cos(a1);
+	    //sin-cosテーブルを計算(これが外に出せるとは…。)
+	    for(int j=0;j<3;j++){
+		w2=factor*(j-1);
+		w= a2 + w2;
+		a_factor[j]=w;
+		w= b2 + w2;
+		b_factor[j]=w;
+		sinb[j]=Math.sin(w);
+		cosb[j]=Math.cos(w);
+		w= c2 + w2;
+		c_factor[j]=w;
+		sinc[j]=Math.sin(w);
+		cosc[j]=Math.cos(w);
+	    }
+	    //
+	    for(t1=0;t1<3;t1++) {
+		SA = Math.sin(a_factor[t1]);
+		CA = Math.cos(a_factor[t1]);
 		//Optimize
-		CACA=wcos*wcos;
-		SASA=wsin*wsin;
-		SACA=wsin*wcos;
-		CA=wcos;
-		SA=wsin;
-		for(t2=-1;t2<=1;t2++) {
-                    b1 = b2 + factor*t2;
-                    wsin = Math.sin(b1);
-                    wcos = Math.cos(b1);
+		CACA=CA*CA;
+		SASA=SA*SA;
+		SACA=SA*CA;
+		for(t2=0;t2<3;t2++) {
+		    wsin=sinb[t2];
+		    wcos=cosb[t2];
 		    CACACB=CACA*wcos;
 		    SACACB=SACA*wcos;
 		    SASACB=SASA*wcos;
 		    CASB=CA*wsin;
 		    SASB=SA*wsin;
 		    //comboの計算1
-		    combo02 = cpara[0] * CASB+ cpara[1] * SASB+ cpara[2] * wcos;
-		    combo12 = cpara[4] * CASB+ cpara[5] * SASB+ cpara[6] * wcos;
-		    combo22 = cpara[8] * CASB+ cpara[9] * SASB+ cpara[10] * wcos;
-		    combo02_2 =combo02 * vertex[2]+combo03;
-		    combo02_5 =combo02 * vertex[5]+combo03;
-		    combo02_8 =combo02 * vertex[8]+combo03;
-		    combo02_11=combo02 * vertex[11]+combo03;
-		    combo12_2 =combo12 * vertex[2]+ combo13;
-		    combo12_5 =combo12 * vertex[5]+ combo13;
-		    combo12_8 =combo12 * vertex[8]+ combo13;
-		    combo12_11=combo12 * vertex[11]+ combo13;
-		    combo22_2 =combo22 * vertex[2]+ combo23;
-		    combo22_5 =combo22 * vertex[5]+ combo23;
-		    combo22_8 =combo22 * vertex[8]+ combo23;
-		    combo22_11=combo22 * vertex[11]+ combo23;
-	    
-		    for(t3=-1;t3<=1;t3++) {
-			c1 = c2 + factor*t3;
-			wsin = Math.sin(c1);
-			wcos = Math.cos(c1);
+		    combo02 = CP0 * CASB+ CP1 * SASB+ CP2 * wcos;
+		    combo12 = CP4 * CASB+ CP5 * SASB+ CP6 * wcos;
+		    combo22 = CP8 * CASB+ CP9 * SASB+ CP10 * wcos;
+
+		    combo02_2 =combo02 * VX02 + combo03;
+		    combo02_5 =combo02 * VX12 + combo03;
+		    combo02_8 =combo02 * VX22 + combo03;
+		    combo02_11=combo02 * VX32 + combo03;
+		    combo12_2 =combo12 * VX02 + combo13;
+		    combo12_5 =combo12 * VX12 + combo13;
+		    combo12_8 =combo12 * VX22 + combo13;
+		    combo12_11=combo12 * VX32 + combo13;
+		    combo22_2 =combo22 * VX02 + combo23;
+		    combo22_5 =combo22 * VX12 + combo23;
+		    combo22_8 =combo22 * VX22 + combo23;
+		    combo22_11=combo22 * VX32 + combo23;	    
+		    for(t3=0;t3<3;t3++){
+			wsin=sinc[t3];
+			wcos=cosc[t3];			
 			SACASC=SACA*wsin;
 			SACACC=SACA*wcos;
 			SACACBSC=SACACB*wsin;
 			SACACBCC=SACACB*wcos;
-			
+
 			rot0 = CACACB*wcos+SASA*wcos+SACACBSC-SACASC;
 			rot3 = SACACBCC-SACACC+SASACB*wsin+CACA*wsin;
 			rot6 = -CASB*wcos-SASB*wsin;
-                        combo00 = cpara[0] * rot0+ cpara[1] * rot3+ cpara[2] * rot6;
-                        combo10 = cpara[4] * rot0+ cpara[5] * rot3+ cpara[6] * rot6;
-                        combo20 = cpara[8] * rot0+ cpara[9] * rot3+ cpara[10] * rot6;
-                        
+
+			combo00 = CP0 * rot0+ CP1 * rot3+ CP2 * rot6;
+			combo10 = CP4 * rot0+ CP5 * rot3+ CP6 * rot6;
+			combo20 = CP8 * rot0+ CP9 * rot3+ CP10 * rot6;
+
 			rot1 = -CACACB*wsin-SASA*wsin+SACACBCC-SACACC;
 			rot4 = -SACACBSC+SACASC+SASACB*wcos+CACA*wcos;
 			rot7 = CASB*wsin-SASB*wcos;
-                        combo01 = cpara[0] * rot1+ cpara[1] * rot4+ cpara[2] * rot7;
-                        combo11 = cpara[4] * rot1+ cpara[5] * rot4+ cpara[6] * rot7;
-                        combo21 = cpara[8] * rot1+ cpara[9] * rot4+ cpara[10] * rot7;
-                        //
-                        err = 0.0;
-                        h  = combo20 * vertex[0]+ combo21 * vertex[1]+ combo22_2;
-                        x = pos2d[0] - (combo00 * vertex[0]+ combo01 * vertex[1]+ combo02_2) / h;
-                        y = pos2d[1] - (combo10 * vertex[0]+ combo11 * vertex[1]+ combo12_2) / h;
-                        err += x*x+y*y;
-                        h  = combo20 * vertex[3]+ combo21 * vertex[4]+ combo22_5;
-                        x = pos2d[2] - (combo00 * vertex[3]+ combo01 * vertex[4]+ combo02_5) / h;
-                        y = pos2d[3] - (combo10 * vertex[3]+ combo11 * vertex[4]+ combo12_5) / h;
-                        err += x*x+y*y;
-                        h  = combo20 * vertex[6]+ combo21 * vertex[7]+ combo22_8;
-                        x = pos2d[4] - (combo00 * vertex[6]+ combo01 * vertex[7]+ combo02_8) / h;
-                        y = pos2d[5] - (combo10 * vertex[6]+ combo11 * vertex[7]+ combo12_8) / h;
-                        err += x*x+y*y;
-                        h  = combo20 * vertex[9]+ combo21 * vertex[10]+ combo22_11;
-                        x = pos2d[6] - (combo00 * vertex[9]+ combo01 * vertex[10]+ combo02_11) / h;
-                        y = pos2d[7] - (combo10 * vertex[9]+ combo11 * vertex[10]+ combo12_11) / h;
-                        err += x*x+y*y;
+			combo01 = CP0 * rot1+ CP1 * rot4+ CP2 * rot7;
+			combo11 = CP4 * rot1+ CP5 * rot4+ CP6 * rot7;
+			combo21 = CP8 * rot1+ CP9 * rot4+ CP10 * rot7;
+			//
+			err = 0.0;
+			h  = combo20 * VX00+ combo21 * VX01+ combo22_2;
+			x = P2D00 - (combo00 * VX00+ combo01 * VX01+ combo02_2) / h;
+			y = P2D01 - (combo10 * VX00+ combo11 * VX01+ combo12_2) / h;
+			err += x*x+y*y;
+			h  = combo20 * VX10+ combo21 * VX11+ combo22_5;
+			x = P2D10 - (combo00 * VX10+ combo01 * VX11+ combo02_5) / h;
+			y = P2D11 - (combo10 * VX10+ combo11 * VX11+ combo12_5) / h;
+			err += x*x+y*y;
+			h  = combo20 * VX20+ combo21 * VX21+ combo22_8;
+			x = P2D20 - (combo00 * VX20+ combo01 * VX21+ combo02_8) / h;
+			y = P2D21 - (combo10 * VX20+ combo11 * VX21+ combo12_8) / h;
+			err += x*x+y*y;
+			h  = combo20 * VX30+ combo21 * VX31+ combo22_11;
+			x = P2D30 - (combo00 * VX30+ combo01 * VX31+ combo02_11) / h;
+			y = P2D31 - (combo10 * VX30+ combo11 * VX31+ combo12_11) / h;
+			err += x*x+y*y;
 			if( err < minerr ) {
 			    minerr = err;
-			    ma = a1;
-			    mb = b1;
-			    mc = c1;
-			    s1 = t1;
-			    s2 = t2;
-			    s3 = t3;
+			    ma = a_factor[t1];
+			    mb = b_factor[t2];
+			    mc = c_factor[t3];
+			    s1 = t1-1;
+			    s2 = t2-1;
+			    s3 = t3-1;
 			}
 		    }
 		}

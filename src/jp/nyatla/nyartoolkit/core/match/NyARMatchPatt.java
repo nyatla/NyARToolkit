@@ -45,7 +45,7 @@ import jp.nyatla.nyartoolkit.core.NyARColorPatt;
  * pattern_match関数を分解した３種類のパターン検出クラスを定義します。
  *
  */
-interface ARMatchPatt{
+public interface NyARMatchPatt{
     public double getConfidence();
     public int getDirection();
     public void evaluate(NyARCode i_code);

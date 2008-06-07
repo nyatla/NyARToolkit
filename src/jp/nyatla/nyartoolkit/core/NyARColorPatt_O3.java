@@ -1,3 +1,34 @@
+/* 
+ * PROJECT: NyARToolkit
+ * --------------------------------------------------------------------------------
+ * This work is based on the original ARToolKit developed by
+ *   Hirokazu Kato
+ *   Mark Billinghurst
+ *   HITLab, University of Washington, Seattle
+ * http://www.hitl.washington.edu/artoolkit/
+ *
+ * The NyARToolkit is Java version ARToolkit class library.
+ * Copyright (C)2008 R.Iizuka
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this framework; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * 
+ * For further information please contact.
+ *	http://nyatla.jp/nyatoolkit/
+ *	<airmail(at)ebony.plala.or.jp>
+ * 
+ */
 package jp.nyatla.nyartoolkit.core;
 
 
@@ -201,6 +232,7 @@ public class NyARColorPatt_O3 implements NyARColorPatt
     private int[] wk_updateExtpat_x_rgb_index;
     private int[] wk_updateExtpat_y_rgb_index;
     private int[] wk_updateExtpat_i_rgb_index;
+    private int wk_updateExtpat_buffer_size=0;
 
     /**
      * ワークバッファを予約する
@@ -208,27 +240,17 @@ public class NyARColorPatt_O3 implements NyARColorPatt
      */
     private void reservWorkBuffers(int i_xdiv2)
     {
-	int[] buf=this.wk_updateExtpat_rgb_buf;
-	if(this.wk_updateExtpat_rgb_buf==null){
-	    wk_updateExtpat_para00_xw=new double[i_xdiv2];
-	    wk_updateExtpat_para10_xw=new double[i_xdiv2];
-	    wk_updateExtpat_para20_xw=new double[i_xdiv2];
-	    wk_updateExtpat_rgb_buf=new int[i_xdiv2*3];
-	    wk_updateExtpat_x_rgb_index=new int[i_xdiv2];
-	    wk_updateExtpat_y_rgb_index=new int[i_xdiv2];
-	    wk_updateExtpat_i_rgb_index=new int[i_xdiv2];
-	}else{
-	    if(buf.length<i_xdiv2){
-		wk_updateExtpat_para00_xw=new double[i_xdiv2];
-		wk_updateExtpat_para10_xw=new double[i_xdiv2];
-		wk_updateExtpat_para20_xw=new double[i_xdiv2];
-		wk_updateExtpat_rgb_buf=new int[i_xdiv2*3];
-		wk_updateExtpat_x_rgb_index=new int[i_xdiv2];
-		wk_updateExtpat_y_rgb_index=new int[i_xdiv2];
-		wk_updateExtpat_i_rgb_index=new int[i_xdiv2];
-	    }
-	    //十分なら何もしない。
-	}
+        if(this.wk_updateExtpat_buffer_size<i_xdiv2){
+            wk_updateExtpat_para00_xw=new double[i_xdiv2];
+            wk_updateExtpat_para10_xw=new double[i_xdiv2];
+            wk_updateExtpat_para20_xw=new double[i_xdiv2];
+            wk_updateExtpat_rgb_buf=new int[i_xdiv2*3];
+            wk_updateExtpat_x_rgb_index=new int[i_xdiv2];
+            wk_updateExtpat_y_rgb_index=new int[i_xdiv2];
+            wk_updateExtpat_i_rgb_index=new int[i_xdiv2];
+            this.wk_updateExtpat_buffer_size=i_xdiv2;
+        }
+	//十分なら何もしない。
 	return;
     }
     
@@ -236,13 +258,15 @@ public class NyARColorPatt_O3 implements NyARColorPatt
     {
 	int img_x=image.getWidth();
 	int img_y=image.getHeight();
-
+	final int[][][] L_extpat=this.extpat;
+	final int L_WIDTH=this.width;
+	final int L_HEIGHT=this.height;
 	/*wk_pickFromRaster_ext_pat2ワーク変数を初期化する。*/
 	//int[][][] ext_pat2=wk_pickFromRaster_ext_pat2;//ARUint32  ext_pat2[AR_PATT_SIZE_Y][AR_PATT_SIZE_X][3];
 	int extpat_j[][],extpat_j_i[];
 	//int ext_pat2_j[][],ext_pat2_j_i[];
 
-	initValue_wk_pickFromRaster_ext_pat2(extpat,this.width,this.height);
+	initValue_wk_pickFromRaster_ext_pat2(L_extpat,L_WIDTH,L_HEIGHT);
 
 	double[][] cpara_array=i_cpara.getArray();
 	double para21_x_yw,para01_x_yw,para11_x_yw;
@@ -261,8 +285,8 @@ public class NyARColorPatt_O3 implements NyARColorPatt
 	int		xc, yc;
 	int i,j;
 	//   	arGetCode_put_zero(ext_pat2);//put_zero( (ARUint8 *)ext_pat2, AR_PATT_SIZE_Y*AR_PATT_SIZE_X*3*sizeof(ARUint32) );
-	int xdiv = i_xdiv2/width;//xdiv = xdiv2/Config.AR_PATT_SIZE_X;
-	int ydiv = i_ydiv2/height;//ydiv = ydiv2/Config.AR_PATT_SIZE_Y;
+	int xdiv = i_xdiv2/L_WIDTH;//xdiv = xdiv2/Config.AR_PATT_SIZE_X;
+	int ydiv = i_ydiv2/L_HEIGHT;//ydiv = ydiv2/Config.AR_PATT_SIZE_Y;
 	
 	//計算バッファを予約する
 	this.reservWorkBuffers(i_xdiv2);	
@@ -282,13 +306,14 @@ public class NyARColorPatt_O3 implements NyARColorPatt
 	}
 
 	int index_num;
+
 	
 	for(j = 0; j < i_ydiv2; j++ ) {
 	    yw = 102.5 + 5.0 * ((double)j+0.5) /i_ydiv2;
 	    para21_x_yw=para21*yw+1.0;
 	    para11_x_yw=para11*yw+para12;
 	    para01_x_yw=para01*yw+para02;
-	    extpat_j=extpat[j/ydiv];
+	    extpat_j=L_extpat[j/ydiv];
 	    index_num=0;
 	    //ステップ１．RGB取得用のマップを作成
 	    for(i = 0; i < i_xdiv2; i++ ) {
@@ -326,9 +351,9 @@ public class NyARColorPatt_O3 implements NyARColorPatt
 	}
 	/*<Optimize>*/
 	int xdiv_x_ydiv=xdiv*ydiv;
-	for(j =this.height-1; j>=0; j--){
-	    extpat_j=extpat[j];
-	    for(i = this.width-1; i>=0; i--){				// PRL 2006-06-08.
+	for(j =L_HEIGHT-1; j>=0; j--){
+	    extpat_j=L_extpat[j];
+	    for(i = L_WIDTH-1; i>=0; i--){				// PRL 2006-06-08.
 		extpat_j_i=extpat_j[i];
 		extpat_j_i[0]/=(xdiv_x_ydiv);//ext_pat[j][i][0] = (byte)(ext_pat2[j][i][0] / (xdiv*ydiv));
 		extpat_j_i[1]/=(xdiv_x_ydiv);//ext_pat[j][i][1] = (byte)(ext_pat2[j][i][1] / (xdiv*ydiv));
