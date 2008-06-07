@@ -2,10 +2,12 @@
  * simpleLiteと同じようなテストプログラム
  * マーカーの一致度の最低値をチェックするところを抜いたので、同じマーカーを大量に
  * 検出すると面白いことになります。
- * (c)2008 R.iizuka
+ * (c)2008 A虎＠nyatla.jp
  * airmail(at)ebony.plala.or.jp
  * http://nyatla.jp/
  */
+package jp.nyatla.nyartoolkit.jogl.sample;
+
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.*;
@@ -21,9 +23,9 @@ import com.sun.opengl.util.Animator;
 
 import jp.nyatla.nyartoolkit.core.NyARCode;
 
-import jp.nyatla.nyartoolkit.jmf.JmfCameraCapture;
-import jp.nyatla.nyartoolkit.jmf.JmfCaptureListener;
-import jp.nyatla.nyartoolkit.gutil.*;
+import jp.nyatla.nyartoolkit.jmf.utils.JmfCameraCapture;
+import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
+import jp.nyatla.nyartoolkit.jogl.utils.*;
 
 
 public class JavaSimpleLite implements GLEventListener,JmfCaptureListener
@@ -31,12 +33,16 @@ public class JavaSimpleLite implements GLEventListener,JmfCaptureListener
     private final String CARCODE_FILE ="../../Data/patt.hiro";
     private final String PARAM_FILE   ="../../Data/camera_para.dat";
        
-    
+    private final static int SCREEN_X=320;
+    private final static int SCREEN_Y=240;
     private Animator animator;
     private GLNyARRaster_RGB cap_image;
     
     private JmfCameraCapture capture;
-    private GL gl;
+    private GL  gl;
+    private NyARGLUtil glnya;
+
+
     //NyARToolkit関係
     private GLNyARSingleDetectMarker nya;
     private GLNyARParam ar_param;
@@ -48,7 +54,7 @@ public class JavaSimpleLite implements GLEventListener,JmfCaptureListener
     {
     	// Colour cube data.
     	int polyList = 0;
-    	float fSize = 0.5f;
+    	float fSize = 0.5f;//マーカーサイズに対して0.5倍なので、4cmのナタデココ
     	int f, i;	
     	float[][] cube_vertices=new float[][]{
     		{1.0f, 1.0f, 1.0f}, {1.0f, -1.0f, 1.0f}, {-1.0f, -1.0f, 1.0f}, {-1.0f, 1.0f, 1.0f},
@@ -111,8 +117,8 @@ public class JavaSimpleLite implements GLEventListener,JmfCaptureListener
 
         frame.setVisible(true);
         Insets ins=frame.getInsets();
-        frame.setSize(320+ins.left+ins.right,240+ins.top+ins.bottom);
-        canvas.setBounds(ins.left,ins.top,320,240);
+        frame.setSize(SCREEN_X+ins.left+ins.right,SCREEN_Y+ins.top+ins.bottom);
+        canvas.setBounds(ins.left,ins.top,SCREEN_X,SCREEN_Y);
     }
 
     public void init(GLAutoDrawable drawable) {
@@ -127,9 +133,11 @@ public class JavaSimpleLite implements GLEventListener,JmfCaptureListener
             ar_param=new GLNyARParam();
             NyARCode ar_code  =new NyARCode(16,16);
             ar_param.loadFromARFile(PARAM_FILE);
-            ar_param.changeSize(320,240);
+            ar_param.changeSize(SCREEN_X,SCREEN_Y);
             nya=new GLNyARSingleDetectMarker(ar_param,ar_code,80.0);
             ar_code.loadFromARFile(CARCODE_FILE);
+            //NyARToolkit用の支援クラス
+            glnya=new NyARGLUtil(gl,ar_param);
             //GL対応のRGBラスタオブジェクト
             cap_image=new GLNyARRaster_RGB(gl,ar_param);
             //キャプチャ開始
@@ -147,19 +155,15 @@ public class JavaSimpleLite implements GLEventListener,JmfCaptureListener
         int x, int y,
         int width, int height)
     {
-	float ratio = (float)height / (float)width;
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
         gl.glViewport(0, 0,  width, height);
 
         //視体積の設定
         gl.glMatrixMode(GL.GL_PROJECTION);
         gl.glLoadIdentity();
-        gl.glFrustum(-1.0f, 1.0f, -ratio, ratio,
-	             5.0f, 40.0f);
         //見る位置
         gl.glMatrixMode(GL.GL_MODELVIEW);
         gl.glLoadIdentity();
-        gl.glTranslatef(0.0f, 0.0f, -10.0f);
     }
 
     public void display(GLAutoDrawable drawable)
@@ -175,10 +179,11 @@ public class JavaSimpleLite implements GLEventListener,JmfCaptureListener
             synchronized(cap_image){
         	is_marker_exist=nya.detectMarkerLite(cap_image,100);
         	//背景を書く
-        	cap_image.glDispImage(1.0);
+        	glnya.drawBackGround(cap_image, 1.0);
             }
             //あったら立方体を書く
             if(is_marker_exist){
+        	//マーカーの一致度を調査するならば、ここでnya.getConfidence()で一致度を調べて下さい。
                 // Projection transformation.
                 gl.glMatrixMode(GL.GL_PROJECTION);
                 gl.glLoadMatrixd(ar_param.getCameraFrustumRH(),0);

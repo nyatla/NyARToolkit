@@ -25,7 +25,7 @@
  * facility. Licensee represents and warrants that it will not use or
  * redistribute the Software for such purposes.
  */
-package jp.nyatla.nyartoolkit.jmf;
+package jp.nyatla.nyartoolkit.jmf.utils;
 
 
 import javax.media.*;

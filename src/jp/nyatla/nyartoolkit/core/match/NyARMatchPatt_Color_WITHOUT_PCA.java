@@ -54,7 +54,7 @@ public class NyARMatchPatt_Color_WITHOUT_PCA implements ARMatchPatt{
     public int getDirection(){
 	return dir;
     }
-    public void setPatt(NyARColorPatt i_target_patt) throws NyARException
+    public boolean setPatt(NyARColorPatt i_target_patt) throws NyARException
     {
 	width=i_target_patt.getWidth();
 	height=i_target_patt.getHeight();
@@ -81,11 +81,12 @@ public class NyARMatchPatt_Color_WITHOUT_PCA implements ARMatchPatt{
         }
         datapow = Math.sqrt( (double)sum );
         if(datapow == 0.0){
-            throw new NyARException();
+            return false;//            throw new NyARException();
 //            dir.set(0);//*dir  = 0;
 //            cf.set(-1.0);//*cf   = -1.0;
 //            return -1;
-        }	
+        }
+        return true;
     }
     /**
      * public int pattern_match(short[][][] data,IntPointer dir,DoublePointer cf)

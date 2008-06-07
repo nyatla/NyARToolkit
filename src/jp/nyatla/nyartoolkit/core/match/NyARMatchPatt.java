@@ -49,7 +49,7 @@ interface ARMatchPatt{
     public double getConfidence();
     public int getDirection();
     public void evaluate(NyARCode i_code);
-    public void setPatt(NyARColorPatt i_target_patt) throws NyARException;
+    public boolean setPatt(NyARColorPatt i_target_patt) throws NyARException;
 }
 
 

@@ -1,10 +1,10 @@
 /**
  * NyARSingleDetectMarkerにOpenGL向け関数を追加したもの
- * (c)2008 R.iizuka
+ * (c)2008 A虎＠nyatla.jp
  * airmail(at)ebony.plala.or.jp
  * http://nyatla.jp/
  */
-package jp.nyatla.nyartoolkit.gutil;
+package jp.nyatla.nyartoolkit.jogl.utils;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARCode;

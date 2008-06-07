@@ -1,16 +1,18 @@
 /**
  * VFMキャプチャテストプログラム
- * (c)2008 R.iizuka
+ * (c)2008 A虎＠nyatla.jp
  * airmail@ebony.plala.or.jp
  * http://nyatla.jp/
  */
+package jp.nyatla.nyartoolkit.jmf.sample;
+
 import javax.media.*;
 
 import javax.media.util.BufferToImage;
 import javax.media.format.*;
-
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.jmf.*;
+import jp.nyatla.nyartoolkit.jmf.utils.*;
+
 import java.awt.*;
 
 

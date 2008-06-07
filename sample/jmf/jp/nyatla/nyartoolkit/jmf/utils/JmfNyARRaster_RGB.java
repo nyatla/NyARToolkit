@@ -1,11 +1,11 @@
 /**
  * RGB形式のJMFバッファをラップするNyARRasterです。
- * 複数のピクセルの並び順に対応してます。
- * (c)2008 R.iizuka
+ * JMFから得たラスタデータのピクセル並び順を考慮します。
+ * (c)2008 A虎＠nyatla.jp
  * airmail(at)ebony.plala.or.jp
  * http://nyatla.jp/
  */
-package jp.nyatla.nyartoolkit.jmfutil;
+package jp.nyatla.nyartoolkit.jmf.utils;
 
 
 import javax.media.format.RGBFormat;
@@ -38,6 +38,33 @@ public class JmfNyARRaster_RGB implements NyARRaster
 	height=i_height;
     }
     /**
+     * フォーマットを解析して、インスタンスのフォーマットプロパティを初期化します。
+     * 
+     * @param i_buffer
+     * @throws NyARException
+     */
+    protected void initFormatProperty(RGBFormat i_fmt) throws NyARException
+    {
+	//データサイズの確認
+        Dimension s=i_fmt.getSize();
+        if(width!=s.width || height !=s.height){
+	    throw new NyARException();
+        }
+	//データ配列の確認
+	red_idx  =i_fmt.getRedMask()-1;
+	green_idx=i_fmt.getGreenMask()-1;
+	blue_idx =i_fmt.getBlueMask()-1;
+	
+	//色配列の特定
+	if(red_idx==0 && blue_idx==2){
+	    pix_type=PIXEL_ORDER_RGB;
+	}else if(red_idx==2 && blue_idx==0){
+	    pix_type=PIXEL_ORDER_BGR;
+	}else{
+	    throw new NyARException("Unknown pixel order.");
+	}	
+    }
+    /**
      * javax.media.Bufferを分析して、その分析結果をNyARRasterに適合する形で保持します。
      * 関数実行後に外部でi_bufferの内容変更した場合には、再度setBuffer関数を呼び出してください。
      * @param i_buffer
@@ -48,25 +75,7 @@ public class JmfNyARRaster_RGB implements NyARRaster
      */
     public void setBuffer(javax.media.Buffer i_buffer) throws NyARException
     {
-	RGBFormat fmt=(RGBFormat)i_buffer.getFormat();
-	//データサイズの確認
-        Dimension s=fmt.getSize();
-        if(width!=s.width || height !=s.height){
-	    throw new NyARException();
-        }
-	//データ配列の確認
-	red_idx  =fmt.getRedMask()-1;
-	green_idx=fmt.getGreenMask()-1;
-	blue_idx =fmt.getBlueMask()-1;
-	
-	//色配列の特定
-	if(red_idx==0 && blue_idx==2){
-	    pix_type=PIXEL_ORDER_RGB;
-	}else if(red_idx==2 && blue_idx==0){
-	    pix_type=PIXEL_ORDER_BGR;
-	}else{
-	    throw new NyARException("Unknown pixel order.");
-	}	
+	initFormatProperty((RGBFormat)i_buffer.getFormat());
         ref_buf=(byte[])i_buffer.getData();
     }
     public int getPixelTotal(int i_x,int i_y)

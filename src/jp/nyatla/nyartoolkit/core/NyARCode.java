@@ -33,6 +33,7 @@
 package jp.nyatla.nyartoolkit.core;
 
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
 
@@ -84,19 +85,32 @@ public class NyARCode{
 	pat=new int[4][height][width][3];//static int    pat[AR_PATT_NUM_MAX][4][AR_PATT_SIZE_Y*AR_PATT_SIZE_X*3];
 	patBW=new short[4][height][width];//static int    patBW[AR_PATT_NUM_MAX][4][AR_PATT_SIZE_Y*AR_PATT_SIZE_X*3];
     }
-
-
     /**
      * int arLoadPatt( const char *filename );
      * ARToolKitのパターンファイルをロードする。
+     * ファイル形式はBGR形式で記録されたパターンファイルであること。
      * @param filename
      * @return
      * @throws Exception
      */
     public void loadFromARFile(String filename) throws NyARException
     {
+	try {
+	    loadFromARFile(new FileInputStream(filename));
+
+	} catch (Exception e) {
+	throw new NyARException(e);
+	}
+    }
+    /**
+     * 
+     * @param i_stream
+     * @throws NyARException
+     */
+    public void loadFromARFile(InputStream i_stream) throws NyARException
+    {
 	try{
-            StreamTokenizer st=new StreamTokenizer(new InputStreamReader(new FileInputStream(filename)));
+            StreamTokenizer st=new StreamTokenizer(new InputStreamReader(i_stream));
             //パターンデータはGBRAで並んでる。
             for(int h=0; h<4; h++ ) {
                 int l = 0;

@@ -91,7 +91,10 @@ public class NyARSingleDetectMarker{
 	//パターンの評価オブジェクトを作る。
 	NyARMatchPatt_Color_WITHOUT_PCA eva=new NyARMatchPatt_Color_WITHOUT_PCA();
 	//パターンを評価器にセット
-	eva.setPatt(patt);
+	if(!eva.setPatt(patt)){
+	    //計算に失敗した。
+	    return false;
+	}
 	//コードと比較する
 	eva.evaluate(code);
 	int square_index=0;

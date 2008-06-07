@@ -72,17 +72,24 @@ public class NyARParam{
      */
     public void loadFromARFile(String i_filename) throws NyARException
     {
-	try{
-            FileInputStream fs=new FileInputStream(i_filename);
-            NyARParam new_inst[]=arParamLoad(fs,1);
-            fs.close();
-            xsize	=new_inst[0].xsize;
-            ysize	=new_inst[0].ysize;
-            mat	=new_inst[0].mat;
-            dist_factor=new_inst[0].dist_factor;
-	}catch(Exception e){
-	    throw new NyARException(e);
-	}
+        try {
+            loadFromARFile(new FileInputStream(i_filename));
+        } catch (Exception e) {
+            throw new NyARException(e);
+        }
+    }
+    public void loadFromARFile(InputStream i_stream) throws NyARException
+    {
+        try {
+            NyARParam new_inst[] = arParamLoad(i_stream, 1);
+            i_stream.close();
+            xsize = new_inst[0].xsize;
+            ysize = new_inst[0].ysize;
+            mat = new_inst[0].mat;
+            dist_factor = new_inst[0].dist_factor;
+        } catch (Exception e) {
+            throw new NyARException(e);
+        }
     }
     /*static double dot( double a1, double a2, double a3,double b1, double b2, double b3 )*/
     private static double dot( double a1, double a2, double a3,double b1, double b2, double b3 )

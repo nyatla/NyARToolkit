@@ -47,7 +47,7 @@ public class NyARMatchPatt_BlackWhite implements ARMatchPatt{
     private int dir=0;
     private int ave;
     private int[][][]	input=new int[height][width][3];
-    public void setPatt(NyARColorPatt i_target_patt) throws NyARException
+    public boolean setPatt(NyARColorPatt i_target_patt) throws NyARException
     {
 	width=i_target_patt.getWidth();
 	height=i_target_patt.getHeight();
@@ -71,11 +71,12 @@ public class NyARMatchPatt_BlackWhite implements ARMatchPatt{
         
         datapow = Math.sqrt( (double)sum );
         if( datapow == 0.0 ){
-            throw new NyARException();
+            return false;//            throw new NyARException();
 //            dir.set(0);//*dir  = 0;
 //            cf.set(-1.0);//*cf   = -1.0;
 //            return -1;
         }
+        return true;
     }
     public double getConfidence()
     {

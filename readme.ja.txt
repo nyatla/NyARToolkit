@@ -1,7 +1,7 @@
 ﻿ARToolkit Java class library NyARToolkit.
 Copyright (C)2008 R.Iizuka
 
-version Alpha 0.7.20080406.0
+version Alpha 0.8.20080412.0
 
 http://nyatla.jp/
 airmail(at)ebony.plala.or.jp
@@ -28,21 +28,21 @@ http://www.hitl.washington.edu/artoolkit/
 
 
 
-・基本構成
+・構成
 
-+-----------------------------+
-|         Application         |
-+-------+-------+-------------+
-|NyARJMF| NyARJogl|           |
-+-------+---------+           |
-|  JMF  |  JOGL   |NyARToolkit|
-+-------+---------+           |
-|Camera |  3D     |           |
-------------------------------+
++-------------------------------------------+
+|               Application                 |
++-------+---------+-------+-----------------+
+|NyARJMF| NyARJogl|NyARJ3d|                 |
++-------+---------+-------+                 |
+|  JMF  |  JOGL   |Java3D |Java3DNyARToolkit|
++-------+---------+-------+                 |
+|Camera |       3D        |                 |
+--------------------------------------------+
 
-映像キャプチャにはJMFを使用し、3D描画にはJoglを使用しています。
-NyARJMFとNyJoglは、これらのエクステンションをApplicationやNyARToolKit
-から使いやすくするためのラッパーです。
+映像キャプチャにはJMFを使用し、3D描画にはJOGL又はJava3Dを使用しています。
+NyARJMFとNyJogl,NyJ3dは、これらのエクステンションをApplicationや
+NyARToolKitから使いやすくするためのラッパーです。
 
 これらとNyARToolkitは完全に分離していますので、入力・出力ともに容易に
 差し替えが出来ると思います。
@@ -52,32 +52,55 @@ NyARJMFとNyJoglは、これらのエクステンションをApplicationやNyART
 
 ・サンプルなど
 
-動作させる前に、JMFとJOGLをインストールしてください。
+動作させる前に、JMFとJOGLかJava3Dをインストールしてください。
 動作確認したバージョンと入手先はこちらです。
 
 JMF JavaTM Media Framework 2.1.1e
 http://java.sun.com/products/java-media/jmf/index.jsp
 
-jogl-1.1.1-pre-20080328-windows-i586.zip
+jogl-1.1.1-pre-20080328-xxxx-i586.zip
 https://jogl.dev.java.net/
+
+java3d-1_5_1-xxxx-i586.exe
+https://java3d.dev.java.net/binary-builds.html
+
 
 
 サンプルは以下のディレクトリにあります。
 
 ./src
-NyARToolkitのEclipseプロジェクトがあります。
-jp.nyatla.nyartoolkit.sampleパッケージに、Rawイメージから
-変換行列を求めるサンプルがあります。
+ NyARToolkitのEclipseプロジェクトがあります。
+ jp.nyatla.nyartoolkit.sampleパッケージに、Rawイメージから
+ 変換行列を求めるサンプルがあります。
 
 ./sample
 NyARToolkitのアプリケーションサンプルEclipseプロジェクトがあります。
-NyARJMFにはビデオキャプチャの試験プログラムと、マーカー検出プログラムがあります。
-NyARJOGLにはARToolkitのsimpleLite相当のサンプルがあります。
 
-NyARJMFのプロジェクトはNyARToolKitに依存し、NyARJOGLのプロジェクトはNyARToolKit
-とNyARJMFに依存しています。
+ jmf
+  jp.nyatla.nyartoolkit.jmf.sample
+  ビデオキャプチャの試験プログラム　と、マーカー検出プログラムがあります。
+
+ jogl
+  jp.nyatla.nyartoolkit.jogl.sample
+  ARToolkitのsimpleLite相当のサンプルがあります。
+
+ java3d
+  jp.nyatla.nyartoolkit.java3d.sample
+  simpleLiteのようなものをJava3Dで動かすサンプルがあります。
+
+
+NyARJMFのプロジェクトはNyARToolKitに依存し、NyARJOGLとJava3Dのプロジェクトは
+NyARToolKitとNyARJMFに依存しています。
 zipを展開すると多分参照関係が壊れてますので、再設定してください。
 
+
+
+・サンプル内のパッケージ注意点
+sampleディレクトリ以下にあるソースはAPIは仕様が固まっていないので、
+時々APIそのものを変更しています。
+
+自前のプロジェクトの部品として使われる場合は、パッケージをコピーして
+使用することをお勧めします。
 
 
 
@@ -117,4 +140,4 @@ NyARToolkitを使って面白いものが出来たら、是非教えてくださ
 
 ではでは、楽しく遊んでくださいネ。
 
-2008.03.29 R.Iizuka nyatla.jp
+2008.03.29 R.Iizuka A虎＠nyatla.jp
