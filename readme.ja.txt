@@ -1,7 +1,7 @@
 ﻿ARToolkit Java class library NyARToolkit.
 Copyright (C)2008 R.Iizuka
 
-version Alpha 0.5.20080329.0
+version Alpha 0.6.20080330.0
 
 http://nyatla.jp/
 airmail(at)ebony.plala.or.jp
@@ -15,25 +15,30 @@ airmail(at)ebony.plala.or.jp
 NyARToolkitは、nativeなコードを一切使用しない、Pure Javaのみで
 構成されたARToolkitクラスライブラリです。
 
-ARToolkit 2.72.0をベースに構築されています。
+ARToolkit 2.72.1をベースに構築されています。
 
 J2SEでのみ動作を確認しました。
 J2MEやMIDP2.0にはそのうち対応します。
 
 
+ARToolkitは加藤博一先生とHuman Interface Technology Labにより
+開発されたAugmented Reality (AR) ライブラリです。
+詳しくはこちらをご覧下さい。
+http://www.hitl.washington.edu/artoolkit/
+
 
 
 ・基本構成
 
-+----------------------------
-|       Application         |
-+-------+-------+-----------+
-|NyARJMF| NyJogl|           |
-+-------+-------+           |
-|  JMF  |  JOGL |NyARToolkit|
-+-------+-------+           |
-|Camera |  3D   |           |
-----------------------------+
++-----------------------------+
+|         Application         |
++-------+-------+-------------+
+|NyARJMF| NyARJogl|           |
++-------+---------+           |
+|  JMF  |  JOGL   |NyARToolkit|
++-------+---------+           |
+|Camera |  3D     |           |
+------------------------------+
 
 映像キャプチャにはJMFを使用し、3D描画にはJoglを使用しています。
 NyARJMFとNyJoglは、これらのエクステンションをApplicationやNyARToolKit
@@ -103,7 +108,6 @@ GPLです。詳しくはLICENCE.txtをみてください。
 
 
 ・お願い
-
 NyARToolkitを使って面白いものが出来たら、是非教えてください。
 
 それと強制では有りませんが、NyARToolkitを使った感想などを
@@ -111,7 +115,6 @@ NyARToolkitを使って面白いものが出来たら、是非教えてくださ
 
 
 
-
 ではでは、楽しく遊んでくださいネ。
 
-2008.03.29 R.Iizuka@nyatla.jp
+2008.03.29 R.Iizuka nyatla.jp

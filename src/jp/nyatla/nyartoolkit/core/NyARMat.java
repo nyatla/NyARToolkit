@@ -105,19 +105,20 @@ public class NyARMat{
 	    }
 	}
     }
+    private int[] wk_nos_matrixSelfInv=new int[50];
     /**
      * i_targetを逆行列に変換する。arMatrixSelfInv()と、arMatrixSelfInv_minv()関数を合成してあります。
      * @param i_target
      * 逆行列にする行列
      * @throws NyARException
      */
-    public static void matrixSelfInv(NyARMat i_target) throws NyARException
+    public void matrixSelfInv() throws NyARException
     {
-	double[][] ap=i_target.m;
+	double[][] ap=m;
 	int dimen=ap.length;
 	double[] wcp,wap,wbp;
-	int i,j,ip,nwork;
-	int[] nos=new int[50];
+	int j,ip,nwork;
+	int[] nos=wk_nos_matrixSelfInv;//この関数で初期化される。
 	double epsl;
 	double p,pbuf,work;
 
@@ -146,7 +147,7 @@ public class NyARMat{
             wcp =ap[n];//wcp = ap + n * rowa;
             p=0.0;
             wap_ptr=0;//wap = DoublePointer.wrap(wcp);
-            for(i = n; i<dimen ; i++){//for(i = n, wap = wcp, p = 0.0; i < dimen ; i++, wap += rowa)
+            for(int i = n; i<dimen ; i++){//for(i = n, wap = wcp, p = 0.0; i < dimen ; i++, wap += rowa)
         	wap=ap[i];
         	if( p < ( pbuf = Math.abs(wap[0]))) {
         	    p = pbuf;
@@ -180,7 +181,7 @@ public class NyARMat{
             }
             wap[wap_ptr]=1.0/work;//*wap = 1.0 / work;
 
-            for(i = 0; i < dimen ; i++) {
+            for(int i = 0; i < dimen ; i++) {
                 if(i != n) {
                     wap =ap[i];//wap = ap + i * rowa;
                     wbp =wcp;
@@ -204,7 +205,7 @@ public class NyARMat{
         	}
             }
             nos[j] = nos[n];
-            for(i = 0; i < dimen ;i++){//for(i = 0, wap = ap + j, wbp = ap + n; i < dimen ;i++, wap += rowa, wbp += rowa) {
+            for(int i = 0; i < dimen ;i++){//for(i = 0, wap = ap + j, wbp = ap + n; i < dimen ;i++, wap += rowa, wbp += rowa) {
         	wap=ap[i];
         	wbp=ap[i];
                 work  =wap[j];//work = *wap;
@@ -253,28 +254,29 @@ public class NyARMat{
 	}
     }
     /**
-     * destにsourceと同じ内容をコピーする。arMatrixDupの代替品
+     * sourceの内容を自身にコピーする。
      * @param dest
      * @param source
      * @return
      */
-    public static void matrixDup(NyARMat dest, NyARMat source) throws NyARException
+    public void matrixDup(NyARMat source) throws NyARException
     {
-	if(dest.row != source.row || dest.clm != source.clm)
+	if(row != source.row || clm != source.clm)
 	{
 	    throw new NyARException();
 	}
-	for(int r = 0; r < source.getRow(); r++) {
-	    for(int c = 0; c < source.getClm(); c++)
+	
+	for(int r = 0; r < row; r++){
+	    for(int c = 0; c < clm; c++)
 	    {
-		dest.m[r][c]=source.m[r][c];
+		m[r][c]=source.m[r][c];
 	    }
 	}
     }
     public NyARMat matrixAllocDup() throws NyARException
     {
 	NyARMat result=new NyARMat(row,clm);
-	matrixDup(result,this);
+	result.matrixDup(this);
 	return result;
     }    
     /**
@@ -287,10 +289,10 @@ public class NyARMat{
     public static void matrixInv(NyARMat dest,NyARMat source) throws NyARException
     {
 	NyARException.trap("未チェックのパス");
-	matrixDup(dest, source);
+	dest.matrixDup(source);
 
 	NyARException.trap("未チェックのパス");
-	matrixSelfInv(dest);
+	dest.matrixSelfInv();
     }
     public NyARMat matrixAllocInv() throws NyARException
     {
@@ -298,7 +300,7 @@ public class NyARMat{
 	NyARMat result=matrixAllocDup();
 
 	NyARException.trap("未チェックのパス");
-	matrixSelfInv(result);
+	result.matrixSelfInv();
 	return result;
     }
     /**

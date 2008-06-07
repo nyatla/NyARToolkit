@@ -121,7 +121,7 @@ public class JavaSimpleLite implements GLEventListener,JmfCaptureListener
         //NyARToolkitの準備
         try{
             //キャプチャの準備
-            capture=new JmfCameraCapture(320,240,30f,JmfCameraCapture.PIXCEL_FORMAT_RGB);
+            capture=new JmfCameraCapture(320,240,15f,JmfCameraCapture.PIXCEL_FORMAT_RGB);
             capture.setCaptureListener(this);
             capture.start();
             //NyARToolkitの準備
@@ -130,7 +130,7 @@ public class JavaSimpleLite implements GLEventListener,JmfCaptureListener
             ar_param.loadFromARFile(PARAM_FILE);
             ar_param.changeSize(320,240);
             nya=new GLNyARSingleDetectMarker(ar_param,ar_code,80.0);
-            ar_code.LoadFromARFile(CARCODE_FILE);
+            ar_code.loadFromARFile(CARCODE_FILE);
             //GL対応のRGBラスタオブジェクト
             cap_image=new GLNyARRaster_RGB(gl,ar_param,320,240);
 

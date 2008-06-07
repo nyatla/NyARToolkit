@@ -57,7 +57,7 @@ public class RawFileTest {
         
         //AR用のパターンコードを読み出し	
         NyARCode code=new NyARCode(16,16);
-        code.LoadFromARFile(code_file);
+        code.loadFromARFile(code_file);
         
         //試験イメージの読み出し(320x240 BGRAのRAWデータ)
         File f=new File(data_file);

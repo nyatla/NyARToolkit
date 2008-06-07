@@ -81,7 +81,6 @@ public class NyARDetectSquare{
 	    return;
 	}
 	detect.detectMarker(labeling,1.0);
-	NyARMarker[] marker=detect.getMarkerArray();
 	int number_of_marker=detect.getMarkerNum();
 
 
@@ -90,13 +89,15 @@ public class NyARDetectSquare{
 	for (int i = 0; i <number_of_marker; i++){
 	    double[][]  line	=new double[4][3];
 	    double[][]  vertex	=new double[4][2];
+	    NyARMarker marker=detect.getMarker(i);
 	    
 	    //・・・線の検出？？
-            if (!getLine(marker[i].x_coord, marker[i].y_coord,marker[i].coord_num, marker[i].vertex,line,vertex))
+            if (!getLine(marker.x_coord, marker.y_coord,marker.coord_num, marker.vertex,line,vertex))
             {
             	continue;
             }
-            marker_info[j]=new NyARSquare(marker[i],line,vertex);
+            //markerは参照渡し。実体はdetect内のバッファを共有してるので注意
+            marker_info[j]=new NyARSquare(marker,line,vertex);
 
             
 //ここで計算するのは良くないと思うんだ	
@@ -152,8 +153,8 @@ public class NyARDetectSquare{
             double [][] in_array=input.getArray();
             for( j = 0; j < n; j++ ) {
         	param.observ2Ideal(x_coord[st+j], y_coord[st+j],dv1,dv2);//arParamObserv2Ideal( dist_factor, x_coord[st+j], y_coord[st+j],&(input->m[j*2+0]), &(input->m[j*2+1]) );
-                in_array[j][0]=dv1.get();
-                in_array[j][1]=dv2.get();
+                in_array[j][0]=dv1.value;
+                in_array[j][1]=dv2.value;
             }
             NyARMat.matrixPCA(input, evec, ev, mean);
             

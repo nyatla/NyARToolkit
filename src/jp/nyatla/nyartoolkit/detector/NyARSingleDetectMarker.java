@@ -50,6 +50,7 @@ public class NyARSingleDetectMarker{
     private int detected_direction;
     private double detected_confidence;
     private NyARSquare detected_square;
+    private NyARColorPatt patt;
     public NyARSingleDetectMarker(NyARParam i_param,NyARCode i_code,double i_marker_width)
     {
 	param=i_param;
@@ -59,7 +60,8 @@ public class NyARSingleDetectMarker{
 	//比較コードを保存
 	code=i_code;
 	marker_width=i_marker_width;
-
+	//評価パターンのホルダを作る
+	patt=new NyARColorPatt(code.getWidth(),code.getHeight());
 	
     }
     /**
@@ -83,8 +85,6 @@ public class NyARSingleDetectMarker{
 
 	//コードの一致度を調べる準備
 	NyARSquare[] squares=square.getSquareArray();
-	//パターンホルダを作る
-	NyARColorPatt patt=new NyARColorPatt(code.getWidth(),code.getHeight());
 	//評価基準になるパターンをイメージから切り出す
 	patt.pickFromRaster(i_image,squares[0].getMarker());
 	

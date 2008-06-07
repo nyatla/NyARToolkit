@@ -84,7 +84,8 @@ public class NyARCode{
 	pat=new int[4][height][width][3];//static int    pat[AR_PATT_NUM_MAX][4][AR_PATT_SIZE_Y*AR_PATT_SIZE_X*3];
 	patBW=new short[4][height][width];//static int    patBW[AR_PATT_NUM_MAX][4][AR_PATT_SIZE_Y*AR_PATT_SIZE_X*3];
     }
-    
+
+
     /**
      * int arLoadPatt( const char *filename );
      * ARToolKitのパターンファイルをロードする。
@@ -92,11 +93,11 @@ public class NyARCode{
      * @return
      * @throws Exception
      */
-    public void LoadFromARFile(String filename) throws NyARException
+    public void loadFromARFile(String filename) throws NyARException
     {
 	try{
             StreamTokenizer st=new StreamTokenizer(new InputStreamReader(new FileInputStream(filename)));
-        	//パターンデータはGBRAで並んでる。
+            //パターンデータはGBRAで並んでる。
             for(int h=0; h<4; h++ ) {
                 int l = 0;
                 for(int i3 = 0; i3 < 3; i3++ ) {

@@ -75,7 +75,7 @@ public class NyARLabeling{
 	return label_num;
     }
     /**
-     * わからん
+     * 
      * @return
      * @throws NyARException
      */
@@ -87,7 +87,7 @@ public class NyARLabeling{
 	return work;
     }
     /**
-     * 検出したエリア配列？よくわからぬ
+     * 検出したエリア配列？
      * @return
      * @throws NyARException
      */
@@ -99,7 +99,7 @@ public class NyARLabeling{
 	return area;
     }
     /**
-     * 検出したクリップ配列？よくわからぬ
+     * 検出したクリップ配列？
      * @return
      * @throws NyARException
      */
@@ -111,7 +111,7 @@ public class NyARLabeling{
 	return clip;
     }
     /**
-     * 検出した位置配列？よくわからぬ
+     * 検出した位置配列？
      * @return
      * @throws NyARException
      */

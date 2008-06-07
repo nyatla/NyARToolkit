@@ -44,7 +44,7 @@ public class NyarToolkitLinkTest extends Frame implements JmfCaptureListener
         ar_param.loadFromARFile(PARAM_FILE);
         ar_param.changeSize(320,240);
         nya=new NyARSingleDetectMarker(ar_param,ar_code,80.0);
-        ar_code.LoadFromARFile(CARCODE_FILE);
+        ar_code.loadFromARFile(CARCODE_FILE);
     }
 
 

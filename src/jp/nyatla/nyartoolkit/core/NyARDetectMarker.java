@@ -48,7 +48,8 @@ public class NyARDetectMarker {
 
     private int area_max=AR_AREA_MAX;
     private int area_min=AR_AREA_MIN;
-    private NyARMarker[] marker_info2_array;
+    private NyARMarker[] marker_holder;	//マーカーデータの保持配列
+    private NyARMarker[] marker_info2_array;	//マーカーデータのインデックス配列
     private int marker_num;
     private int width,height;
     /**
@@ -61,15 +62,19 @@ public class NyARDetectMarker {
     {
 	width =i_width;
 	height=i_height;
+	marker_holder=new NyARMarker[i_squre_max];
 	marker_info2_array=new NyARMarker[i_squre_max];
     }
     public int getMarkerNum()
     {
 	return marker_num;
     }
-    public NyARMarker[] getMarkerArray() throws NyARException
+    public NyARMarker getMarker(int idx) throws NyARException
     {
-	return marker_info2_array;
+	if(idx>=marker_num){
+	    throw new NyARException();
+	}
+	return marker_info2_array[idx];
     }
     /**
      * static int get_vertex( int x_coord[], int y_coord[], int st,  int ed,double thresh, int vertex[], int *vnum)
@@ -214,7 +219,9 @@ public class NyARDetectMarker {
 	}
     /**
      * int arGetContour( ARInt16 *limage, int *label_ref,int label, int clip[4], ARMarkerInfo2 *marker_info2 )
-     * 関数の代替品	
+     * 関数の代替品
+     * detectMarker関数から使う関数です。marker_holder[i_holder_num]にオブジェクトが無ければまず新規に作成し、もし
+     * 既に存在すればそこにマーカー情報を上書きして記録します。
      * @param limage
      * @param label_ref
      * @param label
@@ -223,7 +230,7 @@ public class NyARDetectMarker {
      * 	検出したマーカーからマーカーオブジェクトを生成して返す。
      * @throws NyARException
      */
-    private NyARMarker arGetContour(short[][] limage, int[] label_ref,int label, int[] clip) throws NyARException
+    private NyARMarker arGetContour(int i_holder_num,short[][] limage, int[] label_ref,int label, int[] clip) throws NyARException
     {
         final int[] xdir={0,  1, 1, 1, 0,-1,-1,-1}; //static int      xdir[8] = { 0, 1, 1, 1, 0,-1,-1,-1};
         final int[] ydir={-1,-1, 0, 1, 1, 1, 0,-1};//static int      ydir[8] = {-1,-1, 0, 1, 1, 1, 0,-1};
@@ -232,30 +239,35 @@ public class NyARDetectMarker {
         int             dmax, d, v1=0;
         int             i, j;
     
-//        JartkException.trap("未チェックのパス");
         j = clip[2];
         //p1=ShortPointer.wrap(limage,j*xsize+clip.get());//p1 = &(limage[j*xsize+clip[0]]);
         for( i = clip[0]; i <= clip[1]; i++){//for( i = clip[0]; i <= clip[1]; i++, p1++ ) {
-    	if(limage[j][i] > 0 && label_ref[(limage[j][i])-1] == label ) {//if( *p1 > 0 && label_ref[(*p1)-1] == label ) {
-    	    sx = i; sy = j;
-    	    break;
-    	}
+            if(limage[j][i] > 0 && label_ref[(limage[j][i])-1] == label ) {//if( *p1 > 0 && label_ref[(*p1)-1] == label ) {
+                sx = i; sy = j;
+                break;
+            }
         }
         if(i> clip[1]){//if( i > clip[1] ) {
-    	System.out.println("??? 1");//printf();
-    	throw new NyARException();//return(-1);
+            System.out.println("??? 1");//printf();
+            throw new NyARException();//return(-1);
         }
+        
+        //マーカーホルダが既に確保済みかを調べる
+        if(marker_holder[i_holder_num]==null){
+            //確保していなければ確保
+            marker_holder[i_holder_num]=new NyARMarker();
+        }
+        NyARMarker marker_ref=marker_holder[i_holder_num];
+
     
-        NyARMarker marker_info2=new NyARMarker();
-    
-        marker_info2.coord_num=1;//marker_info2->coord_num = 1;
-        marker_info2.x_coord[0]=sx;//marker_info2->x_coord[0] = sx;
-        marker_info2.y_coord[0]=sy;//marker_info2->y_coord[0] = sy;
+        marker_ref.coord_num=1;//marker_info2->coord_num = 1;
+        marker_ref.x_coord[0]=sx;//marker_info2->x_coord[0] = sx;
+        marker_ref.y_coord[0]=sy;//marker_info2->y_coord[0] = sy;
         dir = 5;
     
         for(;;){
-            int r=marker_info2.y_coord[marker_info2.coord_num-1];
-            int c=marker_info2.x_coord[marker_info2.coord_num-1];
+            int r=marker_ref.y_coord[marker_ref.coord_num-1];
+            int c=marker_ref.x_coord[marker_ref.coord_num-1];
             //p1 = &(limage[marker_info2->y_coord[marker_info2->coord_num-1] * xsize+ marker_info2->x_coord[marker_info2->coord_num-1]]);
             dir = (dir+5)%8;
             for(i=0;i<8;i++) {
@@ -268,21 +280,21 @@ public class NyARDetectMarker {
                 System.out.println("??? 2");//printf("??? 2\n");
                 throw new NyARException();//return(-1);
             }
-            marker_info2.x_coord[marker_info2.coord_num]= marker_info2.x_coord[marker_info2.coord_num-1] + xdir[dir];//marker_info2->x_coord[marker_info2->coord_num]= marker_info2->x_coord[marker_info2->coord_num-1] + xdir[dir];
-            marker_info2.y_coord[marker_info2.coord_num]= marker_info2.y_coord[marker_info2.coord_num-1] + ydir[dir];//marker_info2->y_coord[marker_info2->coord_num]= marker_info2->y_coord[marker_info2->coord_num-1] + ydir[dir];
-            if( marker_info2.x_coord[marker_info2.coord_num] == sx && marker_info2.y_coord[marker_info2.coord_num] == sy ){
+            marker_ref.x_coord[marker_ref.coord_num]= marker_ref.x_coord[marker_ref.coord_num-1] + xdir[dir];//marker_info2->x_coord[marker_info2->coord_num]= marker_info2->x_coord[marker_info2->coord_num-1] + xdir[dir];
+            marker_ref.y_coord[marker_ref.coord_num]= marker_ref.y_coord[marker_ref.coord_num-1] + ydir[dir];//marker_info2->y_coord[marker_info2->coord_num]= marker_info2->y_coord[marker_info2->coord_num-1] + ydir[dir];
+            if( marker_ref.x_coord[marker_ref.coord_num] == sx && marker_ref.y_coord[marker_ref.coord_num] == sy ){
                 break;
             }
-            marker_info2.coord_num++;
-            if( marker_info2.coord_num == marker_info2.x_coord.length-1){//if( marker_info2.coord_num == Config.AR_CHAIN_MAX-1 ){
+            marker_ref.coord_num++;
+            if( marker_ref.coord_num == marker_ref.x_coord.length-1){//if( marker_info2.coord_num == Config.AR_CHAIN_MAX-1 ){
                 System.out.println("??? 3");//printf("??? 3\n");
                 throw new NyARException();//return(-1);
             }
         }
     
         dmax = 0;
-        for(i=1;i<marker_info2.coord_num;i++) {//	for(i=1;i<marker_info2->coord_num;i++) {
-            d = (marker_info2.x_coord[i]-sx)*(marker_info2.x_coord[i]-sx)+ (marker_info2.y_coord[i]-sy)*(marker_info2.y_coord[i]-sy);//	  d = (marker_info2->x_coord[i]-sx)*(marker_info2->x_coord[i]-sx)+ (marker_info2->y_coord[i]-sy)*(marker_info2->y_coord[i]-sy);
+        for(i=1;i<marker_ref.coord_num;i++) {//	for(i=1;i<marker_info2->coord_num;i++) {
+            d = (marker_ref.x_coord[i]-sx)*(marker_ref.x_coord[i]-sx)+ (marker_ref.y_coord[i]-sy)*(marker_ref.y_coord[i]-sy);//	  d = (marker_info2->x_coord[i]-sx)*(marker_info2->x_coord[i]-sx)+ (marker_info2->y_coord[i]-sy)*(marker_info2->y_coord[i]-sy);
             if( d > dmax ) {
     		dmax = d;
     		v1 = i;
@@ -292,33 +304,30 @@ public class NyARDetectMarker {
         int[]      wx=new int[v1];//new int[Config.AR_CHAIN_MAX];
         int[]      wy=new int[v1]; //new int[Config.AR_CHAIN_MAX];   
         for(i=0;i<v1;i++) {
-            wx[i] = marker_info2.x_coord[i];//wx[i] = marker_info2->x_coord[i];
-            wy[i] = marker_info2.y_coord[i];//wy[i] = marker_info2->y_coord[i];
+            wx[i] = marker_ref.x_coord[i];//wx[i] = marker_info2->x_coord[i];
+            wy[i] = marker_ref.y_coord[i];//wy[i] = marker_info2->y_coord[i];
         }
-        for(i=v1;i<marker_info2.coord_num;i++) {//for(i=v1;i<marker_info2->coord_num;i++) {
-            marker_info2.x_coord[i-v1] = marker_info2.x_coord[i];//marker_info2->x_coord[i-v1] = marker_info2->x_coord[i];
-            marker_info2.y_coord[i-v1] = marker_info2.y_coord[i];//marker_info2->y_coord[i-v1] = marker_info2->y_coord[i];
+        for(i=v1;i<marker_ref.coord_num;i++) {//for(i=v1;i<marker_info2->coord_num;i++) {
+            marker_ref.x_coord[i-v1] = marker_ref.x_coord[i];//marker_info2->x_coord[i-v1] = marker_info2->x_coord[i];
+            marker_ref.y_coord[i-v1] = marker_ref.y_coord[i];//marker_info2->y_coord[i-v1] = marker_info2->y_coord[i];
         }
         for(i=0;i<v1;i++) {
-            marker_info2.x_coord[i-v1+marker_info2.coord_num] = wx[i];//marker_info2->x_coord[i-v1+marker_info2->coord_num] = wx[i];
-            marker_info2.y_coord[i-v1+marker_info2.coord_num] = wy[i];//marker_info2->y_coord[i-v1+marker_info2->coord_num] = wy[i];
+            marker_ref.x_coord[i-v1+marker_ref.coord_num] = wx[i];//marker_info2->x_coord[i-v1+marker_info2->coord_num] = wx[i];
+            marker_ref.y_coord[i-v1+marker_ref.coord_num] = wy[i];//marker_info2->y_coord[i-v1+marker_info2->coord_num] = wy[i];
         }
-        marker_info2.x_coord[marker_info2.coord_num] = marker_info2.x_coord[0];//marker_info2->x_coord[marker_info2->coord_num] = marker_info2->x_coord[0];
-        marker_info2.y_coord[marker_info2.coord_num] = marker_info2.y_coord[0];//marker_info2->y_coord[marker_info2->coord_num] = marker_info2->y_coord[0];
-        marker_info2.coord_num++;//marker_info2->coord_num++;
+        marker_ref.x_coord[marker_ref.coord_num] = marker_ref.x_coord[0];//marker_info2->x_coord[marker_info2->coord_num] = marker_info2->x_coord[0];
+        marker_ref.y_coord[marker_ref.coord_num] = marker_ref.y_coord[0];//marker_info2->y_coord[marker_info2->coord_num] = marker_info2->y_coord[0];
+        marker_ref.coord_num++;//marker_info2->coord_num++;
     
-        return marker_info2;
+        return marker_ref;
     }
     	/**
     	 * ARMarkerInfo2 *arDetectMarker2( ARInt16 *limage, int label_num, int *label_ref,int *warea, double *wpos, int *wclip,int area_max, int area_min, double factor, int *marker_num )
     	 * 関数の代替品
-    	 * ラベリング情報からマーカー一覧を作成して、保持する。
+    	 * ラベリング情報からマーカー一覧を作成して保持します。
+    	 * この関数を実行すると、前回のdetectMarker関数で計算した保持値は破壊されます。
     	 * @param i_labeling
     	 * ラベリング済みの情報を持つラベリングオブジェクト
-    	 * @param area_max
-    	 * 何かの閾値？
-    	 * @param area_min
-    	 * 何かの閾値？
     	 * @param factor
     	 * 何かの閾値？
     	 * @return
@@ -329,7 +338,6 @@ public class NyARDetectMarker {
     {
         int               xsize, ysize;
         int               marker_num2;
-        int               i, j;
         double            d;
         int[] warea  	=i_labeling.getArea();
         int label_num	=i_labeling.getLabelNum();
@@ -343,7 +351,7 @@ public class NyARDetectMarker {
         ysize =height;
         
         marker_num2 = 0;
-        for(i=0; i<label_num; i++ ) {
+        for(int i=0; i<label_num; i++ ) {
             if( warea[i] < area_min || warea[i] > area_max ){
                 continue;
             }
@@ -354,49 +362,58 @@ public class NyARDetectMarker {
                 continue;
             }
             //ret = arGetContour( limage, label_ref, i+1,&(wclip[i*4]), &(marker_info2[marker_num2]));
-            marker_info2_array[marker_num2]=arGetContour( limage, label_ref, i+1,wclip[i]);
+            arGetContour(marker_num2,limage, label_ref, i+1,wclip[i]);
             
-            boolean ret = check_square( warea[i], marker_info2_array[marker_num2], factor );//ret = check_square( warea[i], &(marker_info2[marker_num2]), factor );
+            boolean ret = check_square( warea[i], marker_holder[marker_num2], factor );//ret = check_square( warea[i], &(marker_info2[marker_num2]), factor );
             if(!ret){
-                marker_info2_array[marker_num2]=null;
+        	//後半で整理するからここはいらない。//        	marker_holder[marker_num2]=null;
                 continue;
             }
-            marker_info2_array[marker_num2].area   = warea[i];
-            marker_info2_array[marker_num2].pos[0] = wpos[i*2+0];
-            marker_info2_array[marker_num2].pos[1] = wpos[i*2+1];
+            marker_holder[marker_num2].area   = warea[i];
+            marker_holder[marker_num2].pos[0] = wpos[i*2+0];
+            marker_holder[marker_num2].pos[1] = wpos[i*2+1];
             marker_num2++;
             //マーカーリストが上限に達した
-            if( marker_num2 == marker_info2_array.length){
+            if( marker_num2 == marker_holder.length){
                 break;
             }
         }
-        for( i=0; i < marker_num2; i++ ) {
-            for( j=i+1; j < marker_num2; j++ ) {
-                d = (marker_info2_array[i].pos[0] - marker_info2_array[j].pos[0])*
-                    (marker_info2_array[i].pos[0] - marker_info2_array[j].pos[0])+
-                    (marker_info2_array[i].pos[1] - marker_info2_array[j].pos[1])*
-                    (marker_info2_array[i].pos[1] - marker_info2_array[j].pos[1]);
-                if(marker_info2_array[i].area >marker_info2_array[j].area ) {
-                    if( d <marker_info2_array[i].area / 4 ) {
-                        marker_info2_array[j].area = 0;
+        for(int i=0; i < marker_num2; i++ ) {
+            for(int j=i+1; j < marker_num2; j++ ) {
+                d = (marker_holder[i].pos[0] - marker_holder[j].pos[0])*
+                    (marker_holder[i].pos[0] - marker_holder[j].pos[0])+
+                    (marker_holder[i].pos[1] - marker_holder[j].pos[1])*
+                    (marker_holder[i].pos[1] - marker_holder[j].pos[1]);
+                if(marker_holder[i].area >marker_holder[j].area ) {
+                    if( d <marker_holder[i].area / 4 ) {
+                	marker_holder[j].area = 0;
                     }
                 }else{
-                    if( d < marker_info2_array[j].area / 4 ) {
-                        marker_info2_array[i].area = 0;
+                    if( d < marker_holder[j].area / 4 ) {
+                	marker_holder[i].area = 0;
                     }
                 }
             }
         }
-        for( i=0; i < marker_num2; i++ ) {
-            if( marker_info2_array[i].area == 0.0 ) {
-                for( j=i+1; j < marker_num2; j++ ) {
-            	marker_info2_array[j-1] = marker_info2_array[j];
-                }
-                marker_num2--;
+        //みつかったマーカーを整理する。
+        //エリアが0のマーカーを外した配列を作って、その数もついでに計算
+        for(int i=0;i<marker_num2;i++){
+            if(marker_holder[i].area==0.0){
+        	continue;
             }
-        }
+            marker_info2_array[marker_num]=marker_holder[i];
+            marker_num++;
+        }        
+//        for( i=0; i < marker_num2; i++ ) {
+//            if( marker_info2_array[i].area == 0.0 ) {
+//                for( j=i+1; j < marker_num2; j++ ){
+//                    marker_info2_array[j-1] = marker_info2_array[j];
+//                }
+//                marker_num2--;
+//            }
+//        }
         //発見したマーカー数をセット
-        marker_num=marker_num2;//*marker_num = marker_num2;
+//        marker_num=marker_num2;//*marker_num = marker_num2;
         //return( &(marker_info2[0]) );
     }
 

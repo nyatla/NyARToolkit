@@ -36,6 +36,12 @@ package jp.nyatla.nyartoolkit.core;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.util.DoubleValue;
 
+/**
+ * This class calculates ARMatrix from square information and holds it.
+ * --
+ * 変換行列を計算して、結果を保持するクラス。
+ *
+ */
 public class NyARTransMat{
     private static final int AR_FITTING_TO_IDEAL=0;//#define  AR_FITTING_TO_IDEAL          0
     private static final int AR_FITTING_TO_INPUT=1;//#define  AR_FITTING_TO_INPUT          1
@@ -66,7 +72,17 @@ public class NyARTransMat{
     {
 	return result_mat;
     }
-    /*double arGetTransMat( ARMarkerInfo *marker_info,double center[2], double width, double conv[3][4] )*/
+    /**
+     * double arGetTransMat( ARMarkerInfo *marker_info,double center[2], double width, double conv[3][4] )
+     * 関数の置き換え。
+     * 保持している変換行列を更新する。
+     * @param square
+     * 計算対象のNyARSquareオブジェクト
+     * @param i_direction
+     * @param width
+     * @return
+     * @throws NyARException
+     */
     public double transMat( NyARSquare square,int i_direction, double width)throws NyARException
     {
 	double[][]  rot=new double[3][3];
@@ -79,7 +95,7 @@ public class NyARTransMat{
 
     
     	if( arGetInitRot( square,i_direction, rot ) < 0 ){
-            return -1;
+            throw new NyARException();//return -1;
     	}
     
     	dir = i_direction;
@@ -175,8 +191,8 @@ public class NyARTransMat{
 	    DoubleValue a1=new DoubleValue(),a2=new DoubleValue();
 	    for( i = 0; i < num; i++ ) {
 		param.ideal2Observ(ppos2d[i][0], ppos2d[i][1],a1,a2);//arParamIdeal2Observ(dist_factor, ppos2d[i][0], ppos2d[i][1],&pos2d[i][0], &pos2d[i][1]);
-		pos2d[i][0]=a1.get();
-		pos2d[i][1]=a2.get();
+		pos2d[i][0]=a1.value;
+		pos2d[i][1]=a2.value;
 	    }
 	}else{
 	    for( i = 0; i < num; i++ ) {
@@ -201,7 +217,7 @@ public class NyARTransMat{
 //	JartkException.trap("未チェックのパス");{
 	NyARMat.matrixMul( mat_d, mat_b, mat_a );
 	NyARMat.matrixMul( mat_e, mat_b, mat_c );
-	NyARMat.matrixSelfInv(mat_d);
+	mat_d.matrixSelfInv();
 	NyARMat.matrixMul( mat_f, mat_d, mat_e );
 //	}
 	trans[0] = f_array[0][0];//trans[0] = mat_f->m[0];
@@ -226,7 +242,7 @@ public class NyARTransMat{
 //	JartkException.trap("未チェックのパス");{
 	NyARMat.matrixMul( mat_d, mat_b, mat_a );
 	NyARMat.matrixMul( mat_e, mat_b, mat_c );
-	NyARMat.matrixSelfInv(mat_d);
+	mat_d.matrixSelfInv();
 	NyARMat.matrixMul( mat_f, mat_d, mat_e );
 //	}
 	trans[0] = f_array[0][0];//trans[0] = mat_f->m[0];
@@ -258,9 +274,9 @@ public class NyARTransMat{
         int       i, j;
 
         arGetAngle( rot, a, b, c);//arGetAngle( rot, &a, &b, &c );
-        a2 = a.get();
-        b2 = b.get();
-        c2 = c.get();
+        a2 = a.value;
+        b2 = b.value;
+        c2 = c.value;
         factor = 10.0*Math.PI/180.0;
         for( j = 0; j < 10; j++ ) {
             minerr = 1000000000.0;
@@ -303,37 +319,64 @@ public class NyARTransMat{
         /*  printf("factor = %10.5f\n", factor*180.0/MD_PI); */
         return minerr/num;
     }
+    private double[][] wk_cpara2_arGetNewMatrix=new double[3][4];
+    private double[][] wk_rot_arGetNewMatrix   =new double[3][3];
+    /**
+     * 
+     * @param a
+     * @param b
+     * @param c
+     * @param trans
+     * @param trans2
+     * @param ret
+     * @return
+     */
     private int arGetNewMatrix( double a, double b, double c,double trans[], double trans2[][], double ret[][] )
     {
 	double cpara[][]=param.getMat();
-        double[][] cpara2=new double[3][4];
-        double[][] rot=new double[3][3];
+        double[][] cpara2=wk_cpara2_arGetNewMatrix;	//この関数で初期化される。
+        double[][] rot   =wk_rot_arGetNewMatrix;	//arGetRotで初期化される。
         int      i, j;
         
         arGetRot( a, b, c, rot );
         
         if( trans2 != null ) {
             for( j = 0; j < 3; j++ ) {
-            	for( i = 0; i < 4; i++ ) {
-                    cpara2[j][i] = cpara[j][0] * trans2[0][i]+ cpara[j][1] * trans2[1][i]+ cpara[j][2] * trans2[2][i];
-            	}
+//            	for( i = 0; i < 4; i++ ) {
+//                    cpara2[j][i] = cpara[j][0] * trans2[0][i]+ cpara[j][1] * trans2[1][i]+ cpara[j][2] * trans2[2][i];
+//            	}
+//Optimize
+                cpara2[j][0] = cpara[j][0] * trans2[0][0]+ cpara[j][1] * trans2[1][0]+ cpara[j][2] * trans2[2][0];
+                cpara2[j][1] = cpara[j][0] * trans2[0][1]+ cpara[j][1] * trans2[1][1]+ cpara[j][2] * trans2[2][1];
+                cpara2[j][2] = cpara[j][0] * trans2[0][2]+ cpara[j][1] * trans2[1][2]+ cpara[j][2] * trans2[2][2];
+                cpara2[j][3] = cpara[j][0] * trans2[0][3]+ cpara[j][1] * trans2[1][3]+ cpara[j][2] * trans2[2][3];
             }
-        }else{
+        }else{            
             for( j = 0; j < 3; j++ ) {
-            	for( i = 0; i < 4; i++ ) {
-                    cpara2[j][i] = cpara[j][i];
-        	}
+//            	for( i = 0; i < 4; i++ ) {
+//                    cpara2[j][i] = cpara[j][i];
+//        	}
+//Optimize        	
+        	cpara2[j][0] = cpara[j][0];
+        	cpara2[j][1] = cpara[j][1];
+        	cpara2[j][2] = cpara[j][2];
+        	cpara2[j][3] = cpara[j][3];
             }
-        }      
+        }
         for( j = 0; j < 3; j++ ) {
-            for( i = 0; i < 3; i++ ) {
-            	ret[j][i] = cpara2[j][0] * rot[0][i]+ cpara2[j][1] * rot[1][i]+ cpara2[j][2] * rot[2][i];
-            }
+//            for( i = 0; i < 3; i++ ) {
+//            	ret[j][i] = cpara2[j][0] * rot[0][i]+ cpara2[j][1] * rot[1][i]+ cpara2[j][2] * rot[2][i];
+//            }
+//Optimize            
+            ret[j][0] = cpara2[j][0] * rot[0][0]+ cpara2[j][1] * rot[1][0]+ cpara2[j][2] * rot[2][0];
+            ret[j][1] = cpara2[j][0] * rot[0][1]+ cpara2[j][1] * rot[1][1]+ cpara2[j][2] * rot[2][1];
+            ret[j][2] = cpara2[j][0] * rot[0][2]+ cpara2[j][1] * rot[1][2]+ cpara2[j][2] * rot[2][2];
+//
             ret[j][3] = cpara2[j][0] * trans[0]+ cpara2[j][1] * trans[1]+ cpara2[j][2] * trans[2]+ cpara2[j][3];
         }
         return(0);
     }
-    private int arGetRot( double a, double b, double c, double rot[][] )
+    private void arGetRot( double a, double b, double c, double rot[][] )
     {
         double   sina, sinb, sinc;
         double   cosa, cosb, cosc;
@@ -344,6 +387,27 @@ public class NyARTransMat{
         cosb = Math.cos(b);
         sinc = Math.sin(c);
         cosc = Math.cos(c);
+        //Optimize
+        double A,B,C,D,E,F,G;
+        A=sina*cosa;
+        B=sina*sina;
+        C=cosa*cosa;
+        D=cosa*sinb;
+        F=cosb*cosc;
+        E=cosb*sinc;
+        G=sina*sinb;
+
+        rot[0][0] = C*F + B*cosc + A*(E - sinc);
+        rot[0][1] = -C*E-B*sinc+A*(F-cosc);
+        rot[0][2] = D;
+        rot[1][0] = A*(F-cosc)+B*E+C*sinc;
+        rot[1][1] = A*(-E+sinc)+B*F+C*cosc;
+        rot[1][2] = G;
+        rot[2][0] = -D*cosc-G*sinc;
+        rot[2][1] = D*sinc-G*cosc;
+        rot[2][2] = cosb;
+  /*      
+	//49回
         rot[0][0] = cosa*cosa*cosb*cosc+sina*sina*cosc+sina*cosa*cosb*sinc-sina*cosa*sinc;
         rot[0][1] = -cosa*cosa*cosb*sinc-sina*sina*sinc+sina*cosa*cosb*cosc-sina*cosa*cosc;
         rot[0][2] = cosa*sinb;
@@ -353,8 +417,7 @@ public class NyARTransMat{
         rot[2][0] = -cosa*sinb*cosc-sina*sinb*sinc;
         rot[2][1] = cosa*sinb*sinc-sina*sinb*cosc;
         rot[2][2] = cosb;
-    
-        return 0;
+*/
     }
     /*int arGetAngle( double rot[3][3], double *wa, double *wb, double *wc )*/
     private int arGetAngle( double rot[][], DoubleValue wa, DoubleValue wb, DoubleValue wc )
@@ -462,9 +525,9 @@ public class NyARTransMat{
             if( sinc < 0 ) c = -c;
         }
         
-        wa.set(a);//*wa = a;
-        wb.set(b);//*wb = b;
-        wc.set(c);//*wc = c;
+        wa.value=a;//*wa = a;
+        wb.value=b;//*wb = b;
+        wc.value=c;//*wc = c;
         
         return 0;
     }
@@ -537,52 +600,52 @@ public class NyARTransMat{
     }
 
     /*static int check_dir( double dir[3], double st[2], double ed[2],double cpara[3][4] )*/
-    		private static int check_dir( double dir[], double st[], double ed[],double cpara[][]) throws NyARException
-    		{
+    private static int check_dir( double dir[], double st[], double ed[],double cpara[][]) throws NyARException
+    {
     
-    		    double[][]	world=new double[2][3];
-    		    double[][] camera=new double[2][2];
-    		    double[][] v=new double[2][2];
-    		    double    h;
-    		    int       i, j;
-    //		    JartkException.trap("未チェックパス");
-    		    NyARMat mat_a = new NyARMat( 3, 3 );
-    		    double[][] a_array=mat_a.getArray();
-    		    for(j=0;j<3;j++){
-    			for(i=0;i<3;i++){
-    			    a_array[j][i]=cpara[j][i];//m[j*3+i] = cpara[j][i];
-    			}
-    		    }
-    //		    JartkException.trap("未チェックのパス");
-    		    NyARMat.matrixSelfInv(mat_a);
-    		    world[0][0] = a_array[0][0]*st[0]*10.0+ a_array[0][1]*st[1]*10.0+ a_array[0][2]*10.0;//mat_a->m[0]*st[0]*10.0+ mat_a->m[1]*st[1]*10.0+ mat_a->m[2]*10.0;
-    		    world[0][1] = a_array[1][0]*st[0]*10.0+ a_array[1][1]*st[1]*10.0+ a_array[1][2]*10.0;//mat_a->m[3]*st[0]*10.0+ mat_a->m[4]*st[1]*10.0+ mat_a->m[5]*10.0;
-    		    world[0][2] = a_array[2][0]*st[0]*10.0+ a_array[2][1]*st[1]*10.0+ a_array[2][2]*10.0;//mat_a->m[6]*st[0]*10.0+ mat_a->m[7]*st[1]*10.0+ mat_a->m[8]*10.0;
-    		    world[1][0] = world[0][0] + dir[0];
-    		    world[1][1] = world[0][1] + dir[1];
-    		    world[1][2] = world[0][2] + dir[2];
+        double[][]	world=new double[2][3];
+        double[][] camera=new double[2][2];
+        double[][] v=new double[2][2];
+        double    h;
+        int       i, j;
+        //		    JartkException.trap("未チェックパス");
+        NyARMat mat_a = new NyARMat( 3, 3 );
+        double[][] a_array=mat_a.getArray();
+        for(j=0;j<3;j++){
+            for(i=0;i<3;i++){
+                a_array[j][i]=cpara[j][i];//m[j*3+i] = cpara[j][i];
+            }
+        }
+    //	JartkException.trap("未チェックのパス");
+        mat_a.matrixSelfInv();
+        world[0][0] = a_array[0][0]*st[0]*10.0+ a_array[0][1]*st[1]*10.0+ a_array[0][2]*10.0;//mat_a->m[0]*st[0]*10.0+ mat_a->m[1]*st[1]*10.0+ mat_a->m[2]*10.0;
+        world[0][1] = a_array[1][0]*st[0]*10.0+ a_array[1][1]*st[1]*10.0+ a_array[1][2]*10.0;//mat_a->m[3]*st[0]*10.0+ mat_a->m[4]*st[1]*10.0+ mat_a->m[5]*10.0;
+        world[0][2] = a_array[2][0]*st[0]*10.0+ a_array[2][1]*st[1]*10.0+ a_array[2][2]*10.0;//mat_a->m[6]*st[0]*10.0+ mat_a->m[7]*st[1]*10.0+ mat_a->m[8]*10.0;
+        world[1][0] = world[0][0] + dir[0];
+        world[1][1] = world[0][1] + dir[1];
+        world[1][2] = world[0][2] + dir[2];
     
-    		    for( i = 0; i < 2; i++ ) {
-    			h = cpara[2][0] * world[i][0]+ cpara[2][1] * world[i][1]+ cpara[2][2] * world[i][2];
-    			if( h == 0.0 ){
-    			    return -1;
-    			}
-    			camera[i][0] = (cpara[0][0] * world[i][0]+ cpara[0][1] * world[i][1]+ cpara[0][2] * world[i][2]) / h;
-    			camera[i][1] = (cpara[1][0] * world[i][0]+ cpara[1][1] * world[i][1]+ cpara[1][2] * world[i][2]) / h;
-    		    }
-    
-    		    v[0][0] = ed[0] - st[0];
-    		    v[0][1] = ed[1] - st[1];
-    		    v[1][0] = camera[1][0] - camera[0][0];
-    		    v[1][1] = camera[1][1] - camera[0][1];
-    
-    		    if( v[0][0]*v[1][0] + v[0][1]*v[1][1] < 0 ) {
-    			dir[0] = -dir[0];
-    			dir[1] = -dir[1];
-    			dir[2] = -dir[2];
-    		    }
-    		    return 0;
-    		}
+        for( i = 0; i < 2; i++ ) {
+            h = cpara[2][0] * world[i][0]+ cpara[2][1] * world[i][1]+ cpara[2][2] * world[i][2];
+            if( h == 0.0 ){
+                return -1;
+            }
+            camera[i][0] = (cpara[0][0] * world[i][0]+ cpara[0][1] * world[i][1]+ cpara[0][2] * world[i][2]) / h;
+            camera[i][1] = (cpara[1][0] * world[i][0]+ cpara[1][1] * world[i][1]+ cpara[1][2] * world[i][2]) / h;
+        }
+
+        v[0][0] = ed[0] - st[0];
+        v[0][1] = ed[1] - st[1];
+        v[1][0] = camera[1][0] - camera[0][0];
+        v[1][1] = camera[1][1] - camera[0][1];
+
+        if( v[0][0]*v[1][0] + v[0][1]*v[1][1] < 0 ) {
+            dir[0] = -dir[0];
+            dir[1] = -dir[1];
+            dir[2] = -dir[2];
+        }
+        return 0;
+    }
 
 		/*int check_rotation( double rot[2][3] )*/
 		private static int check_rotation( double rot[][] )

@@ -93,7 +93,7 @@ public class NyARColorPatt
             b_array[i*2+1][0]=vertex[i][1];//b->m[i*2+1] = vertex[i][1];
         }
 //	    JartkException.trap("未チェックのパス");
-        NyARMat.matrixSelfInv(a);
+        a.matrixSelfInv();
 	    
 //	    JartkException.trap("未チェックのパス");
         NyARMat.matrixMul( c, a, b );

@@ -236,44 +236,48 @@ public class NyARParam{
         x = (ix - dist_factor[0]) * dist_factor[3];
         y = (iy - dist_factor[1]) * dist_factor[3];
         if( x == 0.0 && y == 0.0 ) {
-            ox.set(dist_factor[0]);
-            oy.set(dist_factor[1]);
+            ox.value=dist_factor[0];
+            oy.value=dist_factor[1];
         }else{
             d = 1.0 - dist_factor[2]/100000000.0 * (x*x+y*y);
-            ox.set(x * d + dist_factor[0]);
-            oy.set(y * d + dist_factor[1]);
+            ox.value=x * d + dist_factor[0];
+            oy.value=y * d + dist_factor[1];
         }
     }
     /*int arParamObserv2Ideal( const double dist_factor[4], const double ox, const double oy,double *ix, double *iy );*/
     public int observ2Ideal(double ox,double oy,DoubleValue ix,DoubleValue iy)
     {
-    	double  z02, z0, p, q, z, px, py;
+    	double  z02, z0, p, q, z, px, py,opttmp_1;
     	
     	px = ox - dist_factor[0];
     	py = oy - dist_factor[1];
     	p = dist_factor[2]/100000000.0;
-    	z02 = px*px+ py*py;
-    	q = z0 = Math.sqrt(px*px+ py*py);
+    	z02 = px*px+py*py;
+    	q = z0 = Math.sqrt(z02);//Optimize//q = z0 = Math.sqrt(px*px+ py*py);
     	
     	for(int i = 1; ; i++ ) {
-    		if( z0 != 0.0 ) {
-    			z = z0 - ((1.0 - p*z02)*z0 - q) / (1.0 - 3.0*p*z02);
-    			px = px * z / z0;
-    			py = py * z / z0;
-    		}else {
-    			px = 0.0;
-    			py = 0.0;
-    			break;
-    		}
-    		if( i == PD_LOOP ){
-    			break;
-    		}
-    		z02 = px*px+ py*py;
-    		z0 = Math.sqrt(px*px+ py*py);
+            if( z0 != 0.0 ) {
+        	//Optimize opttmp_1
+        	opttmp_1=p*z02;
+                z = z0 - ((1.0 - opttmp_1)*z0 - q) / (1.0 - 3.0*opttmp_1);
+        	//Optimize opttmp_1       
+                opttmp_1=z / z0;
+                px = px * opttmp_1;
+                py = py * opttmp_1;
+            }else {
+                px = 0.0;
+                py = 0.0;
+                break;
+            }
+            if( i == PD_LOOP ){
+                break;
+            }
+            z02 = px*px+ py*py;
+            z0 = Math.sqrt(z02);//Optimize//z0 = Math.sqrt(px*px+ py*py);
     	}
     	
-    	ix.set(px / dist_factor[3] + dist_factor[0]);
-    	iy.set(py / dist_factor[3] + dist_factor[1]);
+    	ix.value=px / dist_factor[3] + dist_factor[0];
+    	iy.value=py / dist_factor[3] + dist_factor[1];
     	return 0;
     }
     /**

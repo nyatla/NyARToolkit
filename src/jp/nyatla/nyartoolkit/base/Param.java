@@ -128,7 +128,7 @@ public class Param {
 		NyARException.trap("未チェックのパス");
 		NyARMat.matrixMul( mat_wm1, mat_at, mat_a );//if( arMatrixMul( mat_wm1, mat_at, mat_a ) < 0 ) {
 		NyARException.trap("未チェックのパス");
-		NyARMat.matrixSelfInv(mat_wm1 );//if( arMatrixSelfInv( mat_wm1 ) < 0 ) {
+		mat_wm1.matrixSelfInv();//if( arMatrixSelfInv( mat_wm1 ) < 0 ) {
 
 		NyARException.trap("未チェックのパス");
 		NyARMat.matrixMul( mat_wm2, mat_wm1, mat_at );//if( arMatrixMul( mat_wm2, mat_wm1, mat_at ) < 0 ) {
@@ -311,7 +311,7 @@ public class Param {
 	    t2_array[3][3]=1.0;//t2->m[15] = 1.0;
 	    }
 	    JartkException.trap("未チェックのパス");
-	    ARMat.matrixSelfInv(t1);//if( arMatrixSelfInv(t1) != 0 ) {
+	    t1.matrixSelfInv();//if( arMatrixSelfInv(t1) != 0 ) {
 
 	    JartkException.trap("未チェックのパス");	    
 	    t3 =ARMat.matrixAllocMul(t2, t1);//t3 = arMatrixAllocMul(t2, t1);

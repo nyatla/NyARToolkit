@@ -1,0 +1,30 @@
+2008.03.30 version 0.6.20080330.0
+
+*Title
+-メモリ管理の見直し
+-速度向上(84%up)
+-サンプルの15fps化
+
+*PublicAPI
+
+-NyARCode.java
+[改名--rename]
+ NyARCode::LoadFromARFileをNyARCode::loadFromARFile
+
+-NyARDetectMarker.java
+[廃止--delete]
+NyARDetectMarker::getMarkerArray
+[追加--add]
+NyARDetectMarker::getMarker
+
+
+-NyARMat.java
+[更新--update]
+NyARMat::matrixSelfInv 
+NyARMat::matrixDup
+
+-DoubleValue.java
+[廃止--delete]
+DoubleValue::set
+DoubleValue::get
+DoubleValue::add
