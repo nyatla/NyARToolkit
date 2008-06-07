@@ -1,0 +1,3158 @@
+Index: D:/project.files/java.Lab/NyARToolKit/sample/java3d/src/jp/nyatla/nyartoolkit/java3d/utils/NyARSingleMarkerBehaviorListener.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/java3d/src/jp/nyatla/nyartoolkit/java3d/utils/NyARSingleMarkerBehaviorListener.java	(revision 0)
++++ D:/project.files/java.Lab/NyARToolKit/sample/java3d/src/jp/nyatla/nyartoolkit/java3d/utils/NyARSingleMarkerBehaviorListener.java	(revision 178)
+@@ -0,0 +1,24 @@
++/**
++ * NyARToolkitのBehaviorのリスナ
++ * (c)2008 A虎＠nyatla.jp
++ * airmail@ebony.plala.or.jp
++ * http://nyatla.jp/
++ */
++package jp.nyatla.nyartoolkit.java3d.utils;
++
++import javax.media.j3d.*;
++
++public interface NyARSingleMarkerBehaviorListener
++{
++    /**
++     * このリスナは、リスナにマーカーに連動してオブジェクトを操作するチャンスを与えます。
++     * リスナはNyARSingleMarkerBehavior関数内のprocessStimulus関数から呼び出されます。
++     * 
++     * @param i_is_marker_exist
++     * マーカーが存在する場合true、存在しない場合、falseです。
++     * @param i_transform3d
++     * マーカーが存在する場合、その変換行列が指定されます。
++     * i_is_marker_existがtrueの時だけ有効です。
++     */
++    public void onUpdate(boolean i_is_marker_exist,Transform3D i_transform3d);
++}
+Index: D:/project.files/java.Lab/NyARToolKit/sample/java3d/src/jp/nyatla/nyartoolkit/java3d/utils/J3dNyARRaster_RGB.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/java3d/src/jp/nyatla/nyartoolkit/java3d/utils/J3dNyARRaster_RGB.java	(revision 0)
++++ D:/project.files/java.Lab/NyARToolKit/sample/java3d/src/jp/nyatla/nyartoolkit/java3d/utils/J3dNyARRaster_RGB.java	(revision 178)
+@@ -0,0 +1,64 @@
++/**
++ * NyARRaster_RGBにOpenGL向け関数を追加したもの
++ * (c)2008 A虎＠nyatla.jp
++ * airmail(at)ebony.plala.or.jp
++ * http://nyatla.jp/
++ */
++package jp.nyatla.nyartoolkit.java3d.utils;
++
++import java.awt.image.*;
++import java.awt.color.*;
++
++import javax.media.j3d.ImageComponent;
++import javax.media.j3d.ImageComponent2D;
++
++
++
++import jp.nyatla.nyartoolkit.NyARException;
++import jp.nyatla.nyartoolkit.core.NyARParam;
++import jp.nyatla.nyartoolkit.jmf.utils.*;
++
++
++public class J3dNyARRaster_RGB extends JmfNyARRaster_RGB
++{
++//    public ImageUpdater updater; 
++    private ImageComponent2D imc2d;
++    private byte[] i2d_buf;
++
++    public void setBuffer(javax.media.Buffer i_buffer) throws NyARException
++    {
++        super.setBuffer(i_buffer);
++        //メモ：この時点では、ref_dataにはi_bufferの参照値が入ってる。
++        synchronized(imc2d){
++            //キャプチャデータをi2dのバッファにコピーする。（これ省略したいなあ…。）
++            System.arraycopy(ref_buf,0,i2d_buf,0,this.i2d_buf.length);
++        }
++	//ここでref_bufの参照値をref_bufへ移動
++        ref_buf=i2d_buf;
++    }  
++    public J3dNyARRaster_RGB(NyARParam i_cparam)
++    {
++	super(i_cparam.getX(),i_cparam.getY());
++
++	//RGBのラスタを作る。
++//	ColorSpace cs=ColorSpace.getInstance(ColorSpace.CS_LINEAR_RGB);
++//	ComponentColorModel cm;
++//	cm=new ComponentColorModel(cs,new int[]{8,8,8},false,false,ComponentColorModel.OPAQUE,DataBuffer.TYPE_BYTE);
++//	java.awt.image.WritableRaster raster=cm.createCompatibleWritableRaster(width,height);
++//	i2d_buf=((DataBufferByte)raster.getDataBuffer()).getData();
++//	BufferedImage background_image = new BufferedImage(cm,raster, false, null);
++	BufferedImage background_image = new BufferedImage(width,height,BufferedImage.TYPE_3BYTE_BGR);
++	i2d_buf=((DataBufferByte)background_image.getRaster().getDataBuffer()).getData();
++	//
++	imc2d= new ImageComponent2D(ImageComponent2D.FORMAT_RGB, background_image, true, true);
++	imc2d.setCapability(ImageComponent.ALLOW_IMAGE_WRITE);
++    }
++    /**
++     * このオブジェクトと連動するImageComponent2Dオブジェクトの参照値を得る。
++     * @return
++     */
++    public ImageComponent2D getImageComponent2D()
++    {
++	return imc2d;
++    }
++}
+Index: D:/project.files/java.Lab/NyARToolKit/sample/java3d/src/jp/nyatla/nyartoolkit/java3d/utils/J3dNyARParam.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/java3d/src/jp/nyatla/nyartoolkit/java3d/utils/J3dNyARParam.java	(revision 0)
++++ D:/project.files/java.Lab/NyARToolKit/sample/java3d/src/jp/nyatla/nyartoolkit/java3d/utils/J3dNyARParam.java	(revision 178)
+@@ -0,0 +1,119 @@
++/**
++ * NyARParamにOpenGL向け関数を追加したもの
++ * (c)2008 A虎＠nyatla.jp
++ * airmail(at)ebony.plala.or.jp
++ * http://nyatla.jp/
++ */
++package jp.nyatla.nyartoolkit.java3d.utils;
++
++import jp.nyatla.nyartoolkit.core.*;
++import javax.media.j3d.Transform3D;
++
++public class J3dNyARParam extends NyARParam
++{
++    private double view_distance_min=0.01;//1cm～10.0m
++    private double view_distance_max=10.0;
++    private Transform3D m_projection=null;
++    /**
++     * 視体積の近い方をメートルで指定
++     * @param i_new_value
++     */
++    public void setViewDistanceMin(double i_new_value)
++    {
++	m_projection=null;//キャッシュ済変数初期化
++	view_distance_min=i_new_value;
++    }
++    /**
++     * 視体積の遠い方をメートルで指定
++     * @param i_new_value
++     */
++    public void setViewDistanceMax(double i_new_value)
++    {
++	m_projection=null;//キャッシュ済変数初期化
++	view_distance_max=i_new_value;
++    }
++    /**
++     * void arglCameraFrustumRH(const ARParam *cparam, const double focalmin, const double focalmax, GLdouble m_projection[16])
++     * 関数の置き換え
++     * @param focalmin
++     * @param focalmax
++     * @return
++     */
++    public Transform3D getCameraTransform()
++    {
++	//既に値がキャッシュされていたらそれを使う
++	if(m_projection!=null){
++	    return m_projection;
++	}
++	//無ければ計算
++
++	NyARMat trans_mat=new NyARMat(3,4);
++	NyARMat icpara_mat=new NyARMat(3,4);
++        double[][]  p=new double[3][3], q=new double[4][4];
++    	double      width, height;
++        int      i, j;
++    	
++        width  = xsize;
++        height = ysize;
++    	
++        decompMat(icpara_mat,trans_mat);
++
++        double[][] icpara=icpara_mat.getArray();
++        double[][] trans=trans_mat.getArray();
++    	for (i = 0; i < 4; i++) {
++            icpara[1][i] = (height - 1)*(icpara[2][i]) - icpara[1][i];
++        }
++    	
++        for(i = 0; i < 3; i++) {
++            for(j = 0; j < 3; j++) {
++                p[i][j] = icpara[i][j] / icpara[2][2];
++            }
++        }
++        //p[0][0],p[1][1]=n
++        //p[0][2],p[1][2]=t+b
++
++        //Projectionの計算
++        q[0][0] = (2.0 * p[0][0] / (width - 1));
++        q[0][1] = (2.0 * p[0][1] / (width - 1));
++        q[0][2] = -((2.0 * p[0][2] / (width - 1))  - 1.0);
++        q[0][3] = 0.0;
++    	
++        q[1][0] = 0.0;
++        q[1][1] = -(2.0 * p[1][1] / (height - 1));
++        q[1][2] = -((2.0 * p[1][2] / (height - 1)) - 1.0);
++        q[1][3] = 0.0;
++    	
++        q[2][0] = 0.0;
++        q[2][1] = 0.0;
++        q[2][2] = (view_distance_max + view_distance_min)/(view_distance_min - view_distance_max);
++        q[2][3] = 2.0 * view_distance_max * view_distance_min / (view_distance_min - view_distance_max);
++    	
++        q[3][0] = 0.0;
++        q[3][1] = 0.0;
++        q[3][2] = -1.0;
++        q[3][3] = 0.0;
++        
++        q[2][2]=q[2][2]*-1;
++        q[2][3]=q[2][3]*-1;
++        
++        double[] tmp_projection=new double[16];
++        for (i = 0; i < 4; i++) { // Row.
++    		// First 3 columns of the current row.
++            for (j = 0; j < 3; j++) { // Column.
++        	tmp_projection[i + j*4] =(
++                    q[i][0] * trans[0][j] +
++                    q[i][1] * trans[1][j] +
++                    q[i][2] * trans[2][j]);
++            }
++    		// Fourth column of the current row.
++            tmp_projection[i + 3*4]=
++        	q[i][0] * trans[0][3] +
++        	q[i][1] * trans[1][3] +
++                q[i][2] * trans[2][3] +
++                q[i][3];
++        }
++        m_projection=new Transform3D(tmp_projection);
++        m_projection.transpose();
++        return 	m_projection;
++    }
++}
+Index: D:/project.files/java.Lab/NyARToolKit/sample/java3d/src/jp/nyatla/nyartoolkit/java3d/utils/NyARSingleMarkerBehaviorHolder.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/java3d/src/jp/nyatla/nyartoolkit/java3d/utils/NyARSingleMarkerBehaviorHolder.java	(revision 0)
++++ D:/project.files/java.Lab/NyARToolKit/sample/java3d/src/jp/nyatla/nyartoolkit/java3d/utils/NyARSingleMarkerBehaviorHolder.java	(revision 178)
+@@ -0,0 +1,191 @@
++/**
++ * NyARToolkitのBehaviorホルダー
++ * (c)2008 A虎＠nyatla.jp
++ * airmail@ebony.plala.or.jp
++ * http://nyatla.jp/
++ */
++package jp.nyatla.nyartoolkit.java3d.utils;
++
++import java.util.Enumeration;
++
++import javax.media.Buffer;
++import javax.media.j3d.*;
++import javax.vecmath.*;
++
++import jp.nyatla.nyartoolkit.core.NyARParam;
++import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
++import jp.nyatla.nyartoolkit.jmf.*;
++import jp.nyatla.nyartoolkit.jmf.utils.JmfCameraCapture;
++import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
++import jp.nyatla.nyartoolkit.*;
++import jp.nyatla.nyartoolkit.core.*;
++
++/**
++ * NyARToolkitと連動したBehaviorを返却するクラスです。
++ * 提供できるBehaviorは、BackgroundとTransformgroupです。
++ *
++ */
++public class NyARSingleMarkerBehaviorHolder implements JmfCaptureListener
++{
++    private NyARParam cparam;
++    private JmfCameraCapture capture;
++    private J3dNyARRaster_RGB nya_raster;//最大3スレッドで共有されるので、排他制御かけること。
++    private NyARSingleDetectMarker nya;
++    //Behaviorホルダ
++    private NyARBehavior nya_behavior;
++    public NyARSingleMarkerBehaviorHolder(NyARParam i_cparam,float i_rate,NyARCode i_ar_code,double i_marker_width) throws NyARException
++    {
++	nya_behavior=null;
++	cparam=i_cparam;
++	capture=new JmfCameraCapture(cparam.getX(),cparam.getY(),i_rate,JmfCameraCapture.PIXEL_FORMAT_RGB);
++	capture.setCaptureListener(this);
++	nya_raster=new J3dNyARRaster_RGB(cparam);	
++	nya=new NyARSingleDetectMarker(cparam,i_ar_code,i_marker_width);
++	nya_behavior=new NyARBehavior(nya,nya_raster,i_rate);
++    }
++    public Behavior getBehavior()
++    {
++	return nya_behavior;
++    }
++    /**
++     * i_back_groundにキャプチャ画像を転送するようにBehaviorを設定します。
++     * i_back_groungはALLOW_IMAGE_WRITE属性を持つものである必要があります。
++     * @param i_back_groung
++     * @return
++     */
++    public void setBackGround(Background i_back_ground)
++    {
++	//コール先で排他制御
++        nya_behavior.setRelatedBackGround(i_back_ground);
++    }
++    /**
++     * i_trgroupの座標系をマーカーにあわせるようにBehaviorを設定します。
++     *
++     */
++    public void setTransformGroup(TransformGroup i_trgroup)
++    {
++	//コール先で排他制御
++        nya_behavior.setRelatedTransformGroup(i_trgroup);
++    }
++    /**
++     * 座標系再計算後に呼び出されるリスナです。
++     * @param i_listener
++     */
++    public void setUpdateListener(NyARSingleMarkerBehaviorListener i_listener)
++    {
++	//コール先で排他制御
++	nya_behavior.setUpdateListener(i_listener);
++    }
++    /**
++     * ラスタを更新 コールバック関数だから呼んじゃらめえ
++     */
++    public void onUpdateBuffer(Buffer i_buffer)
++    {
++	try{
++	    synchronized(nya_raster){
++		nya_raster.setBuffer(i_buffer);
++	    }
++	}catch(Exception e){
++	    e.printStackTrace();
++	}
++    }
++    public void start() throws NyARException
++    {
++	//開始
++	capture.start();
++    }
++    public void stop()
++    {
++	capture.stop();
++    }
++}
++
++
++class NyARBehavior extends Behavior
++{
++    private NyARSingleDetectMarker related_nya;
++    private TransformGroup trgroup;
++    private Background back_ground;
++    private J3dNyARRaster_RGB raster;
++    private WakeupCondition wakeup;
++    private NyARSingleMarkerBehaviorListener listener;
++    public void initialize()
++    {
++	wakeupOn(wakeup);
++    }
++    /**
++     * i_related_ic2dの内容で定期的にi_back_groundを更新するBehavior
++     * @param i_back_ground
++     * @param i_related_ic2d
++     */
++    public NyARBehavior(NyARSingleDetectMarker i_related_nya,J3dNyARRaster_RGB i_related_raster,float i_rate)
++    {
++	super();
++	wakeup=new WakeupOnElapsedTime((int)(1000/i_rate));
++	related_nya=i_related_nya;
++	trgroup    =null;
++	raster     =i_related_raster;
++        back_ground=null;
++        listener=null;
++        this.setSchedulingBounds(new BoundingSphere(new Point3d(), 100.0));
++   }
++    public void setRelatedBackGround(Background i_back_ground)
++    {
++	synchronized(raster){
++	    back_ground=i_back_ground;
++	}
++    }
++    public void setRelatedTransformGroup(TransformGroup i_trgroup)
++    {
++	synchronized(raster){
++	    trgroup=i_trgroup;
++	}	
++    }
++    public void setUpdateListener(NyARSingleMarkerBehaviorListener i_listener)
++    {
++	synchronized(raster){
++	    listener=i_listener;
++	}
++    }
++
++    /**
++     * いわゆるイベントハンドラ
++     */
++    public void processStimulus(Enumeration criteria)
++    {
++	try{
++            synchronized(raster){
++        	Transform3D t3d=null;
++        	boolean is_marker_exist=false;
++        	if(back_ground!=null){
++                    back_ground.setImage(raster.getImageComponent2D());        	    
++        	}
++                if(raster.hasData()){
++                    is_marker_exist=related_nya.detectMarkerLite(raster, 100);
++                    if(is_marker_exist){
++                        NyARMat nymat=related_nya.getTransmationMatrix();
++                        double[][] src=nymat.getArray();
++                        Matrix4d matrix=new Matrix4d(
++                             src[0][0],-src[1][0],-src[2][0],0,
++                            -src[0][1], src[1][1], src[2][1],0,
++                            -src[0][2], src[1][2], src[2][2],0,
++                            -src[0][3], src[1][3], src[2][3],1);
++                        matrix.transpose();
++                        t3d=new Transform3D(matrix);
++                        if(trgroup!=null){
++                            trgroup.setTransform(t3d);
++                        }
++                    }
++                }
++                if(listener!=null)
++                {
++                    listener.onUpdate(is_marker_exist, t3d);
++                }
++            }
++            wakeupOn(wakeup);            
++	}catch(Exception e){
++	    e.printStackTrace();
++	}
++    }
++}
++
+Index: D:/project.files/java.Lab/NyARToolKit/sample/java3d/src/jp/nyatla/nyartoolkit/java3d/sample/NyARJava3D.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/java3d/src/jp/nyatla/nyartoolkit/java3d/sample/NyARJava3D.java	(revision 0)
++++ D:/project.files/java.Lab/NyARToolKit/sample/java3d/src/jp/nyatla/nyartoolkit/java3d/sample/NyARJava3D.java	(revision 178)
+@@ -0,0 +1,148 @@
++/**
++ * Java3Dサンプルプログラム
++ * シングルマーカー追跡用のBehaviorを使って、背景と１個のマーカーに連動したTransformGroup
++ * を動かします。
++ * (c)2008 A虎＠nyatla.jp
++ * airmail@ebony.plala.or.jp
++ * http://nyatla.jp/
++ */
++package jp.nyatla.nyartoolkit.java3d.sample;
++
++import java.awt.BorderLayout;
++import javax.media.j3d.*;
++
++import com.sun.j3d.utils.universe.*;
++import java.awt.*;
++import javax.swing.JFrame;
++import javax.vecmath.*;
++
++import jp.nyatla.nyartoolkit.core.*;
++import jp.nyatla.nyartoolkit.java3d.utils.*;
++
++import com.sun.j3d.utils.geometry.ColorCube;
++
++public class NyARJava3D extends JFrame implements NyARSingleMarkerBehaviorListener 
++{
++    private final String CARCODE_FILE ="../../Data/patt.hiro";
++    private final String PARAM_FILE   ="../../Data/camera_para.dat";
++    //NyARToolkit関係
++    private NyARSingleMarkerBehaviorHolder nya_behavior;
++    private J3dNyARParam ar_param;
++    //universe関係
++    private Canvas3D canvas;
++    private Locale locale;
++    private VirtualUniverse universe;
++    public static void main(String[] args)
++    {
++	try{
++            NyARJava3D frame = new NyARJava3D();
++                
++            frame.setVisible(true);
++            Insets ins=frame.getInsets();
++            frame.setSize(320+ins.left+ins.right,240+ins.top+ins.bottom);
++            frame.startCapture();
++            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
++	}catch(Exception e){
++	    e.printStackTrace();
++	}
++    }
++    public void onUpdate(boolean i_is_marker_exist,Transform3D i_transform3d)
++    {
++	/*
++	 * TODO:Please write your behavior operation code here.
++	 * マーカーの姿勢を元に他の３Dオブジェクトを操作するときは、ここに処理を書きます。*/
++	
++    }
++    public void startCapture() throws Exception
++    {
++	nya_behavior.start();       	
++    }
++    public NyARJava3D() throws Exception
++    {
++	super("Java3D Example NyARToolkit");
++
++        //NyARToolkitの準備
++        NyARCode ar_code  =new NyARCode(16,16);
++        ar_code.loadFromARFile(CARCODE_FILE);
++        ar_param=new J3dNyARParam();
++        ar_param.loadFromARFile(PARAM_FILE);
++        ar_param.changeSize(320,240);
++        
++    	//localeの作成とlocateとviewの設定
++        universe = new VirtualUniverse();
++        locale = new Locale( universe );
++        canvas=new Canvas3D( SimpleUniverse.getPreferredConfiguration());
++        View view = new View();
++        ViewPlatform viewPlatform = new ViewPlatform();
++        view.attachViewPlatform( viewPlatform );
++        view.addCanvas3D(canvas);
++        view.setPhysicalBody( new PhysicalBody() );
++        view.setPhysicalEnvironment( new PhysicalEnvironment());
++
++        //視界の設定(カメラ設定から取得)
++        Transform3D camera_3d=ar_param.getCameraTransform();
++        view.setCompatibilityModeEnable(true);
++        view.setProjectionPolicy(View.PERSPECTIVE_PROJECTION);
++        view.setLeftProjection(camera_3d);
++        
++        //視点設定(0,0,0から、Y軸を180度回転してZ+方向を向くようにする。)
++        TransformGroup viewGroup = new TransformGroup();
++        Transform3D viewTransform = new Transform3D();
++        viewTransform.rotY(Math.PI);
++        viewTransform.setTranslation(new Vector3d(0.0,0.0,0.0));
++        viewGroup.setTransform( viewTransform );
++        viewGroup.addChild( viewPlatform );
++        BranchGroup viewRoot = new BranchGroup();
++        viewRoot.addChild( viewGroup );
++        locale.addBranchGraph( viewRoot );
++
++        
++	//バックグラウンドの作成
++        Background background =new Background();
++ 	BoundingSphere bounds = new BoundingSphere();
++        bounds.setRadius( 10.0 ); 
++    	background.setApplicationBounds(bounds);
++    	background.setImageScaleMode(Background.SCALE_FIT_ALL);
++    	background.setCapability(Background.ALLOW_IMAGE_WRITE);
++    	BranchGroup root = new BranchGroup();
++    	root.addChild(background);
++    	
++    	//TransformGroupで囲ったシーングラフの作成
++    	TransformGroup transform=new TransformGroup();
++   	transform.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
++   	transform.addChild(createSceneGraph());
++    	root.addChild(transform);
++    	    	
++        //NyARToolkitのBehaviorを作る。(マーカーサイズはメートルで指定すること)
++    	nya_behavior=new NyARSingleMarkerBehaviorHolder(ar_param,30f,ar_code,0.08);
++    	//Behaviorに連動するグループをセット
++    	nya_behavior.setTransformGroup(transform);
++    	nya_behavior.setBackGround(background);
++    	
++    	//出来たbehaviorをセット
++    	root.addChild(nya_behavior.getBehavior());
++    	nya_behavior.setUpdateListener(this);
++    	
++    	//表示ブランチをLocateにセット
++    	locale.addBranchGraph(root);
++      
++    	//ウインドウの設定
++    	setLayout(new BorderLayout());
++    	add(canvas,BorderLayout.CENTER);
++    }
++    /**
++     * シーングラフを作って、そのノードを返す。
++     * このノードは40mmの色つきナタデココを表示するシーン。ｚ軸を基準に20mm上に浮かせてる。
++     * @return
++     */
++    private Node createSceneGraph()
++    {
++	TransformGroup tg=new TransformGroup();
++        Transform3D mt=new Transform3D();
++        mt.setTranslation(new Vector3d(0.00,0.0,20*0.001));
++        // 大きさ 40mmの色付き立方体を、Z軸上で20mm動かして配置）
++        tg.setTransform(mt);
++        tg.addChild(new ColorCube(20*0.001));
++        return tg;
++    }
++}
+Index: D:/project.files/java.Lab/NyARToolKit/sample/jogl/JavaSimpleLite.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/jogl/JavaSimpleLite.java	(revision 174)
++++ D:/project.files/java.Lab/NyARToolKit/sample/jogl/JavaSimpleLite.java	(revision 178)
+@@ -1,217 +0,0 @@
+-/**
+- * simpleLiteと同じようなテストプログラム
+- * マーカーの一致度の最低値をチェックするところを抜いたので、同じマーカーを大量に
+- * 検出すると面白いことになります。
+- * (c)2008 R.iizuka
+- * airmail(at)ebony.plala.or.jp
+- * http://nyatla.jp/
+- */
+-import java.awt.event.WindowAdapter;
+-import java.awt.event.WindowEvent;
+-import java.awt.*;
+-
+-import javax.media.Buffer;
+-
+-import javax.media.opengl.GL;
+-import javax.media.opengl.GLAutoDrawable;
+-import javax.media.opengl.GLEventListener;
+-import javax.media.opengl.GLCanvas;
+-
+-import com.sun.opengl.util.Animator;
+-
+-import jp.nyatla.nyartoolkit.core.NyARCode;
+-
+-import jp.nyatla.nyartoolkit.jmf.JmfCameraCapture;
+-import jp.nyatla.nyartoolkit.jmf.JmfCaptureListener;
+-import jp.nyatla.nyartoolkit.gutil.*;
+-
+-
+-public class JavaSimpleLite implements GLEventListener,JmfCaptureListener
+-{
+-    private final String CARCODE_FILE ="../../Data/patt.hiro";
+-    private final String PARAM_FILE   ="../../Data/camera_para.dat";
+-       
+-    
+-    private Animator animator;
+-    private GLNyARRaster_RGB cap_image;
+-    
+-    private JmfCameraCapture capture;
+-    private GL gl;
+-    //NyARToolkit関係
+-    private GLNyARSingleDetectMarker nya;
+-    private GLNyARParam ar_param;
+-    /**
+-     * 立方体を書く
+-     *
+-     */
+-    void drawCube()
+-    {
+-    	// Colour cube data.
+-    	int polyList = 0;
+-    	float fSize = 0.5f;
+-    	int f, i;	
+-    	float[][] cube_vertices=new float[][]{
+-    		{1.0f, 1.0f, 1.0f}, {1.0f, -1.0f, 1.0f}, {-1.0f, -1.0f, 1.0f}, {-1.0f, 1.0f, 1.0f},
+-    		{1.0f, 1.0f, -1.0f}, {1.0f, -1.0f, -1.0f}, {-1.0f, -1.0f, -1.0f}, {-1.0f, 1.0f, -1.0f}
+-    	};
+-    	float[][] cube_vertex_colors=new float[][]{
+-    	{1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 1.0f},
+-    	{1.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}
+-    	};
+-    	int cube_num_faces = 6;
+-    	short[][] cube_faces =new short[][]{
+-    	{3, 2, 1, 0}, {2, 3, 7, 6}, {0, 1, 5, 4}, {3, 0, 4, 7}, {1, 2, 6, 5}, {4, 5, 6, 7}
+-    	};
+-    	
+-    	if (polyList==0) {
+-            polyList = gl.glGenLists (1);
+-            gl.glNewList(polyList, GL.GL_COMPILE);
+-            gl.glBegin(GL.GL_QUADS);
+-            for (f = 0; f < cube_num_faces; f++)
+-                for (i = 0; i < 4; i++) {
+-                    gl.glColor3f (cube_vertex_colors[cube_faces[f][i]][0], cube_vertex_colors[cube_faces[f][i]][1], cube_vertex_colors[cube_faces[f][i]][2]);
+-                    gl.glVertex3f(cube_vertices[cube_faces[f][i]][0] * fSize, cube_vertices[cube_faces[f][i]][1] * fSize, cube_vertices[cube_faces[f][i]][2] * fSize);
+-                }
+-            gl.glEnd();
+-            gl.glColor3f(0.0f, 0.0f, 0.0f);
+-            for (f = 0; f < cube_num_faces; f++) {
+-            	gl.glBegin (GL.GL_LINE_LOOP);
+-            	for (i = 0; i < 4; i++)
+-            		gl.glVertex3f(cube_vertices[cube_faces[f][i]][0] * fSize, cube_vertices[cube_faces[f][i]][1] * fSize, cube_vertices[cube_faces[f][i]][2] * fSize);
+-            	gl.glEnd ();
+-            }
+-            gl.glEndList ();
+-    	}
+-    	
+-    	gl.glPushMatrix(); // Save world coordinate system.
+-    	gl.glTranslatef(0.0f, 0.0f, 0.5f); // Place base of cube on marker surface.
+-    	gl.glRotatef(0.0f, 0.0f, 0.0f, 1.0f); // Rotate about z axis.
+-    	gl.glDisable(GL.GL_LIGHTING);	// Just use colours.
+-    	gl.glCallList(polyList);	// Draw the cube.
+-    	gl.glPopMatrix();	// Restore world coordinate system.
+-    	
+-    }
+-    
+-    
+-    
+-    public JavaSimpleLite()
+-    {
+-        Frame frame = new Frame("Java simpleLite with NyARToolkit");
+-
+-
+-        // 3Dを描画するコンポーネント
+-        GLCanvas canvas = new GLCanvas();
+-        frame.add(canvas);
+-        canvas.addGLEventListener(this);
+-        frame.addWindowListener(new WindowAdapter() {
+-                public void windowClosing(WindowEvent e) {
+-                    System.exit(0);
+-                }
+-            });
+-
+-        frame.setVisible(true);
+-        Insets ins=frame.getInsets();
+-        frame.setSize(320+ins.left+ins.right,240+ins.top+ins.bottom);
+-        canvas.setBounds(ins.left,ins.top,320,240);
+-    }
+-
+-    public void init(GLAutoDrawable drawable) {
+-        gl = drawable.getGL();
+-        gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+-        //NyARToolkitの準備
+-        try{
+-            //キャプチャの準備
+-            capture=new JmfCameraCapture(320,240,15f,JmfCameraCapture.PIXEL_FORMAT_RGB);
+-            capture.setCaptureListener(this);
+-            //NyARToolkitの準備
+-            ar_param=new GLNyARParam();
+-            NyARCode ar_code  =new NyARCode(16,16);
+-            ar_param.loadFromARFile(PARAM_FILE);
+-            ar_param.changeSize(320,240);
+-            nya=new GLNyARSingleDetectMarker(ar_param,ar_code,80.0);
+-            ar_code.loadFromARFile(CARCODE_FILE);
+-            //GL対応のRGBラスタオブジェクト
+-            cap_image=new GLNyARRaster_RGB(gl,ar_param);
+-            //キャプチャ開始
+-            capture.start();
+-       }catch(Exception e){
+-            e.printStackTrace();
+-        }
+-        animator = new Animator(drawable);
+-
+-        animator.start();
+-
+-    }
+-
+-    public void reshape(GLAutoDrawable drawable,
+-        int x, int y,
+-        int width, int height)
+-    {
+-	float ratio = (float)height / (float)width;
+-        gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+-        gl.glViewport(0, 0,  width, height);
+-
+-        //視体積の設定
+-        gl.glMatrixMode(GL.GL_PROJECTION);
+-        gl.glLoadIdentity();
+-        gl.glFrustum(-1.0f, 1.0f, -ratio, ratio,
+-	             5.0f, 40.0f);
+-        //見る位置
+-        gl.glMatrixMode(GL.GL_MODELVIEW);
+-        gl.glLoadIdentity();
+-        gl.glTranslatef(0.0f, 0.0f, -10.0f);
+-    }
+-
+-    public void display(GLAutoDrawable drawable)
+-    {
+-        
+-        try{
+-            if(!cap_image.hasData()){
+-        	return;
+-            }    
+-            gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.          
+-            //画像チェックしてマーカー探して、背景を書く
+-            boolean is_marker_exist;
+-            synchronized(cap_image){
+-        	is_marker_exist=nya.detectMarkerLite(cap_image,100);
+-        	//背景を書く
+-        	cap_image.glDispImage(1.0);
+-            }
+-            //あったら立方体を書く
+-            if(is_marker_exist){
+-                // Projection transformation.
+-                gl.glMatrixMode(GL.GL_PROJECTION);
+-                gl.glLoadMatrixd(ar_param.getCameraFrustumRH(),0);
+-                gl.glMatrixMode(GL.GL_MODELVIEW);
+-                // Viewing transformation.
+-                gl.glLoadIdentity();
+-                gl.glLoadMatrixd(nya.getCameraViewRH(),0);
+-
+-            
+-                // All other lighting and geometry goes here.
+-                drawCube();
+-            }
+-        }catch(Exception e){
+-            e.printStackTrace();
+-        }
+-    }
+-    public void onUpdateBuffer(Buffer i_buffer)
+-    {
+-	try{
+-	    synchronized(cap_image){
+-		cap_image.setBuffer(i_buffer, true);
+-	    }
+-	}catch(Exception e){
+-	    e.printStackTrace();
+-	}        
+-    }
+-
+-    public void displayChanged(GLAutoDrawable drawable,
+-                               boolean modeChanged,
+-                               boolean deviceChanged) {}
+-
+-    public static void main(String[] args) {
+-        new JavaSimpleLite();
+-    }
+-}
+-
+Index: D:/project.files/java.Lab/NyARToolKit/sample/jogl/jp/nyatla/nyartoolkit/jogl/utils/GLNyARRaster_RGB.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/jogl/jp/nyatla/nyartoolkit/jogl/utils/GLNyARRaster_RGB.java	(revision 0)
++++ D:/project.files/java.Lab/NyARToolKit/sample/jogl/jp/nyatla/nyartoolkit/jogl/utils/GLNyARRaster_RGB.java	(revision 178)
+@@ -0,0 +1,76 @@
++/**
++ * NyARRaster_RGBにOpenGL用のデータ変換機能を追加したものです。
++ * 
++ * (c)2008 A虎＠nyatla.jp
++ * airmail(at)ebony.plala.or.jp
++ * http://nyatla.jp/
++ */
++package jp.nyatla.nyartoolkit.jogl.utils;
++
++import javax.media.format.RGBFormat;
++import javax.media.opengl.GL;
++import jp.nyatla.nyartoolkit.NyARException;
++import jp.nyatla.nyartoolkit.jmf.utils.*;
++import jp.nyatla.nyartoolkit.core.*;
++
++public class GLNyARRaster_RGB extends JmfNyARRaster_RGB
++{
++    private byte[] gl_buf;
++    private int gl_flag;
++
++    public GLNyARRaster_RGB(GL i_ref_gl,NyARParam i_param)
++    {
++	super(i_param.getX(),i_param.getY());
++	this.gl_flag=GL.GL_RGB;
++	this.gl_buf=new byte[this.width*this.height*3];
++    }
++    public void setBuffer(javax.media.Buffer i_buffer,boolean i_is_reverse) throws NyARException
++    {
++	//JMFデータでフォーマットプロパティを初期化
++	initFormatProperty((RGBFormat)i_buffer.getFormat());
++	
++	byte[] src_buf=(byte[])i_buffer.getData();
++	//GL用のデータを準備
++	if(i_is_reverse){
++	    int length=this.width*3;
++	    int src_idx=0;
++	    int dest_idx=(this.height-1)*length;
++	    for(int i=0;i<this.height;i++){
++		System.arraycopy(src_buf,src_idx,this.gl_buf,dest_idx,length);
++		src_idx+=length;
++		dest_idx-=length;
++	    }
++	}else{
++	    System.arraycopy(src_buf,0,gl_buf,0,src_buf.length);
++	}
++	//GLのフラグ設定
++	switch(this.pix_type){
++	case GLNyARRaster_RGB.PIXEL_ORDER_BGR:
++	    this.gl_flag=GL.GL_BGR;
++            break;
++	case GLNyARRaster_RGB.PIXEL_ORDER_RGB:
++	    this.gl_flag=GL.GL_RGB;
++            break;
++        default:
++            throw new NyARException();
++	}
++	//ref_bufをgl_bufに差し替える
++	ref_buf=gl_buf;
++    }
++    /**
++     * GLでそのまま描画できるRGBバッファを返す。
++     * @return
++     */
++    public byte[] getGLRgbArray()
++    {
++	return this.ref_buf;
++    }
++    /**
++     * GL用のRGBバッファのバイト並びタイプを返す。
++     * @return
++     */
++    public int getGLPixelFlag()
++    {
++	return this.gl_flag;
++    }
++}
+Index: D:/project.files/java.Lab/NyARToolKit/sample/jogl/jp/nyatla/nyartoolkit/jogl/utils/GLNyARSingleDetectMarker.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/jogl/jp/nyatla/nyartoolkit/jogl/utils/GLNyARSingleDetectMarker.java	(revision 0)
++++ D:/project.files/java.Lab/NyARToolKit/sample/jogl/jp/nyatla/nyartoolkit/jogl/utils/GLNyARSingleDetectMarker.java	(revision 178)
+@@ -0,0 +1,57 @@
++/**
++ * NyARSingleDetectMarkerにOpenGL向け関数を追加したもの
++ * (c)2008 A虎＠nyatla.jp
++ * airmail(at)ebony.plala.or.jp
++ * http://nyatla.jp/
++ */
++package jp.nyatla.nyartoolkit.jogl.utils;
++
++import jp.nyatla.nyartoolkit.NyARException;
++import jp.nyatla.nyartoolkit.core.NyARCode;
++import jp.nyatla.nyartoolkit.core.NyARMat;
++import jp.nyatla.nyartoolkit.core.NyARParam;
++import jp.nyatla.nyartoolkit.detector.*;
++
++public class GLNyARSingleDetectMarker extends NyARSingleDetectMarker
++{
++    private double view_scale_factor=0.025;//#define VIEW_SCALEFACTOR		0.025		// 1.0 ARToolKit unit becomes 0.025 of my OpenGL units.
++    public GLNyARSingleDetectMarker(NyARParam i_param,NyARCode i_code,double i_marker_width)
++    {
++	super(i_param,i_code,i_marker_width);	
++    }
++    public void setScaleFactor(double i_new_value)
++    {
++	view_scale_factor=i_new_value;
++    }
++    //    public static void arglCameraViewRH(const double para[3][4], GLdouble m_modelview[16], const double scale)
++    public double[] getCameraViewRH() throws NyARException
++    {
++	//座標を計算
++	NyARMat mat=getTransmationMatrix();
++	//行列変換
++	double[][] para=mat.getArray();
++	double[] result=new double[16];
++	result[0 + 0*4] = para[0][0]; // R1C1
++	result[0 + 1*4] = para[0][1]; // R1C2
++	result[0 + 2*4] = para[0][2];
++	result[0 + 3*4] = para[0][3];
++	result[1 + 0*4] = -para[1][0]; // R2
++	result[1 + 1*4] = -para[1][1];
++    	result[1 + 2*4] = -para[1][2];
++    	result[1 + 3*4] = -para[1][3];
++    	result[2 + 0*4] = -para[2][0]; // R3
++    	result[2 + 1*4] = -para[2][1];
++    	result[2 + 2*4] = -para[2][2];
++    	result[2 + 3*4] = -para[2][3];
++    	result[3 + 0*4] = 0.0;
++    	result[3 + 1*4] = 0.0;
++    	result[3 + 2*4] = 0.0;
++    	result[3 + 3*4] = 1.0;
++    	if (view_scale_factor != 0.0) {
++    	    result[12] *= view_scale_factor;
++    	    result[13] *= view_scale_factor;
++    	    result[14] *= view_scale_factor;
++    	}
++    	return result;
++    }
++}
+Index: D:/project.files/java.Lab/NyARToolKit/sample/jogl/jp/nyatla/nyartoolkit/jogl/utils/NyARGLUtil.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/jogl/jp/nyatla/nyartoolkit/jogl/utils/NyARGLUtil.java	(revision 0)
++++ D:/project.files/java.Lab/NyARToolKit/sample/jogl/jp/nyatla/nyartoolkit/jogl/utils/NyARGLUtil.java	(revision 178)
+@@ -0,0 +1,99 @@
++/**
++ * NyARToolkit用のJOGL支援関数群
++ * (c)2008 A虎＠nyatla.jp
++ * airmail(at)ebony.plala.or.jp
++ * http://nyatla.jp/
++ */
++package jp.nyatla.nyartoolkit.jogl.utils;
++import java.nio.ByteBuffer;
++import java.nio.IntBuffer;
++
++import javax.media.opengl.GL;
++import javax.media.opengl.glu.GLU;
++
++import jp.nyatla.nyartoolkit.core.*;
++
++public class NyARGLUtil
++{
++    private NyARParam ar_param;
++    private javax.media.opengl.GL gl;
++    private javax.media.opengl.glu.GLU glu;
++    public NyARGLUtil(javax.media.opengl.GL i_gl,NyARParam i_camera_param)
++    {
++	this.ar_param=i_camera_param;
++	this.gl=i_gl;
++	this.glu=new GLU();
++    }
++    /**
++     * GLNyARRaster_RGBをバックグラウンドに書き出す。
++     * @param image
++     * @param zoom
++     */
++    public void drawBackGround(GLNyARRaster_RGB i_raster,double i_zoom)
++    {
++    	IntBuffer texEnvModeSave=IntBuffer.allocate(1);	
++    	boolean lightingSave;
++    	boolean depthTestSave;
++    	javax.media.opengl.GL gl_=this.gl;
++    	
++    	// Prepare an orthographic projection, set camera position for 2D drawing, and save GL state.
++    	gl_.glGetTexEnviv(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, texEnvModeSave); // Save GL texture environment mode.
++    	if (texEnvModeSave.array()[0] != GL.GL_REPLACE){
++    	gl_.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_REPLACE);
++    	}
++    	lightingSave = gl_.glIsEnabled(GL.GL_LIGHTING);			// Save enabled state of lighting.
++    	if (lightingSave == true){
++            gl_.glDisable(GL.GL_LIGHTING);
++    	}
++    	depthTestSave = gl_.glIsEnabled(GL.GL_DEPTH_TEST);		// Save enabled state of depth test.
++    	if (depthTestSave == true){
++            gl_.glDisable(GL.GL_DEPTH_TEST);
++    	}
++    	gl_.glMatrixMode(GL.GL_PROJECTION);
++    	gl_.glPushMatrix();
++    	gl_.glLoadIdentity();
++    	glu.gluOrtho2D(0.0,ar_param.getX(),0.0,ar_param.getY());
++    	gl_.glMatrixMode(GL.GL_MODELVIEW);
++    	gl_.glPushMatrix();
++    	gl_.glLoadIdentity();
++   	arglDispImageStateful(i_raster,i_zoom);
++
++
++    	// Restore previous projection, camera position, and GL state.
++   	gl_.glMatrixMode(GL.GL_PROJECTION);
++   	gl_.glPopMatrix();
++   	gl_.glMatrixMode(GL.GL_MODELVIEW);
++   	gl_.glPopMatrix();
++        if (depthTestSave){
++            gl_.glEnable(GL.GL_DEPTH_TEST);			// Restore enabled state of depth test.
++        }
++        if (lightingSave){
++            gl_.glEnable(GL.GL_LIGHTING);			// Restore enabled state of lighting.
++        }
++    	if (texEnvModeSave.get(0) != GL.GL_REPLACE){
++            gl_.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, texEnvModeSave.get(0)); // Restore GL texture environment mode.
++    	}
++    	gl_.glEnd();
++    }
++    /**
++     * arglDispImageStateful関数モドキ
++     * @param image
++     * @param zoom
++     */
++    private void arglDispImageStateful(GLNyARRaster_RGB i_raster,double zoom)
++    {
++    	javax.media.opengl.GL gl_=this.gl;
++    	int width =i_raster.getWidth();
++    	int height=i_raster.getHeight();
++	float zoomf;
++    	IntBuffer params=IntBuffer.allocate(4);
++    	zoomf = (float)zoom;
++    	gl_.glDisable(GL.GL_TEXTURE_2D);
++    	gl_.glGetIntegerv(GL.GL_VIEWPORT,params);
++    	gl_.glPixelZoom(zoomf * ((float)(params.get(2)) / (float)width),-zoomf * ((float)(params.get(3)) / (float)height));
++    	gl_.glRasterPos2f(0.0f,(float)height);
++    	gl_.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
++        ByteBuffer buf=ByteBuffer.wrap(i_raster.getGLRgbArray());
++        gl_.glDrawPixels(width,height,i_raster.getGLPixelFlag(),GL.GL_UNSIGNED_BYTE,buf);
++    }     
++}
+Index: D:/project.files/java.Lab/NyARToolKit/sample/jogl/jp/nyatla/nyartoolkit/jogl/utils/GLNyARParam.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/jogl/jp/nyatla/nyartoolkit/jogl/utils/GLNyARParam.java	(revision 0)
++++ D:/project.files/java.Lab/NyARToolKit/sample/jogl/jp/nyatla/nyartoolkit/jogl/utils/GLNyARParam.java	(revision 178)
+@@ -0,0 +1,99 @@
++/**
++ * NyARParamにOpenGL向け関数を追加したもの
++ * (c)2008 A虎＠nyatla.jp
++ * airmail(at)ebony.plala.or.jp
++ * http://nyatla.jp/
++ */
++package jp.nyatla.nyartoolkit.jogl.utils;
++
++import jp.nyatla.nyartoolkit.core.*;
++public class GLNyARParam extends NyARParam
++{
++    private double view_distance_min=0.1;//#define VIEW_DISTANCE_MIN		0.1			// Objects closer to the camera than this will not be displayed.
++    private double view_distance_max=100.0;//#define VIEW_DISTANCE_MAX		100.0		// Objects further away from the camera than this will not be displayed.
++    private double[] m_projection=null;
++    public void setViewDistanceMin(double i_new_value)
++    {
++	m_projection=null;//キャッシュ済変数初期化
++	view_distance_min=i_new_value;
++    }
++    public void setViewDistanceMax(double i_new_value)
++    {
++	m_projection=null;//キャッシュ済変数初期化
++	view_distance_max=i_new_value;
++    }
++    /**
++     * void arglCameraFrustumRH(const ARParam *cparam, const double focalmin, const double focalmax, GLdouble m_projection[16])
++     * 関数の置き換え
++     * @param focalmin
++     * @param focalmax
++     * @return
++     */
++    public double[] getCameraFrustumRH()
++    {
++	//既に値がキャッシュされていたらそれを使う
++	if(m_projection!=null){
++	    return m_projection;
++	}
++	//無ければ計算
++	m_projection=new double[16];
++	NyARMat trans_mat=new NyARMat(3,4);
++	NyARMat icpara_mat=new NyARMat(3,4);
++        double[][]  p=new double[3][3], q=new double[4][4];
++    	int      width, height;
++        int      i, j;
++    	
++        width  = xsize;
++        height = ysize;
++    	
++        decompMat(icpara_mat,trans_mat);
++
++        double[][] icpara=icpara_mat.getArray();
++        double[][] trans=trans_mat.getArray();
++    	for (i = 0; i < 4; i++) {
++            icpara[1][i] = (height - 1)*(icpara[2][i]) - icpara[1][i];
++        }
++    	
++        for(i = 0; i < 3; i++) {
++            for(j = 0; j < 3; j++) {
++                p[i][j] = icpara[i][j] / icpara[2][2];
++            }
++        }
++        q[0][0] = (2.0 * p[0][0] / (width - 1));
++        q[0][1] = (2.0 * p[0][1] / (width - 1));
++        q[0][2] = -((2.0 * p[0][2] / (width - 1))  - 1.0);
++        q[0][3] = 0.0;
++    	
++        q[1][0] = 0.0;
++        q[1][1] = -(2.0 * p[1][1] / (height - 1));
++        q[1][2] = -((2.0 * p[1][2] / (height - 1)) - 1.0);
++        q[1][3] = 0.0;
++    	
++        q[2][0] = 0.0;
++        q[2][1] = 0.0;
++        q[2][2] = (view_distance_max + view_distance_min)/(view_distance_min - view_distance_max);
++        q[2][3] = 2.0 * view_distance_max * view_distance_min / (view_distance_min - view_distance_max);
++    	
++        q[3][0] = 0.0;
++        q[3][1] = 0.0;
++        q[3][2] = -1.0;
++        q[3][3] = 0.0;
++    	
++        for (i = 0; i < 4; i++) { // Row.
++    		// First 3 columns of the current row.
++            for (j = 0; j < 3; j++) { // Column.
++                m_projection[i + j*4] =
++                    q[i][0] * trans[0][j] +
++                    q[i][1] * trans[1][j] +
++                    q[i][2] * trans[2][j];
++            }
++    		// Fourth column of the current row.
++            m_projection[i + 3*4]=
++        	q[i][0] * trans[0][3] +
++        	q[i][1] * trans[1][3] +
++                q[i][2] * trans[2][3] +
++                q[i][3];
++        }
++        return m_projection;
++    }
++}
+Index: D:/project.files/java.Lab/NyARToolKit/sample/jogl/jp/nyatla/nyartoolkit/jogl/sample/JavaSimpleLite.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/jogl/jp/nyatla/nyartoolkit/jogl/sample/JavaSimpleLite.java	(revision 0)
++++ D:/project.files/java.Lab/NyARToolKit/sample/jogl/jp/nyatla/nyartoolkit/jogl/sample/JavaSimpleLite.java	(revision 178)
+@@ -0,0 +1,222 @@
++/**
++ * simpleLiteと同じようなテストプログラム
++ * マーカーの一致度の最低値をチェックするところを抜いたので、同じマーカーを大量に
++ * 検出すると面白いことになります。
++ * (c)2008 A虎＠nyatla.jp
++ * airmail(at)ebony.plala.or.jp
++ * http://nyatla.jp/
++ */
++package jp.nyatla.nyartoolkit.jogl.sample;
++
++import java.awt.event.WindowAdapter;
++import java.awt.event.WindowEvent;
++import java.awt.*;
++
++import javax.media.Buffer;
++
++import javax.media.opengl.GL;
++import javax.media.opengl.GLAutoDrawable;
++import javax.media.opengl.GLEventListener;
++import javax.media.opengl.GLCanvas;
++
++import com.sun.opengl.util.Animator;
++
++import jp.nyatla.nyartoolkit.core.NyARCode;
++
++import jp.nyatla.nyartoolkit.jmf.utils.JmfCameraCapture;
++import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
++import jp.nyatla.nyartoolkit.jogl.utils.*;
++
++
++public class JavaSimpleLite implements GLEventListener,JmfCaptureListener
++{
++    private final String CARCODE_FILE ="../../Data/patt.hiro";
++    private final String PARAM_FILE   ="../../Data/camera_para.dat";
++       
++    private final static int SCREEN_X=320;
++    private final static int SCREEN_Y=240;
++    private Animator animator;
++    private GLNyARRaster_RGB cap_image;
++    
++    private JmfCameraCapture capture;
++    private GL  gl;
++    private NyARGLUtil glnya;
++
++
++    //NyARToolkit関係
++    private GLNyARSingleDetectMarker nya;
++    private GLNyARParam ar_param;
++    /**
++     * 立方体を書く
++     *
++     */
++    void drawCube()
++    {
++    	// Colour cube data.
++    	int polyList = 0;
++    	float fSize = 0.5f;//マーカーサイズに対して0.5倍なので、4cmのナタデココ
++    	int f, i;	
++    	float[][] cube_vertices=new float[][]{
++    		{1.0f, 1.0f, 1.0f}, {1.0f, -1.0f, 1.0f}, {-1.0f, -1.0f, 1.0f}, {-1.0f, 1.0f, 1.0f},
++    		{1.0f, 1.0f, -1.0f}, {1.0f, -1.0f, -1.0f}, {-1.0f, -1.0f, -1.0f}, {-1.0f, 1.0f, -1.0f}
++    	};
++    	float[][] cube_vertex_colors=new float[][]{
++    	{1.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 1.0f},
++    	{1.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}
++    	};
++    	int cube_num_faces = 6;
++    	short[][] cube_faces =new short[][]{
++    	{3, 2, 1, 0}, {2, 3, 7, 6}, {0, 1, 5, 4}, {3, 0, 4, 7}, {1, 2, 6, 5}, {4, 5, 6, 7}
++    	};
++    	
++    	if (polyList==0) {
++            polyList = gl.glGenLists (1);
++            gl.glNewList(polyList, GL.GL_COMPILE);
++            gl.glBegin(GL.GL_QUADS);
++            for (f = 0; f < cube_num_faces; f++)
++                for (i = 0; i < 4; i++) {
++                    gl.glColor3f (cube_vertex_colors[cube_faces[f][i]][0], cube_vertex_colors[cube_faces[f][i]][1], cube_vertex_colors[cube_faces[f][i]][2]);
++                    gl.glVertex3f(cube_vertices[cube_faces[f][i]][0] * fSize, cube_vertices[cube_faces[f][i]][1] * fSize, cube_vertices[cube_faces[f][i]][2] * fSize);
++                }
++            gl.glEnd();
++            gl.glColor3f(0.0f, 0.0f, 0.0f);
++            for (f = 0; f < cube_num_faces; f++) {
++            	gl.glBegin (GL.GL_LINE_LOOP);
++            	for (i = 0; i < 4; i++)
++            		gl.glVertex3f(cube_vertices[cube_faces[f][i]][0] * fSize, cube_vertices[cube_faces[f][i]][1] * fSize, cube_vertices[cube_faces[f][i]][2] * fSize);
++            	gl.glEnd ();
++            }
++            gl.glEndList ();
++    	}
++    	
++    	gl.glPushMatrix(); // Save world coordinate system.
++    	gl.glTranslatef(0.0f, 0.0f, 0.5f); // Place base of cube on marker surface.
++    	gl.glRotatef(0.0f, 0.0f, 0.0f, 1.0f); // Rotate about z axis.
++    	gl.glDisable(GL.GL_LIGHTING);	// Just use colours.
++    	gl.glCallList(polyList);	// Draw the cube.
++    	gl.glPopMatrix();	// Restore world coordinate system.
++    	
++    }
++    
++    
++    
++    public JavaSimpleLite()
++    {
++        Frame frame = new Frame("Java simpleLite with NyARToolkit");
++
++
++        // 3Dを描画するコンポーネント
++        GLCanvas canvas = new GLCanvas();
++        frame.add(canvas);
++        canvas.addGLEventListener(this);
++        frame.addWindowListener(new WindowAdapter() {
++                public void windowClosing(WindowEvent e) {
++                    System.exit(0);
++                }
++            });
++
++        frame.setVisible(true);
++        Insets ins=frame.getInsets();
++        frame.setSize(SCREEN_X+ins.left+ins.right,SCREEN_Y+ins.top+ins.bottom);
++        canvas.setBounds(ins.left,ins.top,SCREEN_X,SCREEN_Y);
++    }
++
++    public void init(GLAutoDrawable drawable) {
++        gl = drawable.getGL();
++        gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
++        //NyARToolkitの準備
++        try{
++            //キャプチャの準備
++            capture=new JmfCameraCapture(320,240,15f,JmfCameraCapture.PIXEL_FORMAT_RGB);
++            capture.setCaptureListener(this);
++            //NyARToolkitの準備
++            ar_param=new GLNyARParam();
++            NyARCode ar_code  =new NyARCode(16,16);
++            ar_param.loadFromARFile(PARAM_FILE);
++            ar_param.changeSize(SCREEN_X,SCREEN_Y);
++            nya=new GLNyARSingleDetectMarker(ar_param,ar_code,80.0);
++            ar_code.loadFromARFile(CARCODE_FILE);
++            //NyARToolkit用の支援クラス
++            glnya=new NyARGLUtil(gl,ar_param);
++            //GL対応のRGBラスタオブジェクト
++            cap_image=new GLNyARRaster_RGB(gl,ar_param);
++            //キャプチャ開始
++            capture.start();
++       }catch(Exception e){
++            e.printStackTrace();
++        }
++        animator = new Animator(drawable);
++
++        animator.start();
++
++    }
++
++    public void reshape(GLAutoDrawable drawable,
++        int x, int y,
++        int width, int height)
++    {
++        gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
++        gl.glViewport(0, 0,  width, height);
++
++        //視体積の設定
++        gl.glMatrixMode(GL.GL_PROJECTION);
++        gl.glLoadIdentity();
++        //見る位置
++        gl.glMatrixMode(GL.GL_MODELVIEW);
++        gl.glLoadIdentity();
++    }
++
++    public void display(GLAutoDrawable drawable)
++    {
++        
++        try{
++            if(!cap_image.hasData()){
++        	return;
++            }    
++            gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.          
++            //画像チェックしてマーカー探して、背景を書く
++            boolean is_marker_exist;
++            synchronized(cap_image){
++        	is_marker_exist=nya.detectMarkerLite(cap_image,100);
++        	//背景を書く
++        	glnya.drawBackGround(cap_image, 1.0);
++            }
++            //あったら立方体を書く
++            if(is_marker_exist){
++        	//マーカーの一致度を調査するならば、ここでnya.getConfidence()で一致度を調べて下さい。
++                // Projection transformation.
++                gl.glMatrixMode(GL.GL_PROJECTION);
++                gl.glLoadMatrixd(ar_param.getCameraFrustumRH(),0);
++                gl.glMatrixMode(GL.GL_MODELVIEW);
++                // Viewing transformation.
++                gl.glLoadIdentity();
++                gl.glLoadMatrixd(nya.getCameraViewRH(),0);
++
++            
++                // All other lighting and geometry goes here.
++                drawCube();
++            }
++        }catch(Exception e){
++            e.printStackTrace();
++        }
++    }
++    public void onUpdateBuffer(Buffer i_buffer)
++    {
++	try{
++	    synchronized(cap_image){
++		cap_image.setBuffer(i_buffer, true);
++	    }
++	}catch(Exception e){
++	    e.printStackTrace();
++	}        
++    }
++
++    public void displayChanged(GLAutoDrawable drawable,
++                               boolean modeChanged,
++                               boolean deviceChanged) {}
++
++    public static void main(String[] args) {
++        new JavaSimpleLite();
++    }
++}
++
+Index: D:/project.files/java.Lab/NyARToolKit/sample/jmf/JmfCaptureTest.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/jmf/JmfCaptureTest.java	(revision 174)
++++ D:/project.files/java.Lab/NyARToolKit/sample/jmf/JmfCaptureTest.java	(revision 178)
+@@ -1,56 +0,0 @@
+-/**
+- * VFMキャプチャテストプログラム
+- * (c)2008 R.iizuka
+- * airmail@ebony.plala.or.jp
+- * http://nyatla.jp/
+- */
+-import javax.media.*;
+-
+-import javax.media.util.BufferToImage;
+-import javax.media.format.*;
+-
+-import jp.nyatla.nyartoolkit.NyARException;
+-import jp.nyatla.nyartoolkit.jmf.*;
+-import java.awt.*;
+-
+-
+-
+-public class JmfCaptureTest extends Frame implements JmfCaptureListener{
+-    public JmfCaptureTest() throws NyARException
+-    {
+-        setTitle("JmfCaptureTest");
+-        setBounds(0,0,320+64,240+64);     
+-        capture=new JmfCameraCapture(320,240,30f,JmfCameraCapture.PIXEL_FORMAT_RGB);
+-        capture.setCaptureListener(this);
+-    }
+-
+-
+-
+-    private JmfCameraCapture  capture;
+-    public void onUpdateBuffer(Buffer i_buffer)
+-    {
+-	BufferToImage b2i=new BufferToImage((VideoFormat)i_buffer.getFormat());
+-	Image img=b2i.createImage(i_buffer);
+-        Graphics g = getGraphics();        
+-        g.drawImage(img, 32, 32,this);       
+-    }
+-    private void startCapture()
+-    {
+-	try{
+-	    capture.start();
+-	}catch(Exception e){
+-	    e.printStackTrace();
+-	}
+-    }
+-    public static void main(String[] args) {
+-	try{
+-            JmfCaptureTest mainwin = new JmfCaptureTest();
+-            mainwin.setVisible(true);
+-            mainwin.startCapture();
+-	}catch(Exception e){
+-	    e.printStackTrace();
+-	}
+-        
+-    }
+-
+-}
+Index: D:/project.files/java.Lab/NyARToolKit/sample/jmf/NyarToolkitLinkTest.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/jmf/NyarToolkitLinkTest.java	(revision 174)
++++ D:/project.files/java.Lab/NyARToolKit/sample/jmf/NyarToolkitLinkTest.java	(revision 178)
+@@ -1,114 +0,0 @@
+-/**
+- * VFM+ARToolkitテストプログラム
+- * カメラから取り込んだデータからマーカーを検出して、一致度と変換行列を表示します。
+- * (c)2008 R.iizuka
+- * airmail(at)ebony.plala.or.jp
+- * http://nyatla.jp/
+- */
+-import javax.media.*;
+-
+-import javax.media.util.BufferToImage;
+-import javax.media.format.*;
+-
+-import jp.nyatla.nyartoolkit.NyARException;
+-import jp.nyatla.nyartoolkit.jmf.*;
+-import jp.nyatla.nyartoolkit.jmfutil.*;
+-import java.awt.*;
+-
+-import jp.nyatla.nyartoolkit.core.*;
+-import jp.nyatla.nyartoolkit.detector.*;
+-import jp.nyatla.nyartoolkit.core.raster.*;
+-
+-
+-
+-
+-
+-public class NyarToolkitLinkTest extends Frame implements JmfCaptureListener
+-{
+-    private final String CARCODE_FILE ="../../Data/patt.hiro";
+-    private final String PARAM_FILE   ="../../Data/camera_para.dat";
+-    private JmfCameraCapture capture;
+-    NyARSingleDetectMarker nya;
+-    JmfNyARRaster_RGB raster;
+-
+-    public NyarToolkitLinkTest() throws NyARException,NyARException
+-    {
+-        setTitle("JmfCaptureTest");
+-        setBounds(0,0,320+64,240+64);     
+-        //キャプチャの準備
+-        capture=new JmfCameraCapture(320,240,30f,JmfCameraCapture.PIXEL_FORMAT_RGB);
+-        capture.setCaptureListener(this);
+-        
+-        //NyARToolkitの準備
+-        NyARParam ar_param=new NyARParam();
+-        NyARCode ar_code  =new NyARCode(16,16);
+-        ar_param.loadFromARFile(PARAM_FILE);
+-        ar_param.changeSize(320,240);
+-        nya=new NyARSingleDetectMarker(ar_param,ar_code,80.0);
+-        ar_code.loadFromARFile(CARCODE_FILE);
+-        //キャプチャイメージ用のラスタを準備
+-        raster=new JmfNyARRaster_RGB(320,240);
+-    }
+-
+-
+-
+-    public void onUpdateBuffer(Buffer i_buffer)
+-    {
+-	try{
+-            //キャプチャしたバッファをラスタにセット
+-	    raster.setBuffer(i_buffer);
+-
+-            //キャプチャしたイメージを表示用に加工
+-            BufferToImage b2i=new BufferToImage((VideoFormat)i_buffer.getFormat());
+-            Image img=b2i.createImage(i_buffer);
+-
+-            Graphics g = getGraphics();            
+-            double[][] atm=null;
+-
+-            //マーカー検出
+-            boolean is_marker_exist=nya.detectMarkerLite(raster,100);
+-            if(is_marker_exist){
+-                //変換行列を取得
+-                atm=nya.getTransmationMatrix().getArray();
+-            }
+-            //情報を画面に書く       
+-            g.drawImage(img, 32, 32,this);
+-            if(is_marker_exist){
+-                g.drawString("マーカー検出:"+nya.getConfidence(),32,50);
+-                for(int i=0;i<3;i++){
+-                    for(int i2=0;i2<4;i2++){
+-                	g.drawString("["+i+"]["+i2+"]"+atm[i][i2],32,50+(1+i2*3+i)*16);
+-                    }
+-                    
+-                }
+-            }else{
+-                g.drawString("マーカー未検出:",32,100);
+-            }
+-	}catch(Exception e){
+-	    e.printStackTrace();
+-	}
+-       
+-        
+-        
+-        
+-    }
+-    private void startCapture()
+-    {
+-	try{
+-	    capture.start();
+-	}catch(Exception e){
+-	    e.printStackTrace();
+-	}
+-    }
+-    public static void main(String[] args) {
+-	try{
+-            NyarToolkitLinkTest mainwin = new NyarToolkitLinkTest();
+-            mainwin.setVisible(true);
+-            mainwin.startCapture();
+-	}catch(Exception e){
+-	    e.printStackTrace();
+-	}
+-        
+-    }
+-
+-}
+Index: D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/MonitorCDS.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/MonitorCDS.java	(revision 174)
++++ D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/MonitorCDS.java	(revision 178)
+@@ -1,136 +0,0 @@
+-/*
+- * Copyright (c) 1996-2001 Sun Microsystems, Inc. All Rights Reserved.
+- *
+- * Sun grants you ("Licensee") a non-exclusive, royalty free, license to use,
+- * modify and redistribute this software in source and binary code form,
+- * provided that i) this copyright notice and license appear on all copies of
+- * the software; and ii) Licensee does not utilize the software in a manner
+- * which is disparaging to Sun.
+- *
+- * This software is provided "AS IS," without a warranty of any kind. ALL
+- * EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND WARRANTIES, INCLUDING ANY
+- * IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR
+- * NON-INFRINGEMENT, ARE HEREBY EXCLUDED. SUN AND ITS LICENSORS SHALL NOT BE
+- * LIABLE FOR ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING
+- * OR DISTRIBUTING THE SOFTWARE OR ITS DERIVATIVES. IN NO EVENT WILL SUN OR ITS
+- * LICENSORS BE LIABLE FOR ANY LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT,
+- * INDIRECT, SPECIAL, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER
+- * CAUSED AND REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF
+- * OR INABILITY TO USE SOFTWARE, EVEN IF SUN HAS BEEN ADVISED OF THE
+- * POSSIBILITY OF SUCH DAMAGES.
+- *
+- * This software is not designed or intended for use in on-line control of
+- * aircraft, air traffic, aircraft navigation or aircraft communications; or in
+- * the design, construction, operation or maintenance of any nuclear
+- * facility. Licensee represents and warrants that it will not use or
+- * redistribute the Software for such purposes.
+- */
+-package jp.nyatla.nyartoolkit.jmf;
+-
+-
+-import javax.media.*;
+-import javax.media.protocol.*;
+-import javax.media.control.*;
+-
+-import java.io.IOException;
+-
+-
+-
+-public class MonitorCDS extends PushBufferDataSource{
+-
+-    private PushBufferDataSource delegate = null;
+-    private PushBufferStream [] delStreams = null;
+-    private MonitorStream monitorStream = null;
+-    private PushBufferStream [] monitorStreams = null;
+-    boolean delStarted = false; // variable used by MonitorStream also
+-    private Control [] controls;
+-
+-    public MonitorCDS(DataSource ds)
+-    {
+-	// Get the stream from the actual datasource
+-	// and create a MonitorStream from it
+-	// Export the MonitorControl interface of the MonitorStream
+-	if (ds instanceof PushBufferDataSource)
+-	{
+-	    delegate = (PushBufferDataSource) ds;
+-	    delStreams = delegate.getStreams();
+-	    monitorStream = new MonitorStream(delStreams[0], this);
+-	    monitorStreams = new PushBufferStream[] {monitorStream};
+-	}
+-    }
+-
+-    public Object [] getControls()
+-    {
+-	return controls;
+-    }
+-
+-    public Object getControl(String value) {
+-	if (value.equals("jmfsample.MonitorStream") || value.equals("javax.media.control.MonitorControl"))
+-	    return monitorStream;
+-	else
+-	    return null;
+-    }
+-
+-    public javax.media.CaptureDeviceInfo getCaptureDeviceInfo()
+-    {
+-	return ((CaptureDevice)delegate).getCaptureDeviceInfo();
+-    }
+-
+-    public FormatControl[] getFormatControls()
+-    {
+-	return ((CaptureDevice)delegate).getFormatControls();
+-    }
+-
+-    public String getContentType()
+-    {
+-	return delegate.getContentType();
+-    }
+-
+-    public void connect() throws IOException
+-    {
+-	if (delegate == null)
+-	    throw new IOException("Incompatible DataSource");
+-	// Delegate is already connected
+-    }
+-
+-    public void disconnect()
+-    {
+-	monitorStream.setEnabled(false);
+-	delegate.disconnect();
+-    }
+-
+-    public synchronized void start() throws IOException
+-    {
+-	startDelegate();
+-	delStarted = true;
+-    }
+-
+-    public synchronized void stop() throws IOException
+-    {
+-	if (!monitorStream.isEnabled()) {
+-	    stopDelegate();
+-	}
+-	delStarted = false;
+-    }
+-
+-    public Time getDuration()
+-    {
+-	return delegate.getDuration();
+-    }
+-
+-    public PushBufferStream [] getStreams()
+-    {
+-	return monitorStreams;
+-    }
+-
+-    void startDelegate() throws IOException
+-    {
+-	delegate.start();
+-    }
+-
+-    void stopDelegate() throws IOException
+-    {
+-	delegate.stop();
+-    }
+-
+-}
+Index: D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/MonitorStream.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/MonitorStream.java	(revision 174)
++++ D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/MonitorStream.java	(revision 178)
+@@ -1,196 +0,0 @@
+-/*
+- * Copyright (c) 1996-2001 Sun Microsystems, Inc. All Rights Reserved.
+- *
+- * Sun grants you ("Licensee") a non-exclusive, royalty free, license to use,
+- * modify and redistribute this software in source and binary code form,
+- * provided that i) this copyright notice and license appear on all copies of
+- * the software; and ii) Licensee does not utilize the software in a manner
+- * which is disparaging to Sun.
+- *
+- * This software is provided "AS IS," without a warranty of any kind. ALL
+- * EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND WARRANTIES, INCLUDING ANY
+- * IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR
+- * NON-INFRINGEMENT, ARE HEREBY EXCLUDED. SUN AND ITS LICENSORS SHALL NOT BE
+- * LIABLE FOR ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING
+- * OR DISTRIBUTING THE SOFTWARE OR ITS DERIVATIVES. IN NO EVENT WILL SUN OR ITS
+- * LICENSORS BE LIABLE FOR ANY LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT,
+- * INDIRECT, SPECIAL, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER
+- * CAUSED AND REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF
+- * OR INABILITY TO USE SOFTWARE, EVEN IF SUN HAS BEEN ADVISED OF THE
+- * POSSIBILITY OF SUCH DAMAGES.
+- *
+- * This software is not designed or intended for use in on-line control of
+- * aircraft, air traffic, aircraft navigation or aircraft communications; or in
+- * the design, construction, operation or maintenance of any nuclear
+- * facility. Licensee represents and warrants that it will not use or
+- * redistribute the Software for such purposes.
+- */
+-package jp.nyatla.nyartoolkit.jmf;
+-
+-
+-
+-import javax.media.*;
+-import javax.media.protocol.*;
+-
+-import javax.media.util.BufferToImage;
+-import java.io.IOException;
+-import java.awt.*;
+-
+-public class MonitorStream implements PushBufferStream, BufferTransferHandler {
+-
+-    JmfCaptureListener img_listener;
+-    PushBufferStream actual = null;
+-    boolean dataAvailable = false;
+-    boolean terminate = false;
+-    boolean enabled = false;
+-    Object bufferLock = new Object();
+-    Buffer cbuffer = new Buffer();
+-    BufferTransferHandler transferHandler = null;
+-    Component component = null;
+-    MonitorCDS cds;
+-    BufferToImage bti = null;
+-    
+-    MonitorStream(PushBufferStream actual, MonitorCDS cds) {
+-	this.actual = actual;
+-	actual.setTransferHandler(this);
+-	this.cds = cds;
+-    }
+-
+-    public javax.media.Format getFormat()
+-    {
+-	return actual.getFormat();
+-    }
+-    /**
+-     * 非同期READ
+-     */
+-    public void read(Buffer buffer) throws IOException
+-    {
+-	// Wait for data to be available
+-	// Doesn't get used much because the transferData
+-	// call is made when data IS available. And most
+-	// Processors/Players read the data in the same
+-	// thread that called transferData, although that's
+-	// not a safe assumption to make
+-	if (!dataAvailable) {
+-	    synchronized (bufferLock) {
+-		while (!dataAvailable && !terminate) {
+-		    try {
+-			bufferLock.wait(100);
+-		    } catch (InterruptedException ie) {
+-		    }
+-		}
+-	    }
+-	}
+-
+-	if (dataAvailable) {
+-	    synchronized (bufferLock) {
+-		// Copy the buffer attributes, but swap the data
+-		// attributes so that no extra copy is made.
+-		buffer.copy(cbuffer, true);
+-		//dataAvailable = false;
+-	    }
+-	}
+-//	return;
+-    }
+-    public void setCaptureListener(JmfCaptureListener i_listener)
+-    {
+-	img_listener=i_listener;
+-    }
+-
+-    public void transferData(PushBufferStream pbs)
+-    {
+-	// Get the data from the original source stream
+-	synchronized (bufferLock) {
+-	    try {
+-		pbs.read(cbuffer);
+-	    } catch (IOException ioe) {
+-		return;
+-	    }
+-	    dataAvailable = true;
+-	    bufferLock.notifyAll();
+-	}
+-	if(img_listener!=null){
+-	    img_listener.onUpdateBuffer(cbuffer);
+-	}
+-	
+-/*
+-	// Display data if monitor is active
+-	if (isEnabled()) {
+-	    if (bti == null) {
+-		VideoFormat vf = (VideoFormat) cbuffer.getFormat();
+-		bti = new BufferToImage(vf);
+-	    }
+-	    if (bti != null && component != null) {
+-		Image im = bti.createImage(cbuffer);
+-		Graphics g = component.getGraphics();
+-		Dimension size = component.getSize();
+-		if (g != null)
+-		    g.drawImage(im, 0, 0, component);
+-	    }
+-	}
+-*/
+-	// Maybe synchronize this with setTransferHandler() ?
+-	if (transferHandler != null && cds.delStarted)
+-	    transferHandler.transferData(this);
+-    }
+-
+-    public void setTransferHandler(BufferTransferHandler transferHandler) {
+-	this.transferHandler = transferHandler;
+-    }
+-
+-    public boolean setEnabled(boolean value) {
+-	enabled = value;
+-	if (value == false) {
+-	    if (!cds.delStarted) {
+-		try {
+-		    cds.stopDelegate();
+-		} catch (IOException ioe) {
+-		}
+-	    }
+-	} else {
+-	    // Start the capture datasource if the monitor is enabled
+-	    try {
+-		cds.startDelegate();
+-	    }catch (IOException ioe) {
+-	    }
+-	}
+-	return enabled;
+-    }
+-
+-    public boolean isEnabled()
+-    {
+-	return enabled;
+-    }
+-
+-
+-
+-    public float setPreviewFrameRate(float rate)
+-    {
+-	System.err.println("TODO");
+-	return rate;
+-    }
+-	
+-    public ContentDescriptor getContentDescriptor()
+-    {
+-	return actual.getContentDescriptor();
+-    }
+-
+-    public long getContentLength()
+-    {
+-	return actual.getContentLength();
+-    }
+-
+-    public boolean endOfStream() {
+-	return actual.endOfStream();
+-    }
+-
+-    public Object [] getControls() {
+-	return new Object[0];
+-    }
+-
+-    public Object getControl(String str) {
+-	return null;
+-    }
+-
+-
+-}
+Index: D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/JmfCaptureListener.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/JmfCaptureListener.java	(revision 174)
++++ D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/JmfCaptureListener.java	(revision 178)
+@@ -1,14 +0,0 @@
+-/**
+- * JMFお手軽キャプチャ用リスナ
+- * (c)2008 R.Iizuka
+- * airmail@ebony.plala.or.jp
+- * http://nyatla.jp/
+- */
+-package jp.nyatla.nyartoolkit.jmf;
+-
+-import javax.media.Buffer;
+-
+-public interface  JmfCaptureListener{
+-    public void onUpdateBuffer(Buffer i_buffer);
+-    
+-}
+\ No newline at end of file
+Index: D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/JmfCameraCapture.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/JmfCameraCapture.java	(revision 174)
++++ D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/JmfCameraCapture.java	(revision 178)
+@@ -1,180 +0,0 @@
+-/**
+- * JMFお手軽キャプチャクラス
+- * (c)2008 R.Iizuka
+- * airmail@ebony.plala.or.jp
+- * http://nyatla.jp/
+- */
+-package jp.nyatla.nyartoolkit.jmf;
+-
+-
+-
+-import javax.media.*;
+-import javax.media.protocol.*;
+-import javax.media.control.*;
+-import javax.media.format.*;
+-import java.awt.*;
+-import java.util.*;
+-import javax.media.protocol.DataSource;
+-
+-import jp.nyatla.nyartoolkit.NyARException;
+-
+-
+-
+-
+-
+-public class JmfCameraCapture
+-{
+-    private Dimension image_size;
+-    private JmfCaptureListener capture_listener;
+-    private DataSource jmf_data_source;
+-    private MonitorStream jmf_monitor_stream;
+-    private Processor jmf_processor;
+-    private VideoFormat jmf_video_format;
+-    
+-    private Buffer read_buf=new Buffer();
+-    public static final String PIXEL_FORMAT_RGB="RGB";
+-    public JmfCameraCapture(int i_width,int i_height,float i_rate,String i_pixcel_format)
+-    {
+-        String encoding = i_pixcel_format;//comboEncoding.getSelectedItem();
+-        image_size = new Dimension(i_width,i_height);
+-        jmf_video_format = new VideoFormat(encoding, image_size, Format.NOT_SPECIFIED,null,i_rate);
+-    }
+-    public Dimension getSize()
+-    {
+-	return image_size;
+-    }
+-    public javax.media.Buffer readBuffer() throws NyARException
+-    {
+-	if(jmf_monitor_stream==null){
+-            throw new NyARException();
+-	}
+-        try{
+-            jmf_monitor_stream.read(read_buf);
+-        }catch(Exception e){
+-            throw new NyARException(e);
+-        }
+-        return read_buf;
+-    }
+-    public void setCaptureListener(JmfCaptureListener i_listener) throws NyARException
+-    {
+-	if(jmf_processor!=null){
+-	    throw new NyARException();
+-	}
+-	capture_listener=i_listener;
+-	
+-    }
+-    public void start() throws NyARException
+-    {
+-        
+-        DataSource ds=getCaptureDS(jmf_video_format);
+-        VideoFormat[] formats=new VideoFormat[]{new VideoFormat(null)};
+-        ProcessorModel pm = new ProcessorModel(ds,formats,null);//, formats, ftd);
+-        Processor processor;
+-        try {
+-            processor = Manager.createRealizedProcessor(pm);
+-        } catch (Exception e){
+-            // Make sure the capture devices are released
+-            ds.disconnect();
+-            throw new NyARException(e);
+-        }
+-        // Get the monitor control:
+-        // Since there are more than one MonitorControl objects
+-        // exported by the DataSource, we get the specific one
+-        // that is also the MonitorStream object.
+-        jmf_monitor_stream=(MonitorStream)ds.getControl("jmfsample.MonitorStream");
+-	jmf_monitor_stream.setCaptureListener(capture_listener);
+-        jmf_data_source=ds;
+-        jmf_processor=processor;
+-        jmf_processor.start();
+-    }
+-    public void stop()
+-    {
+-        jmf_processor.stop();
+-        jmf_processor.close();
+-        jmf_processor = null;
+-        
+-    }
+-    protected void finalize()
+-    {
+-        if(jmf_processor!=null){
+-        jmf_processor.stop();
+-        jmf_processor.close();
+-        jmf_processor = null;
+-        }
+-    }
+-    private static DataSource getCaptureDS(VideoFormat vf) {
+-	DataSource dsVideo = null;
+-	DataSource ds = null;
+-
+-	// Create a capture DataSource for the video
+-	// If there is no video capture device, then exit with null
+-	if (vf != null) {
+-	    dsVideo = createDataSource(vf);
+-	    if (dsVideo == null)
+-		return null;
+-	}
+-
+-
+-	// Create the monitoring datasource wrapper
+-	if (dsVideo != null) {
+-	    dsVideo = new MonitorCDS(dsVideo);
+-	    return dsVideo;
+-	}
+-
+-	// Merge the data sources, if both audio and video are available
+-	try {
+-	    ds = Manager.createMergingDataSource(new DataSource[]{dsVideo});
+-	} catch (IncompatibleSourceException ise){
+-	    return null;
+-	}
+-
+-	return ds;
+-    }
+-
+-    private static DataSource createDataSource(Format format) {
+-	DataSource ds;
+-	Vector devices;
+-	CaptureDeviceInfo cdi;
+-	MediaLocator ml;
+-
+-	// Find devices for format
+-	devices = CaptureDeviceManager.getDeviceList(format);
+-	if (devices.size() < 1) {
+-	    System.err.println("! No Devices for " + format);
+-	    return null;
+-	}
+-	// Pick the first device
+-	cdi = (CaptureDeviceInfo) devices.elementAt(0);
+-
+-	ml = cdi.getLocator();
+-
+-	try {
+-	    ds = Manager.createDataSource(ml);
+-	    ds.connect();
+-	    if (ds instanceof CaptureDevice)
+-	    {
+-		setCaptureFormat((CaptureDevice) ds, format);
+-	    }
+-	} catch (Exception e) {
+-	    System.err.println(e);
+-	    return null;
+-	}
+-	return ds;
+-    }
+-
+-    private static void setCaptureFormat(CaptureDevice cdev, Format format) {
+-	FormatControl [] fcs = cdev.getFormatControls();
+-	if (fcs.length < 1){
+-	    return;
+-	}
+-	FormatControl fc = fcs[0];
+-	Format [] formats = fc.getSupportedFormats();
+-	for (int i = 0; i < formats.length; i++) {
+-	    if (formats[i].matches(format)){
+-		format = formats[i].intersects(format);
+-		fc.setFormat(format);
+-		break;
+-	    }
+-	}
+-    }
+-}
+\ No newline at end of file
+Index: D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/utils/JmfNyARRaster_RGB.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/utils/JmfNyARRaster_RGB.java	(revision 0)
++++ D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/utils/JmfNyARRaster_RGB.java	(revision 178)
+@@ -0,0 +1,119 @@
++/**
++ * RGB形式のJMFバッファをラップするNyARRasterです。
++ * JMFから得たラスタデータのピクセル並び順を考慮します。
++ * (c)2008 A虎＠nyatla.jp
++ * airmail(at)ebony.plala.or.jp
++ * http://nyatla.jp/
++ */
++package jp.nyatla.nyartoolkit.jmf.utils;
++
++
++import javax.media.format.RGBFormat;
++import java.awt.Dimension;
++import jp.nyatla.nyartoolkit.NyARException;
++import jp.nyatla.nyartoolkit.core.raster.NyARRaster;
++
++
++public class JmfNyARRaster_RGB implements NyARRaster
++{
++    public final static int PIXEL_ORDER_RGB=1;
++    public final static int PIXEL_ORDER_BGR=2;
++    protected int pix_type;
++    private int red_idx;
++    private int green_idx;
++    private int blue_idx;
++    protected byte[] ref_buf;
++    protected int width=0;
++    protected int height=0;
++
++    /**
++     * RGB形式のJMFバッファをラップするオブジェクトをつくります。
++     * 生成直後のオブジェクトはデータを持ちません。
++     * メンバ関数はsetBufferを実行後に使用可能になります。
++     */
++    public JmfNyARRaster_RGB(int i_width,int i_height)
++    {
++	ref_buf=null;
++	width=i_width;
++	height=i_height;
++    }
++    /**
++     * フォーマットを解析して、インスタンスのフォーマットプロパティを初期化します。
++     * 
++     * @param i_buffer
++     * @throws NyARException
++     */
++    protected void initFormatProperty(RGBFormat i_fmt) throws NyARException
++    {
++	//データサイズの確認
++        Dimension s=i_fmt.getSize();
++        if(width!=s.width || height !=s.height){
++	    throw new NyARException();
++        }
++	//データ配列の確認
++	red_idx  =i_fmt.getRedMask()-1;
++	green_idx=i_fmt.getGreenMask()-1;
++	blue_idx =i_fmt.getBlueMask()-1;
++	
++	//色配列の特定
++	if(red_idx==0 && blue_idx==2){
++	    pix_type=PIXEL_ORDER_RGB;
++	}else if(red_idx==2 && blue_idx==0){
++	    pix_type=PIXEL_ORDER_BGR;
++	}else{
++	    throw new NyARException("Unknown pixel order.");
++	}	
++    }
++    /**
++     * javax.media.Bufferを分析して、その分析結果をNyARRasterに適合する形で保持します。
++     * 関数実行後に外部でi_bufferの内容変更した場合には、再度setBuffer関数を呼び出してください。
++     * @param i_buffer
++     * RGB形式のデータを格納したjavax.media.Bufferオブジェクトを指定してください。
++     * @return
++     * i_bufferをラップしたオブジェクトを返します。
++     * @throws NyARException
++     */
++    public void setBuffer(javax.media.Buffer i_buffer) throws NyARException
++    {
++	initFormatProperty((RGBFormat)i_buffer.getFormat());
++        ref_buf=(byte[])i_buffer.getData();
++    }
++    public int getPixelTotal(int i_x,int i_y)
++    {
++        int bp=(i_x+i_y*width)*3;
++        return (ref_buf[bp] & 0xff)+(ref_buf[bp+1] & 0xff)+(ref_buf[bp+2] & 0xff);
++    }
++    public int getWidth()
++    {
++        return width;
++    }
++    public int getHeight()
++    {
++        return height;
++    }
++    public void pickRgbArray(int i_x,int i_y,int[] i_rgb)
++    {
++        int bp=(i_x+i_y*width)*3;
++        i_rgb[0]=(ref_buf[bp+red_idx] & 0xff);//R
++        i_rgb[1]=(ref_buf[bp+green_idx] & 0xff);//G
++        i_rgb[2]=(ref_buf[bp+blue_idx] & 0xff);//B
++    }
++    /**
++     * ピクセルの順序タイプを返します。
++     * @return
++     * その値
++     */
++    public int getPixelOrder()
++    {
++	return pix_type;
++    }
++    /**
++     * データを持っているかを返します。
++     * @return
++     */
++    public boolean hasData()
++    {
++	return ref_buf!=null;
++    }
++
++}
+Index: D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/utils/MonitorCDS.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/utils/MonitorCDS.java	(revision 0)
++++ D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/utils/MonitorCDS.java	(revision 178)
+@@ -0,0 +1,136 @@
++/*
++ * Copyright (c) 1996-2001 Sun Microsystems, Inc. All Rights Reserved.
++ *
++ * Sun grants you ("Licensee") a non-exclusive, royalty free, license to use,
++ * modify and redistribute this software in source and binary code form,
++ * provided that i) this copyright notice and license appear on all copies of
++ * the software; and ii) Licensee does not utilize the software in a manner
++ * which is disparaging to Sun.
++ *
++ * This software is provided "AS IS," without a warranty of any kind. ALL
++ * EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND WARRANTIES, INCLUDING ANY
++ * IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR
++ * NON-INFRINGEMENT, ARE HEREBY EXCLUDED. SUN AND ITS LICENSORS SHALL NOT BE
++ * LIABLE FOR ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING
++ * OR DISTRIBUTING THE SOFTWARE OR ITS DERIVATIVES. IN NO EVENT WILL SUN OR ITS
++ * LICENSORS BE LIABLE FOR ANY LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT,
++ * INDIRECT, SPECIAL, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER
++ * CAUSED AND REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF
++ * OR INABILITY TO USE SOFTWARE, EVEN IF SUN HAS BEEN ADVISED OF THE
++ * POSSIBILITY OF SUCH DAMAGES.
++ *
++ * This software is not designed or intended for use in on-line control of
++ * aircraft, air traffic, aircraft navigation or aircraft communications; or in
++ * the design, construction, operation or maintenance of any nuclear
++ * facility. Licensee represents and warrants that it will not use or
++ * redistribute the Software for such purposes.
++ */
++package jp.nyatla.nyartoolkit.jmf.utils;
++
++
++import javax.media.*;
++import javax.media.protocol.*;
++import javax.media.control.*;
++
++import java.io.IOException;
++
++
++
++public class MonitorCDS extends PushBufferDataSource{
++
++    private PushBufferDataSource delegate = null;
++    private PushBufferStream [] delStreams = null;
++    private MonitorStream monitorStream = null;
++    private PushBufferStream [] monitorStreams = null;
++    boolean delStarted = false; // variable used by MonitorStream also
++    private Control [] controls;
++
++    public MonitorCDS(DataSource ds)
++    {
++	// Get the stream from the actual datasource
++	// and create a MonitorStream from it
++	// Export the MonitorControl interface of the MonitorStream
++	if (ds instanceof PushBufferDataSource)
++	{
++	    delegate = (PushBufferDataSource) ds;
++	    delStreams = delegate.getStreams();
++	    monitorStream = new MonitorStream(delStreams[0], this);
++	    monitorStreams = new PushBufferStream[] {monitorStream};
++	}
++    }
++
++    public Object [] getControls()
++    {
++	return controls;
++    }
++
++    public Object getControl(String value) {
++	if (value.equals("jmfsample.MonitorStream") || value.equals("javax.media.control.MonitorControl"))
++	    return monitorStream;
++	else
++	    return null;
++    }
++
++    public javax.media.CaptureDeviceInfo getCaptureDeviceInfo()
++    {
++	return ((CaptureDevice)delegate).getCaptureDeviceInfo();
++    }
++
++    public FormatControl[] getFormatControls()
++    {
++	return ((CaptureDevice)delegate).getFormatControls();
++    }
++
++    public String getContentType()
++    {
++	return delegate.getContentType();
++    }
++
++    public void connect() throws IOException
++    {
++	if (delegate == null)
++	    throw new IOException("Incompatible DataSource");
++	// Delegate is already connected
++    }
++
++    public void disconnect()
++    {
++	monitorStream.setEnabled(false);
++	delegate.disconnect();
++    }
++
++    public synchronized void start() throws IOException
++    {
++	startDelegate();
++	delStarted = true;
++    }
++
++    public synchronized void stop() throws IOException
++    {
++	if (!monitorStream.isEnabled()) {
++	    stopDelegate();
++	}
++	delStarted = false;
++    }
++
++    public Time getDuration()
++    {
++	return delegate.getDuration();
++    }
++
++    public PushBufferStream [] getStreams()
++    {
++	return monitorStreams;
++    }
++
++    void startDelegate() throws IOException
++    {
++	delegate.start();
++    }
++
++    void stopDelegate() throws IOException
++    {
++	delegate.stop();
++    }
++
++}
+Index: D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/utils/MonitorStream.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/utils/MonitorStream.java	(revision 0)
++++ D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/utils/MonitorStream.java	(revision 178)
+@@ -0,0 +1,196 @@
++/*
++ * Copyright (c) 1996-2001 Sun Microsystems, Inc. All Rights Reserved.
++ *
++ * Sun grants you ("Licensee") a non-exclusive, royalty free, license to use,
++ * modify and redistribute this software in source and binary code form,
++ * provided that i) this copyright notice and license appear on all copies of
++ * the software; and ii) Licensee does not utilize the software in a manner
++ * which is disparaging to Sun.
++ *
++ * This software is provided "AS IS," without a warranty of any kind. ALL
++ * EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND WARRANTIES, INCLUDING ANY
++ * IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR
++ * NON-INFRINGEMENT, ARE HEREBY EXCLUDED. SUN AND ITS LICENSORS SHALL NOT BE
++ * LIABLE FOR ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING, MODIFYING
++ * OR DISTRIBUTING THE SOFTWARE OR ITS DERIVATIVES. IN NO EVENT WILL SUN OR ITS
++ * LICENSORS BE LIABLE FOR ANY LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT,
++ * INDIRECT, SPECIAL, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER
++ * CAUSED AND REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF
++ * OR INABILITY TO USE SOFTWARE, EVEN IF SUN HAS BEEN ADVISED OF THE
++ * POSSIBILITY OF SUCH DAMAGES.
++ *
++ * This software is not designed or intended for use in on-line control of
++ * aircraft, air traffic, aircraft navigation or aircraft communications; or in
++ * the design, construction, operation or maintenance of any nuclear
++ * facility. Licensee represents and warrants that it will not use or
++ * redistribute the Software for such purposes.
++ */
++package jp.nyatla.nyartoolkit.jmf.utils;
++
++
++
++import javax.media.*;
++import javax.media.protocol.*;
++
++import javax.media.util.BufferToImage;
++import java.io.IOException;
++import java.awt.*;
++
++public class MonitorStream implements PushBufferStream, BufferTransferHandler {
++
++    JmfCaptureListener img_listener;
++    PushBufferStream actual = null;
++    boolean dataAvailable = false;
++    boolean terminate = false;
++    boolean enabled = false;
++    Object bufferLock = new Object();
++    Buffer cbuffer = new Buffer();
++    BufferTransferHandler transferHandler = null;
++    Component component = null;
++    MonitorCDS cds;
++    BufferToImage bti = null;
++    
++    MonitorStream(PushBufferStream actual, MonitorCDS cds) {
++	this.actual = actual;
++	actual.setTransferHandler(this);
++	this.cds = cds;
++    }
++
++    public javax.media.Format getFormat()
++    {
++	return actual.getFormat();
++    }
++    /**
++     * 非同期READ
++     */
++    public void read(Buffer buffer) throws IOException
++    {
++	// Wait for data to be available
++	// Doesn't get used much because the transferData
++	// call is made when data IS available. And most
++	// Processors/Players read the data in the same
++	// thread that called transferData, although that's
++	// not a safe assumption to make
++	if (!dataAvailable) {
++	    synchronized (bufferLock) {
++		while (!dataAvailable && !terminate) {
++		    try {
++			bufferLock.wait(100);
++		    } catch (InterruptedException ie) {
++		    }
++		}
++	    }
++	}
++
++	if (dataAvailable) {
++	    synchronized (bufferLock) {
++		// Copy the buffer attributes, but swap the data
++		// attributes so that no extra copy is made.
++		buffer.copy(cbuffer, true);
++		//dataAvailable = false;
++	    }
++	}
++//	return;
++    }
++    public void setCaptureListener(JmfCaptureListener i_listener)
++    {
++	img_listener=i_listener;
++    }
++
++    public void transferData(PushBufferStream pbs)
++    {
++	// Get the data from the original source stream
++	synchronized (bufferLock) {
++	    try {
++		pbs.read(cbuffer);
++	    } catch (IOException ioe) {
++		return;
++	    }
++	    dataAvailable = true;
++	    bufferLock.notifyAll();
++	}
++	if(img_listener!=null){
++	    img_listener.onUpdateBuffer(cbuffer);
++	}
++	
++/*
++	// Display data if monitor is active
++	if (isEnabled()) {
++	    if (bti == null) {
++		VideoFormat vf = (VideoFormat) cbuffer.getFormat();
++		bti = new BufferToImage(vf);
++	    }
++	    if (bti != null && component != null) {
++		Image im = bti.createImage(cbuffer);
++		Graphics g = component.getGraphics();
++		Dimension size = component.getSize();
++		if (g != null)
++		    g.drawImage(im, 0, 0, component);
++	    }
++	}
++*/
++	// Maybe synchronize this with setTransferHandler() ?
++	if (transferHandler != null && cds.delStarted)
++	    transferHandler.transferData(this);
++    }
++
++    public void setTransferHandler(BufferTransferHandler transferHandler) {
++	this.transferHandler = transferHandler;
++    }
++
++    public boolean setEnabled(boolean value) {
++	enabled = value;
++	if (value == false) {
++	    if (!cds.delStarted) {
++		try {
++		    cds.stopDelegate();
++		} catch (IOException ioe) {
++		}
++	    }
++	} else {
++	    // Start the capture datasource if the monitor is enabled
++	    try {
++		cds.startDelegate();
++	    }catch (IOException ioe) {
++	    }
++	}
++	return enabled;
++    }
++
++    public boolean isEnabled()
++    {
++	return enabled;
++    }
++
++
++
++    public float setPreviewFrameRate(float rate)
++    {
++	System.err.println("TODO");
++	return rate;
++    }
++	
++    public ContentDescriptor getContentDescriptor()
++    {
++	return actual.getContentDescriptor();
++    }
++
++    public long getContentLength()
++    {
++	return actual.getContentLength();
++    }
++
++    public boolean endOfStream() {
++	return actual.endOfStream();
++    }
++
++    public Object [] getControls() {
++	return new Object[0];
++    }
++
++    public Object getControl(String str) {
++	return null;
++    }
++
++
++}
+Index: D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/utils/JmfCaptureListener.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/utils/JmfCaptureListener.java	(revision 0)
++++ D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/utils/JmfCaptureListener.java	(revision 178)
+@@ -0,0 +1,14 @@
++/**
++ * JMFお手軽キャプチャ用リスナ
++ * (c)2008 A虎＠nyatla.jp
++ * airmail@ebony.plala.or.jp
++ * http://nyatla.jp/
++ */
++package jp.nyatla.nyartoolkit.jmf.utils;
++
++import javax.media.Buffer;
++
++public interface  JmfCaptureListener{
++    public void onUpdateBuffer(Buffer i_buffer);
++    
++}
+\ No newline at end of file
+Index: D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/utils/JmfCameraCapture.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/utils/JmfCameraCapture.java	(revision 0)
++++ D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/utils/JmfCameraCapture.java	(revision 178)
+@@ -0,0 +1,180 @@
++/**
++ * JMFお手軽キャプチャクラス
++ * (c)2008 A虎＠nyatla.jp
++ * airmail@ebony.plala.or.jp
++ * http://nyatla.jp/
++ */
++package jp.nyatla.nyartoolkit.jmf.utils;
++
++
++
++import javax.media.*;
++import javax.media.protocol.*;
++import javax.media.control.*;
++import javax.media.format.*;
++import java.awt.*;
++import java.util.*;
++import javax.media.protocol.DataSource;
++
++import jp.nyatla.nyartoolkit.NyARException;
++
++
++
++
++
++public class JmfCameraCapture
++{
++    private Dimension image_size;
++    private JmfCaptureListener capture_listener;
++    private DataSource jmf_data_source;
++    private MonitorStream jmf_monitor_stream;
++    private Processor jmf_processor;
++    private VideoFormat jmf_video_format;
++    
++    private Buffer read_buf=new Buffer();
++    public static final String PIXEL_FORMAT_RGB="RGB";
++    public JmfCameraCapture(int i_width,int i_height,float i_rate,String i_pixcel_format)
++    {
++        String encoding = i_pixcel_format;//comboEncoding.getSelectedItem();
++        image_size = new Dimension(i_width,i_height);
++        jmf_video_format = new VideoFormat(encoding, image_size, Format.NOT_SPECIFIED,null,i_rate);
++    }
++    public Dimension getSize()
++    {
++	return image_size;
++    }
++    public javax.media.Buffer readBuffer() throws NyARException
++    {
++	if(jmf_monitor_stream==null){
++            throw new NyARException();
++	}
++        try{
++            jmf_monitor_stream.read(read_buf);
++        }catch(Exception e){
++            throw new NyARException(e);
++        }
++        return read_buf;
++    }
++    public void setCaptureListener(JmfCaptureListener i_listener) throws NyARException
++    {
++	if(jmf_processor!=null){
++	    throw new NyARException();
++	}
++	capture_listener=i_listener;
++	
++    }
++    public void start() throws NyARException
++    {
++        
++        DataSource ds=getCaptureDS(jmf_video_format);
++        VideoFormat[] formats=new VideoFormat[]{new VideoFormat(null)};
++        ProcessorModel pm = new ProcessorModel(ds,formats,null);//, formats, ftd);
++        Processor processor;
++        try {
++            processor = Manager.createRealizedProcessor(pm);
++        } catch (Exception e){
++            // Make sure the capture devices are released
++            ds.disconnect();
++            throw new NyARException(e);
++        }
++        // Get the monitor control:
++        // Since there are more than one MonitorControl objects
++        // exported by the DataSource, we get the specific one
++        // that is also the MonitorStream object.
++        jmf_monitor_stream=(MonitorStream)ds.getControl("jmfsample.MonitorStream");
++	jmf_monitor_stream.setCaptureListener(capture_listener);
++        jmf_data_source=ds;
++        jmf_processor=processor;
++        jmf_processor.start();
++    }
++    public void stop()
++    {
++        jmf_processor.stop();
++        jmf_processor.close();
++        jmf_processor = null;
++        
++    }
++    protected void finalize()
++    {
++        if(jmf_processor!=null){
++        jmf_processor.stop();
++        jmf_processor.close();
++        jmf_processor = null;
++        }
++    }
++    private static DataSource getCaptureDS(VideoFormat vf) {
++	DataSource dsVideo = null;
++	DataSource ds = null;
++
++	// Create a capture DataSource for the video
++	// If there is no video capture device, then exit with null
++	if (vf != null) {
++	    dsVideo = createDataSource(vf);
++	    if (dsVideo == null)
++		return null;
++	}
++
++
++	// Create the monitoring datasource wrapper
++	if (dsVideo != null) {
++	    dsVideo = new MonitorCDS(dsVideo);
++	    return dsVideo;
++	}
++
++	// Merge the data sources, if both audio and video are available
++	try {
++	    ds = Manager.createMergingDataSource(new DataSource[]{dsVideo});
++	} catch (IncompatibleSourceException ise){
++	    return null;
++	}
++
++	return ds;
++    }
++
++    private static DataSource createDataSource(Format format) {
++	DataSource ds;
++	Vector devices;
++	CaptureDeviceInfo cdi;
++	MediaLocator ml;
++
++	// Find devices for format
++	devices = CaptureDeviceManager.getDeviceList(format);
++	if (devices.size() < 1) {
++	    System.err.println("! No Devices for " + format);
++	    return null;
++	}
++	// Pick the first device
++	cdi = (CaptureDeviceInfo) devices.elementAt(0);
++
++	ml = cdi.getLocator();
++
++	try {
++	    ds = Manager.createDataSource(ml);
++	    ds.connect();
++	    if (ds instanceof CaptureDevice)
++	    {
++		setCaptureFormat((CaptureDevice) ds, format);
++	    }
++	} catch (Exception e) {
++	    System.err.println(e);
++	    return null;
++	}
++	return ds;
++    }
++
++    private static void setCaptureFormat(CaptureDevice cdev, Format format) {
++	FormatControl [] fcs = cdev.getFormatControls();
++	if (fcs.length < 1){
++	    return;
++	}
++	FormatControl fc = fcs[0];
++	Format [] formats = fc.getSupportedFormats();
++	for (int i = 0; i < formats.length; i++) {
++	    if (formats[i].matches(format)){
++		format = formats[i].intersects(format);
++		fc.setFormat(format);
++		break;
++	    }
++	}
++    }
++}
+\ No newline at end of file
+Index: D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/sample/JmfCaptureTest.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/sample/JmfCaptureTest.java	(revision 0)
++++ D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/sample/JmfCaptureTest.java	(revision 178)
+@@ -0,0 +1,58 @@
++/**
++ * VFMキャプチャテストプログラム
++ * (c)2008 A虎＠nyatla.jp
++ * airmail@ebony.plala.or.jp
++ * http://nyatla.jp/
++ */
++package jp.nyatla.nyartoolkit.jmf.sample;
++
++import javax.media.*;
++
++import javax.media.util.BufferToImage;
++import javax.media.format.*;
++import jp.nyatla.nyartoolkit.NyARException;
++import jp.nyatla.nyartoolkit.jmf.utils.*;
++
++import java.awt.*;
++
++
++
++public class JmfCaptureTest extends Frame implements JmfCaptureListener{
++    public JmfCaptureTest() throws NyARException
++    {
++        setTitle("JmfCaptureTest");
++        setBounds(0,0,320+64,240+64);     
++        capture=new JmfCameraCapture(320,240,30f,JmfCameraCapture.PIXEL_FORMAT_RGB);
++        capture.setCaptureListener(this);
++    }
++
++
++
++    private JmfCameraCapture  capture;
++    public void onUpdateBuffer(Buffer i_buffer)
++    {
++	BufferToImage b2i=new BufferToImage((VideoFormat)i_buffer.getFormat());
++	Image img=b2i.createImage(i_buffer);
++        Graphics g = getGraphics();        
++        g.drawImage(img, 32, 32,this);       
++    }
++    private void startCapture()
++    {
++	try{
++	    capture.start();
++	}catch(Exception e){
++	    e.printStackTrace();
++	}
++    }
++    public static void main(String[] args) {
++	try{
++            JmfCaptureTest mainwin = new JmfCaptureTest();
++            mainwin.setVisible(true);
++            mainwin.startCapture();
++	}catch(Exception e){
++	    e.printStackTrace();
++	}
++        
++    }
++
++}
+Index: D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/sample/NyarToolkitLinkTest.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/sample/NyarToolkitLinkTest.java	(revision 0)
++++ D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/sample/NyarToolkitLinkTest.java	(revision 178)
+@@ -0,0 +1,116 @@
++/**
++ * VFM+ARToolkitテストプログラム
++ * カメラから取り込んだデータからマーカーを検出して、一致度と変換行列を表示します。
++ * (c)2008 A虎＠nyatla.jp
++ * airmail(at)ebony.plala.or.jp
++ * http://nyatla.jp/
++ */
++package jp.nyatla.nyartoolkit.jmf.sample;
++
++import javax.media.*;
++
++import javax.media.util.BufferToImage;
++import javax.media.format.*;
++
++import jp.nyatla.nyartoolkit.NyARException;
++import jp.nyatla.nyartoolkit.jmf.utils.*;
++
++import java.awt.*;
++
++import jp.nyatla.nyartoolkit.core.*;
++import jp.nyatla.nyartoolkit.detector.*;
++
++
++
++
++
++
++public class NyarToolkitLinkTest extends Frame implements JmfCaptureListener
++{
++    private final String CARCODE_FILE ="../../Data/patt.hiro";
++    private final String PARAM_FILE   ="../../Data/camera_para.dat";
++    private JmfCameraCapture capture;
++    NyARSingleDetectMarker nya;
++    JmfNyARRaster_RGB raster;
++
++    public NyarToolkitLinkTest() throws NyARException,NyARException
++    {
++        setTitle("JmfCaptureTest");
++        setBounds(0,0,320+64,240+64);     
++        //キャプチャの準備
++        capture=new JmfCameraCapture(320,240,30f,JmfCameraCapture.PIXEL_FORMAT_RGB);
++        capture.setCaptureListener(this);
++        
++        //NyARToolkitの準備
++        NyARParam ar_param=new NyARParam();
++        NyARCode ar_code  =new NyARCode(16,16);
++        ar_param.loadFromARFile(PARAM_FILE);
++        ar_param.changeSize(320,240);
++        nya=new NyARSingleDetectMarker(ar_param,ar_code,80.0);
++        ar_code.loadFromARFile(CARCODE_FILE);
++        //キャプチャイメージ用のラスタを準備
++        raster=new JmfNyARRaster_RGB(320,240);
++    }
++
++
++
++    public void onUpdateBuffer(Buffer i_buffer)
++    {
++	try{
++            //キャプチャしたバッファをラスタにセット
++	    raster.setBuffer(i_buffer);
++
++            //キャプチャしたイメージを表示用に加工
++            BufferToImage b2i=new BufferToImage((VideoFormat)i_buffer.getFormat());
++            Image img=b2i.createImage(i_buffer);
++
++            Graphics g = getGraphics();            
++            double[][] atm=null;
++
++            //マーカー検出
++            boolean is_marker_exist=nya.detectMarkerLite(raster,100);
++            if(is_marker_exist){
++                //変換行列を取得
++                atm=nya.getTransmationMatrix().getArray();
++            }
++            //情報を画面に書く       
++            g.drawImage(img, 32, 32,this);
++            if(is_marker_exist){
++                g.drawString("マーカー検出:"+nya.getConfidence(),32,50);
++                for(int i=0;i<3;i++){
++                    for(int i2=0;i2<4;i2++){
++                	g.drawString("["+i+"]["+i2+"]"+atm[i][i2],32,50+(1+i2*3+i)*16);
++                    }
++                    
++                }
++            }else{
++                g.drawString("マーカー未検出:",32,100);
++            }
++	}catch(Exception e){
++	    e.printStackTrace();
++	}
++       
++        
++        
++        
++    }
++    private void startCapture()
++    {
++	try{
++	    capture.start();
++	}catch(Exception e){
++	    e.printStackTrace();
++	}
++    }
++    public static void main(String[] args) {
++	try{
++            NyarToolkitLinkTest mainwin = new NyarToolkitLinkTest();
++            mainwin.setVisible(true);
++            mainwin.startCapture();
++	}catch(Exception e){
++	    e.printStackTrace();
++	}
++        
++    }
++
++}
+-2008.03.29 R.Iizuka nyatla.jp
++2008.03.29 R.Iizuka A虎＠nyatla.jp
+Index: D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/NyARCode.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/NyARCode.java	(revision 174)
++++ D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/NyARCode.java	(revision 178)
+@@ -33,6 +33,7 @@
+ package jp.nyatla.nyartoolkit.core;
+ 
+ import java.io.FileInputStream;
++import java.io.InputStream;
+ import java.io.InputStreamReader;
+ import java.io.StreamTokenizer;
+ 
+@@ -84,19 +85,32 @@
+ 	pat=new int[4][height][width][3];//static int    pat[AR_PATT_NUM_MAX][4][AR_PATT_SIZE_Y*AR_PATT_SIZE_X*3];
+ 	patBW=new short[4][height][width];//static int    patBW[AR_PATT_NUM_MAX][4][AR_PATT_SIZE_Y*AR_PATT_SIZE_X*3];
+     }
+-
+-
+     /**
+      * int arLoadPatt( const char *filename );
+      * ARToolKitのパターンファイルをロードする。
++     * ファイル形式はBGR形式で記録されたパターンファイルであること。
+      * @param filename
+      * @return
+      * @throws Exception
+      */
+     public void loadFromARFile(String filename) throws NyARException
+     {
++	try {
++	    loadFromARFile(new FileInputStream(filename));
++
++	} catch (Exception e) {
++	throw new NyARException(e);
++	}
++    }
++    /**
++     * 
++     * @param i_stream
++     * @throws NyARException
++     */
++    public void loadFromARFile(InputStream i_stream) throws NyARException
++    {
+ 	try{
+-            StreamTokenizer st=new StreamTokenizer(new InputStreamReader(new FileInputStream(filename)));
++            StreamTokenizer st=new StreamTokenizer(new InputStreamReader(i_stream));
+             //パターンデータはGBRAで並んでる。
+             for(int h=0; h<4; h++ ) {
+                 int l = 0;
+Index: D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/NyARParam.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/NyARParam.java	(revision 174)
++++ D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/NyARParam.java	(revision 178)
+@@ -72,18 +72,25 @@
+      */
+     public void loadFromARFile(String i_filename) throws NyARException
+     {
+-	try{
+-            FileInputStream fs=new FileInputStream(i_filename);
+-            NyARParam new_inst[]=arParamLoad(fs,1);
+-            fs.close();
+-            xsize	=new_inst[0].xsize;
+-            ysize	=new_inst[0].ysize;
+-            mat	=new_inst[0].mat;
+-            dist_factor=new_inst[0].dist_factor;
+-	}catch(Exception e){
+-	    throw new NyARException(e);
+-	}
++        try {
++            loadFromARFile(new FileInputStream(i_filename));
++        } catch (Exception e) {
++            throw new NyARException(e);
++        }
+     }
++    public void loadFromARFile(InputStream i_stream) throws NyARException
++    {
++        try {
++            NyARParam new_inst[] = arParamLoad(i_stream, 1);
++            i_stream.close();
++            xsize = new_inst[0].xsize;
++            ysize = new_inst[0].ysize;
++            mat = new_inst[0].mat;
++            dist_factor = new_inst[0].dist_factor;
++        } catch (Exception e) {
++            throw new NyARException(e);
++        }
++    }
+     /*static double dot( double a1, double a2, double a3,double b1, double b2, double b3 )*/
+     private static double dot( double a1, double a2, double a3,double b1, double b2, double b3 )
+     {
+Index: D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/match/NyARMatchPatt.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/match/NyARMatchPatt.java	(revision 174)
++++ D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/match/NyARMatchPatt.java	(revision 178)
+@@ -49,7 +49,7 @@
+     public double getConfidence();
+     public int getDirection();
+     public void evaluate(NyARCode i_code);
+-    public void setPatt(NyARColorPatt i_target_patt) throws NyARException;
++    public boolean setPatt(NyARColorPatt i_target_patt) throws NyARException;
+ }
+ 
+ 
+Index: D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/match/NyARMatchPatt_Color_WITHOUT_PCA.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/match/NyARMatchPatt_Color_WITHOUT_PCA.java	(revision 174)
++++ D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/match/NyARMatchPatt_Color_WITHOUT_PCA.java	(revision 178)
+@@ -54,7 +54,7 @@
+     public int getDirection(){
+ 	return dir;
+     }
+-    public void setPatt(NyARColorPatt i_target_patt) throws NyARException
++    public boolean setPatt(NyARColorPatt i_target_patt) throws NyARException
+     {
+ 	width=i_target_patt.getWidth();
+ 	height=i_target_patt.getHeight();
+@@ -81,11 +81,12 @@
+         }
+         datapow = Math.sqrt( (double)sum );
+         if(datapow == 0.0){
+-            throw new NyARException();
++            return false;//            throw new NyARException();
+ //            dir.set(0);//*dir  = 0;
+ //            cf.set(-1.0);//*cf   = -1.0;
+ //            return -1;
+-        }	
++        }
++        return true;
+     }
+     /**
+      * public int pattern_match(short[][][] data,IntPointer dir,DoublePointer cf)
+Index: D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/match/NyARMatchPatt_Color_WITH_PCA.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/match/NyARMatchPatt_Color_WITH_PCA.java	(revision 174)
++++ D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/match/NyARMatchPatt_Color_WITH_PCA.java	(revision 178)
+@@ -59,7 +59,7 @@
+     public int getDirection(){
+ 	return dir;
+     }
+-    public void setPatt(NyARColorPatt i_target_patt) throws NyARException
++    public boolean setPatt(NyARColorPatt i_target_patt) throws NyARException
+     {
+ 	width=i_target_patt.getWidth();
+ 	height=i_target_patt.getHeight();
+@@ -87,11 +87,12 @@
+         }
+         datapow = Math.sqrt( (double)sum );
+         if(datapow == 0.0){
+-            throw new NyARException();
++            return false;//throw new NyARException();
+ //            dir.set(0);//*dir  = 0;
+ //            cf.set(-1.0);//*cf   = -1.0;
+ //            return -1;
+-        }	
++        }
++        return true;
+     }
+     /**
+      * public int pattern_match(short[][][] data,IntPointer dir,DoublePointer cf)
+Index: D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/match/NyARMatchPatt_BlackWhite.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/match/NyARMatchPatt_BlackWhite.java	(revision 174)
++++ D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/match/NyARMatchPatt_BlackWhite.java	(revision 178)
+@@ -47,7 +47,7 @@
+     private int dir=0;
+     private int ave;
+     private int[][][]	input=new int[height][width][3];
+-    public void setPatt(NyARColorPatt i_target_patt) throws NyARException
++    public boolean setPatt(NyARColorPatt i_target_patt) throws NyARException
+     {
+ 	width=i_target_patt.getWidth();
+ 	height=i_target_patt.getHeight();
+@@ -71,11 +71,12 @@
+         
+         datapow = Math.sqrt( (double)sum );
+         if( datapow == 0.0 ){
+-            throw new NyARException();
++            return false;//            throw new NyARException();
+ //            dir.set(0);//*dir  = 0;
+ //            cf.set(-1.0);//*cf   = -1.0;
+ //            return -1;
+         }
++        return true;
+     }
+     public double getConfidence()
+     {
+Index: D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/detector/NyARSingleDetectMarker.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/detector/NyARSingleDetectMarker.java	(revision 174)
++++ D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/detector/NyARSingleDetectMarker.java	(revision 178)
+@@ -91,7 +91,10 @@
+ 	//パターンの評価オブジェクトを作る。
+ 	NyARMatchPatt_Color_WITHOUT_PCA eva=new NyARMatchPatt_Color_WITHOUT_PCA();
+ 	//パターンを評価器にセット
+-	eva.setPatt(patt);
++	if(!eva.setPatt(patt)){
++	    //計算に失敗した。
++	    return false;
++	}
+ 	//コードと比較する
+ 	eva.evaluate(code);
+ 	int square_index=0;
