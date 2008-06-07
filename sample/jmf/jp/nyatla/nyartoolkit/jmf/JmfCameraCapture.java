@@ -24,6 +24,7 @@ import jp.nyatla.nyartoolkit.NyARException;
 
 public class JmfCameraCapture
 {
+    private Dimension image_size;
     private JmfCaptureListener capture_listener;
     private DataSource jmf_data_source;
     private MonitorStream jmf_monitor_stream;
@@ -31,12 +32,16 @@ public class JmfCameraCapture
     private VideoFormat jmf_video_format;
     
     private Buffer read_buf=new Buffer();
-    public static final String PIXCEL_FORMAT_RGB="RGB";
+    public static final String PIXEL_FORMAT_RGB="RGB";
     public JmfCameraCapture(int i_width,int i_height,float i_rate,String i_pixcel_format)
     {
         String encoding = i_pixcel_format;//comboEncoding.getSelectedItem();
-        Dimension size = new Dimension(i_width,i_height);
-        jmf_video_format = new VideoFormat(encoding, size, Format.NOT_SPECIFIED,null,i_rate);
+        image_size = new Dimension(i_width,i_height);
+        jmf_video_format = new VideoFormat(encoding, image_size, Format.NOT_SPECIFIED,null,i_rate);
+    }
+    public Dimension getSize()
+    {
+	return image_size;
     }
     public javax.media.Buffer readBuffer() throws NyARException
     {

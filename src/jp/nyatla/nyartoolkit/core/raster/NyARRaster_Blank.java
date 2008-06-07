@@ -38,16 +38,15 @@ package jp.nyatla.nyartoolkit.core.raster;
  */
 public class NyARRaster_Blank implements NyARRaster
 {
-    int width;
-    int height;
+    private int width;
+    private int height;
     public NyARRaster_Blank(int i_width,int i_height)
     {
-	NyARRaster_BGRA new_inst=new NyARRaster_BGRA();
-	new_inst.width  =i_width;
-	new_inst.height =i_height;
+        width  =i_width;
+        height =i_height;
     }
     //RGBの合計値を返す
-    public int getPixcelTotal(int i_x,int i_y)
+    public int getPixelTotal(int i_x,int i_y)
     {
 	return 0;
     }
@@ -61,8 +60,8 @@ public class NyARRaster_Blank implements NyARRaster
     }
     public void pickRgbArray(int i_x,int i_y,int[] i_rgb)
     {
-	i_rgb[0]=0;
-	i_rgb[1]=0;
-	i_rgb[2]=0;
+        i_rgb[0]=0;
+        i_rgb[1]=0;
+        i_rgb[2]=0;
     }
 }

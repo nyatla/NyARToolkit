@@ -121,9 +121,8 @@ public class JavaSimpleLite implements GLEventListener,JmfCaptureListener
         //NyARToolkitの準備
         try{
             //キャプチャの準備
-            capture=new JmfCameraCapture(320,240,15f,JmfCameraCapture.PIXCEL_FORMAT_RGB);
+            capture=new JmfCameraCapture(320,240,15f,JmfCameraCapture.PIXEL_FORMAT_RGB);
             capture.setCaptureListener(this);
-            capture.start();
             //NyARToolkitの準備
             ar_param=new GLNyARParam();
             NyARCode ar_code  =new NyARCode(16,16);
@@ -132,8 +131,9 @@ public class JavaSimpleLite implements GLEventListener,JmfCaptureListener
             nya=new GLNyARSingleDetectMarker(ar_param,ar_code,80.0);
             ar_code.loadFromARFile(CARCODE_FILE);
             //GL対応のRGBラスタオブジェクト
-            cap_image=new GLNyARRaster_RGB(gl,ar_param,320,240);
-
+            cap_image=new GLNyARRaster_RGB(gl,ar_param);
+            //キャプチャ開始
+            capture.start();
        }catch(Exception e){
             e.printStackTrace();
         }
@@ -166,17 +166,10 @@ public class JavaSimpleLite implements GLEventListener,JmfCaptureListener
     {
         
         try{
-            gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
-          
-    
-            //キャプチャしたイメージを加工
-            Buffer b=capture.readBuffer();
-            //BufferToImage b2i=new BufferToImage((VideoFormat)b.getFormat());
-            if(b.getData()==null){
+            if(!cap_image.hasData()){
         	return;
-            }else{
-        	//画像準備OK
-            }
+            }    
+            gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.          
             //画像チェックしてマーカー探して、背景を書く
             boolean is_marker_exist;
             synchronized(cap_image){
@@ -206,7 +199,7 @@ public class JavaSimpleLite implements GLEventListener,JmfCaptureListener
     {
 	try{
 	    synchronized(cap_image){
-		cap_image.setRawData((byte[])i_buffer.getData(), true);
+		cap_image.setBuffer(i_buffer, true);
 	    }
 	}catch(Exception e){
 	    e.printStackTrace();

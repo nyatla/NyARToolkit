@@ -206,7 +206,7 @@ public class NyARLabeling{
             int p2=j;
 	    for(int i = 1; i < lxsize-1; i++, nya_pnt_start_x+=nya_poff_step) {//for(int i = 1; i < lxsize-1; i++, pnt+=poff, pnt2++) {
 		//RGBの合計値が閾値より大きいかな？
-		if(image.getPixcelTotal(nya_pnt_start_x,nya_pnt_start_y)<=thresht3){
+		if(image.getPixelTotal(nya_pnt_start_x,nya_pnt_start_y)<=thresht3){
 		    //pnt1 = ShortPointer.wrap(pnt2, -lxsize);//pnt1 = &(pnt2[-lxsize]);
 		    if(label_img[p1][i]>0){//if( *pnt1 > 0 ) {
 			label_img[p2][i]=label_img[p1][i];//*pnt2 = *pnt1;

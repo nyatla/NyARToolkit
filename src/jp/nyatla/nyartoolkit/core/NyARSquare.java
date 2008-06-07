@@ -36,19 +36,19 @@ package jp.nyatla.nyartoolkit.core;
  *
  */
 public class NyARSquare{
-    private NyARMarker    marker;
-    public int		area;
-    public double[]	pos;
-    public double[][]	line;  //double[4][3]
-    public double[][]	vertex;//double[4][2];
+    private NyARMarker marker;
+    public int area;
+    public double[] pos;
+    public double[][] line;  //double[4][3]
+    public double[][] vertex;//double[4][2];
     public NyARSquare(NyARMarker i_marker,double[][] i_attached_line,double[][] i_attached_vertex)
     {
-	//ARSquareは、ARMarkerを完全にラップするようにした。
-	marker=i_marker;
-	area=i_marker.area;
-	pos =i_marker.pos;
-	line  =i_attached_line;
-	vertex=i_attached_vertex;
+        //ARSquareは、ARMarkerを完全にラップするようにした。
+        marker=i_marker;
+        area=i_marker.area;
+        pos =i_marker.pos;
+        line  =i_attached_line;
+        vertex=i_attached_vertex;
     }
     public NyARMarker getMarker()
     {

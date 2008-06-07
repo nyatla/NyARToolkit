@@ -12,7 +12,7 @@ import javax.media.format.*;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.jmf.*;
-
+import jp.nyatla.nyartoolkit.jmfutil.*;
 import java.awt.*;
 
 import jp.nyatla.nyartoolkit.core.*;
@@ -29,13 +29,14 @@ public class NyarToolkitLinkTest extends Frame implements JmfCaptureListener
     private final String PARAM_FILE   ="../../Data/camera_para.dat";
     private JmfCameraCapture capture;
     NyARSingleDetectMarker nya;
+    JmfNyARRaster_RGB raster;
 
     public NyarToolkitLinkTest() throws NyARException,NyARException
     {
         setTitle("JmfCaptureTest");
         setBounds(0,0,320+64,240+64);     
         //キャプチャの準備
-        capture=new JmfCameraCapture(320,240,30f,JmfCameraCapture.PIXCEL_FORMAT_RGB);
+        capture=new JmfCameraCapture(320,240,30f,JmfCameraCapture.PIXEL_FORMAT_RGB);
         capture.setCaptureListener(this);
         
         //NyARToolkitの準備
@@ -45,6 +46,8 @@ public class NyarToolkitLinkTest extends Frame implements JmfCaptureListener
         ar_param.changeSize(320,240);
         nya=new NyARSingleDetectMarker(ar_param,ar_code,80.0);
         ar_code.loadFromARFile(CARCODE_FILE);
+        //キャプチャイメージ用のラスタを準備
+        raster=new JmfNyARRaster_RGB(320,240);
     }
 
 
@@ -52,15 +55,18 @@ public class NyarToolkitLinkTest extends Frame implements JmfCaptureListener
     public void onUpdateBuffer(Buffer i_buffer)
     {
 	try{
-            //キャプチャしたイメージを加工
+            //キャプチャしたバッファをラスタにセット
+	    raster.setBuffer(i_buffer);
+
+            //キャプチャしたイメージを表示用に加工
             BufferToImage b2i=new BufferToImage((VideoFormat)i_buffer.getFormat());
             Image img=b2i.createImage(i_buffer);
-            Graphics g = getGraphics();
-            NyARRaster_RGB ra=NyARRaster_RGB.wrap((byte[])i_buffer.getData(), 320, 240);
-            //i_buffer.
-            boolean is_marker_exist=nya.detectMarkerLite(ra,100);
-            
+
+            Graphics g = getGraphics();            
             double[][] atm=null;
+
+            //マーカー検出
+            boolean is_marker_exist=nya.detectMarkerLite(raster,100);
             if(is_marker_exist){
                 //変換行列を取得
                 atm=nya.getTransmationMatrix().getArray();

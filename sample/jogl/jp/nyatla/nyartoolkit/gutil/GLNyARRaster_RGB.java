@@ -1,5 +1,6 @@
 /**
- * NyARRaster_RGBにOpenGL向け関数を追加したもの
+ * NyARRaster_RGBにOpenGL向け関数を追加したものです。
+ * 
  * (c)2008 R.iizuka
  * airmail(at)ebony.plala.or.jp
  * http://nyatla.jp/
@@ -12,37 +13,58 @@ import java.nio.IntBuffer;
 import javax.media.opengl.GL;
 import javax.media.opengl.glu.GLU;
 
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARParam;
-import jp.nyatla.nyartoolkit.core.raster.NyARRaster_RGB;
+import jp.nyatla.nyartoolkit.jmfutil.*;
 
-public class GLNyARRaster_RGB extends NyARRaster_RGB
+public class GLNyARRaster_RGB extends JmfNyARRaster_RGB
 {
     private NyARParam cparam;
     private GL ref_gl;
     private GLU glu;
-    public GLNyARRaster_RGB(GL i_ref_gl,NyARParam i_cparam,int i_width,int i_height)
+    private byte[] gl_buf;
+    private int gl_flag;
+
+    public GLNyARRaster_RGB(GL i_ref_gl,NyARParam i_cparam)
     {
-        width=i_width;
-        height=i_height;
+	super(i_cparam.getX(),i_cparam.getY());
+	gl_flag=GL.GL_RGB;
 	cparam=i_cparam;
 	ref_gl=i_ref_gl;
 	glu=new GLU();
-	this.ref_buf=new byte[i_width*i_height*3];
+	this.gl_buf=new byte[width*height*3];
     }
-    public void setRawData(byte[] i_buf,boolean i_is_reverse)
+    public void setBuffer(javax.media.Buffer i_buffer,boolean i_is_reverse) throws NyARException
     {
+	super.setBuffer(i_buffer);
+	//メモ：この時点では、ref_dataにはi_bufferの参照値が入ってる。
+	
+	//GL用のデータを準備
 	if(i_is_reverse){
 	    int length=width*3;
 	    int src_idx=0;
 	    int dest_idx=(height-1)*length;
 	    for(int i=0;i<height;i++){
-		System.arraycopy(i_buf,src_idx,ref_buf,dest_idx,length);
+		System.arraycopy(ref_buf,src_idx,gl_buf,dest_idx,length);
 		src_idx+=length;
 		dest_idx-=length;
 	    }
 	}else{
-	    System.arraycopy(i_buf,0,ref_buf,0,this.ref_buf.length);
+	    System.arraycopy(ref_buf,0,gl_buf,0,this.ref_buf.length);
 	}
+	//GLのフラグ設定
+	switch(this.pix_type){
+	case GLNyARRaster_RGB.PIXEL_ORDER_BGR:
+            gl_flag=GL.GL_BGR;
+            break;
+	case GLNyARRaster_RGB.PIXEL_ORDER_RGB:
+            gl_flag=GL.GL_RGB;
+            break;
+        default:
+            throw new NyARException();
+	}
+	//ref_bufをgl_bufに差し替える
+	ref_buf=gl_buf;
     }
     /**
      * 保持してるイメージをGLに出力する。
@@ -104,15 +126,13 @@ public class GLNyARRaster_RGB extends NyARRaster_RGB
     {
     	float zoomf;
     	IntBuffer params=IntBuffer.allocate(4);
-    	int xsize=cparam.getX();
-    	int ysize=cparam.getY();
     	zoomf = (float)zoom;
         ref_gl.glDisable(GL.GL_TEXTURE_2D);
         ref_gl.glGetIntegerv(GL.GL_VIEWPORT,params);
-        ref_gl.glPixelZoom(zoomf * ((float)(params.get(2)) / (float)xsize),-zoomf * ((float)(params.get(3)) / (float)ysize));
+        ref_gl.glPixelZoom(zoomf * ((float)(params.get(2)) / (float)width),-zoomf * ((float)(params.get(3)) / (float)height));
         ref_gl.glRasterPos2i(-1,1);
         ref_gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
         ByteBuffer buf=ByteBuffer.wrap(ref_buf);
-        ref_gl.glDrawPixels(xsize,ysize,GL.GL_BGR,GL.GL_UNSIGNED_BYTE,buf);
+        ref_gl.glDrawPixels(width,height,gl_flag,GL.GL_UNSIGNED_BYTE,buf);
     } 
 }

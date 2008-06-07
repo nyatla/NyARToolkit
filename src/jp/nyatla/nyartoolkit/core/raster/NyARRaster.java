@@ -33,7 +33,7 @@ package jp.nyatla.nyartoolkit.core.raster;
 
 public interface NyARRaster{
     //RGBの合計値を返す
-    public int getPixcelTotal(int i_x,int i_y);
+    public int getPixelTotal(int i_x,int i_y);
     public int getWidth();
     public int getHeight();
     public void pickRgbArray(int i_x,int i_y,int[] i_rgb);

@@ -20,7 +20,7 @@ public class JmfCaptureTest extends Frame implements JmfCaptureListener{
     {
         setTitle("JmfCaptureTest");
         setBounds(0,0,320+64,240+64);     
-        capture=new JmfCameraCapture(320,240,30f,JmfCameraCapture.PIXCEL_FORMAT_RGB);
+        capture=new JmfCameraCapture(320,240,30f,JmfCameraCapture.PIXEL_FORMAT_RGB);
         capture.setCaptureListener(this);
     }
 

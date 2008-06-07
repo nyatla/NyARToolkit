@@ -1,0 +1,595 @@
+﻿2008.04.06 version 0.7.20080406.0
+
+*Title
+-バグフィクス
+--キャプチャ画像のBGRをRGBとして評価していたのを修正
+--JMFキャプチャ画像ピクセルフォーマット認識の自動化
+--サンプルバグ修正
+--スペルミス修正
+
+
+Index: D:/project.files/java.Lab/NyARToolKit/sample/jogl/JavaSimpleLite.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/jogl/JavaSimpleLite.java	(revision 172)
++++ D:/project.files/java.Lab/NyARToolKit/sample/jogl/JavaSimpleLite.java	(revision 173)
+@@ -121,9 +121,8 @@
+         //NyARToolkitの準備
+         try{
+             //キャプチャの準備
+-            capture=new JmfCameraCapture(320,240,15f,JmfCameraCapture.PIXCEL_FORMAT_RGB);
++            capture=new JmfCameraCapture(320,240,15f,JmfCameraCapture.PIXEL_FORMAT_RGB);
+             capture.setCaptureListener(this);
+-            capture.start();
+             //NyARToolkitの準備
+             ar_param=new GLNyARParam();
+             NyARCode ar_code  =new NyARCode(16,16);
+@@ -132,8 +131,9 @@
+             nya=new GLNyARSingleDetectMarker(ar_param,ar_code,80.0);
+             ar_code.loadFromARFile(CARCODE_FILE);
+             //GL対応のRGBラスタオブジェクト
+-            cap_image=new GLNyARRaster_RGB(gl,ar_param,320,240);
+-
++            cap_image=new GLNyARRaster_RGB(gl,ar_param);
++            //キャプチャ開始
++            capture.start();
+        }catch(Exception e){
+             e.printStackTrace();
+         }
+@@ -166,17 +166,10 @@
+     {
+         
+         try{
+-            gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
+-          
+-    
+-            //キャプチャしたイメージを加工
+-            Buffer b=capture.readBuffer();
+-            //BufferToImage b2i=new BufferToImage((VideoFormat)b.getFormat());
+-            if(b.getData()==null){
++            if(!cap_image.hasData()){
+         	return;
+-            }else{
+-        	//画像準備OK
+-            }
++            }    
++            gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.          
+             //画像チェックしてマーカー探して、背景を書く
+             boolean is_marker_exist;
+             synchronized(cap_image){
+@@ -206,7 +199,7 @@
+     {
+ 	try{
+ 	    synchronized(cap_image){
+-		cap_image.setRawData((byte[])i_buffer.getData(), true);
++		cap_image.setBuffer(i_buffer, true);
+ 	    }
+ 	}catch(Exception e){
+ 	    e.printStackTrace();
+Index: D:/project.files/java.Lab/NyARToolKit/sample/jogl/jp/nyatla/nyartoolkit/gutil/GLNyARRaster_RGB.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/jogl/jp/nyatla/nyartoolkit/gutil/GLNyARRaster_RGB.java	(revision 172)
++++ D:/project.files/java.Lab/NyARToolKit/sample/jogl/jp/nyatla/nyartoolkit/gutil/GLNyARRaster_RGB.java	(revision 173)
+@@ -1,5 +1,6 @@
+ /**
+- * NyARRaster_RGBにOpenGL向け関数を追加したもの
++ * NyARRaster_RGBにOpenGL向け関数を追加したものです。
++ * 
+  * (c)2008 R.iizuka
+  * airmail(at)ebony.plala.or.jp
+  * http://nyatla.jp/
+@@ -12,37 +13,58 @@
+ import javax.media.opengl.GL;
+ import javax.media.opengl.glu.GLU;
+ 
++import jp.nyatla.nyartoolkit.NyARException;
+ import jp.nyatla.nyartoolkit.core.NyARParam;
+-import jp.nyatla.nyartoolkit.core.raster.NyARRaster_RGB;
++import jp.nyatla.nyartoolkit.jmfutil.*;
+ 
+-public class GLNyARRaster_RGB extends NyARRaster_RGB
++public class GLNyARRaster_RGB extends JmfNyARRaster_RGB
+ {
+     private NyARParam cparam;
+     private GL ref_gl;
+     private GLU glu;
+-    public GLNyARRaster_RGB(GL i_ref_gl,NyARParam i_cparam,int i_width,int i_height)
++    private byte[] gl_buf;
++    private int gl_flag;
++
++    public GLNyARRaster_RGB(GL i_ref_gl,NyARParam i_cparam)
+     {
+-        width=i_width;
+-        height=i_height;
++	super(i_cparam.getX(),i_cparam.getY());
++	gl_flag=GL.GL_RGB;
+ 	cparam=i_cparam;
+ 	ref_gl=i_ref_gl;
+ 	glu=new GLU();
+-	this.ref_buf=new byte[i_width*i_height*3];
++	this.gl_buf=new byte[width*height*3];
+     }
+-    public void setRawData(byte[] i_buf,boolean i_is_reverse)
++    public void setBuffer(javax.media.Buffer i_buffer,boolean i_is_reverse) throws NyARException
+     {
++	super.setBuffer(i_buffer);
++	//メモ：この時点では、ref_dataにはi_bufferの参照値が入ってる。
++	
++	//GL用のデータを準備
+ 	if(i_is_reverse){
+ 	    int length=width*3;
+ 	    int src_idx=0;
+ 	    int dest_idx=(height-1)*length;
+ 	    for(int i=0;i<height;i++){
+-		System.arraycopy(i_buf,src_idx,ref_buf,dest_idx,length);
++		System.arraycopy(ref_buf,src_idx,gl_buf,dest_idx,length);
+ 		src_idx+=length;
+ 		dest_idx-=length;
+ 	    }
+ 	}else{
+-	    System.arraycopy(i_buf,0,ref_buf,0,this.ref_buf.length);
++	    System.arraycopy(ref_buf,0,gl_buf,0,this.ref_buf.length);
+ 	}
++	//GLのフラグ設定
++	switch(this.pix_type){
++	case GLNyARRaster_RGB.PIXEL_ORDER_BGR:
++            gl_flag=GL.GL_BGR;
++            break;
++	case GLNyARRaster_RGB.PIXEL_ORDER_RGB:
++            gl_flag=GL.GL_RGB;
++            break;
++        default:
++            throw new NyARException();
++	}
++	//ref_bufをgl_bufに差し替える
++	ref_buf=gl_buf;
+     }
+     /**
+      * 保持してるイメージをGLに出力する。
+@@ -104,15 +126,13 @@
+     {
+     	float zoomf;
+     	IntBuffer params=IntBuffer.allocate(4);
+-    	int xsize=cparam.getX();
+-    	int ysize=cparam.getY();
+     	zoomf = (float)zoom;
+         ref_gl.glDisable(GL.GL_TEXTURE_2D);
+         ref_gl.glGetIntegerv(GL.GL_VIEWPORT,params);
+-        ref_gl.glPixelZoom(zoomf * ((float)(params.get(2)) / (float)xsize),-zoomf * ((float)(params.get(3)) / (float)ysize));
++        ref_gl.glPixelZoom(zoomf * ((float)(params.get(2)) / (float)width),-zoomf * ((float)(params.get(3)) / (float)height));
+         ref_gl.glRasterPos2i(-1,1);
+         ref_gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
+         ByteBuffer buf=ByteBuffer.wrap(ref_buf);
+-        ref_gl.glDrawPixels(xsize,ysize,GL.GL_BGR,GL.GL_UNSIGNED_BYTE,buf);
++        ref_gl.glDrawPixels(width,height,gl_flag,GL.GL_UNSIGNED_BYTE,buf);
+     } 
+ }
+Index: D:/project.files/java.Lab/NyARToolKit/sample/jmf/JmfCaptureTest.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/jmf/JmfCaptureTest.java	(revision 172)
++++ D:/project.files/java.Lab/NyARToolKit/sample/jmf/JmfCaptureTest.java	(revision 173)
+@@ -20,7 +20,7 @@
+     {
+         setTitle("JmfCaptureTest");
+         setBounds(0,0,320+64,240+64);     
+-        capture=new JmfCameraCapture(320,240,30f,JmfCameraCapture.PIXCEL_FORMAT_RGB);
++        capture=new JmfCameraCapture(320,240,30f,JmfCameraCapture.PIXEL_FORMAT_RGB);
+         capture.setCaptureListener(this);
+     }
+ 
+Index: D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmfutil/JmfNyARRaster_RGB.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmfutil/JmfNyARRaster_RGB.java	(revision 0)
++++ D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmfutil/JmfNyARRaster_RGB.java	(revision 173)
+@@ -0,0 +1,110 @@
++/**
++ * RGB形式のJMFバッファをラップするNyARRasterです。
++ * 複数のピクセルの並び順に対応してます。
++ * (c)2008 R.iizuka
++ * airmail(at)ebony.plala.or.jp
++ * http://nyatla.jp/
++ */
++package jp.nyatla.nyartoolkit.jmfutil;
++
++
++import javax.media.format.RGBFormat;
++import java.awt.Dimension;
++import jp.nyatla.nyartoolkit.NyARException;
++import jp.nyatla.nyartoolkit.core.raster.NyARRaster;
++
++
++public class JmfNyARRaster_RGB implements NyARRaster
++{
++    public final static int PIXEL_ORDER_RGB=1;
++    public final static int PIXEL_ORDER_BGR=2;
++    protected int pix_type;
++    private int red_idx;
++    private int green_idx;
++    private int blue_idx;
++    protected byte[] ref_buf;
++    protected int width=0;
++    protected int height=0;
++
++    /**
++     * RGB形式のJMFバッファをラップするオブジェクトをつくります。
++     * 生成直後のオブジェクトはデータを持ちません。
++     * メンバ関数はsetBufferを実行後に使用可能になります。
++     */
++    public JmfNyARRaster_RGB(int i_width,int i_height)
++    {
++	ref_buf=null;
++	width=i_width;
++	height=i_height;
++    }
++    /**
++     * javax.media.Bufferを分析して、その分析結果をNyARRasterに適合する形で保持します。
++     * 関数実行後に外部でi_bufferの内容変更した場合には、再度setBuffer関数を呼び出してください。
++     * @param i_buffer
++     * RGB形式のデータを格納したjavax.media.Bufferオブジェクトを指定してください。
++     * @return
++     * i_bufferをラップしたオブジェクトを返します。
++     * @throws NyARException
++     */
++    public void setBuffer(javax.media.Buffer i_buffer) throws NyARException
++    {
++	RGBFormat fmt=(RGBFormat)i_buffer.getFormat();
++	//データサイズの確認
++        Dimension s=fmt.getSize();
++        if(width!=s.width || height !=s.height){
++	    throw new NyARException();
++        }
++	//データ配列の確認
++	red_idx  =fmt.getRedMask()-1;
++	green_idx=fmt.getGreenMask()-1;
++	blue_idx =fmt.getBlueMask()-1;
++	
++	//色配列の特定
++	if(red_idx==0 && blue_idx==2){
++	    pix_type=PIXEL_ORDER_RGB;
++	}else if(red_idx==2 && blue_idx==0){
++	    pix_type=PIXEL_ORDER_BGR;
++	}else{
++	    throw new NyARException("Unknown pixel order.");
++	}	
++        ref_buf=(byte[])i_buffer.getData();
++    }
++    public int getPixelTotal(int i_x,int i_y)
++    {
++        int bp=(i_x+i_y*width)*3;
++        return (ref_buf[bp] & 0xff)+(ref_buf[bp+1] & 0xff)+(ref_buf[bp+2] & 0xff);
++    }
++    public int getWidth()
++    {
++        return width;
++    }
++    public int getHeight()
++    {
++        return height;
++    }
++    public void pickRgbArray(int i_x,int i_y,int[] i_rgb)
++    {
++        int bp=(i_x+i_y*width)*3;
++        i_rgb[0]=(ref_buf[bp+red_idx] & 0xff);//R
++        i_rgb[1]=(ref_buf[bp+green_idx] & 0xff);//G
++        i_rgb[2]=(ref_buf[bp+blue_idx] & 0xff);//B
++    }
++    /**
++     * ピクセルの順序タイプを返します。
++     * @return
++     * その値
++     */
++    public int getPixelOrder()
++    {
++	return pix_type;
++    }
++    /**
++     * データを持っているかを返します。
++     * @return
++     */
++    public boolean hasData()
++    {
++	return ref_buf!=null;
++    }
++
++}
+Index: D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/JmfCameraCapture.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/JmfCameraCapture.java	(revision 172)
++++ D:/project.files/java.Lab/NyARToolKit/sample/jmf/jp/nyatla/nyartoolkit/jmf/JmfCameraCapture.java	(revision 173)
+@@ -24,6 +24,7 @@
+ 
+ public class JmfCameraCapture
+ {
++    private Dimension image_size;
+     private JmfCaptureListener capture_listener;
+     private DataSource jmf_data_source;
+     private MonitorStream jmf_monitor_stream;
+@@ -31,13 +32,17 @@
+     private VideoFormat jmf_video_format;
+     
+     private Buffer read_buf=new Buffer();
+-    public static final String PIXCEL_FORMAT_RGB="RGB";
++    public static final String PIXEL_FORMAT_RGB="RGB";
+     public JmfCameraCapture(int i_width,int i_height,float i_rate,String i_pixcel_format)
+     {
+         String encoding = i_pixcel_format;//comboEncoding.getSelectedItem();
+-        Dimension size = new Dimension(i_width,i_height);
+-        jmf_video_format = new VideoFormat(encoding, size, Format.NOT_SPECIFIED,null,i_rate);
++        image_size = new Dimension(i_width,i_height);
++        jmf_video_format = new VideoFormat(encoding, image_size, Format.NOT_SPECIFIED,null,i_rate);
+     }
++    public Dimension getSize()
++    {
++	return image_size;
++    }
+     public javax.media.Buffer readBuffer() throws NyARException
+     {
+ 	if(jmf_monitor_stream==null){
+Index: D:/project.files/java.Lab/NyARToolKit/sample/jmf/NyarToolkitLinkTest.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/sample/jmf/NyarToolkitLinkTest.java	(revision 172)
++++ D:/project.files/java.Lab/NyARToolKit/sample/jmf/NyarToolkitLinkTest.java	(revision 173)
+@@ -12,7 +12,7 @@
+ 
+ import jp.nyatla.nyartoolkit.NyARException;
+ import jp.nyatla.nyartoolkit.jmf.*;
+-
++import jp.nyatla.nyartoolkit.jmfutil.*;
+ import java.awt.*;
+ 
+ import jp.nyatla.nyartoolkit.core.*;
+@@ -29,13 +29,14 @@
+     private final String PARAM_FILE   ="../../Data/camera_para.dat";
+     private JmfCameraCapture capture;
+     NyARSingleDetectMarker nya;
++    JmfNyARRaster_RGB raster;
+ 
+     public NyarToolkitLinkTest() throws NyARException,NyARException
+     {
+         setTitle("JmfCaptureTest");
+         setBounds(0,0,320+64,240+64);     
+         //キャプチャの準備
+-        capture=new JmfCameraCapture(320,240,30f,JmfCameraCapture.PIXCEL_FORMAT_RGB);
++        capture=new JmfCameraCapture(320,240,30f,JmfCameraCapture.PIXEL_FORMAT_RGB);
+         capture.setCaptureListener(this);
+         
+         //NyARToolkitの準備
+@@ -45,6 +46,8 @@
+         ar_param.changeSize(320,240);
+         nya=new NyARSingleDetectMarker(ar_param,ar_code,80.0);
+         ar_code.loadFromARFile(CARCODE_FILE);
++        //キャプチャイメージ用のラスタを準備
++        raster=new JmfNyARRaster_RGB(320,240);
+     }
+ 
+ 
+@@ -52,15 +55,18 @@
+     public void onUpdateBuffer(Buffer i_buffer)
+     {
+ 	try{
+-            //キャプチャしたイメージを加工
++            //キャプチャしたバッファをラスタにセット
++	    raster.setBuffer(i_buffer);
++
++            //キャプチャしたイメージを表示用に加工
+             BufferToImage b2i=new BufferToImage((VideoFormat)i_buffer.getFormat());
+             Image img=b2i.createImage(i_buffer);
+-            Graphics g = getGraphics();
+-            NyARRaster_RGB ra=NyARRaster_RGB.wrap((byte[])i_buffer.getData(), 320, 240);
+-            //i_buffer.
+-            boolean is_marker_exist=nya.detectMarkerLite(ra,100);
+-            
++
++            Graphics g = getGraphics();            
+             double[][] atm=null;
++
++            //マーカー検出
++            boolean is_marker_exist=nya.detectMarkerLite(raster,100);
+             if(is_marker_exist){
+                 //変換行列を取得
+                 atm=nya.getTransmationMatrix().getArray();
+Index: D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/raster/NyARRaster_Blank.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/raster/NyARRaster_Blank.java	(revision 172)
++++ D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/raster/NyARRaster_Blank.java	(revision 173)
+@@ -38,16 +38,15 @@
+  */
+ public class NyARRaster_Blank implements NyARRaster
+ {
+-    int width;
+-    int height;
++    private int width;
++    private int height;
+     public NyARRaster_Blank(int i_width,int i_height)
+     {
+-	NyARRaster_BGRA new_inst=new NyARRaster_BGRA();
+-	new_inst.width  =i_width;
+-	new_inst.height =i_height;
++        width  =i_width;
++        height =i_height;
+     }
+     //RGBの合計値を返す
+-    public int getPixcelTotal(int i_x,int i_y)
++    public int getPixelTotal(int i_x,int i_y)
+     {
+ 	return 0;
+     }
+@@ -61,8 +60,8 @@
+     }
+     public void pickRgbArray(int i_x,int i_y,int[] i_rgb)
+     {
+-	i_rgb[0]=0;
+-	i_rgb[1]=0;
+-	i_rgb[2]=0;
++        i_rgb[0]=0;
++        i_rgb[1]=0;
++        i_rgb[2]=0;
+     }
+ }
+Index: D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/raster/NyARRaster_RGB.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/raster/NyARRaster_RGB.java	(revision 172)
++++ D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/raster/NyARRaster_RGB.java	(revision 173)
+@@ -39,32 +39,32 @@
+     protected int height;
+     public static NyARRaster_RGB wrap(byte[] i_buffer,int i_width,int i_height)
+     {
+-	NyARRaster_RGB new_inst=new NyARRaster_RGB();
+-	new_inst.ref_buf=i_buffer;
+-	new_inst.width  =i_width;
+-	new_inst.height =i_height;
+-	return new_inst;
++        NyARRaster_RGB new_inst=new NyARRaster_RGB();
++        new_inst.ref_buf=i_buffer;
++        new_inst.width  =i_width;
++        new_inst.height =i_height;
++        return new_inst;
+     }
+     //RGBの合計値を返す
+-    public int getPixcelTotal(int i_x,int i_y)
++    public int getPixelTotal(int i_x,int i_y)
+     {
+-	int bp=(i_x+i_y*width)*3;
+-	return (ref_buf[bp] & 0xff)+(ref_buf[bp+1] & 0xff)+(ref_buf[bp+2] & 0xff);
++        int bp=(i_x+i_y*width)*3;
++        return (ref_buf[bp] & 0xff)+(ref_buf[bp+1] & 0xff)+(ref_buf[bp+2] & 0xff);
+     }
+     public int getWidth()
+     {
+-	return width;
++        return width;
+     }
+     public int getHeight()
+     {
+-	return height;
++        return height;
+     }
+     public void pickRgbArray(int i_x,int i_y,int[] i_rgb)
+     {
+-	int bp=(i_x+i_y*width)*3;
+-	i_rgb[0]=(ref_buf[bp+0] & 0xff);//R
+-	i_rgb[1]=(ref_buf[bp+1] & 0xff);//G
+-	i_rgb[2]=(ref_buf[bp+2] & 0xff);//B
++        int bp=(i_x+i_y*width)*3;
++        i_rgb[0]=(ref_buf[bp+0] & 0xff);//R
++        i_rgb[1]=(ref_buf[bp+1] & 0xff);//G
++        i_rgb[2]=(ref_buf[bp+2] & 0xff);//B
+     }
+ }
+ 
+Index: D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/raster/NyARRaster_BGRA.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/raster/NyARRaster_BGRA.java	(revision 172)
++++ D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/raster/NyARRaster_BGRA.java	(revision 173)
+@@ -35,25 +35,25 @@
+ public class NyARRaster_BGRA implements NyARRaster
+ {
+     private byte[] ref_buf;
+-    int width;
+-    int height;
++    private int width;
++    private int height;
+     public static NyARRaster_BGRA wrap(byte[] i_buffer,int i_width,int i_height)
+     {
+-	NyARRaster_BGRA new_inst=new NyARRaster_BGRA();
+-	new_inst.ref_buf=i_buffer;
+-	new_inst.width  =i_width;
+-	new_inst.height =i_height;
+-	return new_inst;
++        NyARRaster_BGRA new_inst=new NyARRaster_BGRA();
++        new_inst.ref_buf=i_buffer;
++        new_inst.width  =i_width;
++        new_inst.height =i_height;
++        return new_inst;
+     }
+     //RGBの合計値を返す
+-    public int getPixcelTotal(int i_x,int i_y)
++    public int getPixelTotal(int i_x,int i_y)
+     {
+-	int bp=(i_x+i_y*width)*4;
+-	return (ref_buf[bp] & 0xff)+(ref_buf[bp+1] & 0xff)+(ref_buf[bp+2] & 0xff);
++        int bp=(i_x+i_y*width)*4;
++        return (ref_buf[bp] & 0xff)+(ref_buf[bp+1] & 0xff)+(ref_buf[bp+2] & 0xff);
+     }
+     public int getWidth()
+     {
+-	return width;
++        return width;
+     }
+     public int getHeight()
+     {
+@@ -61,10 +61,10 @@
+     }
+     public void pickRgbArray(int i_x,int i_y,int[] i_rgb)
+     {
+-	int bp=(i_x+i_y*width)*4;
+-	i_rgb[0]=(ref_buf[bp+2] & 0xff);//R
+-	i_rgb[1]=(ref_buf[bp+1] & 0xff);//G
+-	i_rgb[2]=(ref_buf[bp+0] & 0xff);//B
++        int bp=(i_x+i_y*width)*4;
++        i_rgb[0]=(ref_buf[bp+2] & 0xff);//R
++        i_rgb[1]=(ref_buf[bp+1] & 0xff);//G
++        i_rgb[2]=(ref_buf[bp+0] & 0xff);//B
+     }
+ }
+ 
+Index: D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/raster/NyARRaster.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/raster/NyARRaster.java	(revision 172)
++++ D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/raster/NyARRaster.java	(revision 173)
+@@ -33,7 +33,7 @@
+ 
+ public interface NyARRaster{
+     //RGBの合計値を返す
+-    public int getPixcelTotal(int i_x,int i_y);
++    public int getPixelTotal(int i_x,int i_y);
+     public int getWidth();
+     public int getHeight();
+     public void pickRgbArray(int i_x,int i_y,int[] i_rgb);
+Index: D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/NyARLabeling.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/NyARLabeling.java	(revision 172)
++++ D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/NyARLabeling.java	(revision 173)
+@@ -206,7 +206,7 @@
+             int p2=j;
+ 	    for(int i = 1; i < lxsize-1; i++, nya_pnt_start_x+=nya_poff_step) {//for(int i = 1; i < lxsize-1; i++, pnt+=poff, pnt2++) {
+ 		//RGBの合計値が閾値より大きいかな？
+-		if(image.getPixcelTotal(nya_pnt_start_x,nya_pnt_start_y)<=thresht3){
++		if(image.getPixelTotal(nya_pnt_start_x,nya_pnt_start_y)<=thresht3){
+ 		    //pnt1 = ShortPointer.wrap(pnt2, -lxsize);//pnt1 = &(pnt2[-lxsize]);
+ 		    if(label_img[p1][i]>0){//if( *pnt1 > 0 ) {
+ 			label_img[p2][i]=label_img[p1][i];//*pnt2 = *pnt1;
+Index: D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/NyARSquare.java
+===================================================================
+--- D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/NyARSquare.java	(revision 172)
++++ D:/project.files/java.Lab/NyARToolKit/src/jp/nyatla/nyartoolkit/core/NyARSquare.java	(revision 173)
+@@ -36,19 +36,19 @@
+  *
+  */
+ public class NyARSquare{
+-    private NyARMarker    marker;
+-    public int		area;
+-    public double[]	pos;
+-    public double[][]	line;  //double[4][3]
+-    public double[][]	vertex;//double[4][2];
++    private NyARMarker marker;
++    public int area;
++    public double[] pos;
++    public double[][] line;  //double[4][3]
++    public double[][] vertex;//double[4][2];
+     public NyARSquare(NyARMarker i_marker,double[][] i_attached_line,double[][] i_attached_vertex)
+     {
+-	//ARSquareは、ARMarkerを完全にラップするようにした。
+-	marker=i_marker;
+-	area=i_marker.area;
+-	pos =i_marker.pos;
+-	line  =i_attached_line;
+-	vertex=i_attached_vertex;
++        //ARSquareは、ARMarkerを完全にラップするようにした。
++        marker=i_marker;
++        area=i_marker.area;
++        pos =i_marker.pos;
++        line  =i_attached_line;
++        vertex=i_attached_vertex;
+     }
+     public NyARMarker getMarker()
+     {
