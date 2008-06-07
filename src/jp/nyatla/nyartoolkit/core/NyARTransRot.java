@@ -15,12 +15,12 @@ interface NyARTransRot
      * @throws NyARException
      */
     public double modifyMatrix(double trans[],double vertex[][], double pos2d[][]) throws NyARException;
-    public void initRot(NyARSquare marker_info,int i_direction) throws NyARException;    
+    public void initRot(NyARSquare marker_info,int i_direction) throws NyARException;
+    public void initRotByPrevResult(NyARTransMatResult i_prev_result);
 }
 
 /**
  * NyARTransRot派生クラスで共通に使いそうな関数類をまとめたもの。
- * @author atla
  *
  */
 abstract class NyARTransRot_OptimizeCommon implements NyARTransRot
@@ -28,6 +28,24 @@ abstract class NyARTransRot_OptimizeCommon implements NyARTransRot
     protected final int number_of_vertex;
     protected final double[] array=new double[9];
     protected final NyARParam cparam;
+    public final void initRotByPrevResult(NyARTransMatResult i_prev_result)
+    {
+	double[][] prev_array=i_prev_result.getArray();
+	double[] pt;
+	final double[] L_rot=this.array;
+	pt=prev_array[0];
+	L_rot[0*3+0]=pt[0];
+	L_rot[0*3+1]=pt[1];
+	L_rot[0*3+2]=pt[2];
+	pt=prev_array[1];
+	L_rot[1*3+0]=pt[0];
+	L_rot[1*3+1]=pt[1];
+	L_rot[1*3+2]=pt[2];
+	pt=prev_array[2];
+	L_rot[2*3+0]=pt[0];
+	L_rot[2*3+1]=pt[1];
+	L_rot[2*3+2]=pt[2];
+    }
     public final double[] getArray()
     {
 	return this.array;
@@ -361,18 +379,20 @@ abstract class NyARTransRot_OptimizeCommon implements NyARTransRot
 	sinc = Math.sin(c);
 	cosc = Math.cos(c);
 	//Optimize
-	double CACA,SASA,SACA,SASB,CASB;
-	CACA=cosa*cosa;
-	SASA=sina*sina;
-	SACA=sina*cosa;
-	SASB=sina*sinb;
-	CASB=cosa*sinb;
+	double CACA,SASA,SACA,SASB,CASB,SACACB;
+	CACA  =cosa*cosa;
+	SASA  =sina*sina;
+	SACA  =sina*cosa;
+	SASB  =sina*sinb;
+	CASB  =cosa*sinb;
+	SACACB=SACA*cosb;
+	
 
-	o_rot[0] = CACA*cosb*cosc+SASA*cosc+SACA*cosb*sinc-SACA*sinc;
-	o_rot[1] = -CACA*cosb*sinc-SASA*sinc+SACA*cosb*cosc-SACA*cosc;
+	o_rot[0] = CACA*cosb*cosc+SASA*cosc+SACACB*sinc-SACA*sinc;
+	o_rot[1] = -CACA*cosb*sinc-SASA*sinc+SACACB*cosc-SACA*cosc;
 	o_rot[2] = CASB;
-	o_rot[3] = SACA*cosb*cosc-SACA*cosc+SASA*cosb*sinc+CACA*sinc;
-	o_rot[4] = -SACA*cosb*sinc+SACA*sinc+SASA*cosb*cosc+CACA*cosc;
+	o_rot[3] = SACACB*cosc-SACA*cosc+SASA*cosb*sinc+CACA*sinc;
+	o_rot[4] = -SACACB*sinc+SACA*sinc+SASA*cosb*cosc+CACA*cosc;
 	o_rot[5] = SASB;
 	o_rot[6] = -CASB*cosc-SASB*sinc;
 	o_rot[7] = CASB*sinc-SASB*cosc;

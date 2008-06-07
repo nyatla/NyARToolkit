@@ -2,7 +2,6 @@ package jp.nyatla.util;
 /**
  * double型ポインタのエミュレートクラス
  * 対象のdouble配列を基点を基準に参照する。
- * @author atla
  *
  */
 public class DoublePointer

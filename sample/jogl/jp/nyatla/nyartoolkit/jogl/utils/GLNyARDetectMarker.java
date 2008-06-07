@@ -12,35 +12,30 @@ import jp.nyatla.nyartoolkit.core.NyARParam;
 import jp.nyatla.nyartoolkit.core.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.detector.*;
 
-public class GLNyARSingleDetectMarker extends NyARSingleDetectMarker
+public class GLNyARDetectMarker extends NyARDetectMarker
 {
     private NyARTransMatResult trans_mat_result=new NyARTransMatResult();
     private double view_scale_factor=0.025;//#define VIEW_SCALEFACTOR		0.025		// 1.0 ARToolKit unit becomes 0.025 of my OpenGL units.
-    public GLNyARSingleDetectMarker(NyARParam i_param,NyARCode i_code,double i_marker_width) throws NyARException
+    public GLNyARDetectMarker(NyARParam i_param,NyARCode[] i_code,double[] i_marker_width,int i_number_of_code) throws NyARException
     {
-	super(i_param,i_code,i_marker_width);	
+	super(i_param,i_code,i_marker_width,i_number_of_code);	
     }
     public void setScaleFactor(double i_new_value)
     {
 	view_scale_factor=i_new_value;
     }
-    //    public static void arglCameraViewRH(const double para[3][4], GLdouble m_modelview[16], const double scale)
-    public double[] getCameraViewRH() throws NyARException
-    {
-	double[] result=new double[16];
-	getCameraViewRH(result);
-	return result;
-    }
     /**
-     * 
+     * @param i_index
+     * マーカーのインデックス番号を指定します。
+     * 直前に実行したdetectMarkerLiteの戻り値未満かつ0以上である必要があります。
      * @param o_result
      * 結果値を格納する配列を指定してください。double[16]以上が必要です。
      * @throws NyARException
      */
-    public void getCameraViewRH(double[] o_result) throws NyARException
+    public void getCameraViewRH(int i_index,double[] o_result) throws NyARException
     {
 	//座標を計算
-	this.getTransmationMatrix(this.trans_mat_result);
+	this.getTransmationMatrix(i_index,this.trans_mat_result);
 	//行列変換
 	double[][] para=this.trans_mat_result.getArray();
 	o_result[0 + 0*4] = para[0][0]; // R1C1

@@ -1,7 +1,7 @@
-﻿ARToolkit Java class library NyARToolkit.
+ARToolkit Java class library NyARToolkit.
 Copyright (C)2008 R.Iizuka
 
-version 1.1.1.20080503.0
+version 1.2.0.20080511
 
 http://nyatla.jp/
 airmail(at)ebony.plala.or.jp
@@ -81,8 +81,11 @@ NyARToolkitのアプリケーションサンプルEclipseプロジェクトが�
   ビデオキャプチャの試験プログラム　と、マーカー検出プログラムがあります。
 
  jogl
-  jp.nyatla.nyartoolkit.jogl.sample
-  ARToolkitのsimpleLite相当のサンプルがあります。
+  jp.nyatla.nyartoolkit.jogl.sample.JavaSimpleLite
+  単一のマーカーを認識するARToolkitのsimpleLite相当のサンプルです。
+  jp.nyatla.nyartoolkit.jogl.sample.JavaSimpleLite2
+  複数のマーカーを認識するサンプルです。～100個程度のマーカーを同時に
+  認識します。
 
  java3d
   jp.nyatla.nyartoolkit.java3d.sample
@@ -112,24 +115,21 @@ sampleディレクトリ以下にあるソースはAPIは仕様が固まって�
 クラスは関数機能毎にまとめた作りになっていますので、オリジナルの
 コード読んだことがあれば、なんとなく判ると思います。
 
-演算性能は、Windows環境下でVCリリース版の約101.5％です。
+演算性能は、Windows環境下でVCリリース版とほぼ同じです。
 マーカー認識部分はネイティブ版よりも低速ですが、変換行列計算部分
-はネイティブ版よりも圧倒的に高速に動作します。
+はネイティブ版よりも高速に動作します。
+このため、複数マーカー取り扱い時は、ネイティブ版よりも良い成績が得られます。
 
 
 ・足りない機能等
 
-マーカーのセーブ機能と、複数マーカーの認識機能が未実装です。
+カメラキャリブレーション、マーカーのセーブ機能等がありません。
 
 今後実装していきます。
 
 
-
-
 ・ライセンス
 GPLです。詳しくはLICENCE.txtをみてください。
-
-
 
 
 ・お願い
@@ -142,4 +142,4 @@ NyARToolkitを使って面白いものが出来たら、是非教えてくださ
 
 ではでは、楽しく遊んでくださいネ。
 
-2008.05.03 R.Iizuka A虎＠nyatla.jp
+2008.05.11 R.Iizuka A虎＠nyatla.jp

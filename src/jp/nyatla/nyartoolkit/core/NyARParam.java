@@ -272,6 +272,41 @@ public class NyARParam{
 	}
     }
     /**
+     * ideal2Observをまとめて実行します。
+     * @param i_in
+     * double[][2]
+     * @param o_out
+     * double[][2]
+     */
+    public void ideal2ObservBatch(double[][] i_in,double[][] o_out,int i_size)
+    {
+
+	double    x, y, d;
+	final double d0,d1,d3,d2_w;
+	final double df[]=this.dist_factor;
+	d0=df[0];
+	d1=df[1];
+	d3=df[3];
+	d2_w=df[2]/100000000.0;
+	for(int i=0;i<i_size;i++){
+            x = (i_in[i][0] - d0) * d3;
+            y = (i_in[i][1] - d1) * d3;
+            if( x == 0.0 && y == 0.0 ) {
+        	o_out[i][0]=d0;
+        	o_out[i][1]=d1;
+            }else{
+                d = 1.0 - d2_w * (x*x+y*y);
+                o_out[i][0]=x * d + d0;
+                o_out[i][1]=y * d + d1;
+            }
+	}
+	return;
+    }    
+    
+    
+    
+    
+    /**
      * int arParamObserv2Ideal( const double dist_factor[4], const double ox, const double oy,double *ix, double *iy );
      * 
      * @param ox
@@ -322,7 +357,7 @@ public class NyARParam{
      * @param i_x_coord
      * @param i_y_coord
      * @param i_start
-     * 開始点
+     * coord開始点
      * @param i_num
      * 計算数
      * @param o_ideal

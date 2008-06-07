@@ -20,7 +20,6 @@ import jp.nyatla.nyartoolkit.jmf.utils.*;
 
 /**
  * 
- * @author A虎＠
  * このクラスは、Java3Dと互換性のあるNyARToolkitのラスタイメージを保持します。
  *
  */

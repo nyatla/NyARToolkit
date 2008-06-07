@@ -37,9 +37,6 @@ import jp.nyatla.nyartoolkit.detector.*;
 /**
  * 320x240のBGRA32で記録されたRAWイメージから、１種類のパターンを認識し、
  * その変換行列を1000回求め、それにかかったミリ秒時間を表示します。
- * 
- * 
- * @author R.iizuka
  *
  */
 public class RawFileTest {
@@ -70,19 +67,19 @@ public class RawFileTest {
 
 	//１パターンのみを追跡するクラスを作成
 	NyARSingleDetectMarker ar=new NyARSingleDetectMarker(ap,code,80.0);
+	NyARTransMatResult result_mat=new NyARTransMatResult();
+	ar.setContinueMode(false);
 	ar.detectMarkerLite(ra,100);
-	ar.getTransmationMatrix();
+	ar.getTransmationMatrix(result_mat);
 
 	//マーカーを検出
-	double[][] tm;
 	Date d2=new Date();
 	for(int i=0;i<1000;i++){
 	    //変換行列を取得
 	    ar.detectMarkerLite(ra,100);
-	    ar.getTransmationMatrix();
+	    ar.getTransmationMatrix(result_mat);
 	}
 	Date d=new Date();
-	tm=null;
 	System.out.println(d.getTime()-d2.getTime()); 
     }
     public static void main(String[] args)

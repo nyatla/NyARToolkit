@@ -53,6 +53,22 @@ public class NyARColorPatt_O2 implements NyARColorPatt
 	this.extpat=new int[i_height][i_width][3];
 	this.wk_pickFromRaster_ext_pat2=new int[i_height][i_width][3];
     }
+//    public void setSize(int i_new_width,int i_new_height)
+//    {
+//	int array_w=this.extpat[0].length;
+//	int array_h=this.extpat.length;
+//	//十分なサイズのバッファがあるか確認
+//	if(array_w>=i_new_width && array_h>=i_new_height){
+//	    //OK 十分だ→サイズ調整のみ
+//	}else{
+//	    //足りないよ→取り直し
+//	    this.wk_pickFromRaster_ext_pat2=new int[i_new_height][i_new_width][3];
+//	    this.extpat=new int[i_new_height][i_new_width][3];
+//	}
+//        this.width =i_new_width;
+//        this.height=i_new_height;
+//        return;
+//    }
     public int[][][] getPatArray()
     {
 	return extpat;
@@ -69,71 +85,64 @@ public class NyARColorPatt_O2 implements NyARColorPatt
     private final NyARMat wk_get_cpara_b=new NyARMat(8,1);
 //    private final NyARMat wk_get_cpara_c=new NyARMat(8,1);
     /**
-     * 
-     * @param world
-     * @param vertex
-     * @param para
-     * [3x3]
-     * @throws NyARException
-     */
-    /**
      * @param world
      * @param vertex
      * @param o_para
      * @throws NyARException
      */
-    private void get_cpara(double vertex_0[], double vertex_1[],NyARMat o_para) throws NyARException
+    private boolean get_cpara(double vertex_0[], double vertex_1[],NyARMat o_para) throws NyARException
     {
 	double world[][]=this.wk_pickFromRaster_world;
-        NyARMat a =wk_get_cpara_a;//次処理で値を設定するので、初期化不要// new NyARMat( 8, 8 );
-        double[][] a_array=a.getArray();
-        NyARMat b =wk_get_cpara_b;//次処理で値を設定するので、初期化不要// new NyARMat( 8, 1 );
-        double[][] b_array=b.getArray();
-        double[] a_pt0,a_pt1,world_pti;
-	    
-        for(int i = 0; i < 4; i++ ) {
-            a_pt0=a_array[i*2];
-            a_pt1=a_array[i*2+1];
-            world_pti=world[i];
-            
-            a_pt0[0]=world_pti[0];//a->m[i*16+0]  = world[i][0];
-            a_pt0[1]=world_pti[1];//a->m[i*16+1]  = world[i][1];
-            a_pt0[2]=1.0;//a->m[i*16+2]  = 1.0;
-            a_pt0[3]=0.0;//a->m[i*16+3]  = 0.0;
-            a_pt0[4]=0.0;//a->m[i*16+4]  = 0.0;
-            a_pt0[5]=0.0;//a->m[i*16+5]  = 0.0;
-            a_pt0[6]=-world_pti[0] * vertex_0[i];//a->m[i*16+6]  = -world[i][0] * vertex[i][0];
-            a_pt0[7]=-world_pti[1] * vertex_0[i];//a->m[i*16+7]  = -world[i][1] * vertex[i][0];
-            a_pt1[0]=0.0;//a->m[i*16+8]  = 0.0;
-            a_pt1[1]=0.0;//a->m[i*16+9]  = 0.0;
-            a_pt1[2]=0.0;//a->m[i*16+10] = 0.0;
-            a_pt1[3]=world_pti[0];//a->m[i*16+11] = world[i][0];
-            a_pt1[4]=world_pti[1];//a->m[i*16+12] = world[i][1];
-            a_pt1[5]=1.0;//a->m[i*16+13] = 1.0;
-            a_pt1[6]=-world_pti[0] * vertex_1[i];//a->m[i*16+14] = -world[i][0] * vertex[i][1];
-            a_pt1[7]=-world_pti[1] * vertex_1[i];//a->m[i*16+15] = -world[i][1] * vertex[i][1];
-            b_array[i*2+0][0]=vertex_0[i];//b->m[i*2+0] = vertex[i][0];
-            b_array[i*2+1][0]=vertex_1[i];//b->m[i*2+1] = vertex[i][1];
-        }
-//	    JartkException.trap("未チェックのパス");
-        a.matrixSelfInv();
-	    
-//	    JartkException.trap("未チェックのパス");
-//        NyARMat c = wk_get_cpara_c;//次処理で結果を受け取るので、初期化不要//new NyARMat( 8, 1 );
-//        double[][] c_array=c.getArray();
+	NyARMat a =wk_get_cpara_a;//次処理で値を設定するので、初期化不要// new NyARMat( 8, 8 );
+	double[][] a_array=a.getArray();
+	NyARMat b =wk_get_cpara_b;//次処理で値を設定するので、初期化不要// new NyARMat( 8, 1 );
+	double[][] b_array=b.getArray();
+	double[] a_pt0,a_pt1,world_pti;
 
-        o_para.matrixMul(a, b);
-//        para[0*3+0] = c_array[0*3+0][0];//para[i][0] = c->m[i*3+0];
-//        para[0*3+1] = c_array[0*3+1][0];//para[i][1] = c->m[i*3+1];
-//        para[0*3+2] = c_array[0*3+2][0];//para[i][2] = c->m[i*3+2];
-//        para[1*3+0] = c_array[1*3+0][0];//para[i][0] = c->m[i*3+0];
-//        para[1*3+1] = c_array[1*3+1][0];//para[i][1] = c->m[i*3+1];
-//        para[i*3+2] = c_array[1*3+2][0];//para[i][2] = c->m[i*3+2];
-//        para[2*3+0] = c_array[2*3+0][0];//para[2][0] = c->m[2*3+0];
-//        para[2*3+1] = c_array[2*3+1][0];//para[2][1] = c->m[2*3+1];
-//        para[2*3+2] = 1.0;//para[2][2] = 1.0;
-        
+	for(int i = 0; i < 4; i++ ) {
+	    a_pt0=a_array[i*2];
+	    a_pt1=a_array[i*2+1];
+	    world_pti=world[i];
 
+	    a_pt0[0]=world_pti[0];//a->m[i*16+0]  = world[i][0];
+	    a_pt0[1]=world_pti[1];//a->m[i*16+1]  = world[i][1];
+	    a_pt0[2]=1.0;//a->m[i*16+2]  = 1.0;
+	    a_pt0[3]=0.0;//a->m[i*16+3]  = 0.0;
+	    a_pt0[4]=0.0;//a->m[i*16+4]  = 0.0;
+	    a_pt0[5]=0.0;//a->m[i*16+5]  = 0.0;
+	    a_pt0[6]=-world_pti[0] * vertex_0[i];//a->m[i*16+6]  = -world[i][0] * vertex[i][0];
+	    a_pt0[7]=-world_pti[1] * vertex_0[i];//a->m[i*16+7]  = -world[i][1] * vertex[i][0];
+	    a_pt1[0]=0.0;//a->m[i*16+8]  = 0.0;
+	    a_pt1[1]=0.0;//a->m[i*16+9]  = 0.0;
+	    a_pt1[2]=0.0;//a->m[i*16+10] = 0.0;
+	    a_pt1[3]=world_pti[0];//a->m[i*16+11] = world[i][0];
+	    a_pt1[4]=world_pti[1];//a->m[i*16+12] = world[i][1];
+	    a_pt1[5]=1.0;//a->m[i*16+13] = 1.0;
+	    a_pt1[6]=-world_pti[0] * vertex_1[i];//a->m[i*16+14] = -world[i][0] * vertex[i][1];
+	    a_pt1[7]=-world_pti[1] * vertex_1[i];//a->m[i*16+15] = -world[i][1] * vertex[i][1];
+	    b_array[i*2+0][0]=vertex_0[i];//b->m[i*2+0] = vertex[i][0];
+	    b_array[i*2+1][0]=vertex_1[i];//b->m[i*2+1] = vertex[i][1];
+	}
+//	JartkException.trap("未チェックのパス");
+	if(!a.matrixSelfInv()){
+	    return false;
+	}
+
+//	JartkException.trap("未チェックのパス");
+//	NyARMat c = wk_get_cpara_c;//次処理で結果を受け取るので、初期化不要//new NyARMat( 8, 1 );
+//	double[][] c_array=c.getArray();
+
+	o_para.matrixMul(a, b);
+//	para[0*3+0] = c_array[0*3+0][0];//para[i][0] = c->m[i*3+0];
+//	para[0*3+1] = c_array[0*3+1][0];//para[i][1] = c->m[i*3+1];
+//	para[0*3+2] = c_array[0*3+2][0];//para[i][2] = c->m[i*3+2];
+//	para[1*3+0] = c_array[1*3+0][0];//para[i][0] = c->m[i*3+0];
+//	para[1*3+1] = c_array[1*3+1][0];//para[i][1] = c->m[i*3+1];
+//	para[i*3+2] = c_array[1*3+2][0];//para[i][2] = c->m[i*3+2];
+//	para[2*3+0] = c_array[2*3+0][0];//para[2][0] = c->m[2*3+0];
+//	para[2*3+1] = c_array[2*3+1][0];//para[2][1] = c->m[2*3+1];
+//	para[2*3+2] = 1.0;//para[2][2] = 1.0;
+	return true;
     }
 
   //   private final double[] wk_pickFromRaster_para=new double[9];//[3][3];
@@ -173,7 +182,7 @@ public class NyARColorPatt_O2 implements NyARColorPatt
      * @param i_marker
      * @throws Exception
      */
-    public void pickFromRaster(NyARRaster image, NyARMarker i_marker) throws NyARException
+    public boolean pickFromRaster(NyARRaster image, NyARMarker i_marker) throws NyARException
     {
 	NyARMat cpara=this.wk_pickFromRaster_cpara;
 	//localの計算
@@ -232,7 +241,9 @@ public class NyARColorPatt_O2 implements NyARColorPatt
 	}	
 	
 	//cparaの計算
-	get_cpara(local_0,local_1,cpara);
+	if(!get_cpara(local_0,local_1,cpara)){
+	    return false;
+	}
 
 	int img_x=image.getWidth();
 	int img_y=image.getHeight();
@@ -307,6 +318,6 @@ public class NyARColorPatt_O2 implements NyARColorPatt
 		extpat_j_i[2]=(ext_pat2_j_i[2] / xdiv_x_ydiv);//ext_pat[j][i][2] = (byte)(ext_pat2[j][i][2] / (xdiv*ydiv));
 	    }
 	}
-	return;
+	return true;
     }
 }

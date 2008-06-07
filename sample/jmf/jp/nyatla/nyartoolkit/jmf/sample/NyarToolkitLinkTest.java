@@ -30,9 +30,10 @@ public class NyarToolkitLinkTest extends Frame implements JmfCaptureListener
     private final String CARCODE_FILE ="../../Data/patt.hiro";
     private final String PARAM_FILE   ="../../Data/camera_para.dat";
     private JmfCameraCapture capture;
-    NyARSingleDetectMarker nya;
-    JmfNyARRaster_RGB raster;
-
+    private NyARSingleDetectMarker nya;
+    private JmfNyARRaster_RGB raster;
+    private NyARTransMatResult trans_mat_result=new NyARTransMatResult();
+    
     public NyarToolkitLinkTest() throws NyARException,NyARException
     {
         setTitle("JmfCaptureTest");
@@ -53,7 +54,7 @@ public class NyarToolkitLinkTest extends Frame implements JmfCaptureListener
     }
 
 
-
+    
     public void onUpdateBuffer(Buffer i_buffer)
     {
 	try{
@@ -71,7 +72,8 @@ public class NyarToolkitLinkTest extends Frame implements JmfCaptureListener
             boolean is_marker_exist=nya.detectMarkerLite(raster,100);
             if(is_marker_exist){
                 //変換行列を取得
-                atm=nya.getTransmationMatrix().getArray();
+                nya.getTransmationMatrix(this.trans_mat_result);
+                atm=this.trans_mat_result.getArray();
             }
             //情報を画面に書く       
             g.drawImage(img, 32, 32,this);

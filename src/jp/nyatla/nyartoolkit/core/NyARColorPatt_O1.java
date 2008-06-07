@@ -48,11 +48,28 @@ public class NyARColorPatt_O1 implements NyARColorPatt
     private int height;
     public NyARColorPatt_O1(int i_width,int i_height)
     {
-	this.width=i_width;
+	this.width =i_width;
 	this.height=i_height;
 	this.extpat=new int[i_height][i_width][3];
 	this.wk_pickFromRaster_ext_pat2=new int[i_height][i_width][3];
     }
+//    public void setSize(int i_new_width,int i_new_height)
+//    {
+//	int array_w=this.extpat[0].length;
+//	int array_h=this.extpat.length;
+//	//十分なサイズのバッファがあるか確認
+//	if(array_w>=i_new_width && array_h>=i_new_height){
+//	    //OK 十分だ→サイズ調整のみ
+//	}else{
+//	    //足りないよ→取り直し
+//	    this.wk_pickFromRaster_ext_pat2=new int[i_new_height][i_new_width][3];
+//	    this.extpat=new int[i_new_height][i_new_width][3];
+//	}
+//        this.width =i_new_width;
+//        this.height=i_new_height;
+//        return;        
+//    }
+    
     public int[][][] getPatArray()
     {
 	return extpat;
@@ -76,14 +93,14 @@ public class NyARColorPatt_O1 implements NyARColorPatt
      * [3x3]
      * @throws NyARException
      */
-    private void get_cpara( double world[][], double vertex[][],double[] para) throws NyARException
+    private boolean get_cpara( double world[][], double vertex[][],double[] para) throws NyARException
     {
         NyARMat a =wk_get_cpara_a;//次処理で値を設定するので、初期化不要// new NyARMat( 8, 8 );
         double[][] a_array=a.getArray();
         NyARMat b =wk_get_cpara_b;//次処理で値を設定するので、初期化不要// new NyARMat( 8, 1 );
         double[][] b_array=b.getArray();
         double[] a_pt0,a_pt1,world_pti;
-	    
+
         for(int i = 0; i < 4; i++ ) {
             a_pt0=a_array[i*2];
             a_pt1=a_array[i*2+1];
@@ -109,7 +126,9 @@ public class NyARColorPatt_O1 implements NyARColorPatt
             b_array[i*2+1][0]=vertex[i][1];//b->m[i*2+1] = vertex[i][1];
         }
 //	    JartkException.trap("未チェックのパス");
-        a.matrixSelfInv();
+        if(!a.matrixSelfInv()){
+            return false;//逆行列を求められないので失敗
+        }
 	    
 //	    JartkException.trap("未チェックのパス");
         NyARMat c = wk_get_cpara_c;//次処理で結果を受け取るので、初期化不要//new NyARMat( 8, 1 );
@@ -124,6 +143,7 @@ public class NyARColorPatt_O1 implements NyARColorPatt
         para[2*3+0] = c_array[2*3+0][0];//para[2][0] = c->m[2*3+0];
         para[2*3+1] = c_array[2*3+1][0];//para[2][1] = c->m[2*3+1];
         para[2*3+2] = 1.0;//para[2][2] = 1.0;
+        return true;
     }
 
     private final double[][] wk_pickFromRaster_local=new double[4][2];
@@ -160,9 +180,11 @@ public class NyARColorPatt_O1 implements NyARColorPatt
      * Optimize:STEP[769->]
      * @param image
      * @param i_marker
+     * @return
+     * 切り出しに失敗した
      * @throws Exception
      */
-    public void pickFromRaster(NyARRaster image, NyARMarker i_marker) throws NyARException
+    public boolean pickFromRaster(NyARRaster image, NyARMarker i_marker) throws NyARException
     {
 	double		d, xw, yw;
 	int		xc, yc;
@@ -195,7 +217,10 @@ public class NyARColorPatt_O1 implements NyARColorPatt
 	world[3][0] = 100.0;
 	world[3][1] = 100.0 + 10.0;*/
 	double[] para =wk_pickFromRaster_para; //double    para[3][3];
-	get_cpara( world, local, para );
+	//パターンの切り出しに失敗することもある。
+	if(!get_cpara( world, local, para )){
+	    return false;
+	}
 	lx1 = (int)((local[0][0] - local[1][0])*(local[0][0] - local[1][0])+ (local[0][1] - local[1][1])*(local[0][1] - local[1][1]));
 	lx2 = (int)((local[2][0] - local[3][0])*(local[2][0] - local[3][0])+ (local[2][1] - local[3][1])*(local[2][1] - local[3][1]));
 	ly1 = (int)((local[1][0] - local[2][0])*(local[1][0] - local[2][0])+ (local[1][1] - local[2][1])*(local[1][1] - local[2][1]));
@@ -294,6 +319,6 @@ public class NyARColorPatt_O1 implements NyARColorPatt
 	    }
 	}
 	/*</Optimize>*/
-	return;
+	return true;
     }
 }

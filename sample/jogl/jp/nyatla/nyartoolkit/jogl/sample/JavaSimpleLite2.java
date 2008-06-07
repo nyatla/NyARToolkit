@@ -1,6 +1,7 @@
 /**
- * simpleLiteと同じようなテストプログラム
- * 最も一致する"Hiro"マーカーを一つ選択して、その上に立方体を表示します。
+ * simpleLiteの複数マーカー同時認識バージョン
+ * "Hiro"のマーカーと"人"のマーカーの混在環境で、Hiroのマーカー全てに
+ * 立方体を表示します。
  * (c)2008 A虎＠nyatla.jp
  * airmail(at)ebony.plala.or.jp
  * http://nyatla.jp/
@@ -27,13 +28,14 @@ import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
 
 
-public class JavaSimpleLite implements GLEventListener,JmfCaptureListener
+public class JavaSimpleLite2 implements GLEventListener,JmfCaptureListener
 {
-    private final String CARCODE_FILE ="../../Data/patt.hiro";
+    private final String CARCODE_FILE1 ="../../Data/patt.hiro";
+    private final String CARCODE_FILE2 ="../../Data/patt.kanji";
     private final String PARAM_FILE   ="../../Data/camera_para.dat";
        
-    private final static int SCREEN_X=320;
-    private final static int SCREEN_Y=240;
+    private final static int SCREEN_X=640;
+    private final static int SCREEN_Y=480;
     private Animator animator;
     private GLNyARRaster_RGB cap_image;
     
@@ -43,7 +45,7 @@ public class JavaSimpleLite implements GLEventListener,JmfCaptureListener
 
 
     //NyARToolkit関係
-    private GLNyARSingleDetectMarker nya;
+    private GLNyARDetectMarker nya;
     private GLNyARParam ar_param;
     /**
      * 立方体を書く
@@ -99,7 +101,7 @@ public class JavaSimpleLite implements GLEventListener,JmfCaptureListener
     
     
     
-    public JavaSimpleLite()
+    public JavaSimpleLite2()
     {
         Frame frame = new Frame("Java simpleLite with NyARToolkit");
 
@@ -130,12 +132,18 @@ public class JavaSimpleLite implements GLEventListener,JmfCaptureListener
             capture.setCaptureListener(this);
             //NyARToolkitの準備
             ar_param=new GLNyARParam();
-            NyARCode ar_code  =new NyARCode(16,16);
             ar_param.loadFromARFile(PARAM_FILE);
             ar_param.changeSize(SCREEN_X,SCREEN_Y);
-            nya=new GLNyARSingleDetectMarker(ar_param,ar_code,80.0);
-            nya.setContinueMode(true);//ここをtrueにすると、transMatContinueモード（History計算）になります。
-            ar_code.loadFromARFile(CARCODE_FILE);
+
+            //ARコードを2個ロード
+            double[] width=new double[]{80.0,80.0};
+            NyARCode[] ar_codes=new NyARCode[2];
+            ar_codes[0]=new NyARCode(16,16);
+            ar_codes[0].loadFromARFile(CARCODE_FILE1);
+            ar_codes[1]=new NyARCode(16,16);
+            ar_codes[1].loadFromARFile(CARCODE_FILE2);
+            nya=new GLNyARDetectMarker(ar_param,ar_codes,width,2);
+            nya.setContinueMode(false);//ここをtrueにすると、transMatContinueモード（History計算）になります。
             //NyARToolkit用の支援クラス
             glnya=new NyARGLUtil(gl,ar_param);
             //GL対応のRGBラスタオブジェクト
@@ -175,14 +183,19 @@ public class JavaSimpleLite implements GLEventListener,JmfCaptureListener
             }    
             gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.          
             //画像チェックしてマーカー探して、背景を書く
-            boolean is_marker_exist;
+            int found_markers;
             synchronized(cap_image){
-        	is_marker_exist=nya.detectMarkerLite(cap_image,110);
+        	found_markers=nya.detectMarkerLite(cap_image,110);
         	//背景を書く
         	glnya.drawBackGround(cap_image, 1.0);
             }
             //あったら立方体を書く
-            if(is_marker_exist){
+            double[] matrix=new double[16]; 
+            for(int i=0;i<found_markers;i++){
+        	//1番のマーカーでなければ表示しない。
+        	if(nya.getARCodeIndex(i)!=0){
+        	    continue;
+        	}
         	//マーカーの一致度を調査するならば、ここでnya.getConfidence()で一致度を調べて下さい。
                 // Projection transformation.
                 gl.glMatrixMode(GL.GL_PROJECTION);
@@ -190,17 +203,17 @@ public class JavaSimpleLite implements GLEventListener,JmfCaptureListener
                 gl.glMatrixMode(GL.GL_MODELVIEW);
                 // Viewing transformation.
                 gl.glLoadIdentity();
-                gl.glLoadMatrixd(nya.getCameraViewRH(),0);
+                nya.getCameraViewRH(i,matrix);
+                gl.glLoadMatrixd(matrix,0);
 
             
                 // All other lighting and geometry goes here.
                 drawCube();
             }
-            Thread.sleep(1);//タスク実行権限を一旦渡す
+            Thread.sleep(1);//タスク実行権限を一旦渡す            
         }catch(Exception e){
             e.printStackTrace();
         }
-        
     }
     public void onUpdateBuffer(Buffer i_buffer)
     {
@@ -218,7 +231,7 @@ public class JavaSimpleLite implements GLEventListener,JmfCaptureListener
                                boolean deviceChanged) {}
 
     public static void main(String[] args) {
-        new JavaSimpleLite();
+        new JavaSimpleLite2();
     }
 }
 

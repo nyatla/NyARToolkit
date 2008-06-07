@@ -13,6 +13,7 @@ import javax.media.j3d.*;
 import javax.vecmath.*;
 
 import jp.nyatla.nyartoolkit.core.NyARParam;
+import jp.nyatla.nyartoolkit.core.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
 import jp.nyatla.nyartoolkit.jmf.*;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCameraCapture;
@@ -103,6 +104,7 @@ public class NyARSingleMarkerBehaviorHolder implements JmfCaptureListener
 
 class NyARBehavior extends Behavior
 {
+    private NyARTransMatResult trans_mat_result=new NyARTransMatResult();    
     private NyARSingleDetectMarker related_nya;
     private TransformGroup trgroup;
     private Background back_ground;
@@ -163,8 +165,8 @@ class NyARBehavior extends Behavior
                 if(raster.hasData()){
                     is_marker_exist=related_nya.detectMarkerLite(raster, 100);
                     if(is_marker_exist){
-                        NyARMat nymat=related_nya.getTransmationMatrix();
-                        double[][] src=nymat.getArray();
+                        related_nya.getTransmationMatrix(this.trans_mat_result);
+                        double[][] src=this.trans_mat_result.getArray();
                         Matrix4d matrix=new Matrix4d(
                              src[0][0],-src[1][0],-src[2][0],0,
                             -src[0][1], src[1][1], src[2][1],0,

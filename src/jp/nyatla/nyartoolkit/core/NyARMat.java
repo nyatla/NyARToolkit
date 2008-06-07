@@ -50,8 +50,16 @@ public class NyARMat{
      * 返された配列のサイズを行列の大きさとして使わないこと！
      * 
      */
-    private double[][] m;
+    protected double[][] m;
     private int clm,row;
+    /**
+     * デフォルトコンストラクタは機能しません。
+     * @throws NyARException
+     */
+    protected NyARMat() throws NyARException
+    {
+	throw new NyARException();
+    }
     public NyARMat(int i_row,int i_clm)
     {
 	m=new double[i_row][i_clm];
@@ -97,6 +105,25 @@ public class NyARMat{
 	    }
 	}
     }
+    /**
+     * i_copy_fromの内容を自分自身にコピーします。
+     * 高さ・幅は同一で無いと失敗します。
+     * @param i_copy_from
+     */
+    public void copyFrom(NyARMat i_copy_from)throws NyARException
+    {
+	//サイズ確認
+	if(this.row!=i_copy_from.row ||this.clm!=i_copy_from.clm)
+	{
+	    throw new NyARException();
+	}
+	//値コピー
+	for(int r=this.row-1;r>=0;r--){
+	    for(int c=this.clm-1;c>=0;c--){
+		this.m[r][c]=i_copy_from.m[r][c];
+	    }
+	}
+    }
 
     public double[][] getArray()
     {
@@ -132,15 +159,18 @@ public class NyARMat{
 	}
     }
     private int[] wk_nos_matrixSelfInv=new int[50];
-    private final static double matrixSelfInv_epsl=1.0e-10;
+//    private final static double matrixSelfInv_epsl=1.0e-10;
     /**
      * i_targetを逆行列に変換する。arMatrixSelfInv()と、arMatrixSelfInv_minv()関数を合成してあります。
      * OPTIMIZE STEP[485->422]
      * @param i_target
      * 逆行列にする行列
+     * @return
+     * 逆行列があればTRUE/無ければFALSE
+     * 
      * @throws NyARException
      */
-    public void matrixSelfInv() throws NyARException
+    public boolean matrixSelfInv() throws NyARException
     {
 	double[][] ap=this.m;
 	int dimen=this.row;
@@ -157,7 +187,7 @@ public class NyARMat{
 	    throw new NyARException();
 	case 1:
 	    ap[0][0]=1.0/ap[0][0];//*ap = 1.0 / (*ap);
-	    return;/* 1 dimension */
+	    return true;/* 1 dimension */
 	}
 
         for(int n = 0; n < dimen ; n++){
@@ -180,8 +210,10 @@ public class NyARMat{
         	    ip = i;
         	}
             }
-            if (p <= matrixSelfInv_epsl){
-                return;
+//          if (p <= matrixSelfInv_epsl){
+            if(p==0.0){
+        	return false;
+//                throw new NyARException();
             }
 
             nwork  = nos[ip];
@@ -227,7 +259,7 @@ public class NyARMat{
                 ap_i[n]=work;//*wbp = work;
 	    }
         }
-        return;
+        return true;
     }
     /**
      * sourceの転置行列をdestに得る。arMatrixTrans()の代替品

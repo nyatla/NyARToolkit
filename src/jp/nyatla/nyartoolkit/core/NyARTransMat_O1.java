@@ -41,12 +41,13 @@ public class NyARTransMat_O1 implements NyARTransMat{
 
     private final static int AR_GET_TRANS_MAT_MAX_LOOP_COUNT=5;//#define   AR_GET_TRANS_MAT_MAX_LOOP_COUNT         5
     private final static double AR_GET_TRANS_MAT_MAX_FIT_ERROR=1.0;//#define   AR_GET_TRANS_MAT_MAX_FIT_ERROR          1.0
+    private final static double AR_GET_TRANS_CONT_MAT_MAX_FIT_ERROR=1.0;
     private final static int P_MAX=10;//頂点の数(4で十分だけどなんとなく10)//#define P_MAX       500
     private final static int NUMBER_OF_VERTEX=4;//処理対象の頂点数
     private final NyARTransRot transrot;
     private final double[] center={0.0,0.0};
     private final NyARParam param;
-    private final NyARMat result_mat=new NyARMat(3,4);
+//    private final NyARMat result_mat=new NyARMat(3,4);
     public NyARTransMat_O1(NyARParam i_param)throws NyARException
     {
 	param=i_param;
@@ -58,10 +59,10 @@ public class NyARTransMat_O1 implements NyARTransMat{
 	center[0]=i_x;
 	center[1]=i_x;
     }
-    public NyARMat getTransformationMatrix()
-    {
-	return result_mat;
-    }
+//    public NyARMat getTransformationMatrix()
+//    {
+//	return result_mat;
+//    }
 
     private final double[][] wk_transMat_pos3d=new double[P_MAX][3];//pos3d[P_MAX][3];
     private final double[][] wk_transMat_ppos2d=new double[4][2];
@@ -74,11 +75,15 @@ public class NyARTransMat_O1 implements NyARTransMat{
      * @param square
      * 計算対象のNyARSquareオブジェクト
      * @param i_direction
-     * @param width
+     * マーカーの方向
+     * @param i_width
+     * マーカーのサイズ(mm)
+     * @param o_result_conv
+     * 変換行列を受け取るオブジェクトを指定します。
      * @return
      * @throws NyARException
      */
-    public double transMat( NyARSquare square,int i_direction, double width)throws NyARException
+    public double transMat(NyARSquare square,int i_direction,double i_width,NyARTransMatResult o_result_conv)throws NyARException
     {
 	double[][]  ppos2d=wk_transMat_ppos2d;
 	double[][]  ppos3d=wk_transMat_ppos3d;
@@ -100,14 +105,14 @@ public class NyARTransMat_O1 implements NyARTransMat{
 	ppos2d[2][1] = square.sqvertex[(6-dir)%4][1];
 	ppos2d[3][0] = square.sqvertex[(7-dir)%4][0];
 	ppos2d[3][1] = square.sqvertex[(7-dir)%4][1];
-	ppos3d[0][0] = center[0] - width/2.0;
-	ppos3d[0][1] = center[1] + width/2.0;
-	ppos3d[1][0] = center[0] + width/2.0;
-	ppos3d[1][1] = center[1] + width/2.0;
-	ppos3d[2][0] = center[0] + width/2.0;
-	ppos3d[2][1] = center[1] - width/2.0;
-	ppos3d[3][0] = center[0] - width/2.0;
-	ppos3d[3][1] = center[1] - width/2.0;
+	ppos3d[0][0] = center[0] - i_width/2.0;
+	ppos3d[0][1] = center[1] + i_width/2.0;
+	ppos3d[1][0] = center[0] + i_width/2.0;
+	ppos3d[1][1] = center[1] + i_width/2.0;
+	ppos3d[2][0] = center[0] + i_width/2.0;
+	ppos3d[2][1] = center[1] - i_width/2.0;
+	ppos3d[3][0] = center[0] - i_width/2.0;
+	ppos3d[3][1] = center[1] - i_width/2.0;
 
 	//arGetTransMat3の前段処理(pos3dとoffを初期化)
 	arGetTransMat3_initPos3d(ppos3d,pos3d,off);
@@ -115,13 +120,98 @@ public class NyARTransMat_O1 implements NyARTransMat{
 
 
 	for(int i=0;i<AR_GET_TRANS_MAT_MAX_LOOP_COUNT; i++ ) {
-	    err = arGetTransMat3(ppos2d, pos3d,off);
+	    err = arGetTransMat3(ppos2d, pos3d,off,o_result_conv);
 	    if( err < AR_GET_TRANS_MAT_MAX_FIT_ERROR ){
 		break;
 	    }
 	}
+
 	return err;
     }
+    /**
+     * transMatContinue用のワーク
+     */
+    private final NyARTransMatResult wk_transMatContinue_result=new NyARTransMatResult();
+    /**
+     * double arGetTransMatCont( ARMarkerInfo *marker_info, double prev_conv[3][4],double center[2], double width, double conv[3][4] )
+     *     
+     * @param i_square
+     * @param i_direction
+     * マーカーの方位を指定する。
+     * @param i_width
+     * @param io_result_conv
+     * 計算履歴を持つNyARTransMatResultオブジェクトを指定する。
+     * 履歴を持たない場合は、transMatと同じ処理を行う。
+     * @return
+     * @throws NyARException
+     */
+    public double transMatContinue(NyARSquare i_square,int i_direction, double i_width,NyARTransMatResult io_result_conv)throws NyARException
+    {
+	//io_result_convが初期値なら、transMatで計算する。
+	if(!io_result_conv.hasValue()){
+	    return this.transMat(i_square, i_direction, i_width, io_result_conv);
+	}
+	
+	
+	
+	double  err1,err2;
+	int     i,dir;
+	double[][]  ppos2d=wk_transMat_ppos2d;
+	double[][]  ppos3d=wk_transMat_ppos3d;
+	double[]    off   =wk_transMat_off;
+	double[][]  pos3d=wk_transMat_pos3d;
+
+	//arGetTransMatContSub計算部分
+	transrot.initRotByPrevResult(io_result_conv);
+
+	dir = i_direction;
+	ppos2d[0][0] = i_square.sqvertex[(4-dir)%4][0];
+	ppos2d[0][1] = i_square.sqvertex[(4-dir)%4][1];
+	ppos2d[1][0] = i_square.sqvertex[(5-dir)%4][0];
+	ppos2d[1][1] = i_square.sqvertex[(5-dir)%4][1];
+	ppos2d[2][0] = i_square.sqvertex[(6-dir)%4][0];
+	ppos2d[2][1] = i_square.sqvertex[(6-dir)%4][1];
+	ppos2d[3][0] = i_square.sqvertex[(7-dir)%4][0];
+	ppos2d[3][1] = i_square.sqvertex[(7-dir)%4][1];
+	ppos3d[0][0] = center[0] - i_width/2.0;
+	ppos3d[0][1] = center[1] + i_width/2.0;
+	ppos3d[1][0] = center[0] + i_width/2.0;
+	ppos3d[1][1] = center[1] + i_width/2.0;
+	ppos3d[2][0] = center[0] + i_width/2.0;
+	ppos3d[2][1] = center[1] - i_width/2.0;
+	ppos3d[3][0] = center[0] - i_width/2.0;
+	ppos3d[3][1] = center[1] - i_width/2.0;
+
+	//arGetTransMat3の前段処理(pos3dとoffを初期化)
+	arGetTransMat3_initPos3d(ppos3d,pos3d,off);
+
+	err1=err2=-1;
+	for( i = 0; i < AR_GET_TRANS_MAT_MAX_LOOP_COUNT; i++ ) {
+	    err1 = arGetTransMat3(ppos2d, pos3d,off,io_result_conv);
+	    if( err1 < AR_GET_TRANS_MAT_MAX_FIT_ERROR ){
+		//十分な精度を達成できたらブレーク
+		break;
+	    }
+	}
+
+	//エラー値が許容範囲でなければTransMatをやり直し
+	if(err1>AR_GET_TRANS_CONT_MAT_MAX_FIT_ERROR ) {
+	    NyARTransMatResult result2=this.wk_transMatContinue_result;
+	    //transMatを実行
+	    transrot.initRot(i_square,i_direction);
+            err2 = transMat(i_square,i_direction,i_width,result2);
+	    //transmMatここまで
+	    if(err2<err1){
+		io_result_conv.copyFrom(result2);
+		err1 = err2;
+	    }
+	}
+	return err1;
+    }
+
+
+ 
+
     private final double[] wk_arGetTransMat3_initPos3d_pmax=new double[3];
     private final double[] wk_arGetTransMat3_initPos3d_pmin=new double[3];
     /**
@@ -155,6 +245,10 @@ public class NyARTransMat_O1 implements NyARTransMat{
 	    if( i_ppos3d[i][1] < pmin[1] ){
 		pmin[1] = i_ppos3d[i][1];
 	    }
+	    /*	オリジナルでもコメントアウト
+	        if( ppos3d[i][2] > pmax[2] ) pmax[2] = ppos3d[i][2];
+	        if( ppos3d[i][2] < pmin[2] ) pmin[2] = ppos3d[i][2];
+	     */	    
 	}
 	o_off[0] = -(pmax[0] + pmin[0]) / 2.0;
 	o_off[1] = -(pmax[1] + pmin[1]) / 2.0;
@@ -186,14 +280,22 @@ public class NyARTransMat_O1 implements NyARTransMat{
     private final double arGetTransMat3(
 	    double ppos2d[][],
 	    final double i_pos3d[][],
-	    final double i_off[])throws NyARException{
-	
+	    final double i_off[],
+	    NyARTransMatResult o_result_conv)throws NyARException{
+
 	double  ret;
-	ret = arGetTransMatSub(ppos2d, i_pos3d);
-	double[][] conv=result_mat.getArray();
-	conv[0][3] = conv[0][0]*i_off[0] + conv[0][1]*i_off[1] + conv[0][2]*i_off[2] + conv[0][3];
-	conv[1][3] = conv[1][0]*i_off[0] + conv[1][1]*i_off[1] + conv[1][2]*i_off[2] + conv[1][3];
-	conv[2][3] = conv[2][0]*i_off[0] + conv[2][1]*i_off[1] + conv[2][2]*i_off[2] + conv[2][3];
+	ret = arGetTransMatSub(ppos2d,i_pos3d,i_off,o_result_conv);
+	
+//        double[][] conv=o_result_conv.getArray();
+//        double[] rot=transrot.getArray();
+//        for(int i=0;i<3;i++){
+//            conv[i][0] = rot[i*3+0];
+//            conv[i][1] = rot[i*3+1];
+//            conv[i][2] = rot[i*3+2];
+//        }
+//	conv[0][3] = conv[0][0]*i_off[0] + conv[0][1]*i_off[1] + conv[0][2]*i_off[2] + conv[0][3];
+//	conv[1][3] = conv[1][0]*i_off[0] + conv[1][1]*i_off[1] + conv[1][2]*i_off[2] + conv[1][3];
+//	conv[2][3] = conv[2][0]*i_off[0] + conv[2][1]*i_off[1] + conv[2][2]*i_off[2] + conv[2][3];
 	return ret;
     }
     private final NyARMat wk_arGetTransMatSub_mat_a=new NyARMat(NUMBER_OF_VERTEX*2,3);
@@ -211,14 +313,12 @@ public class NyARTransMat_O1 implements NyARTransMat{
     /**
      * static double arGetTransMatSub( double rot[3][3], double ppos2d[][2],double pos3d[][3], int num, double conv[3][4],double *dist_factor, double cpara[3][4] )
      * Optimize:2008.04.20:STEP[1033→1004]
-     * @param rot
-     * @param ppos2d
-     * @param pos3d
-     * @param num
+     * @param i_ppos2d
+     * @param i_pos3d
      * @return
      * @throws NyARException
      */
-    private final double arGetTransMatSub(double i_ppos2d[][],double i_pos3d[][]) throws NyARException
+    private final double arGetTransMatSub(double i_ppos2d[][],double i_pos3d[][],double[] i_off,NyARTransMatResult o_result_conv) throws NyARException
     {
 	double[][] pos2d=wk_arGetTransMatSub_pos2d;
 	double cpara[]=param.get34Array();
@@ -314,30 +414,33 @@ public class NyARTransMat_O1 implements NyARTransMat{
 	    c_array[x2][0]  =wz * po2d_pt[0]- cpara[0*4+0]*wx - cpara[0*4+1]*wy - cpara[0*4+2]*wz;//mat_c->m[j*2+0] = wz * pos2d[j][0]- cpara[0][0]*wx - cpara[0][1]*wy - cpara[0][2]*wz;
 	    c_array[x2+1][0]=wz * po2d_pt[1]- cpara[1*4+1]*wy - cpara[1*4+2]*wz;//mat_c->m[j*2+1] = wz * pos2d[j][1]- cpara[1][1]*wy - cpara[1][2]*wz;
 	}
-//	JartkException.trap("未チェックのパス");{
+
 	mat_d.matrixMul(mat_b, mat_a );
 	mat_e.matrixMul(mat_b, mat_c );
 	mat_d.matrixSelfInv();
 	mat_f.matrixMul(mat_d, mat_e );
-//	}
+
 	trans[0] = f_array[0][0];//trans[0] = mat_f->m[0];
 	trans[1] = f_array[1][0];
 	trans[2] = f_array[2][0];//trans[2] = mat_f->m[2];
 
 
 	ret = transrot.modifyMatrix(trans, i_pos3d, pos2d);
-	double[][] conv=result_mat.getArray();
-	for( i = 2; i >=0; i-- ) {//<Optimize/>for( j = 0; j < 3; j++ ) {
-	    //<Optimize>
-	    //for( i = 0; i < 3; i++ ){
-	    //	conv[j][i] = rot[j][i];
-	    //}
-	    conv[i][0] = rot[i*3+0];
-	    conv[i][1] = rot[i*3+1];
-	    conv[i][2] = rot[i*3+2];
-	    //</Optimize>
-	    conv[i][3] = trans[i];
-	}
+	//変換行列を保存
+	o_result_conv.updateMatrixValue(this.transrot,i_off,trans);
+	
+//	double[][] conv=o_result_conv.getArray();
+//	for( i = 2; i >=0; i-- ) {//<Optimize/>for( j = 0; j < 3; j++ ) {
+//	    //<Optimize>
+//	    //for( i = 0; i < 3; i++ ){
+//	    //	conv[j][i] = rot[j][i];
+//	    //}
+//	    conv[i][0] = rot[i*3+0];
+//	    conv[i][1] = rot[i*3+1];
+//	    conv[i][2] = rot[i*3+2];
+//	    //</Optimize>
+//	    conv[i][3] = trans[i];
+//	}
 	return ret;
     }
 }

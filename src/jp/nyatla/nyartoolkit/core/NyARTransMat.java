@@ -33,17 +33,18 @@ package jp.nyatla.nyartoolkit.core;
 
 
 
-import jp.nyatla.nyartoolkit.NyARException;
+
+import jp.nyatla.nyartoolkit.*;
 
 
 /**
- * This class calculates ARMatrix from square information and holds it.
+ * This class calculates ARMatrix from square information.
  * --
- * 変換行列を計算して、結果を保持するクラス。
+ * 変換行列を計算するクラス。
  *
  */
 public interface NyARTransMat{
     public void setCenter(double i_x,double i_y);
-    public NyARMat getTransformationMatrix();
-    public double transMat( NyARSquare square,int i_direction, double width)throws NyARException;
+    public double transMat(NyARSquare i_square,int i_direction, double i_width,NyARTransMatResult o_result)throws NyARException;
+    public double transMatContinue(NyARSquare i_square,int i_direction, double i_width,NyARTransMatResult io_result_conv)throws NyARException;
 }

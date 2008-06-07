@@ -36,11 +36,12 @@ import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.match.NyARMatchPatt_Color_WITHOUT_PCA;
 import jp.nyatla.nyartoolkit.core.raster.*;
 /**
- * 1個のマーカーに対する変換行列を計算するクラスです。
+ * 画像からARCodeに最も一致するマーカーを1個検出し、その変換行列を計算するクラスです。
  *
  */
 public class NyARSingleDetectMarker{
     private static final int AR_SQUARE_MAX=100;
+    private boolean is_continue=false;
     private NyARMatchPatt_Color_WITHOUT_PCA match_patt;
     private NyARDetectSquare square;
     private final NyARSquareList square_list=new NyARSquareList(AR_SQUARE_MAX);
@@ -52,6 +53,16 @@ public class NyARSingleDetectMarker{
     private double detected_confidence;
     private NyARSquare detected_square;
     private NyARColorPatt patt;
+    /**
+     * 検出するARCodeとカメラパラメータから、1個のARCodeを検出するNyARSingleDetectMarkerインスタンスを作ります。
+     * @param i_param
+     * カメラパラメータを指定します。
+     * @param i_code
+     * 検出するARCodeを指定します。
+     * @param i_marker_width
+     * ARコードの物理サイズを、ミリメートルで指定します。
+     * @throws NyARException
+     */
     public NyARSingleDetectMarker(NyARParam i_param,NyARCode i_code,double i_marker_width) throws NyARException
     {
 	//解析オブジェクトを作る
@@ -66,9 +77,12 @@ public class NyARSingleDetectMarker{
 	this.match_patt=new NyARMatchPatt_Color_WITHOUT_PCA();	
     }
     /**
-     * i_imageにマーカー検出処理を実行して、結果を保持します。
-     * @param dataPtr
-     * @param thresh
+     * i_imageにマーカー検出処理を実行し、結果を記録します。
+     * @param i_image
+     * マーカーを検出するイメージを指定します。
+     * @param i_thresh
+     * 検出閾値を指定します。0～255の範囲で指定してください。
+     * 通常は100～130くらいを指定します。
      * @return
      * マーカーが検出できたかを真偽値で返します。
      * @throws NyARException
@@ -86,10 +100,11 @@ public class NyARSingleDetectMarker{
 	    return false;
 	}
 
-	//コードの一致度を調べる準備
-//	NyARSquare[] squares=square.getSquareArray();
 	//評価基準になるパターンをイメージから切り出す
-	patt.pickFromRaster(i_image,l_square_list.getSquare(0));
+	if(!patt.pickFromRaster(i_image,l_square_list.getSquare(0))){
+	    //パターンの切り出しに失敗
+	    return false;
+	}
 	//パターンを評価器にセット
 	if(!this.match_patt.setPatt(patt)){
 	    //計算に失敗した。
@@ -123,43 +138,53 @@ public class NyARSingleDetectMarker{
 	return true;
     }
     /**
-     * 変換行列を返します。直前に実行したdetectMarkerLiteが成功していないと使えません。
-     * @param i_marker_width
-     * マーカーの大きさを指定します。
-     * @return
-     * double[3][4]の変換行列を返します。
+     * 検出したマーカーの変換行列を計算して、o_resultへ値を返します。
+     * 直前に実行したdetectMarkerLiteが成功していないと使えません。
+     * @param o_result
+     * 変換行列を受け取るオブジェクトを指定します。
      * @throws NyARException
-     */
-    public NyARMat getTransmationMatrix() throws NyARException
+     */    
+    public void getTransmationMatrix(NyARTransMatResult o_result) throws NyARException
     {
 	//一番一致したマーカーの位置とかその辺を計算
-	transmat.transMat(detected_square,detected_direction,marker_width);
-	return transmat.getTransformationMatrix();
-    }
+	if(is_continue){
+	    transmat.transMatContinue(detected_square,detected_direction,marker_width,o_result);
+	}else{
+	    transmat.transMat(detected_square,detected_direction,marker_width,o_result);
+	}
+	return;
+    }    
+    /**
+     * 検出したマーカーの一致度を返します。
+     * @return
+     * マーカーの一致度を返します。0～1までの値をとります。
+     * 一致度が低い場合には、誤認識の可能性が高くなります。
+     * @throws NyARException
+     */
     public double getConfidence()
     {
 	return detected_confidence;
     }
+    /**
+     * 検出したマーカーの方位を返します。
+     * @return
+     * 0,1,2,3の何れかを返します。
+     */
     public int getDirection()
     {
 	return detected_direction;
     }
-    
-
-	
-	
-	
-	
-	
-//	public static class arUtil_c{
-//		public static final int		arFittingMode	=Config.DEFAULT_FITTING_MODE;
-//		private static final int		arImageProcMode	=Config.DEFAULT_IMAGE_PROC_MODE;
-//		public static final int		arTemplateMatchingMode  =Config.DEFAULT_TEMPLATE_MATCHING_MODE;
-//		public static final int		arMatchingPCAMode       =Config.DEFAULT_MATCHING_PCA_MODE;	
-		/*int arInitCparam( ARParam *param )*/
-
-
-	
+    /**
+     * getTransmationMatrixの計算モードを設定します。
+     * 初期値はTRUEです。
+     * @param i_is_continue
+     * TRUEなら、transMatCont互換の計算をします。
+     * FALSEなら、transMat互換の計算をします。
+     */
+    public void setContinueMode(boolean i_is_continue)
+    {
+	this.is_continue=i_is_continue;
+    }
 }
 
 	
