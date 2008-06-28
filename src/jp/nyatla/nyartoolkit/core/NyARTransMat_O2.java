@@ -346,7 +346,7 @@ public class NyARTransMat_O2 implements NyARTransMat
      * @return
      * @throws NyARException
      */
-    private final double arGetTransMatSub(double i_ppos2d[][],double i_pos3d[][],NyARMat i_mat_b,NyARMat i_mat_d,double[] o_trans) throws NyARException
+    private final double arGetTransMatSub(double i_pos2d[][],double i_pos3d[][],NyARMat i_mat_b,NyARMat i_mat_d,double[] o_trans) throws NyARException
     {
 	double cpara[]=param.get34Array();
 	NyARMat mat_c,mat_e,mat_f;//ARMat   *mat_a, *mat_b, *mat_c, *mat_d, *mat_e, *mat_f;
@@ -366,8 +366,8 @@ public class NyARTransMat_O2 implements NyARTransMat
 	    wx = rot[0] * i_pos3d_pt[0]+ rot[1] * i_pos3d_pt[1]+ rot[2] * i_pos3d_pt[2];
 	    wy = rot[3] * i_pos3d_pt[0]+ rot[4] * i_pos3d_pt[1]+ rot[5] * i_pos3d_pt[2];
 	    wz = rot[6] * i_pos3d_pt[0]+ rot[7] * i_pos3d_pt[1]+ rot[8] * i_pos3d_pt[2];
-	    c_array[x2][0]  =wz * i_ppos2d[i][0]- cpara[0*4+0]*wx - cpara[0*4+1]*wy - cpara[0*4+2]*wz;//mat_c->m[j*2+0] = wz * pos2d[j][0]- cpara[0][0]*wx - cpara[0][1]*wy - cpara[0][2]*wz;
-	    c_array[x2+1][0]=wz * i_ppos2d[i][1]- cpara[1*4+1]*wy - cpara[1*4+2]*wz;//mat_c->m[j*2+1] = wz * pos2d[j][1]- cpara[1][1]*wy - cpara[1][2]*wz;
+	    c_array[x2][0]  =wz * i_pos2d[i][0]- cpara[0*4+0]*wx - cpara[0*4+1]*wy - cpara[0*4+2]*wz;//mat_c->m[j*2+0] = wz * pos2d[j][0]- cpara[0][0]*wx - cpara[0][1]*wy - cpara[0][2]*wz;
+	    c_array[x2+1][0]=wz * i_pos2d[i][1]- cpara[1*4+1]*wy - cpara[1*4+2]*wz;//mat_c->m[j*2+1] = wz * pos2d[j][1]- cpara[1][1]*wy - cpara[1][2]*wz;
 	}
 	mat_e = this.wk_arGetTransMatSub_mat_e;//次処理で値をもらうので、初期化の必要は無い。
 	mat_f = this.wk_arGetTransMatSub_mat_f;//次処理で値をもらうので、初期化の必要は無い。
@@ -380,15 +380,15 @@ public class NyARTransMat_O2 implements NyARTransMat
 	o_trans[0] = f_array[0][0];//trans[0] = mat_f->m[0];
 	o_trans[1] = f_array[1][0];
 	o_trans[2] = f_array[2][0];//trans[2] = mat_f->m[2];
-	ret =transrot.modifyMatrix(o_trans, i_pos3d, i_ppos2d);
+	ret =transrot.modifyMatrix(o_trans, i_pos3d, i_pos2d);
 	for( i = 0; i < NUMBER_OF_VERTEX; i++ ) {
 	    x2=i*2;
 	    i_pos3d_pt=i_pos3d[i];
 	    wx = rot[0] * i_pos3d_pt[0]+ rot[1] * i_pos3d_pt[1]+ rot[2] * i_pos3d_pt[2];
 	    wy = rot[3] * i_pos3d_pt[0]+ rot[4] * i_pos3d_pt[1]+ rot[5] * i_pos3d_pt[2];
 	    wz = rot[6] * i_pos3d_pt[0]+ rot[7] * i_pos3d_pt[1]+ rot[8] * i_pos3d_pt[2];
-	    c_array[x2][0]  =wz * i_ppos2d[i][0]- cpara[0*4+0]*wx - cpara[0*4+1]*wy - cpara[0*4+2]*wz;//mat_c->m[j*2+0] = wz * pos2d[j][0]- cpara[0][0]*wx - cpara[0][1]*wy - cpara[0][2]*wz;
-	    c_array[x2+1][0]=wz * i_ppos2d[i][1]- cpara[1*4+1]*wy - cpara[1*4+2]*wz;//mat_c->m[j*2+1] = wz * pos2d[j][1]- cpara[1][1]*wy - cpara[1][2]*wz;
+	    c_array[x2][0]  =wz * i_pos2d[i][0]- cpara[0*4+0]*wx - cpara[0*4+1]*wy - cpara[0*4+2]*wz;//mat_c->m[j*2+0] = wz * pos2d[j][0]- cpara[0][0]*wx - cpara[0][1]*wy - cpara[0][2]*wz;
+	    c_array[x2+1][0]=wz * i_pos2d[i][1]- cpara[1*4+1]*wy - cpara[1*4+2]*wz;//mat_c->m[j*2+1] = wz * pos2d[j][1]- cpara[1][1]*wy - cpara[1][2]*wz;
 	}
 
 	mat_e.matrixMul(i_mat_b, mat_c );
@@ -396,7 +396,7 @@ public class NyARTransMat_O2 implements NyARTransMat
 	o_trans[0] = f_array[0][0];//trans[0] = mat_f->m[0];
 	o_trans[1] = f_array[1][0];
 	o_trans[2] = f_array[2][0];//trans[2] = mat_f->m[2];
-	ret = transrot.modifyMatrix(o_trans, i_pos3d, i_ppos2d);
+	ret = transrot.modifyMatrix(o_trans, i_pos3d, i_pos2d);
 	return ret;
     }
 }

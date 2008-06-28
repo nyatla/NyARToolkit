@@ -91,7 +91,7 @@ public class NyARGLUtil
     	gl_.glDisable(GL.GL_TEXTURE_2D);
     	gl_.glGetIntegerv(GL.GL_VIEWPORT,params);
     	gl_.glPixelZoom(zoomf * ((float)(params.get(2)) / (float)width),-zoomf * ((float)(params.get(3)) / (float)height));
-    	gl_.glRasterPos2f(0.0f,(float)height);
+    	gl_.glWindowPos2f(0.0f,(float)height);
     	gl_.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
         ByteBuffer buf=ByteBuffer.wrap(i_raster.getGLRgbArray());
         gl_.glDrawPixels(width,height,i_raster.getGLPixelFlag(),GL.GL_UNSIGNED_BYTE,buf);
