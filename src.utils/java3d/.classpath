@@ -2,12 +2,11 @@
 <classpath>
 	<classpathentry path="" kind="src"/>
 	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" kind="con"/>
-	<classpathentry path="C:/Program Files/JMF2.1.1e/lib/jmf.jar" kind="lib"/>
+	<classpathentry path="/NyARToolKit" combineaccessrules="false" kind="src"/>
 	<classpathentry path="C:/Program Files/Java/Java3D/1.5.1/lib/ext/j3dcore.jar" kind="lib"/>
 	<classpathentry path="C:/Program Files/Java/Java3D/1.5.1/lib/ext/j3dutils.jar" kind="lib"/>
 	<classpathentry path="C:/Program Files/Java/Java3D/1.5.1/lib/ext/vecmath.jar" kind="lib"/>
-	<classpathentry path="/NyARToolKit" combineaccessrules="false" kind="src"/>
+	<classpathentry path="C:/Program Files/JMF2.1.1e/lib/jmf.jar" kind="lib"/>
 	<classpathentry path="/NyARToolkit.utils.jmf" combineaccessrules="false" kind="src"/>
-	<classpathentry path="/NyARToolkit.utils.java3d" combineaccessrules="false" kind="src"/>
-	<classpathentry path="bin" kind="output"/>
+	<classpathentry path="" kind="output"/>
 </classpath>

@@ -4,7 +4,7 @@
  * airmail@ebony.plala.or.jp
  * http://nyatla.jp/
  */
-package jp.nyatla.nyartoolkit.jmf.sample;
+package jp.nyatla.nyartoolkit.jmf.utils.sample;
 
 import javax.media.*;
 

@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>NyARToolkit.utils.jmf</name>
+	<name>NyARToolkit.utils.jogl</name>
 	<comment></comment>
 	<projects>
-		<project>NyARToolKit</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
