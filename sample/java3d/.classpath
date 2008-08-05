@@ -9,5 +9,5 @@
 	<classpathentry path="/NyARToolKit" combineaccessrules="false" kind="src"/>
 	<classpathentry path="/NyARToolkit.utils.jmf" combineaccessrules="false" kind="src"/>
 	<classpathentry path="/NyARToolkit.utils.java3d" combineaccessrules="false" kind="src"/>
-	<classpathentry path="bin" kind="output"/>
+	<classpathentry path="" kind="output"/>
 </classpath>
