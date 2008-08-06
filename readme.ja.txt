@@ -1,7 +1,7 @@
 ARToolkit Java class library NyARToolkit.
 Copyright (C)2008 R.Iizuka
 
-version 1.2.0.20080511
+version 1.3.0
 
 http://nyatla.jp/
 airmail(at)ebony.plala.or.jp
@@ -27,32 +27,52 @@ ARToolkitは加藤博一先生とHuman Interface Technology Labにより
 http://www.hitl.washington.edu/artoolkit/
 
 
+・NyARToolkitの特徴
+
+　-ARToolKitの処理関数を全てクラスベースで再構築してあります。
+
+　-座標変換の演算性能が1.5倍ほど高速です。（JIT有効時）複数マーカー取り扱い時は、
+　 オリジナルよりも良い成績が得られます。
+
+　-取り扱える画像サイズに制限がありません。
+
+　-取り扱えるマーカー個数の最大値が可変です。
+
+
+
 
 ・構成
 
-+-------------------------------------------+
-|               Application                 |
-+-------+---------+-------+-----------------+
-|NyARJMF| NyARJogl|NyARJ3d|                 |
-+-------+---------+-------+                 |
-|  JMF  |  JOGL   |Java3D |Java3DNyARToolkit|
-+-------+---------+-------+                 |
-|Camera |       3D        |                 |
---------------------------------------------+
++-----------------------------------------------+
+|                   Application                 |
++-------+---------+--------+--------+-----------+
+|NyARJMF|CaptureQT| NyARJoglNyARJ3d |           |
++-------+---------+--------+--------+           |
+|  JMF  |QuickTime|  JOGL  | Java3D |NyARToolkit|
++-------+---------+--------+--------+           |
+|      Camera     |       3D        |           |
+------------------------------------+-----------+
 
-映像キャプチャにはJMFを使用し、3D描画にはJOGL又はJava3Dを使用しています。
-NyARJMFとNyJogl,NyJ3dは、これらのエクステンションをApplicationや
-NyARToolKitから使いやすくするためのラッパーです。
 
-これらとNyARToolkitは完全に分離していますので、入力・出力ともに容易に
-差し替えが出来ると思います。
+映像キャプチャにはJMF、又はQuickTimeを使用することが出来ます。
+
+3D描画にはJOGL又はJava3Dを使用することが出来ます。
+
+NyARJMF/CaptureQT/NyARJog/NyARJ3dは、下位のキャプチャモジュール
+や3Dライブラリを使いやすくするためのラッパークラス群です。
+
+これらとNyARToolkitは疎結合になっており、インタフェイスをあわせる
+ことで、自作モジュール等との差し替えが出来ます。
 
 
 
 
 ・サンプルなど
 
-動作させる前に、JMFとJOGLかJava3Dをインストールしてください。
+１．動作させる前に、JMFとJOGLかJava3Dをインストールしてください。
+　　QuickTimeを使う場合には、QuickTime for Javaも必要です。
+
+
 動作確認したバージョンと入手先はこちらです。
 
 JMF JavaTM Media Framework 2.1.1e
@@ -64,82 +84,97 @@ https://jogl.dev.java.net/
 java3d-1_5_1-xxxx-i586.exe
 https://java3d.dev.java.net/binary-builds.html
 
-
-
-サンプルは以下のディレクトリにあります。
-
-./src
- NyARToolkitのEclipseプロジェクトがあります。
- jp.nyatla.nyartoolkit.sampleパッケージに、Rawイメージから
- 変換行列を求めるサンプルがあります。
-
-./sample
-NyARToolkitのアプリケーションサンプルEclipseプロジェクトがあります。
-
- jmf
-  jp.nyatla.nyartoolkit.jmf.sample
-  ビデオキャプチャの試験プログラム　と、マーカー検出プログラムがあります。
-
- jogl
-  jp.nyatla.nyartoolkit.jogl.sample.JavaSimpleLite
-  単一のマーカーを認識するARToolkitのsimpleLite相当のサンプルです。
-  jp.nyatla.nyartoolkit.jogl.sample.JavaSimpleLite2
-  複数のマーカーを認識するサンプルです。～100個程度のマーカーを同時に
-  認識します。
-
- java3d
-  jp.nyatla.nyartoolkit.java3d.sample
-  simpleLiteのようなものをJava3Dで動かすサンプルがあります。
-
-
-NyARJMFのプロジェクトはNyARToolKitに依存し、NyARJOGLとJava3Dのプロジェクトは
-NyARToolKitとNyARJMFに依存しています。
-zipを展開すると多分参照関係が壊れてますので、再設定してください。
+QuickTime 7.5
+http://www.apple.com/quicktime/qtjava/
 
 
 
-・サンプル内のパッケージ注意点
-sampleディレクトリ以下にあるソースはAPIは仕様が固まっていないので、
-時々APIそのものを変更しています。
+２．eclipseで空のワークスペースを作成し、sample,src,src.utils
+　　ディレクトリをインポートしてください。
 
-自前のプロジェクトの部品として使われる場合は、パッケージをコピーして
-使用することをお勧めします。
+srcにはNyARToolkit本体、src.utilsにはキャプチャや3Dライブラリとの
+インタフェイスクラス群、sampleにはこれらを組み合わせた動作する
+サンプルプログラムがあります。
 
 
 
-・NyARToolkitとオリジナルの差分
 
-オリジナルと演算結果に互換性がありますが、関数構成を再設計した
-ため、関数名や関数コールの手順の互換性がほとんどありません。
+・プロジェクトの説明
 
-クラスは関数機能毎にまとめた作りになっていますので、オリジナルの
-コード読んだことがあれば、なんとなく判ると思います。
+ライブラリ
 
-演算性能は、Windows環境下でVCリリース版とほぼ同じです。
-マーカー認識部分はネイティブ版よりも低速ですが、変換行列計算部分
-はネイティブ版よりも高速に動作します。
-このため、複数マーカー取り扱い時は、ネイティブ版よりも良い成績が得られます。
+NyARToolkit
+　NyARToolkitライブラリの本体です。依存する外部モジュールはありません。
+
+NyARToolkit.utils.jmf
+　JMFからの画像をNyARToolkitに取り込むクラス群があります。
+　外部ライブラリは、JMFに依存します。
+
+NyARToolkit.utils.qt
+　QuickTimeからの画像をNyARToolkitに取り込むクラス群があります。
+　外部ライブラリは、JMF、QuickTime for Javaに依存します。
+
+NyARToolkit.utils.jogl
+　OpenGLとNyARToolkitのインタフェイスクラス群があります。
+　外部ライブラリは、JMF,JOGLに依存します。
+
+NyARToolkit.utils.java3d
+　Java3DとNyARToolkitのインタフェイスクラス群があります。
+　外部ライブラリは、JMF,Java3Dに依存します。
+
+
+サンプル
+
+NyARToolkit.sample.jogl
+　JOGL/JMFを使ったサンプルプログラムがあります。
+
+  -jp.nyatla.nyartoolkit.jogl.sample.JavaSimpleLite
+   単一のマーカーを認識するARToolkitのsimpleLite相当のサンプルです。
+  -jp.nyatla.nyartoolkit.jogl.sample.JavaSimpleLite2
+   複数のマーカーを認識するサンプルです。～100個程度のマーカーを同時に
+   認識します。
+
+
+NyARToolkit.sample.java3d
+　JOGL/JMFを使ったサンプルプログラムです。
+　
+  -jp.nyatla.nyartoolkit.java3d.sample
+  simpleLiteをJava3Dで動かすサンプルがあります。
+
+NyARToolkit.sample.jmf
+  JMFを使ったサンプルプログラムです。
+
+  -jp.nyatla..nyartoolkit.jmf.sample
+　JMFでキャプチャした画像をNyARToolkitで処理するサンプルプログラムです。
+　
+
+NyARToolkit.sample.qt
+　Quicktime for Javaを使ったサンプルプログラムです。
+
+　-jp.nyatla.nyartoolkit.qt.sample
+　QuickTimeでキャプチャした画像をNyARToolkitで処理するサンプルプログラムです。
+　
+
+
 
 
 ・足りない機能等
 
 カメラキャリブレーション、マーカーのセーブ機能等がありません。
-
 今後実装していきます。
 
 
+
+
 ・ライセンス
-GPLです。詳しくはLICENCE.txtをみてください。
-
-
-・お願い
-NyARToolkitを使って面白いものが出来たら、是非教えてください。
-
-それと強制では有りませんが、NyARToolkitを使った感想などを
-送ってくれると、今後の励みになります。
+GPLv2以降です。詳しくはLICENCE.txtをみてください。
 
 
 
-ではでは、楽しく遊んでくださいネ。
 
-2008.05.11 R.Iizuka A虎＠nyatla.jp
+・謝辞
+
+arc@dmzさん
+http://digitalmuseum.jp/
+
+QuickTimeキャプチャモジュールを提供をして頂きました。有難うございます。
