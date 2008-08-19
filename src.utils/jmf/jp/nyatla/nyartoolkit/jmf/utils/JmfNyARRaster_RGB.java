@@ -11,10 +11,10 @@ package jp.nyatla.nyartoolkit.jmf.utils;
 import javax.media.format.RGBFormat;
 import java.awt.Dimension;
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.NyARRaster;
+import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 
 
-public class JmfNyARRaster_RGB implements NyARRaster
+public class JmfNyARRaster_RGB implements INyARRaster
 {
     public final static int PIXEL_ORDER_RGB=1;
     public final static int PIXEL_ORDER_BGR=2;

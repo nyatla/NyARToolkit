@@ -35,7 +35,7 @@ package jp.nyatla.nyartoolkit.core;
 
 
 import jp.nyatla.nyartoolkit.NyARException;
-
+import jp.nyatla.nyartoolkit.core.labeling.*;
 
 
 
@@ -89,7 +89,7 @@ public class NyARDetectMarker {
      * @param clip
      * @throws NyARException
      */
-    private final void arGetContour(NyARMarker o_marker,int[][] limage, int[] label_ref,int i_labelnum, NyARLabel i_label) throws NyARException
+    private final void arGetContour(NyARMarker o_marker,int[][] limage,int i_labelnum, NyARLabel i_label) throws NyARException
     {
 	final int[] xcoord=wk_arGetContour_xcoord;
 	final int[] ycoord=wk_arGetContour_ycoord;
@@ -102,13 +102,13 @@ public class NyARDetectMarker {
 	int             i, j,w;
 
 	int[] limage_j;
-	j = i_label.clip2;
+	j = i_label.clip_t;
 	limage_j=limage[j];
-	final int clip1=i_label.clip1;
+	final int clip1=i_label.clip_r;
 	//p1=ShortPointer.wrap(limage,j*xsize+clip.get());//p1 = &(limage[j*xsize+clip[0]]);
-	for( i = i_label.clip0; i <= clip1; i++){//for( i = clip[0]; i <= clip[1]; i++, p1++ ) {
+	for( i = i_label.clip_l; i <= clip1; i++){//for( i = clip[0]; i <= clip[1]; i++, p1++ ) {
 	    w=limage_j[i];
-	    if(w > 0 && label_ref[w-1] == i_labelnum ) {//if( *p1 > 0 && label_ref[(*p1)-1] == label ) {
+	    if(w > 0 && w == i_labelnum ) {
 		sx = i;
 		sy = j;
 		break;
@@ -204,18 +204,17 @@ public class NyARDetectMarker {
      * 抽出したマーカーを格納するリスト
      * @throws NyARException
      */
-    public final void detectMarker(NyARLabeling i_labeling,double i_factor,NyARMarkerList o_marker_list) throws NyARException
+    public final void detectMarker(NyLabelingImage i_labeling,double i_factor,NyARMarkerList o_marker_list) throws NyARException
     {
 	int label_area;
 	int i;
 	int xsize, ysize;
-	NyARLabel[] labels=i_labeling.getLabel();
+	NyARLabel[] labels=i_labeling.getLabelList().getArray();
 //	int[] warea  	=i_labeling.getArea();
-	int label_num	=i_labeling.getLabelNum();
+	int label_num	=i_labeling.getLabelList().getCount();
 //	int[][] wclip	=i_labeling.getClip();
 //	double[] wpos	=i_labeling.getPos();
-	int[][] limage=i_labeling.getLabelImg();
-	int[] label_ref	=i_labeling.getLabelRef();
+	int[][] limage=i_labeling.getImage();
 
 	//マーカーホルダをリセット
 	o_marker_list.reset();
@@ -231,14 +230,14 @@ public class NyARDetectMarker {
 	    if(label_area < AR_AREA_MIN || label_area > AR_AREA_MAX ){
 		continue;
 	    }
-	    if( label_pt.clip0 == 1 || label_pt.clip1 == xsize-2 ){//if( wclip[i*4+0] == 1 || wclip[i*4+1] == xsize-2 ){
+	    if( label_pt.clip_l == 1 || label_pt.clip_r == xsize-2 ){//if( wclip[i*4+0] == 1 || wclip[i*4+1] == xsize-2 ){
 		continue;
 	    }
-	    if( label_pt.clip2 == 1 || label_pt.clip3 == ysize-2 ){//if( wclip[i*4+2] == 1 || wclip[i*4+3] == ysize-2 ){
+	    if( label_pt.clip_t == 1 || label_pt.clip_b == ysize-2 ){//if( wclip[i*4+2] == 1 || wclip[i*4+3] == ysize-2 ){
 		continue;
 	    }
 	    //ret = arGetContour( limage, label_ref, i+1,&(wclip[i*4]), &(marker_info2[marker_num2]));
-	    arGetContour(current_marker,limage, label_ref, i+1,label_pt);
+	    arGetContour(current_marker,limage, i+1,label_pt);
 
 	    if(!current_marker.checkSquare(label_area,i_factor,label_pt.pos_x,label_pt.pos_y)){
 		//後半で整理するからここはいらない。//        	marker_holder[marker_num2]=null;

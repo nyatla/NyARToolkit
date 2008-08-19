@@ -31,21 +31,21 @@
  */
 package jp.nyatla.nyartoolkit.core;
 
-import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.util.DoubleValue;
+
 
 /**
  * ARMarkerInfoに相当するクラス。
  * スクエア情報を保持します。
  *
  */
-public class NyARSquare extends NyARMarker{
+public class NyARSquare{
 //    private NyARMarker marker;
 //    public int area;
 //    public double[] pos;
-    public double[][] line=new double[4][3];  //double[4][3]
-    public double[][] sqvertex=new double[4][2];//double[4][2];
-    public NyARSquare()
+    public double[][] line=new double[4][3];
+    public double[][] sqvertex=new double[4][2];
+    public int[][] imvertex=new int[4][2];
+/*    public NyARSquare()
     {
 	super();
     }
@@ -53,16 +53,7 @@ public class NyARSquare extends NyARMarker{
     private final NyARMat wk_getLine_evec=new NyARMat(2,2);
     private final NyARVec wk_getLine_ev=new NyARVec(2);
     private final NyARVec wk_getLine_mean=new NyARVec(2);
-    /**
-     * arGetLine(int x_coord[], int y_coord[], int coord_num,int vertex[], double line[4][3], double v[4][2])
-     * arGetLine2(int x_coord[], int y_coord[], int coord_num,int vertex[], double line[4][3], double v[4][2], double *dist_factor)
-     * の２関数の合成品です。
-     * 格納しているマーカー情報に対して、GetLineの計算を行い、結果を返します。
-     * Optimize:STEP[424->391]
-     * @param i_cparam
-     * @return
-     * @throws NyARException
-     */
+
     public boolean getLine(NyARParam i_cparam) throws NyARException
     {
 	double   w1;
@@ -118,5 +109,5 @@ public class NyARSquare extends NyARMarker{
 	    l_sqvertex[i][1] = (  l_line_i[0] * l_line_2[2]- l_line_2[0] * l_line_i[2] ) / w1;
 	}
 	return true;
-    }
+    }*/
 }

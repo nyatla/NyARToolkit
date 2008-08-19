@@ -34,7 +34,7 @@ package jp.nyatla.nyartoolkit.core;
 
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.NyARRaster;
+import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 
 /**
  * 24ビットカラーのマーカーを保持するために使うクラスです。
@@ -166,18 +166,16 @@ public class NyARColorPatt_O3 implements NyARColorPatt
      * @param i_marker
      * @throws Exception
      */
-    public boolean pickFromRaster(NyARRaster image, NyARMarker i_marker) throws NyARException
+    public boolean pickFromRaster(INyARRaster image, NyARSquare i_square) throws NyARException
     {
 	NyARMat cpara=this.wk_pickFromRaster_cpara;
 	//localの計算
-	int[] x_coord=i_marker.x_coord;
-	int[] y_coord=i_marker.y_coord;
-	int[] vertex=i_marker.mkvertex;
 	double[] local_0=wk_pickFromRaster_local[0];//double    local[4][2];	
 	double[] local_1=wk_pickFromRaster_local[1];//double    local[4][2];	
+	//
 	for(int i = 0; i < 4; i++ ) {
-	    local_0[i] = x_coord[vertex[i]];
-	    local_1[i] = y_coord[vertex[i]];
+	    local_0[i] = i_square.imvertex[i][0];
+	    local_1[i] = i_square.imvertex[i][1];
 	}
 	//xdiv2,ydiv2の計算
 	int xdiv2, ydiv2;
@@ -262,7 +260,7 @@ public class NyARColorPatt_O3 implements NyARColorPatt
 	return;
     }
     
-    private void updateExtpat(NyARRaster image,NyARMat i_cpara,int i_xdiv2,int i_ydiv2) throws NyARException
+    private void updateExtpat(INyARRaster image,NyARMat i_cpara,int i_xdiv2,int i_ydiv2) throws NyARException
     {
 	int img_x=image.getWidth();
 	int img_y=image.getHeight();

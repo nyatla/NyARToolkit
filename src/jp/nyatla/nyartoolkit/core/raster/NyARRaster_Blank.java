@@ -36,14 +36,12 @@ package jp.nyatla.nyartoolkit.core.raster;
  * 真っ黒の矩形を定義する。
  *
  */
-public class NyARRaster_Blank implements NyARRaster
+public class NyARRaster_Blank extends NyARRaster_BasicClass
 {
-    private int width;
-    private int height;
     public NyARRaster_Blank(int i_width,int i_height)
     {
-        width  =i_width;
-        height =i_height;
+	this._size.w=i_width;
+        this._size.h=i_height;
     }
     //RGBの合計値を返す
     public int getPixelTotal(int i_x,int i_y)
@@ -52,18 +50,10 @@ public class NyARRaster_Blank implements NyARRaster
     }
     public void getPixelTotalRowLine(int i_row,int[] o_line)
     {
-        for(int i=this.width-1;i>=0;i--){
+        for(int i=this._size.w-1;i>=0;i--){
 	    o_line[i]=0;
 	}
     }    
-    public int getWidth()
-    {
-	return width;
-    }
-    public int getHeight()
-    {
-	return height;
-    }
     public void getPixel(int i_x,int i_y,int[] i_rgb)
     {
         i_rgb[0]=0;

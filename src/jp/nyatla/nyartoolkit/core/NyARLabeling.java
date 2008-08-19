@@ -33,43 +33,11 @@ package jp.nyatla.nyartoolkit.core;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.labeling.*;
+import jp.nyatla.nyartoolkit.core.types.*;
 
 
-interface NyARLabeling{
-    /**
-     * 検出したラベルの数を返す
-     * @return
-     */
-    public int getLabelNum();
-    /**
-     * 
-     * @return
-     * @throws NyARException
-     */
-    public int[] getLabelRef() throws NyARException;
-    /**
-     * 検出したラベル配列
-     * @return
-     * @throws NyARException
-     */
-    public NyARLabel[] getLabel() throws NyARException;
-    /**
-     * ラベリング済みイメージを返す
-     * @return
-     * @throws NyARException
-     */
-    public int[][] getLabelImg() throws NyARException;
-    /**
-     * static ARInt16 *labeling2( ARUint8 *image, int thresh,int *label_num, int **area, double **pos, int **clip,int **label_ref, int LorR )
-     * 関数の代替品
-     * ラスタimageをラベリングして、結果を保存します。
-     * Optimize:STEP[1514->1493]
-     * @param image
-     * @param thresh
-     * @throws NyARException
-     */
-    public void labeling(NyARRaster image,int thresh) throws NyARException;
-}
+
 
 
 
@@ -124,204 +92,82 @@ class NyARWorkHolder
     }
 }
 
-class NyARLabel
-{
-    public int area;
-    public int clip0;
-    public int clip1;
-    public int clip2;
-    public int clip3;
-    public double pos_x;
-    public double pos_y;
-}
-
-
-class NyARLabelHolder
-{
-    private final static int ARRAY_APPEND_STEP=128;
-    public final NyARLabel[] labels;
-    private int allocate_size;
-    /**
-     * 最大i_holder_size個の動的割り当てバッファを準備する。
-     * @param i_holder_size
-     */
-    public NyARLabelHolder(int i_holder_size)
-    {
-	//ポインタだけははじめに確保しておく
-	this.labels=new NyARLabel[i_holder_size];
-	this.allocate_size=0;
-    }
-    /**
-     * i_indexで指定した番号までのバッファを準備する。
-     * @param i_index
-     */
-    private final void reserv(int i_index) throws NyARException
-    {
-	//アロケート済みなら即リターン
-	if(this.allocate_size>i_index){
-	    return;
-	}
-	//要求されたインデクスは範囲外
-	if(i_index>=this.labels.length){
-	    throw new NyARException();
-	}	
-	//追加アロケート範囲を計算
-	int range=i_index+ARRAY_APPEND_STEP;
-	if(range>=this.labels.length){
-	    range=this.labels.length;
-	}
-	//アロケート
-	for(int i=this.allocate_size;i<range;i++)
-	{
-	    this.labels[i]=new NyARLabel();
-	}
-	this.allocate_size=range;
-    }
-    /**
-     * i_reserv_sizeまでのバッファを、初期条件i_lxsizeとi_lysizeで初期化する。
-     * @param i_reserv_size
-     * @param i_lxsize
-     * @param i_lysize
-     * @throws NyARException
-     */
-    public final void init(int i_reserv_size,int i_lxsize,int i_lysize) throws NyARException
-    {
-	reserv(i_reserv_size);
-	NyARLabel l;
-	for(int i=0;i<i_reserv_size;i++){
-	    l=this.labels[i];
-	    l.area=0;
-	    l.pos_x=0;
-	    l.pos_y=0;
-	    l.clip0= i_lxsize;//wclip[i*4+0] = lxsize;
-	    l.clip1= 0;//wclip[i*4+0] = lxsize;
-	    l.clip2= i_lysize;//wclip[i*4+2] = lysize;
-	    l.clip3= 0;//wclip[i*4+3] = 0;
-	}	
-    }
-}
-
 
 /**
  * ラベリングクラス。NyARRasterをラベリングして、結果値を保持します。
  * 構造を維持して最適化をしたバージョン
  *
  */
-class NyARLabeling_O2 implements NyARLabeling
+class NyARLabeling_O2 implements INyLabeling
 {
     private static final int WORK_SIZE=1024*32;//#define WORK_SIZE   1024*32
-    private final int[][] glabel_img;//static ARInt16 l_imageL[HARDCODED_BUFFER_WIDTH*HARDCODED_BUFFER_HEIGHT];
-
     private final NyARWorkHolder work_holder=new NyARWorkHolder(WORK_SIZE);
-    private final NyARLabelHolder label_holder=new NyARLabelHolder(WORK_SIZE);
-
-    private int label_num;
-    //
-    private final int width;
-    private final int height;
-    /**
-     * @param i_width
-     * ラベリング画像の幅。解析するラスタの幅より大きいこと。
-     * @param i_height
-     * ラベリング画像の高さ。解析するラスタの高さより大きいこと。
-     */
-    public NyARLabeling_O2(int i_width,int i_height)
+    private int _thresh;
+    private TNyIntSize _dest_size;
+    private NyLabelingImage _out_image;
+    public NyARLabeling_O2()
     {
-	width =i_width;
-	height=i_height;
-	glabel_img=new int[height][width];
-	this.wk_reservLineBuffer_buf=new int[width];
-	label_num=0;
-
-
-	//ワークイメージに枠を書く
-	int[][] label_img=this.glabel_img;
-	for(int i = 0; i < i_width; i++){
-	    label_img[0][i]=0;
-	    label_img[i_height-1][i]=0;
-	}
-	//</Optimize>
-	for(int i = 0; i < i_height; i++) {
-	    label_img[i][0]=0;
-	    label_img[i][i_width-1]=0;			    
-	}
-	
-	
-	
-	
+	this._thresh=110;
     }
-    /**
-     * 検出したラベルの数を返す
-     * @return
-     */
-    public int getLabelNum()
+    public void setThresh(int i_thresh)
     {
-	return label_num;
-    }
-    /**
-     * 検出したエリア配列？
-     * @return
-     * @throws NyARException
-     */
-    public NyARLabel[] getLabel() throws NyARException
-    {
-	if(label_num<1){
-	    throw new NyARException();
-	}
-	return this.label_holder.labels;
-    }    
-    /**
-     * 
-     * @return
-     * @throws NyARException
-     */
-    public int[] getLabelRef() throws NyARException
-    {
-	if(label_num<1){
-	    throw new NyARException();
-	}
-	return work_holder.work;
-    }
-    /**
-     * ラベリング済みイメージを返す
-     * @return
-     * @throws NyARException
-     */
-    public int[][] getLabelImg() throws NyARException
-    {
-	return glabel_img;
+	this._thresh=i_thresh;	
     }
     //コンストラクタで作ること
-    private int[] wk_reservLineBuffer_buf=null;
+    private int[] wk_reservLineBuffer_buf;
+    public void attachDestination(NyLabelingImage i_destination_image) throws NyARException
+    {
+	//サイズチェック
+	TNyIntSize size=i_destination_image.getSize();
+	this._out_image=i_destination_image;
+	
+	//ラインバッファの準備
+	if(this.wk_reservLineBuffer_buf==null){
+	    this.wk_reservLineBuffer_buf=new int[size.w];
+	}else if(this.wk_reservLineBuffer_buf.length<size.w){
+	    this.wk_reservLineBuffer_buf=new int[size.w];	    
+	}
+	
+	//NyLabelingImageのイメージ初期化(枠書き)
+	int[][] img=i_destination_image.getImage();
+	for(int i = 0; i < size.w; i++){
+	    img[0][i]  =0;
+	    img[size.h-1][i]=0;
+	}
+	for(int i = 0; i < size.h; i++) {
+	    img[i][0]  =0;
+	    img[i][size.w-1]=0;			    
+	}
+	
+	//サイズ(参照値)を保存
+	this._dest_size=size;	
+    }
+
 
     /**
      * static ARInt16 *labeling2( ARUint8 *image, int thresh,int *label_num, int **area, double **pos, int **clip,int **label_ref, int LorR )
      * 関数の代替品
      * ラスタimageをラベリングして、結果を保存します。
      * Optimize:STEP[1514->1493]
-     * @param image
+     * @param i_image
      * @param thresh
      * @throws NyARException
      */
-    public void labeling(NyARRaster image,int thresh) throws NyARException
+    public void labeling(INyARRaster i_input_raster) throws NyARException
     {
 	int wk_max;                   /*  work                */
 	int m,n;                      /*  work                */
-	int lxsize, lysize;
-	int thresht3 = thresh * 3;
+	int thresht3 = this._thresh * 3;
 	int i,j,k;
-	lxsize=image.getWidth();//lxsize = arUtil_c.arImXsize;
-	lysize=image.getHeight();//lysize = arUtil_c.arImYsize;
-	//画素数の一致チェック
-	if(lxsize!=this.width || lysize!=this.height){
-	    throw new NyARException();
-	}	
-	//ラベル数を0に初期化
-	this.label_num=0;
-
-
-
-	int[][] label_img=this.glabel_img;
+        NyLabelingImage out_image=this._out_image;	
+	
+        //サイズチェック
+        TNyIntSize in_size=i_input_raster.getSize();
+        this._dest_size.isEqualSize(in_size);
+        
+        int lxsize=in_size.w;//lxsize = arUtil_c.arImXsize;
+	int lysize=in_size.h;//lysize = arUtil_c.arImYsize;
+	int[][] label_img=out_image.getImage();
 	
 
 	//枠作成はインスタンスを作った直後にやってしまう。
@@ -339,10 +185,10 @@ class NyARLabeling_O2 implements NyARLabeling
 	for(j = 1; j < lysize - 1; j++) {//for (int j = 1; j < lysize - 1; j++, pnt += poff*2, pnt2 += 2) {
             label_img_pt0=label_img[j];
             label_img_pt1=label_img[j-1];
-            image.getPixelTotalRowLine(j,line_bufferr);
+            i_input_raster.getPixelTotalRowLine(j,line_bufferr);
 
 	    for(i = 1; i < lxsize-1; i++) {//for(int i = 1; i < lxsize-1; i++, pnt+=poff, pnt2++) {
-		//RGBの合計値が閾値より大きいかな？
+		//RGBの合計値が閾値より小さいかな？
 		if(line_bufferr[i]<=thresht3){
 		    //pnt1 = ShortPointer.wrap(pnt2, -lxsize);//pnt1 = &(pnt2[-lxsize]);
 		    if(label_img_pt1[i]>0){//if( *pnt1 > 0 ) {
@@ -460,39 +306,87 @@ class NyARLabeling_O2 implements NyARLabeling
 		}else {
 		    label_img_pt0[i]=0;//*pnt2 = 0;
 		}
-		
 	    }
 	}
-	j = 1;
+	//グループ化とラベル数の計算
+	int wlabel_num=1;//*label_num = *wlabel_num = j - 1;
+	
 	for(i = 0; i < wk_max; i++){//for(int i = 1; i <= wk_max; i++, wk++) {
-	    work[i]=(work[i]==i+1)? j++: work[work[i]-1];//*wk = (*wk==i)? j++: work[(*wk)-1];
+	    work[i]=(work[i]==i+1)? wlabel_num++: work[work[i]-1];//*wk = (*wk==i)? j++: work[(*wk)-1];
 	}
-
-	int wlabel_num=j - 1;//*label_num = *wlabel_num = j - 1;
-
+	wlabel_num-=1;//*label_num = *wlabel_num = j - 1;
 	if(wlabel_num==0){//if( *label_num == 0 ) {
 	    //発見数0
+	    out_image.getLabelList().setLength(0);
 	    return;
+	}
+	
+	//ラベル衝突の解消
+	int[] line;
+	int i2,l1;
+	l1=lxsize & 0xfffffffc;
+	for(i=lysize-1;i>=0;i--)
+	{
+	    line=label_img[i];
+	    int pix;	    
+	    for(i2=0;i2<l1;)
+	    {
+		pix=line[i2];
+		if(pix!=0){
+		    line[i2]=work[pix-1];
+		}
+		i2++;
+		
+		pix=line[i2];
+		if(pix!=0){
+		    line[i2]=work[pix-1];
+		}
+		i2++;
+
+		pix=line[i2];
+		if(pix!=0){
+		    line[i2]=work[pix-1];
+		}
+		i2++;
+
+		pix=line[i2];
+		if(pix!=0){
+		    line[i2]=work[pix-1];
+		}
+		i2++;
+	    }
+	    for(;i2<lxsize;i2++){
+		pix=line[i2];
+		if(pix==0){
+		    continue;
+		}
+		line[i2]=work[pix-1];
+		i2++;
+	    }
 	}
 
 	
-	
-	//ラベルバッファを予約&初期化
-	this.label_holder.init(wlabel_num, lxsize, lysize);
-//	
-//	putZero(warea,wlabel_num);//put_zero( (ARUint8 *)warea, *label_num *     sizeof(int) );
-//	for(i=0;i<wlabel_num;i++){
-//	    wpos[i*2+0]=0;
-//	    wpos[i*2+1]=0;
-//	}
-//	for(i = 0; i < wlabel_num; i++) {//for(i = 0; i < *label_num; i++) {
-//	    wclip[i][0] = lxsize;//wclip[i*4+0] = lxsize;
-//	    wclip[i][1] = 0;//wclip[i*4+1] = 0;
-//	    wclip[i][2] = lysize;//wclip[i*4+2] = lysize;
-//	    wclip[i][3] = 0;//wclip[i*4+3] = 0;
-//	}
+	//ラベル情報の保存等
+	NyARLabelList label_list=out_image.getLabelList();
+
+	//ラベルバッファを予約
+	label_list.reserv(wlabel_num);
+
+	//エリアと重心、クリップ領域を計算
 	NyARLabel label_pt;
-	NyARLabel[] labels=this.label_holder.labels;
+	NyARLabel[] labels=label_list.getArray();
+	for(i=0;i<wlabel_num;i++)
+	{
+	    label_pt=labels[i];
+	    label_pt.area=0;
+	    label_pt.pos_x=0;
+	    label_pt.pos_y=0;
+	    label_pt.clip_l= lxsize;//wclip[i*4+0] = lxsize;
+	    label_pt.clip_r= 0;//wclip[i*4+0] = lxsize;
+	    label_pt.clip_t= lysize;//wclip[i*4+2] = lysize;
+	    label_pt.clip_b= 0;//wclip[i*4+3] = 0;	    
+	}
+
 	
 	for(i = 0; i < wk_max; i++){
 	    label_pt=labels[work[i] - 1];
@@ -500,17 +394,17 @@ class NyARLabeling_O2 implements NyARLabeling
 	    label_pt.area  += work2_pt[0];
 	    label_pt.pos_x += work2_pt[1];
 	    label_pt.pos_y += work2_pt[2];
-	    if( label_pt.clip0 > work2_pt[3] ){
-		label_pt.clip0 = work2_pt[3];
+	    if( label_pt.clip_l > work2_pt[3] ){
+		label_pt.clip_l = work2_pt[3];
 	    }
-	    if( label_pt.clip1 < work2_pt[4] ){
-		label_pt.clip1 = work2_pt[4];
+	    if( label_pt.clip_r < work2_pt[4] ){
+		label_pt.clip_r = work2_pt[4];
 	    }
-	    if(label_pt.clip2 > work2_pt[5] ){
-		label_pt.clip2 = work2_pt[5];
+	    if(label_pt.clip_t > work2_pt[5] ){
+		label_pt.clip_t = work2_pt[5];
 	    }
-	    if( label_pt.clip3 < work2_pt[6] ){
-		label_pt.clip3 = work2_pt[6];
+	    if( label_pt.clip_b < work2_pt[6] ){
+		label_pt.clip_b = work2_pt[6];
 	    }
 	}
 
@@ -519,8 +413,8 @@ class NyARLabeling_O2 implements NyARLabeling
 	    label_pt.pos_x /= label_pt.area;
 	    label_pt.pos_y /= label_pt.area;
 	}
-
-	label_num=wlabel_num;
+	//ラベル個数を保存する
+	label_list.setLength(wlabel_num);
 	return;
     }
 }

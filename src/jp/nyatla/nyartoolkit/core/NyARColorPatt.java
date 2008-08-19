@@ -65,12 +65,12 @@ public interface NyARColorPatt
      */
     public int[][][] getPatArray();
     /**
-     * ラスタイメージからi_marker部分のカラーパターンを抽出して、保持します。
+     * ラスタイメージからi_square部分のカラーパターンを抽出して、保持します。
      * @param image
-     * @param i_marker
+     * @param i_square
      * @return
      * ラスターの取得に成功するとTRUE/失敗するとFALSE
      * @throws NyARException
      */
-    public boolean pickFromRaster(NyARRaster image, NyARMarker i_marker) throws NyARException;
+    public boolean pickFromRaster(INyARRaster image, NyARSquare i_square) throws NyARException;
 }

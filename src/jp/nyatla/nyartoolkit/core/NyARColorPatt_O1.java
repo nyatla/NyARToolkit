@@ -32,7 +32,7 @@
 package jp.nyatla.nyartoolkit.core;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.NyARRaster;
+import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 
 /**
  * 24ビットカラーのマーカーを保持するために使うクラスです。
@@ -184,7 +184,7 @@ public class NyARColorPatt_O1 implements NyARColorPatt
      * 切り出しに失敗した
      * @throws Exception
      */
-    public boolean pickFromRaster(NyARRaster image, NyARMarker i_marker) throws NyARException
+    public boolean pickFromRaster(INyARRaster image, NyARSquare i_square) throws NyARException
     {
 	double		d, xw, yw;
 	int		xc, yc;
@@ -199,14 +199,16 @@ public class NyARColorPatt_O1 implements NyARColorPatt
 	double    ydiv2_reciprocal; // [tp]
 
 
-	int[] x_coord=i_marker.x_coord;
-	int[] y_coord=i_marker.y_coord;
-	double[][] local=wk_pickFromRaster_local;//double    local[4][2];	
-	int[] vertex=i_marker.mkvertex;
+//	int[] x_coord=i_marker.x_coord;
+//	int[] y_coord=i_marker.y_coord;
+//	int[] vertex=i_marker.mkvertex;
+	double[][] local=wk_pickFromRaster_local;//double    local[4][2];
+	//
 	for(int i = 0; i < 4; i++ ) {
-	    local[i][0] = x_coord[vertex[i]];
-	    local[i][1] = y_coord[vertex[i]];
+	    local[i][0] = i_square.imvertex[i][0];
+	    local[i][1] = i_square.imvertex[i][1];
 	}
+
 	double[][] world=wk_pickFromRaster_world;
 /*	world[0][0] = 100.0;
 	world[0][1] = 100.0;

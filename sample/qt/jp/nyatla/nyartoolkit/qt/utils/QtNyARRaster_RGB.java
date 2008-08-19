@@ -13,10 +13,10 @@ import java.awt.image.DataBuffer;
 import java.awt.image.WritableRaster;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.NyARRaster;
+import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 
 
-public class QtNyARRaster_RGB implements NyARRaster
+public class QtNyARRaster_RGB implements INyARRaster
 {
     protected byte[] ref_buf;
     protected int width=0;

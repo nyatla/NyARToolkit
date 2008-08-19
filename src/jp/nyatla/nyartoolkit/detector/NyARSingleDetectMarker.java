@@ -66,7 +66,7 @@ public class NyARSingleDetectMarker{
     public NyARSingleDetectMarker(NyARParam i_param,NyARCode i_code,double i_marker_width) throws NyARException
     {
 	//解析オブジェクトを作る
-	this.square=new NyARDetectSquare(i_param);
+	this.square=new NyARDetectSquare(i_param,AR_SQUARE_MAX*3);
 	this.transmat=new NyARTransMat_O2(i_param);
 	//比較コードを保存
 	this.code=i_code;
@@ -87,14 +87,14 @@ public class NyARSingleDetectMarker{
      * マーカーが検出できたかを真偽値で返します。
      * @throws NyARException
      */
-    public boolean detectMarkerLite(NyARRaster i_image,int i_thresh) throws NyARException
+    public boolean detectMarkerLite(INyARRaster i_image,int i_thresh) throws NyARException
     {
 	detected_square=null;
 	NyARSquareList l_square_list=this.square_list;
 	//スクエアコードを探す
 	square.detectSquare(i_image, i_thresh,l_square_list);
 	
-	int number_of_square=l_square_list.getSquareNum();
+	int number_of_square=l_square_list.getCount();
 	//コードは見つかった？
 	if(number_of_square<1){
 	    return false;

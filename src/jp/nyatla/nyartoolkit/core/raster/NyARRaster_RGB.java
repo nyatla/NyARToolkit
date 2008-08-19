@@ -32,46 +32,37 @@
 package jp.nyatla.nyartoolkit.core.raster;
 
 
-public class NyARRaster_RGB implements NyARRaster
+
+public class NyARRaster_RGB extends NyARRaster_BasicClass
 {
     protected byte[] ref_buf;
-    protected int width;
-    protected int height;
     public static NyARRaster_RGB wrap(byte[] i_buffer,int i_width,int i_height)
     {
         NyARRaster_RGB new_inst=new NyARRaster_RGB();
         new_inst.ref_buf=i_buffer;
-        new_inst.width  =i_width;
-        new_inst.height =i_height;
+        new_inst._size.w=i_width;
+        new_inst._size.h=i_height;
         return new_inst;
     }
     //RGBの合計値を返す
     public int getPixelTotal(int i_x,int i_y)
     {
 	byte[] ref=this.ref_buf;
-        int bp=(i_x+i_y*this.width)*3;
+        int bp=(i_x+i_y*this._size.w)*3;
         return (ref[bp] & 0xff)+(ref[bp+1] & 0xff)+(ref[bp+2] & 0xff);
     }
     public void getPixelTotalRowLine(int i_row,int[] o_line)
     {
         final byte[] ref=this.ref_buf;
-        int bp=(i_row+1)*this.width*3-3;
-        for(int i=this.width-1;i>=0;i--){
+        int bp=(i_row+1)*this._size.w*3-3;
+        for(int i=this._size.w-1;i>=0;i--){
 	    o_line[i]=(ref[bp] & 0xff)+(ref[bp+1] & 0xff)+(ref[bp+2] & 0xff);
 	    bp-=3;
 	}
-    }    
-    public int getWidth()
-    {
-        return width;
-    }
-    public int getHeight()
-    {
-        return height;
     }
     public void getPixel(int i_x,int i_y,int[] i_rgb)
     {
-        int bp=(i_x+i_y*this.width)*3;
+        int bp=(i_x+i_y*this._size.w)*3;
         byte[] ref=this.ref_buf;
         i_rgb[0]=(ref[bp+0] & 0xff);//R
         i_rgb[1]=(ref[bp+1] & 0xff);//G
@@ -79,7 +70,7 @@ public class NyARRaster_RGB implements NyARRaster
     }
     public void getPixelSet(int[] i_x,int i_y[],int i_num,int[] o_rgb)
     {
-	int width=this.width;
+	int width=this._size.w;
 	byte[] ref=this.ref_buf;
 	int bp;
 	for(int i=i_num-1;i>=0;i--){

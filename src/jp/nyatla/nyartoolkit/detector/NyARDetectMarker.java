@@ -102,7 +102,7 @@ public class NyARDetectMarker{
     public NyARDetectMarker(NyARParam i_param,NyARCode[] i_code,double[] i_marker_width,int i_number_of_code) throws NyARException
     {
 	//解析オブジェクトを作る
-	this.square=new NyARDetectSquare(i_param);
+	this.square=new NyARDetectSquare(i_param,AR_SQUARE_MAX);
 	this.transmat=new NyARTransMat_O2(i_param);
 	//比較コードを保存
 	this.codes=i_code;
@@ -135,13 +135,13 @@ public class NyARDetectMarker{
      * マーカーが見つからない場合は0を返します。
      * @throws NyARException
      */
-    public int detectMarkerLite(NyARRaster i_image,int i_thresh) throws NyARException
+    public int detectMarkerLite(INyARRaster i_image,int i_thresh) throws NyARException
     {
 	NyARSquareList l_square_list=this.square_list;
 	//スクエアコードを探す
-	square.detectSquare(i_image, i_thresh,l_square_list);
+	square.detectSquare(i_image,i_thresh,l_square_list);
 	
-	final int number_of_square=l_square_list.getSquareNum();
+	final int number_of_square=l_square_list.getCount();
 	//コードは見つかった？
 	if(number_of_square<1){
 	    //ないや。おしまい。

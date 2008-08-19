@@ -31,30 +31,40 @@
  */
 package jp.nyatla.nyartoolkit.core;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
-
+import jp.nyatla.nyartoolkit.core.labeling.*;
 
 
 public class NyARDetectSquare
 {
-    private final NyARLabeling labeling;
-    private final NyARDetectMarker detect;
-    private NyARParam param;
-
+    private final NyARLabeling_O2 _labeling;
+    private final NyARDetectMarker _detecter;
+    private final NyLabelingImage _limage;
+    private final NyARParam _param;
+    private final NyARMarkerList _marker_list;
+    
     /**
      * マーカー抽出インスタンスを作ります。
      * @param i_param
+     * @param i_max_marker
+     * 認識するマーカーの最大個数を指定します。
+     * @throws NyARException
      */
-    public NyARDetectSquare(NyARParam i_param)
+    public NyARDetectSquare(NyARParam i_param,int i_max_marker) throws NyARException
     {
-	param=i_param;
+	this._param=i_param;
 	//解析オブジェクトを作る
 	int width=i_param.getX();
 	int height=i_param.getY();
+	
 
-	labeling=new NyARLabeling_O2(width,height);
-	detect=new NyARDetectMarker(width,height);
+	this._detecter=new NyARDetectMarker(width,height);
+	this._labeling=new NyARLabeling_O2();
+	this._limage=new NyLabelingImage(width,height);
+	this._marker_list=new NyARMarkerList(i_max_marker);
+	
+	this._labeling.attachDestination(this._limage);
     }
     /**
      * ラスタイメージから矩形を検出して、結果o_square_holderへ格納します。
@@ -63,42 +73,18 @@ public class NyARDetectSquare
      * @param i_square_holder
      * @throws NyARException
      */
-    public void detectSquare(NyARRaster i_image,int i_thresh,NyARSquareList o_square_holder) throws NyARException
+    public void detectSquare(INyARRaster i_image,int i_thresh,NyARSquareList o_square_list) throws NyARException
     {
-//	number_of_square=0;
-	
-	labeling.labeling(i_image, i_thresh);
-	if(labeling.getLabelNum()<1){
+	this._labeling.setThresh(i_thresh);
+	this._labeling.labeling(i_image);
+	//ラベル数が0ならマーカー検出をしない。	
+	if(this._limage.getLabelList().getCount()<1){
 	    return;
 	}
 	//ここでマーカー配列を作成する。
-	detect.detectMarker(labeling,1.0,o_square_holder);
+	this._detecter.detectMarker(this._limage,1.0,this._marker_list);
 	
 	//マーカー情報をフィルタして、スクエア配列を更新する。
-	o_square_holder.updateSquareArray(param);
-
-//	NyARSquare square;
-//	int j=0;
-//	for (int i = 0; i <number_of_marker; i++){
-//	double[][]  line	=new double[4][3];
-//	double[][]  vertex	=new double[4][2];
-//	//NyARMarker marker=detect.getMarker(i);
-//	square=square_holder.getSquare(i);
-//	//・・・線の検出？？
-//	if (!square.getLine(param))
-//	{
-//	    continue;
-//	}
-//	ここで計算するのは良くないと思うんだ	
-//	marker_infoL[j].id  = id.get();
-//	marker_infoL[j].dir = dir.get();
-//	marker_infoL[j].cf  = cf.get();	
-//	j++;
-//	//配列数こえたらドゴォォォンしないようにループを抜ける
-//	if(j>=marker_info.length){
-//	    break;
-//	}
-//    }
-//    number_of_square=j;
+	o_square_list.pickupSquare(this._param, this._marker_list);
     }
 }
