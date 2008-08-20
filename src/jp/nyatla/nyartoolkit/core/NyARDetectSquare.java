@@ -34,11 +34,11 @@ package jp.nyatla.nyartoolkit.core;
 import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.labeling.*;
-
+import jp.nyatla.nyartoolkit.core.labeling.processor.NyARLabeling;
 
 public class NyARDetectSquare
 {
-    private final NyARLabeling_O2 _labeling;
+    private final NyARLabeling _labeling;
     private final NyARDetectMarker _detecter;
     private final NyLabelingImage _limage;
     private final NyARParam _param;
@@ -60,7 +60,7 @@ public class NyARDetectSquare
 	
 
 	this._detecter=new NyARDetectMarker(width,height);
-	this._labeling=new NyARLabeling_O2();
+	this._labeling=new NyARLabeling();
 	this._limage=new NyLabelingImage(width,height);
 	this._marker_list=new NyARMarkerList(i_max_marker);
 	

@@ -6,7 +6,7 @@ public class NyLabelingImage
 {
     private TNyIntSize _size;
     private int[][] _image;
-    private NyARLabelList _label_list;
+    private NyLabelingLabelList _label_list;
     /**
      * 
      * @param i_width
@@ -18,7 +18,7 @@ public class NyLabelingImage
 	this._size.w=i_width;
 	this._size.h=i_height;
 	this._image=new int[i_height][i_width];
-	this._label_list=new NyARLabelList();
+	this._label_list=new NyLabelingLabelList();
     }
     public TNyIntSize getSize()
     {
@@ -28,7 +28,7 @@ public class NyLabelingImage
     {
 	return this._image;
     }
-    public NyARLabelList getLabelList()
+    public NyLabelingLabelList getLabelList()
     {
 	return this._label_list;
     }

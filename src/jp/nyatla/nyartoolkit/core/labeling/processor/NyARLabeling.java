@@ -29,7 +29,7 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core;
+package jp.nyatla.nyartoolkit.core.labeling.processor;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
@@ -42,70 +42,21 @@ import jp.nyatla.nyartoolkit.core.types.*;
 
 
 
-/**
- * NyARLabeling_O2のworkとwork2を可変長にするためのクラス
- * 
- *
- */
-class NyARWorkHolder
-{
-    private final static int ARRAY_APPEND_STEP=256;
-    public final int[] work;
-    public final int[][] work2;
-    private int allocate_size;
-    /**
-     * 最大i_holder_size個の動的割り当てバッファを準備する。
-     * @param i_holder_size
-     */
-    public NyARWorkHolder(int i_holder_size)
-    {
-	//ポインタだけははじめに確保しておく
-	this.work=new int[i_holder_size];
-	this.work2=new int[i_holder_size][];
-	this.allocate_size=0;
-    }
-    /**
-     * i_indexで指定した番号までのバッファを準備する。
-     * @param i_index
-     */
-    public final void reserv(int i_index) throws NyARException
-    {
-	//アロケート済みなら即リターン
-	if(this.allocate_size>i_index){
-	    return;
-	}
-	//要求されたインデクスは範囲外
-	if(i_index>=this.work.length){
-	    throw new NyARException();
-	}	
-	//追加アロケート範囲を計算
-	int range=i_index+ARRAY_APPEND_STEP;
-	if(range>=this.work.length){
-	    range=this.work.length;
-	}
-	//アロケート
-	for(int i=this.allocate_size;i<range;i++)
-	{
-	    this.work2[i]=new int[7];
-	}
-	this.allocate_size=range;
-    }
-}
 
 
 /**
- * ラベリングクラス。NyARRasterをラベリングして、結果値を保持します。
- * 構造を維持して最適化をしたバージョン
+ * ARToolKit互換のラベリングクラスです。
+ * ARToolKitと同一な評価結果を返します。
  *
  */
-class NyARLabeling_O2 implements INyLabeling
+public class NyARLabeling implements INyLabeling
 {
     private static final int WORK_SIZE=1024*32;//#define WORK_SIZE   1024*32
     private final NyARWorkHolder work_holder=new NyARWorkHolder(WORK_SIZE);
     private int _thresh;
     private TNyIntSize _dest_size;
     private NyLabelingImage _out_image;
-    public NyARLabeling_O2()
+    public NyARLabeling()
     {
 	this._thresh=110;
     }
@@ -367,14 +318,14 @@ class NyARLabeling_O2 implements INyLabeling
 
 	
 	//ラベル情報の保存等
-	NyARLabelList label_list=out_image.getLabelList();
+	NyLabelingLabelList label_list=out_image.getLabelList();
 
 	//ラベルバッファを予約
 	label_list.reserv(wlabel_num);
 
 	//エリアと重心、クリップ領域を計算
-	NyARLabel label_pt;
-	NyARLabel[] labels=label_list.getArray();
+	NyLabelingLabel label_pt;
+	NyLabelingLabel[] labels=label_list.getArray();
 	for(i=0;i<wlabel_num;i++)
 	{
 	    label_pt=labels[i];
@@ -419,3 +370,52 @@ class NyARLabeling_O2 implements INyLabeling
     }
 }
 
+/**
+ * NyARLabeling_O2のworkとwork2を可変長にするためのクラス
+ * 
+ *
+ */
+class NyARWorkHolder
+{
+    private final static int ARRAY_APPEND_STEP=256;
+    public final int[] work;
+    public final int[][] work2;
+    private int allocate_size;
+    /**
+     * 最大i_holder_size個の動的割り当てバッファを準備する。
+     * @param i_holder_size
+     */
+    public NyARWorkHolder(int i_holder_size)
+    {
+	//ポインタだけははじめに確保しておく
+	this.work=new int[i_holder_size];
+	this.work2=new int[i_holder_size][];
+	this.allocate_size=0;
+    }
+    /**
+     * i_indexで指定した番号までのバッファを準備する。
+     * @param i_index
+     */
+    public final void reserv(int i_index) throws NyARException
+    {
+	//アロケート済みなら即リターン
+	if(this.allocate_size>i_index){
+	    return;
+	}
+	//要求されたインデクスは範囲外
+	if(i_index>=this.work.length){
+	    throw new NyARException();
+	}	
+	//追加アロケート範囲を計算
+	int range=i_index+ARRAY_APPEND_STEP;
+	if(range>=this.work.length){
+	    range=this.work.length;
+	}
+	//アロケート
+	for(int i=this.allocate_size;i<range;i++)
+	{
+	    this.work2[i]=new int[7];
+	}
+	this.allocate_size=range;
+    }
+}

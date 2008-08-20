@@ -89,7 +89,7 @@ public class NyARDetectMarker {
      * @param clip
      * @throws NyARException
      */
-    private final void arGetContour(NyARMarker o_marker,int[][] limage,int i_labelnum, NyARLabel i_label) throws NyARException
+    private final void arGetContour(NyARMarker o_marker,int[][] limage,int i_labelnum, NyLabelingLabel i_label) throws NyARException
     {
 	final int[] xcoord=wk_arGetContour_xcoord;
 	final int[] ycoord=wk_arGetContour_ycoord;
@@ -209,7 +209,7 @@ public class NyARDetectMarker {
 	int label_area;
 	int i;
 	int xsize, ysize;
-	NyARLabel[] labels=i_labeling.getLabelList().getArray();
+	NyLabelingLabel[] labels=i_labeling.getLabelList().getArray();
 //	int[] warea  	=i_labeling.getArea();
 	int label_num	=i_labeling.getLabelList().getCount();
 //	int[][] wclip	=i_labeling.getClip();
@@ -223,7 +223,7 @@ public class NyARDetectMarker {
 	ysize =height;
 //	マーカーをmarker_holderに蓄積する。
 	NyARMarker current_marker=o_marker_list.getCurrentHolder();
-	NyARLabel label_pt;
+	NyLabelingLabel label_pt;
 	for(i=0; i<label_num; i++ ){
 	    label_pt=labels[i];
 	    label_area=label_pt.area;

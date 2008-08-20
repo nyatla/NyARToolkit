@@ -34,7 +34,12 @@ package jp.nyatla.nyartoolkit.detector;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.match.NyARMatchPatt_Color_WITHOUT_PCA;
+import jp.nyatla.nyartoolkit.core.pickup.INyColorPatt;
+import jp.nyatla.nyartoolkit.core.pickup.NyARColorPatt_O3;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
+import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
+import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat_O2;
 /**
  * 画像からARCodeに最も一致するマーカーを1個検出し、その変換行列を計算するクラスです。
  *
@@ -46,13 +51,13 @@ public class NyARSingleDetectMarker{
     private NyARDetectSquare square;
     private final NyARSquareList square_list=new NyARSquareList(AR_SQUARE_MAX);
     private NyARCode code;
-    protected NyARTransMat transmat;
+    protected INyARTransMat transmat;
     private double marker_width;
     //検出結果の保存用
     private int detected_direction;
     private double detected_confidence;
     private NyARSquare detected_square;
-    private NyARColorPatt patt;
+    private INyColorPatt patt;
     /**
      * 検出するARCodeとカメラパラメータから、1個のARCodeを検出するNyARSingleDetectMarkerインスタンスを作ります。
      * @param i_param

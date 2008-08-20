@@ -29,12 +29,13 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core;
+package jp.nyatla.nyartoolkit.core.transmat;
 
 
 
 
 import jp.nyatla.nyartoolkit.*;
+import jp.nyatla.nyartoolkit.core.NyARSquare;
 
 
 /**
@@ -43,7 +44,7 @@ import jp.nyatla.nyartoolkit.*;
  * 変換行列を計算するクラス。
  *
  */
-public interface NyARTransMat{
+public interface INyARTransMat{
     public void setCenter(double i_x,double i_y);
     public double transMat(NyARSquare i_square,int i_direction, double i_width,NyARTransMatResult o_result)throws NyARException;
     public double transMatContinue(NyARSquare i_square,int i_direction, double i_width,NyARTransMatResult io_result_conv)throws NyARException;

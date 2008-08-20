@@ -29,11 +29,14 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core;
+package jp.nyatla.nyartoolkit.core.transmat;
 
 
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARMat;
+import jp.nyatla.nyartoolkit.core.NyARParam;
+import jp.nyatla.nyartoolkit.core.NyARSquare;
 import jp.nyatla.util.DoubleValue;
 
 
@@ -46,7 +49,7 @@ import jp.nyatla.util.DoubleValue;
  * 変換行列を計算して、結果を保持するクラス。
  *
  */
-public class NyARTransMat_O2 implements NyARTransMat
+public class NyARTransMat_O2 implements INyARTransMat
 {
     private final static int AR_FITTING_TO_IDEAL=0;//#define  AR_FITTING_TO_IDEAL          0
     private final static int AR_FITTING_TO_INPUT=1;//#define  AR_FITTING_TO_INPUT          1

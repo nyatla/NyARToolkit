@@ -29,9 +29,11 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core;
+package jp.nyatla.nyartoolkit.core.pickup;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARMat;
+import jp.nyatla.nyartoolkit.core.NyARSquare;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 
 /**
@@ -40,7 +42,7 @@ import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
  * 演算順序以外の最適化をしたもの
  *
  */
-public class NyARColorPatt_O1 implements NyARColorPatt
+public class NyARColorPatt_O1 implements INyColorPatt
 {
     private static final int AR_PATT_SAMPLE_NUM=64;//#define   AR_PATT_SAMPLE_NUM   64
     private int extpat[][][];

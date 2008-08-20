@@ -34,7 +34,12 @@ package jp.nyatla.nyartoolkit.detector;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.match.NyARMatchPatt_Color_WITHOUT_PCA;
+import jp.nyatla.nyartoolkit.core.pickup.INyColorPatt;
+import jp.nyatla.nyartoolkit.core.pickup.NyARColorPatt_O3;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
+import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
+import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat_O2;
 
 
 
@@ -75,11 +80,11 @@ public class NyARDetectMarker{
     private NyARDetectSquare square;
     private final NyARSquareList square_list=new NyARSquareList(AR_SQUARE_MAX);
     private NyARCode[] codes;
-    protected NyARTransMat transmat;
+    protected INyARTransMat transmat;
     private double[] marker_width;
     private int number_of_code;
     //検出結果の保存用
-    private NyARColorPatt patt;
+    private INyColorPatt patt;
     
     private NyARDetectMarkerResultHolder result_holder=new NyARDetectMarkerResultHolder();
     

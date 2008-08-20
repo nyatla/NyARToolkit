@@ -33,7 +33,7 @@ package jp.nyatla.nyartoolkit.core.match;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARCode;
-import jp.nyatla.nyartoolkit.core.NyARColorPatt;
+import jp.nyatla.nyartoolkit.core.pickup.INyColorPatt;
 
 
 
@@ -49,7 +49,7 @@ public interface NyARMatchPatt{
     public double getConfidence();
     public int getDirection();
     public void evaluate(NyARCode i_code);
-    public boolean setPatt(NyARColorPatt i_target_patt) throws NyARException;
+    public boolean setPatt(INyColorPatt i_target_patt) throws NyARException;
 }
 
 

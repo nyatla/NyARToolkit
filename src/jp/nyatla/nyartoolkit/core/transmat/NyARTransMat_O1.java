@@ -29,12 +29,15 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core;
+package jp.nyatla.nyartoolkit.core.transmat;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARMat;
+import jp.nyatla.nyartoolkit.core.NyARParam;
+import jp.nyatla.nyartoolkit.core.NyARSquare;
 import jp.nyatla.util.DoubleValue;
 
-public class NyARTransMat_O1 implements NyARTransMat{
+public class NyARTransMat_O1 implements INyARTransMat{
     private final static int AR_FITTING_TO_IDEAL=0;//#define  AR_FITTING_TO_IDEAL          0
     private final static int AR_FITTING_TO_INPUT=1;//#define  AR_FITTING_TO_INPUT          1
     private final static int	arFittingMode	=AR_FITTING_TO_INPUT;

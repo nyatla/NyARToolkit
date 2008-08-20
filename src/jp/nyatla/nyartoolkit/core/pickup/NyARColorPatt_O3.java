@@ -29,11 +29,13 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core;
+package jp.nyatla.nyartoolkit.core.pickup;
 
 
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARMat;
+import jp.nyatla.nyartoolkit.core.NyARSquare;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 
 /**
@@ -42,7 +44,7 @@ import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
  * 演算順序を含む最適化をしたもの
  *
  */
-public class NyARColorPatt_O3 implements NyARColorPatt
+public class NyARColorPatt_O3 implements INyColorPatt
 {
     private static final int AR_PATT_SAMPLE_NUM=64;//#define   AR_PATT_SAMPLE_NUM   64
     private int extpat[][][];
@@ -90,38 +92,39 @@ public class NyARColorPatt_O3 implements NyARColorPatt
      * @param o_para
      * @throws NyARException
      */
-    private boolean get_cpara(double vertex_0[], double vertex_1[],NyARMat o_para) throws NyARException
+    private boolean get_cpara(int[][] vertex,NyARMat o_para) throws NyARException
     {
-	double world[][]=this.wk_pickFromRaster_world;
+	int world[][]=this.wk_pickFromRaster_world;
 	NyARMat a =wk_get_cpara_a;//次処理で値を設定するので、初期化不要// new NyARMat( 8, 8 );
 	double[][] a_array=a.getArray();
 	NyARMat b =wk_get_cpara_b;//次処理で値を設定するので、初期化不要// new NyARMat( 8, 1 );
 	double[][] b_array=b.getArray();
-	double[] a_pt0,a_pt1,world_pti;
+	double[] a_pt0,a_pt1;
+	int[] world_pti;
 
 	for(int i = 0; i < 4; i++ ) {
 	    a_pt0=a_array[i*2];
 	    a_pt1=a_array[i*2+1];
 	    world_pti=world[i];
 
-	    a_pt0[0]=world_pti[0];//a->m[i*16+0]  = world[i][0];
-	    a_pt0[1]=world_pti[1];//a->m[i*16+1]  = world[i][1];
+	    a_pt0[0]=(double)world_pti[0];//a->m[i*16+0]  = world[i][0];
+	    a_pt0[1]=(double)world_pti[1];//a->m[i*16+1]  = world[i][1];
 	    a_pt0[2]=1.0;//a->m[i*16+2]  = 1.0;
 	    a_pt0[3]=0.0;//a->m[i*16+3]  = 0.0;
 	    a_pt0[4]=0.0;//a->m[i*16+4]  = 0.0;
 	    a_pt0[5]=0.0;//a->m[i*16+5]  = 0.0;
-	    a_pt0[6]=-world_pti[0] * vertex_0[i];//a->m[i*16+6]  = -world[i][0] * vertex[i][0];
-	    a_pt0[7]=-world_pti[1] * vertex_0[i];//a->m[i*16+7]  = -world[i][1] * vertex[i][0];
+	    a_pt0[6]=(double)(-world_pti[0] * vertex[i][0]);//a->m[i*16+6]  = -world[i][0] * vertex[i][0];
+	    a_pt0[7]=(double)(-world_pti[1] * vertex[i][0]);//a->m[i*16+7]  = -world[i][1] * vertex[i][0];
 	    a_pt1[0]=0.0;//a->m[i*16+8]  = 0.0;
 	    a_pt1[1]=0.0;//a->m[i*16+9]  = 0.0;
 	    a_pt1[2]=0.0;//a->m[i*16+10] = 0.0;
-	    a_pt1[3]=world_pti[0];//a->m[i*16+11] = world[i][0];
-	    a_pt1[4]=world_pti[1];//a->m[i*16+12] = world[i][1];
+	    a_pt1[3]=(double)world_pti[0];//a->m[i*16+11] = world[i][0];
+	    a_pt1[4]=(double)world_pti[1];//a->m[i*16+12] = world[i][1];
 	    a_pt1[5]=1.0;//a->m[i*16+13] = 1.0;
-	    a_pt1[6]=-world_pti[0] * vertex_1[i];//a->m[i*16+14] = -world[i][0] * vertex[i][1];
-	    a_pt1[7]=-world_pti[1] * vertex_1[i];//a->m[i*16+15] = -world[i][1] * vertex[i][1];
-	    b_array[i*2+0][0]=vertex_0[i];//b->m[i*2+0] = vertex[i][0];
-	    b_array[i*2+1][0]=vertex_1[i];//b->m[i*2+1] = vertex[i][1];
+	    a_pt1[6]=(double)(-world_pti[0] * vertex[i][1]);//a->m[i*16+14] = -world[i][0] * vertex[i][1];
+	    a_pt1[7]=(double)(-world_pti[1] * vertex[i][1]);//a->m[i*16+15] = -world[i][1] * vertex[i][1];
+	    b_array[i*2+0][0]=(double)vertex[i][0];//b->m[i*2+0] = vertex[i][0];
+	    b_array[i*2+1][0]=(double)vertex[i][1];//b->m[i*2+1] = vertex[i][1];
 	}
 	if(!a.matrixSelfInv()){
 	    return false;
@@ -132,11 +135,11 @@ public class NyARColorPatt_O3 implements NyARColorPatt
     }
 
   //   private final double[] wk_pickFromRaster_para=new double[9];//[3][3];
-    private final double[][] wk_pickFromRaster_world={//double    world[4][2];
-	    {100.0,     100.0},
-	    {100.0+10.0,100.0},
-	    {100.0+10.0,100.0 + 10.0},
-	    {100.0,     100.0 + 10.0}
+    private final int[][] wk_pickFromRaster_world={//double    world[4][2];
+	    {100,   100},
+	    {100+10,100},
+	    {100+10,100 + 10},
+	    {100,   100 + 10}
     };
     /**
      * pickFromRaster関数から使う変数です。
@@ -157,7 +160,6 @@ public class NyARColorPatt_O3 implements NyARColorPatt
 	    }
 	}
     }
-    private final double[][] wk_pickFromRaster_local=new double[2][4];
     private final NyARMat wk_pickFromRaster_cpara=new NyARMat(8,1);
     /**
      * imageから、i_markerの位置にあるパターンを切り出して、保持します。
@@ -169,26 +171,27 @@ public class NyARColorPatt_O3 implements NyARColorPatt
     public boolean pickFromRaster(INyARRaster image, NyARSquare i_square) throws NyARException
     {
 	NyARMat cpara=this.wk_pickFromRaster_cpara;
-	//localの計算
-	double[] local_0=wk_pickFromRaster_local[0];//double    local[4][2];	
-	double[] local_1=wk_pickFromRaster_local[1];//double    local[4][2];	
-	//
-	for(int i = 0; i < 4; i++ ) {
-	    local_0[i] = i_square.imvertex[i][0];
-	    local_1[i] = i_square.imvertex[i][1];
-	}
+	int[][] local=i_square.imvertex;
+//	//localの計算
+//	int[] local_0=wk_pickFromRaster_local[0];//double    local[4][2];	
+//	int[] local_1=wk_pickFromRaster_local[1];//double    local[4][2];	
+//	//
+//	for(int i = 0; i < 4; i++ ) {
+//	    local_0[i] = i_square.imvertex[i][0];
+//	    local_1[i] = i_square.imvertex[i][1];
+//	}
 	//xdiv2,ydiv2の計算
 	int xdiv2, ydiv2;
 	int l1,l2;
-	double w1,w2;
+	int w1,w2;
 
 	//x計算
-	w1=local_0[0] - local_0[1];
-	w2=local_1[0] - local_1[1];
-	l1 = (int)(w1*w1+w2*w2);
-	w1=local_0[2] - local_0[3];
-	w2=local_1[2] - local_1[3];
-	l2 = (int)(w1*w1+w2*w2);
+	w1=local[0][0] - local[1][0];
+	w2=local[0][1] - local[1][1];
+	l1 =(w1*w1+w2*w2);
+	w1=local[2][0] - local[3][0];
+	w2=local[2][1] - local[3][1];
+	l2 =(w1*w1+w2*w2);
 	if( l2 > l1 ){
 	    l1 = l2;
 	}
@@ -203,12 +206,12 @@ public class NyARColorPatt_O3 implements NyARColorPatt
 	}
 	
 	//y計算
-	w1=local_0[1] - local_0[2];
-	w2=local_1[1] - local_1[2];
-	l1 = (int)(w1*w1+ w2*w2);
-	w1=local_0[3] - local_0[0];
-	w2=local_1[3] - local_1[0];
-	l2 = (int)(w1*w1+ w2*w2);
+	w1=local[1][0] - local[2][0];
+	w2=local[1][1] - local[2][1];
+	l1 = (w1*w1+ w2*w2);
+	w1=local[3][0] - local[0][0];
+	w2=local[3][1] - local[0][1];
+	l2 = (w1*w1+ w2*w2);
 	if( l2 > l1 ){
 	    l1 = l2;
 	}
@@ -223,7 +226,7 @@ public class NyARColorPatt_O3 implements NyARColorPatt
 	}	
 	
 	//cparaの計算
-	if(!get_cpara(local_0,local_1,cpara)){
+	if(!get_cpara(local,cpara)){
 	    return false;
 	}
 	updateExtpat(image,cpara,xdiv2,ydiv2);

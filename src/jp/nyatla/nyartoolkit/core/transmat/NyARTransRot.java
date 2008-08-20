@@ -1,8 +1,11 @@
-package jp.nyatla.nyartoolkit.core;
+package jp.nyatla.nyartoolkit.core.transmat;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARMat;
+import jp.nyatla.nyartoolkit.core.NyARParam;
+import jp.nyatla.nyartoolkit.core.NyARSquare;
 
-interface NyARTransRot
+public interface NyARTransRot
 {
     public double[] getArray();
     /**

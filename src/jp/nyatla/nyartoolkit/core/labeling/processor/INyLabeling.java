@@ -1,6 +1,7 @@
-package jp.nyatla.nyartoolkit.core.labeling;
+package jp.nyatla.nyartoolkit.core.labeling.processor;
 
 import jp.nyatla.nyartoolkit.*;
+import jp.nyatla.nyartoolkit.core.labeling.NyLabelingImage;
 import jp.nyatla.nyartoolkit.core.raster.*;
 
 

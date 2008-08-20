@@ -6,21 +6,21 @@ import jp.nyatla.nyartoolkit.NyARException;
  * NyLabelの予約型動的配列
  *
  */
-public class NyARLabelList
+public class NyLabelingLabelList
 {    
     private final static int ARRAY_APPEND_STEP=128;
     private final static int ARRAY_MAX=1024*16;
-    private final NyARLabel[] _labels;
+    private final NyLabelingLabel[] _labels;
     private int _allocated_size;
     private int _length;
     /**
      * 最大ARRAY_MAX個の動的割り当てバッファを準備する。
      * @param i_holder_size
      */
-    public NyARLabelList()
+    public NyLabelingLabelList()
     {
 	//ポインタだけははじめに確保しておく
-	this._labels=new NyARLabel[ARRAY_MAX];
+	this._labels=new NyLabelingLabel[ARRAY_MAX];
 	//現在アロケート中の個数は0
 	this._allocated_size=0;
 	this._length=0;
@@ -47,11 +47,11 @@ public class NyARLabelList
 	//アロケート
 	for(int i=this._allocated_size;i<range;i++)
 	{
-	    this._labels[i]=new NyARLabel();
+	    this._labels[i]=new NyLabelingLabel();
 	}
 	this._allocated_size=range;
     }
-    public final NyARLabel[] getArray()
+    public final NyLabelingLabel[] getArray()
     {
 	return this._labels;
     }

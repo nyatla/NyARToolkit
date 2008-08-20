@@ -24,9 +24,10 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core;
-
+package jp.nyatla.nyartoolkit.core.transmat;
 import jp.nyatla.nyartoolkit.*;
+import jp.nyatla.nyartoolkit.core.NyARMat;
+
 /**
  * NyARTransMat戻り値専用のNyARMat
  *

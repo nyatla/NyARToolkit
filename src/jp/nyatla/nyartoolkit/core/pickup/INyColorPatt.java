@@ -29,12 +29,13 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core;
+package jp.nyatla.nyartoolkit.core.pickup;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARSquare;
 import jp.nyatla.nyartoolkit.core.raster.*;
 
-public interface NyARColorPatt
+public interface INyColorPatt
 {
 //	消すかも。
 //    /**
