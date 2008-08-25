@@ -29,27 +29,14 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.raster;
+package jp.nyatla.nyartoolkit.core.raster.threshold;
 
-import jp.nyatla.nyartoolkit.core.types.*;
-/**
- * NyARRasterインタフェイスの基本関数/メンバを実装したクラス
- * 
- *
- */
-public abstract class NyARRaster_BasicClass extends NyARRaster 
+import jp.nyatla.nyartoolkit.*;
+import jp.nyatla.nyartoolkit.core.raster.*;
+
+public interface INyARRasterThresholdDetector
 {
-    final protected TNyARIntSize _size=new TNyARIntSize();
-    final public int getWidth()
-    {
-	return this._size.w;
-    }
-    final public int getHeight()
-    {
-	return this._size.h;
-    }
-    final public TNyARIntSize getSize()
-    {
-	return this._size;
-    }
+    public void analyzeRaster(NyARRaster i_input) throws NyARException;
+    public int getThreshold();
+    public int getThreshold(int i_x,int i_y);
 }

@@ -33,6 +33,7 @@ package jp.nyatla.nyartoolkit.core.labeling.processor;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.raster.operator.INyARRasterReader;
 import jp.nyatla.nyartoolkit.core.labeling.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
@@ -49,14 +50,14 @@ import jp.nyatla.nyartoolkit.core.types.*;
  * ARToolKitと同一な評価結果を返します。
  *
  */
-public class NyARLabeling implements INyLabeling
+public class ARToolKitLabeling implements INyARLabeling
 {
     private static final int WORK_SIZE=1024*32;//#define WORK_SIZE   1024*32
     private final NyARWorkHolder work_holder=new NyARWorkHolder(WORK_SIZE);
     private int _thresh;
-    private TNyIntSize _dest_size;
-    private NyLabelingImage _out_image;
-    public NyARLabeling()
+    private TNyARIntSize _dest_size;
+    private NyARLabelingImage _out_image;
+    public ARToolKitLabeling()
     {
 	this._thresh=110;
     }
@@ -66,10 +67,10 @@ public class NyARLabeling implements INyLabeling
     }
     //コンストラクタで作ること
     private int[] wk_reservLineBuffer_buf;
-    public void attachDestination(NyLabelingImage i_destination_image) throws NyARException
+    public void attachDestination(NyARLabelingImage i_destination_image) throws NyARException
     {
 	//サイズチェック
-	TNyIntSize size=i_destination_image.getSize();
+	TNyARIntSize size=i_destination_image.getSize();
 	this._out_image=i_destination_image;
 	
 	//ラインバッファの準備
@@ -100,20 +101,20 @@ public class NyARLabeling implements INyLabeling
      * 関数の代替品
      * ラスタimageをラベリングして、結果を保存します。
      * Optimize:STEP[1514->1493]
-     * @param i_image
+     * @param i_reader
      * @param thresh
      * @throws NyARException
      */
-    public void labeling(INyARRaster i_input_raster) throws NyARException
+    public void labeling(INyARRasterReader i_reader) throws NyARException
     {
 	int wk_max;                   /*  work                */
 	int m,n;                      /*  work                */
 	int thresht3 = this._thresh * 3;
 	int i,j,k;
-        NyLabelingImage out_image=this._out_image;	
+        NyARLabelingImage out_image=this._out_image;	
 	
         //サイズチェック
-        TNyIntSize in_size=i_input_raster.getSize();
+        TNyARIntSize in_size=i_reader.getRasterSize();
         this._dest_size.isEqualSize(in_size);
         
         int lxsize=in_size.w;//lxsize = arUtil_c.arImXsize;
@@ -136,7 +137,7 @@ public class NyARLabeling implements INyLabeling
 	for(j = 1; j < lysize - 1; j++) {//for (int j = 1; j < lysize - 1; j++, pnt += poff*2, pnt2 += 2) {
             label_img_pt0=label_img[j];
             label_img_pt1=label_img[j-1];
-            i_input_raster.getPixelTotalRowLine(j,line_bufferr);
+            i_reader.readRow(j,line_bufferr);
 
 	    for(i = 1; i < lxsize-1; i++) {//for(int i = 1; i < lxsize-1; i++, pnt+=poff, pnt2++) {
 		//RGBの合計値が閾値より小さいかな？
@@ -318,14 +319,14 @@ public class NyARLabeling implements INyLabeling
 
 	
 	//ラベル情報の保存等
-	NyLabelingLabelList label_list=out_image.getLabelList();
+	NyARLabelingLabelList label_list=out_image.getLabelList();
 
 	//ラベルバッファを予約
 	label_list.reserv(wlabel_num);
 
 	//エリアと重心、クリップ領域を計算
-	NyLabelingLabel label_pt;
-	NyLabelingLabel[] labels=label_list.getArray();
+	NyARLabelingLabel label_pt;
+	NyARLabelingLabel[] labels=label_list.getArray();
 	for(i=0;i<wlabel_num;i++)
 	{
 	    label_pt=labels[i];

@@ -31,28 +31,25 @@
  */
 package jp.nyatla.nyartoolkit.core.raster;
 
-
 public class NyARRaster_BGRA extends NyARRaster_BasicClass
 {
-    private byte[] ref_buf;
+    private byte[] _ref_buf;
+
     public static NyARRaster_BGRA wrap(byte[] i_buffer,int i_width,int i_height)
     {
         NyARRaster_BGRA new_inst=new NyARRaster_BGRA();
-        new_inst.ref_buf=i_buffer;
+        new_inst._ref_buf=i_buffer;
         new_inst._size.w=i_width;
         new_inst._size.h=i_height;
         return new_inst;
     }
-    //RGBの合計値を返す
-    public int getPixelTotal(int i_x,int i_y)
-    {
-        int bp=(i_x+i_y*this._size.w)*4;
-        byte[] ref=this.ref_buf;
-        return (ref[bp] & 0xff)+(ref[bp+1] & 0xff)+(ref[bp+2] & 0xff);
-    }
+    //
+    //仮想関数の実装
+    //
+
     public void getPixelTotalRowLine(int i_row,int[] o_line)
     {
-        final byte[] ref=this.ref_buf;
+        final byte[] ref=this._ref_buf;
         int bp=(i_row+1)*this._size.w*4-4;
         for(int i=this._size.w-1;i>=0;i--){
 	    o_line[i]=(ref[bp] & 0xff)+(ref[bp+1] & 0xff)+(ref[bp+2] & 0xff);
@@ -61,7 +58,7 @@ public class NyARRaster_BGRA extends NyARRaster_BasicClass
     }
     public void getPixel(int i_x,int i_y,int[] i_rgb)
     {
-	byte[] ref=this.ref_buf;
+	byte[] ref=this._ref_buf;
         int bp=(i_x+i_y*this._size.w)*4;
         i_rgb[0]=(ref[bp+2] & 0xff);//R
         i_rgb[1]=(ref[bp+1] & 0xff);//G
@@ -70,7 +67,7 @@ public class NyARRaster_BGRA extends NyARRaster_BasicClass
     public void getPixelSet(int[] i_x,int i_y[],int i_num,int[] o_rgb)
     {
 	int width=this._size.w;
-	byte[] ref=this.ref_buf;
+	byte[] ref=this._ref_buf;
 	int bp;
 	for(int i=i_num-1;i>=0;i--){
 	    bp=(i_x[i]+i_y[i]*width)*4;
@@ -78,6 +75,14 @@ public class NyARRaster_BGRA extends NyARRaster_BasicClass
 	    o_rgb[i*3+1]=(ref[bp+1] & 0xff);//G
 	    o_rgb[i*3+2]=(ref[bp+0] & 0xff);//B
 	}	
+    }
+    public Object getBufferObject()
+    {
+	return this._ref_buf;
+    }
+    public int getBufferType()
+    {
+	return BUFFERFORMAT_BYTE_B8G8R8X8_32;
     }
 }
 

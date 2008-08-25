@@ -15,14 +15,14 @@ import jp.nyatla.nyartoolkit.core.*;
 
 public class GLNyARRaster_RGB extends JmfNyARRaster_RGB
 {
-    private byte[] gl_buf;
-    private int gl_flag;
+    private byte[] _gl_buf;
+    private int _gl_flag;
 
     public GLNyARRaster_RGB(GL i_ref_gl,NyARParam i_param)
     {
 	super(i_param.getX(),i_param.getY());
-	this.gl_flag=GL.GL_RGB;
-	this.gl_buf=new byte[this.width*this.height*3];
+	this._gl_flag=GL.GL_RGB;
+	this._gl_buf=new byte[this._size.w*this._size.h*3];
     }
     public void setBuffer(javax.media.Buffer i_buffer,boolean i_is_reverse) throws NyARException
     {
@@ -32,30 +32,30 @@ public class GLNyARRaster_RGB extends JmfNyARRaster_RGB
 	byte[] src_buf=(byte[])i_buffer.getData();
 	//GL用のデータを準備
 	if(i_is_reverse){
-	    int length=this.width*3;
+	    int length=this._size.w*3;
 	    int src_idx=0;
-	    int dest_idx=(this.height-1)*length;
-	    for(int i=0;i<this.height;i++){
-		System.arraycopy(src_buf,src_idx,this.gl_buf,dest_idx,length);
+	    int dest_idx=(this._size.h-1)*length;
+	    for(int i=0;i<this._size.h;i++){
+		System.arraycopy(src_buf,src_idx,this._gl_buf,dest_idx,length);
 		src_idx+=length;
 		dest_idx-=length;
 	    }
 	}else{
-	    System.arraycopy(src_buf,0,gl_buf,0,src_buf.length);
+	    System.arraycopy(src_buf,0,this._gl_buf,0,src_buf.length);
 	}
 	//GLのフラグ設定
-	switch(this.pix_type){
+	switch(this._pix_type){
 	case GLNyARRaster_RGB.PIXEL_ORDER_BGR:
-	    this.gl_flag=GL.GL_BGR;
+	    this._gl_flag=GL.GL_BGR;
             break;
 	case GLNyARRaster_RGB.PIXEL_ORDER_RGB:
-	    this.gl_flag=GL.GL_RGB;
+	    this._gl_flag=GL.GL_RGB;
             break;
         default:
             throw new NyARException();
 	}
 	//ref_bufをgl_bufに差し替える
-	ref_buf=gl_buf;
+	this._ref_buf=this._gl_buf;
     }
     /**
      * GLでそのまま描画できるRGBバッファを返す。
@@ -63,7 +63,7 @@ public class GLNyARRaster_RGB extends JmfNyARRaster_RGB
      */
     public byte[] getGLRgbArray()
     {
-	return this.ref_buf;
+	return this._ref_buf;
     }
     /**
      * GL用のRGBバッファのバイト並びタイプを返す。
@@ -71,6 +71,6 @@ public class GLNyARRaster_RGB extends JmfNyARRaster_RGB
      */
     public int getGLPixelFlag()
     {
-	return this.gl_flag;
+	return this._gl_flag;
     }
 }

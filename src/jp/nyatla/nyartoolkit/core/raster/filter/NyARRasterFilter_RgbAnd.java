@@ -29,37 +29,34 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.raster;
+package jp.nyatla.nyartoolkit.core.raster.filter;
 
-import jp.nyatla.nyartoolkit.core.types.*;
-
-public interface INyARRaster{
-    //RGBの合計値を返す
-    public int getPixelTotal(int i_x,int i_y);
-    /**
-     * 一行単位でi_row番目の合計値配列を計算して返す。
-     * @param i_row
-     * @param o_line
-     * getWidth()の戻り値以上のサイズが必要。
-     */
-    public void getPixelTotalRowLine(int i_row,int[] o_line);
-    public void getPixel(int i_x,int i_y,int[] i_rgb);
-    /**
-     * 複数のピクセル値をi_rgbへ返します。
-     * @param i_x
-     * xのインデックス配列
-     * @param i_y
-     * yのインデックス配列
-     * @param i_num
-     * 返すピクセル値の数
-     * @param i_rgb
-     * ピクセル値を返すバッファ
-     */
-    public void getPixelSet(int[] i_x,int i_y[],int i_num,int[] o_rgb);
-    public int getWidth();
-    public int getHeight();
-    public TNyIntSize getSize();
+import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.raster.NyARRaster;
+import jp.nyatla.nyartoolkit.core.types.TNyARIntSize;
+/**
+ * 
+ *
+ */
+public class NyARRasterFilter_RgbAnd implements INyARRasterFilter
+{ 
+    public void doFilter(NyARRaster i_input,NyARRaster i_output) throws NyARException
+    {
+	assert(i_input.getBufferType()==NyARRaster.BUFFERFORMAT_BYTE_B8G8R8_24);
+	assert(i_output.getBufferType()==NyARRaster.BUFFERFORMAT_INT2D);
+	assert(i_input.getSize().isEqualSize(i_output.getSize())==true);
+	
+	int [][] out_buf=(int [][])i_output.getBufferObject();
+	byte[] in_buf=(byte[])i_input.getBufferObject();
+	
+	int bp=0;
+	TNyARIntSize size=i_output.getSize();
+	for(int y=0;y<size.h;y++){
+	    for(int x=0;x<size.w;x++){
+		out_buf[y][x]=((in_buf[bp] & 0xff)&(in_buf[bp+1] & 0xff)&(in_buf[bp+2] & 0xff));
+                bp+=3;
+	    }
+	}
+	return;
+    }
 }
-
-
-

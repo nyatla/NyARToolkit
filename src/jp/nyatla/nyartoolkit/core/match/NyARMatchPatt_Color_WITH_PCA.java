@@ -33,7 +33,7 @@ package jp.nyatla.nyartoolkit.core.match;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARCode;
-import jp.nyatla.nyartoolkit.core.pickup.INyColorPatt;
+import jp.nyatla.nyartoolkit.core.pickup.INyARColorPatt;
 
 /**
  * AR_TEMPLATE_MATCHING_COLORかつAR_MATCHING_WITH_PCAと同等のルールで
@@ -59,7 +59,7 @@ public class NyARMatchPatt_Color_WITH_PCA implements NyARMatchPatt{
     public int getDirection(){
 	return dir;
     }
-    public boolean setPatt(INyColorPatt i_target_patt) throws NyARException
+    public boolean setPatt(INyARColorPatt i_target_patt) throws NyARException
     {
 	width=i_target_patt.getWidth();
 	height=i_target_patt.getHeight();

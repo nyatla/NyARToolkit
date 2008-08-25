@@ -33,13 +33,12 @@ package jp.nyatla.nyartoolkit.detector;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.*;
-import jp.nyatla.nyartoolkit.core.match.NyARMatchPatt_Color_WITHOUT_PCA;
-import jp.nyatla.nyartoolkit.core.pickup.INyColorPatt;
-import jp.nyatla.nyartoolkit.core.pickup.NyARColorPatt_O3;
+import jp.nyatla.nyartoolkit.core.match.*;
+import jp.nyatla.nyartoolkit.core.pickup.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
-import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
-import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat_O2;
+import jp.nyatla.nyartoolkit.core.raster.operator.*;
+import jp.nyatla.nyartoolkit.core.transmat.*;
+
 /**
  * 画像からARCodeに最も一致するマーカーを1個検出し、その変換行列を計算するクラスです。
  *
@@ -57,7 +56,7 @@ public class NyARSingleDetectMarker{
     private int detected_direction;
     private double detected_confidence;
     private NyARSquare detected_square;
-    private INyColorPatt patt;
+    private INyARColorPatt patt;
     /**
      * 検出するARCodeとカメラパラメータから、1個のARCodeを検出するNyARSingleDetectMarkerインスタンスを作ります。
      * @param i_param
@@ -81,6 +80,8 @@ public class NyARSingleDetectMarker{
 	//評価器を作る。
 	this.match_patt=new NyARMatchPatt_Color_WITHOUT_PCA();	
     }
+//    INyARRasterReaderFactory _reader_factory=new NyARRasterReaderFactory_RgbTotal();
+    INyARRasterReaderFactory _reader_factory=new NyARRasterReaderFactory_RgbMul();
     /**
      * i_imageにマーカー検出処理を実行し、結果を記録します。
      * @param i_image
@@ -92,12 +93,12 @@ public class NyARSingleDetectMarker{
      * マーカーが検出できたかを真偽値で返します。
      * @throws NyARException
      */
-    public boolean detectMarkerLite(INyARRaster i_image,int i_thresh) throws NyARException
+    public boolean detectMarkerLite(NyARRaster i_image,int i_thresh) throws NyARException
     {
 	detected_square=null;
 	NyARSquareList l_square_list=this.square_list;
 	//スクエアコードを探す
-	square.detectSquare(i_image, i_thresh,l_square_list);
+	square.detectSquare(this._reader_factory.createReader(i_image), i_thresh,l_square_list);
 	
 	int number_of_square=l_square_list.getCount();
 	//コードは見つかった？

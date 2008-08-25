@@ -31,16 +31,13 @@
  */
 package jp.nyatla.nyartoolkit.detector;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.*;
-import jp.nyatla.nyartoolkit.core.match.NyARMatchPatt_Color_WITHOUT_PCA;
-import jp.nyatla.nyartoolkit.core.pickup.INyColorPatt;
-import jp.nyatla.nyartoolkit.core.pickup.NyARColorPatt_O3;
+import jp.nyatla.nyartoolkit.core.match.*;
+import jp.nyatla.nyartoolkit.core.pickup.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
-import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
-import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat_O2;
-
+import jp.nyatla.nyartoolkit.core.transmat.*;
+import jp.nyatla.nyartoolkit.core.raster.operator.*;
 
 
 class NyARDetectMarkerResult
@@ -84,7 +81,7 @@ public class NyARDetectMarker{
     private double[] marker_width;
     private int number_of_code;
     //検出結果の保存用
-    private INyColorPatt patt;
+    private INyARColorPatt patt;
     
     private NyARDetectMarkerResultHolder result_holder=new NyARDetectMarkerResultHolder();
     
@@ -128,6 +125,7 @@ public class NyARDetectMarker{
 	//評価器を作る。
 	this.match_patt=new NyARMatchPatt_Color_WITHOUT_PCA();	
     }
+    NyARRasterReaderFactory_RgbTotal _reader_factory=new NyARRasterReaderFactory_RgbTotal();
     /**
      * i_imageにマーカー検出処理を実行し、結果を記録します。
      * @param i_image
@@ -140,11 +138,11 @@ public class NyARDetectMarker{
      * マーカーが見つからない場合は0を返します。
      * @throws NyARException
      */
-    public int detectMarkerLite(INyARRaster i_image,int i_thresh) throws NyARException
+    public int detectMarkerLite(NyARRaster i_image,int i_thresh) throws NyARException
     {
 	NyARSquareList l_square_list=this.square_list;
 	//スクエアコードを探す
-	square.detectSquare(i_image,i_thresh,l_square_list);
+	square.detectSquare(this._reader_factory.createReader(i_image),i_thresh,l_square_list);
 	
 	final int number_of_square=l_square_list.getCount();
 	//コードは見つかった？

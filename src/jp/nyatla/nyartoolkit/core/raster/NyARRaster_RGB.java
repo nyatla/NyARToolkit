@@ -33,37 +33,22 @@ package jp.nyatla.nyartoolkit.core.raster;
 
 
 
+
 public class NyARRaster_RGB extends NyARRaster_BasicClass
 {
-    protected byte[] ref_buf;
+    protected byte[] _ref_buf;
     public static NyARRaster_RGB wrap(byte[] i_buffer,int i_width,int i_height)
     {
         NyARRaster_RGB new_inst=new NyARRaster_RGB();
-        new_inst.ref_buf=i_buffer;
+        new_inst._ref_buf=i_buffer;
         new_inst._size.w=i_width;
         new_inst._size.h=i_height;
         return new_inst;
     }
-    //RGBの合計値を返す
-    public int getPixelTotal(int i_x,int i_y)
-    {
-	byte[] ref=this.ref_buf;
-        int bp=(i_x+i_y*this._size.w)*3;
-        return (ref[bp] & 0xff)+(ref[bp+1] & 0xff)+(ref[bp+2] & 0xff);
-    }
-    public void getPixelTotalRowLine(int i_row,int[] o_line)
-    {
-        final byte[] ref=this.ref_buf;
-        int bp=(i_row+1)*this._size.w*3-3;
-        for(int i=this._size.w-1;i>=0;i--){
-	    o_line[i]=(ref[bp] & 0xff)+(ref[bp+1] & 0xff)+(ref[bp+2] & 0xff);
-	    bp-=3;
-	}
-    }
     public void getPixel(int i_x,int i_y,int[] i_rgb)
     {
         int bp=(i_x+i_y*this._size.w)*3;
-        byte[] ref=this.ref_buf;
+        byte[] ref=this._ref_buf;
         i_rgb[0]=(ref[bp+0] & 0xff);//R
         i_rgb[1]=(ref[bp+1] & 0xff);//G
         i_rgb[2]=(ref[bp+2] & 0xff);//B
@@ -71,7 +56,7 @@ public class NyARRaster_RGB extends NyARRaster_BasicClass
     public void getPixelSet(int[] i_x,int i_y[],int i_num,int[] o_rgb)
     {
 	int width=this._size.w;
-	byte[] ref=this.ref_buf;
+	byte[] ref=this._ref_buf;
 	int bp;
 	for(int i=i_num-1;i>=0;i--){
 	    bp=(i_x[i]+i_y[i]*width)*3;
@@ -80,5 +65,17 @@ public class NyARRaster_RGB extends NyARRaster_BasicClass
 	    o_rgb[i*3+2]=(ref[bp+2] & 0xff);//B
 	}	
     }
+    public Object getBufferObject()
+    {
+	return this._ref_buf;
+    }
+    /**
+     * バッファオブジェクトのタイプを返します。
+     * @return
+     */
+    public int getBufferType()
+    {
+	return BUFFERFORMAT_BYTE_R8G8B8_24;
+    }    
 }
 

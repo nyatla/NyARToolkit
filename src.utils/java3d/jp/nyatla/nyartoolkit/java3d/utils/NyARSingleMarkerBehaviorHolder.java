@@ -13,13 +13,13 @@ import javax.media.j3d.*;
 import javax.vecmath.*;
 
 import jp.nyatla.nyartoolkit.core.NyARParam;
-import jp.nyatla.nyartoolkit.core.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
 import jp.nyatla.nyartoolkit.jmf.*;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCameraCapture;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
 import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.*;
+import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 
 /**
  * NyARToolkitと連動したBehaviorを返却するクラスです。

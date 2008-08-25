@@ -1,6 +1,6 @@
 package jp.nyatla.nyartoolkit.core.types;
 
-public class TNyIntPoint
+public class TNyARIntPoint
 {
     public int x;
     public int y;

@@ -5,7 +5,7 @@ package jp.nyatla.nyartoolkit.core.types;
  * @author nyatla
  *
  */
-public class TNyIntLine
+public class TNyARIntLine
 {
     public int x;
     public int y;

@@ -29,27 +29,40 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.raster;
+package jp.nyatla.nyartoolkit.core.raster.filter;
 
-import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.raster.NyARRaster;
+import jp.nyatla.nyartoolkit.core.types.TNyARIntSize;
+
 /**
- * NyARRasterインタフェイスの基本関数/メンバを実装したクラス
- * 
+ * 定数閾値による2値化をする。
  *
  */
-public abstract class NyARRaster_BasicClass extends NyARRaster 
+public class NyARRasterFilter_Threshold implements INyARRasterFilter
 {
-    final protected TNyARIntSize _size=new TNyARIntSize();
-    final public int getWidth()
+    private int _threshold;
+    public NyARRasterFilter_Threshold(int i_threshold)
     {
-	return this._size.w;
+	this._threshold=i_threshold;
     }
-    final public int getHeight()
+    public void doFilter(NyARRaster i_input,NyARRaster i_output) throws NyARException
     {
-	return this._size.h;
-    }
-    final public TNyARIntSize getSize()
-    {
-	return this._size;
+	assert(i_input.getBufferType()==NyARRaster.BUFFERFORMAT_INT2D);
+	assert(i_output.getBufferType()==NyARRaster.BUFFERFORMAT_INT2D);
+	assert(i_input.getSize().isEqualSize(i_output.getSize())==true);
+	
+	int[][] out_buf=(int [][])i_output.getBufferObject();
+	int[][] in_buf=(int[][])i_input.getBufferObject();
+	
+	int bp=0;
+	TNyARIntSize size=i_output.getSize();
+	for(int y=0;y<size.h-1;y++){
+	    for(int x=0;x<size.w;x++){
+		out_buf[y][x]=in_buf[y][x]>this._threshold?255:0;
+                bp+=3;
+	    }
+	}
+	return;
     }
 }

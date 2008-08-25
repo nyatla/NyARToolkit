@@ -32,15 +32,15 @@
 package jp.nyatla.nyartoolkit.core;
 
 import jp.nyatla.nyartoolkit.*;
-import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.raster.operator.*;
 import jp.nyatla.nyartoolkit.core.labeling.*;
-import jp.nyatla.nyartoolkit.core.labeling.processor.NyARLabeling;
+import jp.nyatla.nyartoolkit.core.labeling.processor.ARToolKitLabeling;
 
 public class NyARDetectSquare
 {
-    private final NyARLabeling _labeling;
+    private final ARToolKitLabeling _labeling;
     private final NyARDetectMarker _detecter;
-    private final NyLabelingImage _limage;
+    private final NyARLabelingImage _limage;
     private final NyARParam _param;
     private final NyARMarkerList _marker_list;
     
@@ -60,8 +60,8 @@ public class NyARDetectSquare
 	
 
 	this._detecter=new NyARDetectMarker(width,height);
-	this._labeling=new NyARLabeling();
-	this._limage=new NyLabelingImage(width,height);
+	this._labeling=new ARToolKitLabeling();
+	this._limage=new NyARLabelingImage(width,height);
 	this._marker_list=new NyARMarkerList(i_max_marker);
 	
 	this._labeling.attachDestination(this._limage);
@@ -73,10 +73,10 @@ public class NyARDetectSquare
      * @param i_square_holder
      * @throws NyARException
      */
-    public void detectSquare(INyARRaster i_image,int i_thresh,NyARSquareList o_square_list) throws NyARException
+    public void detectSquare(INyARRasterReader i_reader,int i_thresh,NyARSquareList o_square_list) throws NyARException
     {
 	this._labeling.setThresh(i_thresh);
-	this._labeling.labeling(i_image);
+	this._labeling.labeling(i_reader);
 	//ラベル数が0ならマーカー検出をしない。	
 	if(this._limage.getLabelList().getCount()<1){
 	    return;

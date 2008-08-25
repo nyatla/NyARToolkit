@@ -1,6 +1,6 @@
 package jp.nyatla.nyartoolkit.core.labeling;
 
-public class NyLabelingLabel
+public class NyARLabelingLabel
 {
     public int area;
     public int clip_r;//0

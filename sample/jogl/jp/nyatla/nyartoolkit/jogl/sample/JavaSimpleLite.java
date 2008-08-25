@@ -177,7 +177,7 @@ public class JavaSimpleLite implements GLEventListener,JmfCaptureListener
             //画像チェックしてマーカー探して、背景を書く
             boolean is_marker_exist;
             synchronized(cap_image){
-        	is_marker_exist=nya.detectMarkerLite(cap_image,110);
+        	is_marker_exist=nya.detectMarkerLite(cap_image,20);
         	//背景を書く
         	glnya.drawBackGround(cap_image, 1.0);
             }

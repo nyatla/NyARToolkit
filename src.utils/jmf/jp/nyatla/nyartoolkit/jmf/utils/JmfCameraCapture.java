@@ -26,7 +26,7 @@ public class JmfCameraCapture
 {
     private Dimension image_size;
     private JmfCaptureListener capture_listener;
-    private DataSource jmf_data_source;
+//    private DataSource jmf_data_source;
     private MonitorStream jmf_monitor_stream;
     private Processor jmf_processor;
     private VideoFormat jmf_video_format;
@@ -83,7 +83,7 @@ public class JmfCameraCapture
         // that is also the MonitorStream object.
         jmf_monitor_stream=(MonitorStream)ds.getControl("jmfsample.MonitorStream");
 	jmf_monitor_stream.setCaptureListener(capture_listener);
-        jmf_data_source=ds;
+//        jmf_data_source=ds;
         jmf_processor=processor;
         jmf_processor.start();
     }

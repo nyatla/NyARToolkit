@@ -35,7 +35,7 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARSquare;
 import jp.nyatla.nyartoolkit.core.raster.*;
 
-public interface INyColorPatt
+public interface INyARColorPatt
 {
 //	消すかも。
 //    /**
@@ -73,5 +73,5 @@ public interface INyColorPatt
      * ラスターの取得に成功するとTRUE/失敗するとFALSE
      * @throws NyARException
      */
-    public boolean pickFromRaster(INyARRaster image, NyARSquare i_square) throws NyARException;
+    public boolean pickFromRaster(NyARRaster image, NyARSquare i_square) throws NyARException;
 }

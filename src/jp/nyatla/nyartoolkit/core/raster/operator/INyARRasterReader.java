@@ -29,27 +29,13 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.raster;
+package jp.nyatla.nyartoolkit.core.raster.operator;
 
 import jp.nyatla.nyartoolkit.core.types.*;
-/**
- * NyARRasterインタフェイスの基本関数/メンバを実装したクラス
- * 
- *
- */
-public abstract class NyARRaster_BasicClass extends NyARRaster 
+
+public interface INyARRasterReader
 {
-    final protected TNyARIntSize _size=new TNyARIntSize();
-    final public int getWidth()
-    {
-	return this._size.w;
-    }
-    final public int getHeight()
-    {
-	return this._size.h;
-    }
-    final public TNyARIntSize getSize()
-    {
-	return this._size;
-    }
+    public void readRow(int i_row,int[] out_line);
+    public int getThreshold();
+    public TNyARIntSize getRasterSize();
 }

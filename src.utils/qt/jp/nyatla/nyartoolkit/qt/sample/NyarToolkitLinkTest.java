@@ -13,6 +13,7 @@ import jp.nyatla.nyartoolkit.qt.utils.*;
 import java.awt.*;
 
 import jp.nyatla.nyartoolkit.core.*;
+import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.detector.*;
 
 

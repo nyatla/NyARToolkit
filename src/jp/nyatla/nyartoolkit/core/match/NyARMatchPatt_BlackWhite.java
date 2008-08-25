@@ -33,7 +33,7 @@ package jp.nyatla.nyartoolkit.core.match;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.*;
-import jp.nyatla.nyartoolkit.core.pickup.INyColorPatt;
+import jp.nyatla.nyartoolkit.core.pickup.INyARColorPatt;
 
 /**
  * AR_TEMPLATE_MATCHING_BWと同等のルールで
@@ -48,7 +48,7 @@ public class NyARMatchPatt_BlackWhite implements NyARMatchPatt{
     private int dir=0;
     private int ave;
     private int[][][]	input=new int[height][width][3];
-    public boolean setPatt(INyColorPatt i_target_patt) throws NyARException
+    public boolean setPatt(INyARColorPatt i_target_patt) throws NyARException
     {
 	width=i_target_patt.getWidth();
 	height=i_target_patt.getHeight();

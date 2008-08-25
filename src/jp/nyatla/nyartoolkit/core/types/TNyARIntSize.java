@@ -2,7 +2,7 @@ package jp.nyatla.nyartoolkit.core.types;
 
 import jp.nyatla.nyartoolkit.NyARException;
 
-public class TNyIntSize
+public class TNyARIntSize
 {
     public int h;
     public int w;
@@ -28,7 +28,7 @@ public class TNyIntSize
      * @return
      * @throws NyARException
      */    
-    public boolean isEqualSize(TNyIntSize i_size)
+    public boolean isEqualSize(TNyARIntSize i_size)
     {
 	if(i_size.w==this.w && i_size.h==this.h)
 	{

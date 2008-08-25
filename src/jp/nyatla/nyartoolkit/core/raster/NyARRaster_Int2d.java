@@ -31,25 +31,51 @@
  */
 package jp.nyatla.nyartoolkit.core.raster;
 
-import jp.nyatla.nyartoolkit.core.types.*;
-/**
- * NyARRasterインタフェイスの基本関数/メンバを実装したクラス
- * 
- *
- */
-public abstract class NyARRaster_BasicClass extends NyARRaster 
+
+
+
+
+public class NyARRaster_Int2d extends NyARRaster_BasicClass
 {
-    final protected TNyARIntSize _size=new TNyARIntSize();
-    final public int getWidth()
+    protected int[][] _ref_buf;
+    public NyARRaster_Int2d(int i_width,int i_height)
     {
-	return this._size.w;
+	this._ref_buf=new int[i_height][i_width];
+	this._size.w=i_width;
+	this._size.h=i_height;
+	
     }
-    final public int getHeight()
+    
+    
+    public void getPixel(int i_x,int i_y,int[] i_rgb)
     {
-	return this._size.h;
+        int[][] ref=this._ref_buf;
+        int v=ref[i_x][i_y];
+        i_rgb[0]=v;
+        i_rgb[1]=v;
+        i_rgb[2]=v;
     }
-    final public TNyARIntSize getSize()
+    public void getPixelSet(int[] i_x,int i_y[],int i_num,int[] o_rgb)
     {
-	return this._size;
+	int[][] ref=this._ref_buf;
+	for(int i=i_num-1;i>=0;i--){
+	    int v=ref[i_x[i]][i_y[i]];
+	    o_rgb[i*3+0]=v;
+	    o_rgb[i*3+1]=v;
+	    o_rgb[i*3+2]=v;
+	}	
     }
+    public Object getBufferObject()
+    {
+	return this._ref_buf;
+    }
+    /**
+     * バッファオブジェクトのタイプを返します。
+     * @return
+     */
+    public int getBufferType()
+    {
+	return BUFFERFORMAT_INT2D;
+    }    
 }
+

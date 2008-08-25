@@ -10,21 +10,20 @@ package jp.nyatla.nyartoolkit.jmf.utils;
 
 import javax.media.format.RGBFormat;
 import java.awt.Dimension;
-import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
+import jp.nyatla.nyartoolkit.*;
+import jp.nyatla.nyartoolkit.core.raster.NyARRaster;
+import jp.nyatla.nyartoolkit.core.raster.NyARRaster_BasicClass;
 
 
-public class JmfNyARRaster_RGB implements INyARRaster
+public class JmfNyARRaster_RGB  extends NyARRaster_BasicClass
 {
     public final static int PIXEL_ORDER_RGB=1;
     public final static int PIXEL_ORDER_BGR=2;
-    protected int pix_type;
-    private int red_idx;
-    private int green_idx;
-    private int blue_idx;
-    protected byte[] ref_buf;
-    protected int width=0;
-    protected int height=0;
+    protected int _pix_type;
+    private int _red_idx;
+    private int _green_idx;
+    private int _blue_idx;
+    protected byte[] _ref_buf;
 
     /**
      * RGB形式のJMFバッファをラップするオブジェクトをつくります。
@@ -33,10 +32,47 @@ public class JmfNyARRaster_RGB implements INyARRaster
      */
     public JmfNyARRaster_RGB(int i_width,int i_height)
     {
-	ref_buf=null;
-	width=i_width;
-	height=i_height;
+	this._ref_buf=null;
+	this._size.w=i_width;
+	this._size.h=i_height;
     }
+    public void getPixel(int i_x,int i_y,int[] i_rgb)
+    {
+        int bp=(i_x+i_y*this._size.w)*3;
+        byte[] ref=this._ref_buf;
+        i_rgb[0]=(ref[bp+this._red_idx] & 0xff);//R
+        i_rgb[1]=(ref[bp+this._green_idx] & 0xff);//G
+        i_rgb[2]=(ref[bp+this._blue_idx] & 0xff);//B
+    }
+    public void getPixelSet(int[] i_x,int i_y[],int i_num,int[] o_rgb)
+    {
+	int ri=this._red_idx;
+	int bi=this._green_idx;
+	int gi=this._blue_idx;
+	int width=this._size.w;
+	byte[] ref=this._ref_buf;
+	int bp;
+	for(int i=i_num-1;i>=0;i--){
+	    bp=(i_x[i]+i_y[i]*width)*3;
+	    o_rgb[i*3+0]=(ref[bp+ri] & 0xff);//R
+	    o_rgb[i*3+1]=(ref[bp+gi] & 0xff);//G
+	    o_rgb[i*3+2]=(ref[bp+bi] & 0xff);//B
+	}	
+	return;
+    }
+    public Object getBufferObject()
+    {
+	return this._ref_buf;
+    }
+    public int getBufferType() throws NyARException
+    {
+	switch(this._pix_type){
+	case PIXEL_ORDER_RGB:return BUFFERFORMAT_BYTE_R8G8B8_24;
+	case PIXEL_ORDER_BGR:return BUFFERFORMAT_BYTE_B8G8R8_24;
+	default:
+	    throw new NyARException();
+	}
+    }    
     /**
      * フォーマットを解析して、インスタンスのフォーマットプロパティを初期化します。
      * 
@@ -47,19 +83,19 @@ public class JmfNyARRaster_RGB implements INyARRaster
     {
 	//データサイズの確認
         Dimension s=i_fmt.getSize();
-        if(width!=s.width || height !=s.height){
+        if(this._size.w!=s.width || this._size.h !=s.height){
 	    throw new NyARException();
         }
 	//データ配列の確認
-	red_idx  =i_fmt.getRedMask()-1;
-	green_idx=i_fmt.getGreenMask()-1;
-	blue_idx =i_fmt.getBlueMask()-1;
+	this._red_idx  =i_fmt.getRedMask()-1;
+	this._green_idx=i_fmt.getGreenMask()-1;
+	this._blue_idx =i_fmt.getBlueMask()-1;
 	
 	//色配列の特定
-	if(red_idx==0 && blue_idx==2){
-	    pix_type=PIXEL_ORDER_RGB;
-	}else if(red_idx==2 && blue_idx==0){
-	    pix_type=PIXEL_ORDER_BGR;
+	if(this._red_idx==0 && this._blue_idx==2){
+	    this._pix_type=PIXEL_ORDER_RGB;
+	}else if(this._red_idx==2 && this._blue_idx==0){
+	    this._pix_type=PIXEL_ORDER_BGR;
 	}else{
 	    throw new NyARException("Unknown pixel order.");
 	}	
@@ -76,39 +112,8 @@ public class JmfNyARRaster_RGB implements INyARRaster
     public void setBuffer(javax.media.Buffer i_buffer) throws NyARException
     {
 	initFormatProperty((RGBFormat)i_buffer.getFormat());
-        ref_buf=(byte[])i_buffer.getData();
-    }
-    public int getPixelTotal(int i_x,int i_y)
-    {
-        int bp=(i_x+i_y*width)*3;
-        byte[] ref=this.ref_buf;
-        return (ref[bp] & 0xff)+(ref[bp+1] & 0xff)+(ref[bp+2] & 0xff);
-    }
-    public void getPixelTotalRowLine(int i_row,int[] o_line)
-    {
-        final byte[] ref=this.ref_buf;
-        int bp=(i_row+1)*this.width*3-3;
-        for(int i=this.width-1;i>=0;i--){
-	    o_line[i]=(ref[bp] & 0xff)+(ref[bp+1] & 0xff)+(ref[bp+2] & 0xff);
-	    bp-=3;
-	}
+        this._ref_buf=(byte[])i_buffer.getData();
     }    
-    public int getWidth()
-    {
-        return width;
-    }
-    public int getHeight()
-    {
-        return height;
-    }
-    public void getPixel(int i_x,int i_y,int[] i_rgb)
-    {
-        int bp=(i_x+i_y*this.width)*3;
-        byte[] ref=this.ref_buf;
-        i_rgb[0]=(ref[bp+this.red_idx] & 0xff);//R
-        i_rgb[1]=(ref[bp+this.green_idx] & 0xff);//G
-        i_rgb[2]=(ref[bp+this.blue_idx] & 0xff);//B
-    }
     /**
      * ピクセルの順序タイプを返します。
      * @return
@@ -116,7 +121,7 @@ public class JmfNyARRaster_RGB implements INyARRaster
      */
     public int getPixelOrder()
     {
-	return pix_type;
+	return this._pix_type;
     }
     /**
      * データを持っているかを返します。
@@ -124,22 +129,6 @@ public class JmfNyARRaster_RGB implements INyARRaster
      */
     public boolean hasData()
     {
-	return ref_buf!=null;
-    }
-    public void getPixelSet(int[] i_x,int i_y[],int i_num,int[] o_rgb)
-    {
-	int ri=this.red_idx;
-	int bi=this.green_idx;
-	int gi=this.blue_idx;
-	int width=this.width;
-	byte[] ref=this.ref_buf;
-	int bp;
-	for(int i=i_num-1;i>=0;i--){
-	    bp=(i_x[i]+i_y[i]*width)*3;
-	    o_rgb[i*3+0]=(ref[bp+ri] & 0xff);//R
-	    o_rgb[i*3+1]=(ref[bp+gi] & 0xff);//G
-	    o_rgb[i*3+2]=(ref[bp+bi] & 0xff);//B
-	}	
-	return;
-    }
+	return this._ref_buf!=null;
+    }    
 }

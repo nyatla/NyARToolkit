@@ -43,17 +43,6 @@ public class NyARRaster_Blank extends NyARRaster_BasicClass
 	this._size.w=i_width;
         this._size.h=i_height;
     }
-    //RGBの合計値を返す
-    public int getPixelTotal(int i_x,int i_y)
-    {
-	return 0;
-    }
-    public void getPixelTotalRowLine(int i_row,int[] o_line)
-    {
-        for(int i=this._size.w-1;i>=0;i--){
-	    o_line[i]=0;
-	}
-    }    
     public void getPixel(int i_x,int i_y,int[] i_rgb)
     {
         i_rgb[0]=0;
@@ -67,5 +56,13 @@ public class NyARRaster_Blank extends NyARRaster_BasicClass
 	    o_rgb[i*3+1]=0;//G
 	    o_rgb[i*3+2]=0;//B
 	}	
+    }
+    public Object getBufferObject()
+    {
+	return null;
+    }
+    public int getBufferType()
+    {
+	return BUFFERFORMAT_NULL_ALLZERO;
     }    
 }

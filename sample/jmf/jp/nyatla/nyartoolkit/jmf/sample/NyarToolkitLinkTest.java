@@ -19,6 +19,7 @@ import java.awt.*;
 
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.detector.*;
+import jp.nyatla.nyartoolkit.core.transmat.*;
 
 
 
