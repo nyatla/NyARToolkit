@@ -46,4 +46,8 @@ public class NyARException extends Exception {
 	{
 	    throw new NyARException("トラップ:"+m);
 	}
+	public static void notImplement() throws NyARException
+	{
+	    throw new NyARException("Not Implement!");
+	}
 }

@@ -25,22 +25,15 @@
  */
 package jp.nyatla.nyartoolkit.core.raster;
 
-
+import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
-public abstract class NyARRaster_BasicClass implements INyARRaster 
+
+public interface INyARRaster
 {
-    final protected TNyARIntSize _size=new TNyARIntSize();
-    final public int getWidth()
-    {
-	return this._size.w;
-    }
-    final public int getHeight()
-    {
-	return this._size.h;
-    }
-    final public TNyARIntSize getSize()
-    {
-	return this._size;
-    }
+    public int getWidth();
+    public int getHeight();
+    public TNyARIntSize getSize();
+    public int getBufferType() throws NyARException;
+    public Object getBufferObject();
 }

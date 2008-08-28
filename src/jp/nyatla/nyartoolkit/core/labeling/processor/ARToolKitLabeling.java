@@ -33,7 +33,7 @@ package jp.nyatla.nyartoolkit.core.labeling.processor;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.raster.operator.INyARRasterReader;
+import jp.nyatla.nyartoolkit.core.rasteranalyzer.INyARRasterReader;
 import jp.nyatla.nyartoolkit.core.labeling.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 

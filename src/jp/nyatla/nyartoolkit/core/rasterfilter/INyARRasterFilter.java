@@ -23,24 +23,12 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.raster;
+package jp.nyatla.nyartoolkit.core.rasterfilter;
 
+import jp.nyatla.nyartoolkit.*;
+import jp.nyatla.nyartoolkit.core.raster.*;
 
-import jp.nyatla.nyartoolkit.core.types.*;
-
-public abstract class NyARRaster_BasicClass implements INyARRaster 
+public interface INyARRasterFilter
 {
-    final protected TNyARIntSize _size=new TNyARIntSize();
-    final public int getWidth()
-    {
-	return this._size.w;
-    }
-    final public int getHeight()
-    {
-	return this._size.h;
-    }
-    final public TNyARIntSize getSize()
-    {
-	return this._size;
-    }
+    public void doFilter(INyARRaster i_input,INyARRaster i_output) throws NyARException;
 }

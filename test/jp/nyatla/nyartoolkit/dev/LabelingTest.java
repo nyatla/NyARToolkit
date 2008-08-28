@@ -5,7 +5,8 @@ import java.io.File;
 import java.io.FileInputStream;
 
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.raster.operator.*;
+import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_BGRA;
+import jp.nyatla.nyartoolkit.core.rasteranalyzer.*;
 import jp.nyatla.nyartoolkit.core.labeling.processor.*;
 import jp.nyatla.nyartoolkit.core.labeling.*;
 import jp.nyatla.util.j2se.*;
@@ -19,7 +20,7 @@ public class LabelingTest extends Frame
 	FileInputStream fs=new FileInputStream(data_file);
 	byte[] buf=new byte[(int)f.length()];
 	fs.read(buf);
-	NyARRaster_BGRA ra=NyARRaster_BGRA.wrap(buf, 320, 240);
+	NyARRgbRaster_BGRA ra=NyARRgbRaster_BGRA.wrap(buf, 320, 240);
 	NyARLabelingImage limage=new NyARLabelingImage(320,240);
 	INyARLabeling labeling=new ARToolKitLabeling();
 //	INyARLabeling labeling=new NyLineLabeling();

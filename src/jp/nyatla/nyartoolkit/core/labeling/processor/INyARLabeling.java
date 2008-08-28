@@ -2,7 +2,7 @@ package jp.nyatla.nyartoolkit.core.labeling.processor;
 
 import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.labeling.*;
-import jp.nyatla.nyartoolkit.core.raster.operator.*;
+import jp.nyatla.nyartoolkit.core.rasteranalyzer.*;
 
 public interface INyARLabeling
 {

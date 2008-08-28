@@ -37,7 +37,7 @@ import jp.nyatla.nyartoolkit.core.match.*;
 import jp.nyatla.nyartoolkit.core.pickup.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
-import jp.nyatla.nyartoolkit.core.raster.operator.*;
+import jp.nyatla.nyartoolkit.core.rasteranalyzer.*;
 
 
 class NyARDetectMarkerResult
@@ -138,7 +138,7 @@ public class NyARDetectMarker{
      * マーカーが見つからない場合は0を返します。
      * @throws NyARException
      */
-    public int detectMarkerLite(NyARRaster i_image,int i_thresh) throws NyARException
+    public int detectMarkerLite(INyARRaster i_image,int i_thresh) throws NyARException
     {
 	NyARSquareList l_square_list=this.square_list;
 	//スクエアコードを探す

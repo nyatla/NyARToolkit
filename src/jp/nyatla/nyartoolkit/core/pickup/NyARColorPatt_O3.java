@@ -36,7 +36,7 @@ package jp.nyatla.nyartoolkit.core.pickup;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARMat;
 import jp.nyatla.nyartoolkit.core.NyARSquare;
-import jp.nyatla.nyartoolkit.core.raster.NyARRaster;
+import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 
 /**
  * 24ビットカラーのマーカーを保持するために使うクラスです。
@@ -168,7 +168,7 @@ public class NyARColorPatt_O3 implements INyARColorPatt
      * @param i_marker
      * @throws Exception
      */
-    public boolean pickFromRaster(NyARRaster image, NyARSquare i_square) throws NyARException
+    public boolean pickFromRaster(INyARRaster image, NyARSquare i_square) throws NyARException
     {
 	NyARMat cpara=this.wk_pickFromRaster_cpara;
 	int[][] local=i_square.imvertex;
@@ -263,7 +263,7 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 	return;
     }
     
-    private void updateExtpat(NyARRaster image,NyARMat i_cpara,int i_xdiv2,int i_ydiv2) throws NyARException
+    private void updateExtpat(INyARRaster image,NyARMat i_cpara,int i_xdiv2,int i_ydiv2) throws NyARException
     {
 	int img_x=image.getWidth();
 	int img_y=image.getHeight();

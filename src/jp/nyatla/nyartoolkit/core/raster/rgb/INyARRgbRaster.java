@@ -23,24 +23,16 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.raster;
+package jp.nyatla.nyartoolkit.core.raster.rgb;
 
-
-import jp.nyatla.nyartoolkit.core.types.*;
-
-public abstract class NyARRaster_BasicClass implements INyARRaster 
+import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
+import jp.nyatla.nyartoolkit.core.rasterreader.*;
+/**
+ * 8bitRGBを表現できるラスタ
+ *
+ */
+public interface INyARRgbRaster extends INyARRaster
 {
-    final protected TNyARIntSize _size=new TNyARIntSize();
-    final public int getWidth()
-    {
-	return this._size.w;
-    }
-    final public int getHeight()
-    {
-	return this._size.h;
-    }
-    final public TNyARIntSize getSize()
-    {
-	return this._size;
-    }
+    public INyARRgbPixelReader getRgbPixelReader() throws NyARException;
 }

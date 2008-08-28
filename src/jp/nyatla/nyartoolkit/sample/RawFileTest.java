@@ -32,6 +32,7 @@ import java.util.*;
 
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_BGRA;
 import jp.nyatla.nyartoolkit.detector.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 
@@ -63,7 +64,7 @@ public class RawFileTest {
 	FileInputStream fs=new FileInputStream(data_file);
 	byte[] buf=new byte[(int)f.length()];
 	fs.read(buf);
-	NyARRaster_BGRA ra=NyARRaster_BGRA.wrap(buf, 320, 240);
+	NyARRgbRaster_BGRA ra=NyARRgbRaster_BGRA.wrap(buf, 320, 240);
 	//		Blank_Raster ra=new Blank_Raster(320, 240);
 
 	//１パターンのみを追跡するクラスを作成

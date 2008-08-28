@@ -36,7 +36,7 @@ import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.match.*;
 import jp.nyatla.nyartoolkit.core.pickup.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.raster.operator.*;
+import jp.nyatla.nyartoolkit.core.rasteranalyzer.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 
 /**
@@ -93,7 +93,7 @@ public class NyARSingleDetectMarker{
      * マーカーが検出できたかを真偽値で返します。
      * @throws NyARException
      */
-    public boolean detectMarkerLite(NyARRaster i_image,int i_thresh) throws NyARException
+    public boolean detectMarkerLite(INyARRaster i_image,int i_thresh) throws NyARException
     {
 	detected_square=null;
 	NyARSquareList l_square_list=this.square_list;

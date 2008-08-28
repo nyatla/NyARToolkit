@@ -23,24 +23,41 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.raster;
+package jp.nyatla.nyartoolkit.core.raster.rgb;
+
+import jp.nyatla.nyartoolkit.core.raster.TNyRasterType;
+import jp.nyatla.nyartoolkit.core.rasterreader.*;
 
 
-import jp.nyatla.nyartoolkit.core.types.*;
 
-public abstract class NyARRaster_BasicClass implements INyARRaster 
+
+public class NyARRgbRaster_RGB extends NyARRgbRaster_BasicClass
 {
-    final protected TNyARIntSize _size=new TNyARIntSize();
-    final public int getWidth()
+    protected byte[] _ref_buf;
+    private NyARRgbPixelReader_RGB24 _reader;
+    public static NyARRgbRaster_RGB wrap(byte[] i_buffer,int i_width,int i_height)
     {
-	return this._size.w;
+        return new NyARRgbRaster_RGB(i_buffer,i_width,i_height);
     }
-    final public int getHeight()
+    private NyARRgbRaster_RGB(byte[] i_buffer,int i_width,int i_height)
     {
-	return this._size.h;
-    }
-    final public TNyARIntSize getSize()
+	this._ref_buf=i_buffer;
+	this._size.w=i_width;
+	this._size.h=i_height;
+	this._reader=new NyARRgbPixelReader_RGB24(i_buffer,this._size);
+	return;
+    }    
+    public byte[] getBufferObject()
     {
-	return this._size;
+	return this._ref_buf;
     }
+    public int getBufferType()
+    {
+	return TNyRasterType.BUFFERFORMAT_BYTE1D_R8G8B8_24;
+    }
+    public INyARRgbPixelReader getRgbPixelReader()
+    {
+	return this._reader;
+    }    
 }
+

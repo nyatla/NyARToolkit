@@ -23,24 +23,53 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.raster;
+package jp.nyatla.nyartoolkit.core.raster.rgb;
 
 
-import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.raster.TNyRasterType;
+import jp.nyatla.nyartoolkit.core.rasterreader.INyARRgbPixelReader;
 
-public abstract class NyARRaster_BasicClass implements INyARRaster 
+
+/*
+ * 真っ黒の矩形を定義する。
+ *
+ */
+public class NyARRgbRaster_Blank extends NyARRgbRaster_BasicClass
 {
-    final protected TNyARIntSize _size=new TNyARIntSize();
-    final public int getWidth()
+    private class PixelReader implements INyARRgbPixelReader{
+	public void getPixel(int i_x,int i_y,int[] o_rgb)
+	{
+	    o_rgb[0]=0;//R
+	    o_rgb[1]=0;//G
+	    o_rgb[2]=0;//B
+	    return;
+	}
+	public void getPixelSet(int[] i_x,int i_y[],int i_num,int[] o_rgb)
+	{
+	    for(int i=i_num-1;i>=0;i--){
+		o_rgb[i*3+0]=0;//R
+		o_rgb[i*3+1]=0;//G
+		o_rgb[i*3+2]=0;//B
+	    }
+	}	
+    }    
+    private INyARRgbPixelReader _reader;
+    public NyARRgbRaster_Blank(int i_width,int i_height)
     {
-	return this._size.w;
+	this._size.w=i_width;
+	this._size.h=i_height;
+	this._reader=new PixelReader();
     }
-    final public int getHeight()
+    public int getBufferType()
     {
-	return this._size.h;
+	return TNyRasterType.BUFFERFORMAT_NULL_ALLZERO;
     }
-    final public TNyARIntSize getSize()
+    public byte[] getBufferObject()
     {
-	return this._size;
+	return null;
     }
+    public INyARRgbPixelReader getRgbPixelReader()
+    {
+	return this._reader;
+    }     
 }

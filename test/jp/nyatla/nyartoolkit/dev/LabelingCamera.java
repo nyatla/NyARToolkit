@@ -14,16 +14,18 @@ import javax.media.format.*;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
-import jp.nyatla.nyartoolkit.core.raster.threshold.*;
 
 import java.awt.*;
 
 
 import jp.nyatla.nyartoolkit.core.labeling.*;
 import jp.nyatla.nyartoolkit.core.labeling.processor.*;
-import jp.nyatla.nyartoolkit.core.raster.operator.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.raster.filter.*;
+import jp.nyatla.nyartoolkit.core.rasteranalyzer.*;
+import jp.nyatla.nyartoolkit.core.rasteranalyzer.threshold.*;
+import jp.nyatla.nyartoolkit.core.rasterfilter.*;
+import jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin.NyARRasterFilter_Threshold;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.*;
 import jp.nyatla.util.j2se.LabelingBufferdImage;
 
 public class LabelingCamera extends Frame implements JmfCaptureListener {
@@ -43,8 +45,8 @@ public class LabelingCamera extends Frame implements JmfCaptureListener {
 	this._raster = new JmfNyARRaster_RGB(320, 240);
     }
     
-    private NyARRaster _workraster=new NyARRaster_Int2d(320,240);
-    private NyARRaster _workraster2=new NyARRaster_Int2d(320,240);
+    private NyARBinRaster _binraster1=new NyARBinRaster(320,240);
+    private NyARGlayscaleRaster _gsraster1=new NyARGlayscaleRaster(320,240);
     private NyARLabelingImage _limage=new NyARLabelingImage(320, 240);
     private LabelingBufferdImage _bimg=new LabelingBufferdImage(320, 240,LabelingBufferdImage.COLOR_256_MONO);
     private LabelingBufferdImage _bimg2=new LabelingBufferdImage(320, 240,LabelingBufferdImage.COLOR_256_MONO);
@@ -65,9 +67,9 @@ public class LabelingCamera extends Frame implements JmfCaptureListener {
 	    this.getGraphics().drawImage(img, 32, 32, this);
 	    
 	    //画像1
-	    filter=new NyARRasterFilter_RgbSum();
-	    filter.doFilter(_raster, _workraster);
-	    this._bimg2.setImage(this._workraster);
+	    INyARRasterFilter_RgbToGs filter_rgb2gs=new NyARRasterFilter_RgbAve();
+	    filter_rgb2gs.doFilter(_raster, _gsraster1);
+	    this._bimg2.drawImage(this._gsraster1);
 	    this.getGraphics().drawImage(this._bimg2, 32+320, 32,320+320+32,240+32,0,240,320,0, this);
 
 	    //画像2
@@ -75,25 +77,25 @@ public class LabelingCamera extends Frame implements JmfCaptureListener {
 	    threshold.analyzeRaster(_workraster);
 	    filter=new NyARRasterFilter_Threshold(128);
 	    filter.doFilter(_workraster, _workraster2);
-	    this._bimg.setImage(this._workraster2);
+	    this._bimg.drawImage(this._workraster2);
 	    this.getGraphics().drawImage(this._bimg, 32, 32+240,320+32,240+32+240,0,240,320,0, this);
 	    //画像3
 	    //threshold.debugDrawHistgramMap(_workraster, _workraster2);
 	    //this._bimg2.setImage(this._workraster2);
 	    //this.getGraphics().drawImage(this._bimg2, 32+320, 32+240,320+32+320,240+32+240,0,240,320,0, this);
-
+/*
 	    //画像4
 	    NyARRasterThresholdDetector_SlidePTile threshold2=new NyARRasterThresholdDetector_SlidePTile(20);
 	    threshold2.analyzeRaster(_workraster);
 	    filter=new NyARRasterFilter_Threshold(threshold2.getThreshold());
 	    filter.doFilter(_workraster, _workraster2);
-	    this._bimg.setImage(this._workraster2);
+	    this._bimg.drawImage(this._workraster2);
 	    this.getGraphics().drawImage(this._bimg, 32, 32+480,320+32,480+32+240,0,240,320,0, this);
 	    //画像5
 	    threshold2.debugDrawHistgramMap(_workraster, _workraster2);
-	    this._bimg2.setImage(this._workraster2);
+	    this._bimg2.drawImage(this._workraster2);
 	    this.getGraphics().drawImage(this._bimg2, 32+320, 32+480,320+32+320,480+32+240,0,240,320,0, this);
-	    
+*/	    
 	    
 	    //	    this.getGraphics().drawImage(this._bimg, 32, 32, this);
 

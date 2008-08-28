@@ -26,21 +26,24 @@
 package jp.nyatla.nyartoolkit.core.raster;
 
 
-import jp.nyatla.nyartoolkit.core.types.*;
 
-public abstract class NyARRaster_BasicClass implements INyARRaster 
+public final class NyARGlayscaleRaster extends NyARRaster_BasicClass
 {
-    final protected TNyARIntSize _size=new TNyARIntSize();
-    final public int getWidth()
+
+    protected int[][] _ref_buf;
+    public NyARGlayscaleRaster(int i_width,int i_height)
     {
-	return this._size.w;
+	this._ref_buf=new int[i_height][i_width];
+	this._size.w=i_width;
+	this._size.h=i_height;
     }
-    final public int getHeight()
+    public int getBufferType()
     {
-	return this._size.h;
+	return TNyRasterType.BUFFERFORMAT_INT2D_GLAY_8;
     }
-    final public TNyARIntSize getSize()
+    public int[][] getBufferObject()
     {
-	return this._size;
+	return (int[][])this._ref_buf;
     }
 }
+

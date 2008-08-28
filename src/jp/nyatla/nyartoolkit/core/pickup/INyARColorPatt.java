@@ -73,5 +73,5 @@ public interface INyARColorPatt
      * ラスターの取得に成功するとTRUE/失敗するとFALSE
      * @throws NyARException
      */
-    public boolean pickFromRaster(NyARRaster image, NyARSquare i_square) throws NyARException;
+    public boolean pickFromRaster(INyARRaster image, NyARSquare i_square) throws NyARException;
 }

@@ -32,7 +32,7 @@
 package jp.nyatla.nyartoolkit.core;
 
 import jp.nyatla.nyartoolkit.*;
-import jp.nyatla.nyartoolkit.core.raster.operator.*;
+import jp.nyatla.nyartoolkit.core.rasteranalyzer.*;
 import jp.nyatla.nyartoolkit.core.labeling.*;
 import jp.nyatla.nyartoolkit.core.labeling.processor.ARToolKitLabeling;
 
