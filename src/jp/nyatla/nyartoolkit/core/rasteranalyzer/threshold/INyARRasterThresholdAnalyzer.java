@@ -1,12 +1,6 @@
 /* 
  * PROJECT: NyARToolkit
  * --------------------------------------------------------------------------------
- * This work is based on the original ARToolKit developed by
- *   Hirokazu Kato
- *   Mark Billinghurst
- *   HITLab, University of Washington, Seattle
- * http://www.hitl.washington.edu/artoolkit/
- *
  * The NyARToolkit is Java version ARToolkit class library.
  * Copyright (C)2008 R.Iizuka
  *
@@ -29,13 +23,16 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.rasteranalyzer;
+package jp.nyatla.nyartoolkit.core.rasteranalyzer.threshold;
 
-import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.*;
+import jp.nyatla.nyartoolkit.core.raster.*;
 
-public interface INyARRasterReader
+public interface INyARRasterThresholdAnalyzer
 {
-    public void readRow(int i_row,int[] out_line);
-    public int getThreshold();
-    public TNyARIntSize getRasterSize();
+	public void analyzeRaster(INyARRaster i_input) throws NyARException;
+
+	public int getThreshold();
+
+	public int getThreshold(int i_x, int i_y);
 }

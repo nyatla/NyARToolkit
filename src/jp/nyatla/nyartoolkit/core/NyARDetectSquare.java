@@ -32,59 +32,64 @@
 package jp.nyatla.nyartoolkit.core;
 
 import jp.nyatla.nyartoolkit.*;
-import jp.nyatla.nyartoolkit.core.rasteranalyzer.*;
 import jp.nyatla.nyartoolkit.core.labeling.*;
 import jp.nyatla.nyartoolkit.core.labeling.processor.ARToolKitLabeling;
+import jp.nyatla.nyartoolkit.core.raster.*;
 
 public class NyARDetectSquare
 {
-    private final ARToolKitLabeling _labeling;
-    private final NyARDetectMarker _detecter;
-    private final NyARLabelingImage _limage;
-    private final NyARParam _param;
-    private final NyARMarkerList _marker_list;
-    
-    /**
-     * マーカー抽出インスタンスを作ります。
-     * @param i_param
-     * @param i_max_marker
-     * 認識するマーカーの最大個数を指定します。
-     * @throws NyARException
-     */
-    public NyARDetectSquare(NyARParam i_param,int i_max_marker) throws NyARException
-    {
-	this._param=i_param;
-	//解析オブジェクトを作る
-	int width=i_param.getX();
-	int height=i_param.getY();
-	
+	private final ARToolKitLabeling _labeling;
 
-	this._detecter=new NyARDetectMarker(width,height);
-	this._labeling=new ARToolKitLabeling();
-	this._limage=new NyARLabelingImage(width,height);
-	this._marker_list=new NyARMarkerList(i_max_marker);
-	
-	this._labeling.attachDestination(this._limage);
-    }
-    /**
-     * ラスタイメージから矩形を検出して、結果o_square_holderへ格納します。
-     * @param i_marker
-     * @param i_number_of_marker
-     * @param i_square_holder
-     * @throws NyARException
-     */
-    public void detectSquare(INyARRasterReader i_reader,int i_thresh,NyARSquareList o_square_list) throws NyARException
-    {
-	this._labeling.setThresh(i_thresh);
-	this._labeling.labeling(i_reader);
-	//ラベル数が0ならマーカー検出をしない。	
-	if(this._limage.getLabelList().getCount()<1){
-	    return;
+	private final NyARDetectMarker _detecter;
+
+	private final NyARLabelingImage _limage;
+
+	private final NyARParam _param;
+
+	private final NyARMarkerList _marker_list;
+
+	/**
+	 * マーカー抽出インスタンスを作ります。
+	 * 
+	 * @param i_param
+	 * @param i_max_marker
+	 *            認識するマーカーの最大個数を指定します。
+	 * @throws NyARException
+	 */
+	public NyARDetectSquare(NyARParam i_param, int i_max_marker)throws NyARException
+	{
+		this._param = i_param;
+		// 解析オブジェクトを作る
+		int width = i_param.getX();
+		int height = i_param.getY();
+
+		this._detecter = new NyARDetectMarker(width, height);
+		this._labeling = new ARToolKitLabeling();
+		this._limage = new NyARLabelingImage(width, height);
+		this._marker_list = new NyARMarkerList(i_max_marker);
+
+		this._labeling.attachDestination(this._limage);
 	}
-	//ここでマーカー配列を作成する。
-	this._detecter.detectMarker(this._limage,1.0,this._marker_list);
-	
-	//マーカー情報をフィルタして、スクエア配列を更新する。
-	o_square_list.pickupSquare(this._param, this._marker_list);
-    }
+
+	/**
+	 * ラスタイメージから矩形を検出して、結果o_square_holderへ格納します。
+	 * 
+	 * @param i_marker
+	 * @param i_number_of_marker
+	 * @param i_square_holder
+	 * @throws NyARException
+	 */
+	public void detectSquare(NyARBinRaster i_raster,NyARSquareList o_square_list) throws NyARException
+	{
+		this._labeling.labeling(i_raster);
+		// ラベル数が0ならマーカー検出をしない。
+		if (this._limage.getLabelStack().getLength() < 1) {
+			return;
+		}
+		// ここでマーカー配列を作成する。
+		this._detecter.detectMarker(this._limage, 1.0, this._marker_list);
+
+		// マーカー情報をフィルタして、スクエア配列を更新する。
+		o_square_list.pickupSquare(this._param, this._marker_list);
+	}
 }

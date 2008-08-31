@@ -28,64 +28,72 @@ package jp.nyatla.nyartoolkit.core.raster.rgb;
 import jp.nyatla.nyartoolkit.core.raster.TNyRasterType;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
 
-
-
-public class NyARRgbRaster_BGRA extends NyARRgbRaster_BasicClass implements INyARRgbRaster 
+public class NyARRgbRaster_BGRA extends NyARRgbRaster_BasicClass implements INyARRgbRaster
 {
-    private class PixelReader implements INyARRgbPixelReader{
-	private NyARRgbRaster_BGRA _parent;
-	public PixelReader(NyARRgbRaster_BGRA i_parent)
+	private class PixelReader implements INyARRgbPixelReader
 	{
-	    this._parent=i_parent;
+		private NyARRgbRaster_BGRA _parent;
+
+		public PixelReader(NyARRgbRaster_BGRA i_parent)
+		{
+			this._parent = i_parent;
+		}
+
+		public void getPixel(int i_x, int i_y, int[] o_rgb)
+		{
+			byte[] ref = this._parent._ref_buf;
+			int bp = (i_x + i_y * this._parent._size.w) * 4;
+			o_rgb[0] = (ref[bp + 2] & 0xff);// R
+			o_rgb[1] = (ref[bp + 1] & 0xff);// G
+			o_rgb[2] = (ref[bp + 0] & 0xff);// B
+			return;
+		}
+
+		public void getPixelSet(int[] i_x, int i_y[], int i_num, int[] o_rgb)
+		{
+			int width = _parent._size.w;
+			byte[] ref = _parent._ref_buf;
+			int bp;
+			for (int i = i_num - 1; i >= 0; i--) {
+				bp = (i_x[i] + i_y[i] * width) * 4;
+				o_rgb[i * 3 + 0] = (ref[bp + 2] & 0xff);// R
+				o_rgb[i * 3 + 1] = (ref[bp + 1] & 0xff);// G
+				o_rgb[i * 3 + 2] = (ref[bp + 0] & 0xff);// B
+			}
+		}
 	}
-	public void getPixel(int i_x,int i_y,int[] o_rgb)
+
+	private INyARRgbPixelReader _reader;
+
+	private byte[] _ref_buf;
+
+	public static NyARRgbRaster_BGRA wrap(byte[] i_buffer, int i_width, int i_height)
 	{
-	    byte[] ref=this._parent._ref_buf;
-	    int bp=(i_x+i_y*this._parent._size.w)*4;
-	    o_rgb[0]=(ref[bp+2] & 0xff);//R
-	    o_rgb[1]=(ref[bp+1] & 0xff);//G
-	    o_rgb[2]=(ref[bp+0] & 0xff);//B
-	    return;
+		return new NyARRgbRaster_BGRA(i_buffer, i_width, i_height);
 	}
-	public void getPixelSet(int[] i_x,int i_y[],int i_num,int[] o_rgb)
+
+	private NyARRgbRaster_BGRA(byte[] i_buffer, int i_width, int i_height)
 	{
-	    int width=_parent._size.w;
-	    byte[] ref=_parent._ref_buf;
-	    int bp;
-	    for(int i=i_num-1;i>=0;i--){
-		bp=(i_x[i]+i_y[i]*width)*4;
-		o_rgb[i*3+0]=(ref[bp+2] & 0xff);//R
-		o_rgb[i*3+1]=(ref[bp+1] & 0xff);//G
-		o_rgb[i*3+2]=(ref[bp+0] & 0xff);//B
-	    }	
-	}	
-    }
-    private INyARRgbPixelReader _reader;
-    private byte[] _ref_buf;	
-    public static NyARRgbRaster_BGRA wrap(byte[] i_buffer,int i_width,int i_height)
-    {
-	return new NyARRgbRaster_BGRA(i_buffer,i_width,i_height);
-    }
-    private NyARRgbRaster_BGRA(byte[] i_buffer,int i_width,int i_height)
-    {
-	this._ref_buf=i_buffer;
-	this._size.w=i_width;
-	this._size.h=i_height;
-	this._reader=new PixelReader(this);
-	return;
-    }
-    public int getBufferType()
-    {
-	return TNyRasterType.BUFFERFORMAT_BYTE1D_B8G8R8X8_32;
-    }
-    public byte[] getBufferObject()
-    {
-	return this._ref_buf;
-    }
-    public INyARRgbPixelReader getRgbPixelReader()
-    {
-	return this._reader;
-    }
+		this._ref_buf = i_buffer;
+		this._size.w = i_width;
+		this._size.h = i_height;
+		this._reader = new PixelReader(this);
+		return;
+	}
+
+	public int getBufferType()
+	{
+		return TNyRasterType.BUFFERFORMAT_BYTE1D_B8G8R8X8_32;
+	}
+
+	public byte[] getBufferObject()
+	{
+		return this._ref_buf;
+	}
+
+	public INyARRgbPixelReader getRgbPixelReader()
+	{
+		return this._reader;
+	}
 
 }
-

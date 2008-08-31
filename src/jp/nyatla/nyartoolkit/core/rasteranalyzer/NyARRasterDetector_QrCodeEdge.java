@@ -7,124 +7,226 @@ import jp.nyatla.nyartoolkit.core.types.*;
 
 public class NyARRasterDetector_QrCodeEdge
 {
-    private NyARIntPointStack _result;
+	private NyARIntRectStack _result;
 
-    public NyARRasterDetector_QrCodeEdge(int i_result_max)
-    {
-	this._result=new NyARIntPointStack(i_result_max);
-
-    }
-    public NyARIntPointStack geResult()
-    {
-	return this._result;
-    }
-    public void analyzeRaster(INyARRaster i_input) throws NyARException
-    {
-	assert(i_input.getBufferType()==TNyRasterType.BUFFERFORMAT_INT2D_BIN_8);
-
-	//結果をクリア
-	this._result.clear();
-
-	TNyARIntSize size=i_input.getSize();
-	int th=128;
-	int x=0;
-	int w1,b1,w2,b2,w3,b3;
-	w1=b1=w2=b2=w3=b3=0;
-
-	int[] line;
-	int s_pos,e_pos;
-	for(int y=size.h-1;y>=0;y--){
-	    line=((int[][])i_input.getBufferObject())[y];
-	    x=size.w;
-	    while(x>=0){
-		//w1の特定
-		for(;x>=0;x--){
-		    if(line[x]<th){
-			break;
-		    }
-		    w1++;
-		}
-		//w1は3以上欲しいな。
-		if(w1<3){
-		    w1=0;
-		    continue;
-		}
-		s_pos=x;
-		//b1の特定
-		for(;x>=0;x--){
-		    if(line[x]>=th){
-			break;
-		    }
-		    w1++;
-		}
-		//b1は1以上欲しいな。
-		if(b1<1){
-		    w1=b1=0;
-		    continue;
-		}
-
-		//w2の特定
-		for(;x>=0;x--){
-		    if(line[x]<th){
-			break;
-		    }
-		    w2++;
-		}
-		//w2とb1は2倍以上違わないこと
-		if((b1>>1) != (w2>>1)){
-		    w1=b1=w2=0;
-		    continue;
-		}
-
-		//b2の特定
-		for(;x>=0;x--){
-		    if(line[x]>=th){
-			break;
-		    }
-		    b2++;
-		}
-		//b2はw2の2倍以上あること！
-		if((b2>>1) > (w2>>1)){
-		    w1=b1=w2=b2=0;
-		    continue;
-		}
-
-		//w3の特定
-		for(;x>=0;x--){
-		    if(line[x]<th){
-			break;
-		    }
-		    w3++;
-		}
-		//w3とb1は2倍以上違わないこと
-		if((b1>>1) != (w3>>1)){
-		    w1=b1=w2=b2=w3=0;
-		    continue;
-		}
-
-		//b3の特定
-		for(;x>=0;x--){
-		    if(line[x]<th){
-			break;
-		    }
-		    b3++;
-		}
-		//b4とb1は2倍以上違わないこと
-		if((b3>>1) != (b1>>1)){
-		    w1=b1=w2=b2=w3=b3=0;
-		    continue;
-		}
-		e_pos=x;
-		/*コード特定→保管*/	    
-		TNyARIntPoint item=this._result.reserv();
-		item.x=e_pos-s_pos;
-		item.y=y;
-		/*次のコードを探す*/
-		w1=b1=w2=b2=w3=b3=0;
-	    }
+	public NyARRasterDetector_QrCodeEdge(int i_result_max)
+	{
+		this._result = new NyARIntRectStack(i_result_max);
+		return;
 	}
-	return;
-    }
 
+	public NyARIntRectStack geResult()
+	{
+		return this._result;
+	}
 
+	private boolean check_w1(int i_w1)
+	{
+		return i_w1>=1;		
+	}
+	private boolean check_b1(int i_b1)
+	{
+		return i_b1 >= 2;		
+	}
+	private boolean check_w2(int i_b1,int i_w2)
+	{
+		int v=i_w2*100/i_b1;
+		return (30<=v && v<=170);
+	}
+	private boolean check_b2(int i_b1,int i_b2)
+	{
+		int v=i_b2*100/i_b1;
+		//条件:(b1)/2の2～4倍
+		return (200<=v && v<=400);
+	}
+	private boolean check_w3(int i_w2,int i_w3)
+	{
+		int v=i_w3*100/i_w2;
+		return (50<=v && v<=150);
+	}
+	private boolean check_b3(int i_b3,int i_b1)
+	{
+		int v=i_b3*100/i_b1;
+		return (50<=v && v<=150);
+	}	
+	public void analyzeRaster(INyARRaster i_input) throws NyARException
+	{
+		assert (i_input.getBufferType() == TNyRasterType.BUFFERFORMAT_INT2D_BIN_8);
+
+		// 結果をクリア
+		this._result.clear();
+
+		TNyARIntSize size = i_input.getSize();
+		int x = 0;
+		int w1, b1, w2, b2, w3, b3;
+		w1 = b1 = w2 = b2 = w3 = b3 = 0;
+
+		TNyARIntRect item;
+		int[] line;
+		int s_pos, b2_spos,b3_spos;
+		b2_spos=0;
+		for (int y = size.h - 1-8; y >= 8; y--) {
+			line = ((int[][]) i_input.getBufferObject())[y];
+			x = size.w - 1;
+			s_pos=0;
+			int token_id=0;
+			while(x>=0){
+				switch(token_id){
+				case 0:
+					// w1の特定
+					w1 = 0;
+					for (; x >= 0; x--) {
+						if (line[x] == 0) {
+							// 検出条件確認:w1は2以上欲しいな。
+							if (!check_w1(w1)) {
+								// 条件不十分
+								continue;
+							}else{
+								// 検出→次段処理へ
+								token_id=1;
+							}
+							break;
+						}
+						w1++;
+					}
+					break;
+				case 1:
+					// b1の特定
+					b1 = 0;
+					s_pos = x;
+					for (; x >= 0; x--) {
+						if (line[x] > 0) {
+							// 検出条件確認:b1は1以上欲しいな。
+							if (!check_b1(b1)){
+								//条件不十分→白検出からやり直し
+								token_id=0;
+							}else{
+								// 検出→次段処理へ
+								token_id=2;
+							}
+							break;
+						}
+						b1++;
+					}
+					break;
+				case 2:
+					// w2の特定
+					w2 = 0;
+					for (; x >= 0; x--) {
+						if (line[x] == 0) {
+							// 検出条件確認:w2*10/b1は80-120以上欲しいな。
+							if (!check_w2(b1,w2)) {
+								//条件不十分→w2→w1として、b1を解析
+								w1=w2;
+								token_id=1;
+							}else{
+								// 検出→次段処理へ
+//								w1=w2;
+//								token_id=11;
+								token_id=3;
+							}
+							break;
+						}
+						w2++;
+					}
+					break;
+				case 3:
+					// b2の特定
+					b2 = 0;
+					b2_spos=x;
+					for (; x >= 0; x--) {
+						if (line[x] > 0){
+							//条件:(w1+b1)/2の2～4倍
+
+							if (!check_b2(b1,b2)) {
+								// b2->b1と仮定して解析しなおす。
+								if(check_w1(w2) && check_b1(b2)){
+									w1 = w2;
+									b1 = b2;
+									s_pos=b2_spos;
+									token_id=2;
+								}else{
+									
+									token_id=0;
+								}
+							}else{
+								// 検出→次段処理へ
+//								token_id=10;
+								token_id=4;
+							}
+							break;
+						}
+						b2++;
+					}
+					break;
+				case 4:
+					// w3の特定
+					w3 = 0;
+					for (; x >= 0; x--) {
+						if (line[x] == 0){
+							if (!check_w3(w2,w3)) {
+								//w2→w1,b2->b1として解析しなおす。
+								if(check_w1(w2) && check_b1(b2)){
+									w1 = w2;
+									b1 = b2;
+									s_pos=b2_spos;
+									token_id=2;
+								}else{
+									token_id=0;
+								}
+							}else{
+								// 検出→次段処理へ
+//								w1=w3;
+//								token_id=10;
+								token_id=5;
+							}
+							break;
+						}
+						w3++;
+					}
+					break;
+				case 5:
+					// b3の特定
+					b3 = 0;
+					b3_spos=x;
+					for (; x >= 0; x--) {
+						if (line[x] > 0) {
+							// 検出条件確認
+							if (!check_b3(b3,b1)) {
+								if(check_w1(w2) && check_b1(b2)){
+								//条件不十分→b3->b1,w3->w1として再解析
+									w1=w3;
+									b1=b3;
+									s_pos=b3_spos;
+									token_id=2;
+								}else{
+									token_id=0;
+								}
+							}else{
+								// 検出→次段処理へ
+								token_id=10;
+							}
+							break;
+						}
+						b3++;
+					}
+					break;
+				case 10:
+					/* コード特定→保管 */
+					item = this._result.prePush();
+					item.x = x;
+					item.y = y;
+					item.w =s_pos-x;
+					item.h=0;
+					/* 最大個数？ */
+					/* 次のコードを探す */
+					token_id=0;
+					break;
+				default:
+					throw new NyARException();
+				}
+			}
+		}
+		return;
+	}
 }

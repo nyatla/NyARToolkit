@@ -1,5 +1,6 @@
 package jp.nyatla.util;
 
-public class DoubleValue {
-    public double value;
+public class DoubleValue
+{
+	public double value;
 }

@@ -28,35 +28,32 @@ package jp.nyatla.nyartoolkit.core.rasterfilter;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.TNyARIntSize;
+
 /**
- * エッジ検出フィルタ
- * 入力
- * BUFFERFORMAT_INT2D
- * 出力
- * BUFFERFORMAT_INT2D
+ * エッジ検出フィルタ 入力 BUFFERFORMAT_INT2D 出力 BUFFERFORMAT_INT2D
  */
 public class NyARRasterFilter_Edge implements INyARRasterFilter
 {
-    public void doFilter(INyARRaster i_input,INyARRaster i_output) throws NyARException
-    {
-	assert(i_input.getBufferType()==TNyRasterType.BUFFERFORMAT_INT2D_GLAY_8);
-	assert(i_output.getBufferType()==TNyRasterType.BUFFERFORMAT_INT2D_GLAY_8);
-	assert(i_input.getSize().isEqualSize(i_output.getSize())==true);
-	
-	int[][] out_buf=(int [][])i_output.getBufferObject();
-	int[][] in_buf=(int[][])i_input.getBufferObject();
-	
-	int bp=0;
-	TNyARIntSize size=i_output.getSize();
-	for(int y=1;y<size.h;y++){
-	    int prev=128;
-	    for(int x=1;x<size.w;x++){
-		int w=in_buf[y][x];
-		out_buf[y][x]=(Math.abs(w-prev)+Math.abs(w-in_buf[y-1][x]))/2;
-		prev=w;
-                bp+=3;
-	    }
+	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException
+	{
+		assert (i_input.getBufferType() == TNyRasterType.BUFFERFORMAT_INT2D_GLAY_8);
+		assert (i_output.getBufferType() == TNyRasterType.BUFFERFORMAT_INT2D_GLAY_8);
+		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
+
+		int[][] out_buf = (int[][]) i_output.getBufferObject();
+		int[][] in_buf = (int[][]) i_input.getBufferObject();
+
+		int bp = 0;
+		TNyARIntSize size = i_output.getSize();
+		for (int y = 1; y < size.h; y++) {
+			int prev = 128;
+			for (int x = 1; x < size.w; x++) {
+				int w = in_buf[y][x];
+				out_buf[y][x] = (Math.abs(w - prev) + Math.abs(w - in_buf[y - 1][x])) / 2;
+				prev = w;
+				bp += 3;
+			}
+		}
+		return;
 	}
-	return;
-    }
 }

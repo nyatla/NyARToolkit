@@ -28,36 +28,38 @@ package jp.nyatla.nyartoolkit.core.raster.rgb;
 import jp.nyatla.nyartoolkit.core.raster.TNyRasterType;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
 
-
-
-
 public class NyARRgbRaster_RGB extends NyARRgbRaster_BasicClass
 {
-    protected byte[] _ref_buf;
-    private NyARRgbPixelReader_RGB24 _reader;
-    public static NyARRgbRaster_RGB wrap(byte[] i_buffer,int i_width,int i_height)
-    {
-        return new NyARRgbRaster_RGB(i_buffer,i_width,i_height);
-    }
-    private NyARRgbRaster_RGB(byte[] i_buffer,int i_width,int i_height)
-    {
-	this._ref_buf=i_buffer;
-	this._size.w=i_width;
-	this._size.h=i_height;
-	this._reader=new NyARRgbPixelReader_RGB24(i_buffer,this._size);
-	return;
-    }    
-    public byte[] getBufferObject()
-    {
-	return this._ref_buf;
-    }
-    public int getBufferType()
-    {
-	return TNyRasterType.BUFFERFORMAT_BYTE1D_R8G8B8_24;
-    }
-    public INyARRgbPixelReader getRgbPixelReader()
-    {
-	return this._reader;
-    }    
-}
+	protected byte[] _ref_buf;
 
+	private NyARRgbPixelReader_RGB24 _reader;
+
+	public static NyARRgbRaster_RGB wrap(byte[] i_buffer, int i_width, int i_height)
+	{
+		return new NyARRgbRaster_RGB(i_buffer, i_width, i_height);
+	}
+
+	private NyARRgbRaster_RGB(byte[] i_buffer, int i_width, int i_height)
+	{
+		this._ref_buf = i_buffer;
+		this._size.w = i_width;
+		this._size.h = i_height;
+		this._reader = new NyARRgbPixelReader_RGB24(i_buffer, this._size);
+		return;
+	}
+
+	public byte[] getBufferObject()
+	{
+		return this._ref_buf;
+	}
+
+	public int getBufferType()
+	{
+		return TNyRasterType.BUFFERFORMAT_BYTE1D_R8G8B8_24;
+	}
+
+	public INyARRgbPixelReader getRgbPixelReader()
+	{
+		return this._reader;
+	}
+}

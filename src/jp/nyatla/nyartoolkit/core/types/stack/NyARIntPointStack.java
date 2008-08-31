@@ -6,23 +6,26 @@ import jp.nyatla.util.NyObjectStack;
 
 public class NyARIntPointStack extends NyObjectStack
 {
-    public NyARIntPointStack(int i_length)
-    {
-	super(i_length);
-	
-    }
-    protected void onReservRequest(int i_start, int i_end, Object[] i_buffer)
-    {
-	for(int i=i_start;i<i_end;i++){
-	    i_buffer[i]=new TNyARIntPoint();
+	public NyARIntPointStack(int i_length)
+	{
+		super(new TNyARIntPoint[i_length]);
+
 	}
-    }
-    public TNyARIntPoint[] getArray()
-    {
-	return (TNyARIntPoint[])this._items;
-    }
-    public TNyARIntPoint reserv() throws NyARException
-    {
-	return (TNyARIntPoint)super.reserv();
-    }
+
+	protected void onReservRequest(int i_start, int i_end, Object[] i_buffer)
+	{
+		for (int i = i_start; i < i_end; i++) {
+			i_buffer[i] = new TNyARIntPoint();
+		}
+	}
+
+	public TNyARIntPoint[] getArray()
+	{
+		return (TNyARIntPoint[]) this._items;
+	}
+
+	public TNyARIntPoint prePush() throws NyARException
+	{
+		return (TNyARIntPoint) super.prePush();
+	}
 }

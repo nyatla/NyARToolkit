@@ -28,11 +28,12 @@ package jp.nyatla.nyartoolkit.core.raster.rgb;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
+
 /**
  * 8bitRGBを表現できるラスタ
- *
+ * 
  */
 public interface INyARRgbRaster extends INyARRaster
 {
-    public INyARRgbPixelReader getRgbPixelReader() throws NyARException;
+	public INyARRgbPixelReader getRgbPixelReader() throws NyARException;
 }

@@ -30,5 +30,5 @@ import jp.nyatla.nyartoolkit.core.raster.*;
 
 public interface INyARRasterFilter
 {
-    public void doFilter(INyARRaster i_input,INyARRaster i_output) throws NyARException;
+	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException;
 }

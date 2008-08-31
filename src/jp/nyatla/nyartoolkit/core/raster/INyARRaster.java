@@ -28,12 +28,15 @@ package jp.nyatla.nyartoolkit.core.raster;
 import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
-
 public interface INyARRaster
 {
-    public int getWidth();
-    public int getHeight();
-    public TNyARIntSize getSize();
-    public int getBufferType() throws NyARException;
-    public Object getBufferObject();
+	public int getWidth();
+
+	public int getHeight();
+
+	public TNyARIntSize getSize();
+
+	public int getBufferType() throws NyARException;
+
+	public Object getBufferObject();
 }

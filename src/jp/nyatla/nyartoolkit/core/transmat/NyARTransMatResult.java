@@ -25,70 +25,77 @@
  * 
  */
 package jp.nyatla.nyartoolkit.core.transmat;
+
 import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.NyARMat;
 
 /**
  * NyARTransMat戻り値専用のNyARMat
- *
+ * 
  */
 public class NyARTransMatResult extends NyARMat
 {
-    private boolean has_value=false;
-    public NyARTransMatResult()
-    {
-	super(3,4);
-    }
-    /**
-     * この関数は使えません。
-     * @param i_row
-     * @param i_clm
-     * @throws NyARException
-     */
-    public NyARTransMatResult(int i_row,int i_clm) throws NyARException
-    {
-	super();//ここで例外発生
-    }
-    /**
-     * パラメータで変換行列を更新します。
-     * @param i_rot
-     * @param i_off
-     * @param i_trans
-     */
-    public void updateMatrixValue(NyARTransRot i_rot,double[] i_off,double[] i_trans)
-    {
-	double[] pa;
-	double[] rot=i_rot.getArray();
+	private boolean has_value = false;
 
-	pa=this.m[0];
-        pa[0] = rot[0*3+0];
-        pa[1] = rot[0*3+1];
-        pa[2] = rot[0*3+2];
-        pa[3] = rot[0*3+0]*i_off[0] + rot[0*3+1]*i_off[1] + rot[0*3+2]*i_off[2] + i_trans[0];
+	public NyARTransMatResult()
+	{
+		super(3, 4);
+	}
 
-        pa=this.m[1];
-        pa[0] = rot[1*3+0];
-        pa[1] = rot[1*3+1];
-        pa[2] = rot[1*3+2];
-        pa[3] = rot[1*3+0]*i_off[0] + rot[1*3+1]*i_off[1] + rot[1*3+2]*i_off[2] + i_trans[1];
+	/**
+	 * この関数は使えません。
+	 * 
+	 * @param i_row
+	 * @param i_clm
+	 * @throws NyARException
+	 */
+	public NyARTransMatResult(int i_row, int i_clm) throws NyARException
+	{
+		super();// ここで例外発生
+	}
 
-        pa=this.m[2];
-        pa[0] = rot[2*3+0];
-        pa[1] = rot[2*3+1];
-        pa[2] = rot[2*3+2];
-        pa[3] = rot[2*3+0]*i_off[0] + rot[2*3+1]*i_off[1] + rot[2*3+2]*i_off[2] + i_trans[2];
+	/**
+	 * パラメータで変換行列を更新します。
+	 * 
+	 * @param i_rot
+	 * @param i_off
+	 * @param i_trans
+	 */
+	public void updateMatrixValue(NyARTransRot i_rot, double[] i_off, double[] i_trans)
+	{
+		double[] pa;
+		double[] rot = i_rot.getArray();
 
+		pa = this.m[0];
+		pa[0] = rot[0 * 3 + 0];
+		pa[1] = rot[0 * 3 + 1];
+		pa[2] = rot[0 * 3 + 2];
+		pa[3] = rot[0 * 3 + 0] * i_off[0] + rot[0 * 3 + 1] * i_off[1] + rot[0 * 3 + 2] * i_off[2] + i_trans[0];
 
-        this.has_value=true;
-        return;
-    }
-    public void copyFrom(NyARTransMatResult i_from) throws NyARException
-    {
-	super.copyFrom(i_from);
-        this.has_value=i_from.has_value;
-    }
-    public boolean hasValue()
-    {
-	return this.has_value;
-    }
+		pa = this.m[1];
+		pa[0] = rot[1 * 3 + 0];
+		pa[1] = rot[1 * 3 + 1];
+		pa[2] = rot[1 * 3 + 2];
+		pa[3] = rot[1 * 3 + 0] * i_off[0] + rot[1 * 3 + 1] * i_off[1] + rot[1 * 3 + 2] * i_off[2] + i_trans[1];
+
+		pa = this.m[2];
+		pa[0] = rot[2 * 3 + 0];
+		pa[1] = rot[2 * 3 + 1];
+		pa[2] = rot[2 * 3 + 2];
+		pa[3] = rot[2 * 3 + 0] * i_off[0] + rot[2 * 3 + 1] * i_off[1] + rot[2 * 3 + 2] * i_off[2] + i_trans[2];
+
+		this.has_value = true;
+		return;
+	}
+
+	public void copyFrom(NyARTransMatResult i_from) throws NyARException
+	{
+		super.copyFrom(i_from);
+		this.has_value = i_from.has_value;
+	}
+
+	public boolean hasValue()
+	{
+		return this.has_value;
+	}
 }

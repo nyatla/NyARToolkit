@@ -32,13 +32,13 @@ import jp.nyatla.nyartoolkit.core.rasterreader.INyARRgbPixelReader;
 /**
  * NyARRasterインタフェイスの基本関数/メンバを実装したクラス
  * 
- *
+ * 
  */
-public abstract class NyARRgbRaster_BasicClass extends NyARRaster_BasicClass implements INyARRgbRaster 
+public abstract class NyARRgbRaster_BasicClass extends NyARRaster_BasicClass implements INyARRgbRaster
 {
-    public INyARRgbPixelReader getRgbPixcelReader() throws NyARException
-    {
-	NyARException.notImplement();
-	return null;
-    }
+	public INyARRgbPixelReader getRgbPixcelReader() throws NyARException
+	{
+		NyARException.notImplement();
+		return null;
+	}
 }

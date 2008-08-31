@@ -31,15 +31,15 @@
  */
 package jp.nyatla.nyartoolkit.core;
 
-
-
 /**
- * ARMarkerInfoに相当するクラス。
- * スクエア情報を保持します。
- *
+ * ARMarkerInfoに相当するクラス。 矩形情報を保持します。
+ * 
  */
-public class NyARSquare{
-    public double[][] line=new double[4][3];
-    public double[][] sqvertex=new double[4][2];
-    public int[][] imvertex=new int[4][2];
+public class NyARSquare
+{
+	public double[][] line = new double[4][3];
+
+	public double[][] sqvertex = new double[4][2];
+
+	public int[][] imvertex = new int[4][2];
 }

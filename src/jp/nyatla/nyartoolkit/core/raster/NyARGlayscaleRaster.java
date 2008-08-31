@@ -25,25 +25,25 @@
  */
 package jp.nyatla.nyartoolkit.core.raster;
 
-
-
 public final class NyARGlayscaleRaster extends NyARRaster_BasicClass
 {
 
-    protected int[][] _ref_buf;
-    public NyARGlayscaleRaster(int i_width,int i_height)
-    {
-	this._ref_buf=new int[i_height][i_width];
-	this._size.w=i_width;
-	this._size.h=i_height;
-    }
-    public int getBufferType()
-    {
-	return TNyRasterType.BUFFERFORMAT_INT2D_GLAY_8;
-    }
-    public int[][] getBufferObject()
-    {
-	return (int[][])this._ref_buf;
-    }
-}
+	protected int[][] _ref_buf;
 
+	public NyARGlayscaleRaster(int i_width, int i_height)
+	{
+		this._ref_buf = new int[i_height][i_width];
+		this._size.w = i_width;
+		this._size.h = i_height;
+	}
+
+	public int getBufferType()
+	{
+		return TNyRasterType.BUFFERFORMAT_INT2D_GLAY_8;
+	}
+
+	public int[][] getBufferObject()
+	{
+		return (int[][]) this._ref_buf;
+	}
+}

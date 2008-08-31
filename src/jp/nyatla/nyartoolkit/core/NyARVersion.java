@@ -31,36 +31,54 @@
  */
 package jp.nyatla.nyartoolkit.core;
 
-
 /**
- * ARUint32 arGetVersion(char **versionStringRef);
- * 関数の置き換え
+ * ARUint32 arGetVersion(char **versionStringRef); 関数の置き換え
  */
-public class NyARVersion {
-    private static final int AR_HEADER_VERSION_MAJOR=2; //#define AR_HEADER_VERSION_MAJOR		2
-    private static final int AR_HEADER_VERSION_MINOR=72;//#define AR_HEADER_VERSION_MINOR		72   
-    private static final int AR_HEADER_VERSION_TINY=0;//#define AR_HEADER_VERSION_TINY		0
-    private static final int AR_HEADER_VERSION_BUILD=0;//#define AR_HEADER_VERSION_BUILD		0
-    private static final String AR_HEADER_VERSION_STRING="2.72.0";//#define AR_HEADER_VERSION_STRING	"2.72.0"
-    public static final boolean AR_HAVE_HEADER_VERSION_2=true;//#define AR_HAVE_HEADER_VERSION_2
-    public static final boolean AR_HAVE_HEADER_VERSION_2_72=true;//#define AR_HAVE_HEADER_VERSION_2_72
+public class NyARVersion
+{
+	private static final int AR_HEADER_VERSION_MAJOR = 2; // #define
+															// AR_HEADER_VERSION_MAJOR
+															// 2
 
-    public static String getARVersion()
-    {
-	return AR_HEADER_VERSION_STRING;
-    }
-    public static int getARVersionInt()
-    {
-        // Represent full version number (major, minor, tiny, build) in
-        // binary coded decimal. N.B: Integer division.
-	return	(int)(0x10000000 * (AR_HEADER_VERSION_MAJOR / 10)) +
-                (int)(0x01000000 * (AR_HEADER_VERSION_MAJOR % 10)) +
-                (int)(0x00100000 * (AR_HEADER_VERSION_MINOR / 10)) +
-                (int)(0x00010000 * (AR_HEADER_VERSION_MINOR % 10)) +
-                (int)(0x00001000 * (AR_HEADER_VERSION_TINY /  10)) +
-                (int)(0x00000100 * (AR_HEADER_VERSION_TINY %  10)) +
-                (int)(0x00000010 * (AR_HEADER_VERSION_BUILD / 10)) +
-                (int)(0x00000001 * (AR_HEADER_VERSION_BUILD % 10));
-    	
-    }
+	private static final int AR_HEADER_VERSION_MINOR = 72;// #define
+															// AR_HEADER_VERSION_MINOR
+															// 72
+
+	private static final int AR_HEADER_VERSION_TINY = 0;// #define
+														// AR_HEADER_VERSION_TINY
+														// 0
+
+	private static final int AR_HEADER_VERSION_BUILD = 0;// #define
+															// AR_HEADER_VERSION_BUILD
+															// 0
+
+	private static final String AR_HEADER_VERSION_STRING = "2.72.0";// #define
+																	// AR_HEADER_VERSION_STRING
+																	// "2.72.0"
+
+	public static final boolean AR_HAVE_HEADER_VERSION_2 = true;// #define
+																// AR_HAVE_HEADER_VERSION_2
+
+	public static final boolean AR_HAVE_HEADER_VERSION_2_72 = true;// #define
+																	// AR_HAVE_HEADER_VERSION_2_72
+
+	public static String getARVersion()
+	{
+		return AR_HEADER_VERSION_STRING;
+	}
+
+	public static int getARVersionInt()
+	{
+		// Represent full version number (major, minor, tiny, build) in
+		// binary coded decimal. N.B: Integer division.
+		return (int) (0x10000000 * (AR_HEADER_VERSION_MAJOR / 10))
+				+ (int) (0x01000000 * (AR_HEADER_VERSION_MAJOR % 10))
+				+ (int) (0x00100000 * (AR_HEADER_VERSION_MINOR / 10))
+				+ (int) (0x00010000 * (AR_HEADER_VERSION_MINOR % 10))
+				+ (int) (0x00001000 * (AR_HEADER_VERSION_TINY / 10))
+				+ (int) (0x00000100 * (AR_HEADER_VERSION_TINY % 10))
+				+ (int) (0x00000010 * (AR_HEADER_VERSION_BUILD / 10))
+				+ (int) (0x00000001 * (AR_HEADER_VERSION_BUILD % 10));
+
+	}
 }

@@ -35,25 +35,18 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARCode;
 import jp.nyatla.nyartoolkit.core.pickup.INyARColorPatt;
 
-
-
-
-
 /**
- * ARColorPattのマッチング計算をするインタフェイスです。
- * 基準Patに対して、計算済みのARCodeデータとの間で比較演算をします。
+ * ARColorPattのマッチング計算をするインタフェイスです。 基準Patに対して、計算済みのARCodeデータとの間で比較演算をします。
  * pattern_match関数を分解した３種類のパターン検出クラスを定義します。
- *
+ * 
  */
-public interface NyARMatchPatt{
-    public double getConfidence();
-    public int getDirection();
-    public void evaluate(NyARCode i_code);
-    public boolean setPatt(INyARColorPatt i_target_patt) throws NyARException;
+public interface NyARMatchPatt
+{
+	public double getConfidence();
+
+	public int getDirection();
+
+	public void evaluate(NyARCode i_code);
+
+	public boolean setPatt(INyARColorPatt i_target_patt) throws NyARException;
 }
-
-
-
-
-
-

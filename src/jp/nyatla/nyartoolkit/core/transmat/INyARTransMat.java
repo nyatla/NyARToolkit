@@ -31,21 +31,18 @@
  */
 package jp.nyatla.nyartoolkit.core.transmat;
 
-
-
-
 import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.NyARSquare;
 
-
 /**
- * This class calculates ARMatrix from square information.
- * --
- * 変換行列を計算するクラス。
- *
+ * This class calculates ARMatrix from square information. -- 変換行列を計算するクラス。
+ * 
  */
-public interface INyARTransMat{
-    public void setCenter(double i_x,double i_y);
-    public double transMat(NyARSquare i_square,int i_direction, double i_width,NyARTransMatResult o_result)throws NyARException;
-    public double transMatContinue(NyARSquare i_square,int i_direction, double i_width,NyARTransMatResult io_result_conv)throws NyARException;
+public interface INyARTransMat
+{
+	public void setCenter(double i_x, double i_y);
+
+	public double transMat(NyARSquare i_square, int i_direction, double i_width, NyARTransMatResult o_result) throws NyARException;
+
+	public double transMatContinue(NyARSquare i_square, int i_direction, double i_width, NyARTransMatResult io_result_conv) throws NyARException;
 }
