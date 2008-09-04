@@ -100,7 +100,7 @@ class OverlapChecker
  * このクラスは、arDetectMarker2.cとの置き換えになります。
  * 
  */
-public class NyARMarkerDetector
+public class NyARSquareDetector
 {
 	private static final double VERTEX_FACTOR = 1.0;// 線検出のファクタ
 
@@ -125,7 +125,7 @@ public class NyARMarkerDetector
 	 * 
 	 * @param i_param
 	 */
-	public NyARMarkerDetector(NyARParam i_param) throws NyARException
+	public NyARSquareDetector(NyARParam i_param) throws NyARException
 	{
 		this._width = i_param.getX();
 		this._height = i_param.getY();

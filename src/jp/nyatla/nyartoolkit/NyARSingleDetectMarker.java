@@ -49,7 +49,7 @@ public class NyARSingleDetectMarker
 
 	private boolean _is_continue = false;
 	private NyARMatchPatt_Color_WITHOUT_PCA _match_patt;
-	private NyARMarkerDetector _square_detect;
+	private NyARSquareDetector _square_detect;
 
 	private final NyARSquareStack _square_list = new NyARSquareStack(AR_SQUARE_MAX);
 
@@ -82,7 +82,7 @@ public class NyARSingleDetectMarker
 	public NyARSingleDetectMarker(NyARParam i_param, NyARCode i_code, double i_marker_width) throws NyARException
 	{
 		// 解析オブジェクトを作る
-		this._square_detect = new NyARMarkerDetector(i_param);
+		this._square_detect = new NyARSquareDetector(i_param);
 		this._transmat = new NyARTransMat_O2(i_param);
 		// 比較コードを保存
 		this._code = i_code;
