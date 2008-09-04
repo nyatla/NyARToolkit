@@ -5,5 +5,6 @@
 	<classpathentry path="C:/Program Files/JMF2.1.1e/lib/jmf.jar" kind="lib"/>
 	<classpathentry path="C:/Program Files/QuickTime/QTSystem/QTJava.zip" kind="lib"/>
 	<classpathentry path="/NyARToolKit" combineaccessrules="false" kind="src"/>
+	<classpathentry path="/NyARToolkit.utils.qt" combineaccessrules="false" kind="src"/>
 	<classpathentry path="bin" kind="output"/>
 </classpath>
