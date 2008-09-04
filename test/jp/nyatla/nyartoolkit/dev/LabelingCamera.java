@@ -12,21 +12,22 @@ import javax.media.*;
 import javax.media.util.BufferToImage;
 import javax.media.format.*;
 
-import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 
 import java.awt.*;
 
 
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.*;
-import jp.nyatla.nyartoolkit.core.labeling.processor.*;
+import jp.nyatla.nyartoolkit.core.labeling.labelingimage.NyARLabelingImage;
+import jp.nyatla.nyartoolkit.core.labeling.types.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasteranalyzer.*;
 import jp.nyatla.nyartoolkit.core.rasteranalyzer.threshold.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.*;
-import jp.nyatla.util.j2se.LabelingBufferdImage;
+import jp.nyatla.utils.j2se.LabelingBufferdImage;
 
 public class LabelingCamera extends Frame implements JmfCaptureListener {
     private JmfNyARRaster_RGB _raster;
@@ -71,7 +72,7 @@ public class LabelingCamera extends Frame implements JmfCaptureListener {
 	    this.getGraphics().drawImage(this._bimg2, 32+320, 32,320+320+32,240+32,0,240,320,0, this);
 
 	    //画像2
-	    filter_gs2bin=new NyARRasterFilter_ARToolkitThreshold(128);
+	    filter_gs2bin=new NyARRasterFilter_ARToolKitThreshold(128);
 	    filter_gs2bin.doFilter(_gsraster1, _binraster1);
 	    this._bimg.drawImage(_binraster1);
 	    this.getGraphics().drawImage(this._bimg, 32, 32+240,320+32,240+32+240,0,240,320,0, this);

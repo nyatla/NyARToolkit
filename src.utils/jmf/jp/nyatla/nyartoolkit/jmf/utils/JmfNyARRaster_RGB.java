@@ -9,7 +9,7 @@ package jp.nyatla.nyartoolkit.jmf.utils;
 
 import javax.media.format.*;
 import java.awt.Dimension;
-import jp.nyatla.nyartoolkit.*;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
@@ -17,15 +17,15 @@ import jp.nyatla.nyartoolkit.core.types.*;
 
 public class JmfNyARRaster_RGB extends NyARRgbRaster_BasicClass
 {
-	private class PixelReader implements INyARRgbPixelReader
+	protected class PixelReader implements INyARRgbPixelReader
 	{
 		private int _buffer_type = TNyRasterType.BUFFERFORMAT_NULL_ALLZERO;
 
 		private byte[] _ref_buf;
 
-		private TNyARIntSize _size;
+		private NyARIntSize _size;
 
-		public PixelReader(TNyARIntSize i_size)
+		public PixelReader(NyARIntSize i_size)
 		{
 			this._size = i_size;
 		}
@@ -81,6 +81,10 @@ public class JmfNyARRaster_RGB extends NyARRgbRaster_BasicClass
 
 		public void changeBuffer(int i_buffer_type, byte[] i_buffer)
 		{
+			if(i_buffer_type==1){
+				System.out.println("aaa");
+			}
+			
 			this._buffer_type = i_buffer_type;
 			this._ref_buf = i_buffer;
 		}
@@ -90,7 +94,7 @@ public class JmfNyARRaster_RGB extends NyARRgbRaster_BasicClass
 
 	protected int _buffer_type;
 
-	private PixelReader _reader;
+	protected PixelReader _reader;
 
 	/**
 	 * RGB形式のJMFバッファをラップするオブジェクトをつくります。 生成直後のオブジェクトはデータを持ちません。
@@ -116,7 +120,7 @@ public class JmfNyARRaster_RGB extends NyARRgbRaster_BasicClass
 	}
 
 	/**
-	 * フォーマットを解析して、インスタンスのフォーマットプロパティを初期化します。
+	 * フォーマットを解析して、ラスタタイプを返します。
 	 * 
 	 * @param i_fmt
 	 * @throws NyARException

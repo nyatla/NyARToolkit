@@ -6,7 +6,7 @@
  */
 package jp.nyatla.nyartoolkit.qt.sample;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.qt.utils.*;
 
 import java.awt.*;

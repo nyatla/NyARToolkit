@@ -27,7 +27,7 @@ import quicktime.std.sg.SGVideoChannel;
 import quicktime.std.sg.SequenceGrabber;
 import quicktime.util.RawEncodedImage;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 
 
 public class QtCameraCapture implements ActionListener

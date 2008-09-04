@@ -7,9 +7,10 @@ import java.io.FileInputStream;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_BGRA;
 import jp.nyatla.nyartoolkit.core.rasteranalyzer.*;
-import jp.nyatla.nyartoolkit.core.labeling.processor.*;
 import jp.nyatla.nyartoolkit.core.labeling.*;
-import jp.nyatla.util.j2se.*;
+import jp.nyatla.nyartoolkit.core.labeling.labelingimage.NyARLabelingImage;
+import jp.nyatla.nyartoolkit.core.labeling.types.*;
+import jp.nyatla.utils.j2se.*;
 
 public class LabelingTest extends Frame
 {

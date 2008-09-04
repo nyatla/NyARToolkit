@@ -12,9 +12,8 @@ import javax.media.Buffer;
 import javax.media.j3d.*;
 import javax.vecmath.*;
 
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARParam;
-import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
-import jp.nyatla.nyartoolkit.jmf.*;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCameraCapture;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
 import jp.nyatla.nyartoolkit.*;

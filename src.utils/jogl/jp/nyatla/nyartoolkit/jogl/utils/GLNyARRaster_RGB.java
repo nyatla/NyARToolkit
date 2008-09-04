@@ -33,7 +33,7 @@ package jp.nyatla.nyartoolkit.jogl.utils;
 
 import javax.media.format.RGBFormat;
 import javax.media.opengl.GL;
-import jp.nyatla.nyartoolkit.NyARException;
+
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.raster.TNyRasterType;
@@ -56,15 +56,13 @@ public class GLNyARRaster_RGB extends JmfNyARRaster_RGB
 
 	public void setBuffer(javax.media.Buffer i_buffer, boolean i_is_reverse) throws NyARException
 	{
-		//JMFデータでフォーマットプロパティを初期化
-		analyzeBufferType((RGBFormat) i_buffer.getFormat());
-
+		int buffer_type=analyzeBufferType((RGBFormat) i_buffer.getFormat());;
 		byte[] src_buf = (byte[]) i_buffer.getData();
-		//GL用のデータを準備
+		// GL用のデータを準備
 		if (i_is_reverse) {
-			int length = this._size.w * 3;
+			final int length = this._size.w * 3;
 			int src_idx = 0;
-			int dest_idx = (this._size.h - 1) * length;
+			int dest_idx = (this._size.h - 1) * length;			
 			for (int i = 0; i < this._size.h; i++) {
 				System.arraycopy(src_buf, src_idx, this._gl_buf, dest_idx, length);
 				src_idx += length;
@@ -73,9 +71,9 @@ public class GLNyARRaster_RGB extends JmfNyARRaster_RGB
 		} else {
 			System.arraycopy(src_buf, 0, this._gl_buf, 0, src_buf.length);
 		}
-	
-		//GLのフラグ設定
-		switch (this._buffer_type){
+
+		// GLのフラグ設定
+		switch (buffer_type) {
 		case TNyRasterType.BUFFERFORMAT_BYTE1D_B8G8R8_24:
 			this._gl_flag = GL.GL_BGR;
 			break;
@@ -85,12 +83,15 @@ public class GLNyARRaster_RGB extends JmfNyARRaster_RGB
 		default:
 			throw new NyARException();
 		}
-		//ref_bufをgl_bufに差し替える
+		// ref_bufをgl_bufに差し替える
+		this._buffer_type = buffer_type;
 		this._ref_buf = this._gl_buf;
+		this._reader.changeBuffer(this._buffer_type, this._ref_buf);
 	}
 
 	/**
 	 * GLでそのまま描画できるRGBバッファを返す。
+	 * 
 	 * @return
 	 */
 	public byte[] getGLRgbArray()
@@ -100,6 +101,7 @@ public class GLNyARRaster_RGB extends JmfNyARRaster_RGB
 
 	/**
 	 * GL用のRGBバッファのバイト並びタイプを返す。
+	 * 
 	 * @return
 	 */
 	public int getGLPixelFlag()

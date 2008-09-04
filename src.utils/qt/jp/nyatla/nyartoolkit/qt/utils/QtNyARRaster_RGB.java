@@ -7,111 +7,96 @@
  */
 package jp.nyatla.nyartoolkit.qt.utils;
 
-
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.WritableRaster;
 
-import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
+import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.raster.TNyRasterType;
+import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_BasicClass;
+import jp.nyatla.nyartoolkit.core.rasterreader.*;
+import jp.nyatla.nyartoolkit.core.types.*;
 
-
-public class QtNyARRaster_RGB implements INyARRaster
+public class QtNyARRaster_RGB extends NyARRgbRaster_BasicClass
 {
-    protected byte[] ref_buf;
-    protected int width=0;
-    protected int height=0;
-	private WritableRaster raster;
-	private BufferedImage image;
-
-
-    /**
-     * RGB形式のJMFバッファをラップするオブジェクトをつくります。
-     * 生成直後のオブジェクトはデータを持ちません。
-     * メンバ関数はsetBufferを実行後に使用可能になります。
-     */
-    public QtNyARRaster_RGB(int i_width,int i_height)
-    {
-	ref_buf=null;
-	width=i_width;
-	height=i_height;
-	raster = WritableRaster.createInterleavedRaster(DataBuffer.TYPE_BYTE,
-			width, height,
-			width*3, 3,
-			new int[] { 0, 1, 2 }, null); 
-	image = new BufferedImage(width, height,
-			BufferedImage.TYPE_3BYTE_BGR);
-    }
-    /**
-     * javax.media.Bufferを分析して、その分析結果をNyARRasterに適合する形で保持します。
-     * 関数実行後に外部でi_bufferの内容変更した場合には、再度setBuffer関数を呼び出してください。
-     * @param i_buffer
-     * RGB形式のデータを格納したjavax.media.Bufferオブジェクトを指定してください。
-     * @return
-     * i_bufferをラップしたオブジェクトを返します。
-     * @throws NyARException
-     */
-    public void setBuffer(byte[] i_buffer)
-    {
-        ref_buf=i_buffer;
-    }
-    public int getPixelTotal(int i_x,int i_y)
-    {
-        int bp=(i_x+i_y*width)*3;
-        byte[] ref=this.ref_buf;
-        return (ref[bp] & 0xff)+(ref[bp+1] & 0xff)+(ref[bp+2] & 0xff);
-    }
-    public void getPixelTotalRowLine(int i_row,int[] o_line)
-    {
-        final byte[] ref=this.ref_buf;
-        int bp=(i_row+1)*this.width*3-3;
-        for(int i=this.width-1;i>=0;i--){
-	    o_line[i]=(ref[bp] & 0xff)+(ref[bp+1] & 0xff)+(ref[bp+2] & 0xff);
-	    bp-=3;
+	private class PixcelReader extends NyARRgbPixelReader_RGB24{
+		public PixcelReader(NyARIntSize i_size)
+		{
+			super(null,i_size);
+			return;
+		}
+		public void syncBuffer(byte[] i_ref_buffer)
+		{
+			this._ref_buf=i_ref_buffer;
+			return;
+		}
 	}
-    }    
-    public int getWidth()
-    {
-        return width;
-    }
-    public int getHeight()
-    {
-        return height;
-    }
-    public void getPixel(int i_x,int i_y,int[] i_rgb)
-    {
-        int bp=(i_x+i_y*this.width)*3;
-        byte[] ref=this.ref_buf;
-        i_rgb[0]=ref[bp+0];//R
-        i_rgb[1]=ref[bp+1];//G
-        i_rgb[2]=ref[bp+2];//B
-    }
-    /**
-     * データを持っているかを返します。
-     * @return
-     */
-    public boolean hasData()
-    {
-	return ref_buf!=null;
-    }
-    public void getPixelSet(int[] i_x,int i_y[],int i_num,int[] o_rgb)
-    {
-	int width=this.width;
-	byte[] ref=this.ref_buf;
-	int bp;
-	for(int i=i_num-1;i>=0;i--){
-	    bp=(i_x[i]+i_y[i]*width)*3;
-	    o_rgb[i*3+0]=ref[bp+0];//R
-	    o_rgb[i*3+1]=ref[bp+1];//G
-	    o_rgb[i*3+2]=ref[bp+2];//B
-	}	
-	return;
-    }
+	protected byte[] _ref_buf;
+	protected PixcelReader _reader;
+	private WritableRaster _raster;
+	private int _buffer_type;
+	private BufferedImage _image;
 
-    /** 保持しているデータからBufferedImageを作って返します。 */
-    public BufferedImage createImage() {
-		raster.setDataElements(0, 0, width, height, ref_buf);
-    	image.setData(raster);
-    	return image;
-    }
+	/**
+	 * RGB形式のJMFバッファをラップするオブジェクトをつくります。 生成直後のオブジェクトはデータを持ちません。 メンバ関数はsetBufferを実行後に使用可能になります。
+	 */
+	public QtNyARRaster_RGB(int i_width, int i_height)
+	{
+		this._size.w = i_width;
+		this._size.h = i_height;
+		this._ref_buf = null;
+		this._buffer_type = TNyRasterType.BUFFERFORMAT_BYTE1D_R8G8B8_24;
+		this._reader = new PixcelReader(this._size);
+		_raster = WritableRaster.createInterleavedRaster(DataBuffer.TYPE_BYTE, i_width, i_height, i_width * 3, 3, new int[] { 0, 1, 2 }, null);
+		_image = new BufferedImage(i_width, i_height, BufferedImage.TYPE_3BYTE_BGR);
+	}
+
+	/**
+	 * javax.media.Bufferを分析して、その分析結果をNyARRasterに適合する形で保持します。 関数実行後に外部でi_bufferの内容変更した場合には、再度setBuffer関数を呼び出してください。
+	 * 
+	 * @param i_buffer
+	 * RGB形式のデータを格納したjavax.media.Bufferオブジェクトを指定してください。
+	 * @return i_bufferをラップしたオブジェクトを返します。
+	 * @throws NyARException
+	 */
+	public void setBuffer(byte[] i_buffer)
+	{
+		this._ref_buf = i_buffer;
+		this._reader.syncBuffer(i_buffer);
+	}
+	public Object getBufferObject()
+	{
+		return this._ref_buf;
+	}
+
+	public int getBufferType() throws NyARException
+	{
+		return this._buffer_type;
+	}
+	public INyARRgbPixelReader getRgbPixelReader()
+	{
+		return this._reader;
+	}	
+	/**
+	 * データを持っているかを返します。
+	 * 
+	 * @return
+	 */
+	public boolean hasData()
+	{
+		return this._ref_buf != null;
+	}
+	/**
+	 * 保持しているデータからBufferedImageを作って返します。
+	 * @return
+	 */
+	public BufferedImage createImage()
+	{
+		_raster.setDataElements(0, 0, this._size.w,this._size.h,this._ref_buf);
+		_image.setData(_raster);
+		return _image;
+	}
+	
+	
+	
 }
