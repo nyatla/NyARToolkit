@@ -1,4 +1,4 @@
-package jp.nyatla.util;
+package jp.nyatla.utils;
 
 public class DoubleValue
 {

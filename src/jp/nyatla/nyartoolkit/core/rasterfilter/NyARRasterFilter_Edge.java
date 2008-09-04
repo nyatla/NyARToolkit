@@ -1,6 +1,12 @@
 /* 
  * PROJECT: NyARToolkit
  * --------------------------------------------------------------------------------
+ * This work is based on the original ARToolKit developed by
+ *   Hirokazu Kato
+ *   Mark Billinghurst
+ *   HITLab, University of Washington, Seattle
+ * http://www.hitl.washington.edu/artoolkit/
+ *
  * The NyARToolkit is Java version ARToolkit class library.
  * Copyright (C)2008 R.Iizuka
  *
@@ -25,9 +31,9 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterfilter;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.types.TNyARIntSize;
+import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
  * エッジ検出フィルタ 入力 BUFFERFORMAT_INT2D 出力 BUFFERFORMAT_INT2D
@@ -44,7 +50,7 @@ public class NyARRasterFilter_Edge implements INyARRasterFilter
 		int[][] in_buf = (int[][]) i_input.getBufferObject();
 
 		int bp = 0;
-		TNyARIntSize size = i_output.getSize();
+		NyARIntSize size = i_output.getSize();
 		for (int y = 1; y < size.h; y++) {
 			int prev = 128;
 			for (int x = 1; x < size.w; x++) {

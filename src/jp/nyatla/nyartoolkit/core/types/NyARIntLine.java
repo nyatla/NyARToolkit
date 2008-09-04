@@ -29,36 +29,18 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.rasterreader;
-
-import jp.nyatla.nyartoolkit.core.NyARException;
+package jp.nyatla.nyartoolkit.core.types;
 
 /**
- * R8G8B8でピクセルを読み出すインタフェイス
+ * 整数ラインを表現する
+ * 
  * 
  */
-public interface INyARRgbPixelReader
+public class NyARIntLine
 {
-	/**
-	 * 1ピクセルをint配列にして返します。
-	 * 
-	 * @param i_x
-	 * @param i_y
-	 * @param i_rgb
-	 */
-	public void getPixel(int i_x, int i_y, int[] i_rgb) throws NyARException;
+	public int x;
 
-	/**
-	 * 複数のピクセル値をi_rgbへ返します。
-	 * 
-	 * @param i_x
-	 * xのインデックス配列
-	 * @param i_y
-	 * yのインデックス配列
-	 * @param i_num
-	 * 返すピクセル値の数
-	 * @param i_rgb
-	 * ピクセル値を返すバッファ
-	 */
-	public void getPixelSet(int[] i_x, int i_y[], int i_num, int[] i_rgb) throws NyARException;
+	public int y;
+
+	public int v;
 }

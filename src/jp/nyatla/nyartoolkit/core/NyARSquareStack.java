@@ -29,36 +29,37 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.rasterreader;
+package jp.nyatla.nyartoolkit.core;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.utils.*;
 
-/**
- * R8G8B8でピクセルを読み出すインタフェイス
- * 
- */
-public interface INyARRgbPixelReader
+public class NyARSquareStack extends NyObjectStack
 {
-	/**
-	 * 1ピクセルをint配列にして返します。
-	 * 
-	 * @param i_x
-	 * @param i_y
-	 * @param i_rgb
-	 */
-	public void getPixel(int i_x, int i_y, int[] i_rgb) throws NyARException;
+	public NyARSquareStack(int i_length)
+	{
+		super(new NyARSquare[i_length]);
 
-	/**
-	 * 複数のピクセル値をi_rgbへ返します。
-	 * 
-	 * @param i_x
-	 * xのインデックス配列
-	 * @param i_y
-	 * yのインデックス配列
-	 * @param i_num
-	 * 返すピクセル値の数
-	 * @param i_rgb
-	 * ピクセル値を返すバッファ
-	 */
-	public void getPixelSet(int[] i_x, int i_y[], int i_num, int[] i_rgb) throws NyARException;
+	}
+
+	protected void onReservRequest(int i_start, int i_end, Object[] i_buffer)
+	{
+		for (int i = i_start; i < i_end; i++) {
+			i_buffer[i] = new NyARSquare();
+		}
+	}
+
+	public NyARSquare[] getArray()
+	{
+		return (NyARSquare[]) this._items;
+	}
+	public NyARSquare getItem(int i_index)
+	{
+		return (NyARSquare) this._items[i_index];
+	}
+
+	public NyARSquare prePush() throws NyARException
+	{
+		return (NyARSquare) super.prePush();
+	}	
+
 }

@@ -31,8 +31,8 @@
  */
 package jp.nyatla.nyartoolkit.core.match;
 
-import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARCode;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.pickup.INyARColorPatt;
 
 /**
@@ -47,8 +47,7 @@ public class NyARMatchPatt_Color_WITH_PCA implements NyARMatchPatt
 
 	private int[][][] input;
 
-	private double[][][][] evec;// static double
-								// evec[EVEC_MAX][AR_PATT_SIZE_Y*AR_PATT_SIZE_X*3];
+	private double[][][][] evec;// static double evec[EVEC_MAX][AR_PATT_SIZE_Y*AR_PATT_SIZE_X*3];
 
 	private double[][] epat = new double[4][EVEC_MAX];// static double
 														// epat[AR_PATT_NUM_MAX][4][EVEC_MAX];

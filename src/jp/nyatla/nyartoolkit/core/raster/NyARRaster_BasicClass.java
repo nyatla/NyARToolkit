@@ -1,6 +1,12 @@
 /* 
  * PROJECT: NyARToolkit
  * --------------------------------------------------------------------------------
+ * This work is based on the original ARToolKit developed by
+ *   Hirokazu Kato
+ *   Mark Billinghurst
+ *   HITLab, University of Washington, Seattle
+ * http://www.hitl.washington.edu/artoolkit/
+ *
  * The NyARToolkit is Java version ARToolkit class library.
  * Copyright (C)2008 R.Iizuka
  *
@@ -29,7 +35,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
 
 public abstract class NyARRaster_BasicClass implements INyARRaster
 {
-	final protected TNyARIntSize _size = new TNyARIntSize();
+	final protected NyARIntSize _size = new NyARIntSize();
 
 	final public int getWidth()
 	{
@@ -41,7 +47,7 @@ public abstract class NyARRaster_BasicClass implements INyARRaster
 		return this._size.h;
 	}
 
-	final public TNyARIntSize getSize()
+	final public NyARIntSize getSize()
 	{
 		return this._size;
 	}

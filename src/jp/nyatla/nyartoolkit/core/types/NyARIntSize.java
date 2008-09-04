@@ -29,36 +29,47 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.rasterreader;
+package jp.nyatla.nyartoolkit.core.types;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
 
-/**
- * R8G8B8でピクセルを読み出すインタフェイス
- * 
- */
-public interface INyARRgbPixelReader
+public class NyARIntSize
 {
-	/**
-	 * 1ピクセルをint配列にして返します。
-	 * 
-	 * @param i_x
-	 * @param i_y
-	 * @param i_rgb
-	 */
-	public void getPixel(int i_x, int i_y, int[] i_rgb) throws NyARException;
+	public int h;
+
+	public int w;
 
 	/**
-	 * 複数のピクセル値をi_rgbへ返します。
+	 * サイズが同一であるかを確認する。
 	 * 
-	 * @param i_x
-	 * xのインデックス配列
-	 * @param i_y
-	 * yのインデックス配列
-	 * @param i_num
-	 * 返すピクセル値の数
-	 * @param i_rgb
-	 * ピクセル値を返すバッファ
+	 * @param i_width
+	 * @param i_height
+	 * @return
+	 * @throws NyARException
 	 */
-	public void getPixelSet(int[] i_x, int i_y[], int i_num, int[] i_rgb) throws NyARException;
+	public boolean isEqualSize(int i_width, int i_height)
+	{
+		if (i_width == this.w && i_height == this.h) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * サイズが同一であるかを確認する。
+	 * 
+	 * @param i_width
+	 * @param i_height
+	 * @return
+	 * @throws NyARException
+	 */
+	public boolean isEqualSize(NyARIntSize i_size)
+	{
+		if (i_size.w == this.w && i_size.h == this.h) {
+			return true;
+		}
+		return false;
+
+	}
+
 }

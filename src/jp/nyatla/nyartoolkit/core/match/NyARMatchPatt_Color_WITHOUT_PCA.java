@@ -31,7 +31,6 @@
  */
 package jp.nyatla.nyartoolkit.core.match;
 
-import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.pickup.INyARColorPatt;
 
@@ -94,25 +93,21 @@ public class NyARMatchPatt_Color_WITHOUT_PCA implements NyARMatchPatt
 		int sum = 0, l_ave = 0, w_sum;
 		int[][] data_i, input_i;
 		int[] data_i_k, input_i_k;
-		for (i = lheight - 1; i >= 0; i--) {// <Optimize/>for(int
-											// i=0;i<height;i++) {//for(int
-											// i=0;i<Config.AR_PATT_SIZE_Y;i++){
+		for (i = lheight - 1; i >= 0; i--) {// <Optimize/>for(int i=0;i<height;i++) {
+			//for(int i=0;i<Config.AR_PATT_SIZE_Y;i++){
 			data_i = data[i];
 			for (k = lwidth - 1; k >= 0; k--) {// <Optimize/>for(int
 												// i2=0;i2<Config.AR_PATT_SIZE_X;i2++){
-				// <Optimize/>l_ave +=
-				// (255-data[i][i2][0])+(255-data[i][i2][1])+(255-data[i][i2][2]);
+				// <Optimize/>l_ave +=(255-data[i][i2][0])+(255-data[i][i2][1])+(255-data[i][i2][2]);
 				data_i_k = data_i[k];
 				l_ave += 255 * 3 - data_i_k[0] - data_i_k[1] - data_i_k[2];
 			}
 		}
 		l_ave /= (lheight * lwidth * 3);
-		for (i = lheight - 1; i >= 0; i--) {// for(i=0;i<height;i++){//for(int
-											// i=0;i<Config.AR_PATT_SIZE_Y;i++){
+		for (i = lheight - 1; i >= 0; i--) {// for(i=0;i<height;i++){//for(int i=0;i<Config.AR_PATT_SIZE_Y;i++){
 			input_i = linput[i];
 			data_i = data[i];
-			for (k = lwidth - 1; k >= 0; k--) {// for(i2=0;i2<width;i2++){//for(int
-												// i2=0;i2<Config.AR_PATT_SIZE_X;i2++){
+			for (k = lwidth - 1; k >= 0; k--) {// for(i2=0;i2<width;i2++){//for(int i2=0;i2<Config.AR_PATT_SIZE_X;i2++){
 				// <Optimize>
 				// for(int i3=0;i3<3;i3++){
 				// input[i][i2][i3] = (255-data[i][i2][i3]) - l_ave;
@@ -164,25 +159,20 @@ public class NyARMatchPatt_Color_WITHOUT_PCA implements NyARMatchPatt
 		for (int j = 0; j < 4; j++) {
 			int sum = 0;
 			pat_j = pat[j];
-			for (int i = l_height - 1; i >= 0; i--) {// for(int
-														// i=0;i<Config.AR_PATT_SIZE_Y;i++){
+			for (int i = l_height - 1; i >= 0; i--) {// for(int i=0;i<Config.AR_PATT_SIZE_Y;i++){
 				input_i = linput[i];
 				pat_j_i = pat_j[i];
 				for (int k = l_width - 1; k >= 0; k--) {
 					pat_j_i_k = pat_j_i[k];
 					input_i_k = input_i[k];
 					// for(int i3=0;i3<3;i3++){
-					sum += input_i_k[0] * pat_j_i_k[0];// sum +=
-														// input[i][i2][i3]*pat[k][j][i][i2][i3];
-					sum += input_i_k[1] * pat_j_i_k[1];// sum +=
-														// input[i][i2][i3]*pat[k][j][i][i2][i3];
-					sum += input_i_k[2] * pat_j_i_k[2];// sum +=
-														// input[i][i2][i3]*pat[k][j][i][i2][i3];
+					sum += input_i_k[0] * pat_j_i_k[0];// sum +=input[i][i2][i3]*pat[k][j][i][i2][i3];
+					sum += input_i_k[1] * pat_j_i_k[1];// sum +=input[i][i2][i3]*pat[k][j][i][i2][i3];
+					sum += input_i_k[2] * pat_j_i_k[2];// sum +=input[i][i2][i3]*pat[k][j][i][i2][i3];
 					// }
 				}
 			}
-			double sum2 = sum / patpow[j] / datapow;// sum2 = sum / patpow[k][j]
-													// / datapow;
+			double sum2 = sum / patpow[j] / datapow;// sum2 = sum / patpow[k][j]/ datapow;
 			if (sum2 > max) {
 				max = sum2;
 				res = j;

@@ -31,7 +31,7 @@
  */
 package jp.nyatla.nyartoolkit.core;
 
-import jp.nyatla.nyartoolkit.NyARException;
+
 
 public class NyARVec
 {

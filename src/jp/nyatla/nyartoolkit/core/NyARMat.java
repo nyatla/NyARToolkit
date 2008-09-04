@@ -31,7 +31,7 @@
  */
 package jp.nyatla.nyartoolkit.core;
 
-import jp.nyatla.nyartoolkit.NyARException;
+
 
 /**
  * ARMat構造体に対応するクラス typedef struct { double *m; int row; int clm; }ARMat;

@@ -29,7 +29,6 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-
 package jp.nyatla.nyartoolkit.core;
 
 import java.io.FileInputStream;
@@ -37,7 +36,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
 
-import jp.nyatla.nyartoolkit.NyARException;
+
 
 /**
  * ARToolKitのマーカーコードを1個保持します。

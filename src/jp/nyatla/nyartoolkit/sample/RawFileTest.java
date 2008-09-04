@@ -1,6 +1,11 @@
 /* 
  * PROJECT: NyARToolkit
  * --------------------------------------------------------------------------------
+ * This work is based on the original ARToolKit developed by
+ *   Hirokazu Kato
+ *   Mark Billinghurst
+ *   HITLab, University of Washington, Seattle
+ * http://www.hitl.washington.edu/artoolkit/
  *
  * The NyARToolkit is Java version ARToolkit class library.
  * Copyright (C)2008 R.Iizuka
@@ -29,10 +34,9 @@ package jp.nyatla.nyartoolkit.sample;
 import java.io.*;
 import java.util.*;
 
+import jp.nyatla.nyartoolkit.NyARSingleDetectMarker;
 import jp.nyatla.nyartoolkit.core.*;
-import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_BGRA;
-import jp.nyatla.nyartoolkit.detector.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 
 /**

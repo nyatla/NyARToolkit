@@ -34,8 +34,7 @@ package jp.nyatla.nyartoolkit.core;
 import java.io.*;
 import java.nio.*;
 
-import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.util.DoubleValue;
+import jp.nyatla.utils.DoubleValue;
 
 /*
  * typedef struct { int xsize, ysize; double mat[3][4]; double dist_factor[4]; }
@@ -171,94 +170,33 @@ public class NyARParam
 				cpara[r][c] = 0.0;// cpara[r][c] = 0.0;
 			}
 		}
-		cpara[2][2] = norm(Cpara[2 * 4 + 0], Cpara[2 * 4 + 1], Cpara[2 * 4 + 2]);// cpara[2][2]
-																					// =
-																					// norm(
-																					// Cpara[2][0],
-																					// Cpara[2][1],
-																					// Cpara[2][2]
-																					// );
-		trans[2][0] = Cpara[2 * 4 + 0] / cpara[2][2];// trans[2][0] =
-														// Cpara[2][0] /
-														// cpara[2][2];
-		trans[2][1] = Cpara[2 * 4 + 1] / cpara[2][2];// trans[2][1] =
-														// Cpara[2][1] /
-														// cpara[2][2];
-		trans[2][2] = Cpara[2 * 4 + 2] / cpara[2][2];// trans[2][2] =
-														// Cpara[2][2] /
-														// cpara[2][2];
-		trans[2][3] = Cpara[2 * 4 + 3] / cpara[2][2];// trans[2][3] =
-														// Cpara[2][3] /
-														// cpara[2][2];
+		cpara[2][2] = norm(Cpara[2 * 4 + 0], Cpara[2 * 4 + 1], Cpara[2 * 4 + 2]);// cpara[2][2] =norm( Cpara[2][0],Cpara[2][1],Cpara[2][2]);
+		trans[2][0] = Cpara[2 * 4 + 0] / cpara[2][2];// trans[2][0] = Cpara[2][0] /cpara[2][2];
+		trans[2][1] = Cpara[2 * 4 + 1] / cpara[2][2];// trans[2][1] = Cpara[2][1] / cpara[2][2];
+		trans[2][2] = Cpara[2 * 4 + 2] / cpara[2][2];// trans[2][2] =Cpara[2][2] /cpara[2][2];
+		trans[2][3] = Cpara[2 * 4 + 3] / cpara[2][2];// trans[2][3] =Cpara[2][3] /cpara[2][2];
 
-		cpara[1][2] = dot(trans[2][0], trans[2][1], trans[2][2], Cpara[1 * 4 + 0], Cpara[1 * 4 + 1], Cpara[1 * 4 + 2]);// cpara[1][2]
-																														// =
-																														// dot(
-																														// trans[2][0],
-																														// trans[2][1],
-																														// trans[2][2],Cpara[1][0],
-																														// Cpara[1][1],
-																														// Cpara[1][2]
-																														// );
-		rem1 = Cpara[1 * 4 + 0] - cpara[1][2] * trans[2][0];// rem1 =
-															// Cpara[1][0] -
-															// cpara[1][2] *
-															// trans[2][0];
-		rem2 = Cpara[1 * 4 + 1] - cpara[1][2] * trans[2][1];// rem2 =
-															// Cpara[1][1] -
-															// cpara[1][2] *
-															// trans[2][1];
-		rem3 = Cpara[1 * 4 + 2] - cpara[1][2] * trans[2][2];// rem3 =
-															// Cpara[1][2] -
-															// cpara[1][2] *
-															// trans[2][2];
-		cpara[1][1] = norm(rem1, rem2, rem3);// cpara[1][1] = norm( rem1,
-												// rem2, rem3 );
+		cpara[1][2] = dot(trans[2][0], trans[2][1], trans[2][2], Cpara[1 * 4 + 0], Cpara[1 * 4 + 1], Cpara[1 * 4 + 2]);// cpara[1][2]=dot(trans[2][0],trans[2][1],trans[2][2],Cpara[1][0],Cpara[1][1],Cpara[1][2]);
+		rem1 = Cpara[1 * 4 + 0] - cpara[1][2] * trans[2][0];// rem1 =Cpara[1][0] -cpara[1][2] *trans[2][0];
+		rem2 = Cpara[1 * 4 + 1] - cpara[1][2] * trans[2][1];// rem2 =Cpara[1][1] -cpara[1][2] *trans[2][1];
+		rem3 = Cpara[1 * 4 + 2] - cpara[1][2] * trans[2][2];// rem3 =Cpara[1][2] -cpara[1][2] *trans[2][2];
+		cpara[1][1] = norm(rem1, rem2, rem3);// cpara[1][1] = norm( rem1,// rem2, rem3 );
 		trans[1][0] = rem1 / cpara[1][1];// trans[1][0] = rem1 / cpara[1][1];
 		trans[1][1] = rem2 / cpara[1][1];// trans[1][1] = rem2 / cpara[1][1];
 		trans[1][2] = rem3 / cpara[1][1];// trans[1][2] = rem3 / cpara[1][1];
 
-		cpara[0][2] = dot(trans[2][0], trans[2][1], trans[2][2], Cpara[0 * 4 + 0], Cpara[0 * 4 + 1], Cpara[0 * 4 + 2]);// cpara[0][2]
-																														// =
-																														// dot(
-																														// trans[2][0],
-																														// trans[2][1],
-																														// trans[2][2],Cpara[0][0],
-																														// Cpara[0][1],
-																														// Cpara[0][2]
-																														// );
-		cpara[0][1] = dot(trans[1][0], trans[1][1], trans[1][2], Cpara[0 * 4 + 0], Cpara[0 * 4 + 1], Cpara[0 * 4 + 2]);// cpara[0][1]
-																														// =
-																														// dot(
-																														// trans[1][0],
-																														// trans[1][1],
-																														// trans[1][2],Cpara[0][0],
-																														// Cpara[0][1],
-																														// Cpara[0][2]
-																														// );
-		rem1 = Cpara[0 * 4 + 0] - cpara[0][1] * trans[1][0] - cpara[0][2]
-				* trans[2][0];// rem1 = Cpara[0][0] - cpara[0][1]*trans[1][0]
-								// - cpara[0][2]*trans[2][0];
-		rem2 = Cpara[0 * 4 + 1] - cpara[0][1] * trans[1][1] - cpara[0][2]
-				* trans[2][1];// rem2 = Cpara[0][1] - cpara[0][1]*trans[1][1]
-								// - cpara[0][2]*trans[2][1];
-		rem3 = Cpara[0 * 4 + 2] - cpara[0][1] * trans[1][2] - cpara[0][2]
-				* trans[2][2];// rem3 = Cpara[0][2] - cpara[0][1]*trans[1][2]
-								// - cpara[0][2]*trans[2][2];
-		cpara[0][0] = norm(rem1, rem2, rem3);// cpara[0][0] = norm( rem1,
-												// rem2, rem3 );
+		cpara[0][2] = dot(trans[2][0], trans[2][1], trans[2][2], Cpara[0 * 4 + 0], Cpara[0 * 4 + 1], Cpara[0 * 4 + 2]);// cpara[0][2] =dot(trans[2][0], trans[2][1],trans[2][2],Cpara[0][0],Cpara[0][1],Cpara[0][2]);
+		cpara[0][1] = dot(trans[1][0], trans[1][1], trans[1][2], Cpara[0 * 4 + 0], Cpara[0 * 4 + 1], Cpara[0 * 4 + 2]);// cpara[0][1]=dot(trans[1][0],trans[1][1],trans[1][2],Cpara[0][0],Cpara[0][1],Cpara[0][2]);
+		rem1 = Cpara[0 * 4 + 0] - cpara[0][1] * trans[1][0] - cpara[0][2]* trans[2][0];// rem1 = Cpara[0][0] - cpara[0][1]*trans[1][0]- cpara[0][2]*trans[2][0];
+		rem2 = Cpara[0 * 4 + 1] - cpara[0][1] * trans[1][1] - cpara[0][2]* trans[2][1];// rem2 = Cpara[0][1] - cpara[0][1]*trans[1][1]- cpara[0][2]*trans[2][1];
+		rem3 = Cpara[0 * 4 + 2] - cpara[0][1] * trans[1][2] - cpara[0][2]* trans[2][2];// rem3 = Cpara[0][2] - cpara[0][1]*trans[1][2] - cpara[0][2]*trans[2][2];
+		cpara[0][0] = norm(rem1, rem2, rem3);// cpara[0][0] = norm( rem1,rem2, rem3 );
 		trans[0][0] = rem1 / cpara[0][0];// trans[0][0] = rem1 / cpara[0][0];
 		trans[0][1] = rem2 / cpara[0][0];// trans[0][1] = rem2 / cpara[0][0];
 		trans[0][2] = rem3 / cpara[0][0];// trans[0][2] = rem3 / cpara[0][0];
 
-		trans[1][3] = (Cpara[1 * 4 + 3] - cpara[1][2] * trans[2][3])
-				/ cpara[1][1];// trans[1][3] = (Cpara[1][3] -
-								// cpara[1][2]*trans[2][3]) / cpara[1][1];
-		trans[0][3] = (Cpara[0 * 4 + 3] - cpara[0][1] * trans[1][3] - cpara[0][2]
-				* trans[2][3])
-				/ cpara[0][0];// trans[0][3] = (Cpara[0][3] -
-								// cpara[0][1]*trans[1][3]-
-								// cpara[0][2]*trans[2][3]) / cpara[0][0];
+		trans[1][3] = (Cpara[1 * 4 + 3] - cpara[1][2] * trans[2][3])/ cpara[1][1];// trans[1][3] = (Cpara[1][3] -cpara[1][2]*trans[2][3]) / cpara[1][1];
+		trans[0][3] = (Cpara[0 * 4 + 3] - cpara[0][1] * trans[1][3] - cpara[0][2]* trans[2][3])/ cpara[0][0];// trans[0][3] = (Cpara[0][3] -cpara[0][1]*trans[1][3]-cpara[0][2]*trans[2][3]) / cpara[0][0];
 
 		for (int r = 0; r < 3; r++) {
 			for (int c = 0; c < 3; c++) {
@@ -271,25 +209,12 @@ public class NyARParam
 	public int paramDisp()
 	{
 		System.out.println("--------------------------------------");// printf("--------------------------------------\n");
-		System.out.print("SIZE = " + xsize + ", " + ysize);// printf("SIZE =
-															// %d, %d\n",
-															// param->xsize,
-															// param->ysize);
+		System.out.print("SIZE = " + xsize + ", " + ysize);// printf("SIZE =%d, %d\n",param->xsize,param->ysize);
 		System.out.println("Distortion factor = " + dist_factor[0] + " "
-				+ dist_factor[1] + " " + dist_factor[2] + " " + dist_factor[3]);// printf("Distortion
-																				// factor
-																				// = %f
-																				// %f
-																				// %f
-																				// %f\n",
-																				// param->dist_factor[0],param->dist_factor[1],
-																				// param->dist_factor[2],
-																				// param->dist_factor[3]
-																				// );
+				+ dist_factor[1] + " " + dist_factor[2] + " " + dist_factor[3]);// printf("Distortionfactor= %f%f%f%f\n",param->dist_factor[0],param->dist_factor[1],param->dist_factor[2],param->dist_factor[3]);
 		for (int j = 0; j < 3; j++) {// for(j = 0; j < 3; j++ ) {
 			for (int i = 0; i < 4; i++) {
-				System.out.print(array34[j * 4 + i] + " ");// printf("%7.5f ",
-															// param->mat[j][i]);
+				System.out.print(array34[j * 4 + i] + " ");// printf("%7.5f ",param->mat[j][i]);
 			}
 			System.out.println();// printf("\n");
 		}// }
@@ -297,21 +222,15 @@ public class NyARParam
 		return 0;
 	}
 
-	// /*int arParamDecomp( ARParam *source, ARParam *icpara, double trans[3][4]
-	// );*/
-	// private static int arParamDecomp( NyARParam source, NyARParam icpara,
-	// double[][] trans)
+	// /*int arParamDecomp( ARParam *source, ARParam *icpara, double trans[3][4] );*/
+	// private static int arParamDecomp( NyARParam source, NyARParam icpara,double[][] trans)
 	// {
 	// icpara.xsize = source.xsize;//icpara->xsize = source->xsize;
 	// icpara.ysize = source.ysize;//icpara->ysize = source->ysize;
-	// icpara.dist_factor[0] = source.dist_factor[0];//icpara->dist_factor[0] =
-	// source->dist_factor[0];
-	// icpara.dist_factor[1] = source.dist_factor[1];// icpara->dist_factor[1] =
-	// source->dist_factor[1];
-	// icpara.dist_factor[2] = source.dist_factor[2];//icpara->dist_factor[2] =
-	// source->dist_factor[2];
-	// icpara.dist_factor[3] = source.dist_factor[3];//icpara->dist_factor[3] =
-	// source->dist_factor[3];
+	// icpara.dist_factor[0] = source.dist_factor[0];//icpara->dist_factor[0] =source->dist_factor[0];
+	// icpara.dist_factor[1] = source.dist_factor[1];// icpara->dist_factor[1] =source->dist_factor[1];
+	// icpara.dist_factor[2] = source.dist_factor[2];//icpara->dist_factor[2] =source->dist_factor[2];
+	// icpara.dist_factor[3] = source.dist_factor[3];//icpara->dist_factor[3] =source->dist_factor[3];
 	// return arParamDecompMat(source.mat, icpara.mat, trans );
 	// }
 	/**
@@ -327,34 +246,18 @@ public class NyARParam
 	public void changeSize(int i_xsize, int i_ysize)
 	{
 		double scale;
-		scale = (double) i_xsize / (double) (xsize);// scale = (double)xsize /
-													// (double)(source->xsize);
+		scale = (double) i_xsize / (double) (xsize);// scale = (double)xsize / (double)(source->xsize);
 
 		for (int i = 0; i < 4; i++) {
-			array34[0 * 4 + i] = array34[0 * 4 + i] * scale;// newparam->mat[0][i]
-															// =
-															// source->mat[0][i]
-															// * scale;
-			array34[1 * 4 + i] = array34[1 * 4 + i] * scale;// newparam->mat[1][i]
-															// =
-															// source->mat[1][i]
-															// * scale;
-			array34[2 * 4 + i] = array34[2 * 4 + i];// newparam->mat[2][i] =
-													// source->mat[2][i];
+			array34[0 * 4 + i] = array34[0 * 4 + i] * scale;// newparam->mat[0][i]=source->mat[0][i]* scale;
+			array34[1 * 4 + i] = array34[1 * 4 + i] * scale;// newparam->mat[1][i]=source->mat[1][i]* scale;
+			array34[2 * 4 + i] = array34[2 * 4 + i];// newparam->mat[2][i] = source->mat[2][i];
 		}
 
-		dist_factor[0] = dist_factor[0] * scale;// newparam->dist_factor[0] =
-												// source->dist_factor[0] *
-												// scale;
-		dist_factor[1] = dist_factor[1] * scale;// newparam->dist_factor[1] =
-												// source->dist_factor[1] *
-												// scale;
-		dist_factor[2] = dist_factor[2] / (scale * scale);// newparam->dist_factor[2]
-															// =
-															// source->dist_factor[2]
-															// / (scale*scale);
-		dist_factor[3] = dist_factor[3];// newparam->dist_factor[3] =
-										// source->dist_factor[3];
+		dist_factor[0] = dist_factor[0] * scale;// newparam->dist_factor[0] =source->dist_factor[0] *scale;
+		dist_factor[1] = dist_factor[1] * scale;// newparam->dist_factor[1] =source->dist_factor[1] *scale;
+		dist_factor[2] = dist_factor[2] / (scale * scale);// newparam->dist_factor[2]=source->dist_factor[2]/ (scale*scale);
+		dist_factor[3] = dist_factor[3];// newparam->dist_factor[3] =source->dist_factor[3];
 
 		xsize = i_xsize;// newparam->xsize = xsize;
 		ysize = i_ysize;// newparam->ysize = ysize;
@@ -499,15 +402,13 @@ public class NyARParam
 			py = i_y_coord[i_start + j] - d1;
 
 			z02 = px * px + py * py;
-			q = z0 = Math.sqrt(z02);// Optimize//q = z0 = Math.sqrt(px*px+
-									// py*py);
+			q = z0 = Math.sqrt(z02);// Optimize//q = z0 = Math.sqrt(px*px+py*py);
 
 			for (int i = 1;; i++) {
 				if (z0 != 0.0) {
 					// Optimize opttmp_1
 					opttmp_1 = p * z02;
-					z = z0 - ((1.0 - opttmp_1) * z0 - q)
-							/ (1.0 - 3.0 * opttmp_1);
+					z = z0 - ((1.0 - opttmp_1) * z0 - q)/ (1.0 - 3.0 * opttmp_1);
 					px = px * z / z0;
 					py = py * z / z0;
 				} else {
@@ -537,8 +438,7 @@ public class NyARParam
 	 * @throws Exception
 	 *             i_num個の設定が読み出せない場合、JartkExceptionを発生します。
 	 */
-	private static NyARParam[] arParamLoad(InputStream i_stream, int i_num)
-			throws NyARException
+	private static NyARParam[] arParamLoad(InputStream i_stream, int i_num)throws NyARException
 	{
 		try {
 			int read_size = SIZE_OF_PARAM_SET * i_num;

@@ -1,9 +1,41 @@
-package jp.nyatla.util;
+/* 
+ * PROJECT: NyARToolkit
+ * --------------------------------------------------------------------------------
+ * This work is based on the original ARToolKit developed by
+ *   Hirokazu Kato
+ *   Mark Billinghurst
+ *   HITLab, University of Washington, Seattle
+ * http://www.hitl.washington.edu/artoolkit/
+ *
+ * The NyARToolkit is Java version ARToolkit class library.
+ * Copyright (C)2008 R.Iizuka
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this framework; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * 
+ * For further information please contact.
+ *	http://nyatla.jp/nyatoolkit/
+ *	<airmail(at)ebony.plala.or.jp>
+ * 
+ */
+package jp.nyatla.utils;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 
 /**
- * オンデマンド割り当てをするオブジェクト配列
+ * オンデマンド割り当てをするオブジェクト配列。
+ * 配列には実体を格納します。
  */
 public abstract class NyObjectStack
 {
@@ -13,7 +45,7 @@ public abstract class NyObjectStack
 
 	private int _allocated_size;
 
-	private int _length;
+	protected int _length;
 
 	/**
 	 * 最大ARRAY_MAX個の動的割り当てバッファを準備する。
@@ -56,6 +88,18 @@ public abstract class NyObjectStack
 		return ret;
 	}
 	/**
+	 * 見かけ上の要素数を1減らして、最後尾のアイテムを返します。
+	 * @return
+	 */
+	public Object pop() throws NyARException
+	{
+		if(this._length<1){
+			throw new NyARException();
+		}
+		this._length--;
+		return this.getItem(this._length);
+	}
+	/**
 	 * 0～i_number_of_item-1までの領域を予約します。
 	 * 予約すると、見かけ上の要素数は0にリセットされます。
 	 * @param i_number_of_reserv
@@ -69,7 +113,7 @@ public abstract class NyObjectStack
 				throw new NyARException();
 			}
 			// 追加アロケート範囲を計算
-			int range = this._length + ARRAY_APPEND_STEP;
+			int range = this._items.length + ARRAY_APPEND_STEP;
 			if (range >= this._items.length) {
 				range = this._items.length;
 			}
@@ -90,6 +134,10 @@ public abstract class NyObjectStack
 	protected Object[] getArray()
 	{
 		return this._items;
+	}
+	protected Object getItem(int i_index)
+	{
+		return this._items[i_index];
 	}
 
 	/**

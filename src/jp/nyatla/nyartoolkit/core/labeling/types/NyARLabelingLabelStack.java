@@ -29,34 +29,66 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.types.stack;
+package jp.nyatla.nyartoolkit.core.labeling.types;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.utils.NyObjectStack;
+import jp.nyatla.utils.*;
 
-public class NyARIntPointStack extends NyObjectStack
+/**
+ * NyLabelの予約型動的配列
+ * 
+ */
+public class NyARLabelingLabelStack extends NyObjectStack
 {
-	public NyARIntPointStack(int i_length)
+	public NyARLabelingLabelStack(int i_max_array_size)
 	{
-		super(new NyARIntPoint[i_length]);
-
+		super(new NyARLabelingLabel[i_max_array_size]);
 	}
 
 	protected void onReservRequest(int i_start, int i_end, Object[] i_buffer)
 	{
 		for (int i = i_start; i < i_end; i++) {
-			i_buffer[i] = new NyARIntPoint();
+			i_buffer[i] = new NyARLabelingLabel();
 		}
 	}
-
-	public NyARIntPoint[] getArray()
+	public NyARLabelingLabel[] getArray()
 	{
-		return (NyARIntPoint[]) this._items;
+		return (NyARLabelingLabel[]) this._items;
 	}
-
-	public NyARIntPoint prePush() throws NyARException
+	public NyARLabelingLabel getItem(int i_index)
 	{
-		return (NyARIntPoint) super.prePush();
+		return (NyARLabelingLabel)this._items[i_index];
 	}
+	public NyARLabelingLabel prePush() throws NyARException
+	{
+		return (NyARLabelingLabel) super.prePush();
+	}
+	/**
+	 * エリアの大きい順にラベルをソートします。
+	 */
+	final public void sortByArea()
+	{
+		int len=this._length;
+		int h = len *13/10;
+		NyARLabelingLabel[] item=(NyARLabelingLabel[])this._items;
+		for(;;){
+		    int swaps = 0;
+		    for (int i = 0; i + h < len; i++) {
+		        if (item[i + h].area > item[i].area) {
+		            final NyARLabelingLabel temp = item[i + h];
+		            item[i + h] = item[i];
+		            item[i] = temp;
+		            swaps++;
+		        }
+		    }
+		    if (h == 1) {
+		        if (swaps == 0){
+		        	break;
+		        }
+		    }else{
+		        h=h*10/13;
+		    }
+		}		
+	} 
 }
+	

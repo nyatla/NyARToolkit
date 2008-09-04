@@ -1,6 +1,12 @@
 /* 
  * PROJECT: NyARToolkit
  * --------------------------------------------------------------------------------
+ * This work is based on the original ARToolKit developed by
+ *   Hirokazu Kato
+ *   Mark Billinghurst
+ *   HITLab, University of Washington, Seattle
+ * http://www.hitl.washington.edu/artoolkit/
+ *
  * The NyARToolkit is Java version ARToolkit class library.
  * Copyright (C)2008 R.Iizuka
  *
@@ -23,10 +29,11 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.rasterfilter;
+package jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.rasterfilter.INyARRasterFilter;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
@@ -41,6 +48,10 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter
 	{
 		this._threshold = i_threshold;
 	}
+	public void setThreshold(int i_threshold)
+	{
+		this._threshold = i_threshold;
+	}
 
 	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException
 	{
@@ -50,7 +61,7 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter
 		int[][] out_buf = (int[][]) i_output.getBufferObject();
 		byte[] in_buf = (byte[]) i_input.getBufferObject();
 
-		TNyARIntSize size = i_output.getSize();
+		NyARIntSize size = i_output.getSize();
 		switch (i_input.getBufferType()) {
 		case TNyRasterType.BUFFERFORMAT_BYTE1D_B8G8R8_24:
 		case TNyRasterType.BUFFERFORMAT_BYTE1D_R8G8B8_24:
@@ -65,7 +76,7 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter
 		return;
 	}
 
-	private void convert24BitRgb(byte[] i_in, int[][] i_out, TNyARIntSize i_size)
+	private void convert24BitRgb(byte[] i_in, int[][] i_out, NyARIntSize i_size)
 	{
 		int bp = 0;
 		int th=this._threshold*3;
@@ -79,17 +90,18 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter
 		}
 		return;
 	}
-	private void convert32BitRgbx(byte[] i_in, int[][] i_out, TNyARIntSize i_size)
+	private void convert32BitRgbx(byte[] i_in, int[][] i_out, NyARIntSize i_size)
 	{
-		int bp = 0;
-		int th=this._threshold*3;
+		int bp =0;
+		final int th=this._threshold*3;
 		int w;
-		for (int y = 0; y < i_size.h; y++) {
-			for (int x = 0; x < i_size.w; x++) {
+		for (int y =0; y<i_size.h ; y++){
+			int x;
+			for (x = 0;x<i_size.w;x++) {
 				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
 				i_out[y][x]=w<=th?0:1;
 				bp += 4;
-			}
+			}	
 		}
 		return;
 	}

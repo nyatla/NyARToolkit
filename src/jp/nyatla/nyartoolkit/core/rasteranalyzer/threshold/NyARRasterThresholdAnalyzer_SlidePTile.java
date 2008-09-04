@@ -1,6 +1,12 @@
 /* 
  * PROJECT: NyARToolkit
  * --------------------------------------------------------------------------------
+ * This work is based on the original ARToolKit developed by
+ *   Hirokazu Kato
+ *   Mark Billinghurst
+ *   HITLab, University of Washington, Seattle
+ * http://www.hitl.washington.edu/artoolkit/
+ *
  * The NyARToolkit is Java version ARToolkit class library.
  * Copyright (C)2008 R.Iizuka
  *
@@ -25,6 +31,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasteranalyzer.threshold;
 
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -55,7 +62,7 @@ public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresh
 	{
 		int[][] in_buf = (int[][]) i_input.getBufferObject();
 		int[] histgram = o_histgram;
-		TNyARIntSize size = i_input.getSize();
+		NyARIntSize size = i_input.getSize();
 
 		// ヒストグラムを作成
 		for (int i = 0; i < 256; i++) {
@@ -115,7 +122,7 @@ public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresh
 	{
 		assert (i_input.getBufferType() == TNyRasterType.BUFFERFORMAT_INT2D_GLAY_8);
 		assert (i_output.getBufferType() == TNyRasterType.BUFFERFORMAT_INT2D_GLAY_8);
-		TNyARIntSize size = i_output.getSize();
+		NyARIntSize size = i_output.getSize();
 
 		int[][] out_buf = (int[][]) i_output.getBufferObject();
 		// 0で塗りつぶし

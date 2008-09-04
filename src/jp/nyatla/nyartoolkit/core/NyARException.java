@@ -29,36 +29,34 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.rasterreader;
+package jp.nyatla.nyartoolkit.core;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
-
-/**
- * R8G8B8でピクセルを読み出すインタフェイス
- * 
- */
-public interface INyARRgbPixelReader
+public class NyARException extends Exception
 {
-	/**
-	 * 1ピクセルをint配列にして返します。
-	 * 
-	 * @param i_x
-	 * @param i_y
-	 * @param i_rgb
-	 */
-	public void getPixel(int i_x, int i_y, int[] i_rgb) throws NyARException;
+	private static final long serialVersionUID = 1L;
 
-	/**
-	 * 複数のピクセル値をi_rgbへ返します。
-	 * 
-	 * @param i_x
-	 * xのインデックス配列
-	 * @param i_y
-	 * yのインデックス配列
-	 * @param i_num
-	 * 返すピクセル値の数
-	 * @param i_rgb
-	 * ピクセル値を返すバッファ
-	 */
-	public void getPixelSet(int[] i_x, int i_y[], int i_num, int[] i_rgb) throws NyARException;
+	public NyARException()
+	{
+		super();
+	}
+
+	public NyARException(Exception e)
+	{
+		super(e);
+	}
+
+	public NyARException(String m)
+	{
+		super(m);
+	}
+
+	public static void trap(String m) throws NyARException
+	{
+		throw new NyARException("トラップ:" + m);
+	}
+
+	public static void notImplement() throws NyARException
+	{
+		throw new NyARException("Not Implement!");
+	}
 }
