@@ -31,9 +31,9 @@
  */
 package jp.nyatla.nyartoolkit.core.transmat;
 
-import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARSquare;
+import jp.nyatla.nyartoolkit.detectmarker.*;
 
 /**
  * This class calculates ARMatrix from square information. -- 変換行列を計算するクラス。

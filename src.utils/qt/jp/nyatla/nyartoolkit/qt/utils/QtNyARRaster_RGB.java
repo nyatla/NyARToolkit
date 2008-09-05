@@ -12,14 +12,14 @@ import java.awt.image.DataBuffer;
 import java.awt.image.WritableRaster;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.TNyRasterType;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_BasicClass;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 public class QtNyARRaster_RGB extends NyARRgbRaster_BasicClass
 {
-	private class PixcelReader extends NyARRgbPixelReader_RGB24{
+	private class PixcelReader extends NyARRgbPixelReader_RGB24 implements INyARBufferReader
+	{
 		public PixcelReader(NyARIntSize i_size)
 		{
 			super(null,i_size);
@@ -30,11 +30,25 @@ public class QtNyARRaster_RGB extends NyARRgbRaster_BasicClass
 			this._ref_buf=i_ref_buffer;
 			return;
 		}
+		//
+		//INyARBufferReader
+		//
+		public Object getBuffer()
+		{
+			return this._ref_buf;
+		}
+		public int getBufferType()
+		{
+			return INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24;
+		}
+		public boolean isEqualBufferType(int i_type_value)
+		{
+			return i_type_value==INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24;
+		}		
 	}
 	protected byte[] _ref_buf;
 	protected PixcelReader _reader;
 	private WritableRaster _raster;
-	private int _buffer_type;
 	private BufferedImage _image;
 
 	/**
@@ -45,7 +59,6 @@ public class QtNyARRaster_RGB extends NyARRgbRaster_BasicClass
 		this._size.w = i_width;
 		this._size.h = i_height;
 		this._ref_buf = null;
-		this._buffer_type = TNyRasterType.BUFFERFORMAT_BYTE1D_R8G8B8_24;
 		this._reader = new PixcelReader(this._size);
 		_raster = WritableRaster.createInterleavedRaster(DataBuffer.TYPE_BYTE, i_width, i_height, i_width * 3, 3, new int[] { 0, 1, 2 }, null);
 		_image = new BufferedImage(i_width, i_height, BufferedImage.TYPE_3BYTE_BGR);
@@ -64,14 +77,9 @@ public class QtNyARRaster_RGB extends NyARRgbRaster_BasicClass
 		this._ref_buf = i_buffer;
 		this._reader.syncBuffer(i_buffer);
 	}
-	public Object getBufferObject()
+	public INyARBufferReader getBufferReader()
 	{
-		return this._ref_buf;
-	}
-
-	public int getBufferType() throws NyARException
-	{
-		return this._buffer_type;
+		return this._reader;
 	}
 	public INyARRgbPixelReader getRgbPixelReader()
 	{

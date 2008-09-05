@@ -29,14 +29,18 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.labeling.labelingimage;
-import jp.nyatla.nyartoolkit.core.labeling.types.NyARLabelingLabelStack;
-import jp.nyatla.nyartoolkit.core.raster.*;
+package jp.nyatla.nyartoolkit.core.labeling;
 
-public interface INyARLabelingImage extends INyARRaster
+public class NyARLabelingLabel
 {
-	public int[][] getBufferObject();
-	public int[] getIndexArray();
-	public NyARLabelingLabelStack getLabelStack();
-	public void reset(boolean i_label_index_enable);
+	public int id;
+	public int area;
+	public int clip_r;// 0
+	public int clip_l;// 1
+	public int clip_b;// 2
+	public int clip_t;// 3
+	public double pos_x;
+	public double pos_y;
+	public int tmp_x;//最適化用
+	public int tmp_y;//最適化用
 }

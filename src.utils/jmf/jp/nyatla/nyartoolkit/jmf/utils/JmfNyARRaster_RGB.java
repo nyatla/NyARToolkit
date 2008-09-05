@@ -17,19 +17,19 @@ import jp.nyatla.nyartoolkit.core.types.*;
 
 public class JmfNyARRaster_RGB extends NyARRgbRaster_BasicClass
 {
-	protected class PixelReader implements INyARRgbPixelReader
+	protected class Reader implements INyARRgbPixelReader,INyARBufferReader
 	{
 		private int _buffer_type = TNyRasterType.BUFFERFORMAT_NULL_ALLZERO;
-
 		private byte[] _ref_buf;
-
 		private NyARIntSize _size;
 
-		public PixelReader(NyARIntSize i_size)
+		public Reader(NyARIntSize i_size)
 		{
 			this._size = i_size;
 		}
-
+		//
+		//INyARRgbPixelReader
+		//
 		public void getPixel(int i_x, int i_y, int[] o_rgb) throws NyARException
 		{
 			int bp = (i_x + i_y * this._size.w) * 3;
@@ -88,14 +88,25 @@ public class JmfNyARRaster_RGB extends NyARRgbRaster_BasicClass
 			this._buffer_type = i_buffer_type;
 			this._ref_buf = i_buffer;
 		}
+		//
+		//INyARBufferReader
+		//
+		public Object getBuffer()
+		{
+			return this._ref_buf;
+		}
+		public int getBufferType()
+		{
+			return _buffer_type;
+		}
+		public boolean isEqualBufferType(int i_type_value)
+		{
+			return this._buffer_type==i_type_value;
+		}		
 	}
 
 	protected byte[] _ref_buf;
-
-	protected int _buffer_type;
-
-	protected PixelReader _reader;
-
+	protected Reader _reader;
 	/**
 	 * RGB形式のJMFバッファをラップするオブジェクトをつくります。 生成直後のオブジェクトはデータを持ちません。
 	 * メンバ関数はsetBufferを実行後に使用可能になります。
@@ -105,18 +116,7 @@ public class JmfNyARRaster_RGB extends NyARRgbRaster_BasicClass
 		this._size.w = i_width;
 		this._size.h = i_height;
 		this._ref_buf = null;
-		this._buffer_type = TNyRasterType.BUFFERFORMAT_NULL_ALLZERO;
-		this._reader = new PixelReader(this._size);
-	}
-
-	public Object getBufferObject()
-	{
-		return this._ref_buf;
-	}
-
-	public int getBufferType() throws NyARException
-	{
-		return this._buffer_type;
+		this._reader = new Reader(this._size);
 	}
 
 	/**
@@ -157,9 +157,9 @@ public class JmfNyARRaster_RGB extends NyARRgbRaster_BasicClass
 	 */
 	public void setBuffer(javax.media.Buffer i_buffer) throws NyARException
 	{
-		this._buffer_type = analyzeBufferType((RGBFormat) i_buffer.getFormat());
+		int buftype= analyzeBufferType((RGBFormat) i_buffer.getFormat());
 		this._ref_buf = (byte[]) i_buffer.getData();
-		this._reader.changeBuffer(this._buffer_type, this._ref_buf);
+		this._reader.changeBuffer(buftype, this._ref_buf);
 	}
 
 	/**
@@ -172,6 +172,10 @@ public class JmfNyARRaster_RGB extends NyARRgbRaster_BasicClass
 	}
 
 	public INyARRgbPixelReader getRgbPixelReader()
+	{
+		return this._reader;
+	}
+	public INyARBufferReader getBufferReader()
 	{
 		return this._reader;
 	}

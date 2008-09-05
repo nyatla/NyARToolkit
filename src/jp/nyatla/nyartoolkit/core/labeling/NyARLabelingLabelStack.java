@@ -29,7 +29,7 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.labeling.types;
+package jp.nyatla.nyartoolkit.core.labeling;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.utils.*;

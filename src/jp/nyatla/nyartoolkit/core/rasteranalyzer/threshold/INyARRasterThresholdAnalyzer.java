@@ -31,7 +31,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasteranalyzer.threshold;
 
-import jp.nyatla.nyartoolkit.*;
+
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 

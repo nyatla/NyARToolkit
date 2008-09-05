@@ -31,9 +31,8 @@
  */
 package jp.nyatla.nyartoolkit.core.labeling;
 
-import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.labeling.labelingimage.INyARLabelingImage;
+import jp.nyatla.nyartoolkit.core.labeling.image.INyARLabelingImage;
 import jp.nyatla.nyartoolkit.core.raster.*;
 
 public interface INyARLabeling

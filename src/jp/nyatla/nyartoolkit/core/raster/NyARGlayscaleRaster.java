@@ -31,25 +31,24 @@
  */
 package jp.nyatla.nyartoolkit.core.raster;
 
+import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
+import jp.nyatla.nyartoolkit.core.rasterreader.NyARBufferReader;
+
 public final class NyARGlayscaleRaster extends NyARRaster_BasicClass
 {
 
 	protected int[][] _ref_buf;
-
+	private INyARBufferReader _buffer_reader;
+	
 	public NyARGlayscaleRaster(int i_width, int i_height)
 	{
 		this._ref_buf = new int[i_height][i_width];
 		this._size.w = i_width;
 		this._size.h = i_height;
+		this._buffer_reader=new NyARBufferReader(this._ref_buf,INyARBufferReader.BUFFERFORMAT_INT2D_GLAY_8);
 	}
-
-	public int getBufferType()
+	public INyARBufferReader getBufferReader()
 	{
-		return TNyRasterType.BUFFERFORMAT_INT2D_GLAY_8;
-	}
-
-	public int[][] getBufferObject()
-	{
-		return (int[][]) this._ref_buf;
+		return this._buffer_reader;
 	}
 }

@@ -31,9 +31,11 @@
  */
 package jp.nyatla.nyartoolkit.core.labeling;
 
+import java.util.Date;
+
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.labeling.labelingimage.INyARLabelingImage;
+import jp.nyatla.nyartoolkit.core.labeling.image.INyARLabelingImage;
 import jp.nyatla.nyartoolkit.core.labeling.types.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
@@ -41,7 +43,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
  * ARToolKit互換のラベリングクラスです。 ARToolKitと同一な評価結果を返します。
  * 
  */
-public class ARToolKitLabeling implements INyARLabeling
+public class NyARLabeling_ARToolKit implements INyARLabeling
 {
 	private static final int WORK_SIZE = 1024 * 32;// #define WORK_SIZE 1024*32
 	private final NyARWorkHolder work_holder = new NyARWorkHolder(WORK_SIZE);
@@ -55,7 +57,7 @@ public class ARToolKitLabeling implements INyARLabeling
 		this._out_image = i_destination_image;
 
 		// NyLabelingImageのイメージ初期化(枠書き)
-		int[][] img = i_destination_image.getBufferObject();
+		int[][] img = (int[][])i_destination_image.getBufferReader().getBuffer();
 		for (int i = 0; i < size.w; i++) {
 			img[0][i] = 0;
 			img[size.h - 1][i] = 0;
@@ -89,9 +91,9 @@ public class ARToolKitLabeling implements INyARLabeling
 		NyARIntSize in_size = i_raster.getSize();
 		this._dest_size.isEqualSize(in_size);
 
-		int lxsize = in_size.w;// lxsize = arUtil_c.arImXsize;
-		int lysize = in_size.h;// lysize = arUtil_c.arImYsize;
-		int[][] label_img = out_image.getBufferObject();
+		final int lxsize = in_size.w;// lxsize = arUtil_c.arImXsize;
+		final int lysize = in_size.h;// lysize = arUtil_c.arImYsize;
+		int[][] label_img = (int[][])out_image.getBufferReader().getBuffer();
 
 		// 枠作成はインスタンスを作った直後にやってしまう。
 		
@@ -104,12 +106,11 @@ public class ARToolKitLabeling implements INyARLabeling
 		int wk_max = 0;
 
 		int label_pixel;
-		int[][] raster_buf=i_raster.getBufferObject();
+		int[][] raster_buf=(int[][])i_raster.getBufferReader().getBuffer();
 		int[] line_ptr;
 		int[][] work2 = this.work_holder.work2;
 		int[] label_img_pt0, label_img_pt1;
-		for (j = 1; j < lysize - 1; j++) {// for (int j = 1; j < lysize - 1;
-											// j++, pnt += poff*2, pnt2 += 2) {
+		for (j = 1; j < lysize - 1; j++) {// for (int j = 1; j < lysize - 1;j++, pnt += poff*2, pnt2 += 2) {
 			line_ptr=raster_buf[j];
 			label_img_pt0 = label_img[j];
 			label_img_pt1 = label_img[j - 1];
@@ -241,7 +242,7 @@ public class ARToolKitLabeling implements INyARLabeling
 				}
 			}
 		}
-		// グループ化とラベル数の計算
+		// インデックステーブルとラベル数の計算
 		int wlabel_num = 1;// *label_num = *wlabel_num = j - 1;
 
 		for (i = 0; i < wk_max; i++) {// for(int i = 1; i <= wk_max; i++,wk++) {
@@ -266,12 +267,10 @@ public class ARToolKitLabeling implements INyARLabeling
 			label_pt =labels[i];
 			label_pt.id =i+1;
 			label_pt.area = 0;
-			label_pt.pos_x = 0;
-			label_pt.pos_y = 0;
+			label_pt.pos_x =label_pt.pos_y = 0;
 			label_pt.clip_l = lxsize;// wclip[i*4+0] = lxsize;
-			label_pt.clip_r = 0;// wclip[i*4+0] = lxsize;
 			label_pt.clip_t = lysize;// wclip[i*4+2] = lysize;
-			label_pt.clip_b = 0;// wclip[i*4+3] = 0;
+			label_pt.clip_r =label_pt.clip_b = 0;// wclip[i*4+3] = 0;
 		}
 
 		for (i = 0; i < wk_max; i++) {
@@ -301,6 +300,53 @@ public class ARToolKitLabeling implements INyARLabeling
 		}
 		return;
 	}
+/*	構造が変わるから、ハイスピード版実装するときに使う。
+	private void updateLabelStackLarge(NyARLabelingLabelStack i_stack,int[] i_lindex,NyARIntSize i_size,int[][] i_work,int i_work_max,int i_number_of_label) throws NyARException
+	{
+		// ラベルバッファを予約
+		i_stack.reserv(i_number_of_label);
+		// エリアと重心、クリップ領域を計算
+		final NyARLabelingLabel[] labels = i_stack.getArray();
+		for (int i = 0; i < i_number_of_label; i++) {
+			final NyARLabelingLabel label_pt =labels[i];
+			label_pt.id =i+1;
+			label_pt.area = 0;
+			label_pt.pos_x = 0;
+			label_pt.pos_y = 0;
+			label_pt.clip_l = i_size.w;// wclip[i*4+0] = lxsize;
+			label_pt.clip_r = 0;// wclip[i*4+0] = lxsize;
+			label_pt.clip_t = i_size.h;// wclip[i*4+2] = lysize;
+			label_pt.clip_b = 0;// wclip[i*4+3] = 0;
+		}
+
+		for (int i = 0; i < i_work_max; i++) {
+			final NyARLabelingLabel label_pt = labels[i_lindex[i] - 1];
+			final int[] work2_pt = i_work[i];
+			label_pt.area += work2_pt[0];
+			label_pt.pos_x += work2_pt[1];
+			label_pt.pos_y += work2_pt[2];
+			if (label_pt.clip_l > work2_pt[3]) {
+				label_pt.clip_l = work2_pt[3];
+			}
+			if (label_pt.clip_r < work2_pt[4]) {
+				label_pt.clip_r = work2_pt[4];
+			}
+			if (label_pt.clip_t > work2_pt[5]) {
+				label_pt.clip_t = work2_pt[5];
+			}
+			if (label_pt.clip_b < work2_pt[6]) {
+				label_pt.clip_b = work2_pt[6];
+			}
+		}
+
+		for (int i = 0; i < i_number_of_label; i++) {// for(int i = 0; i < *label_num; i++ ) {
+			final NyARLabelingLabel label_pt = labels[i];
+			label_pt.pos_x /= label_pt.area;
+			label_pt.pos_y /= label_pt.area;
+		}
+		return;	
+	}
+	*/
 }
 
 /**

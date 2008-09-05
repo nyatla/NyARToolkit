@@ -19,7 +19,7 @@ import java.awt.*;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.*;
-import jp.nyatla.nyartoolkit.core.labeling.labelingimage.NyARLabelingImage;
+import jp.nyatla.nyartoolkit.core.labeling.image.NyARLabelingImage;
 import jp.nyatla.nyartoolkit.core.labeling.types.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasteranalyzer.*;
@@ -113,7 +113,7 @@ public class LabelingCamera extends Frame implements JmfCaptureListener {
     private INyARLabeling labelingFactory(int i_idx)
     {
 	switch(i_idx){
-	case 0:{ARToolKitLabeling l=new ARToolKitLabeling();l.setThresh(4);return l;}
+	case 0:{NyARLabeling_ARToolKit l=new NyARLabeling_ARToolKit();l.setThresh(4);return l;}
 	case 1:{return new NyLineLabeling();}
 	}
 	return null;

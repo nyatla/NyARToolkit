@@ -31,7 +31,7 @@
  */
 package jp.nyatla.nyartoolkit.core;
 import jp.nyatla.nyartoolkit.core.labeling.*;
-import jp.nyatla.nyartoolkit.core.labeling.labelingimage.*;
+import jp.nyatla.nyartoolkit.core.labeling.image.*;
 import jp.nyatla.nyartoolkit.core.labeling.types.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 
@@ -114,7 +114,7 @@ public class NyARSquareDetector
 
 	private final NyARParam _cparam;
 
-	private final ARToolKitLabeling _labeling;
+	private final NyARLabeling_ARToolKit _labeling;
 
 	private final NyARLabelingImage _limage;
 
@@ -130,7 +130,7 @@ public class NyARSquareDetector
 		this._width = i_param.getX();
 		this._height = i_param.getY();
 		this._cparam = i_param;
-		this._labeling = new ARToolKitLabeling();
+		this._labeling = new NyARLabeling_ARToolKit();
 		this._limage = new NyARLabelingImage(this._width, this._height);
 		this._labeling.attachDestination(this._limage);
 

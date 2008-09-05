@@ -33,14 +33,15 @@ package jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.INyARRasterFilter;
+import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
+import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
  * 定数閾値による2値化をする。
  * 
  */
-public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter
+public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_RgbToBin
 {
 	private int _threshold;
 
@@ -53,21 +54,26 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter
 		this._threshold = i_threshold;
 	}
 
-	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException
+	public void doFilter(INyARRgbRaster i_input, NyARBinRaster i_output) throws NyARException
 	{
-		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
-		assert (checkInputType(i_input)==true);
+		INyARBufferReader in_buffer_reader=i_input.getBufferReader();	
+		INyARBufferReader out_buffer_reader=i_output.getBufferReader();
+		int in_buf_type=in_buffer_reader.getBufferType();
 
-		int[][] out_buf = (int[][]) i_output.getBufferObject();
-		byte[] in_buf = (byte[]) i_input.getBufferObject();
+		assert (out_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT2D_BIN_8));
+		assert (checkInputType(in_buf_type)==true);	
+		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
+
+		int[][] out_buf = (int[][]) out_buffer_reader.getBuffer();
+		byte[] in_buf = (byte[]) in_buffer_reader.getBuffer();
 
 		NyARIntSize size = i_output.getSize();
-		switch (i_input.getBufferType()) {
-		case TNyRasterType.BUFFERFORMAT_BYTE1D_B8G8R8_24:
-		case TNyRasterType.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+		switch (in_buffer_reader.getBufferType()) {
+		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24:
+		case INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24:
 			convert24BitRgb(in_buf, out_buf, size);
 			break;
-		case TNyRasterType.BUFFERFORMAT_BYTE1D_B8G8R8X8_32:
+		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8X8_32:
 			convert32BitRgbx(in_buf, out_buf, size);
 			break;
 		default:
@@ -78,37 +84,98 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter
 
 	private void convert24BitRgb(byte[] i_in, int[][] i_out, NyARIntSize i_size)
 	{
-		int bp = 0;
-		int th=this._threshold*3;
+		final int size_w=i_size.w;
+		final int x_mod_end= size_w-(size_w%8);
+		final int th=this._threshold*3;
+		int bp =(size_w*i_size.h-1)*3;	
 		int w;
-		for (int y = 0; y < i_size.h; y++) {
-			for (int x = 0; x < i_size.w; x++) {
+		int x;		
+		for (int y =i_size.h-1; y>=0 ; y--){
+			//端数分
+			for (x = size_w-1;x>=x_mod_end;x--) {
+				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+				i_out[y][x]=w<=th?0:1;
+				bp -= 3;
+			}
+			//タイリング		
+			for (;x>=0;x-=8) {
 				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
 				i_out[y][x]=w<=th?0:1;
-				bp += 3;
+				bp -= 3;
+				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+				i_out[y][x-1]=w<=th?0:1;
+				bp -= 3;
+				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+				i_out[y][x-2]=w<=th?0:1;
+				bp -= 3;
+				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+				i_out[y][x-3]=w<=th?0:1;
+				bp -= 3;
+				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+				i_out[y][x-4]=w<=th?0:1;
+				bp -= 3;
+				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+				i_out[y][x-5]=w<=th?0:1;
+				bp -= 3;
+				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+				i_out[y][x-6]=w<=th?0:1;
+				bp -= 3;
+				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+				i_out[y][x-7]=w<=th?0:1;
+				bp -= 3;
 			}
 		}
 		return;
 	}
 	private void convert32BitRgbx(byte[] i_in, int[][] i_out, NyARIntSize i_size)
 	{
-		int bp =0;
+		final int size_w=i_size.w;
+		final int x_mod_end= size_w-(size_w%8);
 		final int th=this._threshold*3;
+		int bp =(size_w*i_size.h-1)*4;
 		int w;
-		for (int y =0; y<i_size.h ; y++){
-			int x;
-			for (x = 0;x<i_size.w;x++) {
+		int x;
+		for (int y =i_size.h-1; y>=0 ; y--){
+			//端数分
+			for (x = size_w-1;x>=x_mod_end;x--) {
 				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
 				i_out[y][x]=w<=th?0:1;
-				bp += 4;
+				bp -= 4;
+			}
+			//タイリング
+			for (;x>=0;x-=8) {
+				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+				i_out[y][x]=w<=th?0:1;
+				bp -= 4;
+				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+				i_out[y][x-1]=w<=th?0:1;
+				bp -= 4;
+				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+				i_out[y][x-2]=w<=th?0:1;
+				bp -= 4;
+				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+				i_out[y][x-3]=w<=th?0:1;
+				bp -= 4;
+				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+				i_out[y][x-4]=w<=th?0:1;
+				bp -= 4;
+				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+				i_out[y][x-5]=w<=th?0:1;
+				bp -= 4;
+				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+				i_out[y][x-6]=w<=th?0:1;
+				bp -= 4;
+				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+				i_out[y][x-7]=w<=th?0:1;
+				bp -= 4;
 			}	
 		}
 		return;
 	}
 	
-	private boolean checkInputType(INyARRaster i_input) throws NyARException
+	private boolean checkInputType(int i_input_type) throws NyARException
 	{
-		switch(i_input.getBufferType()){
+		switch(i_input_type){
 		case TNyRasterType.BUFFERFORMAT_BYTE1D_B8G8R8_24:
 		case TNyRasterType.BUFFERFORMAT_BYTE1D_R8G8B8_24:
 		case TNyRasterType.BUFFERFORMAT_BYTE1D_B8G8R8X8_32:

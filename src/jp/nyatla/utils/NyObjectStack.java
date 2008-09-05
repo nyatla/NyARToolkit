@@ -113,7 +113,7 @@ public abstract class NyObjectStack
 				throw new NyARException();
 			}
 			// 追加アロケート範囲を計算
-			int range = this._items.length + ARRAY_APPEND_STEP;
+			int range = i_number_of_item+ARRAY_APPEND_STEP;
 			if (range >= this._items.length) {
 				range = this._items.length;
 			}

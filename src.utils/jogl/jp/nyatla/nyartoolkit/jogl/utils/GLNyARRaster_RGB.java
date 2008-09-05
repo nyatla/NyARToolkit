@@ -84,9 +84,8 @@ public class GLNyARRaster_RGB extends JmfNyARRaster_RGB
 			throw new NyARException();
 		}
 		// ref_bufをgl_bufに差し替える
-		this._buffer_type = buffer_type;
 		this._ref_buf = this._gl_buf;
-		this._reader.changeBuffer(this._buffer_type, this._ref_buf);
+		this._reader.changeBuffer(buffer_type, this._ref_buf);
 	}
 
 	/**

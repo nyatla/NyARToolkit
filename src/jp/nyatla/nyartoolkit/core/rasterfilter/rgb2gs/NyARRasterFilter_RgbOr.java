@@ -34,20 +34,22 @@ package jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs;
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
+import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 public class NyARRasterFilter_RgbOr implements INyARRasterFilter_RgbToGs
 {
 	public void doFilter(INyARRgbRaster i_input, NyARGlayscaleRaster i_output) throws NyARException
 	{
-		assert (i_output.getBufferType() == TNyRasterType.BUFFERFORMAT_INT2D_GLAY_8);
+		INyARBufferReader in_buffer_reader=i_input.getBufferReader();	
+		INyARBufferReader out_buffer_reader=i_output.getBufferReader();			
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
 
-		int[][] out_buf = (int[][]) i_output.getBufferObject();
-		byte[] in_buf = (byte[]) i_input.getBufferObject();
+		final int[][] out_buf = (int[][]) out_buffer_reader.getBuffer();
+		final byte[] in_buf = (byte[]) in_buffer_reader.getBuffer();
 
 		NyARIntSize size = i_output.getSize();
-		switch (i_input.getBufferType()) {
+		switch (in_buffer_reader.getBufferType()) {
 		case TNyRasterType.BUFFERFORMAT_BYTE1D_B8G8R8_24:
 		case TNyRasterType.BUFFERFORMAT_BYTE1D_R8G8B8_24:
 			convert24BitRgb(in_buf, out_buf, size);

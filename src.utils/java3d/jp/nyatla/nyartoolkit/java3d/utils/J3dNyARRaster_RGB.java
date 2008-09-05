@@ -42,9 +42,9 @@ public class J3dNyARRaster_RGB extends JmfNyARRaster_RGB
 			//キャプチャデータをi2dのバッファにコピーする。（これ省略したいなあ…。）
 			System.arraycopy((byte[]) i_buffer.getData(), 0, this.i2d_buf, 0, this.i2d_buf.length);
 		}
-		this._buffer_type = analyzeBufferType((RGBFormat) i_buffer.getFormat());
+		int buffer_type = analyzeBufferType((RGBFormat) i_buffer.getFormat());
 		this._ref_buf = this.i2d_buf;
-		this._reader.changeBuffer(this._buffer_type, this._ref_buf);
+		this._reader.changeBuffer(buffer_type, this._ref_buf);
 	}
 
 	public J3dNyARRaster_RGB(NyARParam i_cparam)

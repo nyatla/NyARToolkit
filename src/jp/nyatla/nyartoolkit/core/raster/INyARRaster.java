@@ -31,9 +31,9 @@
  */
 package jp.nyatla.nyartoolkit.core.raster;
 
-import jp.nyatla.nyartoolkit.*;
-import jp.nyatla.nyartoolkit.core.NyARException;
+
 import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.rasterreader.*;
 
 public interface INyARRaster
 {
@@ -42,8 +42,5 @@ public interface INyARRaster
 	public int getHeight();
 
 	public NyARIntSize getSize();
-
-	public int getBufferType() throws NyARException;
-
-	public Object getBufferObject();
+	public INyARBufferReader getBufferReader();
 }

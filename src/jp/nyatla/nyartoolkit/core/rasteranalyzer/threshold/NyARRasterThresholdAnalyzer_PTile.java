@@ -33,7 +33,7 @@ package jp.nyatla.nyartoolkit.core.rasteranalyzer.threshold;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.*;
+import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
@@ -57,28 +57,27 @@ public class NyARRasterThresholdAnalyzer_PTile implements INyARRasterThresholdAn
 		this._persentage = i_persentage;
 	}
 
-	private int createHistgram(INyARRaster i_input, int[] o_histgram) throws NyARException
+	private int createHistgram(INyARBufferReader i_reader,NyARIntSize i_size, int[] o_histgram) throws NyARException
 	{
-		int[][] in_buf = (int[][]) i_input.getBufferObject();
+		int[][] in_buf = (int[][]) i_reader.getBuffer();
 		int[] histgram = o_histgram;
-		NyARIntSize size = i_input.getSize();
 
 		// ヒストグラムを作成
 		for (int i = 0; i < 256; i++) {
 			histgram[i] = 0;
 		}
 		int sum = 0;
-		for (int y = 0; y < size.h; y++) {
+		for (int y = 0; y < i_size.h; y++) {
 			int sum2 = 0;
-			for (int x = 0; x < size.w; x++) {
+			for (int x = 0; x < i_size.w; x++) {
 				int v = in_buf[y][x];
 				histgram[v]++;
 				sum2 += v;
 			}
-			sum = sum + sum2 / size.w;
+			sum = sum + sum2 / i_size.w;
 		}
 		// 閾値ピクセル数確定
-		int th_pixcels = size.w * size.h * this._persentage / 100;
+		int th_pixcels = i_size.w * i_size.h * this._persentage / 100;
 
 		// 閾値判定
 		int i;
@@ -105,9 +104,10 @@ public class NyARRasterThresholdAnalyzer_PTile implements INyARRasterThresholdAn
 
 	public void analyzeRaster(INyARRaster i_input) throws NyARException
 	{
-		assert (i_input.getBufferType() == TNyRasterType.BUFFERFORMAT_INT2D_GLAY_8);
+		final INyARBufferReader buffer_reader=i_input.getBufferReader();	
+		assert (buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT2D_GLAY_8));
 		int[] histgram = new int[256];
-		this._threshold = createHistgram(i_input, histgram);
+		this._threshold = createHistgram(buffer_reader,i_input.getSize(), histgram);
 	}
 
 	/**
@@ -118,11 +118,13 @@ public class NyARRasterThresholdAnalyzer_PTile implements INyARRasterThresholdAn
 	 */
 	public void debugDrawHistgramMap(INyARRaster i_input, INyARRaster i_output) throws NyARException
 	{
-		assert (i_input.getBufferType() == TNyRasterType.BUFFERFORMAT_INT2D_GLAY_8);
-		assert (i_output.getBufferType() == TNyRasterType.BUFFERFORMAT_INT2D_GLAY_8);
+		INyARBufferReader in_buffer_reader=i_input.getBufferReader();	
+		INyARBufferReader out_buffer_reader=i_output.getBufferReader();	
+		assert (in_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT2D_GLAY_8));
+		assert (out_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT2D_GLAY_8));
 		NyARIntSize size = i_output.getSize();
 
-		int[][] out_buf = (int[][]) i_output.getBufferObject();
+		int[][] out_buf = (int[][]) out_buffer_reader.getBuffer();
 		// 0で塗りつぶし
 		for (int y = 0; y < size.h; y++) {
 			for (int x = 0; x < size.w; x++) {
@@ -131,7 +133,7 @@ public class NyARRasterThresholdAnalyzer_PTile implements INyARRasterThresholdAn
 		}
 		// ヒストグラムを計算
 		int[] histgram = new int[256];
-		int threshold = createHistgram(i_input, histgram);
+		int threshold = createHistgram(in_buffer_reader,i_input.getSize(), histgram);
 
 		// ヒストグラムの最大値を出す
 		int max_v = 0;

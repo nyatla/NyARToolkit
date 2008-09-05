@@ -8,7 +8,7 @@ import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_BGRA;
 import jp.nyatla.nyartoolkit.core.rasteranalyzer.*;
 import jp.nyatla.nyartoolkit.core.labeling.*;
-import jp.nyatla.nyartoolkit.core.labeling.labelingimage.NyARLabelingImage;
+import jp.nyatla.nyartoolkit.core.labeling.image.NyARLabelingImage;
 import jp.nyatla.nyartoolkit.core.labeling.types.*;
 import jp.nyatla.utils.j2se.*;
 
@@ -23,7 +23,7 @@ public class LabelingTest extends Frame
 	fs.read(buf);
 	NyARRgbRaster_BGRA ra=NyARRgbRaster_BGRA.wrap(buf, 320, 240);
 	NyARLabelingImage limage=new NyARLabelingImage(320,240);
-	INyARLabeling labeling=new ARToolKitLabeling();
+	INyARLabeling labeling=new NyARLabeling_ARToolKit();
 //	INyARLabeling labeling=new NyLineLabeling();
 	INyARRasterReaderFactory rf=new NyARRasterReaderFactory_RgbTotal();
 	labeling.attachDestination(limage);

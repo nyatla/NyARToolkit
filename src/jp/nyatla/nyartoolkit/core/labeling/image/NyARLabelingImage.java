@@ -29,21 +29,23 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.labeling.labelingimage;
+package jp.nyatla.nyartoolkit.core.labeling.image;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.labeling.types.NyARLabelingLabel;
-import jp.nyatla.nyartoolkit.core.labeling.types.NyARLabelingLabelStack;
+import jp.nyatla.nyartoolkit.core.labeling.NyARLabelingLabel;
+import jp.nyatla.nyartoolkit.core.labeling.NyARLabelingLabelStack;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
+import jp.nyatla.nyartoolkit.core.rasterreader.NyARBufferReader;
 
 /**
- * @author atla
  *
  */
 public class NyARLabelingImage extends NyARRaster_BasicClass implements INyARLabelingImage
 {
 	private final static int MAX_LABELS = 1024*32;	
 	protected int[][] _ref_buf;
+	private INyARBufferReader _buffer_reader;
 	protected NyARLabelingLabelStack _label_list;
 	protected int[] _index_table;
 	protected boolean _is_index_table_enable;
@@ -56,18 +58,16 @@ public class NyARLabelingImage extends NyARRaster_BasicClass implements INyARLab
 		this._label_list = new NyARLabelingLabelStack(MAX_LABELS);
 		this._index_table=new int[MAX_LABELS];
 		this._is_index_table_enable=false;
+		this._buffer_reader=new NyARBufferReader(this._ref_buf,INyARBufferReader.BUFFERFORMAT_INT2D);
+		
 		return;
 	}
-
-	public int[][] getBufferObject()
+	public INyARBufferReader getBufferReader()
 	{
-		return this._ref_buf;
+		return this._buffer_reader;
 	}
 
-	public int getBufferType()
-	{
-		return TNyRasterType.BUFFERFORMAT_INT2D;
-	}
+
 	/**
 	 * ラベリング結果がインデックステーブルを持つ場合、その配列を返します。
 	 * 持たない場合、nullを返します。

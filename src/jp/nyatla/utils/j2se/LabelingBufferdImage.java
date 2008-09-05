@@ -39,10 +39,10 @@ import java.awt.*;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.*;
 
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.stack.*;
+import jp.nyatla.nyartoolkit.detectmarker.*;
 
 /**
  * bitmapとして利用可能なラベリングイメージです。
@@ -128,7 +128,7 @@ public class LabelingBufferdImage extends BufferedImage
 
 	public void drawImage(NyARGlayscaleRaster i_raster) throws NyARException
 	{
-		assert (i_raster.getBufferType() == TNyRasterType.BUFFERFORMAT_INT2D_GLAY_8);
+		assert (i_raster.getBufferReader().getBufferType() == TNyRasterType.BUFFERFORMAT_INT2D_GLAY_8);
 
 		int w = this.getWidth();
 		int h = this.getHeight();
@@ -140,7 +140,7 @@ public class LabelingBufferdImage extends BufferedImage
 
 		int[][] limg;
 		// イメージの描画
-		limg = (int[][]) i_raster.getBufferObject();
+		limg = (int[][]) i_raster.getBufferReader().getBuffer();
 		for (int i = 0; i < h; i++) {
 			for (int i2 = 0; i2 < w; i2++) {
 				this.setRGB(i2, i, this._rgb_table[limg[i][i2] % this._number_of_color]);
@@ -151,7 +151,7 @@ public class LabelingBufferdImage extends BufferedImage
 
 	public void drawImage(NyARBinRaster i_raster) throws NyARException
 	{
-		assert (i_raster.getBufferType() == TNyRasterType.BUFFERFORMAT_INT2D_BIN_8);
+		assert (i_raster.getBufferReader().getBufferType() == TNyRasterType.BUFFERFORMAT_INT2D_BIN_8);
 
 		int w = this.getWidth();
 		int h = this.getHeight();
@@ -163,7 +163,7 @@ public class LabelingBufferdImage extends BufferedImage
 
 		int[][] limg;
 		// イメージの描画
-		limg = (int[][]) i_raster.getBufferObject();
+		limg = (int[][]) i_raster.getBufferReader().getBuffer();
 		for (int i = 0; i < h; i++) {
 			for (int i2 = 0; i2 < w; i2++) {
 				this.setRGB(i2, i, limg[i][i2] > 0 ? 255 : 0);

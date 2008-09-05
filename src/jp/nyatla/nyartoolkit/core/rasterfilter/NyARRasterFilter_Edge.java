@@ -33,6 +33,7 @@ package jp.nyatla.nyartoolkit.core.rasterfilter;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
@@ -42,12 +43,14 @@ public class NyARRasterFilter_Edge implements INyARRasterFilter
 {
 	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException
 	{
-		assert (i_input.getBufferType() == TNyRasterType.BUFFERFORMAT_INT2D_GLAY_8);
-		assert (i_output.getBufferType() == TNyRasterType.BUFFERFORMAT_INT2D_GLAY_8);
+		INyARBufferReader in_buffer_reader=i_input.getBufferReader();	
+		INyARBufferReader out_buffer_reader=i_output.getBufferReader();	
+		assert (in_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT2D_GLAY_8));
+		assert (out_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT2D_GLAY_8));
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
 
-		int[][] out_buf = (int[][]) i_output.getBufferObject();
-		int[][] in_buf = (int[][]) i_input.getBufferObject();
+		int[][] out_buf = (int[][]) out_buffer_reader.getBuffer();
+		int[][] in_buf = (int[][]) in_buffer_reader.getBuffer();
 
 		int bp = 0;
 		NyARIntSize size = i_output.getSize();

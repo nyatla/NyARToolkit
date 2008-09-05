@@ -45,14 +45,13 @@ public class NyARRasterFilter_AreaAverage implements INyARRasterFilter_GsToBin
 
 	public void doFilter(NyARGlayscaleRaster i_input, NyARBinRaster i_output) throws NyARException
 	{
-		NyARIntSize size = i_output.getSize();
+		final NyARIntSize size = i_output.getSize();
+		final int[][] out_buf = (int[][]) i_output.getBufferReader().getBuffer();
+		final int[][] in_buf = (int[][]) i_input.getBufferReader().getBuffer();
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
-		assert (size.h % 8 == 0 && size.w % 8 == 0);
+		assert (size.h % 8 == 0 && size.w % 8 == 0);//暫定実装なので。
 
-		int[][] out_buf = (int[][]) i_output.getBufferObject();
-		int[][] in_buf = (int[][]) i_input.getBufferObject();
-
-		int area = this._area;
+		final int area = this._area;
 		int y1 = area;
 		int x1 = area;
 		int y2 = size.h - area;
