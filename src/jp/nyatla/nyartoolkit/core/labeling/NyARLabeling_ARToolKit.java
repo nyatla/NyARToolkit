@@ -112,12 +112,10 @@ public class NyARLabeling_ARToolKit implements INyARLabeling
 			line_ptr=raster_buf[j];
 			label_img_pt0 = label_img[j];
 			label_img_pt1 = label_img[j - 1];
-			for (i = 1; i < lxsize - 1; i++) {// for(int i = 1; i < lxsize-1;
-												// i++, pnt+=poff, pnt2++) {
+			for (i = 1; i < lxsize - 1; i++) {// for(int i = 1; i < lxsize-1;i++, pnt+=poff, pnt2++) {
 				// RGBの合計値が閾値より小さいかな？
 				if (line_ptr[i]==0) {
-					// pnt1 = ShortPointer.wrap(pnt2, -lxsize);//pnt1 =
-					// &(pnt2[-lxsize]);
+					// pnt1 = ShortPointer.wrap(pnt2, -lxsize);//pnt1 =&(pnt2[-lxsize]);
 					if (label_img_pt1[i] > 0) {// if( *pnt1 > 0 ) {
 						label_pixel = label_img_pt1[i];// *pnt2 = *pnt1;
 

@@ -41,6 +41,4 @@ public class NyARLabelingLabel
 	public int clip_t;// 3
 	public double pos_x;
 	public double pos_y;
-	public int tmp_x;//最適化用
-	public int tmp_y;//最適化用
 }
