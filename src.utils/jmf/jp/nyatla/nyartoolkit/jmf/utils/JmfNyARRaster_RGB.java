@@ -9,7 +9,8 @@ package jp.nyatla.nyartoolkit.jmf.utils;
 
 import javax.media.format.*;
 import java.awt.Dimension;
-import jp.nyatla.nyartoolkit.core.NyARException;
+
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
@@ -19,7 +20,7 @@ public class JmfNyARRaster_RGB extends NyARRgbRaster_BasicClass
 {
 	protected class Reader implements INyARRgbPixelReader,INyARBufferReader
 	{
-		private int _buffer_type = TNyRasterType.BUFFERFORMAT_NULL_ALLZERO;
+		private int _buffer_type = INyARBufferReader.BUFFERFORMAT_NULL_ALLZERO;
 		private byte[] _ref_buf;
 		private NyARIntSize _size;
 
@@ -35,12 +36,12 @@ public class JmfNyARRaster_RGB extends NyARRgbRaster_BasicClass
 			int bp = (i_x + i_y * this._size.w) * 3;
 			byte[] ref = this._ref_buf;
 			switch (this._buffer_type) {
-			case TNyRasterType.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+			case INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24:
 				o_rgb[0] = (ref[bp + 0] & 0xff);// R
 				o_rgb[1] = (ref[bp + 1] & 0xff);// G
 				o_rgb[2] = (ref[bp + 2] & 0xff);// B
 				break;
-			case TNyRasterType.BUFFERFORMAT_BYTE1D_B8G8R8_24:
+			case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24:
 				o_rgb[0] = (ref[bp + 2] & 0xff);// B
 				o_rgb[1] = (ref[bp + 1] & 0xff);// G
 				o_rgb[2] = (ref[bp + 0] & 0xff);// R
@@ -57,7 +58,7 @@ public class JmfNyARRaster_RGB extends NyARRgbRaster_BasicClass
 			byte[] ref = this._ref_buf;
 			int bp;
 			switch (this._buffer_type) {
-			case TNyRasterType.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+			case INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24:
 				for (int i = i_num - 1; i >= 0; i--) {
 					bp = (i_x[i] + i_y[i] * width) * 3;
 					o_rgb[i * 3 + 0] = (ref[bp + 0] & 0xff);// R
@@ -65,7 +66,7 @@ public class JmfNyARRaster_RGB extends NyARRgbRaster_BasicClass
 					o_rgb[i * 3 + 2] = (ref[bp + 2] & 0xff);// B
 				}
 				break;
-			case TNyRasterType.BUFFERFORMAT_BYTE1D_B8G8R8_24:
+			case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24:
 				for (int i = i_num - 1; i >= 0; i--) {
 					bp = (i_x[i] + i_y[i] * width) * 3;
 					o_rgb[i * 3 + 0] = (ref[bp + 2] & 0xff);// R
@@ -138,9 +139,9 @@ public class JmfNyARRaster_RGB extends NyARRgbRaster_BasicClass
 
 		// 色配列の特定
 		if (r == 0 && b == 2) {
-			return TNyRasterType.BUFFERFORMAT_BYTE1D_R8G8B8_24;
+			return INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24;
 		} else if (r == 2 && b == 0) {
-			return TNyRasterType.BUFFERFORMAT_BYTE1D_B8G8R8_24;
+			return INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24;
 		} else {
 			throw new NyARException("Unknown pixel order.");
 		}

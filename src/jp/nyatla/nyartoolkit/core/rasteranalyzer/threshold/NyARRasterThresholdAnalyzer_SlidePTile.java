@@ -31,11 +31,11 @@
  */
 package jp.nyatla.nyartoolkit.core.rasteranalyzer.threshold;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.detectmarker.*;
+
 
 /**
  * 明点と暗点をPタイル法で検出して、その中央値を閾値とする。

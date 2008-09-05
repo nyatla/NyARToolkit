@@ -31,7 +31,7 @@
  */
 package jp.nyatla.utils;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.NyARException;
 
 /**
  * オンデマンド割り当てをするオブジェクト配列。

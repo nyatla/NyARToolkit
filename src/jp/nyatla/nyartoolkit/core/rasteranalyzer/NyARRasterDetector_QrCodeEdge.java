@@ -31,7 +31,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasteranalyzer;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.stack.*;
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -84,7 +84,7 @@ public class NyARRasterDetector_QrCodeEdge
 	public void analyzeRaster(INyARRaster i_input) throws NyARException
 	{
 		INyARBufferReader buffer_reader=i_input.getBufferReader();
-		assert (buffer_reader.isEqualBufferType(TNyRasterType.BUFFERFORMAT_INT2D_BIN_8));
+		assert (buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT2D_BIN_8));
 
 		// 結果をクリア
 		this._result.clear();

@@ -37,12 +37,12 @@ import java.awt.color.*;
 import java.awt.*;
 
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
-
+import jp.nyatla.nyartoolkit.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.stack.*;
-import jp.nyatla.nyartoolkit.detectmarker.*;
+
 
 /**
  * bitmapとして利用可能なラベリングイメージです。
@@ -128,7 +128,7 @@ public class LabelingBufferdImage extends BufferedImage
 
 	public void drawImage(NyARGlayscaleRaster i_raster) throws NyARException
 	{
-		assert (i_raster.getBufferReader().getBufferType() == TNyRasterType.BUFFERFORMAT_INT2D_GLAY_8);
+		assert (i_raster.getBufferReader().getBufferType() == INyARBufferReader.BUFFERFORMAT_INT2D_GLAY_8);
 
 		int w = this.getWidth();
 		int h = this.getHeight();
@@ -151,7 +151,7 @@ public class LabelingBufferdImage extends BufferedImage
 
 	public void drawImage(NyARBinRaster i_raster) throws NyARException
 	{
-		assert (i_raster.getBufferReader().getBufferType() == TNyRasterType.BUFFERFORMAT_INT2D_BIN_8);
+		assert (i_raster.getBufferReader().getBufferType() == INyARBufferReader.BUFFERFORMAT_INT2D_BIN_8);
 
 		int w = this.getWidth();
 		int h = this.getHeight();

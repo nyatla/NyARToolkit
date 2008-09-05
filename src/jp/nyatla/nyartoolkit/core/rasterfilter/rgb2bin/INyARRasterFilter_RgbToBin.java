@@ -29,34 +29,14 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core;
+package jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin;
 
-public class NyARException extends Exception
+
+import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.raster.rgb.*;
+
+public interface INyARRasterFilter_RgbToBin
 {
-	private static final long serialVersionUID = 1L;
-
-	public NyARException()
-	{
-		super();
-	}
-
-	public NyARException(Exception e)
-	{
-		super(e);
-	}
-
-	public NyARException(String m)
-	{
-		super(m);
-	}
-
-	public static void trap(String m) throws NyARException
-	{
-		throw new NyARException("トラップ:" + m);
-	}
-
-	public static void notImplement() throws NyARException
-	{
-		throw new NyARException("Not Implement!");
-	}
+	public void doFilter(INyARRgbRaster i_input, NyARBinRaster i_output) throws NyARException;
 }

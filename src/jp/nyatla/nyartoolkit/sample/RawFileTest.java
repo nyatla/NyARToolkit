@@ -37,7 +37,7 @@ import java.util.*;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_BGRA;
 import jp.nyatla.nyartoolkit.core.transmat.*;
-import jp.nyatla.nyartoolkit.detectmarker.NyARSingleDetectMarker;
+import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
 
 /**
  * 320x240のBGRA32で記録されたRAWイメージから、１種類のパターンを認識し、

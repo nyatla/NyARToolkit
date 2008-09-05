@@ -12,7 +12,7 @@ import javax.media.format.RGBFormat;
 import javax.media.j3d.ImageComponent;
 import javax.media.j3d.ImageComponent2D;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARParam;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 

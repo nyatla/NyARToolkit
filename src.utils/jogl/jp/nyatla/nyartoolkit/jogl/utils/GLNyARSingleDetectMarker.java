@@ -32,11 +32,11 @@
 
 package jp.nyatla.nyartoolkit.jogl.utils;
 
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARCode;
-import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARParam;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
-import jp.nyatla.nyartoolkit.detectmarker.NyARSingleDetectMarker;
+import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
 
 
 /**

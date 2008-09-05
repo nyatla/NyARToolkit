@@ -29,11 +29,9 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.labeling.image;
+package jp.nyatla.nyartoolkit.core.labeling;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.labeling.NyARLabelingLabel;
-import jp.nyatla.nyartoolkit.core.labeling.NyARLabelingLabelStack;
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.rasterreader.NyARBufferReader;

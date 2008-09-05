@@ -31,7 +31,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterreader;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.NyARException;
 
 /**
  * R8G8B8でピクセルを読み出すインタフェイス

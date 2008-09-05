@@ -31,12 +31,10 @@
  */
 package jp.nyatla.nyartoolkit.core.labeling;
 
-import java.util.Date;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.labeling.image.INyARLabelingImage;
-import jp.nyatla.nyartoolkit.core.labeling.types.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**

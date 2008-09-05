@@ -31,7 +31,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
@@ -176,9 +176,9 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 	private boolean checkInputType(int i_input_type) throws NyARException
 	{
 		switch(i_input_type){
-		case TNyRasterType.BUFFERFORMAT_BYTE1D_B8G8R8_24:
-		case TNyRasterType.BUFFERFORMAT_BYTE1D_R8G8B8_24:
-		case TNyRasterType.BUFFERFORMAT_BYTE1D_B8G8R8X8_32:
+		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24:
+		case INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8X8_32:
 			return true;
 		default:
 			return false;

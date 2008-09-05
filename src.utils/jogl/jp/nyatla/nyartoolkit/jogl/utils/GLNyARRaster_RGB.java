@@ -34,9 +34,11 @@ package jp.nyatla.nyartoolkit.jogl.utils;
 import javax.media.format.RGBFormat;
 import javax.media.opengl.GL;
 
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.core.*;
-import jp.nyatla.nyartoolkit.core.raster.TNyRasterType;
+import jp.nyatla.nyartoolkit.core.rasterreader.*;
+
 
 /**
  * NyARRaster_RGBにOpenGL用のデータ変換機能を追加したものです。
@@ -74,10 +76,10 @@ public class GLNyARRaster_RGB extends JmfNyARRaster_RGB
 
 		// GLのフラグ設定
 		switch (buffer_type) {
-		case TNyRasterType.BUFFERFORMAT_BYTE1D_B8G8R8_24:
+		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24:
 			this._gl_flag = GL.GL_BGR;
 			break;
-		case TNyRasterType.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+		case INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24:
 			this._gl_flag = GL.GL_RGB;
 			break;
 		default:

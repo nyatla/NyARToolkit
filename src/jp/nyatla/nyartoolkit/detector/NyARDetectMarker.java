@@ -29,8 +29,9 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.detectmarker;
+package jp.nyatla.nyartoolkit.detector;
 
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.match.*;
 import jp.nyatla.nyartoolkit.core.pickup.*;

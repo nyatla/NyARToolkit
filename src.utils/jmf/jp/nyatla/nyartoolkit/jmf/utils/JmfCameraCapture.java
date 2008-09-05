@@ -14,7 +14,7 @@ import java.awt.*;
 import java.util.*;
 import javax.media.protocol.DataSource;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.NyARException;
 
 public class JmfCameraCapture
 {

@@ -31,7 +31,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
@@ -50,8 +50,8 @@ public class NyARRasterFilter_RgbMul implements INyARRasterFilter_RgbToGs
 
 		NyARIntSize size = i_output.getSize();
 		switch (in_buffer_reader.getBufferType()) {
-		case TNyRasterType.BUFFERFORMAT_BYTE1D_B8G8R8_24:
-		case TNyRasterType.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24:
+		case INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24:
 			convert24BitRgb(in_buf, out_buf, size);
 			break;
 		default:

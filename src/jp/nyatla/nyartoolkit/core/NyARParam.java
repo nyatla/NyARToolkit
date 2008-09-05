@@ -34,6 +34,7 @@ package jp.nyatla.nyartoolkit.core;
 import java.io.*;
 import java.nio.*;
 
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.utils.DoubleValue;
 
 /*

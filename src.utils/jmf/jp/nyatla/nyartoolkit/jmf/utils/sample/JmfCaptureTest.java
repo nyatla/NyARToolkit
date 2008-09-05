@@ -11,7 +11,7 @@ import javax.media.*;
 import javax.media.util.BufferToImage;
 import javax.media.format.*;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 
 import java.awt.*;

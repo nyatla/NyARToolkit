@@ -29,13 +29,34 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.labeling.image;
-import jp.nyatla.nyartoolkit.core.labeling.NyARLabelingLabelStack;
-import jp.nyatla.nyartoolkit.core.raster.*;
+package jp.nyatla.nyartoolkit;
 
-public interface INyARLabelingImage extends INyARRaster
+public class NyARException extends Exception
 {
-	public int[] getIndexArray();
-	public NyARLabelingLabelStack getLabelStack();
-	public void reset(boolean i_label_index_enable);
+	private static final long serialVersionUID = 1L;
+
+	public NyARException()
+	{
+		super();
+	}
+
+	public NyARException(Exception e)
+	{
+		super(e);
+	}
+
+	public NyARException(String m)
+	{
+		super(m);
+	}
+
+	public static void trap(String m) throws NyARException
+	{
+		throw new NyARException("トラップ:" + m);
+	}
+
+	public static void notImplement() throws NyARException
+	{
+		throw new NyARException("Not Implement!");
+	}
 }

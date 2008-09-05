@@ -31,6 +31,7 @@
  */
 package jp.nyatla.nyartoolkit.core;
 
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.utils.*;
 
 public class NyARSquareStack extends NyObjectStack

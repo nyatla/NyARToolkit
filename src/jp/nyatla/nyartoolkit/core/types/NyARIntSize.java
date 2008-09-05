@@ -31,7 +31,7 @@
  */
 package jp.nyatla.nyartoolkit.core.types;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.NyARException;
 
 public class NyARIntSize
 {

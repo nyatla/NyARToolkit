@@ -30,6 +30,7 @@
  * 
  */
 package jp.nyatla.nyartoolkit.core;
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.*;
 import jp.nyatla.nyartoolkit.core.labeling.image.*;
 import jp.nyatla.nyartoolkit.core.labeling.types.*;

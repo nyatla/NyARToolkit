@@ -8,7 +8,6 @@ import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_BGRA;
 import jp.nyatla.nyartoolkit.core.rasteranalyzer.*;
 import jp.nyatla.nyartoolkit.core.labeling.*;
-import jp.nyatla.nyartoolkit.core.labeling.image.NyARLabelingImage;
 import jp.nyatla.nyartoolkit.core.labeling.types.*;
 import jp.nyatla.utils.j2se.*;
 
