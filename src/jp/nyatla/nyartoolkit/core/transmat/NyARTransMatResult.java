@@ -67,28 +67,26 @@ public class NyARTransMatResult extends NyARMat
 	 * @param i_off
 	 * @param i_trans
 	 */
-	public void updateMatrixValue(NyARTransRot i_rot, double[] i_off, double[] i_trans)
+	public void updateMatrixValue(NyARRotMatrix i_rot, double[] i_off, double[] i_trans)
 	{
 		double[] pa;
-		double[] rot = i_rot.getArray();
-
 		pa = this.m[0];
-		pa[0] = rot[0 * 3 + 0];
-		pa[1] = rot[0 * 3 + 1];
-		pa[2] = rot[0 * 3 + 2];
-		pa[3] = rot[0 * 3 + 0] * i_off[0] + rot[0 * 3 + 1] * i_off[1] + rot[0 * 3 + 2] * i_off[2] + i_trans[0];
+		pa[0] = i_rot.m00;
+		pa[1] = i_rot.m01;
+		pa[2] = i_rot.m02;
+		pa[3] = i_rot.m00 * i_off[0] + i_rot.m01 * i_off[1] + i_rot.m02 * i_off[2] + i_trans[0];
 
 		pa = this.m[1];
-		pa[0] = rot[1 * 3 + 0];
-		pa[1] = rot[1 * 3 + 1];
-		pa[2] = rot[1 * 3 + 2];
-		pa[3] = rot[1 * 3 + 0] * i_off[0] + rot[1 * 3 + 1] * i_off[1] + rot[1 * 3 + 2] * i_off[2] + i_trans[1];
+		pa[0] = i_rot.m10;
+		pa[1] = i_rot.m11;
+		pa[2] = i_rot.m12;
+		pa[3] = i_rot.m10 * i_off[0] + i_rot.m11 * i_off[1] + i_rot.m12 * i_off[2] + i_trans[1];
 
 		pa = this.m[2];
-		pa[0] = rot[2 * 3 + 0];
-		pa[1] = rot[2 * 3 + 1];
-		pa[2] = rot[2 * 3 + 2];
-		pa[3] = rot[2 * 3 + 0] * i_off[0] + rot[2 * 3 + 1] * i_off[1] + rot[2 * 3 + 2] * i_off[2] + i_trans[2];
+		pa[0] = i_rot.m20;
+		pa[1] = i_rot.m21;
+		pa[2] = i_rot.m22;
+		pa[3] = i_rot.m20 * i_off[0] + i_rot.m21 * i_off[1] + i_rot.m22 * i_off[2] + i_trans[2];
 
 		this.has_value = true;
 		return;

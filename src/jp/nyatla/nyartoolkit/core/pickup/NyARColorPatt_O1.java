@@ -231,8 +231,8 @@ public class NyARColorPatt_O1 implements INyARColorPatt
 		double[][] local = wk_pickFromRaster_local;// double local[4][2];
 		//
 		for (int i = 0; i < 4; i++) {
-			local[i][0] = i_square.imvertex[i][0];
-			local[i][1] = i_square.imvertex[i][1];
+			local[i][0] = i_square.imvertex[i].x;
+			local[i][1] = i_square.imvertex[i].y;
 		}
 
 		double[][] world = wk_pickFromRaster_world;

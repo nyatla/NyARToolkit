@@ -36,6 +36,7 @@ import jp.nyatla.nyartoolkit.core.NyARMat;
 import jp.nyatla.nyartoolkit.core.NyARSquare;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
+import jp.nyatla.nyartoolkit.core.types.*;
 /**
  * 24ビットカラーのマーカーを保持するために使うクラスです。 このクラスは、ARToolkitのパターンと、ラスタから取得したパターンを保持します。
  * 演算順序を含む最適化をしたもの
@@ -99,8 +100,7 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 	 * @param o_para
 	 * @throws NyARException
 	 */
-	private boolean get_cpara(int[][] vertex, NyARMat o_para)
-			throws NyARException
+	private boolean get_cpara(final NyARIntPoint[] i_vertex, NyARMat o_para)throws NyARException
 	{
 		int world[][] = this.wk_pickFromRaster_world;
 		NyARMat a = wk_get_cpara_a;// 次処理で値を設定するので、初期化不要// new NyARMat( 8, 8 );
@@ -121,18 +121,18 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 			a_pt0[3] = 0.0;// a->m[i*16+3] = 0.0;
 			a_pt0[4] = 0.0;// a->m[i*16+4] = 0.0;
 			a_pt0[5] = 0.0;// a->m[i*16+5] = 0.0;
-			a_pt0[6] = (double) (-world_pti[0] * vertex[i][0]);// a->m[i*16+6]= -world[i][0]*vertex[i][0];
-			a_pt0[7] = (double) (-world_pti[1] * vertex[i][0]);// a->m[i*16+7]=-world[i][1]*vertex[i][0];
+			a_pt0[6] = (double) (-world_pti[0] * i_vertex[i].x);// a->m[i*16+6]= -world[i][0]*vertex[i][0];
+			a_pt0[7] = (double) (-world_pti[1] * i_vertex[i].x);// a->m[i*16+7]=-world[i][1]*vertex[i][0];
 			a_pt1[0] = 0.0;// a->m[i*16+8] = 0.0;
 			a_pt1[1] = 0.0;// a->m[i*16+9] = 0.0;
 			a_pt1[2] = 0.0;// a->m[i*16+10] = 0.0;
 			a_pt1[3] = (double) world_pti[0];// a->m[i*16+11] = world[i][0];
 			a_pt1[4] = (double) world_pti[1];// a->m[i*16+12] = world[i][1];
 			a_pt1[5] = 1.0;// a->m[i*16+13] = 1.0;
-			a_pt1[6] = (double) (-world_pti[0] * vertex[i][1]);// a->m[i*16+14]=-world[i][0]*vertex[i][1];
-			a_pt1[7] = (double) (-world_pti[1] * vertex[i][1]);// a->m[i*16+15]=-world[i][1]*vertex[i][1];
-			b_array[i * 2 + 0][0] = (double) vertex[i][0];// b->m[i*2+0] =vertex[i][0];
-			b_array[i * 2 + 1][0] = (double) vertex[i][1];// b->m[i*2+1] =vertex[i][1];
+			a_pt1[6] = (double) (-world_pti[0] * i_vertex[i].y);// a->m[i*16+14]=-world[i][0]*vertex[i][1];
+			a_pt1[7] = (double) (-world_pti[1] * i_vertex[i].y);// a->m[i*16+15]=-world[i][1]*vertex[i][1];
+			b_array[i * 2 + 0][0] = (double) i_vertex[i].x;// b->m[i*2+0] =vertex[i][0];
+			b_array[i * 2 + 1][0] = (double) i_vertex[i].y;// b->m[i*2+1] =vertex[i][1];
 		}
 		if (!a.matrixSelfInv()) {
 			return false;
@@ -150,8 +150,7 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 	 * pickFromRaster関数から使う変数です。
 	 * 
 	 */
-	private static void initValue_wk_pickFromRaster_ext_pat2(
-			int[][][] i_ext_pat2, int i_width, int i_height)
+	private static void initValue_wk_pickFromRaster_ext_pat2(int[][][] i_ext_pat2, int i_width, int i_height)
 	{
 		int i, i2;
 		int[][] pt2;
@@ -179,7 +178,7 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 	public boolean pickFromRaster(INyARRgbRaster image, NyARSquare i_square)throws NyARException
 	{
 		NyARMat cpara = this.wk_pickFromRaster_cpara;
-		int[][] local = i_square.imvertex;
+		NyARIntPoint[] local = i_square.imvertex;
 		// //localの計算
 		// int[] local_0=wk_pickFromRaster_local[0];//double local[4][2];
 		// int[] local_1=wk_pickFromRaster_local[1];//double local[4][2];
@@ -194,11 +193,11 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 		int w1, w2;
 
 		// x計算
-		w1 = local[0][0] - local[1][0];
-		w2 = local[0][1] - local[1][1];
+		w1 = local[0].x - local[1].x;
+		w2 = local[0].y - local[1].y;
 		l1 = (w1 * w1 + w2 * w2);
-		w1 = local[2][0] - local[3][0];
-		w2 = local[2][1] - local[3][1];
+		w1 = local[2].x - local[3].x;
+		w2 = local[2].y - local[3].y;
 		l2 = (w1 * w1 + w2 * w2);
 		if (l2 > l1) {
 			l1 = l2;
@@ -213,11 +212,11 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 		}
 
 		// y計算
-		w1 = local[1][0] - local[2][0];
-		w2 = local[1][1] - local[2][1];
+		w1 = local[1].x - local[2].x;
+		w2 = local[1].y - local[2].y;
 		l1 = (w1 * w1 + w2 * w2);
-		w1 = local[3][0] - local[0][0];
-		w2 = local[3][1] - local[0][1];
+		w1 = local[3].x - local[0].x;
+		w2 = local[3].y - local[0].y;
 		l2 = (w1 * w1 + w2 * w2);
 		if (l2 > l1) {
 			l1 = l2;

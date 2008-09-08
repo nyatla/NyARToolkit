@@ -38,6 +38,9 @@ import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_BGRA;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
+import jp.nyatla.nyartoolkit.core.rasteranalyzer.threshold.*;
+import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.*;
 
 /**
  * 320x240のBGRA32で記録されたRAWイメージから、１種類のパターンを認識し、
@@ -55,6 +58,7 @@ public class RawFileTest
 	public RawFileTest()
 	{
 	}
+
 
 	public void Test_arDetectMarkerLite() throws Exception
 	{
@@ -84,7 +88,7 @@ public class RawFileTest
 
 		// マーカーを検出
 		Date d2 = new Date();
-		for (int i = 0; i < 5000; i++) {
+		for (int i = 0; i < 1000; i++) {
 			// 変換行列を取得
 			ar.detectMarkerLite(ra, 100);
 			ar.getTransmationMatrix(result_mat);

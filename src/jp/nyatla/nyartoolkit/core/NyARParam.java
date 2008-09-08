@@ -34,6 +34,7 @@ package jp.nyatla.nyartoolkit.core;
 import java.io.*;
 import java.nio.*;
 
+import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.utils.DoubleValue;
 
@@ -273,8 +274,7 @@ public class NyARParam
 	 * @param ox
 	 * @param oy
 	 */
-	public void ideal2Observ(double ix, double iy, DoubleValue ox,
-			DoubleValue oy)
+	public void ideal2Observ(double ix, double iy, DoubleValue ox,DoubleValue oy)
 	{
 
 		double x, y, d;
@@ -303,26 +303,25 @@ public class NyARParam
 	 * @param o_out
 	 *            double[][2]
 	 */
-	public void ideal2ObservBatch(double[][] i_in, double[][] o_out, int i_size)
+	public void ideal2ObservBatch(final NyARDoublePoint2d[] i_in, NyARDoublePoint2d[] o_out, int i_size)
 	{
 
-		double x, y, d;
-		final double d0, d1, d3, d2_w;
+		double x, y;
 		final double df[] = this.dist_factor;
-		d0 = df[0];
-		d1 = df[1];
-		d3 = df[3];
-		d2_w = df[2] / 100000000.0;
+		final double d0 = df[0];
+		final double d1 = df[1];
+		final double d3 = df[3];
+		final double d2_w = df[2] / 100000000.0;
 		for (int i = 0; i < i_size; i++) {
-			x = (i_in[i][0] - d0) * d3;
-			y = (i_in[i][1] - d1) * d3;
+			x = (i_in[i].x - d0) * d3;
+			y = (i_in[i].y - d1) * d3;
 			if (x == 0.0 && y == 0.0) {
-				o_out[i][0] = d0;
-				o_out[i][1] = d1;
+				o_out[i].x = d0;
+				o_out[i].y = d1;
 			} else {
-				d = 1.0 - d2_w * (x * x + y * y);
-				o_out[i][0] = x * d + d0;
-				o_out[i][1] = y * d + d1;
+				final double d = 1.0 - d2_w * (x * x + y * y);
+				o_out[i].x = x * d + d0;
+				o_out[i].y = y * d + d1;
 			}
 		}
 		return;

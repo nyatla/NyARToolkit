@@ -119,17 +119,17 @@ public class NyARTransMat_O1 implements INyARTransMat
 		int dir;
 		double err = -1;
 
-		transrot.initRot(square, i_direction);
+		transrot.initRotBySquare(square, i_direction);
 
 		dir = i_direction;
-		ppos2d[0][0] = square.sqvertex[(4 - dir) % 4][0];
-		ppos2d[0][1] = square.sqvertex[(4 - dir) % 4][1];
-		ppos2d[1][0] = square.sqvertex[(5 - dir) % 4][0];
-		ppos2d[1][1] = square.sqvertex[(5 - dir) % 4][1];
-		ppos2d[2][0] = square.sqvertex[(6 - dir) % 4][0];
-		ppos2d[2][1] = square.sqvertex[(6 - dir) % 4][1];
-		ppos2d[3][0] = square.sqvertex[(7 - dir) % 4][0];
-		ppos2d[3][1] = square.sqvertex[(7 - dir) % 4][1];
+		ppos2d[0][0] = square.sqvertex[(4 - dir) % 4].x;
+		ppos2d[0][1] = square.sqvertex[(4 - dir) % 4].y;
+		ppos2d[1][0] = square.sqvertex[(5 - dir) % 4].x;
+		ppos2d[1][1] = square.sqvertex[(5 - dir) % 4].y;
+		ppos2d[2][0] = square.sqvertex[(6 - dir) % 4].x;
+		ppos2d[2][1] = square.sqvertex[(6 - dir) % 4].y;
+		ppos2d[3][0] = square.sqvertex[(7 - dir) % 4].x;
+		ppos2d[3][1] = square.sqvertex[(7 - dir) % 4].y;
 		ppos3d[0][0] = center[0] - i_width / 2.0;
 		ppos3d[0][1] = center[1] + i_width / 2.0;
 		ppos3d[1][0] = center[0] + i_width / 2.0;
@@ -188,14 +188,14 @@ public class NyARTransMat_O1 implements INyARTransMat
 		transrot.initRotByPrevResult(io_result_conv);
 
 		dir = i_direction;
-		ppos2d[0][0] = i_square.sqvertex[(4 - dir) % 4][0];
-		ppos2d[0][1] = i_square.sqvertex[(4 - dir) % 4][1];
-		ppos2d[1][0] = i_square.sqvertex[(5 - dir) % 4][0];
-		ppos2d[1][1] = i_square.sqvertex[(5 - dir) % 4][1];
-		ppos2d[2][0] = i_square.sqvertex[(6 - dir) % 4][0];
-		ppos2d[2][1] = i_square.sqvertex[(6 - dir) % 4][1];
-		ppos2d[3][0] = i_square.sqvertex[(7 - dir) % 4][0];
-		ppos2d[3][1] = i_square.sqvertex[(7 - dir) % 4][1];
+		ppos2d[0][0] = i_square.sqvertex[(4 - dir) % 4].x;
+		ppos2d[0][1] = i_square.sqvertex[(4 - dir) % 4].y;
+		ppos2d[1][0] = i_square.sqvertex[(5 - dir) % 4].x;
+		ppos2d[1][1] = i_square.sqvertex[(5 - dir) % 4].y;
+		ppos2d[2][0] = i_square.sqvertex[(6 - dir) % 4].x;
+		ppos2d[2][1] = i_square.sqvertex[(6 - dir) % 4].y;
+		ppos2d[3][0] = i_square.sqvertex[(7 - dir) % 4].x;
+		ppos2d[3][1] = i_square.sqvertex[(7 - dir) % 4].y;
 		ppos3d[0][0] = center[0] - i_width / 2.0;
 		ppos3d[0][1] = center[1] + i_width / 2.0;
 		ppos3d[1][0] = center[0] + i_width / 2.0;
@@ -221,7 +221,7 @@ public class NyARTransMat_O1 implements INyARTransMat
 		if (err1 > AR_GET_TRANS_CONT_MAT_MAX_FIT_ERROR) {
 			NyARTransMatResult result2 = this.wk_transMatContinue_result;
 			// transMatを実行
-			transrot.initRot(i_square, i_direction);
+			transrot.initRotBySquare(i_square, i_direction);
 			err2 = transMat(i_square, i_direction, i_width, result2);
 			// transmMatここまで
 			if (err2 < err1) {
@@ -251,10 +251,7 @@ public class NyARTransMat_O1 implements INyARTransMat
 	private final void arGetTransMat3_initPos3d(double i_ppos3d[][], double[][] o_pos3d, double[] o_off) throws NyARException
 	{
 		double[] pmax = wk_arGetTransMat3_initPos3d_pmax;// new double[3];
-		double[] pmin = wk_arGetTransMat3_initPos3d_pmin;// new
-															// double[3];//double
-															// off[3], pmax[3],
-															// pmin[3];
+		double[] pmin = wk_arGetTransMat3_initPos3d_pmin;// new double[3];//double off[3], pmax[3], pmin[3];
 		int i;
 		pmax[0] = pmax[1] = pmax[2] = -10000000000.0;
 		pmin[0] = pmin[1] = pmin[2] = 10000000000.0;
@@ -411,31 +408,11 @@ public class NyARTransMat_O1 implements INyARTransMat
 			wy = rot[3] * i_pos3d_pt[0] + rot[4] * i_pos3d_pt[1] + rot[5] * i_pos3d_pt[2];
 			wz = rot[6] * i_pos3d_pt[0] + rot[7] * i_pos3d_pt[1] + rot[8] * i_pos3d_pt[2];
 			// </Optimize>
-			a_array[x2][0] = b_array[0][x2] = cpara[0 * 4 + 0];// mat_a->m[j*6+0]
-																// =
-																// mat_b->m[num*0+j*2]
-																// =
-																// cpara[0][0];
-			a_array[x2][1] = b_array[1][x2] = cpara[0 * 4 + 1];// mat_a->m[j*6+1]
-																// =
-																// mat_b->m[num*2+j*2]
-																// =
-																// cpara[0][1];
-			a_array[x2][2] = b_array[2][x2] = cpara[0 * 4 + 2] - po2d_pt[0];// mat_a->m[j*6+2]
-																			// =
-																			// mat_b->m[num*4+j*2]
-																			// =
-																			// cpara[0][2]
-																			// -
-																			// pos2d[j][0];
-			a_array[x2 + 1][0] = b_array[0][x2 + 1] = 0.0;// mat_a->m[j*6+3] =
-															// mat_b->m[num*0+j*2+1]
-															// = 0.0;
-			a_array[x2 + 1][1] = b_array[1][x2 + 1] = cpara[1 * 4 + 1];// mat_a->m[j*6+4]
-																		// =
-																		// mat_b->m[num*2+j*2+1]
-																		// =
-																		// cpara[1][1];
+			a_array[x2][0] = b_array[0][x2] = cpara[0 * 4 + 0];// mat_a->m[j*6+0]=mat_b->m[num*0+j*2]=cpara[0][0];
+			a_array[x2][1] = b_array[1][x2] = cpara[0 * 4 + 1];// mat_a->m[j*6+1]= mat_b->m[num*2+j*2]=cpara[0][1];
+			a_array[x2][2] = b_array[2][x2] = cpara[0 * 4 + 2] - po2d_pt[0];// mat_a->m[j*6+2]=mat_b->m[num*4+j*2]=cpara[0][2]-pos2d[j][0];
+			a_array[x2 + 1][0] = b_array[0][x2 + 1] = 0.0;// mat_a->m[j*6+3] =mat_b->m[num*0+j*2+1]= 0.0;
+			a_array[x2 + 1][1] = b_array[1][x2 + 1] = cpara[1 * 4 + 1];// mat_a->m[j*6+4]=mat_b->m[num*2+j*2+1]=cpara[1][1];
 			a_array[x2 + 1][2] = b_array[2][x2 + 1] = cpara[1 * 4 + 2] - po2d_pt[1];// mat_a->m[j*6+5]
 																					// =
 																					// mat_b->m[num*4+j*2+1]
@@ -452,13 +429,7 @@ public class NyARTransMat_O1 implements INyARTransMat
 																														// cpara[0][1]*wy
 																														// -
 																														// cpara[0][2]*wz;
-			c_array[x2 + 1][0] = wz * po2d_pt[1] - cpara[1 * 4 + 1] * wy - cpara[1 * 4 + 2] * wz;// mat_c->m[j*2+1]
-																									// = wz
-																									// *
-																									// pos2d[j][1]-
-																									// cpara[1][1]*wy
-																									// -
-																									// cpara[1][2]*wz;
+			c_array[x2 + 1][0] = wz * po2d_pt[1] - cpara[1 * 4 + 1] * wy - cpara[1 * 4 + 2] * wz;// mat_c->m[j*2+1]= wz*pos2d[j][1]-cpara[1][1]*wy-cpara[1][2]*wz;
 		}
 		mat_d = this.wk_arGetTransMatSub_mat_d;// 次処理で値をもらうので、初期化の必要は無い。
 		mat_e = this.wk_arGetTransMatSub_mat_e;// 次処理で値をもらうので、初期化の必要は無い。

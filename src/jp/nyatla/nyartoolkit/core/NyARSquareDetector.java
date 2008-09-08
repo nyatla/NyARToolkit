@@ -33,6 +33,8 @@ package jp.nyatla.nyartoolkit.core;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.types.*;
+
 
 
 /**
@@ -402,7 +404,7 @@ public class NyARSquareDetector
 	 */
 	public boolean getSquareLine(int[] i_mkvertex, int[] i_xcoord, int[] i_ycoord, NyARSquare o_square) throws NyARException
 	{
-		final double[][] l_line = o_square.line;
+		final NyARLinear[] l_line = o_square.line;
 		final NyARVec ev = this.__getSquareLine_ev; // matrixPCAの戻り値を受け取る
 		final NyARVec mean = this.__getSquareLine_mean;// matrixPCAの戻り値を受け取る
 		final double[] mean_array = mean.getArray();
@@ -427,26 +429,26 @@ public class NyARSquareDetector
 
 			// 主成分分析
 			input.matrixPCA(evec, ev, mean);
-			final double[] l_line_i = l_line[i];
-			l_line_i[0] = evec_array[0][1];// line[i][0] = evec->m[1];
-			l_line_i[1] = -evec_array[0][0];// line[i][1] = -evec->m[0];
-			l_line_i[2] = -(l_line_i[0] * mean_array[0] + l_line_i[1] * mean_array[1]);// line[i][2] = -(line[i][0]*mean->v[0] + line[i][1]*mean->v[1]);
+			final NyARLinear l_line_i = l_line[i];
+			l_line_i.run = evec_array[0][1];// line[i][0] = evec->m[1];
+			l_line_i.rise = -evec_array[0][0];// line[i][1] = -evec->m[0];
+			l_line_i.intercept = -(l_line_i.run * mean_array[0] + l_line_i.rise * mean_array[1]);// line[i][2] = -(line[i][0]*mean->v[0] + line[i][1]*mean->v[1]);
 		}
 
-		final double[][] l_sqvertex = o_square.sqvertex;
-		final int[][] l_imvertex = o_square.imvertex;
+		final NyARDoublePoint2d[] l_sqvertex = o_square.sqvertex;
+		final NyARIntPoint[] l_imvertex = o_square.imvertex;
 		for (int i = 0; i < 4; i++) {
-			final double[] l_line_i = l_line[i];
-			final double[] l_line_2 = l_line[(i + 3) % 4];
-			final double w1 = l_line_2[0] * l_line_i[1] - l_line_i[0] * l_line_2[1];
+			final NyARLinear l_line_i = l_line[i];
+			final NyARLinear l_line_2 = l_line[(i + 3) % 4];
+			final double w1 = l_line_2.run * l_line_i.rise - l_line_i.run * l_line_2.rise;
 			if (w1 == 0.0) {
 				return false;
 			}
-			l_sqvertex[i][0] = (l_line_2[1] * l_line_i[2] - l_line_i[1] * l_line_2[2]) / w1;
-			l_sqvertex[i][1] = (l_line_i[0] * l_line_2[2] - l_line_2[0] * l_line_i[2]) / w1;
+			l_sqvertex[i].x = (l_line_2.rise * l_line_i.intercept - l_line_i.rise * l_line_2.intercept) / w1;
+			l_sqvertex[i].y = (l_line_i.run * l_line_2.intercept - l_line_2.run * l_line_i.intercept) / w1;
 			// 頂点インデクスから頂点座標を得て保存
-			l_imvertex[i][0] = i_xcoord[i_mkvertex[i]];
-			l_imvertex[i][1] = i_ycoord[i_mkvertex[i]];
+			l_imvertex[i].x = i_xcoord[i_mkvertex[i]];
+			l_imvertex[i].y = i_ycoord[i_mkvertex[i]];
 		}
 		return true;
 	}

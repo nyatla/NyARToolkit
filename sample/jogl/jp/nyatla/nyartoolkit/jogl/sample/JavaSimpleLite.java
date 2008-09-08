@@ -21,6 +21,9 @@ import javax.media.opengl.GLCanvas;
 import com.sun.opengl.util.Animator;
 
 import jp.nyatla.nyartoolkit.core.NyARCode;
+import jp.nyatla.nyartoolkit.core.raster.NyARGlayscaleRaster;
+import jp.nyatla.nyartoolkit.core.rasteranalyzer.threshold.NyARRasterThresholdAnalyzer_SlidePTile;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_RgbAve;
 
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCameraCapture;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
@@ -131,7 +134,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 			_ar_param.loadFromARFile(PARAM_FILE);
 			_ar_param.changeSize(SCREEN_X, SCREEN_Y);
 			_nya = new GLNyARSingleDetectMarker(_ar_param, ar_code, 80.0);
-			_nya.setContinueMode(true);//ここをtrueにすると、transMatContinueモード（History計算）になります。
+			_nya.setContinueMode(false);//ここをtrueにすると、transMatContinueモード（History計算）になります。
 			ar_code.loadFromARFile(CARCODE_FILE);
 			//NyARToolkit用の支援クラス
 			_glnya = new NyARGLUtil(_gl, _ar_param);
@@ -172,7 +175,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 			//画像チェックしてマーカー探して、背景を書く
 			boolean is_marker_exist;
 			synchronized (_cap_image) {
-				is_marker_exist = _nya.detectMarkerLite(_cap_image, 110);
+				is_marker_exist = _nya.detectMarkerLite(_cap_image, threshold);
 				//背景を書く
 				_glnya.drawBackGround(_cap_image, 1.0);
 			}
@@ -196,12 +199,19 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 		}
 
 	}
-
+	int threshold;
+	final NyARRasterThresholdAnalyzer_SlidePTile th=new NyARRasterThresholdAnalyzer_SlidePTile(15);
+	final NyARGlayscaleRaster gs=new NyARGlayscaleRaster(320,240);
+	final NyARRasterFilter_RgbAve togs=new NyARRasterFilter_RgbAve();
 	public void onUpdateBuffer(Buffer i_buffer)
 	{
 		try {
 			synchronized (_cap_image) {
 				_cap_image.setBuffer(i_buffer, true);
+				//閾値計算(めんどくさいから一時的に自動調整にしとく。)
+				togs.doFilter(_cap_image, gs);
+				th.analyzeRaster(gs);
+				threshold=th.getThreshold();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

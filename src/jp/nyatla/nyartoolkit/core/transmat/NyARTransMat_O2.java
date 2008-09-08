@@ -31,11 +31,14 @@
  */
 package jp.nyatla.nyartoolkit.core.transmat;
 
+import java.util.Date;
+
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARMat;
 import jp.nyatla.nyartoolkit.core.NyARParam;
 import jp.nyatla.nyartoolkit.core.NyARSquare;
 import jp.nyatla.utils.DoubleValue;
+import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
  * This class calculates ARMatrix from square information and holds it. --
@@ -62,24 +65,20 @@ public class NyARTransMat_O2 implements INyARTransMat
 
 	private final static double AR_GET_TRANS_CONT_MAT_MAX_FIT_ERROR = 1.0;
 
-	private final static int P_MAX = 10;// 頂点の数(4で十分だけどなんとなく10)//#define P_MAX
-										// 500
-
 	private final static int NUMBER_OF_VERTEX = 4;// 処理対象の頂点数
 
-	private final NyARTransRot transrot;
+	private final NyARRotMatrix _rotmatrix;
 
 	private final double[] center = { 0.0, 0.0 };
 
 	private final NyARParam param;
 
-	private final NyARMat result_mat = new NyARMat(3, 4);
-
 	public NyARTransMat_O2(NyARParam i_param) throws NyARException
 	{
 		param = i_param;
-		transrot = new NyARTransRot_O3(i_param, NUMBER_OF_VERTEX);
-
+		this._rotmatrix = new NyARTransRot_O3(i_param, NUMBER_OF_VERTEX);
+		this.__transMat_marker_vertex3d=NyARDoublePoint3d.createArray(NUMBER_OF_VERTEX);
+		this.__transMat_marker_vertex2d=NyARDoublePoint2d.createArray(NUMBER_OF_VERTEX);
 	}
 
 	public void setCenter(double i_x, double i_y)
@@ -88,56 +87,55 @@ public class NyARTransMat_O2 implements INyARTransMat
 		center[1] = i_x;
 	}
 
-	public NyARMat getTransformationMatrix()
-	{
-		return result_mat;
-	}
+
+
 
 	/**
-	 * transMat関数の初期化関数を分離したものです。
+	 * i_squareの内容で、頂点情報を初期化します。
 	 * 
-	 * @param square
+	 * @param i_square
 	 * @param i_direction
 	 * @param i_width
-	 * @param o_ppos2d
-	 * @param o_ppos3d
+	 * @param o_sqvertex_ref
+	 * @param o_markbase_vertex
 	 */
-	private final void init_transMat_ppos(NyARSquare square, int i_direction, double i_width, double[][] o_ppos2d, double[][] o_ppos3d)
+	private final void initializeVertexArray(NyARSquare i_square, int i_direction, NyARDoublePoint2d[] o_sqvertex_ref, NyARLinear[] o_liner_ref)
 	{
-		o_ppos2d[0][0] = square.sqvertex[(4 - i_direction) % 4][0];
-		o_ppos2d[0][1] = square.sqvertex[(4 - i_direction) % 4][1];
-		o_ppos2d[1][0] = square.sqvertex[(5 - i_direction) % 4][0];
-		o_ppos2d[1][1] = square.sqvertex[(5 - i_direction) % 4][1];
-		o_ppos2d[2][0] = square.sqvertex[(6 - i_direction) % 4][0];
-		o_ppos2d[2][1] = square.sqvertex[(6 - i_direction) % 4][1];
-		o_ppos2d[3][0] = square.sqvertex[(7 - i_direction) % 4][0];
-		o_ppos2d[3][1] = square.sqvertex[(7 - i_direction) % 4][1];
+		//頂点順序を考慮した矩形の頂点情報
+		o_sqvertex_ref[0]= i_square.sqvertex[(4 - i_direction) % 4];
+		o_sqvertex_ref[1]= i_square.sqvertex[(5 - i_direction) % 4];
+		o_sqvertex_ref[2]= i_square.sqvertex[(6 - i_direction) % 4];
+		o_sqvertex_ref[3]= i_square.sqvertex[(7 - i_direction) % 4];
+		
+		o_liner_ref[0]=i_square.line[(4 - i_direction) % 4];
+		o_liner_ref[1]=i_square.line[(5 - i_direction) % 4];
+		o_liner_ref[2]=i_square.line[(6 - i_direction) % 4];
+		o_liner_ref[3]=i_square.line[(7 - i_direction) % 4];
 
-		double c0, c1, w_2;
-		c0 = center[0];
-		c1 = center[1];
-		w_2 = i_width / 2.0;
-
-		o_ppos3d[0][0] = c0 - w_2;// center[0] - w/2.0;
-		o_ppos3d[0][1] = c1 + w_2;// center[1] + w/2.0;
-		o_ppos3d[1][0] = c0 + w_2;// center[0] + w/2.0;
-		o_ppos3d[1][1] = c1 + w_2;// center[1] + w/2.0;
-		o_ppos3d[2][0] = c0 + w_2;// center[0] + w/2.0;
-		o_ppos3d[2][1] = c1 - w_2;// center[1] - w/2.0;
-		o_ppos3d[3][0] = c0 - w_2;// center[0] - w/2.0;
-		o_ppos3d[3][1] = c1 - w_2;// center[1] - w/2.0;
+//		//3d空間上の頂点位置
+//		final double c0 = center[0];
+//		final double c1 = center[1];
+//		final double w_2 = i_width / 2.0;
+//		o_markbase_vertex[0][0] = c0 - w_2;// center[0] - w/2.0;
+//		o_markbase_vertex[0][1] = c1 + w_2;// center[1] + w/2.0;
+//		o_markbase_vertex[1][0] = c0 + w_2;// center[0] + w/2.0;
+//		o_markbase_vertex[1][1] = c1 + w_2;// center[1] + w/2.0;
+//		o_markbase_vertex[2][0] = c0 + w_2;// center[0] + w/2.0;
+//		o_markbase_vertex[2][1] = c1 - w_2;// center[1] - w/2.0;
+//		o_markbase_vertex[3][0] = c0 - w_2;// center[0] - w/2.0;
+//		o_markbase_vertex[3][1] = c1 - w_2;// center[1] - w/2.0;
 		return;
 	}
 
-	private final double[][] wk_transMat_pos3d = new double[P_MAX][3];// pos3d[P_MAX][3];
+	private NyARDoublePoint3d[] __transMat_marker_vertex3d;
+	private NyARDoublePoint2d[] __transMat_marker_vertex2d;
 
-	private final double[][] wk_transMat_ppos2d = new double[4][2];
+	private final NyARDoublePoint2d[] __transMat_sqvertex_ref = new NyARDoublePoint2d[4];
+	private final NyARLinear[] __transMat_linear_ref=new NyARLinear[4];
 
-	private final double[][] wk_transMat_ppos3d = new double[4][2];
 
 	private final double[] wk_transMat_off = new double[3];
 
-	private final double[][] wk_transMat_pos2d = new double[P_MAX][2];// pos2d[P_MAX][2];
 
 	private final NyARMat wk_transMat_mat_b = new NyARMat(3, NUMBER_OF_VERTEX * 2);
 
@@ -150,45 +148,47 @@ public class NyARTransMat_O2 implements INyARTransMat
 	 * width, double conv[3][4] ) 演算シーケンス最適化のため、arGetTransMat3等の関数フラグメントを含みます。
 	 * 保持している変換行列を更新する。
 	 * 
-	 * @param square
+	 * @param i_square
 	 * 計算対象のNyARSquareオブジェクト
 	 * @param i_direction
-	 * @param width
+	 * @param i_width
 	 * @return
 	 * @throws NyARException
 	 */
-	public double transMat(NyARSquare square, int i_direction, double width, NyARTransMatResult o_result_conv) throws NyARException
+	public double transMat(final NyARSquare i_square, int i_direction, double i_width, NyARTransMatResult o_result_conv) throws NyARException
 	{
-		double[][] ppos2d = wk_transMat_ppos2d;
-		double[][] ppos3d = wk_transMat_ppos3d;
+		final NyARDoublePoint2d[] sqvertex_ref = __transMat_sqvertex_ref;
+		final NyARLinear[] linear_ref=__transMat_linear_ref;
+//		double[][] mark_vertex = __transMat_mark_vertex;
 		double[] off = wk_transMat_off;
-		double[][] pos3d = wk_transMat_pos3d;
+
+
+		//画面上の頂点情報と、マーカーベースの頂点を矩形情報から初期化
+		initializeVertexArray(i_square, i_direction, sqvertex_ref,linear_ref);
 
 		// rotationの初期化
-		transrot.initRot(square, i_direction);
-
-		// ppos2dとppos3dの初期化
-		init_transMat_ppos(square, i_direction, width, ppos2d, ppos3d);
-
+		_rotmatrix.initRotBySquare(linear_ref,sqvertex_ref);
+		
 		// arGetTransMat3の前段処理(pos3dとoffを初期化)
-		double[][] pos2d = this.wk_transMat_pos2d;
 		final NyARMat mat_b = this.wk_transMat_mat_b;
 		final NyARMat mat_d = this.wk_transMat_mat_d;
 
-		arGetTransMat3_initTransMat(ppos3d, ppos2d, pos2d, pos3d, off, mat_b, mat_d);
+		final NyARDoublePoint2d[] marker_vertex2d = this.__transMat_marker_vertex2d;
+		final NyARDoublePoint3d[] marker_vertex3d = this.__transMat_marker_vertex3d;
+		initTransMat(i_width, sqvertex_ref, marker_vertex2d, marker_vertex3d, off, mat_b, mat_d);
 
 		double err = -1;
 		double[] trans = this.wk_transMat_mat_trans;
 		for (int i = 0; i < AR_GET_TRANS_MAT_MAX_LOOP_COUNT; i++) {
 			// <arGetTransMat3>
-			err = arGetTransMatSub(pos2d, pos3d, mat_b, mat_d, trans);
+			err = arGetTransMatSub(marker_vertex2d, marker_vertex3d, mat_b, mat_d, trans);
 			// //</arGetTransMat3>
 			if (err < AR_GET_TRANS_MAT_MAX_FIT_ERROR) {
 				break;
 			}
 		}
 		// マトリクスの保存
-		o_result_conv.updateMatrixValue(this.transrot, off, trans);
+		o_result_conv.updateMatrixValue(this._rotmatrix, off, trans);
 		return err;
 	}
 
@@ -214,24 +214,26 @@ public class NyARTransMat_O2 implements INyARTransMat
 			return this.transMat(i_square, i_direction, i_width, io_result_conv);
 		}
 
-		double[][] ppos2d = wk_transMat_ppos2d;
-		double[][] ppos3d = wk_transMat_ppos3d;
+		final NyARLinear[] linear_ref=__transMat_linear_ref;
+		
+		NyARDoublePoint2d[] sqvertex_ref = this.__transMat_sqvertex_ref;
+//		double[][] mark_vertex = this.__transMat_mark_vertex;
 		double[] off = wk_transMat_off;
-		double[][] pos3d = wk_transMat_pos3d;
+		final NyARDoublePoint3d[] marker_vertex3d = this.__transMat_marker_vertex3d;
+		final NyARDoublePoint2d[] marker_vertex2d = this.__transMat_marker_vertex2d;
 
 		// arGetTransMatContSub計算部分
-		transrot.initRotByPrevResult(io_result_conv);
+		_rotmatrix.initRotByPrevResult(io_result_conv);
 
 		// ppos2dとppos3dの初期化
-		init_transMat_ppos(i_square, i_direction, i_width, ppos2d, ppos3d);
+		initializeVertexArray(i_square,i_direction,sqvertex_ref,linear_ref);
 
 		// arGetTransMat3の前段処理(pos3dとoffを初期化)
-		double[][] pos2d = this.wk_transMat_pos2d;
 		final NyARMat mat_b = this.wk_transMat_mat_b;
 		final NyARMat mat_d = this.wk_transMat_mat_d;
 
 		// transMatに必要な初期値を計算
-		arGetTransMat3_initTransMat(ppos3d, ppos2d, pos2d, pos3d, off, mat_b, mat_d);
+		initTransMat(i_width, sqvertex_ref, marker_vertex2d, marker_vertex3d, off, mat_b, mat_d);
 
 		double err1, err2;
 		int i;
@@ -239,20 +241,20 @@ public class NyARTransMat_O2 implements INyARTransMat
 		err1 = err2 = -1;
 		double[] trans = this.wk_transMat_mat_trans;
 		for (i = 0; i < AR_GET_TRANS_MAT_MAX_LOOP_COUNT; i++) {
-			err1 = arGetTransMatSub(pos2d, pos3d, mat_b, mat_d, trans);
+			err1 = arGetTransMatSub(marker_vertex2d, marker_vertex3d, mat_b, mat_d, trans);
 			if (err1 < AR_GET_TRANS_MAT_MAX_FIT_ERROR) {
 				// 十分な精度を達成できたらブレーク
 				break;
 			}
 		}
 		// 値を保存
-		io_result_conv.updateMatrixValue(this.transrot, off, trans);
+		io_result_conv.updateMatrixValue(this._rotmatrix, off, trans);
 
 		// エラー値が許容範囲でなければTransMatをやり直し
 		if (err1 > AR_GET_TRANS_CONT_MAT_MAX_FIT_ERROR) {
 			NyARTransMatResult result2 = this.wk_transMatContinue_result;
 			// transMatを実行(初期化値は共用)
-			transrot.initRot(i_square, i_direction);
+			_rotmatrix.initRotBySquare(linear_ref,sqvertex_ref);
 			err2 = transMat(i_square, i_direction, i_width, result2);
 			// transmMatここまで
 			if (err2 < err1) {
@@ -265,67 +267,97 @@ public class NyARTransMat_O2 implements INyARTransMat
 	}
 
 	private final NyARMat wk_arGetTransMat3_mat_a = new NyARMat(NUMBER_OF_VERTEX * 2, 3);
-
 	/**
 	 * arGetTransMat3関数の前処理部分。i_ppos3dから、o_pos3dとoffを計算する。
 	 * 計算結果から再帰的に変更される可能性が無いので、切り離し。
 	 * 
-	 * @param i_ppos3d
-	 * 入力配列[num][3]
-	 * @param o_pos3d
+	 * @param i_mark_vertex
+	 * 入力配列[num][2]
+	 * @param i_square_vertex
 	 * 出力配列[P_MAX][3]
+	 * @param o_marker_vertex3d
+	 * 
 	 * @param o_off
 	 * [3]
 	 * @throws NyARException
 	 */
-	private final void arGetTransMat3_initTransMat(double[][] i_ppos3d, double[][] i_ppos2d, double[][] o_pos2d, double[][] o_pos3d, double[] o_off, NyARMat o_mat_b, NyARMat o_mat_d) throws NyARException
+	private final void initTransMat(final double i_width, NyARDoublePoint2d[] i_square_vertex, NyARDoublePoint2d[] o_marker_vertex_2d, NyARDoublePoint3d[] o_marker_vertex3d, double[] o_off, NyARMat o_mat_b, NyARMat o_mat_d) throws NyARException
 	{
-		double pmax0, pmax1, pmax2, pmin0, pmin1, pmin2;
-		int i;
-		pmax0 = pmax1 = pmax2 = -10000000000.0;
-		pmin0 = pmin1 = pmin2 = 10000000000.0;
-		for (i = 0; i < NUMBER_OF_VERTEX; i++) {
-			if (i_ppos3d[i][0] > pmax0) {
-				pmax0 = i_ppos3d[i][0];
-			}
-			if (i_ppos3d[i][0] < pmin0) {
-				pmin0 = i_ppos3d[i][0];
-			}
-			if (i_ppos3d[i][1] > pmax1) {
-				pmax1 = i_ppos3d[i][1];
-			}
-			if (i_ppos3d[i][1] < pmin1) {
-				pmin1 = i_ppos3d[i][1];
-			}
-			/*
-			 * オリジナルでもコメントアウト if( ppos3d[i][2] > pmax[2] ) pmax[2] =
-			 * ppos3d[i][2]; if( ppos3d[i][2] < pmin[2] ) pmin[2] =
-			 * ppos3d[i][2];
-			 */
-		}
-		o_off[0] = -(pmax0 + pmin0) / 2.0;
-		o_off[1] = -(pmax1 + pmin1) / 2.0;
-		o_off[2] = -(pmax2 + pmin2) / 2.0;
+		// オフセット位置の計算
+		// オフセットは、マーカーの初期値での、4頂点の中心位置(z方向は0)
+		// ARToolKitの独自値は以下のように計算していたが、正方形マーカーの場合は計算せずとも求まる。
+		// 
+		// final double c0 = center[0];
+		// final double c1 = center[1];
+		// final double w_2 = i_width / 2.0;
+		// i_mark_vertex[0][0] = c0 - w_2;// center[0] - w/2.0;
+		// i_mark_vertex[0][1] = c1 + w_2;// center[1] + w/2.0;
+		// i_mark_vertex[1][0] = c0 + w_2;// center[0] + w/2.0;
+		// i_mark_vertex[1][1] = c1 + w_2;// center[1] + w/2.0;
+		// i_mark_vertex[2][0] = c0 + w_2;// center[0] + w/2.0;
+		// i_mark_vertex[2][1] = c1 - w_2;// center[1] - w/2.0;
+		// i_mark_vertex[3][0] = c0 - w_2;// center[0] - w/2.0;
+		// i_mark_vertex[3][1] = c1 - w_2;// center[1] - w/2.0;
+		// //マーカー座標系の最大値と最小値を計算
+		// double pmax0, pmax1, pmax2, pmin0, pmin1, pmin2;
+		// pmax0 = pmax1 = pmax2 = -10000000000.0;
+		// pmin0 = pmin1 = pmin2 = 10000000000.0;
+		// for (i = 0; i < NUMBER_OF_VERTEX; i++) {
+		// 	if (i_mark_vertex[i][0] > pmax0) {
+		// 		pmax0 = i_mark_vertex[i][0];
+		// 	}
+		// 	if (i_mark_vertex[i][0] < pmin0) {
+		// 		pmin0 = i_mark_vertex[i][0];
+		// 	}
+		// 	if (i_mark_vertex[i][1] > pmax1) {
+		// 		pmax1 = i_mark_vertex[i][1];
+		// 	}
+		// 	if (i_mark_vertex[i][1] < pmin1) {
+		//  	pmin1 = i_mark_vertex[i][1];
+		// 	}
+		// }
+		// o_off[0] = -(pmax0 + pmin0) / 2.0;
+		// o_off[1] = -(pmax1 + pmin1) / 2.0;
+		// o_off[2] = -(pmax2 + pmin2) / 2.0;
+		//
 
-		double[] o_pos3d_pt;
-		double[] i_pos_pd_pt;
-		for (i = 0; i < NUMBER_OF_VERTEX; i++) {
-			o_pos3d_pt = o_pos3d[i];
-			i_pos_pd_pt = i_ppos3d[i];
-			o_pos3d_pt[0] = i_pos_pd_pt[0] + o_off[0];
-			o_pos3d_pt[1] = i_pos_pd_pt[1] + o_off[1];
-			o_pos3d_pt[2] = 0.0;
-		}
-		// ココから先でarGetTransMatSubの初期化処理
+		o_off[0] = -center[0];
+		o_off[1] = -center[1];
+		o_off[2] = -0;
+		 
+		//ジッタ除去するときあわせる正方形頂点(理論値)の計算
+		final double c0 = center[0];
+		final double c1 = center[1];
+		final double w_2 = i_width / 2.0;
+		
+		NyARDoublePoint3d o_pos3d_ptr;
+		o_pos3d_ptr= o_marker_vertex3d[0];
+		o_pos3d_ptr.x = c0 - w_2 + o_off[0];
+		o_pos3d_ptr.y = c1 + w_2 + o_off[1];
+		o_pos3d_ptr.z = 0.0;
+		o_pos3d_ptr= o_marker_vertex3d[1];
+		o_pos3d_ptr.x = c0 + w_2 + o_off[0];
+		o_pos3d_ptr.y = c1 + w_2 + o_off[1];
+		o_pos3d_ptr.z = 0.0;
+		o_pos3d_ptr= o_marker_vertex3d[2];
+		o_pos3d_ptr.x = c0 + w_2 + o_off[0];
+		o_pos3d_ptr.y = c1 - w_2 + o_off[1];
+		o_pos3d_ptr.z = 0.0;
+		o_pos3d_ptr= o_marker_vertex3d[3];
+		o_pos3d_ptr.x = c0 - w_2 + o_off[0];
+		o_pos3d_ptr.y = c1 - w_2 + o_off[1];
+		o_pos3d_ptr.z = 0.0;
+
+
 		// arGetTransMatSubにあった処理。毎回おなじっぽい。pos2dに変換座標を格納する。
-
+		int i;
 		if (arFittingMode == AR_FITTING_TO_INPUT) {
 			// arParamIdeal2Observをバッチ処理
-			param.ideal2ObservBatch(i_ppos2d, o_pos2d, NUMBER_OF_VERTEX);
+			param.ideal2ObservBatch(i_square_vertex, o_marker_vertex_2d, NUMBER_OF_VERTEX);
 		} else {
 			for (i = 0; i < NUMBER_OF_VERTEX; i++) {
-				o_pos2d[i][0] = i_ppos2d[i][0];
-				o_pos2d[i][1] = i_ppos2d[i][1];
+				o_marker_vertex_2d[i].x = i_square_vertex[i].x;
+				o_marker_vertex_2d[i].y = i_square_vertex[i].y;
 			}
 		}
 
@@ -341,38 +373,12 @@ public class NyARTransMat_O2 implements INyARTransMat
 		for (i = 0; i < NUMBER_OF_VERTEX; i++) {
 			x2 = i * 2;
 			// </Optimize>
-			a_array[x2][0] = b_array[0][x2] = cpara[0 * 4 + 0];// mat_a->m[j*6+0]
-																// =
-																// mat_b->m[num*0+j*2]
-																// =
-																// cpara[0][0];
-			a_array[x2][1] = b_array[1][x2] = cpara[0 * 4 + 1];// mat_a->m[j*6+1]
-																// =
-																// mat_b->m[num*2+j*2]
-																// =
-																// cpara[0][1];
-			a_array[x2][2] = b_array[2][x2] = cpara[0 * 4 + 2] - o_pos2d[i][0];// mat_a->m[j*6+2]
-																				// =
-																				// mat_b->m[num*4+j*2]
-																				// =
-																				// cpara[0][2]
-																				// -
-																				// pos2d[j][0];
-			a_array[x2 + 1][0] = b_array[0][x2 + 1] = 0.0;// mat_a->m[j*6+3] =
-															// mat_b->m[num*0+j*2+1]
-															// = 0.0;
-			a_array[x2 + 1][1] = b_array[1][x2 + 1] = cpara[1 * 4 + 1];// mat_a->m[j*6+4]
-																		// =
-																		// mat_b->m[num*2+j*2+1]
-																		// =
-																		// cpara[1][1];
-			a_array[x2 + 1][2] = b_array[2][x2 + 1] = cpara[1 * 4 + 2] - o_pos2d[i][1];// mat_a->m[j*6+5]
-																						// =
-																						// mat_b->m[num*4+j*2+1]
-																						// =
-																						// cpara[1][2]
-																						// -
-																						// pos2d[j][1];
+			a_array[x2][0] = b_array[0][x2] = cpara[0 * 4 + 0];// mat_a->m[j*6+0]=mat_b->m[num*0+j*2] =cpara[0][0];
+			a_array[x2][1] = b_array[1][x2] = cpara[0 * 4 + 1];// mat_a->m[j*6+1]=mat_b->m[num*2+j*2]=cpara[0][1];
+			a_array[x2][2] = b_array[2][x2] = cpara[0 * 4 + 2] - o_marker_vertex_2d[i].x;// mat_a->m[j*6+2]=mat_b->m[num*4+j*2]=cpara[0][2]-pos2d[j][0];
+			a_array[x2 + 1][0] = b_array[0][x2 + 1] = 0.0;// mat_a->m[j*6+3] =mat_b->m[num*0+j*2+1]= 0.0;
+			a_array[x2 + 1][1] = b_array[1][x2 + 1] = cpara[1 * 4 + 1];// mat_a->m[j*6+4] =mat_b->m[num*2+j*2+1]= cpara[1][1];
+			a_array[x2 + 1][2] = b_array[2][x2 + 1] = cpara[1 * 4 + 2] - o_marker_vertex_2d[i].y;// mat_a->m[j*6+5]=mat_b->m[num*4+j*2+1]=cpara[1][2]-pos2d[j][1];
 		}
 
 		// mat_d
@@ -385,14 +391,14 @@ public class NyARTransMat_O2 implements INyARTransMat
 	private final NyARMat wk_arGetTransMatSub_mat_e = new NyARMat(3, 1);
 
 	private final NyARMat wk_arGetTransMatSub_mat_f = new NyARMat(3, 1);
-
+	private final NyARDoublePoint3d __arGetTransMatSub_point3d=new NyARDoublePoint3d();
 	/**
 	 * static double arGetTransMatSub( double rot[3][3], double
 	 * ppos2d[][2],double pos3d[][3], int num, double conv[3][4],double
 	 * *dist_factor, double cpara[3][4] ) Optimize:2008.04.20:STEP[1033→1004]
 	 * 
 	 * @param i_ppos2d
-	 * @param i_pos3d
+	 * @param i_vertex3d
 	 * @param i_mat_b
 	 * 演算用行列b
 	 * @param i_mat_d
@@ -400,43 +406,24 @@ public class NyARTransMat_O2 implements INyARTransMat
 	 * @return
 	 * @throws NyARException
 	 */
-	private final double arGetTransMatSub(double i_pos2d[][], double i_pos3d[][], NyARMat i_mat_b, NyARMat i_mat_d, double[] o_trans) throws NyARException
+	private final double arGetTransMatSub(final NyARDoublePoint2d[] i_vertex2d,final NyARDoublePoint3d[] i_vertex3d, NyARMat i_mat_b, NyARMat i_mat_d, double[] o_trans) throws NyARException
 	{
 		double cpara[] = param.get34Array();
-		NyARMat mat_c, mat_e, mat_f;// ARMat *mat_a, *mat_b, *mat_c, *mat_d,
-									// *mat_e, *mat_f;
+		NyARMat mat_c, mat_e, mat_f;// ARMat *mat_a, *mat_b, *mat_c, *mat_d,*mat_e, *mat_f;
 
-		double wx, wy, wz;
 		double ret;
 		int i;
+		final NyARDoublePoint3d point3d=this.__arGetTransMatSub_point3d;
 
 		mat_c = this.wk_arGetTransMatSub_mat_c;// 次処理で値をもらうので、初期化の必要は無い。
 		double[][] c_array = mat_c.getArray();
-		double[] rot = transrot.getArray();
-		double[] i_pos3d_pt;
-		int x2;
+		NyARRotMatrix rot=this._rotmatrix;//ちょっと無理のあるキャストなんとかしよう。
+//		double[] rot = transrot.getArray();
 		for (i = 0; i < NUMBER_OF_VERTEX; i++) {
-			x2 = i * 2;
-			i_pos3d_pt = i_pos3d[i];
-			wx = rot[0] * i_pos3d_pt[0] + rot[1] * i_pos3d_pt[1] + rot[2] * i_pos3d_pt[2];
-			wy = rot[3] * i_pos3d_pt[0] + rot[4] * i_pos3d_pt[1] + rot[5] * i_pos3d_pt[2];
-			wz = rot[6] * i_pos3d_pt[0] + rot[7] * i_pos3d_pt[1] + rot[8] * i_pos3d_pt[2];
-			c_array[x2][0] = wz * i_pos2d[i][0] - cpara[0 * 4 + 0] * wx - cpara[0 * 4 + 1] * wy - cpara[0 * 4 + 2] * wz;// mat_c->m[j*2+0]
-																														// = wz
-																														// *
-																														// pos2d[j][0]-
-																														// cpara[0][0]*wx
-																														// -
-																														// cpara[0][1]*wy
-																														// -
-																														// cpara[0][2]*wz;
-			c_array[x2 + 1][0] = wz * i_pos2d[i][1] - cpara[1 * 4 + 1] * wy - cpara[1 * 4 + 2] * wz;// mat_c->m[j*2+1]
-																									// = wz
-																									// *
-																									// pos2d[j][1]-
-																									// cpara[1][1]*wy
-																									// -
-																									// cpara[1][2]*wz;
+			final int x2 = i+i;
+			rot.getPoint3d(i_vertex3d[i],point3d);
+			c_array[x2][0] = point3d.z * i_vertex2d[i].x - cpara[0 * 4 + 0] * point3d.x - cpara[0 * 4 + 1] * point3d.y - cpara[0 * 4 + 2] * point3d.z;// mat_c->m[j*2+0] = wz*pos2d[j][0]-cpara[0][0]*wx-cpara[0][1]*wy-cpara[0][2]*wz;
+			c_array[x2 + 1][0] = point3d.z * i_vertex2d[i].y - cpara[1 * 4 + 1] * point3d.y - cpara[1 * 4 + 2] * point3d.z;// mat_c->m[j*2+1]= wz*pos2d[j][1]-cpara[1][1]*wy-cpara[1][2]*wz;
 		}
 		mat_e = this.wk_arGetTransMatSub_mat_e;// 次処理で値をもらうので、初期化の必要は無い。
 		mat_f = this.wk_arGetTransMatSub_mat_f;// 次処理で値をもらうので、初期化の必要は無い。
@@ -449,29 +436,17 @@ public class NyARTransMat_O2 implements INyARTransMat
 		o_trans[0] = f_array[0][0];// trans[0] = mat_f->m[0];
 		o_trans[1] = f_array[1][0];
 		o_trans[2] = f_array[2][0];// trans[2] = mat_f->m[2];
-		ret = transrot.modifyMatrix(o_trans, i_pos3d, i_pos2d);
+		ret = _rotmatrix.modifyMatrix(o_trans, i_vertex3d, i_vertex2d);
+		
+		
+		
+		
+		
 		for (i = 0; i < NUMBER_OF_VERTEX; i++) {
-			x2 = i * 2;
-			i_pos3d_pt = i_pos3d[i];
-			wx = rot[0] * i_pos3d_pt[0] + rot[1] * i_pos3d_pt[1] + rot[2] * i_pos3d_pt[2];
-			wy = rot[3] * i_pos3d_pt[0] + rot[4] * i_pos3d_pt[1] + rot[5] * i_pos3d_pt[2];
-			wz = rot[6] * i_pos3d_pt[0] + rot[7] * i_pos3d_pt[1] + rot[8] * i_pos3d_pt[2];
-			c_array[x2][0] = wz * i_pos2d[i][0] - cpara[0 * 4 + 0] * wx - cpara[0 * 4 + 1] * wy - cpara[0 * 4 + 2] * wz;// mat_c->m[j*2+0]
-																														// = wz
-																														// *
-																														// pos2d[j][0]-
-																														// cpara[0][0]*wx
-																														// -
-																														// cpara[0][1]*wy
-																														// -
-																														// cpara[0][2]*wz;
-			c_array[x2 + 1][0] = wz * i_pos2d[i][1] - cpara[1 * 4 + 1] * wy - cpara[1 * 4 + 2] * wz;// mat_c->m[j*2+1]
-																									// = wz
-																									// *
-																									// pos2d[j][1]-
-																									// cpara[1][1]*wy
-																									// -
-																									// cpara[1][2]*wz;
+			final int x2 = i+i;
+			rot.getPoint3d(i_vertex3d[i],point3d);
+			c_array[x2][0] = point3d.z * i_vertex2d[i].x - cpara[0 * 4 + 0] * point3d.x - cpara[0 * 4 + 1] * point3d.y - cpara[0 * 4 + 2] * point3d.z;// mat_c->m[j*2+0]= wz*pos2d[j][0]-cpara[0][0]*wx-cpara[0][1]*wy-cpara[0][2]*wz;
+			c_array[x2 + 1][0] = point3d.z * i_vertex2d[i].y - cpara[1 * 4 + 1] * point3d.y - cpara[1 * 4 + 2] * point3d.z;// mat_c->m[j*2+1]= wz*pos2d[j][1]-cpara[1][1]*wy-cpara[1][2]*wz;
 		}
 
 		mat_e.matrixMul(i_mat_b, mat_c);
@@ -479,7 +454,7 @@ public class NyARTransMat_O2 implements INyARTransMat
 		o_trans[0] = f_array[0][0];// trans[0] = mat_f->m[0];
 		o_trans[1] = f_array[1][0];
 		o_trans[2] = f_array[2][0];// trans[2] = mat_f->m[2];
-		ret = transrot.modifyMatrix(o_trans, i_pos3d, i_pos2d);
+		ret = _rotmatrix.modifyMatrix(o_trans, i_vertex3d, i_vertex2d);
 		return ret;
 	}
 }
