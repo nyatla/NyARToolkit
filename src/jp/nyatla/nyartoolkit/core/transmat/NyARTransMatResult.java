@@ -32,8 +32,9 @@
 package jp.nyatla.nyartoolkit.core.transmat;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.NyARMat;
-import jp.nyatla.nyartoolkit.detector.*;
+import jp.nyatla.nyartoolkit.core.*;
+import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.NyARRotMatrix;
+import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
  * NyARTransMat戻り値専用のNyARMat
@@ -67,26 +68,26 @@ public class NyARTransMatResult extends NyARMat
 	 * @param i_off
 	 * @param i_trans
 	 */
-	public void updateMatrixValue(NyARRotMatrix i_rot, double[] i_off, double[] i_trans)
+	public void updateMatrixValue(NyARRotMatrix i_rot, NyARDoublePoint3d i_off, NyARDoublePoint3d i_trans)
 	{
 		double[] pa;
 		pa = this.m[0];
 		pa[0] = i_rot.m00;
 		pa[1] = i_rot.m01;
 		pa[2] = i_rot.m02;
-		pa[3] = i_rot.m00 * i_off[0] + i_rot.m01 * i_off[1] + i_rot.m02 * i_off[2] + i_trans[0];
+		pa[3] = i_rot.m00 * i_off.x + i_rot.m01 * i_off.y + i_rot.m02 * i_off.z + i_trans.x;
 
 		pa = this.m[1];
 		pa[0] = i_rot.m10;
 		pa[1] = i_rot.m11;
 		pa[2] = i_rot.m12;
-		pa[3] = i_rot.m10 * i_off[0] + i_rot.m11 * i_off[1] + i_rot.m12 * i_off[2] + i_trans[1];
+		pa[3] = i_rot.m10 * i_off.x + i_rot.m11 * i_off.y + i_rot.m12 * i_off.z + i_trans.y;
 
 		pa = this.m[2];
 		pa[0] = i_rot.m20;
 		pa[1] = i_rot.m21;
 		pa[2] = i_rot.m22;
-		pa[3] = i_rot.m20 * i_off[0] + i_rot.m21 * i_off[1] + i_rot.m22 * i_off[2] + i_trans[2];
+		pa[3] = i_rot.m20 * i_off.x + i_rot.m21 * i_off.y + i_rot.m22 * i_off.z + i_trans.z;
 
 		this.has_value = true;
 		return;

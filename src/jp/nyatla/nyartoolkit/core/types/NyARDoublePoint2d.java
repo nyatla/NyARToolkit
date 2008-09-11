@@ -17,5 +17,15 @@ public class NyARDoublePoint2d
 			ret[i]=new NyARDoublePoint2d();
 		}
 		return ret;
+	}
+	public NyARDoublePoint2d()
+	{
+		this.x=0;
+		this.y=0;
 	}	
+	public NyARDoublePoint2d(double i_x,double i_y)
+	{
+		this.x=i_x;
+		this.y=i_y;
+	}
 }

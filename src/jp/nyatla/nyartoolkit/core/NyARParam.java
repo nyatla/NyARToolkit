@@ -274,24 +274,21 @@ public class NyARParam
 	 * @param ox
 	 * @param oy
 	 */
-	public void ideal2Observ(double ix, double iy, DoubleValue ox,DoubleValue oy)
+	public void ideal2Observ(final NyARDoublePoint2d i_in, NyARDoublePoint2d o_out)
 	{
-
-		double x, y, d;
-		final double d0, d1, d3;
 		final double df[] = this.dist_factor;
-		d0 = df[0];
-		d1 = df[1];
-		d3 = df[3];
-		x = (ix - d0) * d3;
-		y = (iy - d1) * d3;
+		final double d0 = df[0];
+		final double d1 = df[1];
+		final double d3 = df[3];
+		final double x = (i_in.x - d0) * d3;
+		final double y = (i_in.y - d1) * d3;
 		if (x == 0.0 && y == 0.0) {
-			ox.value = d0;
-			oy.value = d1;
+			o_out.x = d0;
+			o_out.y = d1;
 		} else {
-			d = 1.0 - df[2] / 100000000.0 * (x * x + y * y);
-			ox.value = x * d + d0;
-			oy.value = y * d + d1;
+			final double d = 1.0 - df[2] / 100000000.0 * (x * x + y * y);
+			o_out.x = x * d + d0;
+			o_out.y = y * d + d1;
 		}
 	}
 

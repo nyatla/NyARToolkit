@@ -42,8 +42,6 @@ import jp.nyatla.nyartoolkit.core.NyARSquare;
 public interface INyARTransMat
 {
 	public void setCenter(double i_x, double i_y);
-
-	public double transMat(NyARSquare i_square, int i_direction, double i_width, NyARTransMatResult o_result) throws NyARException;
-
-	public double transMatContinue(NyARSquare i_square, int i_direction, double i_width, NyARTransMatResult io_result_conv) throws NyARException;
+	public void transMat(NyARSquare i_square, int i_direction, double i_width, NyARTransMatResult o_result) throws NyARException;
+	public void transMatContinue(NyARSquare i_square, int i_direction, double i_width, NyARTransMatResult io_result_conv) throws NyARException;
 }

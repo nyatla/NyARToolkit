@@ -1,6 +1,7 @@
-package jp.nyatla.nyartoolkit.core.transmat;
+package jp.nyatla.nyartoolkit.core.transmat.rotmatrix;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.*;
 /**
@@ -23,7 +24,6 @@ public class NyARRotMatrix
 	 * インスタンスを準備します。
 	 * 
 	 * @param i_param
-	 * nullを指定した場合、一部の関数が使用不能になります。
 	 */
 	public NyARRotMatrix(NyARParam i_param) throws NyARException
 	{
@@ -100,7 +100,7 @@ public class NyARRotMatrix
 	 * @param o_angle
 	 * @return
 	 */
-	protected final void getAngle(NyARDoublePoint3d o_angle)
+	public final void getAngle(final NyARDoublePoint3d o_angle)
 	{
 		double a,b,c;
 		double sina, cosa, sinb,cosb,sinc, cosc;
@@ -218,7 +218,7 @@ public class NyARRotMatrix
 	 * @param i_y
 	 * @param i_z
 	 */
-	protected void setRot(double i_x, double i_y, double i_z)
+	public final void setAngle(final double i_x, final double i_y, final double i_z)
 	{
 		final double sina = Math.sin(i_x);
 		final double cosa = Math.cos(i_x);
@@ -250,12 +250,34 @@ public class NyARRotMatrix
 	 * @param i_in_point
 	 * @param i_out_point
 	 */
-	protected void getPoint3d(final NyARDoublePoint3d i_in_point,final NyARDoublePoint3d i_out_point)
+	public final void getPoint3d(final NyARDoublePoint3d i_in_point,final NyARDoublePoint3d i_out_point)
 	{
-		i_out_point.x=this.m00 * i_in_point.x + this.m01 * i_in_point.y + this.m02 * i_in_point.z;
-		i_out_point.y=this.m10 * i_in_point.x + this.m11 * i_in_point.y + this.m12 * i_in_point.z;
-		i_out_point.z=this.m20 * i_in_point.x + this.m21 * i_in_point.y + this.m22 * i_in_point.z;
+		final double x=i_in_point.x;
+		final double y=i_in_point.y;
+		final double z=i_in_point.z;
+		i_out_point.x=this.m00 * x + this.m01 * y + this.m02 * z;
+		i_out_point.y=this.m10 * x + this.m11 * y + this.m12 * z;
+		i_out_point.z=this.m20 * x + this.m21 * y + this.m22 * z;
 		return;
 	}
-	
+	/**
+	 * 複数の頂点を一括して変換する
+	 * @param i_in_point
+	 * @param i_out_point
+	 * @param i_number_of_vertex
+	 */
+	public final void getPoint3dBatch(final NyARDoublePoint3d[] i_in_point,NyARDoublePoint3d[] i_out_point,int i_number_of_vertex)
+	{
+		for(int i=i_number_of_vertex-1;i>=0;i--){
+			final NyARDoublePoint3d out_ptr=i_out_point[i];
+			final NyARDoublePoint3d in_ptr=i_in_point[i];
+			final double x=in_ptr.x;
+			final double y=in_ptr.y;
+			final double z=in_ptr.z;
+			out_ptr.x=this.m00 * x + this.m01 * y + this.m02 * z;
+			out_ptr.y=this.m10 * x + this.m11 * y + this.m12 * z;
+			out_ptr.z=this.m20 * x + this.m21 * y + this.m22 * z;
+		}
+		return;
+	}	
 }
