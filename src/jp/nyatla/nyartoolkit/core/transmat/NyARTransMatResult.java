@@ -31,35 +31,19 @@
  */
 package jp.nyatla.nyartoolkit.core.transmat;
 
-import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.*;
+
 import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.NyARRotMatrix;
 import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.types.matrix.*;
 
 /**
  * NyARTransMat戻り値専用のNyARMat
  * 
  */
-public class NyARTransMatResult extends NyARMat
+public class NyARTransMatResult extends NyARDoubleMatrix34
 {
 	private boolean has_value = false;
 
-	public NyARTransMatResult()
-	{
-		super(3, 4);
-	}
-
-	/**
-	 * この関数は使えません。
-	 * 
-	 * @param i_row
-	 * @param i_clm
-	 * @throws NyARException
-	 */
-	public NyARTransMatResult(int i_row, int i_clm) throws NyARException
-	{
-		super();// ここで例外発生
-	}
 
 	/**
 	 * パラメータで変換行列を更新します。
@@ -70,33 +54,23 @@ public class NyARTransMatResult extends NyARMat
 	 */
 	public void updateMatrixValue(NyARRotMatrix i_rot, NyARDoublePoint3d i_off, NyARDoublePoint3d i_trans)
 	{
-		double[] pa;
-		pa = this.m[0];
-		pa[0] = i_rot.m00;
-		pa[1] = i_rot.m01;
-		pa[2] = i_rot.m02;
-		pa[3] = i_rot.m00 * i_off.x + i_rot.m01 * i_off.y + i_rot.m02 * i_off.z + i_trans.x;
+		this.m00=i_rot.m00;
+		this.m01=i_rot.m01;
+		this.m02=i_rot.m02;
+		this.m03=i_rot.m00 * i_off.x + i_rot.m01 * i_off.y + i_rot.m02 * i_off.z + i_trans.x;
 
-		pa = this.m[1];
-		pa[0] = i_rot.m10;
-		pa[1] = i_rot.m11;
-		pa[2] = i_rot.m12;
-		pa[3] = i_rot.m10 * i_off.x + i_rot.m11 * i_off.y + i_rot.m12 * i_off.z + i_trans.y;
+		this.m10 = i_rot.m10;
+		this.m11 = i_rot.m11;
+		this.m12 = i_rot.m12;
+		this.m13 = i_rot.m10 * i_off.x + i_rot.m11 * i_off.y + i_rot.m12 * i_off.z + i_trans.y;
 
-		pa = this.m[2];
-		pa[0] = i_rot.m20;
-		pa[1] = i_rot.m21;
-		pa[2] = i_rot.m22;
-		pa[3] = i_rot.m20 * i_off.x + i_rot.m21 * i_off.y + i_rot.m22 * i_off.z + i_trans.z;
+		this.m20 = i_rot.m20;
+		this.m21 = i_rot.m21;
+		this.m22 = i_rot.m22;
+		this.m23 = i_rot.m20 * i_off.x + i_rot.m21 * i_off.y + i_rot.m22 * i_off.z + i_trans.z;
 
 		this.has_value = true;
 		return;
-	}
-
-	public void copyFrom(NyARTransMatResult i_from) throws NyARException
-	{
-		super.copyFrom(i_from);
-		this.has_value = i_from.has_value;
 	}
 
 	public boolean hasValue()

@@ -1,3 +1,34 @@
+/* 
+ * PROJECT: NyARToolkit
+ * --------------------------------------------------------------------------------
+ * This work is based on the original ARToolKit developed by
+ *   Hirokazu Kato
+ *   Mark Billinghurst
+ *   HITLab, University of Washington, Seattle
+ * http://www.hitl.washington.edu/artoolkit/
+ *
+ * The NyARToolkit is Java version ARToolkit class library.
+ * Copyright (C)2008 R.Iizuka
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this framework; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * 
+ * For further information please contact.
+ *	http://nyatla.jp/nyatoolkit/
+ *	<airmail(at)ebony.plala.or.jp>
+ * 
+ */
 package jp.nyatla.nyartoolkit.core.transmat.rotmatrix;
 
 import jp.nyatla.nyartoolkit.NyARException;
@@ -29,20 +60,19 @@ public class NyARRotMatrix extends NyARDoubleMatrix33
 
 	public final void initRotByPrevResult(NyARTransMatResult i_prev_result)
 	{
-		double[][] prev_array = i_prev_result.getArray();
-		double[] pt;
-		pt = prev_array[0];
-		this.m00=pt[0];
-		this.m01=pt[1];
-		this.m02=pt[2];
-		pt = prev_array[1];
-		this.m10=pt[0];
-		this.m11=pt[1];
-		this.m12=pt[2];
-		pt = prev_array[2];
-		this.m20=pt[0];
-		this.m21=pt[1];
-		this.m22=pt[2];
+
+		this.m00=i_prev_result.m00;
+		this.m01=i_prev_result.m01;
+		this.m02=i_prev_result.m02;
+
+		this.m10=i_prev_result.m10;
+		this.m11=i_prev_result.m11;
+		this.m12=i_prev_result.m12;
+
+		this.m20=i_prev_result.m20;
+		this.m21=i_prev_result.m21;
+		this.m22=i_prev_result.m22;
+		return;
 	}	
 	
 	

@@ -1,5 +1,5 @@
 /* 
- * PROJECT: NyARToolkit
+ * PROJECT: NyARToolkit JOGL utilities.
  * --------------------------------------------------------------------------------
  * This work is based on the original ARToolKit developed by
  *   Hirokazu Kato
@@ -29,7 +29,6 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-
 package jp.nyatla.nyartoolkit.jogl.utils;
 
 import jp.nyatla.nyartoolkit.NyARException;
@@ -77,19 +76,19 @@ public class GLNyARSingleDetectMarker extends NyARSingleDetectMarker
 		// 座標を計算
 		this.getTransmationMatrix(this.trans_mat_result);
 		// 行列変換
-		double[][] para = this.trans_mat_result.getArray();
-		o_result[0 + 0 * 4] = para[0][0]; // R1C1
-		o_result[0 + 1 * 4] = para[0][1]; // R1C2
-		o_result[0 + 2 * 4] = para[0][2];
-		o_result[0 + 3 * 4] = para[0][3];
-		o_result[1 + 0 * 4] = -para[1][0]; // R2
-		o_result[1 + 1 * 4] = -para[1][1];
-		o_result[1 + 2 * 4] = -para[1][2];
-		o_result[1 + 3 * 4] = -para[1][3];
-		o_result[2 + 0 * 4] = -para[2][0]; // R3
-		o_result[2 + 1 * 4] = -para[2][1];
-		o_result[2 + 2 * 4] = -para[2][2];
-		o_result[2 + 3 * 4] = -para[2][3];
+		final NyARTransMatResult mat = this.trans_mat_result;
+		o_result[0 + 0 * 4] = mat.m00; // R1C1
+		o_result[0 + 1 * 4] = mat.m01; // R1C2
+		o_result[0 + 2 * 4] = mat.m02;
+		o_result[0 + 3 * 4] = mat.m03;
+		o_result[1 + 0 * 4] = -mat.m10; // R2
+		o_result[1 + 1 * 4] = -mat.m11;
+		o_result[1 + 2 * 4] = -mat.m12;
+		o_result[1 + 3 * 4] = -mat.m13;
+		o_result[2 + 0 * 4] = -mat.m20; // R3
+		o_result[2 + 1 * 4] = -mat.m21;
+		o_result[2 + 2 * 4] = -mat.m22;
+		o_result[2 + 3 * 4] = -mat.m23;
 		o_result[3 + 0 * 4] = 0.0;
 		o_result[3 + 1 * 4] = 0.0;
 		o_result[3 + 2 * 4] = 0.0;

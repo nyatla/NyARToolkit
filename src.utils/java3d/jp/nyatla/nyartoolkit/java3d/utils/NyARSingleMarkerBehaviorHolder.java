@@ -1,8 +1,28 @@
-/**
- * NyARToolkitのBehaviorホルダー
- * (c)2008 A虎＠nyatla.jp
- * airmail@ebony.plala.or.jp
- * http://nyatla.jp/
+/* 
+ * PROJECT: NyARToolkit Java3D utilities.
+ * --------------------------------------------------------------------------------
+ * The MIT License
+ * Copyright (c) 2008 nyatla
+ * airmail(at)ebony.plala.or.jp
+ * http://nyatla.jp/nyartoolkit/
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * 
  */
 package jp.nyatla.nyartoolkit.java3d.utils;
 
@@ -188,10 +208,11 @@ class NyARBehavior extends Behavior
 				}
 				if (raster.hasData()) {
 					is_marker_exist = related_nya.detectMarkerLite(raster, 100);
-					if (is_marker_exist) {
-						related_nya.getTransmationMatrix(this.trans_mat_result);
-						double[][] src = this.trans_mat_result.getArray();
-						Matrix4d matrix = new Matrix4d(src[0][0], -src[1][0], -src[2][0], 0, -src[0][1], src[1][1], src[2][1], 0, -src[0][2], src[1][2], src[2][2], 0, -src[0][3], src[1][3], src[2][3], 1);
+					if (is_marker_exist)
+					{
+						final NyARTransMatResult src = this.trans_mat_result;
+						related_nya.getTransmationMatrix(src);
+						Matrix4d matrix = new Matrix4d(src.m00, -src.m10, -src.m20, 0, -src.m01, src.m11, src.m21, 0, -src.m02, src.m12, src.m22, 0, -src.m03, src.m13, src.m23, 1);
 						matrix.transpose();
 						t3d = new Transform3D(matrix);
 						if (trgroup != null) {

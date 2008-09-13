@@ -29,46 +29,17 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs;
+package jp.nyatla.nyartoolkit.core.rasterfilter;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
-import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
-import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
-public class NyARRasterFilter_RgbOr implements INyARRasterFilter_RgbToGs
+/**
+ * このインタフェイスは、RGBラスタをグレースケールラスタに変換します。
+ *
+ */
+public interface INyARRasterFilter_RgbToGs
 {
-	public void doFilter(INyARRgbRaster i_input, NyARGlayscaleRaster i_output) throws NyARException
-	{
-		INyARBufferReader in_buffer_reader=i_input.getBufferReader();	
-		INyARBufferReader out_buffer_reader=i_output.getBufferReader();			
-		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
-
-		final int[][] out_buf = (int[][]) out_buffer_reader.getBuffer();
-		final byte[] in_buf = (byte[]) in_buffer_reader.getBuffer();
-
-		NyARIntSize size = i_output.getSize();
-		switch (in_buffer_reader.getBufferType()) {
-		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24:
-		case INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24:
-			convert24BitRgb(in_buf, out_buf, size);
-			break;
-		default:
-			throw new NyARException();
-		}
-		return;
-	}
-
-	private void convert24BitRgb(byte[] i_in, int[][] i_out, NyARIntSize i_size)
-	{
-		int bp = 0;
-		for (int y = 0; y < i_size.h; y++) {
-			for (int x = 0; x < i_size.w; x++) {
-				i_out[y][x] = ((i_in[bp] & 0xff) | (i_in[bp + 1] & 0xff) | (i_in[bp + 2] & 0xff));
-				bp += 3;
-			}
-		}
-		return;
-	}
+	public void doFilter(INyARRgbRaster i_input, NyARGlayscaleRaster i_output) throws NyARException;
 }

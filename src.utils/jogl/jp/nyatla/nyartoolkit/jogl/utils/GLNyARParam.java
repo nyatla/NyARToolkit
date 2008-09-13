@@ -1,5 +1,5 @@
 /* 
- * PROJECT: NyARToolkit
+ * PROJECT: NyARToolkit JOGL utilities.
  * --------------------------------------------------------------------------------
  * This work is based on the original ARToolKit developed by
  *   Hirokazu Kato
@@ -29,7 +29,6 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-
 package jp.nyatla.nyartoolkit.jogl.utils;
 
 import jp.nyatla.nyartoolkit.core.*;

@@ -1,9 +1,26 @@
-/**
- * RGB形式のbyte配列をラップするNyARRasterです。
- * 保持したデータからBufferedImageを出力する機能も持ちます。
- * (c)2008 arc@dmz, A虎＠nyatla.jp
- * arc@digitalmuseum.jp
- * http://nyatla.jp/
+/* 
+ * PROJECT: NyARToolkit Quicktime utilities.
+ * --------------------------------------------------------------------------------
+ * Copyright (C)2008 arc@dmz
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this framework; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * 
+ * For further information please contact.
+ *	
+ *	<arc(at)digitalmuseum.jp>
+ * 
  */
 package jp.nyatla.nyartoolkit.qt.utils;
 
@@ -15,40 +32,51 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_BasicClass;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.core.types.*;
-
+/**
+ * RGB形式のbyte配列をラップするNyARRasterです。
+ * 保持したデータからBufferedImageを出力する機能も持ちます。
+ */
 public class QtNyARRaster_RGB extends NyARRgbRaster_BasicClass
 {
 	private class PixcelReader extends NyARRgbPixelReader_RGB24 implements INyARBufferReader
 	{
 		public PixcelReader(NyARIntSize i_size)
 		{
-			super(null,i_size);
+			super(null, i_size);
 			return;
 		}
+
 		public void syncBuffer(byte[] i_ref_buffer)
 		{
-			this._ref_buf=i_ref_buffer;
+			this._ref_buf = i_ref_buffer;
 			return;
 		}
+
 		//
-		//INyARBufferReader
+		// INyARBufferReader
 		//
 		public Object getBuffer()
 		{
 			return this._ref_buf;
 		}
+
 		public int getBufferType()
 		{
 			return INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24;
 		}
+
 		public boolean isEqualBufferType(int i_type_value)
 		{
-			return i_type_value==INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24;
-		}		
+			return i_type_value == INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24;
+		}
 	}
+
 	protected byte[] _ref_buf;
+
 	protected PixcelReader _reader;
+
 	private WritableRaster _raster;
+
 	private BufferedImage _image;
 
 	/**
@@ -77,14 +105,17 @@ public class QtNyARRaster_RGB extends NyARRgbRaster_BasicClass
 		this._ref_buf = i_buffer;
 		this._reader.syncBuffer(i_buffer);
 	}
+
 	public INyARBufferReader getBufferReader()
 	{
 		return this._reader;
 	}
+
 	public INyARRgbPixelReader getRgbPixelReader()
 	{
 		return this._reader;
-	}	
+	}
+
 	/**
 	 * データを持っているかを返します。
 	 * 
@@ -94,17 +125,17 @@ public class QtNyARRaster_RGB extends NyARRgbRaster_BasicClass
 	{
 		return this._ref_buf != null;
 	}
+
 	/**
 	 * 保持しているデータからBufferedImageを作って返します。
+	 * 
 	 * @return
 	 */
 	public BufferedImage createImage()
 	{
-		_raster.setDataElements(0, 0, this._size.w,this._size.h,this._ref_buf);
+		_raster.setDataElements(0, 0, this._size.w, this._size.h, this._ref_buf);
 		_image.setData(_raster);
 		return _image;
 	}
-	
-	
-	
+
 }

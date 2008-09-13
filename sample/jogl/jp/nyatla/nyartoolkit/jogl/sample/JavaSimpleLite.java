@@ -1,9 +1,28 @@
-/**
- * simpleLiteと同じようなテストプログラム
- * 最も一致する"Hiro"マーカーを一つ選択して、その上に立方体を表示します。
- * (c)2008 A虎＠nyatla.jp
+/* 
+ * PROJECT: NyARToolkit JOGL sample program.
+ * --------------------------------------------------------------------------------
+ * The MIT License
+ * Copyright (c) 2008 nyatla
  * airmail(at)ebony.plala.or.jp
- * http://nyatla.jp/
+ * http://nyatla.jp/nyartoolkit/
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * 
  */
 package jp.nyatla.nyartoolkit.jogl.sample;
 
@@ -23,12 +42,17 @@ import com.sun.opengl.util.Animator;
 import jp.nyatla.nyartoolkit.core.NyARCode;
 import jp.nyatla.nyartoolkit.core.raster.NyARGlayscaleRaster;
 import jp.nyatla.nyartoolkit.core.rasteranalyzer.threshold.NyARRasterThresholdAnalyzer_SlidePTile;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_RgbAve;
+import jp.nyatla.nyartoolkit.core2.NyARRasterFilter_RgbAve;
 
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCameraCapture;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
-
+/**
+ * simpleLiteと同じようなテストプログラム
+ * 出来る限りARToolKitのサンプルと似せて作ってあります。
+ * 最も一致する"Hiro"マーカーを一つ選択して、その上に立方体を表示します。
+ * 
+ */
 public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 {
 	private final String CARCODE_FILE = "../../Data/patt.hiro";
@@ -62,7 +86,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 	{
 		// Colour cube data.
 		int polyList = 0;
-		float fSize = 0.5f;//マーカーサイズに対して0.5倍なので、4cmのナタデココ
+		float fSize = 0.5f;//マーカーサイズに対して0.5倍なので、4cmの立方体
 		int f, i;
 		float[][] cube_vertices = new float[][] { { 1.0f, 1.0f, 1.0f }, { 1.0f, -1.0f, 1.0f }, { -1.0f, -1.0f, 1.0f }, { -1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, -1.0f }, { 1.0f, -1.0f, -1.0f }, { -1.0f, -1.0f, -1.0f }, { -1.0f, 1.0f, -1.0f } };
 		float[][] cube_vertex_colors = new float[][] { { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 1.0f }, { 1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } };

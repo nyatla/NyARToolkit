@@ -45,7 +45,7 @@ import jp.nyatla.nyartoolkit.core.param.*;
  * このクラスは、arDetectMarker2.cとの置き換えになります。
  * 
  */
-public class NyARSquareDetector
+public class NyARSquareDetector implements INyARSquareDetector
 {
 	private static final double VERTEX_FACTOR = 1.0;// 線検出のファクタ
 
@@ -345,7 +345,7 @@ public class NyARSquareDetector
 	 * @return
 	 * @throws NyARException
 	 */
-	public boolean getSquareLine(int[] i_mkvertex, int[] i_xcoord, int[] i_ycoord, NyARSquare o_square) throws NyARException
+	private boolean getSquareLine(int[] i_mkvertex, int[] i_xcoord, int[] i_ycoord, NyARSquare o_square) throws NyARException
 	{
 		final NyARLinear[] l_line = o_square.line;
 		final NyARVec ev = this.__getSquareLine_ev; // matrixPCAの戻り値を受け取る

@@ -47,7 +47,6 @@ import jp.nyatla.nyartoolkit.core.types.stack.*;
 /**
  * bitmapとして利用可能なラベリングイメージです。
  * 
- * @author atla
  * 
  */
 public class LabelingBufferdImage extends BufferedImage

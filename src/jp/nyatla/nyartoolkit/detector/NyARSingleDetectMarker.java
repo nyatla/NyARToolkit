@@ -52,7 +52,7 @@ public class NyARSingleDetectMarker
 
 	private boolean _is_continue = false;
 	private NyARMatchPatt_Color_WITHOUT_PCA _match_patt;
-	private NyARSquareDetector _square_detect;
+	private INyARSquareDetector _square_detect;
 
 	private final NyARSquareStack _square_list = new NyARSquareStack(AR_SQUARE_MAX);
 

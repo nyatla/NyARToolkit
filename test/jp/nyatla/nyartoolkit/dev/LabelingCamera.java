@@ -26,6 +26,7 @@ import jp.nyatla.nyartoolkit.core.rasteranalyzer.threshold.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.*;
+import jp.nyatla.nyartoolkit.core2.NyARRasterFilter_RgbAve;
 import jp.nyatla.utils.j2se.LabelingBufferdImage;
 
 public class LabelingCamera extends Frame implements JmfCaptureListener {

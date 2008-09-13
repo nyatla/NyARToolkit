@@ -146,8 +146,7 @@ public class NyARVec
 			NyARException.trap("未チェックのパス");
 			{
 				this.v[i_start] += s;// x->v[0] += s;
-				t = 1 / Math.sqrt(this.v[i_start] * s);// t = 1 / sqrt(x->v[0]
-														// * s);
+				t = 1 / Math.sqrt(this.v[i_start] * s);// t = 1 / sqrt(x->v[0] * s);
 			}
 			for (int i = i_start; i < this.clm; i++) {
 				NyARException.trap("未チェックのパス");
