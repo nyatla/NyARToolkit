@@ -40,9 +40,6 @@ import javax.media.opengl.GLCanvas;
 import com.sun.opengl.util.Animator;
 
 import jp.nyatla.nyartoolkit.core.NyARCode;
-import jp.nyatla.nyartoolkit.core.raster.NyARGlayscaleRaster;
-import jp.nyatla.nyartoolkit.core.rasteranalyzer.threshold.NyARRasterThresholdAnalyzer_SlidePTile;
-import jp.nyatla.nyartoolkit.core2.NyARRasterFilter_RgbAve;
 
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCameraCapture;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
@@ -199,7 +196,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 			//画像チェックしてマーカー探して、背景を書く
 			boolean is_marker_exist;
 			synchronized (_cap_image) {
-				is_marker_exist = _nya.detectMarkerLite(_cap_image, threshold);
+				is_marker_exist = _nya.detectMarkerLite(_cap_image, 110);
 				//背景を書く
 				_glnya.drawBackGround(_cap_image, 1.0);
 			}
@@ -223,19 +220,11 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 		}
 
 	}
-	int threshold;
-	final NyARRasterThresholdAnalyzer_SlidePTile th=new NyARRasterThresholdAnalyzer_SlidePTile(15);
-	final NyARGlayscaleRaster gs=new NyARGlayscaleRaster(320,240);
-	final NyARRasterFilter_RgbAve togs=new NyARRasterFilter_RgbAve();
 	public void onUpdateBuffer(Buffer i_buffer)
 	{
 		try {
 			synchronized (_cap_image) {
 				_cap_image.setBuffer(i_buffer, true);
-				//閾値計算(めんどくさいから一時的に自動調整にしとく。)
-				togs.doFilter(_cap_image, gs);
-				th.analyzeRaster(gs);
-				threshold=110;//th.getThreshold();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

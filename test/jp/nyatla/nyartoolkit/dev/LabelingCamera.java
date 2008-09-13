@@ -21,12 +21,12 @@ import java.awt.*;
 import jp.nyatla.nyartoolkit.core.labeling.*;
 import jp.nyatla.nyartoolkit.core.labeling.types.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.rasteranalyzer.*;
-import jp.nyatla.nyartoolkit.core.rasteranalyzer.threshold.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.*;
-import jp.nyatla.nyartoolkit.core2.NyARRasterFilter_RgbAve;
+import jp.nyatla.nyartoolkit.core2.rasteranalyzer.*;
+import jp.nyatla.nyartoolkit.core2.rasteranalyzer.threshold.*;
+import jp.nyatla.nyartoolkit.core2.rasterfilter.gs2bin.*;
+import jp.nyatla.nyartoolkit.core2.rasterfilter.rgb2gs.NyARRasterFilter_RgbAve;
 import jp.nyatla.utils.j2se.LabelingBufferdImage;
 
 public class LabelingCamera extends Frame implements JmfCaptureListener {
