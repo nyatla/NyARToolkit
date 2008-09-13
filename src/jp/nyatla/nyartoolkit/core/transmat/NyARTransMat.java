@@ -32,19 +32,20 @@
 package jp.nyatla.nyartoolkit.core.transmat;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.NyARParam;
 import jp.nyatla.nyartoolkit.core.NyARSquare;
+import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.transmat.fitveccalc.NyARFitVecCalculator;
 import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.NyARRotMatrix;
 import jp.nyatla.nyartoolkit.core.transmat.rottransopt.NyARRotTransOptimize;
 import jp.nyatla.nyartoolkit.core.types.*;
-import java.util.*;
+
+
 /**
  * This class calculates ARMatrix from square information and holds it. --
  * 変換行列を計算して、結果を保持するクラス。
  * 
  */
-public class NyARTransMat_O2 implements INyARTransMat
+public class NyARTransMat implements INyARTransMat
 {
 	private final static double AR_GET_TRANS_CONT_MAT_MAX_FIT_ERROR = 1.0;
 
@@ -52,14 +53,16 @@ public class NyARTransMat_O2 implements INyARTransMat
 	private final NyARDoublePoint2d _center=new NyARDoublePoint2d(0,0);
 	private final NyARFitVecCalculator _calculator;
 	private final NyARTransOffset _offset=new NyARTransOffset();
-	private final NyARRotTransOptimize __mat_optimize;
+	private final NyARRotTransOptimize _mat_optimize;
 
 
-	public NyARTransMat_O2(NyARParam i_param) throws NyARException
+	public NyARTransMat(NyARParam i_param) throws NyARException
 	{
-		this._calculator=new NyARFitVecCalculator(i_param);
-		this._rotmatrix = new NyARRotMatrix(i_param);
-		this.__mat_optimize=new NyARRotTransOptimize(i_param);
+		final NyARCameraDistortionFactor dist=i_param.getDistortionFactor();
+		final NyARPerspectiveProjectionMatrix pmat=i_param.getPerspectiveProjectionMatrix();
+		this._calculator=new NyARFitVecCalculator(pmat,dist);
+		this._rotmatrix = new NyARRotMatrix(pmat);
+		this._mat_optimize=new NyARRotTransOptimize(pmat);
 	}
 
 	public void setCenter(double i_x, double i_y)
@@ -92,11 +95,9 @@ public class NyARTransMat_O2 implements INyARTransMat
 		return;
 	}
 
-//	private NyARDoublePoint3d[] __transMat_marker_vertex3d;
 
 	private final NyARDoublePoint2d[] __transMat_sqvertex_ref = new NyARDoublePoint2d[4];
 	private final NyARLinear[] __transMat_linear_ref=new NyARLinear[4];
-
 	final NyARDoublePoint3d __transMat_trans=new NyARDoublePoint3d();
 	/**
 	 * double arGetTransMat( ARMarkerInfo *marker_info,double center[2], double width, double conv[3][4] )
@@ -133,7 +134,8 @@ public class NyARTransMat_O2 implements INyARTransMat
 		this._calculator.calculateTransfer(this._rotmatrix,trans);
 		
 		//計算結果の最適化(this._rotmatrix,trans)
-		this.__mat_optimize.optimize(this._rotmatrix,trans,this._calculator);
+		this._mat_optimize.optimize(this._rotmatrix,trans,this._calculator);
+		
 		// マトリクスの保存
 		o_result_conv.updateMatrixValue(this._rotmatrix, this._offset.point, trans);
 		return;
@@ -178,7 +180,7 @@ public class NyARTransMat_O2 implements INyARTransMat
 		this._calculator.calculateTransfer(this._rotmatrix,trans);
 		
 		//計算結果の最適化(this._rotmatrix,trans)
-		final double err=this.__mat_optimize.optimize(this._rotmatrix,trans,this._calculator);
+		final double err=this._mat_optimize.optimize(this._rotmatrix,trans,this._calculator);
 		
 		//計算結果を保存
 		io_result_conv.updateMatrixValue(this._rotmatrix, this._offset.point, trans);
@@ -190,7 +192,7 @@ public class NyARTransMat_O2 implements INyARTransMat
 			//回転行列の平行移動量の計算
 			this._calculator.calculateTransfer(this._rotmatrix,trans);
 			//計算結果の最適化(this._rotmatrix,trans)
-			final double err2=this.__mat_optimize.optimize(this._rotmatrix,trans,this._calculator);
+			final double err2=this._mat_optimize.optimize(this._rotmatrix,trans,this._calculator);
 			//エラー値が低かったら値を差換え
 			if (err2 < err) {
 				// 良い値が取れたら、差換え

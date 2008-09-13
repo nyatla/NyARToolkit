@@ -39,7 +39,7 @@ import jp.nyatla.nyartoolkit.core.pickup.INyARColorPatt;
  * AR_TEMPLATE_MATCHING_COLORかつAR_MATCHING_WITHOUT_PCAと同等のルールで マーカーを評価します。
  * 
  */
-public class NyARMatchPatt_Color_WITHOUT_PCA implements NyARMatchPatt
+public class NyARMatchPatt_Color_WITHOUT_PCA implements INyARMatchPatt
 {
 	private int[][][] input = new int[1][1][3];
 

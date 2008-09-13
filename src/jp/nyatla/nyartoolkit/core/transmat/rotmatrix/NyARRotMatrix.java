@@ -3,32 +3,23 @@ package jp.nyatla.nyartoolkit.core.transmat.rotmatrix;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core.*;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
+import jp.nyatla.nyartoolkit.core.param.*;
 /**
  * 回転行列計算用の、3x3行列
  *
  */
-public class NyARRotMatrix
-{
-	public double m00;
-	public double m01;
-	public double m02;
-	public double m10;
-	public double m11;
-	public double m12;
-	public double m20;
-	public double m21;
-	public double m22;
-	
+public class NyARRotMatrix extends NyARDoubleMatrix33
+{	
 	/**
 	 * インスタンスを準備します。
 	 * 
 	 * @param i_param
 	 */
-	public NyARRotMatrix(NyARParam i_param) throws NyARException
+	public NyARRotMatrix(NyARPerspectiveProjectionMatrix i_matrix) throws NyARException
 	{
-		this.__initRot_vec1=new NyARRotVector(i_param);
-		this.__initRot_vec2=new NyARRotVector(i_param);
+		this.__initRot_vec1=new NyARRotVector(i_matrix);
+		this.__initRot_vec2=new NyARRotVector(i_matrix);
 		return;
 	}
 	final private NyARRotVector __initRot_vec1;
@@ -68,7 +59,7 @@ public class NyARRotMatrix
 
 		//軸２
 		vec2.exteriorProductFromLinear(i_linear[1], i_linear[3]);
-		vec2.checkVectorByVertex(i_sqvertex[3], i_sqvertex[1]);
+		vec2.checkVectorByVertex(i_sqvertex[3], i_sqvertex[0]);
 
 		//回転の最適化？
 		NyARRotVector.checkRotation(vec1,vec2);
@@ -81,13 +72,13 @@ public class NyARRotMatrix
 		this.m21 =vec2.v3;
 		
 		//最後の軸を計算
-		this.m02 = vec1.v2 * vec2.v3 - vec1.v3 * vec2.v2;
-		this.m12 = vec1.v3 * vec2.v1 - vec1.v1 * vec2.v3;
-		this.m22 = vec1.v1 * vec2.v2 - vec1.v2 * vec2.v1;
-		final double w = Math.sqrt(this.m02 * this.m02 + this.m12 * this.m12 + this.m22 * this.m22);
-		this.m02 /= w;
-		this.m12 /= w;
-		this.m22 /= w;
+		final double w02 = vec1.v2 * vec2.v3 - vec1.v3 * vec2.v2;
+		final double w12 = vec1.v3 * vec2.v1 - vec1.v1 * vec2.v3;
+		final double w22 = vec1.v1 * vec2.v2 - vec1.v2 * vec2.v1;
+		final double w = Math.sqrt(w02 * w02 + w12 * w12 + w22 * w22);
+		this.m02 = w02/w;
+		this.m12 = w12/w;
+		this.m22 = w22/w;
 		return;
 	}
 
@@ -143,10 +134,8 @@ public class NyARRotMatrix
 				a = -a;
 			}
 			// <Optimize>
-			// sinc = (rot[2][1]*rot[0][2]-rot[2][0]*rot[1][2])/
-			// (rot[0][2]*rot[0][2]+rot[1][2]*rot[1][2]);
-			// cosc = -(rot[0][2]*rot[2][0]+rot[1][2]*rot[2][1])/
-			// (rot[0][2]*rot[0][2]+rot[1][2]*rot[1][2]);
+			// sinc = (rot[2][1]*rot[0][2]-rot[2][0]*rot[1][2])/(rot[0][2]*rot[0][2]+rot[1][2]*rot[1][2]);
+			// cosc = -(rot[0][2]*rot[2][0]+rot[1][2]*rot[2][1])/(rot[0][2]*rot[0][2]+rot[1][2]*rot[1][2]);
 			final double tmp = (rot02 * rot02 + rot12 * rot12);
 			sinc = (this.m21 * rot02 - this.m20 * rot12) / tmp;
 			cosc = -(rot02 * this.m20 + rot12 * this.m21) / tmp;

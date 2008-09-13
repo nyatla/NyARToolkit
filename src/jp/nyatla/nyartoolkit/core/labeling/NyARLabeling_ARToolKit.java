@@ -350,7 +350,7 @@ public class NyARLabeling_ARToolKit implements INyARLabeling
  * 
  * 
  */
-class NyARWorkHolder
+final class NyARWorkHolder
 {
 	private final static int ARRAY_APPEND_STEP = 256;
 

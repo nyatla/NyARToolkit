@@ -1,9 +1,8 @@
 package jp.nyatla.nyartoolkit.core.transmat.rottransopt;
 
-import java.util.Date;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.*;
+import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.transmat.fitveccalc.NyARFitVecCalculator;
 import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.NyARRotMatrix;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
@@ -13,18 +12,15 @@ public class NyARRotTransOptimize
 {
 	private final static int AR_GET_TRANS_MAT_MAX_LOOP_COUNT = 5;// #define AR_GET_TRANS_MAT_MAX_LOOP_COUNT 5
 	private final static double AR_GET_TRANS_MAT_MAX_FIT_ERROR = 1.0;// #define AR_GET_TRANS_MAT_MAX_FIT_ERROR 1.0
-	private final NyARParam _param;
-	public NyARRotTransOptimize(NyARParam i_param)
+	private final NyARPerspectiveProjectionMatrix _projection_mat_ref;
+	public NyARRotTransOptimize(NyARPerspectiveProjectionMatrix i_projection_mat_ref)
 	{
-		this._param=i_param;
+		this._projection_mat_ref=i_projection_mat_ref;
+		return;
 	}
 	
 	final public double optimize(NyARRotMatrix io_rotmat,NyARDoublePoint3d io_transvec,NyARFitVecCalculator i_calculator) throws NyARException
 	{
-		
-		
-		
-		
 		final NyARDoublePoint2d[] fit_vertex=i_calculator.getFitSquare();
 		final NyARDoublePoint3d[] offset_square=i_calculator.getOffsetVertex().vertex;
 		
@@ -107,22 +103,20 @@ public class NyARRotTransOptimize
 		d_pt2 = i_vertex2d[3];
 		P2D30 = d_pt2.x;
 		P2D31 = d_pt2.y;
-		final double cpara[] = this._param.get34Array();
-		final double CP0, CP1, CP2, CP3, CP4, CP5, CP6, CP7, CP8, CP9, CP10;
-		CP0 = cpara[0];
-		CP1 = cpara[1];
-		CP2 = cpara[2];
-		CP3 = cpara[3];
-		CP4 = cpara[4];
-		CP5 = cpara[5];
-		CP6 = cpara[6];
-		CP7 = cpara[7];
-		CP8 = cpara[8];
-		CP9 = cpara[9];
-		CP10 = cpara[10];
-		combo03 = CP0 * trans.x + CP1 * trans.y + CP2 * trans.z + CP3;
-		combo13 = CP4 * trans.x + CP5 * trans.y + CP6 * trans.z + CP7;
-		combo23 = CP8 * trans.x + CP9 * trans.y + CP10 * trans.z + cpara[11];
+		final NyARPerspectiveProjectionMatrix prjmat = this._projection_mat_ref;
+		final double CP0, CP1, CP2, CP4, CP5, CP6, CP8, CP9, CP10;
+		CP0 = prjmat.m00;
+		CP1 = prjmat.m01;
+		CP2 = prjmat.m02;
+		CP4 = prjmat.m10;
+		CP5 = prjmat.m11;
+		CP6 = prjmat.m12;
+		CP8 = prjmat.m20;
+		CP9 = prjmat.m21;
+		CP10 = prjmat.m22;
+		combo03 = CP0 * trans.x + CP1 * trans.y + CP2 * trans.z + prjmat.m03;
+		combo13 = CP4 * trans.x + CP5 * trans.y + CP6 * trans.z + prjmat.m13;
+		combo23 = CP8 * trans.x + CP9 * trans.y + CP10 * trans.z + prjmat.m23;
 		double CACA, SASA, SACA, CA, SA;
 		double CACACB, SACACB, SASACB, CASB, SASB;
 		double SACASC, SACACBSC, SACACBCC, SACACC;

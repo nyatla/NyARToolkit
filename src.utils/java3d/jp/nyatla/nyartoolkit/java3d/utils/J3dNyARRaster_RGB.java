@@ -13,7 +13,7 @@ import javax.media.j3d.ImageComponent;
 import javax.media.j3d.ImageComponent2D;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.NyARParam;
+import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 
 /**
@@ -49,7 +49,7 @@ public class J3dNyARRaster_RGB extends JmfNyARRaster_RGB
 
 	public J3dNyARRaster_RGB(NyARParam i_cparam)
 	{
-		super(i_cparam.getX(), i_cparam.getY());
+		super(i_cparam.getScreenSize());
 
 		//RGBのラスタを作る。
 		this.bufferd_image = new BufferedImage(this._size.w, this._size.h, BufferedImage.TYPE_3BYTE_BGR);

@@ -39,7 +39,7 @@ import jp.nyatla.nyartoolkit.core.pickup.INyARColorPatt;
  * AR_TEMPLATE_MATCHING_BWと同等のルールで マーカーを評価します。
  * 
  */
-public class NyARMatchPatt_BlackWhite implements NyARMatchPatt
+public class NyARMatchPatt_BlackWhite implements INyARMatchPatt
 {
 	private double datapow;
 

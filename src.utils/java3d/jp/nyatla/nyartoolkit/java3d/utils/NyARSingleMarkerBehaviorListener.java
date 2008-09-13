@@ -7,7 +7,11 @@
 package jp.nyatla.nyartoolkit.java3d.utils;
 
 import javax.media.j3d.*;
-
+/**
+ * 
+ * NyARToolkitのBehaviorのリスナ
+ *
+ */
 public interface NyARSingleMarkerBehaviorListener
 {
     /**

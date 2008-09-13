@@ -37,6 +37,7 @@ import javax.media.opengl.GL;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.core.*;
+import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
 
 
@@ -51,7 +52,7 @@ public class GLNyARRaster_RGB extends JmfNyARRaster_RGB
 
 	public GLNyARRaster_RGB(NyARParam i_param)
 	{
-		super(i_param.getX(), i_param.getY());
+		super(i_param.getScreenSize());
 		this._gl_flag = GL.GL_RGB;
 		this._gl_buf = new byte[this._size.w * this._size.h * 3];
 	}

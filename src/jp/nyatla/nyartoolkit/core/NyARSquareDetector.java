@@ -34,67 +34,11 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.param.*;
 
 
 
-/**
- * ラベル同士の重なり（内包関係）を調べるクラスです。 ラベルリストに内包するラベルを蓄積し、それにターゲットのラベルが内包されているか を確認します。
- */
-class OverlapChecker
-{
-	private NyARLabelingLabel[] _labels = new NyARLabelingLabel[32];
 
-	private int _length;
-
-	/**
-	 * 最大i_max_label個のラベルを蓄積できるようにオブジェクトをリセットする
-	 * 
-	 * @param i_max_label
-	 */
-	public void reset(int i_max_label)
-	{
-		if (i_max_label > this._labels.length) {
-			this._labels = new NyARLabelingLabel[i_max_label];
-		}
-		this._length = 0;
-	}
-
-	/**
-	 * チェック対象のラベルを追加する。
-	 * 
-	 * @param i_label_ref
-	 */
-	public void push(NyARLabelingLabel i_label_ref)
-	{
-		this._labels[this._length] = i_label_ref;
-		this._length++;
-	}
-
-	/**
-	 * 現在リストにあるラベルと重なっているかを返す。
-	 * 
-	 * @param i_label
-	 * @return 何れかのラベルの内側にあるならばfalse,独立したラベルである可能性が高ければtrueです．
-	 */
-	public boolean check(NyARLabelingLabel i_label)
-	{
-		// 重なり処理かな？
-		final NyARLabelingLabel[] label_pt = this._labels;
-		final int px1 = (int) i_label.pos_x;
-		final int py1 = (int) i_label.pos_y;
-		for (int i = this._length - 1; i >= 0; i--) {
-			final int px2 = (int) label_pt[i].pos_x;
-			final int py2 = (int) label_pt[i].pos_y;
-			final int d = (px1 - px2) * (px1 - px2) + (py1 - py2) * (py1 - py2);
-			if (d < label_pt[i].area / 4) {
-				// 対象外
-				return false;
-			}
-		}
-		// 対象
-		return true;
-	}
-}
 
 /**
  * イメージから正方形候補を検出するクラス。
@@ -108,29 +52,26 @@ public class NyARSquareDetector
 	private static final int AR_AREA_MAX = 100000;// #define AR_AREA_MAX 100000
 
 	private static final int AR_AREA_MIN = 70;// #define AR_AREA_MIN 70
-
 	private final int _width;
-
 	private final int _height;
-
-	private final NyARParam _cparam;
 
 	private final NyARLabeling_ARToolKit _labeling;
 
 	private final NyARLabelingImage _limage;
 
 	private final OverlapChecker _overlap_checker = new OverlapChecker();
+	private final NyARCameraDistortionFactor _dist_factor_ref;
 
 	/**
 	 * 最大i_squre_max個のマーカーを検出するクラスを作成する。
 	 * 
 	 * @param i_param
 	 */
-	public NyARSquareDetector(NyARParam i_param) throws NyARException
+	public NyARSquareDetector(NyARCameraDistortionFactor i_dist_factor_ref,NyARIntSize i_size) throws NyARException
 	{
-		this._width = i_param.getX();
-		this._height = i_param.getY();
-		this._cparam = i_param;
+		this._width = i_size.w;
+		this._height = i_size.h;
+		this._dist_factor_ref = i_dist_factor_ref;
 		this._labeling = new NyARLabeling_ARToolKit();
 		this._limage = new NyARLabelingImage(this._width, this._height);
 		this._labeling.attachDestination(this._limage);
@@ -348,8 +289,9 @@ public class NyARSquareDetector
 			o_vertex[2] = v1;
 			o_vertex[3] = wv2.vertex[0];
 		} else if (wv1.number_of_vertex > 1 && wv2.number_of_vertex == 0) {// }else if( wvnum1 > 1 && wvnum2== 0) {
-			v2 = v1 / 2;
-			if (!wv1.getVertex(i_x_coord, i_y_coord, 0, v2, thresh)) {
+			//頂点位置を、起点から対角点の間の1/2にあると予想して、検索する。
+			v2 = (v1-i_vertex1_index)/2+i_vertex1_index;
+			if (!wv1.getVertex(i_x_coord, i_y_coord, i_vertex1_index, v2, thresh)) {
 				return false;
 			}
 			if (!wv2.getVertex(i_x_coord, i_y_coord, v2, v1, thresh)) {
@@ -363,7 +305,8 @@ public class NyARSquareDetector
 				return false;
 			}
 		} else if (wv1.number_of_vertex == 0 && wv2.number_of_vertex > 1) {
-			v2 = (v1 + end_of_coord) / 2;
+			//v2 = (v1-i_vertex1_index+ end_of_coord-i_vertex1_index) / 2+i_vertex1_index;
+			v2 = (v1+ end_of_coord)/2;
 
 			if (!wv1.getVertex(i_x_coord, i_y_coord, v1, v2, thresh)) {
 				return false;
@@ -408,8 +351,7 @@ public class NyARSquareDetector
 		final NyARVec ev = this.__getSquareLine_ev; // matrixPCAの戻り値を受け取る
 		final NyARVec mean = this.__getSquareLine_mean;// matrixPCAの戻り値を受け取る
 		final double[] mean_array = mean.getArray();
-		final NyARParam cparam = this._cparam;
-
+		final NyARCameraDistortionFactor dist_factor=this._dist_factor_ref;  
 		final NyARMat input = this.__getSquareLine_input;// 次処理で初期化される。
 		final NyARMat evec = this.__getSquareLine_evec;// アウトパラメータを受け取るから初期化不要//new NyARMat(2,2);
 		final double[][] evec_array = evec.getArray();
@@ -425,7 +367,7 @@ public class NyARSquareDetector
 			// pcaの準備
 			input.realloc(n, 2);
 			// バッチ取得
-			cparam.observ2IdealBatch(i_xcoord, i_ycoord, st, n, input.getArray());
+			dist_factor.observ2IdealBatch(i_xcoord, i_ycoord, st, n, input.getArray());
 
 			// 主成分分析
 			input.matrixPCA(evec, ev, mean);
@@ -519,6 +461,65 @@ final class NyARVertexCounter
 				return false;
 			}
 		}
+		return true;
+	}
+}
+
+/**
+ * ラベル同士の重なり（内包関係）を調べるクラスです。 ラベルリストに内包するラベルを蓄積し、それにターゲットのラベルが内包されているか を確認します。
+ */
+class OverlapChecker
+{
+	private NyARLabelingLabel[] _labels = new NyARLabelingLabel[32];
+
+	private int _length;
+
+	/**
+	 * 最大i_max_label個のラベルを蓄積できるようにオブジェクトをリセットする
+	 * 
+	 * @param i_max_label
+	 */
+	public void reset(int i_max_label)
+	{
+		if (i_max_label > this._labels.length) {
+			this._labels = new NyARLabelingLabel[i_max_label];
+		}
+		this._length = 0;
+	}
+
+	/**
+	 * チェック対象のラベルを追加する。
+	 * 
+	 * @param i_label_ref
+	 */
+	public void push(NyARLabelingLabel i_label_ref)
+	{
+		this._labels[this._length] = i_label_ref;
+		this._length++;
+	}
+
+	/**
+	 * 現在リストにあるラベルと重なっているかを返す。
+	 * 
+	 * @param i_label
+	 * @return 何れかのラベルの内側にあるならばfalse,独立したラベルである可能性が高ければtrueです．
+	 */
+	public boolean check(NyARLabelingLabel i_label)
+	{
+		// 重なり処理かな？
+		final NyARLabelingLabel[] label_pt = this._labels;
+		final int px1 = (int) i_label.pos_x;
+		final int py1 = (int) i_label.pos_y;
+		for (int i = this._length - 1; i >= 0; i--) {
+			final int px2 = (int) label_pt[i].pos_x;
+			final int py2 = (int) label_pt[i].pos_y;
+			final int d = (px1 - px2) * (px1 - px2) + (py1 - py2) * (py1 - py2);
+			if (d < label_pt[i].area / 4) {
+				// 対象外
+				return false;
+			}
+		}
+		// 対象
 		return true;
 	}
 }

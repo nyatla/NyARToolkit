@@ -11,6 +11,7 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.qt.utils.*;
 import java.awt.*;
 import jp.nyatla.nyartoolkit.core.*;
+import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
 
@@ -36,8 +37,8 @@ public class NyarToolkitLinkTest extends Frame implements QtCaptureListener
         //NyARToolkitの準備
         NyARParam ar_param=new NyARParam();
         NyARCode ar_code  =new NyARCode(16,16);
-        ar_param.loadFromARFile(PARAM_FILE);
-        ar_param.changeSize(320,240);
+        ar_param.loadARParamFromFile(PARAM_FILE);
+        ar_param.changeScreenSize(320,240);
         nya=new NyARSingleDetectMarker(ar_param,ar_code,80.0);
         ar_code.loadFromARFile(CARCODE_FILE);
         //キャプチャイメージ用のラスタを準備

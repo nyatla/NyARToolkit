@@ -40,7 +40,7 @@ import jp.nyatla.nyartoolkit.core.pickup.INyARColorPatt;
  * pattern_match関数を分解した３種類のパターン検出クラスを定義します。
  * 
  */
-public interface NyARMatchPatt
+public interface INyARMatchPatt
 {
 	public double getConfidence();
 

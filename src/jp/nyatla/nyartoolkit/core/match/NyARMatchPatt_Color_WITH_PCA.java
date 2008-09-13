@@ -39,7 +39,7 @@ import jp.nyatla.nyartoolkit.core.pickup.INyARColorPatt;
  * AR_TEMPLATE_MATCHING_COLORかつAR_MATCHING_WITH_PCAと同等のルールで マーカーを評価します。
  * 
  */
-public class NyARMatchPatt_Color_WITH_PCA implements NyARMatchPatt
+public class NyARMatchPatt_Color_WITH_PCA implements INyARMatchPatt
 {
 	private final int EVEC_MAX = 10;// #define EVEC_MAX 10
 
@@ -49,8 +49,7 @@ public class NyARMatchPatt_Color_WITH_PCA implements NyARMatchPatt
 
 	private double[][][][] evec;// static double evec[EVEC_MAX][AR_PATT_SIZE_Y*AR_PATT_SIZE_X*3];
 
-	private double[][] epat = new double[4][EVEC_MAX];// static double
-														// epat[AR_PATT_NUM_MAX][4][EVEC_MAX];
+	private double[][] epat = new double[4][EVEC_MAX];// static double epat[AR_PATT_NUM_MAX][4][EVEC_MAX];
 
 	private int ave;
 
@@ -81,15 +80,12 @@ public class NyARMatchPatt_Color_WITH_PCA implements NyARMatchPatt
 		int[][][] data = i_target_patt.getPatArray();
 
 		input = new int[height][width][3];
-		evec = new double[EVEC_MAX][height][width][3];// static double
-														// evec[EVEC_MAX][AR_PATT_SIZE_Y*AR_PATT_SIZE_X*3];
+		evec = new double[EVEC_MAX][height][width][3];// static double evec[EVEC_MAX][AR_PATT_SIZE_Y*AR_PATT_SIZE_X*3];
 		int sum;
 
 		sum = ave = 0;
-		for (int i = 0; i < height; i++) {// for(int
-											// i=0;i<Config.AR_PATT_SIZE_Y;i++){
-			for (int i2 = 0; i2 < width; i2++) {// for(int
-												// i2=0;i2<Config.AR_PATT_SIZE_X;i2++){
+		for (int i = 0; i < height; i++) {// for(int i=0;i<Config.AR_PATT_SIZE_Y;i++){
+			for (int i2 = 0; i2 < width; i2++) {// for(int i2=0;i2<Config.AR_PATT_SIZE_X;i2++){
 				ave += (255 - data[i][i2][0]) + (255 - data[i][i2][1])
 						+ (255 - data[i][i2][2]);
 			}

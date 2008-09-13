@@ -112,14 +112,21 @@ public class JmfNyARRaster_RGB extends NyARRgbRaster_BasicClass
 	 * RGB形式のJMFバッファをラップするオブジェクトをつくります。 生成直後のオブジェクトはデータを持ちません。
 	 * メンバ関数はsetBufferを実行後に使用可能になります。
 	 */
-	public JmfNyARRaster_RGB(int i_width, int i_height)
+	public JmfNyARRaster_RGB(NyARIntSize i_size)
+	{
+		this._size.w = i_size.w;
+		this._size.h = i_size.h;
+		this._ref_buf = null;
+		this._reader = new Reader(this._size);
+	}
+	public JmfNyARRaster_RGB(int i_width,int i_height)
 	{
 		this._size.w = i_width;
 		this._size.h = i_height;
 		this._ref_buf = null;
 		this._reader = new Reader(this._size);
-	}
-
+	}	
+	
 	/**
 	 * フォーマットを解析して、ラスタタイプを返します。
 	 * 

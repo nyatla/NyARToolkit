@@ -131,13 +131,13 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 			//NyARToolkitの準備
 			_ar_param = new GLNyARParam();
 			NyARCode ar_code = new NyARCode(16, 16);
-			_ar_param.loadFromARFile(PARAM_FILE);
-			_ar_param.changeSize(SCREEN_X, SCREEN_Y);
+			_ar_param.loadARParamFromFile(PARAM_FILE);
+			_ar_param.changeScreenSize(SCREEN_X, SCREEN_Y);
 			_nya = new GLNyARSingleDetectMarker(_ar_param, ar_code, 80.0);
 			_nya.setContinueMode(false);//ここをtrueにすると、transMatContinueモード（History計算）になります。
 			ar_code.loadFromARFile(CARCODE_FILE);
 			//NyARToolkit用の支援クラス
-			_glnya = new NyARGLUtil(_gl, _ar_param);
+			_glnya = new NyARGLUtil(_gl);
 			//GL対応のRGBラスタオブジェクト
 			_cap_image = new GLNyARRaster_RGB(_ar_param);
 			//キャプチャ開始
@@ -211,7 +211,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 				//閾値計算(めんどくさいから一時的に自動調整にしとく。)
 				togs.doFilter(_cap_image, gs);
 				th.analyzeRaster(gs);
-				threshold=th.getThreshold();
+				threshold=110;//th.getThreshold();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

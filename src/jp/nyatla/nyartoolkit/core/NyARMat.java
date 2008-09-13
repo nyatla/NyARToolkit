@@ -247,12 +247,8 @@ public class NyARMat
 					ap_i = ap[i];// wap = ap + i * rowa;
 
 					work = ap_i[0];
-					for (j = 0; j < dimen_1; j++) {// for(j = 1, wbp = wcp,
-													// work = *wap;j < dimen ;
-													// j++, wap++, wbp++)
-						ap_i[j] = ap_i[j + 1] - work * ap_n[j];// wap = *(wap +
-																// 1) - work *
-																// (*wbp);
+					for (j = 0; j < dimen_1; j++) {// for(j = 1, wbp = wcp,work = *wap;j < dimen ;j++, wap++, wbp++)
+						ap_i[j] = ap_i[j + 1] - work * ap_n[j];// wap = *(wap +1) - work *(*wbp);
 					}
 					ap_i[j] = -work * ap_n[j];// *wap = -work * (*wbp);
 				}
@@ -982,8 +978,7 @@ public class NyARMat
 	}
 
 	/* int arMatrixPCA2( ARMat *input, ARMat *evec, ARVec *ev ); */
-	public static void arMatrixPCA2(NyARMat input, NyARMat evec, NyARVec ev)
-			throws NyARException
+	public static void arMatrixPCA2(NyARMat input, NyARMat evec, NyARVec ev) throws NyARException
 	{
 		NyARException.trap("未チェックのパス");
 		NyARMat work;

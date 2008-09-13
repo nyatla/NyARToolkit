@@ -34,10 +34,12 @@ package jp.nyatla.nyartoolkit.detector;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.match.*;
+import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.pickup.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
+import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilter_ARToolkitThreshold;
 
 /**
@@ -82,9 +84,10 @@ public class NyARSingleDetectMarker
 	 */
 	public NyARSingleDetectMarker(NyARParam i_param, NyARCode i_code, double i_marker_width) throws NyARException
 	{
+		final NyARIntSize scr_size=i_param.getScreenSize();		
 		// 解析オブジェクトを作る
-		this._square_detect = new NyARSquareDetector(i_param);
-		this._transmat = new NyARTransMat_O2(i_param);
+		this._square_detect = new NyARSquareDetector(i_param.getDistortionFactor(),scr_size);
+		this._transmat = new NyARTransMat(i_param);
 		// 比較コードを保存
 		this._code = i_code;
 		this._marker_width = i_marker_width;
@@ -93,7 +96,7 @@ public class NyARSingleDetectMarker
 		// 評価器を作る。
 		this._match_patt = new NyARMatchPatt_Color_WITHOUT_PCA();
 		//２値画像バッファを作る
-		this._bin_raster=new NyARBinRaster(i_param.getX(),i_param.getY());
+		this._bin_raster=new NyARBinRaster(scr_size.w,scr_size.h);
 	}
 
 	NyARBinRaster _bin_raster;

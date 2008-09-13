@@ -61,6 +61,5 @@ public class NyARSquareStack extends NyObjectStack
 	public NyARSquare prePush() throws NyARException
 	{
 		return (NyARSquare) super.prePush();
-	}	
-
+	}
 }

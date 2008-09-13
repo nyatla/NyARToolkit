@@ -301,8 +301,7 @@ public class NyARColorPatt_O1 implements INyARColorPatt
 			yw = 102.5 + 5.0 * (j + 0.5) * ydiv2_reciprocal;
 			for (i = 0; i < xdiv2; i++) {
 				xw = 102.5 + 5.0 * (i + 0.5) * xdiv2_reciprocal;
-				d = para[2 * 3 + 0] * xw + para[2 * 3 + 1] * yw
-						+ para[2 * 3 + 2];
+				d = para[2 * 3 + 0] * xw + para[2 * 3 + 1] * yw+ para[2 * 3 + 2];
 				if (d == 0) {
 					throw new NyARException();
 				}
@@ -320,8 +319,7 @@ public class NyARColorPatt_O1 implements INyARColorPatt
 				}
 			}
 		}
-		// short[][][] ext_pat=new
-		// short[Config.AR_PATT_SIZE_Y][Config.AR_PATT_SIZE_X][3];//ARUint32
+		// short[][][] ext_pat=new short[Config.AR_PATT_SIZE_Y][Config.AR_PATT_SIZE_X][3];//ARUint32
 		// ext_pat2[AR_PATT_SIZE_Y][AR_PATT_SIZE_X][3];
 		/* <Optimize> */
 		int xdiv_x_ydiv = xdiv * ydiv;
@@ -335,22 +333,7 @@ public class NyARColorPatt_O1 implements INyARColorPatt
 				extpat_j_i[1] = (ext_pat2_j_i[1] / xdiv_x_ydiv);// ext_pat[j][i][1]=(byte)(ext_pat2[j][i][1]/(xdiv*ydiv));
 				extpat_j_i[2] = (ext_pat2_j_i[2] / xdiv_x_ydiv);// ext_pat[j][i][2]=(byte)(ext_pat2[j][i][2]/(xdiv*ydiv));
 			}
-		}/*
-			 * int xdiv_mul_ydiv=xdiv*ydiv; short [][] extpat_pt_2; short[]
-			 * extpat_pt_1; int[][] ext_pat2_pt_2; int[] ext_pat2_pt_1; for(int
-			 * j=this.height-1; j>=0; j--){//for(int j = 0; j < this.height; j++ ){
-			 * extpat_pt_2=extpat[j]; ext_pat2_pt_2=ext_pat2[j]; for(int i =
-			 * this.width-1; i>=0; i--){//for(int i = 0; i < this.width; i++ ){ //
-			 * PRL 2006-06-08. extpat_pt_1=extpat_pt_2[i];
-			 * ext_pat2_pt_1=ext_pat2_pt_2[i];
-			 * extpat_pt_1[0]=(short)(ext_pat2_pt_1[0] /
-			 * xdiv_mul_ydiv);//ext_pat[j][i][0] = (byte)(ext_pat2[j][i][0] /
-			 * (xdiv*ydiv)); extpat_pt_1[1]=(short)(ext_pat2_pt_1[1] /
-			 * xdiv_mul_ydiv);//ext_pat[j][i][1] = (byte)(ext_pat2[j][i][1] /
-			 * (xdiv*ydiv)); extpat_pt_1[2]=(short)(ext_pat2_pt_1[2] /
-			 * xdiv_mul_ydiv);//ext_pat[j][i][2] = (byte)(ext_pat2[j][i][2] /
-			 * (xdiv*ydiv)); } } /*</Optimize>
-			 */
+		}
 		return true;
 	}
 }

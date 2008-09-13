@@ -40,27 +40,17 @@ public class NyARVersion
 															// AR_HEADER_VERSION_MAJOR
 															// 2
 
-	private static final int AR_HEADER_VERSION_MINOR = 72;// #define
-															// AR_HEADER_VERSION_MINOR
-															// 72
+	private static final int AR_HEADER_VERSION_MINOR = 72;// #define AR_HEADER_VERSION_MINOR 72
 
-	private static final int AR_HEADER_VERSION_TINY = 0;// #define
-														// AR_HEADER_VERSION_TINY
-														// 0
+	private static final int AR_HEADER_VERSION_TINY = 0;// #define AR_HEADER_VERSION_TINY 0
 
-	private static final int AR_HEADER_VERSION_BUILD = 0;// #define
-															// AR_HEADER_VERSION_BUILD
-															// 0
+	private static final int AR_HEADER_VERSION_BUILD = 0;// #define AR_HEADER_VERSION_BUILD 0
 
-	private static final String AR_HEADER_VERSION_STRING = "2.72.0";// #define
-																	// AR_HEADER_VERSION_STRING
-																	// "2.72.0"
+	private static final String AR_HEADER_VERSION_STRING = "2.72.0";// #define AR_HEADER_VERSION_STRING "2.72.0"
 
-	public static final boolean AR_HAVE_HEADER_VERSION_2 = true;// #define
-																// AR_HAVE_HEADER_VERSION_2
+	public static final boolean AR_HAVE_HEADER_VERSION_2 = true;// #define AR_HAVE_HEADER_VERSION_2
 
-	public static final boolean AR_HAVE_HEADER_VERSION_2_72 = true;// #define
-																	// AR_HAVE_HEADER_VERSION_2_72
+	public static final boolean AR_HAVE_HEADER_VERSION_2_72 = true;// #define AR_HAVE_HEADER_VERSION_2_72
 
 	public static String getARVersion()
 	{

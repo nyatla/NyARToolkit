@@ -2,9 +2,9 @@ package jp.nyatla.nyartoolkit.core.transmat.rotmatrix;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARMat;
-import jp.nyatla.nyartoolkit.core.NyARParam;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
+import jp.nyatla.nyartoolkit.core.param.*;
 
 public class NyARRotVector
 {
@@ -18,43 +18,47 @@ public class NyARRotVector
 
 	//privateメンバ達
 	
-	private double[] _i_cpara_array_ref;
+	private NyARPerspectiveProjectionMatrix _projection_mat_ref;
 
 	private double[][] _inv_cpara_array_ref;
 
-	public NyARRotVector(NyARParam i_cpara) throws NyARException
+	public NyARRotVector(NyARPerspectiveProjectionMatrix i_cmat) throws NyARException
 	{
-		final double[] cpara = i_cpara.get34Array();
 		NyARMat mat_a = new NyARMat(3, 3);
 		double[][] a_array = mat_a.getArray();
-		int i, j;
-		for (j = 0; j < 3; j++) {
-			for (i = 0; i < 3; i++) {
-				a_array[j][i] = cpara[j * 4 + i];// m[j*3+i] = cpara[j][i];
-			}
-		}
+		
+		a_array[0][0] =i_cmat.m00;
+		a_array[0][1] =i_cmat.m01;
+		a_array[0][2] =i_cmat.m02;
+		a_array[1][0] =i_cmat.m10;
+		a_array[1][1] =i_cmat.m11;
+		a_array[1][2] =i_cmat.m12;
+		a_array[2][0] =i_cmat.m20;
+		a_array[2][1] =i_cmat.m21;
+		a_array[2][2] =i_cmat.m22;
+		
 		mat_a.matrixSelfInv();
-		this._i_cpara_array_ref = cpara;
+		this._projection_mat_ref = i_cmat;
 		this._inv_cpara_array_ref = mat_a.getArray();
 		//GCない言語のときは、ここで配列の所有権委譲してね！
 	}
 
 	/**
-	 * ２直線に直交するベクトルを計算する。
+	 * ２直線に直交するベクトルを計算する・・・だと思う。
 	 * @param i_linear1
 	 * @param i_linear2
 	 */
 	public void exteriorProductFromLinear(NyARLinear i_linear1, NyARLinear i_linear2)
 	{
 		//1行目
-		final double[] cpara = this._i_cpara_array_ref;
+		final NyARPerspectiveProjectionMatrix cmat= this._projection_mat_ref;
 		final double w1 = i_linear1.run * i_linear2.rise - i_linear2.run * i_linear1.rise;
 		final double w2 = i_linear1.rise * i_linear2.intercept - i_linear2.rise * i_linear1.intercept;
 		final double w3 = i_linear1.intercept * i_linear2.run - i_linear2.intercept * i_linear1.run;
 
-		final double m0 = w1 * (cpara[0 * 4 + 1] * cpara[1 * 4 + 2] - cpara[0 * 4 + 2] * cpara[1 * 4 + 1]) + w2 * cpara[1 * 4 + 1] - w3 * cpara[0 * 4 + 1];
-		final double m1 = -w1 * cpara[0 * 4 + 0] * cpara[1 * 4 + 2] + w3 * cpara[0 * 4 + 0];
-		final double m2 = w1 * cpara[0 * 4 + 0] * cpara[1 * 4 + 1];
+		final double m0 = w1 * (cmat.m01 * cmat.m12 - cmat.m02 * cmat.m11) + w2 * cmat.m11 - w3 * cmat.m01;//w1 * (cpara[0 * 4 + 1] * cpara[1 * 4 + 2] - cpara[0 * 4 + 2] * cpara[1 * 4 + 1]) + w2 * cpara[1 * 4 + 1] - w3 * cpara[0 * 4 + 1];
+		final double m1 = -w1 * cmat.m00 * cmat.m12 + w3 * cmat.m00;//-w1 * cpara[0 * 4 + 0] * cpara[1 * 4 + 2] + w3 * cpara[0 * 4 + 0];
+		final double m2 = w1 * cmat.m00 * cmat.m11;//w1 * cpara[0 * 4 + 0] * cpara[1 * 4 + 1];
 		final double w = Math.sqrt(m0 * m0 + m1 * m1 + m2 * m2);
 		this.v1 = m0 / w;
 		this.v2 = m1 / w;
@@ -72,7 +76,6 @@ public class NyARRotVector
 	public void checkVectorByVertex(final NyARDoublePoint2d i_start_vertex, final NyARDoublePoint2d i_end_vertex) throws NyARException
 	{
 		double h;
-		final double[] cpara = this._i_cpara_array_ref;
 		final double[][] inv_cpara = this._inv_cpara_array_ref;
 		//final double[] world = __checkVectorByVertex_world;// [2][3];
 		final double world0 = inv_cpara[0][0] * i_start_vertex.x * 10.0 + inv_cpara[0][1] * i_start_vertex.y * 10.0 + inv_cpara[0][2] * 10.0;// mat_a->m[0]*st[0]*10.0+
@@ -84,20 +87,26 @@ public class NyARRotVector
 		// </Optimize>
 
 		//final double[] camera = __checkVectorByVertex_camera;// [2][2];
-
-		h = cpara[2 * 4 + 0] * world0 + cpara[2 * 4 + 1] * world1 + cpara[2 * 4 + 2] * world2;
+		final NyARPerspectiveProjectionMatrix cmat= this._projection_mat_ref;
+		//h = cpara[2 * 4 + 0] * world0 + cpara[2 * 4 + 1] * world1 + cpara[2 * 4 + 2] * world2;
+		h = cmat.m20 * world0 + cmat.m21 * world1 + cmat.m22 * world2;
 		if (h == 0.0) {
 			throw new NyARException();
 		}
-		final double camera0 = (cpara[0 * 4 + 0] * world0 + cpara[0 * 4 + 1] * world1 + cpara[0 * 4 + 2] * world2) / h;
-		final double camera1 = (cpara[1 * 4 + 0] * world0 + cpara[1 * 4 + 1] * world1 + cpara[1 * 4 + 2] * world2) / h;
+		//final double camera0 = (cpara[0 * 4 + 0] * world0 + cpara[0 * 4 + 1] * world1 + cpara[0 * 4 + 2] * world2) / h;
+		//final double camera1 = (cpara[1 * 4 + 0] * world0 + cpara[1 * 4 + 1] * world1 + cpara[1 * 4 + 2] * world2) / h;
+		final double camera0 = (cmat.m00 * world0 + cmat.m01 * world1 + cmat.m02 * world2) / h;
+		final double camera1 = (cmat.m10 * world0 + cmat.m11 * world1 + cmat.m12 * world2) / h;
 
-		h = cpara[2 * 4 + 0] * world3 + cpara[2 * 4 + 1] * world4 + cpara[2 * 4 + 2] * world5;
+		//h = cpara[2 * 4 + 0] * world3 + cpara[2 * 4 + 1] * world4 + cpara[2 * 4 + 2] * world5;
+		h = cmat.m20 * world3 + cmat.m21 * world4 + cmat.m22 * world5;
 		if (h == 0.0) {
 			throw new NyARException();
 		}
-		final double camera2 = (cpara[0 * 4 + 0] * world3 + cpara[0 * 4 + 1] * world4 + cpara[0 * 4 + 2] * world5) / h;
-		final double camera3 = (cpara[1 * 4 + 0] * world3 + cpara[1 * 4 + 1] * world4 + cpara[1 * 4 + 2] * world5) / h;
+		//final double camera2 = (cpara[0 * 4 + 0] * world3 + cpara[0 * 4 + 1] * world4 + cpara[0 * 4 + 2] * world5) / h;
+		//final double camera3 = (cpara[1 * 4 + 0] * world3 + cpara[1 * 4 + 1] * world4 + cpara[1 * 4 + 2] * world5) / h;
+		final double camera2 = (cmat.m00 * world3 + cmat.m01 * world4 + cmat.m02 * world5) / h;
+		final double camera3 = (cmat.m10 * world3 + cmat.m11 * world4 + cmat.m12 * world5) / h;
 
 		final double v = (i_end_vertex.x - i_start_vertex.x) * (camera2 - camera0) + (i_end_vertex.y - i_start_vertex.y) * (camera3 - camera1);
 		if (v < 0) {

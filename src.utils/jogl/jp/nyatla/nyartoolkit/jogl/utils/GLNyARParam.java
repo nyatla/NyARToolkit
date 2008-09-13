@@ -33,6 +33,7 @@
 package jp.nyatla.nyartoolkit.jogl.utils;
 
 import jp.nyatla.nyartoolkit.core.*;
+import jp.nyatla.nyartoolkit.core.param.NyARParam;
 
 /**
  * NyARParamにOpenGL向け関数を追加したもの
@@ -75,13 +76,13 @@ public class GLNyARParam extends NyARParam
 		NyARMat trans_mat = new NyARMat(3, 4);
 		NyARMat icpara_mat = new NyARMat(3, 4);
 		double[][] p = new double[3][3], q = new double[4][4];
-		int width, height;
+
 		int i, j;
 
-		width = xsize;
-		height = ysize;
+		final int width = this._screen_size.w;
+		final int height = this._screen_size.h;
 
-		decompMat(icpara_mat, trans_mat);
+		this.getPerspectiveProjectionMatrix().decompMat(icpara_mat, trans_mat);
 
 		double[][] icpara = icpara_mat.getArray();
 		double[][] trans = trans_mat.getArray();
