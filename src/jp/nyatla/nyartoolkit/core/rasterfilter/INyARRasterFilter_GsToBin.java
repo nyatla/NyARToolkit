@@ -29,40 +29,12 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin;
+package jp.nyatla.nyartoolkit.core.rasterfilter;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.types.*;
 
-/**
- * 定数閾値による2値化をする。
- * 
- */
-public class NyARRasterFilter_Threshold implements INyARRasterFilter_GsToBin
+public interface INyARRasterFilter_GsToBin
 {
-	private int _threshold;
-
-	public NyARRasterFilter_Threshold(int i_threshold)
-	{
-		this._threshold = i_threshold;
-	}
-
-	public void doFilter(NyARGlayscaleRaster i_input, NyARBinRaster i_output) throws NyARException
-	{
-		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
-
-		final int[][] out_buf = (int[][]) i_output.getBufferReader().getBuffer();
-		final int[][] in_buf = (int[][]) i_input.getBufferReader().getBuffer();
-
-		int bp = 0;
-		NyARIntSize size = i_output.getSize();
-		for (int y = 0; y < size.h - 1; y++) {
-			for (int x = 0; x < size.w; x++) {
-				out_buf[y][x] = in_buf[y][x] >= this._threshold ? 1 : 0;
-				bp += 3;
-			}
-		}
-		return;
-	}
+	public void doFilter(NyARGlayscaleRaster i_input, NyARBinRaster i_output) throws NyARException;
 }
