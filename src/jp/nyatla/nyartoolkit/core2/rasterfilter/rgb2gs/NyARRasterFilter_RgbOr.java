@@ -29,7 +29,7 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core2;
+package jp.nyatla.nyartoolkit.core2.rasterfilter.rgb2gs;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
@@ -38,7 +38,7 @@ import jp.nyatla.nyartoolkit.core.rasterfilter.INyARRasterFilter_RgbToGs;
 import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
-public class NyARRasterFilter_RgbMul implements INyARRasterFilter_RgbToGs
+public class NyARRasterFilter_RgbOr implements INyARRasterFilter_RgbToGs
 {
 	public void doFilter(INyARRgbRaster i_input, NyARGlayscaleRaster i_output) throws NyARException
 	{
@@ -46,8 +46,8 @@ public class NyARRasterFilter_RgbMul implements INyARRasterFilter_RgbToGs
 		INyARBufferReader out_buffer_reader=i_output.getBufferReader();			
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
 
-		int[][] out_buf = (int[][]) in_buffer_reader.getBuffer();
-		byte[] in_buf = (byte[]) out_buffer_reader.getBuffer();
+		final int[][] out_buf = (int[][]) out_buffer_reader.getBuffer();
+		final byte[] in_buf = (byte[]) in_buffer_reader.getBuffer();
 
 		NyARIntSize size = i_output.getSize();
 		switch (in_buffer_reader.getBufferType()) {
@@ -66,7 +66,7 @@ public class NyARRasterFilter_RgbMul implements INyARRasterFilter_RgbToGs
 		int bp = 0;
 		for (int y = 0; y < i_size.h; y++) {
 			for (int x = 0; x < i_size.w; x++) {
-				i_out[y][x] = ((i_in[bp] & 0xff) * (i_in[bp + 1] & 0xff) * (i_in[bp + 2] & 0xff)) >> 16;
+				i_out[y][x] = ((i_in[bp] & 0xff) | (i_in[bp + 1] & 0xff) | (i_in[bp + 2] & 0xff));
 				bp += 3;
 			}
 		}

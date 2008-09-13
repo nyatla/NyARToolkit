@@ -29,7 +29,7 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core2;
+package jp.nyatla.nyartoolkit.core2.rasterfilter.rgb2gs;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
@@ -38,25 +38,22 @@ import jp.nyatla.nyartoolkit.core.rasterfilter.INyARRasterFilter_RgbToGs;
 import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
-public class NyARRasterFilter_RgbAve implements INyARRasterFilter_RgbToGs
+public class NyARRasterFilter_RgbMul implements INyARRasterFilter_RgbToGs
 {
 	public void doFilter(INyARRgbRaster i_input, NyARGlayscaleRaster i_output) throws NyARException
 	{
 		INyARBufferReader in_buffer_reader=i_input.getBufferReader();	
-		INyARBufferReader out_buffer_reader=i_output.getBufferReader();	
+		INyARBufferReader out_buffer_reader=i_output.getBufferReader();			
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
 
-		int[][] out_buf = (int[][]) out_buffer_reader.getBuffer();
-		byte[] in_buf = (byte[]) in_buffer_reader.getBuffer();
+		int[][] out_buf = (int[][]) in_buffer_reader.getBuffer();
+		byte[] in_buf = (byte[]) out_buffer_reader.getBuffer();
 
 		NyARIntSize size = i_output.getSize();
 		switch (in_buffer_reader.getBufferType()) {
 		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24:
 		case INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24:
 			convert24BitRgb(in_buf, out_buf, size);
-			break;
-		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8X8_32:
-			convert32BitRgbx(in_buf, out_buf, size);
 			break;
 		default:
 			throw new NyARException();
@@ -69,21 +66,10 @@ public class NyARRasterFilter_RgbAve implements INyARRasterFilter_RgbToGs
 		int bp = 0;
 		for (int y = 0; y < i_size.h; y++) {
 			for (int x = 0; x < i_size.w; x++) {
-				i_out[y][x] = ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff)) / 3;
+				i_out[y][x] = ((i_in[bp] & 0xff) * (i_in[bp + 1] & 0xff) * (i_in[bp + 2] & 0xff)) >> 16;
 				bp += 3;
 			}
 		}
 		return;
 	}
-	private void convert32BitRgbx(byte[] i_in, int[][] i_out, NyARIntSize i_size)
-	{
-		int bp = 0;
-		for (int y = 0; y < i_size.h; y++) {
-			for (int x = 0; x < i_size.w; x++) {
-				i_out[y][x] = ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff)) / 3;
-				bp += 4;
-			}
-		}
-		return;
-	}	
 }

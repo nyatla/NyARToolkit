@@ -29,7 +29,7 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.transmat.rottransopt;
+package jp.nyatla.nyartoolkit.core.transmat.optimize;
 
 
 import jp.nyatla.nyartoolkit.NyARException;

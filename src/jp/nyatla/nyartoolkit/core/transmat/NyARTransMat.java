@@ -35,8 +35,8 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARSquare;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.transmat.fitveccalc.NyARFitVecCalculator;
+import jp.nyatla.nyartoolkit.core.transmat.optimize.NyARRotTransOptimize;
 import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.NyARRotMatrix;
-import jp.nyatla.nyartoolkit.core.transmat.rottransopt.NyARRotTransOptimize;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 

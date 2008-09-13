@@ -29,20 +29,18 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.rasteranalyzer.threshold;
+package jp.nyatla.nyartoolkit.core2.rasteranalyzer.threshold;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.types.*;
 
-
 /**
- * 明点と暗点をPタイル法で検出して、その中央値を閾値とする。
- * 
+ * Pタイル法による閾値検出
  * 
  */
-public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresholdAnalyzer
+public class NyARRasterThresholdAnalyzer_PTile implements INyARRasterThresholdAnalyzer
 {
 	private int _persentage;
 
@@ -50,12 +48,12 @@ public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresh
 
 	/**
 	 * @param i_persentage
-	 * 0<=50であること。白/黒マーカーの場合は10～20を推奨 正の場合、黒点を基準にします。 負の場合、白点を基準にします。
+	 * -100<=0<=100であること。 正の場合、黒点を基準にします。 負の場合、白点を基準にします。
 	 * (CMOSカメラの場合、基準点は白点の方が良い)
 	 */
-	public NyARRasterThresholdAnalyzer_SlidePTile(int i_persentage)
+	public NyARRasterThresholdAnalyzer_PTile(int i_persentage)
 	{
-		assert (0 <= i_persentage && i_persentage <= 50);
+		assert (-100 <= i_persentage && i_persentage <= 100);
 		this._persentage = i_persentage;
 	}
 
@@ -80,44 +78,43 @@ public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresh
 		}
 		// 閾値ピクセル数確定
 		int th_pixcels = i_size.w * i_size.h * this._persentage / 100;
-		int th_wk;
-		int th_w, th_b;
 
-		// 黒点基準
-		th_wk = th_pixcels;
-		for (th_b = 0; th_b < 254; th_b++) {
-			th_wk -= histgram[th_b];
-			if (th_wk <= 0) {
-				break;
+		// 閾値判定
+		int i;
+		if (th_pixcels > 0) {
+			// 黒点基準
+			for (i = 0; i < 254; i++) {
+				th_pixcels -= histgram[i];
+				if (th_pixcels <= 0) {
+					break;
+				}
 			}
-		}
-		// 白点基準
-		th_wk = th_pixcels;
-		for (th_w = 255; th_w > 1; th_w--) {
-			th_wk -= histgram[th_w];
-			if (th_wk <= 0) {
-				break;
+		} else {
+			// 白点基準
+			for (i = 255; i > 1; i--) {
+				th_pixcels += histgram[i];
+				if (th_pixcels >= 0) {
+					break;
+				}
 			}
 		}
 		// 閾値の保存
-		return (th_w + th_b) / 2;
+		return i;
 	}
 
 	public void analyzeRaster(INyARRaster i_input) throws NyARException
 	{
 		final INyARBufferReader buffer_reader=i_input.getBufferReader();	
 		assert (buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT2D_GLAY_8));
-
 		int[] histgram = new int[256];
-		// 閾値の基準値を出す。
 		this._threshold = createHistgram(buffer_reader,i_input.getSize(), histgram);
-		return;
 	}
 
 	/**
-	 * ヒストグラムをラスタに書き出す。
+	 * デバック用の関数です。 ヒストグラムをラスタに書き出します。
 	 * 
 	 * @param i_output
+	 * 書き出し先のラスタオブジェクト 256ピクセル以上の幅があること。
 	 */
 	public void debugDrawHistgramMap(INyARRaster i_input, INyARRaster i_output) throws NyARException
 	{
@@ -125,7 +122,6 @@ public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresh
 		INyARBufferReader out_buffer_reader=i_output.getBufferReader();	
 		assert (in_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT2D_GLAY_8));
 		assert (out_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT2D_GLAY_8));
-
 		NyARIntSize size = i_output.getSize();
 
 		int[][] out_buf = (int[][]) out_buffer_reader.getBuffer();
@@ -138,9 +134,6 @@ public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresh
 		// ヒストグラムを計算
 		int[] histgram = new int[256];
 		int threshold = createHistgram(in_buffer_reader,i_input.getSize(), histgram);
-		for (int i = 255; i > 0; i--) {
-			histgram[i] = Math.abs(histgram[i]);
-		}
 
 		// ヒストグラムの最大値を出す
 		int max_v = 0;

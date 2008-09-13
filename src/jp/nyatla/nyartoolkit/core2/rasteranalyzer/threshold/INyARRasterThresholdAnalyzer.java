@@ -29,7 +29,7 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.rasteranalyzer.threshold;
+package jp.nyatla.nyartoolkit.core2.rasteranalyzer.threshold;
 
 
 import jp.nyatla.nyartoolkit.NyARException;
