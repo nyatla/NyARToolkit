@@ -40,6 +40,10 @@ import jp.nyatla.utils.*;
  */
 public class NyARLabelingLabelStack extends NyObjectStack
 {
+	protected NyARLabelingLabelStack(NyARLabelingLabel[] i_label_array)
+	{
+		super(i_label_array);		
+	}
 	public NyARLabelingLabelStack(int i_max_array_size)
 	{
 		super(new NyARLabelingLabel[i_max_array_size]);

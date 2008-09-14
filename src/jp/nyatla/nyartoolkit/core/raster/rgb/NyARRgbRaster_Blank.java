@@ -34,6 +34,7 @@ package jp.nyatla.nyartoolkit.core.raster.rgb;
 import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.rasterreader.INyARRgbPixelReader;
 import jp.nyatla.nyartoolkit.core.rasterreader.NyARBufferReader;
+import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /*
  * 真っ黒の矩形を定義する。
@@ -66,8 +67,7 @@ public class NyARRgbRaster_Blank extends NyARRgbRaster_BasicClass
 	
 	public NyARRgbRaster_Blank(int i_width, int i_height)
 	{
-		this._size.w = i_width;
-		this._size.h = i_height;
+		super(new NyARIntSize(i_width,i_height));
 		this._reader = new PixelReader();
 		this._buffer_reader=new NyARBufferReader(null,INyARBufferReader.BUFFERFORMAT_NULL_ALLZERO);
 		return;

@@ -35,7 +35,11 @@ import jp.nyatla.nyartoolkit.core.types.*;
 
 public abstract class NyARRaster_BasicClass implements INyARRaster
 {
-	final protected NyARIntSize _size = new NyARIntSize();
+	final protected NyARIntSize _size;
+	protected NyARRaster_BasicClass(final NyARIntSize i_size)
+	{
+		this._size= i_size;
+	}
 
 	final public int getWidth()
 	{

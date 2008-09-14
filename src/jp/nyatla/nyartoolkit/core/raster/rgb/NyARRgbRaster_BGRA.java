@@ -32,6 +32,7 @@
 package jp.nyatla.nyartoolkit.core.raster.rgb;
 
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
+import jp.nyatla.nyartoolkit.core.types.*;
 
 public class NyARRgbRaster_BGRA extends NyARRgbRaster_BasicClass implements INyARRgbRaster
 {
@@ -79,9 +80,8 @@ public class NyARRgbRaster_BGRA extends NyARRgbRaster_BasicClass implements INyA
 
 	private NyARRgbRaster_BGRA(byte[] i_buffer, int i_width, int i_height)
 	{
+		super(new NyARIntSize(i_width,i_height));
 		this._ref_buf = i_buffer;
-		this._size.w = i_width;
-		this._size.h = i_height;
 		this._rgb_reader = new PixelReader(this);
 		this._buffer_reader=new NyARBufferReader(i_buffer,INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8X8_32);
 		return;

@@ -50,8 +50,7 @@ public class RawFileTest
 {
 	private final String code_file = "../Data/patt.hiro";
 
-//	private final String data_file = "../Data/320x240ABGR.raw";
-	private final String data_file = "../Data/320x240RGB.raw";
+	private final String data_file = "../Data/320x240ABGR.raw";
 
 	private final String camera_file = "../Data/camera_para.dat";
 
@@ -65,7 +64,7 @@ public class RawFileTest
 		// AR用カメラパラメタファイルをロード
 		NyARParam ap = new NyARParam();
 		ap.loadARParamFromFile(camera_file);
-		ap.changeScreenSize(640, 480);
+		ap.changeScreenSize(320, 240);
 
 		// AR用のパターンコードを読み出し
 		NyARCode code = new NyARCode(16, 16);
@@ -76,8 +75,7 @@ public class RawFileTest
 		FileInputStream fs = new FileInputStream(data_file);
 		byte[] buf = new byte[(int) f.length()];
 		fs.read(buf);
-		INyARRgbRaster ra = NyARRgbRaster_RGB.wrap(buf, 640, 480);
-//		INyARRgbRaster ra = NyARRgbRaster_BGRA.wrap(buf, 320, 240);
+		INyARRgbRaster ra = NyARRgbRaster_BGRA.wrap(buf, 320, 240);
 		// Blank_Raster ra=new Blank_Raster(320, 240);
 
 		// １パターンのみを追跡するクラスを作成
@@ -89,7 +87,7 @@ public class RawFileTest
 
 		// マーカーを検出
 		Date d2 = new Date();
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < 10000; i++) {
 			// 変換行列を取得
 			ar.detectMarkerLite(ra, 110);
 			ar.getTransmationMatrix(result_mat);

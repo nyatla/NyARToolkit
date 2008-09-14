@@ -35,6 +35,7 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.rasterreader.NyARBufferReader;
+import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
  *
@@ -47,12 +48,10 @@ public class NyARLabelingImage extends NyARRaster_BasicClass implements INyARLab
 	protected NyARLabelingLabelStack _label_list;
 	protected int[] _index_table;
 	protected boolean _is_index_table_enable;
-
 	public NyARLabelingImage(int i_width, int i_height)
 	{
+		super(new NyARIntSize(i_width,i_height));
 		this._ref_buf =new int[i_height][i_width];
-		this._size.w = i_width;
-		this._size.h = i_height;
 		this._label_list = new NyARLabelingLabelStack(MAX_LABELS);
 		this._index_table=new int[MAX_LABELS];
 		this._is_index_table_enable=false;

@@ -137,6 +137,7 @@ public class JmfNyARRaster_RGB extends NyARRgbRaster_BasicClass
 	 */
 	public JmfNyARRaster_RGB(NyARIntSize i_size)
 	{
+		super(new NyARIntSize(i_size.w,i_size.w));
 		this._size.w = i_size.w;
 		this._size.h = i_size.h;
 		this._ref_buf = null;
@@ -144,8 +145,7 @@ public class JmfNyARRaster_RGB extends NyARRgbRaster_BasicClass
 	}
 	public JmfNyARRaster_RGB(int i_width,int i_height)
 	{
-		this._size.w = i_width;
-		this._size.h = i_height;
+		super(new NyARIntSize(i_width,i_height));
 		this._ref_buf = null;
 		this._reader = new Reader(this._size);
 	}	

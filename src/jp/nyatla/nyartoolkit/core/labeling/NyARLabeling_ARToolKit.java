@@ -296,53 +296,7 @@ public class NyARLabeling_ARToolKit implements INyARLabeling
 		}
 		return;
 	}
-/*	構造が変わるから、ハイスピード版実装するときに使う。
-	private void updateLabelStackLarge(NyARLabelingLabelStack i_stack,int[] i_lindex,NyARIntSize i_size,int[][] i_work,int i_work_max,int i_number_of_label) throws NyARException
-	{
-		// ラベルバッファを予約
-		i_stack.reserv(i_number_of_label);
-		// エリアと重心、クリップ領域を計算
-		final NyARLabelingLabel[] labels = i_stack.getArray();
-		for (int i = 0; i < i_number_of_label; i++) {
-			final NyARLabelingLabel label_pt =labels[i];
-			label_pt.id =i+1;
-			label_pt.area = 0;
-			label_pt.pos_x = 0;
-			label_pt.pos_y = 0;
-			label_pt.clip_l = i_size.w;// wclip[i*4+0] = lxsize;
-			label_pt.clip_r = 0;// wclip[i*4+0] = lxsize;
-			label_pt.clip_t = i_size.h;// wclip[i*4+2] = lysize;
-			label_pt.clip_b = 0;// wclip[i*4+3] = 0;
-		}
 
-		for (int i = 0; i < i_work_max; i++) {
-			final NyARLabelingLabel label_pt = labels[i_lindex[i] - 1];
-			final int[] work2_pt = i_work[i];
-			label_pt.area += work2_pt[0];
-			label_pt.pos_x += work2_pt[1];
-			label_pt.pos_y += work2_pt[2];
-			if (label_pt.clip_l > work2_pt[3]) {
-				label_pt.clip_l = work2_pt[3];
-			}
-			if (label_pt.clip_r < work2_pt[4]) {
-				label_pt.clip_r = work2_pt[4];
-			}
-			if (label_pt.clip_t > work2_pt[5]) {
-				label_pt.clip_t = work2_pt[5];
-			}
-			if (label_pt.clip_b < work2_pt[6]) {
-				label_pt.clip_b = work2_pt[6];
-			}
-		}
-
-		for (int i = 0; i < i_number_of_label; i++) {// for(int i = 0; i < *label_num; i++ ) {
-			final NyARLabelingLabel label_pt = labels[i];
-			label_pt.pos_x /= label_pt.area;
-			label_pt.pos_y /= label_pt.area;
-		}
-		return;	
-	}
-	*/
 }
 
 /**
@@ -353,8 +307,6 @@ public class NyARLabeling_ARToolKit implements INyARLabeling
 final class NyARWorkHolder
 {
 	private final static int ARRAY_APPEND_STEP = 256;
-
-	public final int[] work;
 
 	public final int[][] work2;
 
@@ -368,7 +320,6 @@ final class NyARWorkHolder
 	public NyARWorkHolder(int i_holder_size)
 	{
 		// ポインタだけははじめに確保しておく
-		this.work = new int[i_holder_size];
 		this.work2 = new int[i_holder_size][];
 		this.allocate_size = 0;
 	}
@@ -385,13 +336,13 @@ final class NyARWorkHolder
 			return;
 		}
 		// 要求されたインデクスは範囲外
-		if (i_index >= this.work.length) {
+		if (i_index >= this.work2.length) {
 			throw new NyARException();
 		}
 		// 追加アロケート範囲を計算
 		int range = i_index + ARRAY_APPEND_STEP;
-		if (range >= this.work.length) {
-			range = this.work.length;
+		if (range >= this.work2.length) {
+			range = this.work2.length;
 		}
 		// アロケート
 		for (int i = this.allocate_size; i < range; i++) {

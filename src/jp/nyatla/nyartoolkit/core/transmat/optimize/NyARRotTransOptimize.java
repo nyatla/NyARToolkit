@@ -38,8 +38,12 @@ import jp.nyatla.nyartoolkit.core.transmat.fitveccalc.NyARFitVecCalculator;
 import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.NyARRotMatrix;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
-
-public class NyARRotTransOptimize
+/**
+ * 基本姿勢と実画像を一致するように、角度を微調整→平行移動量を再計算
+ * を繰り返して、変換行列を最適化する。
+ *
+ */
+public class NyARRotTransOptimize implements INyARRotTransOptimize
 {
 	private final static int AR_GET_TRANS_MAT_MAX_LOOP_COUNT = 5;// #define AR_GET_TRANS_MAT_MAX_LOOP_COUNT 5
 	private final static double AR_GET_TRANS_MAT_MAX_FIT_ERROR = 1.0;// #define AR_GET_TRANS_MAT_MAX_FIT_ERROR 1.0

@@ -84,8 +84,7 @@ public class QtNyARRaster_RGB extends NyARRgbRaster_BasicClass
 	 */
 	public QtNyARRaster_RGB(int i_width, int i_height)
 	{
-		this._size.w = i_width;
-		this._size.h = i_height;
+		super(new NyARIntSize(i_width,i_height));
 		this._ref_buf = null;
 		this._reader = new PixcelReader(this._size);
 		_raster = WritableRaster.createInterleavedRaster(DataBuffer.TYPE_BYTE, i_width, i_height, i_width * 3, 3, new int[] { 0, 1, 2 }, null);
