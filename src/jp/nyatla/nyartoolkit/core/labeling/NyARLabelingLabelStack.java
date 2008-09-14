@@ -56,10 +56,6 @@ public class NyARLabelingLabelStack extends NyObjectStack
 		}
 	}
 
-	public NyARLabelingLabel prePush() throws NyARException
-	{
-		return (NyARLabelingLabel) super.prePush();
-	}
 	/**
 	 * エリアの大きい順にラベルをソートします。
 	 */

@@ -48,9 +48,4 @@ public class NyARSquareStack extends NyObjectStack
 			i_buffer[i] = new NyARSquare();
 		}
 	}
-
-	public NyARSquare prePush() throws NyARException
-	{
-		return (NyARSquare) super.prePush();
-	}
 }

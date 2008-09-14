@@ -190,7 +190,7 @@ public class NyARSquareDetector implements INyARSquareDetector
 			normalizeCoord(xcoord, ycoord, vertex1, coord_num);
 
 			// 領域を準備する。
-			NyARSquare square_ptr = o_square_stack.prePush();
+			NyARSquare square_ptr = (NyARSquare)o_square_stack.prePush();
 
 			// 頂点情報を取得
 			if (!getSquareVertex(xcoord, ycoord, vertex1, coord_num, label_area, mkvertex)) {

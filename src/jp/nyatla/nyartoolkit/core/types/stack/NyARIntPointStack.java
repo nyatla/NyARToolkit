@@ -50,9 +50,4 @@ public class NyARIntPointStack extends NyObjectStack
 		}
 	}
 
-
-	public NyARIntPoint prePush() throws NyARException
-	{
-		return (NyARIntPoint) super.prePush();
-	}
 }

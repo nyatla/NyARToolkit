@@ -49,10 +49,4 @@ public class NyARIntRectStack extends NyObjectStack
 			i_buffer[i] = new NyARIntRect();
 		}
 	}
-
-
-	public NyARIntRect prePush() throws NyARException
-	{
-		return (NyARIntRect) super.prePush();
-	}
 }

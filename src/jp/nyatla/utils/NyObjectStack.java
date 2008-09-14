@@ -65,7 +65,7 @@ public abstract class NyObjectStack
 	 * ポインタを1進めて、その要素を予約し、その要素へのポインタを返します。
 	 * 特定型に依存させるときには、継承したクラスでこの関数をオーバーライドしてください。
 	 */
-	public Object prePush() throws NyARException
+	public final Object prePush() throws NyARException
 	{
 		// 必要に応じてアロケート
 		if (this._length >= this._allocated_size) {
