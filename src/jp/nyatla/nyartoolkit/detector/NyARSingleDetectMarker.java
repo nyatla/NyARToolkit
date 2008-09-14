@@ -136,7 +136,7 @@ public class NyARSingleDetectMarker
 		}
 
 		// 評価基準になるパターンをイメージから切り出す
-		if (!this._patt.pickFromRaster(i_raster, l_square_list.getItem(0))) {
+		if (!this._patt.pickFromRaster(i_raster, (NyARSquare)l_square_list.getItem(0))) {
 			// パターンの切り出しに失敗
 			return false;
 		}
@@ -152,7 +152,7 @@ public class NyARSingleDetectMarker
 		double confidence = this._match_patt.getConfidence();
 		for (int i = 1; i < number_of_square; i++) {
 			// 次のパターンを取得
-			this._patt.pickFromRaster(i_raster, l_square_list.getItem(i));
+			this._patt.pickFromRaster(i_raster, (NyARSquare)l_square_list.getItem(i));
 			// 評価器にセットする。
 			this._match_patt.setPatt(this._patt);
 			// コードと比較する
@@ -167,7 +167,7 @@ public class NyARSingleDetectMarker
 			confidence = c2;
 		}
 		// マーカー情報を保存
-		this._detected_square = l_square_list.getItem(square_index);
+		this._detected_square = (NyARSquare)l_square_list.getItem(square_index);
 		this._detected_direction = direction;
 		this._detected_confidence = confidence;
 		return true;

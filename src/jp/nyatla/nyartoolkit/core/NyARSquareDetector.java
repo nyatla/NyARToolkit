@@ -128,7 +128,7 @@ public class NyARSquareDetector implements INyARSquareDetector
 		}
 
 		final NyARLabelingLabelStack stack = limage.getLabelStack();
-		final NyARLabelingLabel[] labels = stack.getArray();
+		final NyARLabelingLabel[] labels = (NyARLabelingLabel[])stack.getArray();
 		
 		
 		// ラベルを大きい順に整列

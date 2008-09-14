@@ -275,7 +275,7 @@ public class NyARLabeling_ARToolKit_X2 implements INyARLabeling
 		// ラベルバッファを予約
 		i_stack.reserv(i_number_of_label);
 		// エリアと重心、クリップ領域を計算
-		final NyARLabelingLabel[] labels = i_stack.getArray();
+		final NyARLabelingLabel[] labels = (NyARLabelingLabel[])i_stack.getArray();
 		for (int i = 0; i < i_number_of_label; i++) {
 			final int[] temp_ptr = temp[i];
 			temp_ptr[0]=0;//area

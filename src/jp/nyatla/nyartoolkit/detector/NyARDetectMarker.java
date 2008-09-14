@@ -185,7 +185,7 @@ public class NyARDetectMarker
 
 		// 1スクエア毎に、一致するコードを決定していく
 		for (int i = 0; i < number_of_square; i++) {
-			NyARSquare square = l_square_list.getItem(i);
+			NyARSquare square = (NyARSquare)l_square_list.getItem(i);
 			// 評価基準になるパターンをイメージから切り出す
 			if (!this._patt.pickFromRaster(i_raster, square)) {
 				// イメージの切り出しは失敗することもある。

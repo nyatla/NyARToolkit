@@ -131,7 +131,7 @@ public class NyARLabelingImage extends NyARRaster_BasicClass implements INyARLab
 	{
 		final int[] xdir = this._getContour_xdir;// static int xdir[8] = { 0,1, 1, 1, 0,-1,-1,-1};
 		final int[] ydir = this._getContour_ydir;// static int ydir[8] = {-1,-1,0, 1, 1, 1, 0,-1};
-		final NyARLabelingLabel label=this._label_list.getItem(i_index);		
+		final NyARLabelingLabel label=(NyARLabelingLabel)this._label_list.getItem(i_index);		
 		int i;
 		//クリップ領域の上端に接しているポイントを得る。
 		int sx=getTopClipTangentX(label);

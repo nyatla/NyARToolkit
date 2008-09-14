@@ -91,7 +91,7 @@ public abstract class NyObjectStack
 	 * 見かけ上の要素数を1減らして、最後尾のアイテムを返します。
 	 * @return
 	 */
-	public Object pop() throws NyARException
+	public final Object pop() throws NyARException
 	{
 		if(this._length<1){
 			throw new NyARException();
@@ -126,19 +126,7 @@ public abstract class NyObjectStack
 		return;
 	}
 
-	/**
-	 * 配列を返します。
-	 * 
-	 * @return
-	 */
-	protected Object[] getArray()
-	{
-		return this._items;
-	}
-	protected Object getItem(int i_index)
-	{
-		return this._items[i_index];
-	}
+
 
 	/**
 	 * この関数を継承先クラスで実装して下さい。
@@ -149,7 +137,19 @@ public abstract class NyObjectStack
 	 * @param i_buffer
 	 */
 	protected abstract void onReservRequest(int i_start, int i_end, Object[] i_buffer);
-
+	/**
+	 * 配列を返します。
+	 * 
+	 * @return
+	 */
+	public final Object[] getArray()
+	{
+		return this._items;
+	}
+	public final Object getItem(int i_index)
+	{
+		return this._items[i_index];
+	}
 	/**
 	 * 配列の見かけ上の要素数を返却します。
 	 * @return

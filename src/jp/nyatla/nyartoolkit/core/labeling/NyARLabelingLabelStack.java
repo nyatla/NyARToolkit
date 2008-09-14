@@ -55,14 +55,7 @@ public class NyARLabelingLabelStack extends NyObjectStack
 			i_buffer[i] = new NyARLabelingLabel();
 		}
 	}
-	public NyARLabelingLabel[] getArray()
-	{
-		return (NyARLabelingLabel[]) this._items;
-	}
-	public NyARLabelingLabel getItem(int i_index)
-	{
-		return (NyARLabelingLabel)this._items[i_index];
-	}
+
 	public NyARLabelingLabel prePush() throws NyARException
 	{
 		return (NyARLabelingLabel) super.prePush();

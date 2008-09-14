@@ -49,15 +49,6 @@ public class NyARSquareStack extends NyObjectStack
 		}
 	}
 
-	public NyARSquare[] getArray()
-	{
-		return (NyARSquare[]) this._items;
-	}
-	public NyARSquare getItem(int i_index)
-	{
-		return (NyARSquare) this._items[i_index];
-	}
-
 	public NyARSquare prePush() throws NyARException
 	{
 		return (NyARSquare) super.prePush();

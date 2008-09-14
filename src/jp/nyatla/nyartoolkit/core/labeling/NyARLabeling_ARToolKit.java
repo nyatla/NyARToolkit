@@ -258,7 +258,7 @@ public class NyARLabeling_ARToolKit implements INyARLabeling
 
 		// エリアと重心、クリップ領域を計算
 		NyARLabelingLabel label_pt;
-		NyARLabelingLabel[] labels = label_list.getArray();
+		NyARLabelingLabel[] labels = (NyARLabelingLabel[])label_list.getArray();
 		for (i = 0; i < wlabel_num; i++) {
 			label_pt =labels[i];
 			label_pt.id =i+1;

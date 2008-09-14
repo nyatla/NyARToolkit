@@ -174,7 +174,7 @@ public class LabelingBufferdImage extends BufferedImage
 	public void overlayData(NyARIntPointStack i_stack)
 	{
 		int count = i_stack.getLength();
-		NyARIntPoint[] items = i_stack.getArray();
+		NyARIntPoint[] items = (NyARIntPoint[])i_stack.getArray();
 		Graphics g = this.getGraphics();
 		for (int i = 0; i < count; i++) {
 			int x = items[i].x;
@@ -189,7 +189,7 @@ public class LabelingBufferdImage extends BufferedImage
 	{
 		Color[] c=new Color[]{Color.cyan,Color.red,Color.green};
 		int count = i_stack.getLength();
-		NyARIntRect[] items = i_stack.getArray();
+		NyARIntRect[] items = (NyARIntRect[])i_stack.getArray();
 		Graphics g = this.getGraphics();
 		for (int i = 0; i < count; i++) {
 			int x = items[i].x;

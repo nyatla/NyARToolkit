@@ -50,10 +50,6 @@ public class NyARIntPointStack extends NyObjectStack
 		}
 	}
 
-	public NyARIntPoint[] getArray()
-	{
-		return (NyARIntPoint[]) this._items;
-	}
 
 	public NyARIntPoint prePush() throws NyARException
 	{
