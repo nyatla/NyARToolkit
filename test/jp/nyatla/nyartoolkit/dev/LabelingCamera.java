@@ -1,9 +1,6 @@
-/**
- * VFM+ARToolkitテストプログラム
- * カメラから取り込んだデータからマーカーを検出して、一致度と変換行列を表示します。
- * (c)2008 A虎＠nyatla.jp
- * airmail(at)ebony.plala.or.jp
- * http://nyatla.jp/
+/* このソースは実験用のソースです。
+ * 動いたり動かなかったりします。
+ * 
  */
 package jp.nyatla.nyartoolkit.dev;
 
@@ -19,10 +16,8 @@ import java.awt.*;
 
 
 import jp.nyatla.nyartoolkit.core.labeling.*;
-import jp.nyatla.nyartoolkit.core.labeling.types.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.*;
 import jp.nyatla.nyartoolkit.core2.rasteranalyzer.*;
 import jp.nyatla.nyartoolkit.core2.rasteranalyzer.threshold.*;
 import jp.nyatla.nyartoolkit.core2.rasterfilter.gs2bin.*;

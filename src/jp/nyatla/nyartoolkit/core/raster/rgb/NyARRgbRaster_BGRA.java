@@ -47,24 +47,24 @@ public class NyARRgbRaster_BGRA extends NyARRgbRaster_BasicClass implements INyA
 
 		public void getPixel(int i_x, int i_y, int[] o_rgb)
 		{
-			byte[] ref = this._parent._ref_buf;
+			byte[] ref_buf = this._parent._ref_buf;
 			int bp = (i_x + i_y * this._parent._size.w) * 4;
-			o_rgb[0] = (ref[bp + 2] & 0xff);// R
-			o_rgb[1] = (ref[bp + 1] & 0xff);// G
-			o_rgb[2] = (ref[bp + 0] & 0xff);// B
+			o_rgb[0] = (ref_buf[bp + 2] & 0xff);// R
+			o_rgb[1] = (ref_buf[bp + 1] & 0xff);// G
+			o_rgb[2] = (ref_buf[bp + 0] & 0xff);// B
 			return;
 		}
 
-		public void getPixelSet(int[] i_x, int i_y[], int i_num, int[] o_rgb)
+		public void getPixelSet(int[] i_x, int[] i_y, int i_num, int[] o_rgb)
 		{
 			int width = _parent._size.w;
-			byte[] ref = _parent._ref_buf;
+			byte[] ref_buf = _parent._ref_buf;
 			int bp;
 			for (int i = i_num - 1; i >= 0; i--) {
 				bp = (i_x[i] + i_y[i] * width) * 4;
-				o_rgb[i * 3 + 0] = (ref[bp + 2] & 0xff);// R
-				o_rgb[i * 3 + 1] = (ref[bp + 1] & 0xff);// G
-				o_rgb[i * 3 + 2] = (ref[bp + 0] & 0xff);// B
+				o_rgb[i * 3 + 0] = (ref_buf[bp + 2] & 0xff);// R
+				o_rgb[i * 3 + 1] = (ref_buf[bp + 1] & 0xff);// G
+				o_rgb[i * 3 + 2] = (ref_buf[bp + 0] & 0xff);// B
 			}
 		}
 	}

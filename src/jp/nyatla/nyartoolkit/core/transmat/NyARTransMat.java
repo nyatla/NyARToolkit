@@ -98,7 +98,7 @@ public class NyARTransMat implements INyARTransMat
 
 	private final NyARDoublePoint2d[] __transMat_sqvertex_ref = new NyARDoublePoint2d[4];
 	private final NyARLinear[] __transMat_linear_ref=new NyARLinear[4];
-	final NyARDoublePoint3d __transMat_trans=new NyARDoublePoint3d();
+	private final NyARDoublePoint3d __transMat_trans=new NyARDoublePoint3d();
 	/**
 	 * double arGetTransMat( ARMarkerInfo *marker_info,double center[2], double width, double conv[3][4] )
 	 * 

@@ -68,7 +68,7 @@ public class RawFileTest
 
 		// AR用のパターンコードを読み出し
 		NyARCode code = new NyARCode(16, 16);
-		code.loadFromARFile(code_file);
+		code.loadARPattFromFile(code_file);
 
 		// 試験イメージの読み出し(320x240 BGRAのRAWデータ)
 		File f = new File(data_file);
@@ -82,14 +82,14 @@ public class RawFileTest
 		NyARSingleDetectMarker ar = new NyARSingleDetectMarker(ap, code, 80.0);
 		NyARTransMatResult result_mat = new NyARTransMatResult();
 		ar.setContinueMode(false);
-		ar.detectMarkerLite(ra, 110);
+		ar.detectMarkerLite(ra, 100);
 		ar.getTransmationMatrix(result_mat);
 
 		// マーカーを検出
 		Date d2 = new Date();
-		for (int i = 0; i < 10000; i++) {
+		for (int i = 0; i < 1000; i++) {
 			// 変換行列を取得
-			ar.detectMarkerLite(ra, 110);
+			ar.detectMarkerLite(ra, 100);
 			ar.getTransmationMatrix(result_mat);
 		}
 		Date d = new Date();

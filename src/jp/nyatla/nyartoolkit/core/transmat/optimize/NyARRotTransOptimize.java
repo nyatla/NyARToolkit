@@ -89,7 +89,7 @@ public class NyARRotTransOptimize implements INyARRotTransOptimize
 	 * @return
 	 * @throws NyARException
 	 */
-	private double modifyMatrix(NyARRotMatrix io_rot,NyARDoublePoint3d trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d i_vertex2d[]) throws NyARException
+	private double modifyMatrix(NyARRotMatrix io_rot,NyARDoublePoint3d trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d) throws NyARException
 	{
 		double factor;
 		double a2, b2, c2;

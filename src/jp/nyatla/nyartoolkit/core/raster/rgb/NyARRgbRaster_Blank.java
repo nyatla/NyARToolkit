@@ -52,7 +52,7 @@ public class NyARRgbRaster_Blank extends NyARRgbRaster_BasicClass
 			return;
 		}
 
-		public void getPixelSet(int[] i_x, int i_y[], int i_num, int[] o_rgb)
+		public void getPixelSet(int[] i_x, int[] i_y, int i_num, int[] o_rgb)
 		{
 			for (int i = i_num - 1; i >= 0; i--) {
 				o_rgb[i * 3 + 0] = 0;// R

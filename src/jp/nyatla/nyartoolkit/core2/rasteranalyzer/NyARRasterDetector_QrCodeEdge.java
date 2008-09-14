@@ -37,6 +37,11 @@ import jp.nyatla.nyartoolkit.core.types.stack.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
 
+/**
+ * QRコードの4頂点候補を探そうとするクラス。
+ * 未完成
+ *
+ */
 public class NyARRasterDetector_QrCodeEdge
 {
 	private NyARIntRectStack _result;

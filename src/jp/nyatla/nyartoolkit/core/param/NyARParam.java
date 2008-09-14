@@ -146,7 +146,7 @@ public class NyARParam
 	public void saveARParam(OutputStream i_stream)throws Exception
 	{
 		NyARException.trap("未チェックの関数");
-		byte buf[] = new byte[SIZE_OF_PARAM_SET];
+		byte[] buf = new byte[SIZE_OF_PARAM_SET];
 		// バッファをラップ
 		ByteBuffer bb = ByteBuffer.wrap(buf);
 		bb.order(ByteOrder.BIG_ENDIAN);

@@ -1,21 +1,24 @@
-﻿ARToolkit Java class library NyARToolkit.
+﻿ARToolKit Java class library NyARToolkit.
 Copyright (C)2008 R.Iizuka
 
-version 1.3.0.
+version 2.0.0
 
-http://nyatla.jp/
+http://nyatla.jp/nyartoolkit/
 airmail(at)ebony.plala.or.jp
 --------------------------------------------------
 
 
 
 
-・NyARToolkit
+・NyARToolkit/2.0
 
-NyARToolkitは、nativeなコードを一切使用しない、Pure Javaのみで
-構成されたARToolkitクラスライブラリです。
+NyARToolkitは、Pure Javaで実装したARToolKitクラスライブラリです。
 
-ARToolkit 2.72.1をベースに構築されています。
+ARToolKit 2.72.1をベースに構築されています。
+
+NyARToolkit/1.xと比較し、構造的な最適化がされ、可読性が向上しています。
+
+
 
 J2SEでのみ動作を確認しました。
 J2MEやMIDP2.0にはそのうち対応します。
@@ -29,7 +32,9 @@ http://www.hitl.washington.edu/artoolkit/
 
 ・NyARToolkitの特徴
 
-　-ARToolKitの処理関数を全てクラスベースで再構築してあります。
+　-ARToolKitと同等な処理シーケンスを、クラスベースで再構築してあります。
+
+  -構造的な最適化がされており、ARToolKitと比較して可読性に優れています。
 
 　-座標変換の演算性能が1.5倍ほど高速です。（JIT有効時）複数マーカー取り扱い時は、
 　 オリジナルよりも良い成績が得られます。
@@ -37,6 +42,8 @@ http://www.hitl.washington.edu/artoolkit/
 　-取り扱える画像サイズに制限がありません。
 
 　-取り扱えるマーカー個数の最大値が可変です。
+
+
 
 
 
@@ -160,7 +167,7 @@ NyARToolkit.sample.qt
 
 ・足りない機能等
 
-カメラキャリブレーション、マーカーのセーブ機能等がありません。
+カメラキャリブレーション、マーカーのセーブ機能等が相変わらずありません。
 今後実装していきます。
 
 
@@ -168,6 +175,7 @@ NyARToolkit.sample.qt
 
 ・ライセンス
 GPLv2以降です。詳しくはLICENCE.txtをみてください。
+ソースコード毎のライセンスは、各ソースファイルを参照してください。
 
 
 

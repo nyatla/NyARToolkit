@@ -68,6 +68,6 @@ final public class NyARTransOffset
 		this.point.x=-i_center.x;
 		this.point.y=-i_center.y;
 		this.point.z=0;
-
+		return;
 	}
 }

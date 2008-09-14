@@ -127,7 +127,7 @@ public class NyARLabelingImage extends NyARRaster_BasicClass implements INyARLab
 	 * 輪郭線の長さを返します。
 	 * @throws NyARException
 	 */
-	public int getContour(int i_index,int i_array_size,int o_coord_x[],int o_coord_y[]) throws NyARException
+	public int getContour(int i_index,int i_array_size,int[] o_coord_x,int[] o_coord_y) throws NyARException
 	{
 		final int[] xdir = this._getContour_xdir;// static int xdir[8] = { 0,1, 1, 1, 0,-1,-1,-1};
 		final int[] ydir = this._getContour_ydir;// static int ydir[8] = {-1,-1,0, 1, 1, 1, 0,-1};

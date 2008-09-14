@@ -73,7 +73,7 @@ public class NyarToolkitLinkTest extends Frame implements JmfCaptureListener
 		ar_param.loadARParamFromFile(PARAM_FILE);
 		ar_param.changeScreenSize(320, 240);
 		nya = new NyARSingleDetectMarker(ar_param, ar_code, 80.0);
-		ar_code.loadFromARFile(CARCODE_FILE);
+		ar_code.loadARPattFromFile(CARCODE_FILE);
 		//キャプチャイメージ用のラスタを準備
 		raster = new JmfNyARRaster_RGB(320, 240);
 	}

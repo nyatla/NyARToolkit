@@ -60,5 +60,5 @@ public interface INyARRgbPixelReader
 	 * @param i_rgb
 	 * ピクセル値を返すバッファ
 	 */
-	public void getPixelSet(int[] i_x, int i_y[], int i_num, int[] i_rgb) throws NyARException;
+	public void getPixelSet(int[] i_x, int[] i_y, int i_num, int[] i_rgb) throws NyARException;
 }

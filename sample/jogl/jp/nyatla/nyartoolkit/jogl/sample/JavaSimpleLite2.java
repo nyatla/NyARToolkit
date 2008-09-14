@@ -160,9 +160,9 @@ public class JavaSimpleLite2 implements GLEventListener, JmfCaptureListener
 			double[] width = new double[] { 80.0, 80.0 };
 			NyARCode[] ar_codes = new NyARCode[2];
 			ar_codes[0] = new NyARCode(16, 16);
-			ar_codes[0].loadFromARFile(CARCODE_FILE1);
+			ar_codes[0].loadARPattFromFile(CARCODE_FILE1);
 			ar_codes[1] = new NyARCode(16, 16);
-			ar_codes[1].loadFromARFile(CARCODE_FILE2);
+			ar_codes[1].loadARPattFromFile(CARCODE_FILE2);
 			_nya = new GLNyARDetectMarker(_ar_param, ar_codes, width, 2);
 			_nya.setContinueMode(false);//ここをtrueにすると、transMatContinueモード（History計算）になります。
 			//NyARToolkit用の支援クラス

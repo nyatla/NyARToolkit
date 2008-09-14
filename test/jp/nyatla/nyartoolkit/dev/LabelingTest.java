@@ -1,3 +1,7 @@
+/* このソースは実験用のソースです。
+ * 動いたり動かなかったりします。
+ * 
+ */
 package jp.nyatla.nyartoolkit.dev;
 
 import java.awt.Frame;
@@ -7,7 +11,7 @@ import java.io.FileInputStream;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_BGRA;
 import jp.nyatla.nyartoolkit.core.labeling.*;
-import jp.nyatla.nyartoolkit.core.labeling.types.*;
+
 import jp.nyatla.nyartoolkit.core2.rasteranalyzer.*;
 import jp.nyatla.utils.j2se.*;
 

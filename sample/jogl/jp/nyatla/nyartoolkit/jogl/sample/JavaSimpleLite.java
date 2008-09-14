@@ -156,7 +156,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 			_ar_param.changeScreenSize(SCREEN_X, SCREEN_Y);
 			_nya = new GLNyARSingleDetectMarker(_ar_param, ar_code, 80.0);
 			_nya.setContinueMode(false);//ここをtrueにすると、transMatContinueモード（History計算）になります。
-			ar_code.loadFromARFile(CARCODE_FILE);
+			ar_code.loadARPattFromFile(CARCODE_FILE);
 			//NyARToolkit用の支援クラス
 			_glnya = new NyARGLUtil(_gl);
 			//GL対応のRGBラスタオブジェクト

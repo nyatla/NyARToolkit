@@ -47,7 +47,7 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 	private static final int AR_PATT_SAMPLE_NUM = 64;// #define
 														// AR_PATT_SAMPLE_NUM 64
 
-	private int extpat[][][];
+	private int[][][] extpat;
 
 	private int width;
 
@@ -102,7 +102,7 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 	 */
 	private boolean get_cpara(final NyARIntPoint[] i_vertex, NyARMat o_para)throws NyARException
 	{
-		int world[][] = this.wk_pickFromRaster_world;
+		int[][] world = this.wk_pickFromRaster_world;
 		NyARMat a = wk_get_cpara_a;// 次処理で値を設定するので、初期化不要// new NyARMat( 8, 8 );
 		double[][] a_array = a.getArray();
 		NyARMat b = wk_get_cpara_b;// 次処理で値を設定するので、初期化不要// new NyARMat( 8, 1 );
@@ -287,7 +287,8 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 		/* wk_pickFromRaster_ext_pat2ワーク変数を初期化する。 */
 		// int[][][] ext_pat2=wk_pickFromRaster_ext_pat2;//ARUint32
 		// ext_pat2[AR_PATT_SIZE_Y][AR_PATT_SIZE_X][3];
-		int extpat_j[][], extpat_j_i[];
+		int[][] extpat_j;
+		int[] extpat_j_i;
 		// int ext_pat2_j[][],ext_pat2_j_i[];
 
 		initValue_wk_pickFromRaster_ext_pat2(L_extpat, L_WIDTH, L_HEIGHT);
