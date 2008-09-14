@@ -1,145 +1,213 @@
-/**
- * RGB形式のJMFバッファをラップするNyARRasterです。
- * JMFから得たラスタデータのピクセル並び順を考慮します。
- * (c)2008 A虎＠nyatla.jp
+/* 
+ * PROJECT: NyARToolkit JMF utilities.
+ * --------------------------------------------------------------------------------
+ * The MIT License
+ * Copyright (c) 2008 nyatla
  * airmail(at)ebony.plala.or.jp
- * http://nyatla.jp/
+ * http://nyatla.jp/nyartoolkit/
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * 
  */
 package jp.nyatla.nyartoolkit.jmf.utils;
 
-
-import javax.media.format.RGBFormat;
+import javax.media.format.*;
 import java.awt.Dimension;
+
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.NyARRaster;
-
-
-public class JmfNyARRaster_RGB implements NyARRaster
+import jp.nyatla.nyartoolkit.core.raster.rgb.*;
+import jp.nyatla.nyartoolkit.core.rasterreader.*;
+import jp.nyatla.nyartoolkit.core.types.*;
+/**
+ * 
+ * RGB形式のJMFバッファをラップするNyARRasterです。
+ * JMFから得たラスタデータのピクセル並び順を考慮します。
+ *
+ */
+public class JmfNyARRaster_RGB extends NyARRgbRaster_BasicClass
 {
-    public final static int PIXEL_ORDER_RGB=1;
-    public final static int PIXEL_ORDER_BGR=2;
-    protected int pix_type;
-    private int red_idx;
-    private int green_idx;
-    private int blue_idx;
-    protected byte[] ref_buf;
-    protected int width=0;
-    protected int height=0;
+	protected class Reader implements INyARRgbPixelReader,INyARBufferReader
+	{
+		private int _buffer_type = INyARBufferReader.BUFFERFORMAT_NULL_ALLZERO;
+		private byte[] _ref_buf;
+		private NyARIntSize _size;
 
-    /**
-     * RGB形式のJMFバッファをラップするオブジェクトをつくります。
-     * 生成直後のオブジェクトはデータを持ちません。
-     * メンバ関数はsetBufferを実行後に使用可能になります。
-     */
-    public JmfNyARRaster_RGB(int i_width,int i_height)
-    {
-	ref_buf=null;
-	width=i_width;
-	height=i_height;
-    }
-    /**
-     * フォーマットを解析して、インスタンスのフォーマットプロパティを初期化します。
-     * 
-     * @param i_buffer
-     * @throws NyARException
-     */
-    protected void initFormatProperty(RGBFormat i_fmt) throws NyARException
-    {
-	//データサイズの確認
-        Dimension s=i_fmt.getSize();
-        if(width!=s.width || height !=s.height){
-	    throw new NyARException();
-        }
-	//データ配列の確認
-	red_idx  =i_fmt.getRedMask()-1;
-	green_idx=i_fmt.getGreenMask()-1;
-	blue_idx =i_fmt.getBlueMask()-1;
-	
-	//色配列の特定
-	if(red_idx==0 && blue_idx==2){
-	    pix_type=PIXEL_ORDER_RGB;
-	}else if(red_idx==2 && blue_idx==0){
-	    pix_type=PIXEL_ORDER_BGR;
-	}else{
-	    throw new NyARException("Unknown pixel order.");
-	}	
-    }
-    /**
-     * javax.media.Bufferを分析して、その分析結果をNyARRasterに適合する形で保持します。
-     * 関数実行後に外部でi_bufferの内容変更した場合には、再度setBuffer関数を呼び出してください。
-     * @param i_buffer
-     * RGB形式のデータを格納したjavax.media.Bufferオブジェクトを指定してください。
-     * @return
-     * i_bufferをラップしたオブジェクトを返します。
-     * @throws NyARException
-     */
-    public void setBuffer(javax.media.Buffer i_buffer) throws NyARException
-    {
-	initFormatProperty((RGBFormat)i_buffer.getFormat());
-        ref_buf=(byte[])i_buffer.getData();
-    }
-    public int getPixelTotal(int i_x,int i_y)
-    {
-        int bp=(i_x+i_y*width)*3;
-        byte[] ref=this.ref_buf;
-        return (ref[bp] & 0xff)+(ref[bp+1] & 0xff)+(ref[bp+2] & 0xff);
-    }
-    public void getPixelTotalRowLine(int i_row,int[] o_line)
-    {
-        final byte[] ref=this.ref_buf;
-        int bp=(i_row+1)*this.width*3-3;
-        for(int i=this.width-1;i>=0;i--){
-	    o_line[i]=(ref[bp] & 0xff)+(ref[bp+1] & 0xff)+(ref[bp+2] & 0xff);
-	    bp-=3;
+		public Reader(NyARIntSize i_size)
+		{
+			this._size = i_size;
+		}
+		//
+		//INyARRgbPixelReader
+		//
+		public void getPixel(int i_x, int i_y, int[] o_rgb) throws NyARException
+		{
+			int bp = (i_x + i_y * this._size.w) * 3;
+			byte[] ref = this._ref_buf;
+			switch (this._buffer_type) {
+			case INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+				o_rgb[0] = (ref[bp + 0] & 0xff);// R
+				o_rgb[1] = (ref[bp + 1] & 0xff);// G
+				o_rgb[2] = (ref[bp + 2] & 0xff);// B
+				break;
+			case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24:
+				o_rgb[0] = (ref[bp + 2] & 0xff);// B
+				o_rgb[1] = (ref[bp + 1] & 0xff);// G
+				o_rgb[2] = (ref[bp + 0] & 0xff);// R
+				break;
+			default:
+				throw new NyARException();
+			}
+			return;
+		}
+
+		public void getPixelSet(int[] i_x, int i_y[], int i_num, int[] o_rgb) throws NyARException
+		{
+			int width = this._size.w;
+			byte[] ref = this._ref_buf;
+			int bp;
+			switch (this._buffer_type) {
+			case INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+				for (int i = i_num - 1; i >= 0; i--) {
+					bp = (i_x[i] + i_y[i] * width) * 3;
+					o_rgb[i * 3 + 0] = (ref[bp + 0] & 0xff);// R
+					o_rgb[i * 3 + 1] = (ref[bp + 1] & 0xff);// G
+					o_rgb[i * 3 + 2] = (ref[bp + 2] & 0xff);// B
+				}
+				break;
+			case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24:
+				for (int i = i_num - 1; i >= 0; i--) {
+					bp = (i_x[i] + i_y[i] * width) * 3;
+					o_rgb[i * 3 + 0] = (ref[bp + 2] & 0xff);// R
+					o_rgb[i * 3 + 1] = (ref[bp + 1] & 0xff);// G
+					o_rgb[i * 3 + 2] = (ref[bp + 0] & 0xff);// B
+				}
+				break;
+			default:
+				throw new NyARException();
+			}
+			return;
+		}
+
+		public void changeBuffer(int i_buffer_type, byte[] i_buffer)
+		{
+			if(i_buffer_type==1){
+				System.out.println("aaa");
+			}
+			
+			this._buffer_type = i_buffer_type;
+			this._ref_buf = i_buffer;
+		}
+		//
+		//INyARBufferReader
+		//
+		public Object getBuffer()
+		{
+			return this._ref_buf;
+		}
+		public int getBufferType()
+		{
+			return _buffer_type;
+		}
+		public boolean isEqualBufferType(int i_type_value)
+		{
+			return this._buffer_type==i_type_value;
+		}		
 	}
-    }    
-    public int getWidth()
-    {
-        return width;
-    }
-    public int getHeight()
-    {
-        return height;
-    }
-    public void getPixel(int i_x,int i_y,int[] i_rgb)
-    {
-        int bp=(i_x+i_y*this.width)*3;
-        byte[] ref=this.ref_buf;
-        i_rgb[0]=(ref[bp+this.red_idx] & 0xff);//R
-        i_rgb[1]=(ref[bp+this.green_idx] & 0xff);//G
-        i_rgb[2]=(ref[bp+this.blue_idx] & 0xff);//B
-    }
-    /**
-     * ピクセルの順序タイプを返します。
-     * @return
-     * その値
-     */
-    public int getPixelOrder()
-    {
-	return pix_type;
-    }
-    /**
-     * データを持っているかを返します。
-     * @return
-     */
-    public boolean hasData()
-    {
-	return ref_buf!=null;
-    }
-    public void getPixelSet(int[] i_x,int i_y[],int i_num,int[] o_rgb)
-    {
-	int ri=this.red_idx;
-	int bi=this.green_idx;
-	int gi=this.blue_idx;
-	int width=this.width;
-	byte[] ref=this.ref_buf;
-	int bp;
-	for(int i=i_num-1;i>=0;i--){
-	    bp=(i_x[i]+i_y[i]*width)*3;
-	    o_rgb[i*3+0]=(ref[bp+ri] & 0xff);//R
-	    o_rgb[i*3+1]=(ref[bp+gi] & 0xff);//G
-	    o_rgb[i*3+2]=(ref[bp+bi] & 0xff);//B
+
+	protected byte[] _ref_buf;
+	protected Reader _reader;
+	/**
+	 * RGB形式のJMFバッファをラップするオブジェクトをつくります。 生成直後のオブジェクトはデータを持ちません。
+	 * メンバ関数はsetBufferを実行後に使用可能になります。
+	 */
+	public JmfNyARRaster_RGB(NyARIntSize i_size)
+	{
+		super(new NyARIntSize(i_size.w,i_size.w));
+		this._size.w = i_size.w;
+		this._size.h = i_size.h;
+		this._ref_buf = null;
+		this._reader = new Reader(this._size);
+	}
+	public JmfNyARRaster_RGB(int i_width,int i_height)
+	{
+		super(new NyARIntSize(i_width,i_height));
+		this._ref_buf = null;
+		this._reader = new Reader(this._size);
 	}	
-	return;
-    }
+	
+	/**
+	 * フォーマットを解析して、ラスタタイプを返します。
+	 * 
+	 * @param i_fmt
+	 * @throws NyARException
+	 */
+	protected int analyzeBufferType(RGBFormat i_fmt) throws NyARException
+	{
+		// データサイズの確認
+		Dimension s = i_fmt.getSize();
+		if (!this._size.isEqualSize(s.width, s.height)) {
+			throw new NyARException();
+		}
+		// データ配列の確認
+		int r = i_fmt.getRedMask() - 1;
+		int b = i_fmt.getBlueMask() - 1;
+
+		// 色配列の特定
+		if (r == 0 && b == 2) {
+			return INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24;
+		} else if (r == 2 && b == 0) {
+			return INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24;
+		} else {
+			throw new NyARException("Unknown pixel order.");
+		}
+	}
+
+	/**
+	 * javax.media.Bufferを分析して、その分析結果をNyARRasterに適合する形で保持します。
+	 * 関数実行後に外部でi_bufferの内容変更した場合には、再度setBuffer関数を呼び出してください。
+	 * この関数を実行すると、getRgbPixelReaderで取得したReaderのプロパティが変化することがあります。
+	 * @param i_buffer
+	 * RGB形式のデータを格納したjavax.media.Bufferオブジェクトを指定してください。
+	 * @return i_bufferをラップしたオブジェクトを返します。
+	 * @throws NyARException
+	 */
+	public void setBuffer(javax.media.Buffer i_buffer) throws NyARException
+	{
+		int buftype= analyzeBufferType((RGBFormat) i_buffer.getFormat());
+		this._ref_buf = (byte[]) i_buffer.getData();
+		this._reader.changeBuffer(buftype, this._ref_buf);
+	}
+
+	/**
+	 * データを持っているかを返します。
+	 * @return
+	 */
+	public boolean hasData()
+	{
+		return this._ref_buf != null;
+	}
+
+	public INyARRgbPixelReader getRgbPixelReader()
+	{
+		return this._reader;
+	}
+	public INyARBufferReader getBufferReader()
+	{
+		return this._reader;
+	}
 }

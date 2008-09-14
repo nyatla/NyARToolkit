@@ -1,9 +1,28 @@
-/**
- * QuickTimeお手軽キャプチャクラス
- * (c)2008 arc@dmz, A虎＠nyatla.jp
- * arc@digitalmuseum.jp
- * http://nyatla.jp/
+/* 
+ * PROJECT: NyARToolkit Quicktime utilities.
+ * --------------------------------------------------------------------------------
+ * Copyright (C)2008 arc@dmz
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this framework; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * 
+ * For further information please contact.
+ *	
+ *	<arc(at)digitalmuseum.jp>
+ * 
  */
+
 package jp.nyatla.nyartoolkit.qt.utils;
 
 import java.awt.Dimension;
@@ -29,69 +48,77 @@ import quicktime.util.RawEncodedImage;
 
 import jp.nyatla.nyartoolkit.NyARException;
 
-
+/**
+ * QuickTimeキャプチャクラス
+ *
+ */
 public class QtCameraCapture implements ActionListener
 {
 
 	private Dimension image_size;
-    private QtCaptureListener capture_listener;
 
-	protected float fps = 30;				// キャプチャ画像を取得するfps
-	protected byte[] pixels;				// キャプチャ画像の実データを保持するバイト型配列
+	private QtCaptureListener capture_listener;
+
+	protected float fps = 30; // キャプチャ画像を取得するfps
+
+	protected byte[] pixels; // キャプチャ画像の実データを保持するバイト型配列
 
 	// キャプチャに使うタイマー
 	private Timer timer;
 
 	// QTJava用のあれこれ
 	private QDGraphics graphics;
+
 	private QDRect bounds;
+
 	private SequenceGrabber grabber;
+
 	private SGVideoChannel channel;
+
 	private RawEncodedImage rawEncodedImage;
+
 	private Movie movie;
 
 	// ピクセルフォーマット変換用の一時変数
 	private int[] pixels_int;
-    
-    public static final int PIXEL_FORMAT_RGB = quicktime.util.EndianOrder.isNativeLittleEndian() ?
-			QDConstants.k32BGRAPixelFormat : QDGraphics.kDefaultPixelFormat;
-    public QtCameraCapture(int i_width,int i_height,float i_rate)
-    {
-        image_size = new Dimension(i_width,i_height);
-        fps = i_rate;
-    }
-    public Dimension getSize()
-    {
-	return image_size;
-    }
-    public byte[] readBuffer() throws NyARException
-    {
-	if(grabber==null){
-            throw new NyARException();
-	}
-        return pixels;
-    }
-    public void setCaptureListener(QtCaptureListener i_listener) throws NyARException
-    {
-	if(grabber!=null){
-	    throw new NyARException();
-	}
-	capture_listener=i_listener;
-	
-    }
 
-    public void prepSetInput(Object input) throws QTException {
+	public static final int PIXEL_FORMAT_RGB = quicktime.util.EndianOrder.isNativeLittleEndian() ? QDConstants.k32BGRAPixelFormat : QDGraphics.kDefaultPixelFormat;
+
+	public QtCameraCapture(int i_width, int i_height, float i_rate)
+	{
+		image_size = new Dimension(i_width, i_height);
+		fps = i_rate;
+	}
+
+	public Dimension getSize()
+	{
+		return image_size;
+	}
+
+	public byte[] readBuffer() throws NyARException
+	{
+		if (grabber == null) {
+			throw new NyARException();
+		}
+		return pixels;
+	}
+
+	public void setCaptureListener(QtCaptureListener i_listener) throws NyARException
+	{
+		if (grabber != null) {
+			throw new NyARException();
+		}
+		capture_listener = i_listener;
+
+	}
+
+	public void prepSetInput(Object input) throws QTException
+	{
 		QTSession.open();
 		bounds = new QDRect(image_size.width, image_size.height);
-		graphics = new QDGraphics(
-				quicktime.util.EndianOrder.isNativeLittleEndian() ?
-						QDConstants.k32BGRAPixelFormat : QDGraphics.kDefaultPixelFormat,
-				bounds);
+		graphics = new QDGraphics(quicktime.util.EndianOrder.isNativeLittleEndian() ? QDConstants.k32BGRAPixelFormat : QDGraphics.kDefaultPixelFormat, bounds);
 		if (input != null && input.getClass().equals(File.class)) {
-			movie = quicktime.std.movies.Movie.fromDataRef(
-				new DataRef(new QTFile((File) input)),
-				StdQTConstants.newMovieActive
-			);
+			movie = quicktime.std.movies.Movie.fromDataRef(new DataRef(new QTFile((File) input)), StdQTConstants.newMovieActive);
 		} else {
 			grabber = new SequenceGrabber();
 			grabber.setGWorld(graphics, null);
@@ -116,13 +143,17 @@ public class QtCameraCapture implements ActionListener
 	 * Webcamの設定ダイアログを表示する。
 	 * 既定のWebcamでは駄目な場合(複数のWebcamが接続されているPCなど)ではこれを実行するとよい。
 	 */
-	public void prepShowDialog() throws QTException { channel.settingsDialog(); }
+	public void prepShowDialog() throws QTException
+	{
+		channel.settingsDialog();
+	}
 
-    public void start() throws NyARException
-    {
+	public void start() throws NyARException
+	{
 		try {
 
-			if (grabber == null) prepSetInput(null);
+			if (grabber == null)
+				prepSetInput(null);
 
 			if (movie == null) {
 				grabber.prepare(true, false); // あってもなくてもよさそう
@@ -146,23 +177,26 @@ public class QtCameraCapture implements ActionListener
 		}
 
 		// キャプチャイメージを定期的に更新するタイマー
-		timer = new Timer((int) (1000/fps), this);
+		timer = new Timer((int) (1000 / fps), this);
 		timer.start();
-    }
-    public void stop()
-    {
-        finalize();
-    }
+	}
+
+	public void stop()
+	{
+		finalize();
+	}
 
 	/** タイマー処理。キャプチャイメージの更新結果をリスナに伝える。 */
-	public void actionPerformed(ActionEvent event) {
+	public void actionPerformed(ActionEvent event)
+	{
 
 		// 画像をQTJavaのRawEncodedImageとして取得
 		try {
 			if (movie == null) {
 				grabber.idle();
 			} else {
-				if (movie.isDone()) movie.goToBeginning();
+				if (movie.isDone())
+					movie.goToBeginning();
 				movie.getPict(movie.getTime()).draw(graphics, bounds);
 			}
 		} catch (QTException e) {
@@ -175,18 +209,18 @@ public class QtCameraCapture implements ActionListener
 
 		// バイト列を生成する
 		int idx_byte = 0;
-		for (int idx = 0; idx < image_size.width*image_size.height; idx ++) {
-			pixels[idx_byte ++] = (byte) (pixels_int[idx] >> 16);
-			pixels[idx_byte ++] = (byte) (pixels_int[idx] >> 8 & 0xff);
-			pixels[idx_byte ++] = (byte) (pixels_int[idx] & 0xff);
+		for (int idx = 0; idx < image_size.width * image_size.height; idx++) {
+			pixels[idx_byte++] = (byte) (pixels_int[idx] >> 16);
+			pixels[idx_byte++] = (byte) (pixels_int[idx] >> 8 & 0xff);
+			pixels[idx_byte++] = (byte) (pixels_int[idx] & 0xff);
 		}
 
 		// 各リスナに更新されたバイト列を渡す
 		capture_listener.onUpdateBuffer(pixels);
 	}
 
-    protected void finalize()
-    {
+	protected void finalize()
+	{
 		try {
 			if (movie == null) {
 				grabber.stop();
@@ -199,6 +233,6 @@ public class QtCameraCapture implements ActionListener
 			QTSession.close();
 		}
 		timer.stop();
-    }
+	}
 
 }

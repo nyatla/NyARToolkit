@@ -31,19 +31,32 @@
  */
 package jp.nyatla.nyartoolkit;
 
-public class NyARException extends Exception {
+public class NyARException extends Exception
+{
 	private static final long serialVersionUID = 1L;
-	public NyARException(){
+
+	public NyARException()
+	{
 		super();
 	}
-	public NyARException(Exception e){
+
+	public NyARException(Exception e)
+	{
 		super(e);
 	}
-	public NyARException(String m){
-	    super(m);
+
+	public NyARException(String m)
+	{
+		super(m);
 	}
+
 	public static void trap(String m) throws NyARException
 	{
-	    throw new NyARException("トラップ:"+m);
+		throw new NyARException("トラップ:" + m);
+	}
+
+	public static void notImplement() throws NyARException
+	{
+		throw new NyARException("Not Implement!");
 	}
 }
