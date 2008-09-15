@@ -92,36 +92,37 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 		int x;		
 		for (int y =i_size.h-1; y>=0 ; y--){
 			//端数分
+			final int[] row_ptr=i_out[y];
 			for (x = size_w-1;x>=x_mod_end;x--) {
 				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				i_out[y][x]=w<=th?0:1;
+				row_ptr[x]=w<=th?0:1;
 				bp -= 3;
 			}
 			//タイリング		
 			for (;x>=0;x-=8) {
 				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				i_out[y][x]=w<=th?0:1;
+				row_ptr[x]=w<=th?0:1;
 				bp -= 3;
 				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				i_out[y][x-1]=w<=th?0:1;
+				row_ptr[x-1]=w<=th?0:1;
 				bp -= 3;
 				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				i_out[y][x-2]=w<=th?0:1;
+				row_ptr[x-2]=w<=th?0:1;
 				bp -= 3;
 				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				i_out[y][x-3]=w<=th?0:1;
+				row_ptr[x-3]=w<=th?0:1;
 				bp -= 3;
 				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				i_out[y][x-4]=w<=th?0:1;
+				row_ptr[x-4]=w<=th?0:1;
 				bp -= 3;
 				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				i_out[y][x-5]=w<=th?0:1;
+				row_ptr[x-5]=w<=th?0:1;
 				bp -= 3;
 				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				i_out[y][x-6]=w<=th?0:1;
+				row_ptr[x-6]=w<=th?0:1;
 				bp -= 3;
 				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				i_out[y][x-7]=w<=th?0:1;
+				row_ptr[x-7]=w<=th?0:1;
 				bp -= 3;
 			}
 		}
@@ -136,37 +137,39 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 		int w;
 		int x;
 		for (int y =i_size.h-1; y>=0 ; y--){
+			final int[] row_ptr=i_out[y];
+
 			//端数分
 			for (x = size_w-1;x>=x_mod_end;x--) {
 				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				i_out[y][x]=w<=th?0:1;
+				row_ptr[x]=w<=th?0:1;
 				bp -= 4;
 			}
 			//タイリング
 			for (;x>=0;x-=8) {
 				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				i_out[y][x]=w<=th?0:1;
+				row_ptr[x]=w<=th?0:1;
 				bp -= 4;
 				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				i_out[y][x-1]=w<=th?0:1;
+				row_ptr[x-1]=w<=th?0:1;
 				bp -= 4;
 				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				i_out[y][x-2]=w<=th?0:1;
+				row_ptr[x-2]=w<=th?0:1;
 				bp -= 4;
 				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				i_out[y][x-3]=w<=th?0:1;
+				row_ptr[x-3]=w<=th?0:1;
 				bp -= 4;
 				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				i_out[y][x-4]=w<=th?0:1;
+				row_ptr[x-4]=w<=th?0:1;
 				bp -= 4;
 				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				i_out[y][x-5]=w<=th?0:1;
+				row_ptr[x-5]=w<=th?0:1;
 				bp -= 4;
 				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				i_out[y][x-6]=w<=th?0:1;
+				row_ptr[x-6]=w<=th?0:1;
 				bp -= 4;
 				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				i_out[y][x-7]=w<=th?0:1;
+				row_ptr[x-7]=w<=th?0:1;
 				bp -= 4;
 			}	
 		}
