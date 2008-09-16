@@ -131,20 +131,20 @@ final public class NyARCameraDistortionFactor
 	/**
 	 * int arParamObserv2Ideal( const double dist_factor[4], const double ox,const double oy,double *ix, double *iy );
 	 * 
-	 * @param ox
-	 * @param oy
+	 * @param ix
+	 * @param iy
 	 * @param ix
 	 * @param iy
 	 * @return
 	 */
-	public void observ2Ideal(double ox, double oy, DoubleValue ix, DoubleValue iy)
+	public void observ2Ideal(double ix, double iy, NyARDoublePoint2d o_point)
 	{
 		double z02, z0, p, q, z, px, py, opttmp_1;
 		final double d0 = this._f0;
 		final double d1 = this._f1;
 
-		px = ox - d0;
-		py = oy - d1;
+		px = ix - d0;
+		py = iy - d1;
 		p = this._f2 / 100000000.0;
 		z02 = px * px + py * py;
 		q = z0 = Math.sqrt(z02);// Optimize//q = z0 = Math.sqrt(px*px+ py*py);
@@ -167,8 +167,8 @@ final public class NyARCameraDistortionFactor
 			z02 = px * px + py * py;
 			z0 = Math.sqrt(z02);// Optimize//z0 = Math.sqrt(px*px+ py*py);
 		}
-		ix.value = px / this._f3 + d0;
-		iy.value = py / this._f3 + d1;
+		o_point.x = px / this._f3 + d0;
+		o_point.y = py / this._f3 + d1;
 		return;
 	}
 

@@ -35,7 +35,7 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARSquare;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.transmat.fitveccalc.NyARFitVecCalculator;
-import jp.nyatla.nyartoolkit.core.transmat.optimize.NyARRotTransOptimize;
+import jp.nyatla.nyartoolkit.core.transmat.optimize.*;
 import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.NyARRotMatrix;
 import jp.nyatla.nyartoolkit.core.types.*;
 
@@ -49,13 +49,20 @@ public class NyARTransMat implements INyARTransMat
 {
 	private final static double AR_GET_TRANS_CONT_MAT_MAX_FIT_ERROR = 1.0;
 
-	private final NyARRotMatrix _rotmatrix;
 	private final NyARDoublePoint2d _center=new NyARDoublePoint2d(0,0);
-	private final NyARFitVecCalculator _calculator;
 	private final NyARTransOffset _offset=new NyARTransOffset();
-	private final NyARRotTransOptimize _mat_optimize;
+	private final NyARRotMatrix _rotmatrix;
+	private final NyARFitVecCalculator _calculator;
+	private final INyARRotTransOptimize _mat_optimize;
 
-
+	protected NyARTransMat(NyARParam i_param,NyARRotMatrix i_rotmatrix,INyARRotTransOptimize i_optimize)
+	{
+		final NyARCameraDistortionFactor dist=i_param.getDistortionFactor();
+		final NyARPerspectiveProjectionMatrix pmat=i_param.getPerspectiveProjectionMatrix();
+		this._calculator=new NyARFitVecCalculator(pmat,dist);
+		this._rotmatrix =i_rotmatrix;
+		this._mat_optimize=i_optimize;		
+	}
 	public NyARTransMat(NyARParam i_param) throws NyARException
 	{
 		final NyARCameraDistortionFactor dist=i_param.getDistortionFactor();

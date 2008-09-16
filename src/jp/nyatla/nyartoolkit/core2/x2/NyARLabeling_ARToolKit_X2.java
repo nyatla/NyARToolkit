@@ -29,7 +29,7 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core2.temp;
+package jp.nyatla.nyartoolkit.core2.x2;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
@@ -311,6 +311,7 @@ public class NyARLabeling_ARToolKit_X2 implements INyARLabeling
 		for (int i = 0; i < i_number_of_label; i++) {// for(int i = 0; i < *label_num; i++ ) {
 			final NyARLabelingLabel label_pt = labels[i];
 			final int temp_ptr[] = temp[i];
+			label_pt.id=i+1;
 			label_pt.area=temp_ptr[0];			
 			label_pt.pos_x= (double)temp_ptr[1]/label_pt.area;
 			label_pt.pos_y= (double)temp_ptr[2]/label_pt.area;
