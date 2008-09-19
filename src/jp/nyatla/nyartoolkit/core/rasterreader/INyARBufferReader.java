@@ -54,6 +54,11 @@ public interface INyARBufferReader
 	public static final int BUFFERFORMAT_BYTE1D_B8G8R8X8_32 = 0x00010101;
 
 	/**
+	 * byte[]で、RGB565の16ビット(little endian)で画素が格納されている。
+	 */
+	public static final int BUFFERFORMAT_BYTE1D_R5G6B5_16LE = 0x00010201;
+	
+	/**
 	 * int[][]で特に値範囲を定めない
 	 */
 	public static final int BUFFERFORMAT_INT2D = 0x00020000;

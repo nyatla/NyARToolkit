@@ -29,7 +29,7 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core2.x2;
+package jp.nyatla.nyartoolkit.nymodel.x2;
 
 
 import jp.nyatla.nyartoolkit.NyARException;

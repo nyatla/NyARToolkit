@@ -32,7 +32,6 @@
 package jp.nyatla.nyartoolkit.core.param;
 
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
-import jp.nyatla.utils.DoubleValue;
 
 /**
  * カメラの歪み成分を格納するクラスと、補正関数群

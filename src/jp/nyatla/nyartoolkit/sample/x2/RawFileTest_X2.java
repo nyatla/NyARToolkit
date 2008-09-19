@@ -29,7 +29,7 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.sample;
+package jp.nyatla.nyartoolkit.sample.x2;
 
 import java.io.*;
 import java.util.*;
@@ -38,7 +38,7 @@ import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
-import jp.nyatla.nyartoolkit.core2.x2.*;
+import jp.nyatla.nyartoolkit.nymodel.x2.*;
 
 
 /**

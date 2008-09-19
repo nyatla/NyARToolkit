@@ -182,6 +182,7 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24:
 		case INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24:
 		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8X8_32:
+		case INyARBufferReader.BUFFERFORMAT_BYTE1D_R5G6B5_16LE:
 			return true;
 		default:
 			return false;
