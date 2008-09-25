@@ -11,9 +11,9 @@ import javax.media.format.*;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
-import jp.nyatla.nyartoolkit.nymodel.x2.NyARLabeling_ARToolKit_X2;
 import jp.nyatla.nyartoolkit.core.*;
-import jp.nyatla.nyartoolkit.nymodel.x2.NyARTransMat_X2;
+import jp.nyatla.nyartoolkit.toys.x2.NyARLabeling_ARToolKit_X2;
+import jp.nyatla.nyartoolkit.toys.x2.NyARTransMat_X2;
 
 import java.awt.*;
 

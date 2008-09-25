@@ -29,14 +29,14 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.nymodel.x2;
+package jp.nyatla.nyartoolkit.toys.vertexdetect;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.*;
-
+import jp.nyatla.nyartoolkit.toys.x2.*;
 
 /**
  * 矩形座標をPCAではなく、頂点座標そのものからSquare位置を計算するクラス
@@ -235,7 +235,7 @@ public class NyARQrCodeDetector implements INyARSquareDetector
 		o_line.intercept=(i_v1.y+(o_line.run/o_line.rise)*(i_v1.x))*rise_;
 		
 	}
-/*
+
 	private void getSquare(int[] i_mkvertex, int[] i_xcoord, int[] i_ycoord, NyARSquare o_square)
 	{
 		final NyARCameraDistortionFactor dist_factor=this._dist_factor_ref;		
@@ -255,7 +255,7 @@ public class NyARQrCodeDetector implements INyARSquareDetector
 		getLine(vertex[0],vertex[3],o_square.line[3]);	
 		return;
 	}
-*/
+
 	/**
 	 * 辺からの対角線が最長になる点を対角線候補として返す。
 	 * 

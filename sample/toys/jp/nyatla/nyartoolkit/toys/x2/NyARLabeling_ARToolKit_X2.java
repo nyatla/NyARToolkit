@@ -29,7 +29,7 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.nymodel.x2;
+package jp.nyatla.nyartoolkit.toys.x2;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
@@ -37,6 +37,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.labeling.*;
 
 /**
+ * 計算部から浮動小数点計算を除外したNyARLabeling_ARToolKit
  * NyARLabeling_ARToolKitと同じ処理をするけど、エリア計算にintを使う。 
  * 画面サイズが1600ｘ1600を超えると挙動が怪しくなる。
  * 

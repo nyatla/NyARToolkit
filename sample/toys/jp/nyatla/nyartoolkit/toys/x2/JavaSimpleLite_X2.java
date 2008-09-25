@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  * 
  */
-package jp.nyatla.nyartoolkit.jogl.sample.x2;
+package jp.nyatla.nyartoolkit.toys.x2;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;

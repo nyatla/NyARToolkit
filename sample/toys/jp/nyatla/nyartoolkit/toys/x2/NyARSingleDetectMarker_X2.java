@@ -29,7 +29,7 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.nymodel.x2;
+package jp.nyatla.nyartoolkit.toys.x2;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.*;
@@ -41,6 +41,7 @@ import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilter_ARToolkitThreshold;
+
 
 /**
  * 画像からARCodeに最も一致するマーカーを1個検出し、その変換行列を計算するクラスです。
@@ -86,7 +87,7 @@ public class NyARSingleDetectMarker_X2
 	{
 		final NyARIntSize scr_size=i_param.getScreenSize();		
 		// 解析オブジェクトを作る
-		this._square_detect = new NyARQrCodeDetector(i_param.getDistortionFactor(),scr_size);
+		this._square_detect = new NyARSquareDetector(i_param.getDistortionFactor(),scr_size);
 		this._transmat = new NyARTransMat_X2(i_param);
 		// 比較コードを保存
 		this._code = i_code;

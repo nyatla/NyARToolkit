@@ -29,7 +29,7 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.nymodel.x2;
+package jp.nyatla.nyartoolkit.toys.x2;
 
 
 import jp.nyatla.nyartoolkit.NyARException;
@@ -38,6 +38,7 @@ import jp.nyatla.nyartoolkit.core.transmat.fitveccalc.*;
 import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.transmat.optimize.*;
+import jp.nyatla.nyartoolkit.toys.x2.NyARSinTable;
 
 /**
  * 基本姿勢と実画像を一致するように、角度を微調整→平行移動量を再計算

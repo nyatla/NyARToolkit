@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.nymodel.x2;
+package jp.nyatla.nyartoolkit.toys.x2;
 /**
  * 単純Sinテーブル
  *

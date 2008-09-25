@@ -29,7 +29,7 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.sample.x2;
+package jp.nyatla.nyartoolkit.toys.x2;
 
 import java.io.*;
 import java.util.*;
@@ -48,11 +48,11 @@ import jp.nyatla.nyartoolkit.nymodel.x2.*;
  */
 public class RawFileTest_X2
 {
-	private final String code_file = "../Data/patt.hiro";
+	private final String code_file = "../../Data/patt.hiro";
 
-	private final String data_file = "../Data/320x240ABGR.raw";
+	private final String data_file = "../../Data/320x240ABGR.raw";
 
-	private final String camera_file = "../Data/camera_para.dat";
+	private final String camera_file = "../../Data/camera_para.dat";
 
 	public RawFileTest_X2()
 	{
