@@ -29,25 +29,34 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.types;
+package jp.nyatla.nyartoolkit.core.types.matrix;
 
-public class NyARIntPoint
+public class NyARDoubleMatrix22 implements INyARDoubleMatrix
 {
-	public int x;
-
-	public int y;
+	public double m00;
+	public double m01;
+	public double m10;
+	public double m11;
 	/**
-	 * 配列ファクトリ
-	 * @param i_number
-	 * @return
+	 * 遅いからあんまり使わないでね。
 	 */
-	public static NyARIntPoint[] createArray(int i_number)
+	public void setValue(double[] i_value)
 	{
-		NyARIntPoint[] ret=new NyARIntPoint[i_number];
-		for(int i=0;i<i_number;i++)
-		{
-			ret[i]=new NyARIntPoint();
-		}
-		return ret;
+		this.m00=i_value[0];
+		this.m01=i_value[1];
+		this.m10=i_value[3];
+		this.m11=i_value[4];
+		return;
+	}
+	/**
+	 * 遅いからあんまり使わないでね。
+	 */
+	public void getValue(double[] o_value)
+	{
+		o_value[0]=this.m00;
+		o_value[1]=this.m01;
+		o_value[3]=this.m10;
+		o_value[4]=this.m11;
+		return;
 	}
 }

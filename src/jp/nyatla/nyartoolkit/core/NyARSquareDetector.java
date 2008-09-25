@@ -35,7 +35,9 @@ import jp.nyatla.nyartoolkit.core.labeling.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.param.*;
-
+import jp.nyatla.nyartoolkit.core.pca2d.NyARPca2d_MatrixPCA_O2;
+import jp.nyatla.nyartoolkit.core.types.matrix.*;
+import jp.nyatla.nyartoolkit.core.pca2d.*;
 
 
 
@@ -83,6 +85,9 @@ public class NyARSquareDetector implements INyARSquareDetector
 		this._max_coord = number_of_coord;
 		this._xcoord = new int[number_of_coord * 2];
 		this._ycoord = new int[number_of_coord * 2];
+		//PCA(最大頂点数は対角線長さ)
+		this._pca=new NyARPca2d_MatrixPCA_O2(this._width+this._height);
+		
 	}
 
 	private final int _max_coord;
@@ -197,7 +202,7 @@ public class NyARSquareDetector implements INyARSquareDetector
 				o_square_stack.pop();// 頂点の取得が出来なかったので破棄
 				continue;
 			}
-
+			// マーカーを検出
 			if (!getSquareLine(mkvertex, xcoord, ycoord, square_ptr)) {
 				// 矩形が成立しなかった。
 				o_square_stack.pop();
@@ -328,14 +333,10 @@ public class NyARSquareDetector implements INyARSquareDetector
 		return true;
 	}
 
-	private final NyARMat __getSquareLine_input = new NyARMat(1, 2);
-
-	private final NyARMat __getSquareLine_evec = new NyARMat(2, 2);
-
-	private final NyARVec __getSquareLine_ev = new NyARVec(2);
-
-	private final NyARVec __getSquareLine_mean = new NyARVec(2);
-
+	private final INyARPca2d _pca;
+	private final NyARDoubleMatrix22 __getSquareLine_evec=new NyARDoubleMatrix22();
+	private final NyARDoublePoint2d __getSquareLine_mean=new NyARDoublePoint2d();
+	private final NyARDoublePoint2d __getSquareLine_ev=new NyARDoublePoint2d();
 	/**
 	 * arGetLine(int x_coord[], int y_coord[], int coord_num,int vertex[], double line[4][3], double v[4][2]) arGetLine2(int x_coord[], int y_coord[], int
 	 * coord_num,int vertex[], double line[4][3], double v[4][2], double *dist_factor) の２関数の合成品です。 マーカーのvertex,lineを計算して、結果をo_squareに保管します。
@@ -348,13 +349,12 @@ public class NyARSquareDetector implements INyARSquareDetector
 	private boolean getSquareLine(int[] i_mkvertex, int[] i_xcoord, int[] i_ycoord, NyARSquare o_square) throws NyARException
 	{
 		final NyARLinear[] l_line = o_square.line;
-		final NyARVec ev = this.__getSquareLine_ev; // matrixPCAの戻り値を受け取る
-		final NyARVec mean = this.__getSquareLine_mean;// matrixPCAの戻り値を受け取る
-		final double[] mean_array = mean.getArray();
 		final NyARCameraDistortionFactor dist_factor=this._dist_factor_ref;  
-		final NyARMat input = this.__getSquareLine_input;// 次処理で初期化される。
-		final NyARMat evec = this.__getSquareLine_evec;// アウトパラメータを受け取るから初期化不要//new NyARMat(2,2);
-		final double[][] evec_array = evec.getArray();
+		final NyARDoubleMatrix22 evec=this.__getSquareLine_evec;
+		final NyARDoublePoint2d mean=this.__getSquareLine_mean;
+		final NyARDoublePoint2d ev=this.__getSquareLine_ev;
+	
+		
 		for (int i = 0; i < 4; i++) {
 			final double w1 = (double) (i_mkvertex[i + 1] - i_mkvertex[i] + 1) * 0.05 + 0.5;
 			final int st = (int) (i_mkvertex[i] + w1);
@@ -364,17 +364,12 @@ public class NyARSquareDetector implements INyARSquareDetector
 				// nが2以下でmatrix.PCAを計算することはできないので、エラー
 				return false;
 			}
-			// pcaの準備
-			input.realloc(n, 2);
-			// バッチ取得
-			dist_factor.observ2IdealBatch(i_xcoord, i_ycoord, st, n, input.getArray());
-
-			// 主成分分析
-			input.matrixPCA(evec, ev, mean);
+			//主成分分析する。
+			this._pca.pcaWithDistortionFactor(i_xcoord, i_ycoord, st, n,dist_factor, evec, ev,mean);
 			final NyARLinear l_line_i = l_line[i];
-			l_line_i.run = evec_array[0][1];// line[i][0] = evec->m[1];
-			l_line_i.rise = -evec_array[0][0];// line[i][1] = -evec->m[0];
-			l_line_i.intercept = -(l_line_i.run * mean_array[0] + l_line_i.rise * mean_array[1]);// line[i][2] = -(line[i][0]*mean->v[0] + line[i][1]*mean->v[1]);
+			l_line_i.run = evec.m01;// line[i][0] = evec->m[1];
+			l_line_i.rise = -evec.m00;// line[i][1] = -evec->m[0];
+			l_line_i.intercept = -(l_line_i.run * mean.x + l_line_i.rise * mean.y);// line[i][2] = -(line[i][0]*mean->v[0] + line[i][1]*mean->v[1]);
 		}
 
 		final NyARDoublePoint2d[] l_sqvertex = o_square.sqvertex;
@@ -396,74 +391,7 @@ public class NyARSquareDetector implements INyARSquareDetector
 	}
 }
 
-/**
- * get_vertex関数を切り離すためのクラス
- * 
- */
-final class NyARVertexCounter
-{
-	public final int[] vertex = new int[10];// 5まで削れる
 
-	public int number_of_vertex;
-
-	private double thresh;
-
-	private int[] x_coord;
-
-	private int[] y_coord;
-
-	public boolean getVertex(int[] i_x_coord, int[] i_y_coord, int st, int ed, double i_thresh)
-	{
-		this.number_of_vertex = 0;
-		this.thresh = i_thresh;
-		this.x_coord = i_x_coord;
-		this.y_coord = i_y_coord;
-		return get_vertex(st, ed);
-	}
-
-	/**
-	 * static int get_vertex( int x_coord[], int y_coord[], int st, int ed,double thresh, int vertex[], int *vnum) 関数の代替関数
-	 * 
-	 * @param x_coord
-	 * @param y_coord
-	 * @param st
-	 * @param ed
-	 * @param thresh
-	 * @return
-	 */
-	private boolean get_vertex(int st, int ed)
-	{
-		int v1 = 0;
-		final int[] lx_coord = this.x_coord;
-		final int[] ly_coord = this.y_coord;
-		final double a = ly_coord[ed] - ly_coord[st];
-		final double b = lx_coord[st] - lx_coord[ed];
-		final double c = lx_coord[ed] * ly_coord[st] - ly_coord[ed] * lx_coord[st];
-		double dmax = 0;
-		for (int i = st + 1; i < ed; i++) {
-			final double d = a * lx_coord[i] + b * ly_coord[i] + c;
-			if (d * d > dmax) {
-				dmax = d * d;
-				v1 = i;
-			}
-		}
-		if (dmax / (a * a + b * b) > thresh) {
-			if (!get_vertex(st, v1)) {
-				return false;
-			}
-			if (number_of_vertex > 5) {
-				return false;
-			}
-			vertex[number_of_vertex] = v1;// vertex[(*vnum)] = v1;
-			number_of_vertex++;// (*vnum)++;
-
-			if (!get_vertex(v1, ed)) {
-				return false;
-			}
-		}
-		return true;
-	}
-}
 
 /**
  * ラベル同士の重なり（内包関係）を調べるクラスです。 ラベルリストに内包するラベルを蓄積し、それにターゲットのラベルが内包されているか を確認します。

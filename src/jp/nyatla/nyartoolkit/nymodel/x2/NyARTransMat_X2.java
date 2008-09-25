@@ -33,8 +33,8 @@ package jp.nyatla.nyartoolkit.nymodel.x2;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.*;
-import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
+import jp.nyatla.nyartoolkit.core.transmat.fitveccalc.NyARFitVecCalculator;
 
 
 /**
@@ -44,11 +44,15 @@ import jp.nyatla.nyartoolkit.core.transmat.*;
  */
 public class NyARTransMat_X2 extends NyARTransMat
 {
+	private NyARSinTable _sin_table=new NyARSinTable(1024);
 	public NyARTransMat_X2(NyARParam i_param) throws NyARException
 	{
-		super(
-			i_param,
-			new NyARRotMatrix(i_param.getPerspectiveProjectionMatrix()),
-			new NyARRotTransOptimize_X2(i_param.getPerspectiveProjectionMatrix()));
+		super();
+		final NyARCameraDistortionFactor dist=i_param.getDistortionFactor();
+		final NyARPerspectiveProjectionMatrix pmat=i_param.getPerspectiveProjectionMatrix();
+		this._calculator=new NyARFitVecCalculator(pmat,dist);
+		this._rotmatrix = new NyARRotMatrix_X2(pmat,this._sin_table);
+		this._mat_optimize=new NyARRotTransOptimize_X2(pmat,this._sin_table);
+		return;
 	}
 }

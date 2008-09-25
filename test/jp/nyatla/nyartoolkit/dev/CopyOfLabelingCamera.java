@@ -21,8 +21,6 @@ import jp.nyatla.nyartoolkit.core.INyARSquareDetector;
 import jp.nyatla.nyartoolkit.core.labeling.*;
 import jp.nyatla.nyartoolkit.core.match.*;
 import jp.nyatla.nyartoolkit.core.param.*;
-import jp.nyatla.nyartoolkit.core.pca2d.INyARPca2d;
-import jp.nyatla.nyartoolkit.core.pca2d.NyARPca2d_MatrixPCA_O2;
 import jp.nyatla.nyartoolkit.core.pickup.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
@@ -36,7 +34,6 @@ import jp.nyatla.utils.j2se.LabelingBufferdImage;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix22;
 
 
 class NyARMkVertexStack extends NyObjectStack
@@ -70,28 +67,25 @@ class NyQrCodeSymbolBinder
 	 * @param i_s2
 	 * @param o_vertex
 	 */
-	public static void getMinimumTriangleVertex(NyARSquare[] i_sqare,int[] o_vertex_id)
+	public static void getMinimumTriangleVertex(NyARIntPoint[][] i_sqare,int[] o_vertex_id)
 	{
 		//辺の長さが最小になる頂点の組合せを探す
 		int d;
 		int x,y;
 		int dmax=0x7fffffff;
-		final NyARIntPoint[] vertex0=i_sqare[0].imvertex;
-		final NyARIntPoint[] vertex1=i_sqare[1].imvertex;
-		final NyARIntPoint[] vertex2=i_sqare[2].imvertex;
 		for(int i=0;i<4;i++)
 		{
 			for(int i2=0;i2<4;i2++)
 			{
 				for(int i3=0;i3<4;i3++){
-					x=vertex0[i].x-vertex2[i3].x;
-					y=vertex0[i].y-vertex2[i3].y;
+					x=i_sqare[0][i].x-i_sqare[2][i3].x;
+					y=i_sqare[0][i].y-i_sqare[2][i3].y;
 					d=x*x+y*y;
-					x=vertex1[i2].x-vertex2[i3].x;
-					y=vertex1[i2].y-vertex2[i3].y;
+					x=i_sqare[1][i2].x-i_sqare[2][i3].x;
+					y=i_sqare[1][i2].y-i_sqare[2][i3].y;
 					d+=x*x+y*y;
-					x=vertex1[i2].x-vertex0[i].x;
-					y=vertex1[i2].y-vertex0[i].y;
+					x=i_sqare[1][i2].x-i_sqare[0][i].x;
+					y=i_sqare[1][i2].y-i_sqare[0][i].y;
 					d+=x*x+y*y;
 					if(d<dmax){
 						dmax=d;
@@ -139,14 +133,14 @@ class NyQrCodeSymbolBinder
 	 * 最小三角形の頂点IDセット
 	 * @return
 	 */
-	public static int getKeySymble(NyARSquare[] i_sqare,int[] i_vertex_id)
+	public static int getKeySymble(NyARIntPoint[][] i_sqare,int[] i_vertex_id)
 	{
 		//シンボルグループの重心を計算
 		int cx,cy;
 		cx=cy=0;
 		for(int i=0;i<3;i++)
 		{
-			final NyARIntPoint[] sq_ptr=i_sqare[i].imvertex;
+			final NyARIntPoint[] sq_ptr=i_sqare[i];
 			cx+=sq_ptr[0].x;			
 			cx+=sq_ptr[1].x;			
 			cx+=sq_ptr[2].x;			
@@ -160,12 +154,12 @@ class NyQrCodeSymbolBinder
 		cy/=12;	
 		//前段で探した頂点候補のうち、最も重心に近いものが中心シンボルの内対角点
 		int key_symble_idx=0;
-		int x=i_sqare[0].imvertex[i_vertex_id[0]].x-cx;
-		int y=i_sqare[0].imvertex[i_vertex_id[0]].y-cy;
+		int x=i_sqare[0][i_vertex_id[0]].x-cx;
+		int y=i_sqare[0][i_vertex_id[0]].y-cy;
 		int dmax=x*x+y*y;
 		for(int i=1;i<3;i++){
-			x=i_sqare[i].imvertex[i_vertex_id[i]].x-cx;
-			y=i_sqare[i].imvertex[i_vertex_id[i]].y-cy;
+			x=i_sqare[i][i_vertex_id[i]].x-cx;
+			y=i_sqare[i][i_vertex_id[i]].y-cy;
 			final int d=x*x+y*y;
 			if(d<dmax){
 				dmax=d;
@@ -174,41 +168,16 @@ class NyQrCodeSymbolBinder
 		}
 		return key_symble_idx;
 	}
-	public void bindSquare(NyARSquare i_sq1,int i_lv1,NyARSquare i_sq2,int i_lv2)
+	public void getLineFromVertex(NyARIntPoint i_v1,NyARIntPoint i_v2)
 	{
-		NyARSquare new_square=new NyARSquare();
-		//4辺の式を計算
-		new_square.line[0].copyFrom(i_sq1.line[(i_lv1)%4]);
-		new_square.line[1].copyFrom(i_sq1.line[(i_lv1+3)%4]);
-		new_square.line[2].copyFrom(i_sq2.line[(i_lv2)%4]);
-		new_square.line[3].copyFrom(i_sq2.line[(i_lv2+3)%4]);
-		//歪み無しの座標系を計算
-		final NyARDoublePoint2d[] l_sqvertex = new_square.sqvertex;
-		final NyARLinear[] l_line = new_square.line;		
-		for (int i = 0; i < 4; i++) {
-			final NyARLinear l_line_i = l_line[i];
-			final NyARLinear l_line_2 = l_line[(i + 3) % 4];
-			final double w1 = l_line_2.run * l_line_i.rise - l_line_i.run * l_line_2.rise;
-			if (w1 == 0.0) {
-				return;
-			}
-			l_sqvertex[i].x = (l_line_2.rise * l_line_i.intercept - l_line_i.rise * l_line_2.intercept) / w1;
-			l_sqvertex[i].y = (l_line_i.run * l_line_2.intercept - l_line_2.run * l_line_i.intercept) / w1;
-//			// 頂点インデクスから頂点座標を得て保存
-//			l_imvertex[i].x = i_xcoord[i_mkvertex[i]];
-//			l_imvertex[i].y = i_ycoord[i_mkvertex[i]];
-		}
+		double sx=i_v1.x-i_v2.x;
+		double sy=i_v1.y-i_v2.y;
+		double k=sy/sx;
+		double b=i_v2.y-k*i_v2.x;
 		Graphics g=this.bimg.getGraphics();
 		g.setColor(Color.red);
-		int[] x=new int[4];
-		int[] y=new int[4];
-		for(int i=0;i<4;i++){
-			x[i]=(int)l_sqvertex[i].x;
-			y[i]=(int)l_sqvertex[i].y;
-		}
-		g.drawPolygon(x,y,4);
-		//基準点はVertexをそのまま採用
-		//２個の想定点は座標を逆変換して設定
+		g.drawLine(0,(int)b,320,(int)(k*320+b));
+		
 	}
 	/**
 	 *
@@ -216,7 +185,7 @@ class NyQrCodeSymbolBinder
 	 * @param o_sq
 	 * @return
 	 */
-	public boolean margeEdge(NyARSquare[] i_sq,NyARSquare o_sq)
+	public boolean margeEdge(NyARIntPoint[][] i_sq,NyARSquare o_sq)
 	{
 		int[] minimum_triangle_vertex=new int[3];
 		int[] minimum_line_vertex=new int[2];
@@ -233,22 +202,26 @@ class NyQrCodeSymbolBinder
 		
 		//エッジシンボル間で最短距離を取る頂点ペアを取る
 		//(角度を低くするとエラーが出やすい。対角線との類似性を確認する方法のほうがいい。多分)
-		getMinimumLineVertex(i_sq[symbol_e1_idx].imvertex,i_sq[symbol_e2_idx].imvertex,minimum_line_vertex);
+		getMinimumLineVertex(i_sq[symbol_e1_idx],i_sq[symbol_e2_idx],minimum_line_vertex);
 		
 		//内対角を外対角に変換
 		int lv1=(minimum_line_vertex[0]+2)%4;
 		int lv2=(minimum_line_vertex[1]+2)%4;
 		int kv =(minimum_triangle_vertex[key_simble_idx]+2)%4;
-		//矩形のバインド
-		bindSquare(i_sq[symbol_e1_idx],lv1,i_sq[symbol_e2_idx],lv2);
+
+		getLineFromVertex(i_sq[symbol_e1_idx][(lv1+1)%4],i_sq[symbol_e1_idx][lv1]);
+		getLineFromVertex(i_sq[symbol_e1_idx][(lv1+3)%4],i_sq[symbol_e1_idx][lv1]);
+		getLineFromVertex(i_sq[symbol_e2_idx][(lv2+1)%4],i_sq[symbol_e2_idx][lv2]);
+		getLineFromVertex(i_sq[symbol_e2_idx][(lv2+3)%4],i_sq[symbol_e2_idx][lv2]);
+		getLineFromVertex(i_sq[key_simble_idx][(kv+2)%4],i_sq[key_simble_idx][kv]);
 				
 		
 		Graphics g=this.bimg.getGraphics();
 		//内対角に緑の点を打つ
 		g.setColor(Color.green);
-		g.fillRect(i_sq[symbol_e1_idx].imvertex[lv1].x-2,i_sq[symbol_e1_idx].imvertex[lv1].y-2,4,4);
-		g.fillRect(i_sq[symbol_e2_idx].imvertex[lv2].x-2,i_sq[symbol_e2_idx].imvertex[lv2].y-2,4,4);
-//		g.fillRect(i_sq[symbol_e2_idx][minimum_line_vertex[1]].x-2,i_sq[symbol_e2_idx][minimum_line_vertex[1]].y-2,4,4);
+		g.fillRect(i_sq[key_simble_idx][minimum_triangle_vertex[key_simble_idx]].x-2,i_sq[key_simble_idx][minimum_triangle_vertex[key_simble_idx]].y-2,4,4);
+		g.fillRect(i_sq[symbol_e1_idx][minimum_line_vertex[0]].x-2,i_sq[symbol_e1_idx][minimum_line_vertex[0]].y-2,4,4);
+		g.fillRect(i_sq[symbol_e2_idx][minimum_line_vertex[1]].x-2,i_sq[symbol_e2_idx][minimum_line_vertex[1]].y-2,4,4);
 		
 		
 		//中央の中心エッジから最も遠い点が
@@ -263,8 +236,8 @@ class NyQrCodeSymbolBinder
 			int[] xp=new int[4]; 
 			int[] yp=new int[4]; 
 			for(int i2=0;i2<4;i2++){
-				xp[i2]=i_sq[i].imvertex[i2].x;
-				yp[i2]=i_sq[i].imvertex[i2].y;
+				xp[i2]=i_sq[i][i2].x;
+				yp[i2]=i_sq[i][i2].y;
 			}
 			this.bimg.getGraphics().setColor(Color.RED);
 			this.bimg.getGraphics().drawPolygon(xp, yp,4);
@@ -402,7 +375,7 @@ class NyARQRCodeDetector implements INyARSquareDetector
 		int coord_num;
 		int label_area;
 		NyARLabelingLabel label_pt;
-		NyARSquareStack wk_stack=new NyARSquareStack(100);
+		NyARMkVertexStack vertex_stack=new NyARMkVertexStack(100);
 
 		for (; i < label_num; i++) {
 			label_pt = labels[i];
@@ -435,18 +408,27 @@ class NyARQRCodeDetector implements INyARSquareDetector
 			// 頂点候補(vertex1)を先頭に並べなおした配列を作成する。
 			normalizeCoord(xcoord, ycoord, vertex1, coord_num);
 
+
 			// 頂点情報を取得
 			if (!getSquareVertex(xcoord, ycoord, vertex1, coord_num, label_area, mkvertex)) {
 //				o_square_stack.pop();// 頂点の取得が出来なかったので破棄
 				continue;
 			}
-			NyARSquare square=(NyARSquare)wk_stack.prePush();
-			if(!getSquareLine(mkvertex,xcoord,ycoord,square)){
-				wk_stack.pop();
-				continue;
-			}
+			// 領域を準備する。
+			NyARIntPoint[] vertex_ptr = (NyARIntPoint[]) vertex_stack.prePush();
+			vertex_ptr[0].x=xcoord[mkvertex[0]];
+			vertex_ptr[0].y=ycoord[mkvertex[0]];
+			vertex_ptr[1].x=xcoord[mkvertex[1]];
+			vertex_ptr[1].y=ycoord[mkvertex[1]];
+			vertex_ptr[2].x=xcoord[mkvertex[2]];
+			vertex_ptr[2].y=ycoord[mkvertex[2]];
+			vertex_ptr[3].x=xcoord[mkvertex[3]];
+			vertex_ptr[3].y=ycoord[mkvertex[3]];
+
+//			// 頂点情報からライン情報を作っちゃう
+//			getSquare(mkvertex, xcoord, ycoord, vertex_ptr);
 		}
-		bindQrcodeEdge(wk_stack);
+		bindQrcodeEdge(vertex_stack);
 		//エッジ同士の相関関係をしらべる。
 
 		return;
@@ -457,7 +439,7 @@ class NyARQRCodeDetector implements INyARSquareDetector
 	 * @param o_sq
 	 * @return
 	 */
-	public boolean margeEdge(NyARSquare[] i_sq,NyARSquare o_sq)
+	public boolean margeEdge(NyARIntPoint[][] i_sq,NyARSquare o_sq)
 	{
 		NyQrCodeSymbolBinder binder=new NyQrCodeSymbolBinder();
 		binder.bimg=this.bimg;
@@ -473,15 +455,15 @@ class NyARQRCodeDetector implements INyARSquareDetector
 	 * QRコードのエッジペアを作る
 	 * @param i_square_stack
 	 */
-	public void bindQrcodeEdge(NyARSquareStack i_square_stack)
+	public void bindQrcodeEdge(NyARMkVertexStack i_square_stack)
 	{
 		
-		NyARSquare sq_ptr1,sq_ptr2,sq_ptr3;
+		NyARIntPoint[] sq_ptr1,sq_ptr2,sq_ptr3;
 		int number_of_edge=i_square_stack.getLength();
 		if(number_of_edge<3){
 			return;
 		}
-		NyARSquare[] sa=(NyARSquare[])i_square_stack.getArray();
+		NyARIntPoint[][] sa=(NyARIntPoint[][])i_square_stack.getArray();
 		for(int i=0;i<number_of_edge;i++)
 		{	
 			for(int i2=i+1;i2<number_of_edge;i2++)
@@ -530,62 +512,32 @@ class NyARQRCodeDetector implements INyARSquareDetector
 		o_line.intercept = (i_v1.y + (o_line.run / o_line.rise) * (i_v1.x)) * rise_;
 
 	}
-	private final INyARPca2d _pca=new NyARPca2d_MatrixPCA_O2(100);
-	private final NyARDoubleMatrix22 __getSquareLine_evec=new NyARDoubleMatrix22();
-	private final NyARDoublePoint2d __getSquareLine_mean=new NyARDoublePoint2d();
-	private final NyARDoublePoint2d __getSquareLine_ev=new NyARDoublePoint2d();
-	/**
-	 * arGetLine(int x_coord[], int y_coord[], int coord_num,int vertex[], double line[4][3], double v[4][2]) arGetLine2(int x_coord[], int y_coord[], int
-	 * coord_num,int vertex[], double line[4][3], double v[4][2], double *dist_factor) の２関数の合成品です。 マーカーのvertex,lineを計算して、結果をo_squareに保管します。
-	 * Optimize:STEP[424->391]
-	 * 
-	 * @param i_cparam
-	 * @return
-	 * @throws NyARException
-	 */
-	private boolean getSquareLine(int[] i_mkvertex, int[] i_xcoord, int[] i_ycoord, NyARSquare o_square) throws NyARException
-	{
-		final NyARLinear[] l_line = o_square.line;
-		final NyARCameraDistortionFactor dist_factor=this._dist_factor_ref;  
-		final NyARDoubleMatrix22 evec=this.__getSquareLine_evec;
-		final NyARDoublePoint2d mean=this.__getSquareLine_mean;
-		final NyARDoublePoint2d ev=this.__getSquareLine_ev;
-	
-		
-		for (int i = 0; i < 4; i++) {
-			final double w1 = (double) (i_mkvertex[i + 1] - i_mkvertex[i] + 1) * 0.05 + 0.5;
-			final int st = (int) (i_mkvertex[i] + w1);
-			final int ed = (int) (i_mkvertex[i + 1] - w1);
-			final int n = ed - st + 1;
-			if (n < 2) {
-				// nが2以下でmatrix.PCAを計算することはできないので、エラー
-				return false;
-			}
-			//主成分分析する。
-			this._pca.pcaWithDistortionFactor(i_xcoord, i_ycoord, st, n,dist_factor, evec, ev,mean);
-			final NyARLinear l_line_i = l_line[i];
-			l_line_i.run = evec.m01;// line[i][0] = evec->m[1];
-			l_line_i.rise = -evec.m00;// line[i][1] = -evec->m[0];
-			l_line_i.intercept = -(l_line_i.run * mean.x + l_line_i.rise * mean.y);// line[i][2] = -(line[i][0]*mean->v[0] + line[i][1]*mean->v[1]);
-		}
 
-		final NyARDoublePoint2d[] l_sqvertex = o_square.sqvertex;
-		final NyARIntPoint[] l_imvertex = o_square.imvertex;
+	private void getSquare(int[] i_mkvertex, int[] i_xcoord, int[] i_ycoord, NyARSquare o_square)
+	{
+		final NyARCameraDistortionFactor dist_factor = this._dist_factor_ref;
+		final NyARDoublePoint2d[] vertex = o_square.sqvertex;
+
+		NyARIntPoint[] imvertex_ptr=o_square.imvertex;
+		NyARIntPoint wk_vertex;
+		//頂点座標取得
 		for (int i = 0; i < 4; i++) {
-			final NyARLinear l_line_i = l_line[i];
-			final NyARLinear l_line_2 = l_line[(i + 3) % 4];
-			final double w1 = l_line_2.run * l_line_i.rise - l_line_i.run * l_line_2.rise;
-			if (w1 == 0.0) {
-				return false;
-			}
-			l_sqvertex[i].x = (l_line_2.rise * l_line_i.intercept - l_line_i.rise * l_line_2.intercept) / w1;
-			l_sqvertex[i].y = (l_line_i.run * l_line_2.intercept - l_line_2.run * l_line_i.intercept) / w1;
-			// 頂点インデクスから頂点座標を得て保存
-			l_imvertex[i].x = i_xcoord[i_mkvertex[i]];
-			l_imvertex[i].y = i_ycoord[i_mkvertex[i]];
+			final int idx = i_mkvertex[i];
+			imvertex_ptr[i].x = i_xcoord[idx];
+			imvertex_ptr[i].y = i_ycoord[idx];
 		}
-		return true;
+		// 歪み補正
+		for (int i = 0; i < 4; i++) {
+			dist_factor.observ2Ideal(imvertex_ptr[i].x,imvertex_ptr[i].y, vertex[i]);
+		}
+		// ライン計算
+		getLine(vertex[1], vertex[0], o_square.line[0]);
+		getLine(vertex[2], vertex[1], o_square.line[1]);
+		getLine(vertex[3], vertex[2], o_square.line[2]);
+		getLine(vertex[0], vertex[3], o_square.line[3]);
+		return;
 	}
+
 	/**
 	 * 辺からの対角線が最長になる点を対角線候補として返す。
 	 * 
@@ -811,7 +763,7 @@ class NyARQRCodeDetector implements INyARSquareDetector
 }
 
 
-public class LabelingCamera extends Frame implements JmfCaptureListener
+public class CopyOfLabelingCamera extends Frame implements JmfCaptureListener
 {
 	private final String camera_file = "../Data/camera_para.dat";
 
@@ -819,7 +771,7 @@ public class LabelingCamera extends Frame implements JmfCaptureListener
 
 	private JmfCameraCapture capture;
 	private NyARParam ap;
-	public LabelingCamera() throws NyARException, NyARException
+	public CopyOfLabelingCamera() throws NyARException, NyARException
 	{
 		setBounds(0, 0, 640 + 64, 720 + 64);
 		// キャプチャの準備
@@ -956,7 +908,7 @@ public class LabelingCamera extends Frame implements JmfCaptureListener
 	public static void main(String[] args)
 	{
 		try {
-			LabelingCamera mainwin = new LabelingCamera();
+			CopyOfLabelingCamera mainwin = new CopyOfLabelingCamera();
 			mainwin.setVisible(true);
 			mainwin.startCapture();
 		} catch (Exception e) {

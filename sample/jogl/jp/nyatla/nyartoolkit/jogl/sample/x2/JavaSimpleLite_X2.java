@@ -44,7 +44,6 @@ import jp.nyatla.nyartoolkit.core.NyARCode;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCameraCapture;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
-import jp.nyatla.nyartoolkit.jogl.utils2.*;
 /**
  * simpleLiteと同じようなテストプログラム
  * 出来る限りARToolKitのサンプルと似せて作ってあります。

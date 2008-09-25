@@ -29,25 +29,37 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.types;
+package jp.nyatla.nyartoolkit.core.pca2d;
 
-public class NyARIntPoint
+import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.param.*;
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix22;
+
+public interface INyARPca2d
 {
-	public int x;
-
-	public int y;
 	/**
-	 * 配列ファクトリ
-	 * @param i_number
-	 * @return
+	 * 通常のPCA
+	 * @param i_x
+	 * @param i_y
+	 * @param i_start
+	 * @param i_number_of_point
+	 * @param o_evec
+	 * @param o_ev
+	 * @param o_mean
+	 * @throws NyARException
 	 */
-	public static NyARIntPoint[] createArray(int i_number)
-	{
-		NyARIntPoint[] ret=new NyARIntPoint[i_number];
-		for(int i=0;i<i_number;i++)
-		{
-			ret[i]=new NyARIntPoint();
-		}
-		return ret;
-	}
+	public void pca(double[] i_x,double[] i_y,int i_start,int i_number_of_point,NyARDoubleMatrix22 o_evec, NyARDoublePoint2d o_ev,NyARDoublePoint2d o_mean) throws NyARException;
+	/**
+	 * カメラ歪み補正つきのPCA
+	 * @param i_x
+	 * @param i_y
+	 * @param i_start
+	 * @param i_number_of_point
+	 * @param i_factor
+	 * @param o_evec
+	 * @param o_mean
+	 * @throws NyARException
+	 */
+	public void pcaWithDistortionFactor(int[] i_x,int[] i_y,int i_start,int i_number_of_point,NyARCameraDistortionFactor i_factor,NyARDoubleMatrix22 o_evec,NyARDoublePoint2d o_ev, NyARDoublePoint2d o_mean) throws NyARException;
 }

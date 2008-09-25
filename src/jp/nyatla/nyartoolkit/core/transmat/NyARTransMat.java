@@ -36,7 +36,7 @@ import jp.nyatla.nyartoolkit.core.NyARSquare;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.transmat.fitveccalc.NyARFitVecCalculator;
 import jp.nyatla.nyartoolkit.core.transmat.optimize.*;
-import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.NyARRotMatrix;
+import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 
@@ -51,24 +51,26 @@ public class NyARTransMat implements INyARTransMat
 
 	private final NyARDoublePoint2d _center=new NyARDoublePoint2d(0,0);
 	private final NyARTransOffset _offset=new NyARTransOffset();
-	private final NyARRotMatrix _rotmatrix;
-	private final NyARFitVecCalculator _calculator;
-	private final INyARRotTransOptimize _mat_optimize;
+	protected NyARRotMatrix _rotmatrix;
+	protected NyARFitVecCalculator _calculator;
+	protected INyARRotTransOptimize _mat_optimize;
 
-	protected NyARTransMat(NyARParam i_param,NyARRotMatrix i_rotmatrix,INyARRotTransOptimize i_optimize)
+	/**
+	 * 派生クラスで自分でメンバオブジェクトを指定したい場合はこちらを使う。
+	 *
+	 */
+	protected NyARTransMat()
 	{
-		final NyARCameraDistortionFactor dist=i_param.getDistortionFactor();
-		final NyARPerspectiveProjectionMatrix pmat=i_param.getPerspectiveProjectionMatrix();
-		this._calculator=new NyARFitVecCalculator(pmat,dist);
-		this._rotmatrix =i_rotmatrix;
-		this._mat_optimize=i_optimize;		
+		//_calculator,_rotmatrix,_mat_optimizeをコンストラクタの終了後に
+		//作成して割り当ててください。
+		return;
 	}
 	public NyARTransMat(NyARParam i_param) throws NyARException
 	{
 		final NyARCameraDistortionFactor dist=i_param.getDistortionFactor();
 		final NyARPerspectiveProjectionMatrix pmat=i_param.getPerspectiveProjectionMatrix();
 		this._calculator=new NyARFitVecCalculator(pmat,dist);
-		this._rotmatrix = new NyARRotMatrix(pmat);
+		this._rotmatrix = new NyARRotMatrix_ARToolKit(pmat);
 		this._mat_optimize=new NyARRotTransOptimize(pmat);
 	}
 

@@ -39,10 +39,10 @@ import jp.nyatla.nyartoolkit.core.*;
 
 
 /**
- * 矩形座標をPCAではなく、頂点座標そのものから計算する。
+ * 矩形座標をPCAではなく、頂点座標そのものからSquare位置を計算するクラス
  *
  */
-public class NyARSquareDetector_X2 implements INyARSquareDetector
+public class NyARQrCodeDetector implements INyARSquareDetector
 {
 	private static final double VERTEX_FACTOR = 1.0;// 線検出のファクタ
 
@@ -64,7 +64,7 @@ public class NyARSquareDetector_X2 implements INyARSquareDetector
 	 * 
 	 * @param i_param
 	 */
-	public NyARSquareDetector_X2(NyARCameraDistortionFactor i_dist_factor_ref,NyARIntSize i_size) throws NyARException
+	public NyARQrCodeDetector(NyARCameraDistortionFactor i_dist_factor_ref,NyARIntSize i_size) throws NyARException
 	{
 		this._width = i_size.w;
 		this._height = i_size.h;
@@ -202,6 +202,12 @@ public class NyARSquareDetector_X2 implements INyARSquareDetector
 		}	
 		return;
 	}
+	/**
+	 * ２つの頂点座標を結ぶ直線から、NyARLinearを計算する。
+	 * @param i_v1
+	 * @param i_v2
+	 * @param o_line
+	 */
 	final private void getLine(NyARDoublePoint2d i_v1,NyARDoublePoint2d i_v2,NyARLinear o_line)
 	{
 		final double x=i_v1.x-i_v2.x;
@@ -229,6 +235,7 @@ public class NyARSquareDetector_X2 implements INyARSquareDetector
 		o_line.intercept=(i_v1.y+(o_line.run/o_line.rise)*(i_v1.x))*rise_;
 		
 	}
+/*
 	private void getSquare(int[] i_mkvertex, int[] i_xcoord, int[] i_ycoord, NyARSquare o_square)
 	{
 		final NyARCameraDistortionFactor dist_factor=this._dist_factor_ref;		
@@ -245,11 +252,10 @@ public class NyARSquareDetector_X2 implements INyARSquareDetector
 		getLine(vertex[1],vertex[0],o_square.line[0]);
 		getLine(vertex[2],vertex[1],o_square.line[1]);
 		getLine(vertex[3],vertex[2],o_square.line[2]);
-		getLine(vertex[0],vertex[3],o_square.line[3]);
-		
+		getLine(vertex[0],vertex[3],o_square.line[3]);	
 		return;
 	}
-
+*/
 	/**
 	 * 辺からの対角線が最長になる点を対角線候補として返す。
 	 * 

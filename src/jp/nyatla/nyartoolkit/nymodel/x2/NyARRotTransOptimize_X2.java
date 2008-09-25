@@ -46,11 +46,13 @@ import jp.nyatla.nyartoolkit.core.transmat.optimize.*;
  */
 public class NyARRotTransOptimize_X2 implements INyARRotTransOptimize
 {
-	private final static int AR_GET_TRANS_MAT_MAX_LOOP_COUNT = 1;// #define AR_GET_TRANS_MAT_MAX_LOOP_COUNT 5
+	private NyARSinTable _sin_table_ref;	
+	private final static int AR_GET_TRANS_MAT_MAX_LOOP_COUNT = 5;// #define AR_GET_TRANS_MAT_MAX_LOOP_COUNT 5
 	private final static double AR_GET_TRANS_MAT_MAX_FIT_ERROR = 1.0;// #define AR_GET_TRANS_MAT_MAX_FIT_ERROR 1.0
 	private final NyARPerspectiveProjectionMatrix _projection_mat_ref;
-	public NyARRotTransOptimize_X2(NyARPerspectiveProjectionMatrix i_projection_mat_ref)
+	public NyARRotTransOptimize_X2(NyARPerspectiveProjectionMatrix i_projection_mat_ref,NyARSinTable _sin_table_ref)
 	{
+		this._sin_table_ref=_sin_table_ref;
 		this._projection_mat_ref=i_projection_mat_ref;
 		return;
 	}
@@ -59,6 +61,7 @@ public class NyARRotTransOptimize_X2 implements INyARRotTransOptimize
 	{
 		final NyARDoublePoint2d[] fit_vertex=i_calculator.getFitSquare();
 		final NyARDoublePoint3d[] offset_square=i_calculator.getOffsetVertex().vertex;
+
 		
 		double err = -1;
 		/*ループを抜けるタイミングをARToolKitと合わせるために変なことしてます。*/
@@ -185,17 +188,17 @@ public class NyARRotTransOptimize_X2 implements INyARRotTransOptimize
 				a_factor[j] = w;
 				w = b2 + w2;
 				b_factor[j] = w;
-				sinb[j] = Math.sin(w);
-				cosb[j] = Math.cos(w);
+				sinb[j] = this._sin_table_ref.sin(w);
+				cosb[j] = this._sin_table_ref.cos(w);
 				w = c2 + w2;
 				c_factor[j] = w;
-				sinc[j] = Math.sin(w);
-				cosc[j] = Math.cos(w);
+				sinc[j] = this._sin_table_ref.sin(w);
+				cosc[j] = this._sin_table_ref.cos(w);
 			}
 			//
 			for (t1 = 0; t1 < 3; t1++) {
-				SA = Math.sin(a_factor[t1]);
-				CA = Math.cos(a_factor[t1]);
+				SA = this._sin_table_ref.sin(a_factor[t1]);
+				CA = this._sin_table_ref.cos(a_factor[t1]);
 				// Optimize
 				CACA = CA * CA;
 				SASA = SA * SA;
@@ -287,7 +290,5 @@ public class NyARRotTransOptimize_X2 implements INyARRotTransOptimize
 		io_rot.setAngle(ma, mb, mc);
 		/* printf("factor = %10.5f\n", factor*180.0/MD_PI); */
 		return minerr / 4;
-	}	
-	
-	
+	}
 }

@@ -42,7 +42,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.stack.*;
-
+import jp.nyatla.nyartoolkit.core.labeling.*;
 
 /**
  * bitmapとして利用可能なラベリングイメージです。
@@ -63,9 +63,8 @@ public class LabelingBufferdImage extends BufferedImage
 
 	public final static int COLOR_8_MONO = 5;// 16階調モノクロモード
 
-	private int[] _rgb_table;
+	private int[] _rgb_table_125;
 
-	private int _number_of_color;
 
 	/**
 	 * i_width x i_heightの大きさのイメージを作成します。
@@ -73,23 +72,19 @@ public class LabelingBufferdImage extends BufferedImage
 	 * @param i_width
 	 * @param i_height
 	 */
-	public LabelingBufferdImage(int i_width, int i_height, int i_color_mode)
+	public LabelingBufferdImage(int i_width, int i_height)
 	{
 		super(i_width, i_height, ColorSpace.TYPE_RGB);
 		// RGBテーブルを作成
-		switch (i_color_mode) {
-		case COLOR_125_COLOR:
-			this._rgb_table = new int[125];
-			this._number_of_color = 125;
-			for (int i = 0; i < 5; i++) {
-				for (int i2 = 0; i2 < 5; i2++) {
-					for (int i3 = 0; i3 < 5; i3++) {
-						this._rgb_table[((i * 5) + i2) * 5 + i3] = ((((i * 63) << 8) | (i2 * 63)) << 8) | (i3 * 63);
-					}
+		this._rgb_table_125 = new int[125];
+		for (int i = 0; i < 5; i++) {
+			for (int i2 = 0; i2 < 5; i2++) {
+				for (int i3 = 0; i3 < 5; i3++) {
+					this._rgb_table_125[((i * 5) + i2) * 5 + i3] = ((((i * 63) << 8) | (i2 * 63)) << 8) | (i3 * 63);
 				}
 			}
-			break;
-		case COLOR_256_MONO:
+		}
+/*		case COLOR_256_MONO:
 			this._rgb_table = new int[256];
 			this._number_of_color = 256;
 			for (int i = 0; i < 256; i++) {
@@ -120,7 +115,7 @@ public class LabelingBufferdImage extends BufferedImage
 				this._rgb_table[i] = (m << 16) | (m << 8) | m;
 			}
 			break;
-		}
+		}*/
 	}
 
 
@@ -142,12 +137,16 @@ public class LabelingBufferdImage extends BufferedImage
 		limg = (int[][]) i_raster.getBufferReader().getBuffer();
 		for (int i = 0; i < h; i++) {
 			for (int i2 = 0; i2 < w; i2++) {
-				this.setRGB(i2, i, this._rgb_table[limg[i][i2] % this._number_of_color]);
+				this.setRGB(i2, i,limg[i][i2]);
 			}
 		}
 		return;
 	}
-
+	/**
+	 * バイナリラスタ
+	 * @param i_raster
+	 * @throws NyARException
+	 */
 	public void drawImage(NyARBinRaster i_raster) throws NyARException
 	{
 		assert (i_raster.getBufferReader().getBufferType() == INyARBufferReader.BUFFERFORMAT_INT2D_BIN_8);
@@ -170,6 +169,55 @@ public class LabelingBufferdImage extends BufferedImage
 		}
 		return;
 	}
+		
+	/**
+	 * ラベリングイメージを書く
+	 * @param i_raster
+	 * @throws NyARException
+	 */
+	public void drawLabel(NyARLabelingImage i_image) throws NyARException
+	{
+		int w = this.getWidth();
+		int h = this.getHeight();
+		// サイズをチェック
+		NyARIntSize size = i_image.getSize();
+		if (size.h > h || size.w > w) {
+			throw new NyARException();
+		}
+		int[] index_array=i_image.getIndexArray();
+
+		int[][] limg;
+		// イメージの描画
+		limg = (int[][]) i_image.getBufferReader().getBuffer();
+		for (int i = 0; i < h; i++) {
+			for (int i2 = 0; i2 < w; i2++) {
+				int t=limg[i][i2]-1;
+				if(t<0){
+					t=0;
+				}else{
+					t=index_array[t];
+				}
+				this.setRGB(i2, i,_rgb_table_125[t% _rgb_table_125.length]);
+			}
+		}
+		return;
+	}
+	/**
+	 * 
+	 * @param i_stack
+	 */
+
+	public void overlayData(NyARLabelingLabel i_label)
+	{
+		Graphics g = this.getGraphics();
+		g.setColor(Color.red);
+		g.drawRect(i_label.clip_l,i_label.clip_t,i_label.clip_r-i_label.clip_l,i_label.clip_b-i_label.clip_t);
+		return;
+	}	
+	/**
+	 * 
+	 * @param i_stack
+	 */
 
 	public void overlayData(NyARIntPointStack i_stack)
 	{

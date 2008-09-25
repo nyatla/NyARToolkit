@@ -86,7 +86,7 @@ public class NyARSingleDetectMarker_X2
 	{
 		final NyARIntSize scr_size=i_param.getScreenSize();		
 		// 解析オブジェクトを作る
-		this._square_detect = new NyARSquareDetector_X2(i_param.getDistortionFactor(),scr_size);
+		this._square_detect = new NyARQrCodeDetector(i_param.getDistortionFactor(),scr_size);
 		this._transmat = new NyARTransMat_X2(i_param);
 		// 比較コードを保存
 		this._code = i_code;
@@ -99,8 +99,8 @@ public class NyARSingleDetectMarker_X2
 		this._bin_raster=new NyARBinRaster(scr_size.w,scr_size.h);
 	}
 
-	NyARBinRaster _bin_raster;
-	NyARRasterFilter_ARToolkitThreshold _tobin_filter=new NyARRasterFilter_ARToolkitThreshold(100);
+	private NyARBinRaster _bin_raster;
+	private NyARRasterFilter_ARToolkitThreshold _tobin_filter=new NyARRasterFilter_ARToolkitThreshold(100);
 
 	/**
 	 * i_imageにマーカー検出処理を実行し、結果を記録します。
