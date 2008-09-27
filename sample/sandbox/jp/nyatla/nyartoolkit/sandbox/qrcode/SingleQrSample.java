@@ -112,7 +112,7 @@ public class SingleQrSample implements GLEventListener, JmfCaptureListener
 
 	public SingleQrSample()
 	{
-		Frame frame = new Frame("Java simpleLite with NyARToolkit");
+		Frame frame = new Frame("SingleQrSample");
 
 		// 3Dを描画するコンポーネント
 		GLCanvas canvas = new GLCanvas();
