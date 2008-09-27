@@ -40,14 +40,14 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 public class NyARRasterFilter_RgbMul implements INyARRasterFilter_RgbToGs
 {
-	public void doFilter(INyARRgbRaster i_input, NyARGlayscaleRaster i_output) throws NyARException
+	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output) throws NyARException
 	{
 		INyARBufferReader in_buffer_reader=i_input.getBufferReader();	
 		INyARBufferReader out_buffer_reader=i_output.getBufferReader();			
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
 
-		int[][] out_buf = (int[][]) in_buffer_reader.getBuffer();
-		byte[] in_buf = (byte[]) out_buffer_reader.getBuffer();
+		int[][] out_buf = (int[][]) out_buffer_reader.getBuffer();
+		byte[] in_buf = (byte[]) in_buffer_reader.getBuffer();
 
 		NyARIntSize size = i_output.getSize();
 		switch (in_buffer_reader.getBufferType()) {

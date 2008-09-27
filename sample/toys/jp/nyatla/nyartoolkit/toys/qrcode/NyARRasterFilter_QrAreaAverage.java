@@ -29,7 +29,7 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core2.rasterfilter.gs2bin;
+package jp.nyatla.nyartoolkit.toys.qrcode;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
@@ -40,7 +40,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
  * 平均移動法を使った２値化フィルタ
  * 
  */
-public class NyARRasterFilter_AreaAverage implements INyARRasterFilter_GsToBin
+public class NyARRasterFilter_QrAreaAverage implements INyARRasterFilter_GsToBin
 {
 	private int _area = 8;
 
@@ -67,7 +67,9 @@ public class NyARRasterFilter_AreaAverage implements INyARRasterFilter_GsToBin
 					nn++;
 				}
 			}
+			int th;
 			boolean first = true;
+			th=0;
 			for (int x = area; x < x2; x++) {
 				if (!first) {
 					for (int yy = y - area; yy < y + area; yy++) {
@@ -76,8 +78,7 @@ public class NyARRasterFilter_AreaAverage implements INyARRasterFilter_GsToBin
 					}
 				}
 				first = false;
-				int th = (sum / nn);
-
+				th = (sum / nn);
 				int g = in_buf[y][x];
 				out_buf[y][x] = th < g ? 1 : 0;
 			}

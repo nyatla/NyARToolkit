@@ -36,5 +36,5 @@ import jp.nyatla.nyartoolkit.core.raster.*;
 
 public interface INyARRasterFilter_GsToBin
 {
-	public void doFilter(NyARGlayscaleRaster i_input, NyARBinRaster i_output) throws NyARException;
+	public void doFilter(NyARGrayscaleRaster i_input, NyARBinRaster i_output) throws NyARException;
 }

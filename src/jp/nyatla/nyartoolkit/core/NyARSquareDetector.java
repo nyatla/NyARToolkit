@@ -104,9 +104,9 @@ public class NyARSquareDetector implements INyARSquareDetector
 	private final int[] __detectMarker_mkvertex = new int[5];
 
 	/**
-	 * ARMarkerInfo2 *arDetectMarker2( ARInt16 *limage, int label_num, int *label_ref,int *warea, double *wpos, int *wclip,int area_max, int area_min, double
-	 * factor, int *marker_num ) 関数の代替品 ラベリング情報からマーカー一覧を作成してo_marker_listを更新します。 関数はo_marker_listに重なりを除外したマーカーリストを作成します。
-	 * 
+	 * arDetectMarker2を基にした関数
+	 * この関数はNyARSquare要素のうち、directionを除くパラメータを取得して返します。
+	 * directionの確定は行いません。
 	 * @param i_raster
 	 * 解析する２値ラスタイメージを指定します。
 	 * @param o_square_stack
@@ -394,7 +394,8 @@ public class NyARSquareDetector implements INyARSquareDetector
 
 
 /**
- * ラベル同士の重なり（内包関係）を調べるクラスです。 ラベルリストに内包するラベルを蓄積し、それにターゲットのラベルが内包されているか を確認します。
+ * ラベル同士の重なり（内包関係）を調べるクラスです。 
+ * ラベルリストに内包するラベルを蓄積し、それにターゲットのラベルが内包されているか を確認します。
  */
 class OverlapChecker
 {

@@ -35,14 +35,20 @@ import jp.nyatla.nyartoolkit.core.types.*;
 /**
  * ARMarkerInfoに相当するクラス。 矩形情報を保持します。
  * 
+ * directionは方角を表します。
+ * 決定しないときはDIRECTION_UNKNOWNを設定してください。
+ * 
  */
 public class NyARSquare
 {
+	public final static int DIRECTION_UNKNOWN=-1;
+	public int direction;
 	public NyARLinear[] line = new NyARLinear[4];
 	public NyARDoublePoint2d[] sqvertex = new NyARDoublePoint2d[4];
 	public NyARIntPoint[] imvertex = new NyARIntPoint[4];
 	public NyARSquare()
 	{
+		this.direction=DIRECTION_UNKNOWN;
 		for(int i=0;i<4;i++){
 			this.sqvertex[i]=new NyARDoublePoint2d();
 			this.imvertex[i]=new NyARIntPoint();

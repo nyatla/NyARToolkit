@@ -37,12 +37,11 @@ import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.toys.x2.*;
-
 /**
  * 矩形座標をPCAではなく、頂点座標そのものからSquare位置を計算するクラス
  *
  */
-public class NyARQrCodeDetector implements INyARSquareDetector
+public class NyARVertexDetector implements INyARSquareDetector
 {
 	private static final double VERTEX_FACTOR = 1.0;// 線検出のファクタ
 
@@ -64,7 +63,7 @@ public class NyARQrCodeDetector implements INyARSquareDetector
 	 * 
 	 * @param i_param
 	 */
-	public NyARQrCodeDetector(NyARCameraDistortionFactor i_dist_factor_ref,NyARIntSize i_size) throws NyARException
+	public NyARVertexDetector(NyARCameraDistortionFactor i_dist_factor_ref,NyARIntSize i_size) throws NyARException
 	{
 		this._width = i_size.w;
 		this._height = i_size.h;

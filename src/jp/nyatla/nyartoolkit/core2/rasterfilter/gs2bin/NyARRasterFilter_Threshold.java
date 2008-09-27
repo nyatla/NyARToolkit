@@ -49,7 +49,7 @@ public class NyARRasterFilter_Threshold implements INyARRasterFilter_GsToBin
 		this._threshold = i_threshold;
 	}
 
-	public void doFilter(NyARGlayscaleRaster i_input, NyARBinRaster i_output) throws NyARException
+	public void doFilter(NyARGrayscaleRaster i_input, NyARBinRaster i_output) throws NyARException
 	{
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
 

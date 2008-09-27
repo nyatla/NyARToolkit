@@ -40,7 +40,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 public class NyARRasterFilter_RgbAve implements INyARRasterFilter_RgbToGs
 {
-	public void doFilter(INyARRgbRaster i_input, NyARGlayscaleRaster i_output) throws NyARException
+	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output) throws NyARException
 	{
 		INyARBufferReader in_buffer_reader=i_input.getBufferReader();	
 		INyARBufferReader out_buffer_reader=i_output.getBufferReader();	

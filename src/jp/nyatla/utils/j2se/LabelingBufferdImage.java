@@ -120,7 +120,7 @@ public class LabelingBufferdImage extends BufferedImage
 
 
 
-	public void drawImage(NyARGlayscaleRaster i_raster) throws NyARException
+	public void drawImage(NyARGrayscaleRaster i_raster) throws NyARException
 	{
 		assert (i_raster.getBufferReader().getBufferType() == INyARBufferReader.BUFFERFORMAT_INT2D_GLAY_8);
 

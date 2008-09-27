@@ -35,13 +35,13 @@ import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.rasterreader.NyARBufferReader;
 import jp.nyatla.nyartoolkit.core.types.*;
 
-public final class NyARGlayscaleRaster extends NyARRaster_BasicClass
+public final class NyARGrayscaleRaster extends NyARRaster_BasicClass
 {
 
 	protected int[][] _ref_buf;
 	private INyARBufferReader _buffer_reader;
 	
-	public NyARGlayscaleRaster(int i_width, int i_height)
+	public NyARGrayscaleRaster(int i_width, int i_height)
 	{
 		super(new NyARIntSize(i_width,i_height));
 		this._ref_buf = new int[i_height][i_width];

@@ -41,5 +41,5 @@ import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
  */
 public interface INyARRasterFilter_RgbToGs
 {
-	public void doFilter(INyARRgbRaster i_input, NyARGlayscaleRaster i_output) throws NyARException;
+	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output) throws NyARException;
 }

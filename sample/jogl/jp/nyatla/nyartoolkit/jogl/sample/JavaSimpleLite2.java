@@ -27,23 +27,16 @@
 
 package jp.nyatla.nyartoolkit.jogl.sample;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.awt.*;
-
-import javax.media.Buffer;
-
-import javax.media.opengl.GL;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLEventListener;
-import javax.media.opengl.GLCanvas;
-
+import javax.media.*;
+import javax.media.opengl.*;
 import com.sun.opengl.util.Animator;
-
-import jp.nyatla.nyartoolkit.core.NyARCode;
-
-import jp.nyatla.nyartoolkit.jmf.utils.JmfCameraCapture;
-import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
+import jp.nyatla.nyartoolkit.core.param.*;
+import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
+import jp.nyatla.nyartoolkit.core.*;
+import jp.nyatla.nyartoolkit.detector.*;
+import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
 /**
  * simpleLiteの複数マーカー同時認識バージョン
@@ -73,10 +66,10 @@ public class JavaSimpleLite2 implements GLEventListener, JmfCaptureListener
 	private NyARGLUtil _glnya;
 
 	//NyARToolkit関係
-	private GLNyARDetectMarker _nya;
+	private NyARDetectMarker _nya;
 
-	private GLNyARParam _ar_param;
-
+	private NyARParam _ar_param;
+	private double[] _camera_projection=new double[16];
 	/**
 	 * 立方体を書く
 	 *
@@ -152,7 +145,7 @@ public class JavaSimpleLite2 implements GLEventListener, JmfCaptureListener
 			_capture = new JmfCameraCapture(SCREEN_X, SCREEN_Y, 15f, JmfCameraCapture.PIXEL_FORMAT_RGB);
 			_capture.setCaptureListener(this);
 			//NyARToolkitの準備
-			_ar_param = new GLNyARParam();
+			_ar_param = new NyARParam();
 			_ar_param.loadARParamFromFile(PARAM_FILE);
 			_ar_param.changeScreenSize(SCREEN_X, SCREEN_Y);
 
@@ -163,7 +156,7 @@ public class JavaSimpleLite2 implements GLEventListener, JmfCaptureListener
 			ar_codes[0].loadARPattFromFile(CARCODE_FILE1);
 			ar_codes[1] = new NyARCode(16, 16);
 			ar_codes[1].loadARPattFromFile(CARCODE_FILE2);
-			_nya = new GLNyARDetectMarker(_ar_param, ar_codes, width, 2);
+			_nya = new NyARDetectMarker(_ar_param, ar_codes, width, 2);
 			_nya.setContinueMode(false);//ここをtrueにすると、transMatContinueモード（History計算）になります。
 			//NyARToolkit用の支援クラス
 			_glnya = new NyARGLUtil(_gl);
@@ -174,8 +167,10 @@ public class JavaSimpleLite2 implements GLEventListener, JmfCaptureListener
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		//カメラパラメータの計算
+		_glnya.toCameraFrustumRH(_ar_param,_camera_projection);
+		
 		_animator = new Animator(drawable);
-
 		_animator.start();
 
 	}
@@ -192,9 +187,12 @@ public class JavaSimpleLite2 implements GLEventListener, JmfCaptureListener
 		_gl.glMatrixMode(GL.GL_MODELVIEW);
 		_gl.glLoadIdentity();
 	}
-
+	private NyARTransMatResult __display_transmat_result=new NyARTransMatResult();
+	private double[] __display_wk=new double[16];
+	
 	public void display(GLAutoDrawable drawable)
 	{
+		NyARTransMatResult transmat_result=__display_transmat_result;
 
 		try {
 			if (!_cap_image.hasData()) {
@@ -209,7 +207,6 @@ public class JavaSimpleLite2 implements GLEventListener, JmfCaptureListener
 				_glnya.drawBackGround(_cap_image, 1.0);
 			}
 			//あったら立方体を書く
-			double[] matrix = new double[16];
 			for (int i = 0; i < found_markers; i++) {
 				//1番のマーカーでなければ表示しない。
 				if (_nya.getARCodeIndex(i) != 0) {
@@ -218,12 +215,15 @@ public class JavaSimpleLite2 implements GLEventListener, JmfCaptureListener
 				//マーカーの一致度を調査するならば、ここでnya.getConfidence()で一致度を調べて下さい。
 				// Projection transformation.
 				_gl.glMatrixMode(GL.GL_PROJECTION);
-				_gl.glLoadMatrixd(_ar_param.getCameraFrustumRH(), 0);
+				_gl.glLoadMatrixd(_camera_projection, 0);
 				_gl.glMatrixMode(GL.GL_MODELVIEW);
 				// Viewing transformation.
 				_gl.glLoadIdentity();
-				_nya.getCameraViewRH(i, matrix);
-				_gl.glLoadMatrixd(matrix, 0);
+				//変換行列を取得
+				_nya.getTransmationMatrix(i,transmat_result);
+				//変換行列をOpenGL形式に変換
+				_glnya.toCameraViewRH(transmat_result, __display_wk);
+				_gl.glLoadMatrixd(__display_wk, 0);
 
 				// All other lighting and geometry goes here.
 				drawCube();
@@ -232,6 +232,7 @@ public class JavaSimpleLite2 implements GLEventListener, JmfCaptureListener
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return;
 	}
 
 	public void onUpdateBuffer(Buffer i_buffer)
