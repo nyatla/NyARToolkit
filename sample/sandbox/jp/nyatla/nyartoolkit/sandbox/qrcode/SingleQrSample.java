@@ -37,9 +37,8 @@ import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
 /**
- * simpleLiteと同じようなテストプログラム
- * 出来る限りARToolKitのサンプルと似せて作ってあります。
- * 最も一致する"Hiro"マーカーを一つ選択して、その上に立方体を表示します。
+ * QRコードをマーカーの代わりに使うサンプルプログラム。
+ * 頂点と方位は認識できるけど、QRコードのデコードはしてません。
  * 
  */
 public class SingleQrSample implements GLEventListener, JmfCaptureListener

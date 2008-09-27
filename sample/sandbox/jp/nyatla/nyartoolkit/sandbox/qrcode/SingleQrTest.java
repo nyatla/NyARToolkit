@@ -20,10 +20,8 @@ import jp.nyatla.nyartoolkit.core.labeling.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.*;
-import jp.nyatla.nyartoolkit.core2.rasterfilter.gs2bin.*;
 import jp.nyatla.nyartoolkit.core2.rasterfilter.rgb2gs.*;
 import jp.nyatla.utils.j2se.LabelingBufferdImage;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 

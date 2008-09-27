@@ -33,17 +33,14 @@ package jp.nyatla.nyartoolkit.sandbox.qrcode;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.*;
-import jp.nyatla.nyartoolkit.core.match.*;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
-import jp.nyatla.nyartoolkit.core.pickup.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
 import jp.nyatla.nyartoolkit.core2.rasterfilter.rgb2gs.*;
-import jp.nyatla.nyartoolkit.core2.rasterfilter.gs2bin.*;
+
 /**
  * 画像からARCodeに最も一致するマーカーを1個検出し、その変換行列を計算するクラスです。
  * 

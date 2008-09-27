@@ -1,11 +1,7 @@
 package jp.nyatla.nyartoolkit.sandbox.qrcode;
 
-import java.awt.Color;
-import java.awt.Graphics;
-
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.utils.j2se.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 /**
  * QRコードのシンボルを結びつける偉いクラス
@@ -239,15 +235,12 @@ public class NyARQrCodeSymbolBinder
 		//矩形の合成
 		bindSquare(i_sq[symbol_e1_idx],lv1,i_sq[symbol_e2_idx],lv2,o_sq);
 		
-		//方位判定
-		//基点(中央シンボルを0として時計回りにインクリメント.基点の座標1か3
-		
+		//方位判定		
 		int direction=getDirection(o_sq,i_sq[key_simble_idx].imvertex[kv],center);
 		if(direction==-1){
 			return false;
 		}
 		o_sq.direction=direction;
-		System.out.println(o_sq.direction);
 		
 		return true;
 	}	

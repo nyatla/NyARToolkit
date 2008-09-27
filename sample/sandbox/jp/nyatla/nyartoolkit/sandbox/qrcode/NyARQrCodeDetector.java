@@ -19,7 +19,6 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntPoint;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix22;
-import jp.nyatla.utils.j2se.LabelingBufferdImage;
 
 public class NyARQrCodeDetector implements INyARSquareDetector
 {
@@ -134,7 +133,7 @@ public class NyARQrCodeDetector implements INyARSquareDetector
 		int coord_num;
 		int label_area;
 		NyARLabelingLabel label_pt;
-		NyARSquareStack wk_stack=new NyARSquareStack(100);
+		NyARSquareStack wk_stack=new NyARSquareStack(10);
 		wk_stack.clear();
 
 		for (; i < label_num; i++) {
