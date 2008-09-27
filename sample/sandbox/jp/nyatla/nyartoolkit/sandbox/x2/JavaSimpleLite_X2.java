@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  * 
  */
-package jp.nyatla.nyartoolkit.toys.x2;
+package jp.nyatla.nyartoolkit.sandbox.x2;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -40,7 +40,8 @@ import javax.media.opengl.GLCanvas;
 import com.sun.opengl.util.Animator;
 
 import jp.nyatla.nyartoolkit.core.NyARCode;
-
+import jp.nyatla.nyartoolkit.core.param.*;
+import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCameraCapture;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
@@ -150,7 +151,7 @@ public class JavaSimpleLite_X2 implements GLEventListener, JmfCaptureListener
 			_capture = new JmfCameraCapture(SCREEN_X, SCREEN_Y, 15f, JmfCameraCapture.PIXEL_FORMAT_RGB);
 			_capture.setCaptureListener(this);
 			//NyARToolkitの準備
-			_ar_param = new GLNyARParam();
+			_ar_param = new NyARParam();
 			NyARCode ar_code = new NyARCode(16, 16);
 			_ar_param.loadARParamFromFile(PARAM_FILE);
 			_ar_param.changeScreenSize(SCREEN_X, SCREEN_Y);
@@ -166,6 +167,8 @@ public class JavaSimpleLite_X2 implements GLEventListener, JmfCaptureListener
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		//カメラパラメータの計算
+		_glnya.toCameraFrustumRH(_ar_param,_camera_projection);
 		_animator = new Animator(drawable);
 
 		_animator.start();
@@ -184,10 +187,12 @@ public class JavaSimpleLite_X2 implements GLEventListener, JmfCaptureListener
 		_gl.glMatrixMode(GL.GL_MODELVIEW);
 		_gl.glLoadIdentity();
 	}
-
+	private double[] _camera_projection=new double[16];
+	private NyARTransMatResult __display_transmat_result=new NyARTransMatResult();
+	private double[] __display_wk=new double[16];
 	public void display(GLAutoDrawable drawable)
 	{
-
+		NyARTransMatResult transmat_result=__display_transmat_result;
 		try {
 			if (!_cap_image.hasData()) {
 				return;
@@ -200,16 +205,20 @@ public class JavaSimpleLite_X2 implements GLEventListener, JmfCaptureListener
 				//背景を書く
 				_glnya.drawBackGround(_cap_image, 1.0);
 			}
-			//あったら立方体を書く
+			//マーカーがあれば、立方体を描画
 			if (is_marker_exist) {
 				//マーカーの一致度を調査するならば、ここでnya.getConfidence()で一致度を調べて下さい。
 				// Projection transformation.
 				_gl.glMatrixMode(GL.GL_PROJECTION);
-				_gl.glLoadMatrixd(_ar_param.getCameraFrustumRH(), 0);
+				_gl.glLoadMatrixd(_camera_projection, 0);
 				_gl.glMatrixMode(GL.GL_MODELVIEW);
 				// Viewing transformation.
 				_gl.glLoadIdentity();
-				_gl.glLoadMatrixd(_nya.getCameraViewRH(), 0);
+				//変換行列を取得
+				_nya.getTransmationMatrix(transmat_result);
+				//変換行列をOpenGL形式に変換
+				_glnya.toCameraViewRH(transmat_result, __display_wk);
+				_gl.glLoadMatrixd(__display_wk, 0);
 
 				// All other lighting and geometry goes here.
 				drawCube();

@@ -2,7 +2,7 @@
  * 動いたり動かなかったりします。
  * 
  */
-package jp.nyatla.nyartoolkit.toys.qrcode;
+package jp.nyatla.nyartoolkit.sandbox.qrcode;
 
 import javax.media.*;
 
@@ -54,8 +54,6 @@ public class SingleQrTest extends Frame implements JmfCaptureListener
 		
 		
 	}
-
-	// そのラベルが特徴点候補か返す。
 
 	private NyARBinRaster _binraster1 = new NyARBinRaster(320, 240);
 
@@ -152,16 +150,6 @@ public class SingleQrTest extends Frame implements JmfCaptureListener
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-	}
-
-	private INyARLabeling labelingFactory(int i_idx)
-	{
-		// switch(i_idx){
-		// case 0:{NyARLabeling_ARToolKit l=new NyARLabeling_ARToolKit();l.setThresh(4);return l;}
-		// case 1:{return new NyLineLabeling();}
-		// }
-		return null;
 
 	}
 

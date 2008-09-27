@@ -29,16 +29,16 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.toys.vertexdetect;
+package jp.nyatla.nyartoolkit.sandbox.vertexdetect;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.*;
-import jp.nyatla.nyartoolkit.toys.x2.*;
+import jp.nyatla.nyartoolkit.sandbox.x2.*;
 /**
- * 矩形座標をPCAではなく、頂点座標そのものからSquare位置を計算するクラス
+ * PCAではなく、頂点座標そのものからSquare位置を計算するクラス
  *
  */
 public class NyARVertexDetector implements INyARSquareDetector

@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  * 
  */
-package jp.nyatla.nyartoolkit.toys.qrcode;
+package jp.nyatla.nyartoolkit.sandbox.qrcode;
 
 import java.awt.event.*;
 import java.awt.*;

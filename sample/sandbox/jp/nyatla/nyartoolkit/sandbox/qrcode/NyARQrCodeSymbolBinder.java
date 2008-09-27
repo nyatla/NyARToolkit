@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.toys.qrcode;
+package jp.nyatla.nyartoolkit.sandbox.qrcode;
 
 import java.awt.Color;
 import java.awt.Graphics;

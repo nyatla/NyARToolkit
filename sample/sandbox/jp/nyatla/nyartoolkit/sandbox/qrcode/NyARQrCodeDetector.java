@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.toys.qrcode;
+package jp.nyatla.nyartoolkit.sandbox.qrcode;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.INyARSquareDetector;
@@ -187,7 +187,7 @@ public class NyARQrCodeDetector implements INyARSquareDetector
 	}
 
 	/**
-	 * QRコードのエッジペアを作る
+	 * QRコードのエッジグループを作る
 	 * @param i_square_stack
 	 */
 	public void bindQrcodeEdge(NyARSquareStack i_square_stack,NyARSquareStack o_square_stack) throws NyARException

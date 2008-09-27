@@ -29,7 +29,7 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.toys.x2;
+package jp.nyatla.nyartoolkit.sandbox.x2;
 
 import java.io.*;
 import java.util.*;
