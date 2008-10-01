@@ -3,10 +3,10 @@
 	<classpathentry path="" kind="src"/>
 	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" kind="con"/>
 	<classpathentry path="C:/Program Files/JMF2.1.1e/lib/jmf.jar" kind="lib"/>
-	<classpathentry path="C:/Program Files/Java/jogl/lib/gluegen-rt.jar" kind="lib"/>
-	<classpathentry path="C:/Program Files/Java/jogl/lib/jogl.jar" kind="lib"/>
 	<classpathentry path="/NyARToolKit" combineaccessrules="false" kind="src"/>
 	<classpathentry path="/NyARToolkit.utils.jmf" combineaccessrules="false" kind="src"/>
 	<classpathentry path="/NyARToolkit.utils.jogl" combineaccessrules="false" kind="src"/>
+	<classpathentry path="C:/Program Files/Java/jre1.6.0_03/lib/gluegen-rt.jar" kind="lib"/>
+	<classpathentry path="C:/Program Files/Java/jre1.6.0_03/lib/jogl.jar" kind="lib"/>
 	<classpathentry path="" kind="output"/>
 </classpath>

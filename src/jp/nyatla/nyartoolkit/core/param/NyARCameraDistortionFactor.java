@@ -173,7 +173,6 @@ final public class NyARCameraDistortionFactor
 
 	/**
 	 * 指定範囲のobserv2Idealをまとめて実行して、結果をo_idealに格納します。
-	 * 
 	 * @param i_x_coord
 	 * @param i_y_coord
 	 * @param i_start
@@ -183,44 +182,6 @@ final public class NyARCameraDistortionFactor
 	 * @param o_ideal
 	 *            出力バッファ[i_num][2]であること。
 	 */
-	public void observ2IdealBatch(int[] i_x_coord, int[] i_y_coord,int i_start, int i_num, double[][] o_ideal)
-	{
-		double z02, z0, q, z, px, py, opttmp_1;
-		final double d0 = this._f0;
-		final double d1 = this._f1;
-		final double d3 = this._f3;
-		final double p = this._f2 / 100000000.0;
-		for (int j = 0; j < i_num; j++) {
-
-			px = i_x_coord[i_start + j] - d0;
-			py = i_y_coord[i_start + j] - d1;
-
-			z02 = px * px + py * py;
-			q = z0 = Math.sqrt(z02);// Optimize//q = z0 = Math.sqrt(px*px+py*py);
-
-			for (int i = 1;; i++) {
-				if (z0 != 0.0) {
-					// Optimize opttmp_1
-					opttmp_1 = p * z02;
-					z = z0 - ((1.0 - opttmp_1) * z0 - q)/ (1.0 - 3.0 * opttmp_1);
-					px = px * z / z0;
-					py = py * z / z0;
-				} else {
-					px = 0.0;
-					py = 0.0;
-					break;
-				}
-				if (i == PD_LOOP) {
-					break;
-				}
-				z02 = px * px + py * py;
-				z0 = Math.sqrt(z02);// Optimize//z0 = Math.sqrt(px*px+ py*py);
-			}
-			o_ideal[j][0] = px / d3 + d0;
-			o_ideal[j][1] = py / d3 + d1;
-		}
-		return;
-	}
 	public void observ2IdealBatch(int[] i_x_coord, int[] i_y_coord,int i_start, int i_num, double[] o_x_coord,double[] o_y_coord)
 	{
 		double z02, z0, q, z, px, py, opttmp_1;

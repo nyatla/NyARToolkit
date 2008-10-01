@@ -21,9 +21,10 @@ import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.*;
 import jp.nyatla.nyartoolkit.core2.rasterfilter.rgb2gs.*;
+import jp.nyatla.nyartoolkit.core2.rasterfilter.gs2bin.*;
 import jp.nyatla.utils.j2se.LabelingBufferdImage;
 import jp.nyatla.nyartoolkit.core.types.*;
-
+import jp.nyatla.nyartoolkit.core2.rasteranalyzer.threshold.*;
 
 
 
@@ -56,14 +57,13 @@ public class SingleQrTest extends Frame implements JmfCaptureListener
 	private NyARBinRaster _binraster1 = new NyARBinRaster(320, 240);
 
 	private NyARGrayscaleRaster _gsraster1 = new NyARGrayscaleRaster(320, 240);
-
+	private INyARRasterThresholdAnalyzer _tha=new NyARRasterThresholdAnalyzer_DiffHistgram();
 
 	private LabelingBufferdImage _bimg = new LabelingBufferdImage(320, 240);
 
 
 	public void onUpdateBuffer(Buffer i_buffer)
 	{
-		NyARRasterFilter_QrAreaAverage gs2bin=new NyARRasterFilter_QrAreaAverage();
 
 		try {
 			// キャプチャしたバッファをラスタにセット
@@ -82,6 +82,8 @@ public class SingleQrTest extends Frame implements JmfCaptureListener
 			filter_rgb2gs.doFilter(_raster, _gsraster1);
 			this._bimg.drawImage(this._gsraster1);
 			this.getGraphics().drawImage(this._bimg, 32 + 320, 32, 320 + 320 + 32, 240 + 32, 0, 240, 320, 0, this);
+			_tha.analyzeRaster(_gsraster1);
+			NyARRasterFilter_Threshold gs2bin=new NyARRasterFilter_Threshold(_tha.getThreshold());
 			
 
 			// 画像2

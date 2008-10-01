@@ -47,6 +47,7 @@ public class NyARRasterFilter_Threshold implements INyARRasterFilter_GsToBin
 	public NyARRasterFilter_Threshold(int i_threshold)
 	{
 		this._threshold = i_threshold;
+		return;
 	}
 
 	public void doFilter(NyARGrayscaleRaster i_input, NyARBinRaster i_output) throws NyARException
@@ -65,5 +66,10 @@ public class NyARRasterFilter_Threshold implements INyARRasterFilter_GsToBin
 			}
 		}
 		return;
+	}
+	public void setThreshold(int i_threshold)
+	{
+		this._threshold = i_threshold;
+		return;		
 	}
 }

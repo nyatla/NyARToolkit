@@ -29,34 +29,41 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.pca2d;
+package jp.nyatla.nyartoolkit.sandbox.x2;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
-
+import jp.nyatla.nyartoolkit.core.pca2d.*;
 /**
- * ARToolkitのPCA関数を二次元に特化させて単純化したもの
+ * 線分から任意個数の点をサンプリングして、それに対するPCAを実行する関数
+ * このクラスでは、線分の両端からn/2個の点を抽出する。
  *
  */
-public class NyARPca2d_MatrixPCA_O2 implements INyARPca2d
+public class NyARPca2d_SamplingPCA implements INyARPca2d
 {
 	private double[] _x;
-
 	private double[] _y;
+	private int[] _tmp_x;
+	private int[] _tmp_y;
 
 	private int _number_of_data;
+	private int _sampling_points;
 
 	private static final double PCA_EPS = 1e-6; // #define EPS 1e-6
 
 	private static final int PCA_MAX_ITER = 100; // #define MAX_ITER 100
 
 	private static final double PCA_VZERO = 1e-16; // #define VZERO 1e-16
-	public NyARPca2d_MatrixPCA_O2(int i_max_points)
+	public NyARPca2d_SamplingPCA(int i_sampling_points)
 	{
-		this._x=new double[i_max_points];
-		this._y=new double[i_max_points];
+		this._x=new double[i_sampling_points];
+		this._y=new double[i_sampling_points];
+		//サンプリング用配列
+		this._tmp_x=new int[i_sampling_points];
+		this._tmp_y=new int[i_sampling_points];
+		this._sampling_points=i_sampling_points;
 		this._number_of_data=0;
 		return;
 	}
@@ -220,11 +227,24 @@ public class NyARPca2d_MatrixPCA_O2 implements INyARPca2d
 	public void pca(double[] i_x,double[] i_y,int i_start,int i_number_of_point,NyARDoubleMatrix22 o_evec, NyARDoublePoint2d o_ev,NyARDoublePoint2d o_mean) throws NyARException
 	{
 		NyARException.trap("未チェックの関数");
-		assert(this._x.length>i_number_of_point);		
-		this._number_of_data = i_number_of_point;
-		System.arraycopy(i_x, 0, this._x, i_start, i_number_of_point);
-		System.arraycopy(i_y, 0, this._y, i_start, i_number_of_point);
-		
+		if(i_number_of_point<this._sampling_points){
+			this._number_of_data = i_number_of_point;
+			System.arraycopy(i_x, 0, this._x, i_start, i_number_of_point);
+			System.arraycopy(i_y, 0, this._y, i_start, i_number_of_point);
+		}else{
+			//サンプリング個数分の点を、両端から半分づつ取ってくる。
+			int st=i_start;
+			int ed=i_start+i_number_of_point-1;
+			for(int i=this._sampling_points-1;i>=0;i+=2){
+				this._x[i]=i_x[st];
+				this._y[i]=i_y[st];
+				this._x[i+1]=i_x[ed];
+				this._y[i+1]=i_y[ed];
+				ed--;
+				st++;
+			}
+			this._number_of_data = this._sampling_points;			
+		}
 		PCA_PCA(o_evec, o_ev,o_mean);
 
 		final double sum = o_ev.x + o_ev.y;
@@ -236,9 +256,24 @@ public class NyARPca2d_MatrixPCA_O2 implements INyARPca2d
 	
 	public void pcaWithDistortionFactor(int[] i_x,int[] i_y,int i_start,int i_number_of_point,NyARCameraDistortionFactor i_factor,NyARDoubleMatrix22 o_evec, NyARDoublePoint2d o_ev,NyARDoublePoint2d o_mean) throws NyARException
 	{
-		assert(this._x.length>i_number_of_point);
-		this._number_of_data = i_number_of_point;
-		i_factor.observ2IdealBatch(i_x, i_y, i_start, i_number_of_point, this._x, this._y);
+		if(i_number_of_point<this._sampling_points){
+			i_factor.observ2IdealBatch(i_x, i_y, i_start, i_number_of_point, this._x, this._y);
+			this._number_of_data = i_number_of_point;
+		}else{
+			//サンプリング個数分の点を、両端から半分づつ取ってくる。
+			int st=i_start;
+			int ed=i_start+i_number_of_point-1;
+			for(int i=this._sampling_points-1;i>=0;i-=2){
+				this._tmp_x[i]=i_x[st];
+				this._tmp_y[i]=i_y[st];
+				this._tmp_x[i-1]=i_x[ed];
+				this._tmp_y[i-1]=i_y[ed];
+				ed--;
+				st++;
+			}
+			i_factor.observ2IdealBatch(this._tmp_x,this._tmp_y,0,this._sampling_points, this._x, this._y);
+			this._number_of_data = this._sampling_points;			
+		}
 
 		PCA_PCA(o_evec,o_ev,o_mean);
 
