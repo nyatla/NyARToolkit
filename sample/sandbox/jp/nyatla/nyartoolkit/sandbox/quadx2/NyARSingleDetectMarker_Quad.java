@@ -29,7 +29,7 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.sandbox.x2;
+package jp.nyatla.nyartoolkit.sandbox.quadx2;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.*;
@@ -41,13 +41,15 @@ import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilter_ARToolkitThreshold;
+import jp.nyatla.nyartoolkit.sandbox.x2.NyARSquareDetector_X2;
+import jp.nyatla.nyartoolkit.sandbox.x2.NyARTransMat_X2;
 
 
 /**
  * 画像からARCodeに最も一致するマーカーを1個検出し、その変換行列を計算するクラスです。
  * 
  */
-public class NyARSingleDetectMarker_X2
+public class NyARSingleDetectMarker_Quad
 {
 	private static final int AR_SQUARE_MAX = 100;
 
@@ -83,15 +85,12 @@ public class NyARSingleDetectMarker_X2
 	 * ARコードの物理サイズを、ミリメートルで指定します。
 	 * @throws NyARException
 	 */
-	public NyARSingleDetectMarker_X2(NyARParam i_param, NyARCode i_code, double i_marker_width) throws NyARException
+	public NyARSingleDetectMarker_Quad(NyARParam i_param, NyARCode i_code, double i_marker_width) throws NyARException
 	{
 		final NyARIntSize scr_size=i_param.getScreenSize();		
-		final NyARFixedFloatCameraDistortionFactorMap dist_factor_map=new NyARFixedFloatCameraDistortionFactorMap(i_param.getDistortionFactor(),scr_size);
 		// 解析オブジェクトを作る
-//		this._square_detect = new NyARSquareDetector_X2(dist_factor_map,scr_size);
-//		this._transmat = new NyARTransMat_X2(i_param,dist_factor_map);
-		this._square_detect = new NyARSquareDetector(i_param.getDistortionFactor(),scr_size);
-		this._transmat = new NyARTransMat_X2(i_param,dist_factor_map);
+		this._square_detect = new NyARSquareDetector_Quad(i_param.getDistortionFactor(),scr_size);
+		this._transmat = new NyARTransMat_X2(i_param);
 		// 比較コードを保存
 		this._code = i_code;
 		this._marker_width = i_marker_width;
@@ -100,14 +99,14 @@ public class NyARSingleDetectMarker_X2
 		// 評価器を作る。
 		this._match_patt = new NyARMatchPatt_Color_WITHOUT_PCA();
 		//２値画像バッファを作る
-		this._bin_raster=new NyARBinRaster(scr_size.w,scr_size.h);
+		this._bin_raster=new NyARBinRaster(scr_size.w/2,scr_size.h/2);
 		return;
 	}
 
 	private NyARBinRaster _bin_raster;
-	private NyARRasterFilter_ARToolkitThreshold _tobin_filter=new NyARRasterFilter_ARToolkitThreshold(100);
+//	private NyARRasterFilter_ARToolkitThreshold _tobin_filter=new NyARRasterFilter_ARToolkitThreshold(100);
+	private NyARRasterFilter_ARTTh_Quad _tobin_filter=new NyARRasterFilter_ARTTh_Quad(100);
 
-	
 	/**
 	 * i_imageにマーカー検出処理を実行し、結果を記録します。
 	 * 
@@ -120,7 +119,7 @@ public class NyARSingleDetectMarker_X2
 	public boolean detectMarkerLite(INyARRgbRaster i_raster,int i_threshold) throws NyARException
 	{
 		//サイズチェック
-		if(!this._bin_raster.getSize().isEqualSize(i_raster.getSize())){
+		if(!this._bin_raster.getSize().isEqualSize(i_raster.getSize().w/2,i_raster.getSize().h/2)){
 			throw new NyARException();
 		}
 

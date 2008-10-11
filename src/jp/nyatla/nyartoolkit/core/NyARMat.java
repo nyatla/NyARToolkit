@@ -47,7 +47,7 @@ public class NyARMat
 	 */
 	protected double[][] m;
 
-	private int clm, row;
+	protected int clm, row;
 
 	/**
 	 * デフォルトコンストラクタは機能しません。

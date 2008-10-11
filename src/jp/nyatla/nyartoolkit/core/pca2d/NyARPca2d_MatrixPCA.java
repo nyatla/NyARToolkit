@@ -34,7 +34,6 @@ package jp.nyatla.nyartoolkit.core.pca2d;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARMat;
 import jp.nyatla.nyartoolkit.core.NyARVec;
-import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix22;
 /**
@@ -48,38 +47,16 @@ public class NyARPca2d_MatrixPCA implements INyARPca2d
 	private final NyARVec __pca_ev = new NyARVec(2);
 	private final NyARVec __pca_mean = new NyARVec(2);	
 	
-	public void pca(double[] i_x,double[] i_y,int i_start,int i_number_of_point,NyARDoubleMatrix22 o_evec, NyARDoublePoint2d o_ev,NyARDoublePoint2d o_mean) throws NyARException
-	{
-		final NyARMat input = this.__pca_input;// 次処理で初期化される。
-		final double[][] input_array=input.getArray();
-		// pcaの準備
-		input.realloc(i_number_of_point, 2);
-		System.arraycopy(i_x, 0, input_array[0], i_start, i_number_of_point);
-		System.arraycopy(i_y, 0, input_array[1], i_start, i_number_of_point);
-		// 主成分分析
-		input.matrixPCA(this.__pca_evec, this.__pca_ev, this.__pca_mean);
-		final double[] mean_array = this.__pca_mean.getArray();
-		final double[][] evec_array = this.__pca_evec.getArray();
-		final double[] ev_array=this.__pca_ev.getArray();
-		o_evec.m00=evec_array[0][0];
-		o_evec.m01=evec_array[0][1];
-		o_evec.m10=evec_array[1][0];
-		o_evec.m11=evec_array[1][1];
-		o_ev.x=ev_array[0];
-		o_ev.x=ev_array[1];
-		o_mean.x=mean_array[0];
-		o_mean.y=mean_array[1];
-		return;
-		
-	}
-
-	public void pcaWithDistortionFactor(int[] i_x,int[] i_y,int i_start,int i_number_of_point,NyARCameraDistortionFactor i_factor,NyARDoubleMatrix22 o_evec, NyARDoublePoint2d o_ev,NyARDoublePoint2d o_mean) throws NyARException
+	public void pca(double[] i_x,double[] i_y,int i_number_of_point,NyARDoubleMatrix22 o_evec, NyARDoublePoint2d o_ev,NyARDoublePoint2d o_mean) throws NyARException
 	{
 		final NyARMat input = this.__pca_input;// 次処理で初期化される。		
 		// pcaの準備
 		input.realloc(i_number_of_point, 2);
 		final double[][] input_array=input.getArray();
-		i_factor.observ2IdealBatch(i_x, i_y, i_start, i_number_of_point,input_array[0],input_array[1]);
+		for(int i=0;i<i_number_of_point;i++){
+			input_array[i][0]=i_x[i];
+			input_array[i][1]=i_y[i];
+		}
 		// 主成分分析
 		input.matrixPCA(this.__pca_evec, this.__pca_ev, this.__pca_mean);
 		final double[] mean_array = this.__pca_mean.getArray();

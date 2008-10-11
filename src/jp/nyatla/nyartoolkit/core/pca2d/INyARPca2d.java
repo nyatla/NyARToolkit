@@ -49,7 +49,7 @@ public interface INyARPca2d
 	 * @param o_mean
 	 * @throws NyARException
 	 */
-	public void pca(double[] i_x,double[] i_y,int i_start,int i_number_of_point,NyARDoubleMatrix22 o_evec, NyARDoublePoint2d o_ev,NyARDoublePoint2d o_mean) throws NyARException;
+	public void pca(double[] i_x,double[] i_y,int i_number_of_point,NyARDoubleMatrix22 o_evec, NyARDoublePoint2d o_ev,NyARDoublePoint2d o_mean) throws NyARException;
 	/**
 	 * カメラ歪み補正つきのPCA
 	 * @param i_x
@@ -61,5 +61,5 @@ public interface INyARPca2d
 	 * @param o_mean
 	 * @throws NyARException
 	 */
-	public void pcaWithDistortionFactor(int[] i_x,int[] i_y,int i_start,int i_number_of_point,NyARCameraDistortionFactor i_factor,NyARDoubleMatrix22 o_evec,NyARDoublePoint2d o_ev, NyARDoublePoint2d o_mean) throws NyARException;
+//	public void pcaWithDistortionFactor(int[] i_x,int[] i_y,int i_start,int i_number_of_point,INyARCameraDistortionFactor i_factor,NyARDoubleMatrix22 o_evec,NyARDoublePoint2d o_ev, NyARDoublePoint2d o_mean) throws NyARException;
 }

@@ -33,6 +33,15 @@ package jp.nyatla.nyartoolkit.core.rasterreader;
 
 public interface INyARBufferReader
 {
+    //  ID規約
+	//  00-07(8)型番号
+	//  08-15(8)ビットフォーマットID
+	//      00:24bit/01:32bit/02:16bit
+	//  16-27(8)型ID
+	//      00:無効/01:byte[]/02:int[][]/03:short[]
+	//  24-31(8)予約
+	//
+	
 	/**
 	 * RGB24フォーマットで、全ての画素が0
 	 */
@@ -54,9 +63,16 @@ public interface INyARBufferReader
 	public static final int BUFFERFORMAT_BYTE1D_B8G8R8X8_32 = 0x00010101;
 
 	/**
-	 * byte[]で、RGB565の16ビット(little endian)で画素が格納されている。
+	 * byte[]で、RGB565の16ビット(little/big endian)で画素が格納されている。
 	 */
 	public static final int BUFFERFORMAT_BYTE1D_R5G6B5_16LE = 0x00010201;
+    public static final int BUFFERFORMAT_BYTE1D_R5G6B5_16BE = 0x00010202;
+	/**
+	 * short[]で、RGB565の16ビット(little/big endian)で画素が格納されている。
+	 */	
+    public static final int BUFFERFORMAT_WORD1D_R5G6B5_16LE = 0x00030201;
+    public static final int BUFFERFORMAT_WORD1D_R5G6B5_16BE = 0x00030202;
+
 	
 	/**
 	 * int[][]で特に値範囲を定めない

@@ -137,9 +137,9 @@ public class NyARLabelingImage extends NyARRaster_BasicClass implements INyARLab
 		int sx=getTopClipTangentX(label);
 		int sy=label.clip_t;
 
-		int coord_num = 1;// marker_info2->coord_num = 1;
-		o_coord_x[0] = sx;// marker_info2->x_coord[0] = sx;
-		o_coord_y[0] = sy;// marker_info2->y_coord[0] = sy;
+		int coord_num = 1;
+		o_coord_x[0] = sx;
+		o_coord_y[0] = sy;
 		int dir = 5;
 
 		int[][] limage=this._ref_buf;
@@ -148,8 +148,7 @@ public class NyARLabelingImage extends NyARRaster_BasicClass implements INyARLab
 		for (;;) {
 			dir = (dir + 5) % 8;
 			for (i = 0; i < 8; i++) {
-				if (limage[r + ydir[dir]][c + xdir[dir]] > 0) {// if(
-					// p1[ydir[dir]*xsize+xdir[dir]] > 0 ){
+				if (limage[r + ydir[dir]][c + xdir[dir]] > 0) {
 					break;
 				}
 				dir = (dir + 1) % 8;
@@ -159,18 +158,17 @@ public class NyARLabelingImage extends NyARRaster_BasicClass implements INyARLab
 				throw new NyARException();// return(-1);
 			}
 			// xcoordとycoordをc,rにも保存
-			c = c + xdir[dir];// marker_info2->x_coord[marker_info2->coord_num]=marker_info2->x_coord[marker_info2->coord_num-1]
-			// + xdir[dir];
-			r = r + ydir[dir];// marker_info2->y_coord[marker_info2->coord_num]=marker_info2->y_coord[marker_info2->coord_num-1]+ ydir[dir];
-			o_coord_x[coord_num] = c;// marker_info2->x_coord[marker_info2->coord_num]=marker_info2->x_coord[marker_info2->coord_num-1]+ xdir[dir];
-			o_coord_y[coord_num] = r;// marker_info2->y_coord[marker_info2->coord_num]=marker_info2->y_coord[marker_info2->coord_num-1]+ ydir[dir];
+			c = c + xdir[dir];
+			r = r + ydir[dir];
+			o_coord_x[coord_num] = c;
+			o_coord_y[coord_num] = r;
 			// 終了条件判定
 			if (c == sx && r == sy){
 				coord_num++;
 				break;
 			}
 			coord_num++;
-			if (coord_num == i_array_size) {// if( marker_info2.coord_num ==Config.AR_CHAIN_MAX-1 ){
+			if (coord_num == i_array_size) {
 				//輪郭が末端に達した
 				return coord_num;
 			}

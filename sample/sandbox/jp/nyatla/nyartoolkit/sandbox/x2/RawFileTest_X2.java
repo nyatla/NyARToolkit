@@ -55,6 +55,7 @@ public class RawFileTest_X2
 
 	public RawFileTest_X2()
 	{
+		NyMath.initialize();
 	}
 
 

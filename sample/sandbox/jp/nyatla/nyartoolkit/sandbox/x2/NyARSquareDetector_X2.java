@@ -36,7 +36,9 @@ import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
-import jp.nyatla.nyartoolkit.core.pca2d.*;
+import jp.nyatla.nyartoolkit.core2.types.NyARI64Linear;
+import jp.nyatla.nyartoolkit.core2.types.NyARI64Point2d;
+import jp.nyatla.nyartoolkit.core2.types.matrix.NyARI64Matrix22;
 import jp.nyatla.nyartoolkit.core.*;
 
 
@@ -48,8 +50,6 @@ import jp.nyatla.nyartoolkit.core.*;
  */
 public class NyARSquareDetector_X2 implements INyARSquareDetector
 {
-	private static final double VERTEX_FACTOR = 1.0;// 線検出のファクタ
-
 	private static final int AR_AREA_MAX = 100000;// #define AR_AREA_MAX 100000
 
 	private static final int AR_AREA_MIN = 70;// #define AR_AREA_MIN 70
@@ -61,14 +61,17 @@ public class NyARSquareDetector_X2 implements INyARSquareDetector
 	private final NyARLabelingImage _limage;
 
 	private final OverlapChecker _overlap_checker = new OverlapChecker();
-	private final NyARCameraDistortionFactor _dist_factor_ref;
+	private final NyARFixedFloatCameraDistortionFactorMap _dist_factor_ref;
+//	private final NyARFixFloatCameraDistortionFactorMap _dist_factor_ref;
+	private final NyARFixedFloatPca2d _pca;
+//	private final INyARPca2d _pca;
 
 	/**
 	 * 最大i_squre_max個のマーカーを検出するクラスを作成する。
 	 * 
 	 * @param i_param
 	 */
-	public NyARSquareDetector_X2(NyARCameraDistortionFactor i_dist_factor_ref,NyARIntSize i_size) throws NyARException
+	public NyARSquareDetector_X2(NyARFixedFloatCameraDistortionFactorMap i_dist_factor_ref,NyARIntSize i_size) throws NyARException
 	{
 		this._width = i_size.w;
 		this._height = i_size.h;
@@ -85,14 +88,17 @@ public class NyARSquareDetector_X2 implements INyARSquareDetector
 		this._xcoord = new int[number_of_coord * 2];
 		this._ycoord = new int[number_of_coord * 2];
 		//PCA
-		this._pca=new NyARPca2d_SamplingPCA(20);
-		
+
+		this._pca=new NyARFixedFloatPca2d();
 	}
+	private final int PCA_LENGTH=20;
 
 	private final int _max_coord;
 	private final int[] _xcoord;
 	private final int[] _ycoord;
-
+	private final int[] _xpos=new int[PCA_LENGTH];
+	private final int[] _ypos=new int[PCA_LENGTH];
+	
 	private void normalizeCoord(int[] i_coord_x, int[] i_coord_y, int i_index, int i_coord_num)
 	{
 		// vertex1を境界にして、後方に配列を連結
@@ -241,9 +247,9 @@ public class NyARSquareDetector_X2 implements INyARSquareDetector
 		return ret;
 	}
 
-	private final NyARVertexCounter __getSquareVertex_wv1 = new NyARVertexCounter();
+	private final NyARFixedFloatVertexCounter __getSquareVertex_wv1 = new NyARFixedFloatVertexCounter();
 
-	private final NyARVertexCounter __getSquareVertex_wv2 = new NyARVertexCounter();
+	private final NyARFixedFloatVertexCounter __getSquareVertex_wv2 = new NyARFixedFloatVertexCounter();
 
 	/**
 	 * static int arDetectMarker2_check_square( int area, ARMarkerInfo2 *marker_info2, double factor ) 関数の代替関数 OPTIMIZED STEP [450->415] o_squareに頂点情報をセットします。
@@ -259,8 +265,8 @@ public class NyARSquareDetector_X2 implements INyARSquareDetector
 	 */
 	private boolean getSquareVertex(int[] i_x_coord, int[] i_y_coord, int i_vertex1_index, int i_coord_num, int i_area, int[] o_vertex)
 	{
-		final NyARVertexCounter wv1 = this.__getSquareVertex_wv1;
-		final NyARVertexCounter wv2 = this.__getSquareVertex_wv2;
+		final NyARFixedFloatVertexCounter wv1 = this.__getSquareVertex_wv1;
+		final NyARFixedFloatVertexCounter wv2 = this.__getSquareVertex_wv2;
 		final int end_of_coord = i_vertex1_index + i_coord_num - 1;
 		final int sx = i_x_coord[i_vertex1_index];// sx = marker_info2->x_coord[0];
 		final int sy = i_y_coord[i_vertex1_index];// sy = marker_info2->y_coord[0];
@@ -274,15 +280,16 @@ public class NyARSquareDetector_X2 implements INyARSquareDetector
 				v1 = i;
 			}
 		}
-		final double thresh = (i_area / 0.75) * 0.01 * VERTEX_FACTOR;
+		//final double thresh = (i_area / 0.75) * 0.01;
+		final long thresh_f16 =(i_area<<16)/75;
 
 		o_vertex[0] = i_vertex1_index;
 
-		if (!wv1.getVertex(i_x_coord, i_y_coord, i_vertex1_index, v1, thresh)) { // if(get_vertex(marker_info2->x_coord,marker_info2->y_coord,0,v1,thresh,wv1,&wvnum1)<
+		if (!wv1.getVertex(i_x_coord, i_y_coord, i_vertex1_index, v1, thresh_f16)) { // if(get_vertex(marker_info2->x_coord,marker_info2->y_coord,0,v1,thresh,wv1,&wvnum1)<
 																					// 0 ) {
 			return false;
 		}
-		if (!wv2.getVertex(i_x_coord, i_y_coord, v1, end_of_coord, thresh)) {// if(get_vertex(marker_info2->x_coord,marker_info2->y_coord,v1,marker_info2->coord_num-1,thresh,wv2,&wvnum2)
+		if (!wv2.getVertex(i_x_coord, i_y_coord, v1, end_of_coord, thresh_f16)) {// if(get_vertex(marker_info2->x_coord,marker_info2->y_coord,v1,marker_info2->coord_num-1,thresh,wv2,&wvnum2)
 			// < 0) {
 			return false;
 		}
@@ -295,10 +302,10 @@ public class NyARSquareDetector_X2 implements INyARSquareDetector
 		} else if (wv1.number_of_vertex > 1 && wv2.number_of_vertex == 0) {// }else if( wvnum1 > 1 && wvnum2== 0) {
 			//頂点位置を、起点から対角点の間の1/2にあると予想して、検索する。
 			v2 = (v1-i_vertex1_index)/2+i_vertex1_index;
-			if (!wv1.getVertex(i_x_coord, i_y_coord, i_vertex1_index, v2, thresh)) {
+			if (!wv1.getVertex(i_x_coord, i_y_coord, i_vertex1_index, v2, thresh_f16)) {
 				return false;
 			}
-			if (!wv2.getVertex(i_x_coord, i_y_coord, v2, v1, thresh)) {
+			if (!wv2.getVertex(i_x_coord, i_y_coord, v2, v1, thresh_f16)) {
 				return false;
 			}
 			if (wv1.number_of_vertex == 1 && wv2.number_of_vertex == 1) {
@@ -312,10 +319,10 @@ public class NyARSquareDetector_X2 implements INyARSquareDetector
 			//v2 = (v1-i_vertex1_index+ end_of_coord-i_vertex1_index) / 2+i_vertex1_index;
 			v2 = (v1+ end_of_coord)/2;
 
-			if (!wv1.getVertex(i_x_coord, i_y_coord, v1, v2, thresh)) {
+			if (!wv1.getVertex(i_x_coord, i_y_coord, v1, v2, thresh_f16)) {
 				return false;
 			}
-			if (!wv2.getVertex(i_x_coord, i_y_coord, v2, end_of_coord, thresh)) {
+			if (!wv2.getVertex(i_x_coord, i_y_coord, v2, end_of_coord, thresh_f16)) {
 				return false;
 			}
 			if (wv1.number_of_vertex == 1 && wv2.number_of_vertex == 1) {
@@ -332,10 +339,11 @@ public class NyARSquareDetector_X2 implements INyARSquareDetector
 		return true;
 	}
 
-	private final INyARPca2d _pca;
-	private final NyARDoubleMatrix22 __getSquareLine_evec=new NyARDoubleMatrix22();
-	private final NyARDoublePoint2d __getSquareLine_mean=new NyARDoublePoint2d();
-	private final NyARDoublePoint2d __getSquareLine_ev=new NyARDoublePoint2d();
+	private final NyARI64Matrix22 __getSquareLine_evec=new NyARI64Matrix22();
+	private final NyARI64Point2d __getSquareLine_mean=new NyARI64Point2d();
+	private final NyARI64Point2d __getSquareLine_ev=new NyARI64Point2d();
+	private final NyARI64Linear[] __getSquareLine_i64liner=NyARI64Linear.createArray(4);
+
 	/**
 	 * arGetLine(int x_coord[], int y_coord[], int coord_num,int vertex[], double line[4][3], double v[4][2]) arGetLine2(int x_coord[], int y_coord[], int
 	 * coord_num,int vertex[], double line[4][3], double v[4][2], double *dist_factor) の２関数の合成品です。 マーカーのvertex,lineを計算して、結果をo_squareに保管します。
@@ -348,48 +356,116 @@ public class NyARSquareDetector_X2 implements INyARSquareDetector
 	private boolean getSquareLine(int[] i_mkvertex, int[] i_xcoord, int[] i_ycoord, NyARSquare o_square) throws NyARException
 	{
 		final NyARLinear[] l_line = o_square.line;
-		final NyARCameraDistortionFactor dist_factor=this._dist_factor_ref;  
-		final NyARDoubleMatrix22 evec=this.__getSquareLine_evec;
-		final NyARDoublePoint2d mean=this.__getSquareLine_mean;
-		final NyARDoublePoint2d ev=this.__getSquareLine_ev;
+		final NyARI64Matrix22 evec=this.__getSquareLine_evec;
+		final NyARI64Point2d mean=this.__getSquareLine_mean;
+		final NyARI64Point2d ev=this.__getSquareLine_ev;
+		final NyARI64Linear[] i64liner=this.__getSquareLine_i64liner;
 	
-		
 		for (int i = 0; i < 4; i++) {
-			final double w1 = (double) (i_mkvertex[i + 1] - i_mkvertex[i] + 1) * 0.05 + 0.5;
-			final int st = (int) (i_mkvertex[i] + w1);
-			final int ed = (int) (i_mkvertex[i + 1] - w1);
-			final int n = ed - st + 1;
+//			final double w1 = (double) (i_mkvertex[i + 1] - i_mkvertex[i] + 1) * 0.05 + 0.5;
+			final int w1 = ((((i_mkvertex[i + 1] - i_mkvertex[i] + 1)<<8)*13)>>8) + (1<<7);
+			final int st = i_mkvertex[i] + (w1>>8);
+			final int ed = i_mkvertex[i + 1] - (w1>>8);
+			int n = ed - st + 1;
 			if (n < 2) {
 				// nが2以下でmatrix.PCAを計算することはできないので、エラー
 				return false;
 			}
+			//配列作成
+			n=this._dist_factor_ref.observ2IdealSampling(i_xcoord, i_ycoord, st, n,this._xpos,this._ypos,PCA_LENGTH);
 			//主成分分析する。
-			this._pca.pcaWithDistortionFactor(i_xcoord, i_ycoord, st, n,dist_factor, evec, ev,mean);
-			final NyARLinear l_line_i = l_line[i];
+			this._pca.pcaF16(this._xpos,this._ypos, n,evec, ev,mean);
+			final NyARI64Linear l_line_i = i64liner[i];
 			l_line_i.run = evec.m01;// line[i][0] = evec->m[1];
 			l_line_i.rise = -evec.m00;// line[i][1] = -evec->m[0];
-			l_line_i.intercept = -(l_line_i.run * mean.x + l_line_i.rise * mean.y);// line[i][2] = -(line[i][0]*mean->v[0] + line[i][1]*mean->v[1]);
+			l_line_i.intercept = -((l_line_i.run * mean.x + l_line_i.rise * mean.y)>>16);// line[i][2] = -(line[i][0]*mean->v[0] + line[i][1]*mean->v[1]);
 		}
 
 		final NyARDoublePoint2d[] l_sqvertex = o_square.sqvertex;
 		final NyARIntPoint[] l_imvertex = o_square.imvertex;
 		for (int i = 0; i < 4; i++) {
-			final NyARLinear l_line_i = l_line[i];
-			final NyARLinear l_line_2 = l_line[(i + 3) % 4];
-			final double w1 = l_line_2.run * l_line_i.rise - l_line_i.run * l_line_2.rise;
-			if (w1 == 0.0) {
+			final NyARI64Linear l_line_i = i64liner[i];
+			final NyARI64Linear l_line_2 = i64liner[(i + 3) % 4];
+			final long w1 =(l_line_2.run * l_line_i.rise - l_line_i.run * l_line_2.rise)>>16;
+			if (w1 == 0) {
 				return false;
 			}
-			l_sqvertex[i].x = (l_line_2.rise * l_line_i.intercept - l_line_i.rise * l_line_2.intercept) / w1;
-			l_sqvertex[i].y = (l_line_i.run * l_line_2.intercept - l_line_2.run * l_line_i.intercept) / w1;
+			l_sqvertex[i].x = (double)((l_line_2.rise * l_line_i.intercept - l_line_i.rise * l_line_2.intercept) / w1)/65536.0;
+			l_sqvertex[i].y = (double)((l_line_i.run * l_line_2.intercept - l_line_2.run * l_line_i.intercept) / w1)/65536.0;
 			// 頂点インデクスから頂点座標を得て保存
 			l_imvertex[i].x = i_xcoord[i_mkvertex[i]];
 			l_imvertex[i].y = i_ycoord[i_mkvertex[i]];
+			l_line[i].run=(double)l_line_i.run/65536.0;
+			l_line[i].rise=(double)l_line_i.rise/65536.0;
+			l_line[i].intercept=(double)l_line_i.intercept/65536.0;
 		}
 		return true;
 	}
 }
+final class NyARFixedFloatVertexCounter
+{
+	public final int[] vertex = new int[6];// 5まで削れる
 
+	public int number_of_vertex;
+
+	private long thresh_16f;
+
+	private int[] x_coord;
+
+	private int[] y_coord;
+
+	public boolean getVertex(int[] i_x_coord, int[] i_y_coord, int st, int ed, long i_thresh)
+	{
+		this.number_of_vertex = 0;
+		this.thresh_16f = i_thresh;
+		this.x_coord = i_x_coord;
+		this.y_coord = i_y_coord;
+		return get_vertex(st, ed);
+	}
+
+	/**
+	 * static int get_vertex( int x_coord[], int y_coord[], int st, int ed,double thresh, int vertex[], int *vnum) 関数の代替関数
+	 * 
+	 * @param x_coord
+	 * @param y_coord
+	 * @param st
+	 * @param ed
+	 * @param thresh
+	 * @return
+	 */
+	private boolean get_vertex(int st, int ed)
+	{
+		int v1 = 0;
+		final int[] lx_coord = this.x_coord;
+		final int[] ly_coord = this.y_coord;
+		final int a = ly_coord[ed] - ly_coord[st];
+		final int b = lx_coord[st] - lx_coord[ed];
+		final int c = lx_coord[ed] * ly_coord[st] - ly_coord[ed] * lx_coord[st];
+		long dmax = 0;
+		for (int i = st + 1; i < ed; i++) {
+			final long d = a * lx_coord[i] + b * ly_coord[i] + c;
+			if (d * d > dmax) {
+				dmax = d * d;
+				v1 = i;
+			}
+		}
+		if ((dmax<<16) / (long)(a * a + b * b) > this.thresh_16f) {
+			if (!get_vertex(st, v1)) {
+				return false;
+			}
+			if (number_of_vertex > 5) {
+				return false;
+			}
+			vertex[number_of_vertex] = v1;// vertex[(*vnum)] = v1;
+			number_of_vertex++;// (*vnum)++;
+
+			if (!get_vertex(v1, ed)) {
+				return false;
+			}
+		}
+		return true;
+	}
+}
 
 
 /**

@@ -43,13 +43,21 @@ import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
  * p=(1-fd^2)
  * xd=px+x0,yd=py+y0
  */
-final public class NyARCameraDistortionFactor
+public class NyARCameraDistortionFactor implements INyARCameraDistortionFactor
 {
 	private static final int PD_LOOP = 3;
 	private double _f0;//x0
 	private double _f1;//y0
 	private double _f2;//100000000.0*ｆ
 	private double _f3;//s
+	public void copyFrom(NyARCameraDistortionFactor i_ref)
+	{
+		this._f0=i_ref._f0;
+		this._f1=i_ref._f1;
+		this._f2=i_ref._f2;
+		this._f3=i_ref._f3;
+		return;
+	}
 	/**
 	 * 配列の値をファクタ値としてセットする。
 	 * @param i_factor

@@ -29,59 +29,48 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.types.matrix;
+package jp.nyatla.nyartoolkit.sandbox.x2;
+
+import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core2.types.NyARFixedFloat16Point2d;
+import jp.nyatla.nyartoolkit.core2.types.NyARFixedFloat16Point3d;
 
 
-public class NyARDoubleMatrix33 implements INyARDoubleMatrix
+final public class NyARFixedFloatTransOffset
 {
-	public double m00;
-	public double m01;
-	public double m02;
-	public double m10;
-	public double m11;
-	public double m12;
-	public double m20;
-	public double m21;
-	public double m22;
-	public static NyARDoubleMatrix33[] createArray(int i_number)
-	{
-		NyARDoubleMatrix33[] ret=new NyARDoubleMatrix33[i_number];
-		for(int i=0;i<i_number;i++)
-		{
-			ret[i]=new NyARDoubleMatrix33();
-		}
-		return ret;
-	}
+	public NyARFixedFloat16Point3d[] vertex=NyARFixedFloat16Point3d.createArray(4);
+	public NyARFixedFloat16Point3d point=new NyARFixedFloat16Point3d();	
 	/**
-	 * 遅いからあんまり使わないでね。
+	 * 中心位置と辺長から、オフセット情報を作成して設定する。
+	 * @param i_width
+	 * FF16で渡すこと！
+	 * @param i_center
 	 */
-	public void setValue(double[] i_value)
+	public void setSquare(long i_width,NyARFixedFloat16Point2d i_center)
 	{
-		this.m00=i_value[0];
-		this.m01=i_value[1];
-		this.m02=i_value[2];
-		this.m10=i_value[3];
-		this.m11=i_value[4];
-		this.m12=i_value[5];
-		this.m20=i_value[6];
-		this.m21=i_value[7];
-		this.m22=i_value[8];
-		return;
-	}
-	/**
-	 * 遅いからあんまり使わないでね。
-	 */
-	public void getValue(double[] o_value)
-	{
-		o_value[0]=this.m00;
-		o_value[1]=this.m01;
-		o_value[2]=this.m02;
-		o_value[3]=this.m10;
-		o_value[4]=this.m11;
-		o_value[5]=this.m12;
-		o_value[6]=this.m20;
-		o_value[7]=this.m21;
-		o_value[8]=this.m22;
+		final long w_2 = i_width>>1;
+		
+		NyARFixedFloat16Point3d vertex3d_ptr;
+		vertex3d_ptr= this.vertex[0];
+		vertex3d_ptr.x = -w_2;
+		vertex3d_ptr.y =  w_2;
+		vertex3d_ptr.z = 0;
+		vertex3d_ptr= this.vertex[1];
+		vertex3d_ptr.x = w_2;
+		vertex3d_ptr.y = w_2;
+		vertex3d_ptr.z = 0;
+		vertex3d_ptr= this.vertex[2];
+		vertex3d_ptr.x =  w_2;
+		vertex3d_ptr.y = -w_2;
+		vertex3d_ptr.z = 0;
+		vertex3d_ptr= this.vertex[3];
+		vertex3d_ptr.x = -w_2;
+		vertex3d_ptr.y = -w_2;
+		vertex3d_ptr.z = 0;
+		
+		this.point.x=-i_center.x;
+		this.point.y=-i_center.y;
+		this.point.z=0;
 		return;
 	}
 }

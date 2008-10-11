@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  * 
  */
-package jp.nyatla.nyartoolkit.sandbox.x2;
+package jp.nyatla.nyartoolkit.sandbox.quadx2;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -51,7 +51,7 @@ import jp.nyatla.nyartoolkit.jogl.utils.*;
  * 最も一致する"Hiro"マーカーを一つ選択して、その上に立方体を表示します。
  * 
  */
-public class JavaSimpleLite_X2 implements GLEventListener, JmfCaptureListener
+public class JavaSimpleLite_Quad implements GLEventListener, JmfCaptureListener
 {
 	private final String CARCODE_FILE = "../../Data/patt.hiro";
 
@@ -72,7 +72,7 @@ public class JavaSimpleLite_X2 implements GLEventListener, JmfCaptureListener
 	private NyARGLUtil _glnya;
 
 	//NyARToolkit関係
-	private NyARSingleDetectMarker_X2 _nya;
+	private NyARSingleDetectMarker_Quad _nya;
 
 	private NyARParam _ar_param;
 
@@ -120,9 +120,8 @@ public class JavaSimpleLite_X2 implements GLEventListener, JmfCaptureListener
 
 	}
 
-	public JavaSimpleLite_X2()
+	public JavaSimpleLite_Quad()
 	{
-		NyMath.initialize();
 		Frame frame = new Frame("Java simpleLite with NyARToolkit");
 
 		// 3Dを描画するコンポーネント
@@ -156,7 +155,7 @@ public class JavaSimpleLite_X2 implements GLEventListener, JmfCaptureListener
 			NyARCode ar_code = new NyARCode(16, 16);
 			_ar_param.loadARParamFromFile(PARAM_FILE);
 			_ar_param.changeScreenSize(SCREEN_X, SCREEN_Y);
-			_nya = new NyARSingleDetectMarker_X2(_ar_param, ar_code, 80.0);
+			_nya = new NyARSingleDetectMarker_Quad(_ar_param, ar_code, 80.0);
 			_nya.setContinueMode(false);//ここをtrueにすると、transMatContinueモード（History計算）になります。
 			ar_code.loadARPattFromFile(CARCODE_FILE);
 			//NyARToolkit用の支援クラス
@@ -247,6 +246,6 @@ public class JavaSimpleLite_X2 implements GLEventListener, JmfCaptureListener
 
 	public static void main(String[] args)
 	{
-		new JavaSimpleLite_X2();
+		new JavaSimpleLite_Quad();
 	}
 }

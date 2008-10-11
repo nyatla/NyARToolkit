@@ -29,55 +29,50 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core;
+package jp.nyatla.nyartoolkit.sandbox.quadx2;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.param.*;
-import jp.nyatla.nyartoolkit.core.pca2d.NyARPca2d_MatrixPCA_O2;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 import jp.nyatla.nyartoolkit.core.pca2d.*;
-
-
+import jp.nyatla.nyartoolkit.core2.pca2d.NyARPca2d_SamplingPCA;
+import jp.nyatla.nyartoolkit.core.*;
+import jp.nyatla.nyartoolkit.sandbox.x2.*;
 
 
 /**
- * イメージから正方形候補を検出するクラス。
- * このクラスは、arDetectMarker2.cとの置き換えになります。
- * 
+ * 1/4に解像度を落して解析するNyARSquareDetector_X2
+ * 与えるBinRasterが既に1/4のサイズになっていないといけないことに注意
  */
-public class NyARSquareDetector implements INyARSquareDetector
+public class NyARSquareDetector_Quad implements INyARSquareDetector
 {
 	private static final double VERTEX_FACTOR = 1.0;// 線検出のファクタ
-	private static final int AR_AREA_MAX = 100000;// #define AR_AREA_MAX 100000
-	private static final int AR_AREA_MIN = 70;// #define AR_AREA_MIN 70
+
+	private static final int AR_AREA_MAX = 25000;// #define AR_AREA_MAX 100000
+
+	private static final int AR_AREA_MIN = 20;// #define AR_AREA_MIN 70
 	private final int _width;
 	private final int _height;
 
-	private final NyARLabeling_ARToolKit _labeling;
+	private final INyARLabeling _labeling;
 
 	private final NyARLabelingImage _limage;
 
 	private final OverlapChecker _overlap_checker = new OverlapChecker();
-	private final INyARCameraDistortionFactor _dist_factor;
-	
-	private final double[] _xpos;
-	private final double[] _ypos;
+	private final NyARCameraDistortionFactor _dist_factor=new NyARCameraDistortionFactor();
 
 	/**
 	 * 最大i_squre_max個のマーカーを検出するクラスを作成する。
 	 * 
 	 * @param i_param
 	 */
-	public NyARSquareDetector(NyARCameraDistortionFactor i_dist_factor_ref,NyARIntSize i_size) throws NyARException
+	public NyARSquareDetector_Quad(NyARCameraDistortionFactor i_dist_factor_ref,NyARIntSize i_size) throws NyARException
 	{
-		this._width = i_size.w;
-		this._height = i_size.h;
-		//歪み計算テーブルを作ると、8*width/height*2の領域を消費します。
-		//領域を取りたくない場合は、i_dist_factor_refの値をそのまま使ってください。
-		this._dist_factor = new NyARCameraDistortionFactorMap(i_dist_factor_ref,i_size);
-		this._labeling = new NyARLabeling_ARToolKit();
+		this._width = i_size.w/2;
+		this._height = i_size.h/2;
+		this._labeling = new NyARLabeling_ARToolKit_X2();
 		this._limage = new NyARLabelingImage(this._width, this._height);
 		this._labeling.attachDestination(this._limage);
 
@@ -88,10 +83,12 @@ public class NyARSquareDetector implements INyARSquareDetector
 		this._max_coord = number_of_coord;
 		this._xcoord = new int[number_of_coord * 2];
 		this._ycoord = new int[number_of_coord * 2];
-		this._pca=new NyARPca2d_MatrixPCA_O2();
-		this._xpos=new double[this._width+this._height];//最大辺長はthis._width+this._height
-		this._ypos=new double[this._width+this._height];//最大辺長はthis._width+this._height
-		return;
+		//PCA
+		this._pca=new NyARPca2d_SamplingPCA(20);
+		//内部的に1/4のサイズで取り扱う
+		this._dist_factor.copyFrom(i_dist_factor_ref);
+		this._dist_factor.changeScale(0.5);
+		
 	}
 
 	private final int _max_coord;
@@ -246,9 +243,9 @@ public class NyARSquareDetector implements INyARSquareDetector
 		return ret;
 	}
 
-	private final NyARVertexCounter __getSquareVertex_wv1 = new NyARVertexCounter();
+	private final NyARFixedFloatVertexCounter __getSquareVertex_wv1 = new NyARFixedFloatVertexCounter();
 
-	private final NyARVertexCounter __getSquareVertex_wv2 = new NyARVertexCounter();
+	private final NyARFixedFloatVertexCounter __getSquareVertex_wv2 = new NyARFixedFloatVertexCounter();
 
 	/**
 	 * static int arDetectMarker2_check_square( int area, ARMarkerInfo2 *marker_info2, double factor ) 関数の代替関数 OPTIMIZED STEP [450->415] o_squareに頂点情報をセットします。
@@ -264,8 +261,8 @@ public class NyARSquareDetector implements INyARSquareDetector
 	 */
 	private boolean getSquareVertex(int[] i_x_coord, int[] i_y_coord, int i_vertex1_index, int i_coord_num, int i_area, int[] o_vertex)
 	{
-		final NyARVertexCounter wv1 = this.__getSquareVertex_wv1;
-		final NyARVertexCounter wv2 = this.__getSquareVertex_wv2;
+		final NyARFixedFloatVertexCounter wv1 = this.__getSquareVertex_wv1;
+		final NyARFixedFloatVertexCounter wv2 = this.__getSquareVertex_wv2;
 		final int end_of_coord = i_vertex1_index + i_coord_num - 1;
 		final int sx = i_x_coord[i_vertex1_index];// sx = marker_info2->x_coord[0];
 		final int sy = i_y_coord[i_vertex1_index];// sy = marker_info2->y_coord[0];
@@ -353,6 +350,7 @@ public class NyARSquareDetector implements INyARSquareDetector
 	private boolean getSquareLine(int[] i_mkvertex, int[] i_xcoord, int[] i_ycoord, NyARSquare o_square) throws NyARException
 	{
 		final NyARLinear[] l_line = o_square.line;
+		final NyARCameraDistortionFactor dist_factor=this._dist_factor;  
 		final NyARDoubleMatrix22 evec=this.__getSquareLine_evec;
 		final NyARDoublePoint2d mean=this.__getSquareLine_mean;
 		final NyARDoublePoint2d ev=this.__getSquareLine_ev;
@@ -367,15 +365,12 @@ public class NyARSquareDetector implements INyARSquareDetector
 				// nが2以下でmatrix.PCAを計算することはできないので、エラー
 				return false;
 			}
-			//配列作成
-			this._dist_factor.observ2IdealBatch(i_xcoord, i_ycoord, st, n,this._xpos,this._ypos);
-			
 			//主成分分析する。
-			this._pca.pca(this._xpos,this._ypos,n,evec, ev,mean);
+			this._pca.pcaWithDistortionFactor(i_xcoord, i_ycoord, st, n,dist_factor, evec, ev,mean);
 			final NyARLinear l_line_i = l_line[i];
 			l_line_i.run = evec.m01;// line[i][0] = evec->m[1];
 			l_line_i.rise = -evec.m00;// line[i][1] = -evec->m[0];
-			l_line_i.intercept = -(l_line_i.run * mean.x + l_line_i.rise * mean.y);// line[i][2] = -(line[i][0]*mean->v[0] + line[i][1]*mean->v[1]);
+			l_line_i.intercept = -(l_line_i.run * mean.x + l_line_i.rise * mean.y)*2;// line[i][2] = -(line[i][0]*mean->v[0] + line[i][1]*mean->v[1]);
 		}
 
 		final NyARDoublePoint2d[] l_sqvertex = o_square.sqvertex;
@@ -390,8 +385,8 @@ public class NyARSquareDetector implements INyARSquareDetector
 			l_sqvertex[i].x = (l_line_2.rise * l_line_i.intercept - l_line_i.rise * l_line_2.intercept) / w1;
 			l_sqvertex[i].y = (l_line_i.run * l_line_2.intercept - l_line_2.run * l_line_i.intercept) / w1;
 			// 頂点インデクスから頂点座標を得て保存
-			l_imvertex[i].x = i_xcoord[i_mkvertex[i]];
-			l_imvertex[i].y = i_ycoord[i_mkvertex[i]];
+			l_imvertex[i].x = i_xcoord[i_mkvertex[i]]*2;
+			l_imvertex[i].y = i_ycoord[i_mkvertex[i]]*2;
 		}
 		return true;
 	}

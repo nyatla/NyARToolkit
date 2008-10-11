@@ -6,7 +6,7 @@ package jp.nyatla.nyartoolkit.core;
  */
 final public class NyARVertexCounter
 {
-	public final int[] vertex = new int[10];// 5まで削れる
+	public final int[] vertex = new int[10];// 6まで削れる
 
 	public int number_of_vertex;
 
@@ -37,12 +37,14 @@ final public class NyARVertexCounter
 	 */
 	private boolean get_vertex(int st, int ed)
 	{
+		//メモ:座標値は65536を超えなければint32で扱って大丈夫なので変更。
+		//dmaxは4乗なのでやるとしてもint64じゃないとマズイ
 		int v1 = 0;
 		final int[] lx_coord = this.x_coord;
 		final int[] ly_coord = this.y_coord;
-		final double a = ly_coord[ed] - ly_coord[st];
-		final double b = lx_coord[st] - lx_coord[ed];
-		final double c = lx_coord[ed] * ly_coord[st] - ly_coord[ed] * lx_coord[st];
+		final int a = ly_coord[ed] - ly_coord[st];
+		final int b = lx_coord[st] - lx_coord[ed];
+		final int c = lx_coord[ed] * ly_coord[st] - ly_coord[ed] * lx_coord[st];
 		double dmax = 0;
 		for (int i = st + 1; i < ed; i++) {
 			final double d = a * lx_coord[i] + b * ly_coord[i] + c;
@@ -51,7 +53,7 @@ final public class NyARVertexCounter
 				v1 = i;
 			}
 		}
-		if (dmax / (a * a + b * b) > thresh) {
+		if (dmax / (double)(a * a + b * b) > thresh) {
 			if (!get_vertex(st, v1)) {
 				return false;
 			}

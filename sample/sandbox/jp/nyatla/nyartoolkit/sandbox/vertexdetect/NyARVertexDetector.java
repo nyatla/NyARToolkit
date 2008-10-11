@@ -56,14 +56,14 @@ public class NyARVertexDetector implements INyARSquareDetector
 	private final NyARLabelingImage _limage;
 
 	private final OverlapChecker _overlap_checker = new OverlapChecker();
-	private final NyARCameraDistortionFactor _dist_factor_ref;
+	private final NyARCameraDistortionFactorMap _dist_factor_ref;
 
 	/**
 	 * 最大i_squre_max個のマーカーを検出するクラスを作成する。
 	 * 
 	 * @param i_param
 	 */
-	public NyARVertexDetector(NyARCameraDistortionFactor i_dist_factor_ref,NyARIntSize i_size) throws NyARException
+	public NyARVertexDetector(NyARCameraDistortionFactorMap i_dist_factor_ref,NyARIntSize i_size) throws NyARException
 	{
 		this._width = i_size.w;
 		this._height = i_size.h;
@@ -237,7 +237,7 @@ public class NyARVertexDetector implements INyARSquareDetector
 
 	private void getSquare(int[] i_mkvertex, int[] i_xcoord, int[] i_ycoord, NyARSquare o_square)
 	{
-		final NyARCameraDistortionFactor dist_factor=this._dist_factor_ref;		
+		final NyARCameraDistortionFactorMap dist_factor=this._dist_factor_ref;		
 		final NyARDoublePoint2d[] vertex=o_square.sqvertex;
 		//歪み補正
 		for(int i=0;i<4;i++)

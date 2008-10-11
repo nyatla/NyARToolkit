@@ -71,7 +71,7 @@ public class NyARTransMat implements INyARTransMat
 		final NyARPerspectiveProjectionMatrix pmat=i_param.getPerspectiveProjectionMatrix();
 		this._calculator=new NyARFitVecCalculator(pmat,dist);
 		this._rotmatrix = new NyARRotMatrix_ARToolKit(pmat);
-		this._mat_optimize=new NyARRotTransOptimize(pmat);
+		this._mat_optimize=new NyARRotTransOptimize_O2(pmat);
 	}
 
 	public void setCenter(double i_x, double i_y)
@@ -146,7 +146,7 @@ public class NyARTransMat implements INyARTransMat
 		this._mat_optimize.optimize(this._rotmatrix,trans,this._calculator);
 		
 		// マトリクスの保存
-		o_result_conv.updateMatrixValue(this._rotmatrix, this._offset.point, trans);
+		this.updateMatrixValue(this._rotmatrix, this._offset.point, trans,o_result_conv);
 		return;
 	}
 	/**
@@ -168,7 +168,7 @@ public class NyARTransMat implements INyARTransMat
 		final NyARDoublePoint3d trans=this.__transMat_trans;
 
 		// io_result_convが初期値なら、transMatで計算する。
-		if (!io_result_conv.hasValue()) {
+		if (!io_result_conv.has_value) {
 			this.transMat(i_square, i_direction, i_width, io_result_conv);
 			return;
 		}
@@ -192,7 +192,7 @@ public class NyARTransMat implements INyARTransMat
 		final double err=this._mat_optimize.optimize(this._rotmatrix,trans,this._calculator);
 		
 		//計算結果を保存
-		io_result_conv.updateMatrixValue(this._rotmatrix, this._offset.point, trans);
+		this.updateMatrixValue(this._rotmatrix, this._offset.point, trans,io_result_conv);
 
 		// エラー値が許容範囲でなければTransMatをやり直し
 		if (err > AR_GET_TRANS_CONT_MAT_MAX_FIT_ERROR) {
@@ -205,9 +205,36 @@ public class NyARTransMat implements INyARTransMat
 			//エラー値が低かったら値を差換え
 			if (err2 < err) {
 				// 良い値が取れたら、差換え
-				io_result_conv.updateMatrixValue(this._rotmatrix, this._offset.point, trans);
+				this.updateMatrixValue(this._rotmatrix, this._offset.point, trans,io_result_conv);
 			}
 		}
 		return;
 	}
+	/**
+	 * パラメータで変換行列を更新します。
+	 * 
+	 * @param i_rot
+	 * @param i_off
+	 * @param i_trans
+	 */
+	public void updateMatrixValue(NyARRotMatrix i_rot, NyARDoublePoint3d i_off, NyARDoublePoint3d i_trans,NyARTransMatResult o_result)
+	{
+		o_result.m00=i_rot.m00;
+		o_result.m01=i_rot.m01;
+		o_result.m02=i_rot.m02;
+		o_result.m03=i_rot.m00 * i_off.x + i_rot.m01 * i_off.y + i_rot.m02 * i_off.z + i_trans.x;
+
+		o_result.m10 = i_rot.m10;
+		o_result.m11 = i_rot.m11;
+		o_result.m12 = i_rot.m12;
+		o_result.m13 = i_rot.m10 * i_off.x + i_rot.m11 * i_off.y + i_rot.m12 * i_off.z + i_trans.y;
+
+		o_result.m20 = i_rot.m20;
+		o_result.m21 = i_rot.m21;
+		o_result.m22 = i_rot.m22;
+		o_result.m23 = i_rot.m20 * i_off.x + i_rot.m21 * i_off.y + i_rot.m22 * i_off.z + i_trans.z;
+
+		o_result.has_value = true;
+		return;
+	}	
 }
