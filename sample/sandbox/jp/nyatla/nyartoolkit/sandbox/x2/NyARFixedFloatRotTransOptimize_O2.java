@@ -45,7 +45,7 @@ import jp.nyatla.nyartoolkit.core2.types.NyARFixedFloat16Point3d;
  */
 public class NyARFixedFloatRotTransOptimize_O2
 {
-	private final static int AR_GET_TRANS_MAT_MAX_LOOP_COUNT = 5;// #define AR_GET_TRANS_MAT_MAX_LOOP_COUNT 5
+	private final static int AR_GET_TRANS_MAT_MAX_LOOP_COUNT = 1;// #define AR_GET_TRANS_MAT_MAX_LOOP_COUNT 5
 	private final NyARPerspectiveProjectionMatrix _projection_mat_ref;
 	public NyARFixedFloatRotTransOptimize_O2(NyARPerspectiveProjectionMatrix i_projection_mat_ref)
 	{

@@ -31,9 +31,7 @@
  */
 package jp.nyatla.nyartoolkit.sandbox.x2;
 
-import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core2.types.NyARFixedFloat16Point2d;
-import jp.nyatla.nyartoolkit.core2.types.NyARFixedFloat16Point3d;
+import jp.nyatla.nyartoolkit.core2.types.*;
 
 
 final public class NyARFixedFloatTransOffset

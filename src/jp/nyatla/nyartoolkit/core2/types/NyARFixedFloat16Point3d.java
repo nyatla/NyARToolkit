@@ -31,6 +31,8 @@
  */
 package jp.nyatla.nyartoolkit.core2.types;
 
+import jp.nyatla.nyartoolkit.core.types.*;
+
 public class NyARFixedFloat16Point3d extends NyARI64Point3d
 {
 	/**
@@ -47,4 +49,19 @@ public class NyARFixedFloat16Point3d extends NyARI64Point3d
 		}
 		return ret;
 	}
+	public void copyTo(NyARDoublePoint3d i_to)
+	{
+		i_to.x=(double)this.x/0x10000;
+		i_to.y=(double)this.y/0x10000;
+		i_to.z=(double)this.z/0x10000;
+		return;
+	}
+	public void copyFrom(NyARDoublePoint3d i_from)
+	{
+		this.x=(long)(i_from.x*0x10000);
+		this.y=(long)(i_from.y*0x10000);
+		this.z=(long)(i_from.z*0x10000);
+		return;
+	}
+
 }

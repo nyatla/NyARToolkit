@@ -33,19 +33,18 @@ package jp.nyatla.nyartoolkit.sandbox.x2;
 
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.param.*;
-import jp.nyatla.nyartoolkit.core2.types.NyARFixedFloat16Point2d;
 /**
  * 歪み成分マップを使用するINyARCameraDistortionFactor
  * 内部マップをint(1:15:16)フォーマットの固定小数点で保持する。
  * 固定小数点で値を提供するインタフェイスを持ちます。
  */
-final public class NyARFixedFloatCameraDistortionFactorMap
+final public class NyARFixedFloatObserv2IdealMap
 {
 	private double[] _factor=new double[4];
 	private int _stride;
 	private int[] _mapx;
 	private int[] _mapy;
-	public NyARFixedFloatCameraDistortionFactorMap(NyARCameraDistortionFactor i_distfactor,NyARIntSize i_screen_size)
+	public NyARFixedFloatObserv2IdealMap(NyARCameraDistortionFactor i_distfactor,NyARIntSize i_screen_size)
 	{
 		NyARDoublePoint2d opoint=new NyARDoublePoint2d();
 		this._mapx=new int[i_screen_size.w*i_screen_size.h];
@@ -57,50 +56,13 @@ final public class NyARFixedFloatCameraDistortionFactorMap
 		{
 			for(int i2=i_screen_size.w-1;i2>=0;i2--)
 			{
-				i_distfactor.observ2Ideal(i2,i, opoint);
+				i_distfactor.observ2Ideal(i2,i,opoint);
 				this._mapx[ptr]=(int)(opoint.x*65536);
 				this._mapy[ptr]=(int)(opoint.y*65536);
 				ptr--;
 			}
 		}
 		i_distfactor.getValue(this._factor);
-		return;
-	}	
-	public void ideal2ObservBatch(final NyARDoublePoint2d[] i_in, NyARFixedFloat16Point2d[] o_out, int i_size)
-	{
-		double x, y;
-		final double d0 = this._factor[0];
-		final double d1 = this._factor[1];
-		final double d3 = this._factor[3];
-		final double d2_w = this._factor[2] / 100000000.0;
-		for (int i = 0; i < i_size; i++) {
-			x = (i_in[i].x - d0) * d3;
-			y = (i_in[i].y - d1) * d3;
-			if (x == 0.0 && y == 0.0) {
-				o_out[i].x = (long)(d0*NyMath.FIXEDFLOAT16_1);
-				o_out[i].y = (long)(d1*NyMath.FIXEDFLOAT16_1);
-			} else {
-				final double d = 1.0 - d2_w * (x * x + y * y);
-				o_out[i].x = (long)((x * d + d0)*NyMath.FIXEDFLOAT16_1);
-				o_out[i].y = (long)((y * d + d1)*NyMath.FIXEDFLOAT16_1);
-			}
-		}
-		return;
-	}
-	public void ideal2Observ(final NyARDoublePoint2d i_in, NyARFixedFloat16Point2d o_out)
-	{
-		final double f0=this._factor[0];
-		final double f1=this._factor[1];
-		final double x = (i_in.x - f0) * this._factor[3];
-		final double y = (i_in.y - f1) * this._factor[3];
-		if (x == 0.0 && y == 0.0) {
-			o_out.x = (long)(f0*NyMath.FIXEDFLOAT16_1);
-			o_out.y = (long)(f1*NyMath.FIXEDFLOAT16_1);
-		} else {
-			final double d = 1.0 - this._factor[2] / 100000000.0 * (x * x + y * y);
-			o_out.x = (long)((x * d + f0)*NyMath.FIXEDFLOAT16_1);
-			o_out.y = (long)((y * d + f1)*NyMath.FIXEDFLOAT16_1);
-		}
 		return;
 	}	
 	/**
@@ -121,7 +83,7 @@ final public class NyARFixedFloatCameraDistortionFactorMap
         int idx;
         if (i_num < i_sample_count)
         {
-            for (int i = i_num - 1; i >= 0; i -= 2)
+            for (int i = i_num - 1; i >= 0; i--)
             {
                 idx = i_x_coord[i_start + i] + i_y_coord[i_start + i] * this._stride;
                 o_x_coord[i] = this._mapx[idx];

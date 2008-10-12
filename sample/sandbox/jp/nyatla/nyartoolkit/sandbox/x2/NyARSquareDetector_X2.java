@@ -61,7 +61,7 @@ public class NyARSquareDetector_X2 implements INyARSquareDetector
 	private final NyARLabelingImage _limage;
 
 	private final OverlapChecker _overlap_checker = new OverlapChecker();
-	private final NyARFixedFloatCameraDistortionFactorMap _dist_factor_ref;
+	private final NyARFixedFloatObserv2IdealMap _dist_factor_ref;
 //	private final NyARFixFloatCameraDistortionFactorMap _dist_factor_ref;
 	private final NyARFixedFloatPca2d _pca;
 //	private final INyARPca2d _pca;
@@ -71,7 +71,7 @@ public class NyARSquareDetector_X2 implements INyARSquareDetector
 	 * 
 	 * @param i_param
 	 */
-	public NyARSquareDetector_X2(NyARFixedFloatCameraDistortionFactorMap i_dist_factor_ref,NyARIntSize i_size) throws NyARException
+	public NyARSquareDetector_X2(NyARFixedFloatObserv2IdealMap i_dist_factor_ref,NyARIntSize i_size) throws NyARException
 	{
 		this._width = i_size.w;
 		this._height = i_size.h;

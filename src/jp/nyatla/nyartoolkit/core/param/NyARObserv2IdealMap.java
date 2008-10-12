@@ -36,65 +36,12 @@ import jp.nyatla.nyartoolkit.core.types.*;
 /**
  * 歪み成分マップを使用するINyARCameraDistortionFactor
  */
-final public class NyARCameraDistortionFactorMap implements INyARCameraDistortionFactor
+final public class NyARObserv2IdealMap
 {
-	private double[] _factor=new double[4];
 	private int _stride;
 	private double[] _mapx;
 	private double[] _mapy;
-	/**
-	 * int arParamIdeal2Observ( const double dist_factor[4], const double ix,const double iy,double *ox, double *oy ) 関数の代替関数
-	 * 
-	 * @param i_in
-	 * @param o_out
-	 */
-	public void ideal2Observ(final NyARDoublePoint2d i_in, NyARDoublePoint2d o_out)
-	{
-		final double f0=this._factor[0];
-		final double f1=this._factor[1];
-		final double x = (i_in.x - f0) * this._factor[3];
-		final double y = (i_in.y - f1) * this._factor[3];
-		if (x == 0.0 && y == 0.0) {
-			o_out.x = f0;
-			o_out.y = f1;
-		} else {
-			final double d = 1.0 - this._factor[2] / 100000000.0 * (x * x + y * y);
-			o_out.x = x * d + f0;
-			o_out.y = y * d + f1;
-		}
-		return;
-	}
-
-	/**
-	 * ideal2Observをまとめて実行します。
-	 * @param i_in
-	 * @param o_out
-	 */
-	public void ideal2ObservBatch(final NyARDoublePoint2d[] i_in, NyARDoublePoint2d[] o_out, int i_size)
-	{
-		double x, y;
-		final double d0 = this._factor[0];
-		final double d1 = this._factor[1];
-		final double d3 = this._factor[3];
-		final double d2_w = this._factor[2] / 100000000.0;
-		for (int i = 0; i < i_size; i++) {
-			x = (i_in[i].x - d0) * d3;
-			y = (i_in[i].y - d1) * d3;
-			if (x == 0.0 && y == 0.0) {
-				o_out[i].x = d0;
-				o_out[i].y = d1;
-			} else {
-				final double d = 1.0 - d2_w * (x * x + y * y);
-				o_out[i].x = x * d + d0;
-				o_out[i].y = y * d + d1;
-			}
-		}
-		return;
-	}	
-	
-	
-	
-	public NyARCameraDistortionFactorMap(NyARCameraDistortionFactor i_distfactor,NyARIntSize i_screen_size)
+	public NyARObserv2IdealMap(NyARCameraDistortionFactor i_distfactor,NyARIntSize i_screen_size)
 	{
 		NyARDoublePoint2d opoint=new NyARDoublePoint2d();
 		this._mapx=new double[i_screen_size.w*i_screen_size.h];
@@ -112,7 +59,6 @@ final public class NyARCameraDistortionFactorMap implements INyARCameraDistortio
 				ptr--;
 			}
 		}
-		i_distfactor.getValue(this._factor);
 		return;
 	}
 	public void observ2Ideal(double ix, double iy, NyARDoublePoint2d o_point)

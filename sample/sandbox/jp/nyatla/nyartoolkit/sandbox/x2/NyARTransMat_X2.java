@@ -35,10 +35,10 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARSquare;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
-import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.NyARRotMatrix;
+import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.*;
+import jp.nyatla.nyartoolkit.core.transmat.fitveccalc.*;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core2.types.NyARFixedFloat16Point2d;
-import jp.nyatla.nyartoolkit.core2.types.NyARFixedFloat16Point3d;
+import jp.nyatla.nyartoolkit.core2.types.*;
 
 
 /**
@@ -54,10 +54,10 @@ public class NyARTransMat_X2 implements INyARTransMat
 	private NyARFixedFloatFitVecCalculator _calculator;
 	private NyARFixedFloatRotTransOptimize_O2 _mat_optimize;
 
-	public NyARTransMat_X2(NyARParam i_param,NyARFixedFloatCameraDistortionFactorMap i_dist_factor_map) throws NyARException
+	public NyARTransMat_X2(NyARParam i_param) throws NyARException
 	{
 		final NyARPerspectiveProjectionMatrix pmat=i_param.getPerspectiveProjectionMatrix();
-		this._calculator=new NyARFixedFloatFitVecCalculator(pmat,i_dist_factor_map);
+		this._calculator=new NyARFixedFloatFitVecCalculator(pmat,i_param.getDistortionFactor());
 		this._rotmatrix = new NyARFixedFloatRotMatrix(pmat);
 		this._mat_optimize=new NyARFixedFloatRotTransOptimize_O2(pmat);
 	}
@@ -75,13 +75,17 @@ public class NyARTransMat_X2 implements INyARTransMat
 	 * @param o_sqvertex_ref
 	 * @param o_liner_ref
 	 */
-	private final void initVertexOrder(NyARSquare i_square, int i_direction, NyARDoublePoint2d[] o_sqvertex_ref, NyARLinear[] o_liner_ref)
+	private final void initVertexOrder(NyARSquare i_square, int i_direction, NyARFixedFloat16Point2d[] o_sqvertex_ref, NyARLinear[] o_liner_ref)
 	{
 		//頂点順序を考慮した矩形の頂点情報
-		o_sqvertex_ref[0]= i_square.sqvertex[(4 - i_direction) % 4];
-		o_sqvertex_ref[1]= i_square.sqvertex[(5 - i_direction) % 4];
-		o_sqvertex_ref[2]= i_square.sqvertex[(6 - i_direction) % 4];
-		o_sqvertex_ref[3]= i_square.sqvertex[(7 - i_direction) % 4];	
+		o_sqvertex_ref[0].x= (long)(i_square.sqvertex[(4 - i_direction) % 4].x*NyMath.FIXEDFLOAT16_1);
+		o_sqvertex_ref[0].y= (long)(i_square.sqvertex[(4 - i_direction) % 4].y*NyMath.FIXEDFLOAT16_1);
+		o_sqvertex_ref[1].x= (long)(i_square.sqvertex[(5 - i_direction) % 4].x*NyMath.FIXEDFLOAT16_1);
+		o_sqvertex_ref[1].y= (long)(i_square.sqvertex[(5 - i_direction) % 4].y*NyMath.FIXEDFLOAT16_1);
+		o_sqvertex_ref[2].x= (long)(i_square.sqvertex[(6 - i_direction) % 4].x*NyMath.FIXEDFLOAT16_1);
+		o_sqvertex_ref[2].y= (long)(i_square.sqvertex[(6 - i_direction) % 4].y*NyMath.FIXEDFLOAT16_1);
+		o_sqvertex_ref[3].x= (long)(i_square.sqvertex[(7 - i_direction) % 4].x*NyMath.FIXEDFLOAT16_1);	
+		o_sqvertex_ref[3].y= (long)(i_square.sqvertex[(7 - i_direction) % 4].y*NyMath.FIXEDFLOAT16_1);	
 		o_liner_ref[0]=i_square.line[(4 - i_direction) % 4];
 		o_liner_ref[1]=i_square.line[(5 - i_direction) % 4];
 		o_liner_ref[2]=i_square.line[(6 - i_direction) % 4];
@@ -90,7 +94,7 @@ public class NyARTransMat_X2 implements INyARTransMat
 	}
 
 
-	private final NyARDoublePoint2d[] __transMat_sqvertex_ref = new NyARDoublePoint2d[4];
+	private final NyARFixedFloat16Point2d[] __transMat_sqvertex_ref = NyARFixedFloat16Point2d.createArray(4);
 	private final NyARLinear[] __transMat_linear_ref=new NyARLinear[4];
 	private final NyARFixedFloat16Point3d __transMat_trans=new NyARFixedFloat16Point3d();
 	/**
@@ -105,10 +109,10 @@ public class NyARTransMat_X2 implements INyARTransMat
 	 */
 	public void transMat(final NyARSquare i_square, int i_direction, double i_width, NyARTransMatResult o_result_conv) throws NyARException
 	{
-		final NyARDoublePoint2d[] sqvertex_ref = __transMat_sqvertex_ref;
+		final NyARFixedFloat16Point2d[] sqvertex_ref = __transMat_sqvertex_ref;
 		final NyARLinear[] linear_ref=__transMat_linear_ref;
 		final NyARFixedFloat16Point3d trans=this.__transMat_trans;
-		
+	
 		//計算用に頂点情報を初期化（順番調整）
 		initVertexOrder(i_square, i_direction, sqvertex_ref,linear_ref);
 		

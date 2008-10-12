@@ -34,9 +34,8 @@ package jp.nyatla.nyartoolkit.sandbox.x2;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core.types.matrix.*;
 import jp.nyatla.nyartoolkit.core.param.*;
-import jp.nyatla.nyartoolkit.core2.types.NyARFixedFloat16Point3d;
+import jp.nyatla.nyartoolkit.core2.types.*;
 import jp.nyatla.nyartoolkit.core2.types.matrix.NyARFixedFloat24Matrix33;
 
 
@@ -79,7 +78,7 @@ public class NyARFixedFloatRotMatrix extends NyARFixedFloat24Matrix33
 		return;
 	}
 
-	public final void initRotBySquare(final NyARLinear[] i_linear, final NyARDoublePoint2d[] i_sqvertex) throws NyARException
+	public final void initRotBySquare(final NyARLinear[] i_linear, final NyARFixedFloat16Point2d[] i_sqvertex) throws NyARException
 	{
 		final NyARFixedFloatRotVector vec1 = this.__initRot_vec1;
 		final NyARFixedFloatRotVector vec2 = this.__initRot_vec2;
@@ -96,19 +95,22 @@ public class NyARFixedFloatRotMatrix extends NyARFixedFloat24Matrix33
 
 		// 回転の最適化？
 		NyARFixedFloatRotVector.checkRotation(vec1, vec2);
+	
 
-		this.m00 = (long)(vec1.v1*NyMath.FIXEDFLOAT24_1);
-		this.m10 = (long)(vec1.v2*NyMath.FIXEDFLOAT24_1);
-		this.m20 = (long)(vec1.v3*NyMath.FIXEDFLOAT24_1);
-		this.m01 = (long)(vec2.v1*NyMath.FIXEDFLOAT24_1);
-		this.m11 = (long)(vec2.v2*NyMath.FIXEDFLOAT24_1);
-		this.m21 = (long)(vec2.v3*NyMath.FIXEDFLOAT24_1);
+		this.m00 = vec1.v1<<8;
+		this.m10 = vec1.v2<<8;
+		this.m20 = vec1.v3<<8;
+		this.m01 = vec2.v1<<8;
+		this.m11 = vec2.v2<<8;
+		this.m21 = vec2.v3<<8;
+		
+
 
 		// 最後の軸を計算
-		final long w02 = (long)((vec1.v2 * vec2.v3 - vec1.v3 * vec2.v2)*NyMath.FIXEDFLOAT24_1);//S24
-		final long w12 = (long)((vec1.v3 * vec2.v1 - vec1.v1 * vec2.v3)*NyMath.FIXEDFLOAT24_1);//S24
-		final long w22 = (long)((vec1.v1 * vec2.v2 - vec1.v2 * vec2.v1)*NyMath.FIXEDFLOAT24_1);//S24
-		final long w = NyMath.sqrtFixdFloat((w02 * w02 + w12 * w12 + w22 * w22)>>24,24);//S24
+		final long w02 = (vec1.v2 * vec2.v3 - vec1.v3 * vec2.v2)>>16;//S16
+		final long w12 = (vec1.v3 * vec2.v1 - vec1.v1 * vec2.v3)>>16;//S16
+		final long w22 = (vec1.v1 * vec2.v2 - vec1.v2 * vec2.v1)>>16;//S16
+		final long w = NyMath.sqrtFixdFloat((w02 * w02 + w12 * w12 + w22 * w22)>>16,16);//S16
 		this.m02 = (w02<<24) / w;
 		this.m12 = (w12<<24) / w;
 		this.m22 = (w22<<24) / w;
@@ -132,11 +134,11 @@ public class NyARFixedFloatRotMatrix extends NyARFixedFloat24Matrix33
 			this.m22 = -NyMath.FIXEDFLOAT24_1;// <Optimize/>rot[2][2] = -1.0;
 		}
 		cosb = this.m22;// <Optimize/>cosb = rot[2][2];
-		b=(int)(Math.acos((double)cosb/NyMath.FIXEDFLOAT24_1)*NyMath.FIXEDFLOAT16_1);
+		b=NyMath.acosFixedFloat16((int)cosb);
 		sinb = (long)NyMath.sinFixedFloat24(b);
 		final long rot02 = this.m02;
 		final long rot12 = this.m12;
-		if (b!=0) {
+		if (sinb!=0) {
 			cosa = (rot02<<24) / sinb;// <Optimize/>cosa = rot[0][2] / sinb;
 			sina = (rot12<<24) / sinb;// <Optimize/>sina = rot[1][2] / sinb;
 			if (cosa > NyMath.FIXEDFLOAT24_1) {
@@ -159,7 +161,7 @@ public class NyARFixedFloatRotMatrix extends NyARFixedFloat24Matrix33
 				sina = -NyMath.FIXEDFLOAT24_1;
 				cosa = 0;
 			}
-			a = (int)(Math.acos((double)cosa/NyMath.FIXEDFLOAT24_1)*NyMath.FIXEDFLOAT16_1);
+			a = (int)NyMath.acosFixedFloat16((int)cosa);
 			if (sina < 0) {
 				a = -a;
 			}
@@ -191,7 +193,7 @@ public class NyARFixedFloatRotMatrix extends NyARFixedFloat24Matrix33
 				sinc = -NyMath.FIXEDFLOAT24_1;
 				cosc = 0;
 			}
-			c = (int)(Math.acos((double)cosc/NyMath.FIXEDFLOAT24_1)*NyMath.FIXEDFLOAT16_1);
+			c = (int)NyMath.acosFixedFloat16((int)cosc);
 			if (sinc < 0) {
 				c = -c;
 			}
@@ -221,7 +223,7 @@ public class NyARFixedFloatRotMatrix extends NyARFixedFloat24Matrix33
 				sinc = -NyMath.FIXEDFLOAT24_1;
 				cosc = 0;
 			}
-			c = (int)(Math.acos((double)cosc/NyMath.FIXEDFLOAT24_1)*NyMath.FIXEDFLOAT16_1);
+			c = (int)NyMath.acosFixedFloat16((int)cosc);
 			if (sinc < 0) {
 				c = -c;
 			}

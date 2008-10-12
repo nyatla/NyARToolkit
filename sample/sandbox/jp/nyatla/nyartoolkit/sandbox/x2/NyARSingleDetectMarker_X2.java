@@ -85,13 +85,12 @@ public class NyARSingleDetectMarker_X2
 	 */
 	public NyARSingleDetectMarker_X2(NyARParam i_param, NyARCode i_code, double i_marker_width) throws NyARException
 	{
-		final NyARIntSize scr_size=i_param.getScreenSize();		
-		final NyARFixedFloatCameraDistortionFactorMap dist_factor_map=new NyARFixedFloatCameraDistortionFactorMap(i_param.getDistortionFactor(),scr_size);
+		final NyARIntSize scr_size=i_param.getScreenSize();	
+        final NyARFixedFloatObserv2IdealMap dist_map = new NyARFixedFloatObserv2IdealMap(i_param.getDistortionFactor(), scr_size);
+		
 		// 解析オブジェクトを作る
-//		this._square_detect = new NyARSquareDetector_X2(dist_factor_map,scr_size);
-//		this._transmat = new NyARTransMat_X2(i_param,dist_factor_map);
-		this._square_detect = new NyARSquareDetector(i_param.getDistortionFactor(),scr_size);
-		this._transmat = new NyARTransMat_X2(i_param,dist_factor_map);
+		this._square_detect = new NyARSquareDetector_X2(dist_map,scr_size);
+		this._transmat = new NyARTransMat_X2(i_param);
 		// 比較コードを保存
 		this._code = i_code;
 		this._marker_width = i_marker_width;

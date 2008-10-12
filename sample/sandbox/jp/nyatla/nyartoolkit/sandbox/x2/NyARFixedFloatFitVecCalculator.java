@@ -73,11 +73,11 @@ public class NyARFixedFloatFitVecCalculator
 	private final NyARFixedFloat16Mat _mat_d = new NyARFixedFloat16Mat(3,3);
 	private final NyARCustomMatrix _mat_d2=new NyARCustomMatrix(3,3);
 	private final NyARPerspectiveProjectionMatrix _projection_mat;
-	private final NyARFixedFloatCameraDistortionFactorMap _distortionfactor;
+	private final NyARFixedFloatIdeal2Observ _distortionfactor;
 
 
 //	private NyARDoublePoint2d[] _vertex_2d_ref;
-	public NyARFixedFloatFitVecCalculator(final NyARPerspectiveProjectionMatrix i_projection_mat_ref,final NyARFixedFloatCameraDistortionFactorMap i_distortion_ref)
+	public NyARFixedFloatFitVecCalculator(final NyARPerspectiveProjectionMatrix i_projection_mat_ref,final NyARCameraDistortionFactor i_distortion_ref)
 	{
 		// 変換マトリクスdとbの準備(arGetTransMatSubの一部)
 		final long[][] a_array = this._mat_a.getArray();
@@ -92,7 +92,7 @@ public class NyARFixedFloatFitVecCalculator
 			a_array[x2 + 1][1] = b_array[1][x2 + 1] =(long)(i_projection_mat_ref.m11*NyMath.FIXEDFLOAT16_1);// mat_a->m[j*6+4] =mat_b->m[num*2+j*2+1]= cpara[1][1];
 		}
 		this._projection_mat=i_projection_mat_ref;
-		this._distortionfactor=i_distortion_ref;
+		this._distortionfactor=new NyARFixedFloatIdeal2Observ(i_distortion_ref);
 		return;
 	}
 	private final NyARFixedFloat16Point2d[] _fitsquare_vertex=NyARFixedFloat16Point2d.createArray(4);;
@@ -116,7 +116,7 @@ public class NyARFixedFloatFitVecCalculator
 	 * @param i_square_vertex
 	 * @throws NyARException
 	 */
-	public void setFittedSquare(NyARDoublePoint2d[] i_square_vertex) throws NyARException
+	public void setFittedSquare(NyARFixedFloat16Point2d[] i_square_vertex) throws NyARException
 	{
 		final NyARFixedFloat16Point2d[] vertex=_fitsquare_vertex;
 		for(int i=0;i<4;i++){

@@ -60,7 +60,7 @@ public class NyARSquareDetector implements INyARSquareDetector
 	private final NyARLabelingImage _limage;
 
 	private final OverlapChecker _overlap_checker = new OverlapChecker();
-	private final INyARCameraDistortionFactor _dist_factor;
+	private final NyARObserv2IdealMap _dist_factor;
 	
 	private final double[] _xpos;
 	private final double[] _ypos;
@@ -76,7 +76,7 @@ public class NyARSquareDetector implements INyARSquareDetector
 		this._height = i_size.h;
 		//歪み計算テーブルを作ると、8*width/height*2の領域を消費します。
 		//領域を取りたくない場合は、i_dist_factor_refの値をそのまま使ってください。
-		this._dist_factor = new NyARCameraDistortionFactorMap(i_dist_factor_ref,i_size);
+		this._dist_factor = new NyARObserv2IdealMap(i_dist_factor_ref,i_size);
 		this._labeling = new NyARLabeling_ARToolKit();
 		this._limage = new NyARLabelingImage(this._width, this._height);
 		this._labeling.attachDestination(this._limage);

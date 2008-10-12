@@ -31,7 +31,7 @@
  */
 package jp.nyatla.nyartoolkit.core2.types.matrix;
 
-import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
+import jp.nyatla.nyartoolkit.core.types.matrix.*;
 
 
 public class NyARFixedFloat24Matrix33 extends NyARI64Matrix33
@@ -49,6 +49,20 @@ public class NyARFixedFloat24Matrix33 extends NyARI64Matrix33
 		this.m22=(long)i_matrix.m22*0x1000000;
 		return;
 	}
+	public void copyTo(NyARDoubleMatrix33 i_to)
+	{
+		i_to.m00=(double)this.m00/0x1000000;
+		i_to.m01=(double)this.m01/0x1000000;
+		i_to.m02=(double)this.m02/0x1000000;
+		i_to.m10=(double)this.m10/0x1000000;
+		i_to.m11=(double)this.m11/0x1000000;
+		i_to.m12=(double)this.m12/0x1000000;
+		i_to.m20=(double)this.m20/0x1000000;
+		i_to.m21=(double)this.m21/0x1000000;
+		i_to.m22=(double)this.m22/0x1000000;
+		return;
+	}
+	
 	public static NyARFixedFloat24Matrix33[] createArray(int i_number)
 	{
 		NyARFixedFloat24Matrix33[] ret=new NyARFixedFloat24Matrix33[i_number];
@@ -58,4 +72,5 @@ public class NyARFixedFloat24Matrix33 extends NyARI64Matrix33
 		}
 		return ret;
 	}
+
 }

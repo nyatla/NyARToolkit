@@ -3,9 +3,13 @@ package jp.nyatla.nyartoolkit.sandbox.x2;
 public class NyMath
 {
 	public final static long FIXEDFLOAT24_1=0x1000000L;
+	public final static long FIXEDFLOAT24_0_25=FIXEDFLOAT24_1/4;
 	public final static long FIXEDFLOAT16_1=0x10000L;	
+	public final static long FIXEDFLOAT8_1=0x100L;	
+
 	private final static int FF16_PI=(int)(Math.PI*FIXEDFLOAT16_1);
 	private final static int FF16_2PI=(int)(2 *FF16_PI);
+	private final static int FF16_05PI=(int)(FF16_PI/2);
 	private final static int SIN_RESOLUTION=1024;
 	private final static int ACOS_RESOLUTION=256;
 	/* sinテーブルは0-2PIを1024分割
@@ -56,28 +60,36 @@ public class NyMath
 	}
 	public static int acosFixedFloat16(int i_ff24)
 	{
-		// 0～1を0～256に変換
-		int idx = (int)((i_ff24)>>16);//S8
-		if (idx < 0) {
-			return acos_table[-idx]+FF16_PI;
+/*		int abs_ff24=i_ff24>0?i_ff24:-i_ff24;
+		if(abs_ff24<FIXEDFLOAT24_0_25){
+			//0.25までの範囲は、一次の近似式
+			return FF16_05PI-(i_ff24>>8);
 		}else{
-			return acos_table[idx];
+			// 0～1を0～512に変換
+			int idx = (int)(i_ff24>>16);//S8
+			if (idx < 0) {
+				return FF16_PI-acos_table[-idx];
+			}else{
+				return acos_table[idx];
+			}
 		}
+*/		return (int)(Math.acos((double)i_ff24/0x1000000)*0x10000);
 	}	
 	public static int sinFixedFloat24(int i_ff16)
 	{
 		// 0～2PIを0～1024に変換
-		int rad_index = (int) (i_ff16 * SIN_RESOLUTION / FF16_2PI);
+/*		int rad_index = (int) (i_ff16 * SIN_RESOLUTION / FF16_2PI);
 		rad_index = rad_index % SIN_RESOLUTION;
 		if (rad_index < 0) {
 			rad_index += SIN_RESOLUTION;
 		}
 		// ここで0-1024にいる
 		return sin_table[rad_index];
+*/		return (int)(Math.sin((double)i_ff16/0x10000)*0x1000000);
 	}
 	public static int cosFixedFloat24(int i_ff16)
 	{
-		// 0～Math.PI/2を 0～256の値空間に変換
+/*		// 0～Math.PI/2を 0～256の値空間に変換
 		int rad_index = (int) (i_ff16* SIN_RESOLUTION / FF16_2PI);
 		// 90度ずらす
 		rad_index = (rad_index + SIN_RESOLUTION / 4) % SIN_RESOLUTION;
@@ -87,7 +99,7 @@ public class NyMath
 		}
 		// ここで0-1024にいる
 		return sin_table[rad_index];	
-//		return (int)(Math.cos((double)i_ff16/0x10000)*0x1000000);
+*/		return (int)(Math.cos((double)i_ff16/0x10000)*0x1000000);
 	}
 	public static void initialize()
 	{
