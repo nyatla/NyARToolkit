@@ -166,286 +166,13 @@ public class NyARFixedFloatRotVector
 
         return;
     }
+    private static int DIV0_CANCEL=1;
     /**
      * int check_rotation( double rot[2][3] )
      * 2つのベクトル引数の調整をする？
      * @param i_r
      * @throws NyARException
      */
-/*
-    public static void checkRotation(NyARFixedFloatRotVector io_vec1, NyARFixedFloatRotVector io_vec2) throws NyARException
-    {
-        long w;
-        int f;
-
-        long vec10 = io_vec1.v1;
-        long vec11 = io_vec1.v2;
-        long vec12 = io_vec1.v3;
-        long vec20 = io_vec2.v1;
-        long vec21 = io_vec2.v2;
-        long vec22 = io_vec2.v3;
-
-        long vec30 = (vec11 * vec22 - vec12 * vec21) >> 24;
-        long vec31 = (vec12 * vec20 - vec10 * vec22) >> 24;
-        long vec32 = (vec10 * vec21 - vec11 * vec20) >> 24;
-        w = NyMath.sqrtFixdFloat((vec30 * vec30 + vec31 * vec31 + vec32 * vec32) >> 24, 24);
-        if (w == 0)
-        {
-            throw new NyARException();
-        }
-        vec30 = (vec30 << 24) / w;
-        vec31 = (vec31 << 24) / w;
-        vec32 = (vec32 << 24) / w;
-
-        long cb = (vec10 * vec20 + vec11 * vec21 + vec12 * vec22) >> 24;
-        if (cb < 0)
-        {
-            cb = -cb;//cb *= -1.0;			
-        }
-        long ca = (NyMath.sqrtFixdFloat(cb + NyMath.FIXEDFLOAT24_1, 24) + NyMath.sqrtFixdFloat(NyMath.FIXEDFLOAT24_1 - cb, 24)) >> 1;
-
-        if (vec31 * vec10 - vec11 * vec30 != 0)
-        {
-            f = 0;
-        }
-        else
-        {
-            if (vec32 * vec10 - vec12 * vec30 != 0)
-            {
-                w = vec11; vec11 = vec12; vec12 = w;
-                w = vec31; vec31 = vec32; vec32 = w;
-                f = 1;
-            }
-            else
-            {
-                w = vec10; vec10 = vec12; vec12 = w;
-                w = vec30; vec30 = vec32; vec32 = w;
-                f = 2;
-            }
-        }
-        if (vec31 * vec10 - vec11 * vec30 == 0)
-        {
-            throw new NyARException();
-        }
-
-        long k1, k2, k3, k4;
-        long a, b, c, d;
-        long p1, q1, r1;
-        long p2, q2, r2;
-        long p3, q3, r3;
-        long p4, q4, r4;
-
-
-        k1 = (vec11 * vec32 - vec31 * vec12) / ((vec31 * vec10 - vec11 * vec30) >> 24);
-        k2 = (vec31 * ca) / ((vec31 * vec10 - vec11 * vec30) >> 24);
-        k3 = (vec10 * vec32 - vec30 * vec12) / ((vec30 * vec11 - vec10 * vec31) >> 24);
-        k4 = (vec30 * ca) / ((vec30 * vec11 - vec10 * vec31) >> 24);
-
-        a = ((k1 * k1 + k3 * k3) >> 24) + NyMath.FIXEDFLOAT24_1;
-        b = ((k1 * k2 + k3 * k4) >> 24);
-        c = ((k2 * k2 + k4 * k4) >> 24) - NyMath.FIXEDFLOAT24_1;
-
-        d = ((b>>8) * (b>>8) - (a>>8) * (c>>8)) >> 8;
-        if (d < 0)
-        {
-            throw new NyARException();
-        }
-        r1 = ((-b + NyMath.sqrtFixdFloat(d, 24)) << 24) / a;
-        p1 = ((k1 * r1) >> 24) + k2;
-        q1 = ((k3 * r1) >> 24) + k4;
-        r2 = ((-b - NyMath.sqrtFixdFloat(d, 24)) << 24) / a;
-        p2 = ((k1 * r2) >> 24) + k2;
-        q2 = ((k3 * r2) >> 24) + k4;
-        if (f == 1)
-        {
-            w = q1; q1 = r1; r1 = w;
-            w = q2; q2 = r2; r2 = w;
-            w = vec11; vec11 = vec12; vec12 = w;
-            w = vec31; vec31 = vec32; vec32 = w;
-            f = 0;
-        }
-        if (f == 2)
-        {
-            w = p1; p1 = r1; r1 = w;
-            w = p2; p2 = r2; r2 = w;
-            w = vec10; vec10 = vec12; vec12 = w;
-            w = vec30; vec30 = vec32; vec32 = w;
-            f = 0;
-        }
-
-        if (vec31 * vec20 - vec21 * vec30 != 0)
-        {
-            f = 0;
-        }
-        else
-        {
-            if (vec32 * vec20 - vec22 * vec30 != 0)
-            {
-                w = vec21; vec21 = vec22; vec22 = w;
-                w = vec31; vec31 = vec32; vec32 = w;
-                f = 1;
-            }
-            else
-            {
-                w = vec20; vec20 = vec22; vec22 = w;
-                w = vec30; vec30 = vec32; vec32 = w;
-                f = 2;
-            }
-        }
-        if (vec31 * vec20 - vec21 * vec30 == 0)
-        {
-            throw new NyARException();
-        }
-        k1 = (vec21 * vec32 - vec31 * vec22) / ((vec31 * vec20 - vec21 * vec30) >> 24);
-        k2 = (vec31 * ca) / ((vec31 * vec20 - vec21 * vec30) >> 24);
-        k3 = (vec20 * vec32 - vec30 * vec22) / ((vec30 * vec21 - vec20 * vec31) >> 24);
-        k4 = (vec30 * ca) / ((vec30 * vec21 - vec20 * vec31) >> 24);
-
-        a = ((k1 * k1 + k3 * k3) >> 24) + NyMath.FIXEDFLOAT24_1;
-        b = ((k1 * k2 + k3 * k4) >> 24);
-        c = ((k2 * k2 + k4 * k4) >> 24) - NyMath.FIXEDFLOAT24_1;
-
-        d = ((b>>8) * (b>>8) - (a>>8) * (c>>8)) >> 8;
-        if (d < 0)
-        {
-            throw new NyARException();
-        }
-        r3 = ((-b + NyMath.sqrtFixdFloat(d, 24)) << 24) / a;
-        p3 = ((k1 * r3) >> 24) + k2;
-        q3 = ((k3 * r3) >> 24) + k4;
-        r4 = ((-b - NyMath.sqrtFixdFloat(d, 24)) << 24) / a;
-        p4 = ((k1 * r4) >> 24) + k2;
-        q4 = ((k3 * r4) >> 24) + k4;
-        if (f == 1)
-        {
-            w = q3; q3 = r3; r3 = w;
-            w = q4; q4 = r4; r4 = w;
-            w = vec21; vec21 = vec22; vec22 = w;
-            w = vec31; vec31 = vec32; vec32 = w;
-            f = 0;
-        }
-        if (f == 2)
-        {
-            w = p3; p3 = r3; r3 = w;
-            w = p4; p4 = r4; r4 = w;
-            w = vec20; vec20 = vec22; vec22 = w;
-            w = vec30; vec30 = vec32; vec32 = w;
-            f = 0;
-        }
-
-        long e1 = (p1 * p3 + q1 * q3 + r1 * r3) >> 24;
-        if (e1 < 0)
-        {
-            e1 = -e1;
-        }
-        long e2 = (p1 * p4 + q1 * q4 + r1 * r4) >> 24;
-        if (e2 < 0)
-        {
-            e2 = -e2;
-        }
-        long e3 = (p2 * p3 + q2 * q3 + r2 * r3) >> 24;
-        if (e3 < 0)
-        {
-            e3 = -e3;
-        }
-        long e4 = (p2 * p4 + q2 * q4 + r2 * r4) >> 24;
-        if (e4 < 0)
-        {
-            e4 = -e4;
-        }
-        if (e1 < e2)
-        {
-            if (e1 < e3)
-            {
-                if (e1 < e4)
-                {
-                    io_vec1.v1 = p1;
-                    io_vec1.v2 = q1;
-                    io_vec1.v3 = r1;
-                    io_vec2.v1 = p3;
-                    io_vec2.v2 = q3;
-                    io_vec2.v3 = r3;
-                }
-                else
-                {
-                    io_vec1.v1 = p2;
-                    io_vec1.v2 = q2;
-                    io_vec1.v3 = r2;
-                    io_vec2.v1 = p4;
-                    io_vec2.v2 = q4;
-                    io_vec2.v3 = r4;
-                }
-            }
-            else
-            {
-                if (e3 < e4)
-                {
-                    io_vec1.v1 = p2;
-                    io_vec1.v2 = q2;
-                    io_vec1.v3 = r2;
-                    io_vec2.v1 = p3;
-                    io_vec2.v2 = q3;
-                    io_vec2.v3 = r3;
-                }
-                else
-                {
-                    io_vec1.v1 = p2;
-                    io_vec1.v2 = q2;
-                    io_vec1.v3 = r2;
-                    io_vec2.v1 = p4;
-                    io_vec2.v2 = q4;
-                    io_vec2.v3 = r4;
-                }
-            }
-        }
-        else
-        {
-            if (e2 < e3)
-            {
-                if (e2 < e4)
-                {
-                    io_vec1.v1 = p1;
-                    io_vec1.v2 = q1;
-                    io_vec1.v3 = r1;
-                    io_vec2.v1 = p4;
-                    io_vec2.v2 = q4;
-                    io_vec2.v3 = r4;
-                }
-                else
-                {
-                    io_vec1.v1 = p2;
-                    io_vec1.v2 = q2;
-                    io_vec1.v3 = r2;
-                    io_vec2.v1 = p4;
-                    io_vec2.v2 = q4;
-                    io_vec2.v3 = r4;
-                }
-            }
-            else
-            {
-                if (e3 < e4)
-                {
-                    io_vec1.v1 = p2;
-                    io_vec1.v2 = q2;
-                    io_vec1.v3 = r2;
-                    io_vec2.v1 = p3;
-                    io_vec2.v2 = q3;
-                    io_vec2.v3 = r3;
-                }
-                else
-                {
-                    io_vec1.v1 = p2;
-                    io_vec1.v2 = q2;
-                    io_vec1.v3 = r2;
-                    io_vec2.v1 = p4;
-                    io_vec2.v2 = q4;
-                    io_vec2.v3 = r4;
-                }
-            }
-        }
-        return;
-    }*/
-	//16bit固定小数点版
 	public final static void checkRotation(NyARFixedFloatRotVector io_vec1, NyARFixedFloatRotVector io_vec2) throws NyARException
 	{
 		long w;
@@ -463,7 +190,8 @@ public class NyARFixedFloatRotVector
 		long vec32 = (vec10 * vec21 - vec11 * vec20)>>16;
 		w = NyMath.sqrtFixdFloat16((vec30 * vec30 + vec31 * vec31 + vec32 * vec32)>>16);
 		if (w == 0) {
-			throw new NyARException();
+			w=1;//極小値
+			//throw new NyARException();
 		}
 		vec30= (vec30<<16)/w;
 		vec31= (vec31<<16)/w;
@@ -500,10 +228,10 @@ public class NyARFixedFloatRotVector
 		long p4, q4, r4;		
 		
 		
-		k1 = ((vec11 * vec32 - vec31 * vec12)) / ((vec31 * vec10 - vec11 * vec30)>>16);
-		k2 = (vec31 * ca) / ((vec31 * vec10 - vec11 * vec30)>>16);
-		k3 = (vec10 * vec32 - vec30 * vec12) / ((vec30 * vec11 - vec10 * vec31)>>16);
-		k4 = (vec30 * ca) / ((vec30 * vec11 - vec10 * vec31)>>16);
+		k1 = ((vec11 * vec32 - vec31 * vec12)) / (DIV0_CANCEL+((vec31 * vec10 - vec11 * vec30)>>16));
+		k2 = (vec31 * ca) / (DIV0_CANCEL+((vec31 * vec10 - vec11 * vec30)>>16));
+		k3 = (vec10 * vec32 - vec30 * vec12) / (DIV0_CANCEL+((vec30 * vec11 - vec10 * vec31)>>16));
+		k4 = (vec30 * ca) / (DIV0_CANCEL+((vec30 * vec11 - vec10 * vec31)>>16));
 
 		a = ((k1 * k1 + k3 * k3)>>16) + NyMath.FIXEDFLOAT16_1;
 		b = ((k1 * k2 + k3 * k4)>>16);
@@ -550,10 +278,10 @@ public class NyARFixedFloatRotVector
 		if (vec31 * vec20 - vec21 * vec30 == 0) {
 			throw new NyARException();
 		}
-		k1 = (vec21 * vec32 - vec31 * vec22) / ((vec31 * vec20 - vec21 * vec30)>>16);
-		k2 = (vec31 * ca) / ((vec31 * vec20 - vec21 * vec30)>>16);
+		k1 = (vec21 * vec32 - vec31 * vec22) / (DIV0_CANCEL+((vec31 * vec20 - vec21 * vec30)>>16));
+		k2 = (vec31 * ca) / (DIV0_CANCEL+((vec31 * vec20 - vec21 * vec30)>>16));
 		k3 = (vec20 * vec32 - vec30 * vec22) / ((vec30 * vec21 - vec20 * vec31)>>16);
-		k4 = (vec30 * ca) / ((vec30 * vec21 - vec20 * vec31)>>16);
+		k4 = (vec30 * ca) / (DIV0_CANCEL+((vec30 * vec21 - vec20 * vec31)>>16));
 
 		a = ((k1 * k1 + k3 * k3)>>16) + NyMath.FIXEDFLOAT16_1;
 		b = ((k1 * k2 + k3 * k4)>>16);

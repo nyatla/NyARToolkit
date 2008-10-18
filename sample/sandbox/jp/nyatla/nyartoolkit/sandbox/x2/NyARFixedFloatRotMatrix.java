@@ -46,6 +46,7 @@ import jp.nyatla.nyartoolkit.core2.types.matrix.NyARFixedFloat24Matrix33;
  */
 public class NyARFixedFloatRotMatrix extends NyARFixedFloat24Matrix33
 {
+	private static int DIV0CANCEL=1;
 	/**
 	 * インスタンスを準備します。
 	 * 
@@ -168,7 +169,7 @@ public class NyARFixedFloatRotMatrix extends NyARFixedFloat24Matrix33
 			// <Optimize>
 			// sinc = (rot[2][1]*rot[0][2]-rot[2][0]*rot[1][2])/(rot[0][2]*rot[0][2]+rot[1][2]*rot[1][2]);
 			// cosc = -(rot[0][2]*rot[2][0]+rot[1][2]*rot[2][1])/(rot[0][2]*rot[0][2]+rot[1][2]*rot[1][2]);
-			final long tmp = (rot02 * rot02 + rot12 * rot12)>>24;
+			final long tmp = DIV0CANCEL+((rot02 * rot02 + rot12 * rot12)>>24);
 			sinc = (this.m21 * rot02 - this.m20 * rot12) / tmp;
 			cosc = -(rot02 * this.m20 + rot12 * this.m21) / tmp;
 			// </Optimize>

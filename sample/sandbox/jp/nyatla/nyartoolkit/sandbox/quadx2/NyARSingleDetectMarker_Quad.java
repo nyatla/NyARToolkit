@@ -40,8 +40,7 @@ import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilter_ARToolkitThreshold;
-import jp.nyatla.nyartoolkit.sandbox.x2.NyARSquareDetector_X2;
+
 import jp.nyatla.nyartoolkit.sandbox.x2.NyARTransMat_X2;
 
 
