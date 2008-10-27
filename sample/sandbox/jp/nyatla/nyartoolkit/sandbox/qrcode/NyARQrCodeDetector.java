@@ -12,7 +12,7 @@ import jp.nyatla.nyartoolkit.core.labeling.NyARLabelingLabelStack;
 import jp.nyatla.nyartoolkit.core.labeling.NyARLabeling_ARToolKit;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.pca2d.INyARPca2d;
-import jp.nyatla.nyartoolkit.core.pca2d.NyARPca2d_MatrixPCA_O2;
+import jp.nyatla.nyartoolkit.core.pca2d.*;
 import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint;
@@ -38,7 +38,8 @@ public class NyARQrCodeDetector implements INyARSquareDetector
 	private final NyARLabelingImage _limage;
 
 	private final NyARCameraDistortionFactor _dist_factor_ref;
-
+	private final double[] _xpos;
+	private final double[] _ypos;
 	/**
 	 * 最大i_squre_max個のマーカーを検出するクラスを作成する。
 	 * 
@@ -61,6 +62,9 @@ public class NyARQrCodeDetector implements INyARSquareDetector
 		this._max_coord = number_of_coord;
 		this._xcoord = new int[number_of_coord * 2];
 		this._ycoord = new int[number_of_coord * 2];
+		this._xpos=new double[this._width+this._height];//最大辺長はthis._width+this._height
+		this._ypos=new double[this._width+this._height];//最大辺長はthis._width+this._height
+		
 	}
 
 	private final int _max_coord;
@@ -216,7 +220,7 @@ public class NyARQrCodeDetector implements INyARSquareDetector
 		return;
 	}
 	private static int MAX_COORD_NUM=(320+240)*2;//サイズの1/2の長方形の編程度が目安(VGAなら(320+240)*2)
-	private final INyARPca2d _pca=new NyARPca2d_MatrixPCA_O2(MAX_COORD_NUM);
+	private final INyARPca2d _pca=new NyARPca2d_MatrixPCA_O2();
 	private final NyARDoubleMatrix22 __getSquareLine_evec=new NyARDoubleMatrix22();
 	private final NyARDoublePoint2d __getSquareLine_mean=new NyARDoublePoint2d();
 	private final NyARDoublePoint2d __getSquareLine_ev=new NyARDoublePoint2d();
@@ -228,7 +232,6 @@ public class NyARQrCodeDetector implements INyARSquareDetector
 	 */
 	private boolean getSquareLine(int[] i_mkvertex, int[] i_xcoord, int[] i_ycoord, NyARLinear[] o_line,NyARIntPoint[] o_imvertex) throws NyARException
 	{
-		final NyARCameraDistortionFactor dist_factor=this._dist_factor_ref;  
 		final NyARDoubleMatrix22 evec=this.__getSquareLine_evec;
 		final NyARDoublePoint2d mean=this.__getSquareLine_mean;
 		final NyARDoublePoint2d ev=this.__getSquareLine_ev;
@@ -243,8 +246,11 @@ public class NyARQrCodeDetector implements INyARSquareDetector
 				// nが2以下、又はMAX_COORD_NUM以上なら主成分分析をしない。
 				return false;
 			}
+			//配列作成
+			this._dist_factor_ref.observ2IdealBatch(i_xcoord, i_ycoord, st, n,this._xpos,this._ypos);
+			
 			//主成分分析する。
-			this._pca.pcaWithDistortionFactor(i_xcoord, i_ycoord, st, n,dist_factor, evec, ev,mean);
+			this._pca.pca(this._xpos,this._ypos,n,evec, ev,mean);
 			final NyARLinear l_line_i = o_line[i];
 			l_line_i.run = evec.m01;// line[i][0] = evec->m[1];
 			l_line_i.rise = -evec.m00;// line[i][1] = -evec->m[0];

@@ -1,7 +1,7 @@
 ﻿ARToolKit Java class library NyARToolkit.
 Copyright (C)2008 R.Iizuka
 
-version 2.0.0
+version 2.1.0
 
 http://nyatla.jp/nyartoolkit/
 airmail(at)ebony.plala.or.jp
@@ -10,13 +10,14 @@ airmail(at)ebony.plala.or.jp
 
 
 
-・NyARToolkit/2.0
+・NyARToolkit/2.1
 
 NyARToolkitは、Pure Javaで実装したARToolKitクラスライブラリです。
 
 ARToolKit 2.72.1をベースに構築されています。
 
-NyARToolkit/1.xと比較し、構造的な最適化がされ、可読性が向上しています。
+NyARToolkit/2.0系は、NyARToolkit/1.xと比較して構造的な最適化がされており、
+可読性と分離性が向上しています。
 
 
 
