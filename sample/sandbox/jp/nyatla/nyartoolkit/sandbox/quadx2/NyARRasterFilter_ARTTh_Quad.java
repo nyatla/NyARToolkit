@@ -62,11 +62,11 @@ public class NyARRasterFilter_ARTTh_Quad implements INyARRasterFilter_RgbToBin
 		int in_buf_type=in_buffer_reader.getBufferType();
 
 		NyARIntSize size = i_output.getSize();
-		assert (out_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT2D_BIN_8));
+		assert (out_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8));
 		assert (checkInputType(in_buf_type)==true);	
 		assert (i_input.getSize().isEqualSize(size.w*2,size.h*2) == true);
 
-		int[][] out_buf = (int[][]) out_buffer_reader.getBuffer();
+		int[] out_buf = (int[]) out_buffer_reader.getBuffer();
 		byte[] in_buf = (byte[]) in_buffer_reader.getBuffer();
 
 		switch (in_buffer_reader.getBufferType()) {
@@ -83,7 +83,7 @@ public class NyARRasterFilter_ARTTh_Quad implements INyARRasterFilter_RgbToBin
 		return;
 	}
 
-	private void convert24BitRgb(byte[] i_in, int[][] i_out, NyARIntSize i_size)
+	private void convert24BitRgb(byte[] i_in, int[] i_out, NyARIntSize i_size)
 	{
 		final int size_w=i_size.w*2;
 		final int x_mod_end= size_w-(size_w%8);
@@ -93,37 +93,37 @@ public class NyARRasterFilter_ARTTh_Quad implements INyARRasterFilter_RgbToBin
 		int x;		
 		for (int y =i_size.h-1; y>=0 ; y--){
 			//端数分
-			final int[] row_ptr=i_out[y];
+			final int row_ptr=y*i_size.w;
 			for (x = i_size.w-1;x>=x_mod_end;x--) {
 				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x]=w<=th?0:1;
+				i_out[row_ptr+x]=w<=th?0:1;
 				bp -= 6;
 			}
 			//タイリング		
 			for (;x>=0;x-=8) {
 				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x]=w<=th?0:1;
+				i_out[row_ptr+x]=w<=th?0:1;
 				bp -= 6;
 				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-1]=w<=th?0:1;
+				i_out[row_ptr+x-1]=w<=th?0:1;
 				bp -= 6;
 				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-2]=w<=th?0:1;
+				i_out[row_ptr+x-2]=w<=th?0:1;
 				bp -= 6;
 				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-3]=w<=th?0:1;
+				i_out[row_ptr+x-3]=w<=th?0:1;
 				bp -= 6;
 				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-4]=w<=th?0:1;
+				i_out[row_ptr+x-4]=w<=th?0:1;
 				bp -= 6;
 				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-5]=w<=th?0:1;
+				i_out[row_ptr+x-5]=w<=th?0:1;
 				bp -= 6;
 				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-6]=w<=th?0:1;
+				i_out[row_ptr+x-6]=w<=th?0:1;
 				bp -= 6;
 				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-7]=w<=th?0:1;
+				i_out[row_ptr+x-7]=w<=th?0:1;
 				bp -= 6;
 			}
 			//1行飛ばし
@@ -131,7 +131,7 @@ public class NyARRasterFilter_ARTTh_Quad implements INyARRasterFilter_RgbToBin
 		}
 		return;
 	}
-	private void convert32BitRgbx(byte[] i_in, int[][] i_out, NyARIntSize i_size)
+	private void convert32BitRgbx(byte[] i_in, int[] i_out, NyARIntSize i_size)
 	{
 		final int size_w=i_size.w;
 		final int x_mod_end= size_w-(size_w%8);
@@ -140,39 +140,39 @@ public class NyARRasterFilter_ARTTh_Quad implements INyARRasterFilter_RgbToBin
 		int w;
 		int x;
 		for (int y =i_size.h-1; y>=0 ; y--){
-			final int[] row_ptr=i_out[y];
+			final int row_ptr=y*i_size.w;
 
 			//端数分
 			for (x = size_w-1;x>=x_mod_end;x--) {
 				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x]=w<=th?0:1;
+				i_out[row_ptr+x]=w<=th?0:1;
 				bp -= 4;
 			}
 			//タイリング
 			for (;x>=0;x-=8) {
 				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x]=w<=th?0:1;
+				i_out[row_ptr+x]=w<=th?0:1;
 				bp -= 4;
 				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-1]=w<=th?0:1;
+				i_out[row_ptr+x-1]=w<=th?0:1;
 				bp -= 4;
 				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-2]=w<=th?0:1;
+				i_out[row_ptr+x-2]=w<=th?0:1;
 				bp -= 4;
 				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-3]=w<=th?0:1;
+				i_out[row_ptr+x-3]=w<=th?0:1;
 				bp -= 4;
 				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-4]=w<=th?0:1;
+				i_out[row_ptr+x-4]=w<=th?0:1;
 				bp -= 4;
 				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-5]=w<=th?0:1;
+				i_out[row_ptr+x-5]=w<=th?0:1;
 				bp -= 4;
 				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-6]=w<=th?0:1;
+				i_out[row_ptr+x-6]=w<=th?0:1;
 				bp -= 4;
 				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-7]=w<=th?0:1;
+				i_out[row_ptr+x-7]=w<=th?0:1;
 				bp -= 4;
 			}	
 		}

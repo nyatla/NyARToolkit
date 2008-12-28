@@ -54,14 +54,14 @@ public class NyARRasterFilter_Threshold implements INyARRasterFilter_GsToBin
 	{
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
 
-		final int[][] out_buf = (int[][]) i_output.getBufferReader().getBuffer();
-		final int[][] in_buf = (int[][]) i_input.getBufferReader().getBuffer();
+		final int[] out_buf = (int[]) i_output.getBufferReader().getBuffer();
+		final int[] in_buf = (int[]) i_input.getBufferReader().getBuffer();
 
 		int bp = 0;
 		NyARIntSize size = i_output.getSize();
 		for (int y = 0; y < size.h - 1; y++) {
 			for (int x = 0; x < size.w; x++) {
-				out_buf[y][x] = in_buf[y][x] >= this._threshold ? 1 : 0;
+				out_buf[y*size.w+x] = in_buf[y*size.w+x] >= this._threshold ? 1 : 0;
 				bp += 3;
 			}
 		}

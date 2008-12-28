@@ -57,7 +57,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 
 	private GLNyARRaster_RGB _cap_image;
 
-	private JmfCameraCapture _capture;
+	private JmfCaptureDevice _capture;
 
 	private GL _gl;
 	private NyARGLUtil _glnya;
@@ -140,8 +140,10 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 		//NyARToolkitの準備
 		try {
 			//キャプチャの準備
-			_capture = new JmfCameraCapture(SCREEN_X, SCREEN_Y, 15f, JmfCameraCapture.PIXEL_FORMAT_RGB);
-			_capture.setCaptureListener(this);
+			JmfCaptureDeviceList devlist=new JmfCaptureDeviceList();
+			_capture=devlist.getDevice(0);
+			_capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB,SCREEN_X, SCREEN_Y,15f);
+			_capture.setOnCapture(this);
 			//NyARToolkitの準備
 			_ar_param = new NyARParam();
 			NyARCode ar_code = new NyARCode(16, 16);

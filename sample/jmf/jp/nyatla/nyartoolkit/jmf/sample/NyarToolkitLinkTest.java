@@ -47,42 +47,47 @@ import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
  */
 public class NyarToolkitLinkTest extends Frame implements JmfCaptureListener
 {
+	private static final long serialVersionUID = 6471434231970804953L;
+
 	private final String CARCODE_FILE = "../../Data/patt.hiro";
 
 	private final String PARAM_FILE = "../../Data/camera_para.dat";
 
-	private JmfCameraCapture capture;
+	private JmfCaptureDevice _capture;
 
-	private NyARSingleDetectMarker nya;
+	private NyARSingleDetectMarker _nya;
 
-	private JmfNyARRaster_RGB raster;
+	private JmfNyARRaster_RGB _raster;
 
-	private NyARTransMatResult trans_mat_result = new NyARTransMatResult();
+	private NyARTransMatResult _trans_mat_result = new NyARTransMatResult();
 
 	public NyarToolkitLinkTest() throws NyARException, NyARException
 	{
 		setTitle("JmfCaptureTest");
 		setBounds(0, 0, 320 + 64, 240 + 64);
 		//キャプチャの準備
-		capture = new JmfCameraCapture(320, 240, 30f, JmfCameraCapture.PIXEL_FORMAT_RGB);
-		capture.setCaptureListener(this);
+		JmfCaptureDeviceList devlist=new JmfCaptureDeviceList();
+		_capture=devlist.getDevice(0);
+		_capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB,320, 240,15f);
+		_capture.setOnCapture(this);
 
 		//NyARToolkitの準備
 		NyARParam ar_param = new NyARParam();
 		NyARCode ar_code = new NyARCode(16, 16);
 		ar_param.loadARParamFromFile(PARAM_FILE);
 		ar_param.changeScreenSize(320, 240);
-		nya = new NyARSingleDetectMarker(ar_param, ar_code, 80.0);
+		this._nya = new NyARSingleDetectMarker(ar_param, ar_code, 80.0);
 		ar_code.loadARPattFromFile(CARCODE_FILE);
 		//キャプチャイメージ用のラスタを準備
-		raster = new JmfNyARRaster_RGB(320, 240);
+		this._raster = new JmfNyARRaster_RGB(320, 240);
+		return;
 	}
 
 	public void onUpdateBuffer(Buffer i_buffer)
 	{
 		try {
 			//キャプチャしたバッファをラスタにセット
-			raster.setBuffer(i_buffer);
+			this._raster.setBuffer(i_buffer);
 
 			//キャプチャしたイメージを表示用に加工
 			BufferToImage b2i = new BufferToImage((VideoFormat) i_buffer.getFormat());
@@ -91,27 +96,27 @@ public class NyarToolkitLinkTest extends Frame implements JmfCaptureListener
 			Graphics g = getGraphics();
 
 			//マーカー検出
-			boolean is_marker_exist = nya.detectMarkerLite(raster, 100);
+			boolean is_marker_exist = this._nya.detectMarkerLite(this._raster, 100);
 			if (is_marker_exist) {
 				//変換行列を取得
-				nya.getTransmationMatrix(this.trans_mat_result);
+				this._nya.getTransmationMatrix(this._trans_mat_result);
 			}
 			//情報を画面に書く       
 			g.drawImage(img, 32, 32, this);
 			if (is_marker_exist) {
-				g.drawString("マーカー検出:" + nya.getConfidence(), 32, 50);
-				g.drawString("[m00]" +this.trans_mat_result.m00, 32, 50 + 16*1);
-				g.drawString("[m01]" +this.trans_mat_result.m01, 32, 50 + 16*2);
-				g.drawString("[m02]" +this.trans_mat_result.m02, 32, 50 + 16*3);
-				g.drawString("[m03]" +this.trans_mat_result.m03, 32, 50 + 16*4);
-				g.drawString("[m10]" +this.trans_mat_result.m10, 32, 50 + 16*5);
-				g.drawString("[m11]" +this.trans_mat_result.m11, 32, 50 + 16*6);
-				g.drawString("[m12]" +this.trans_mat_result.m12, 32, 50 + 16*7);
-				g.drawString("[m13]" +this.trans_mat_result.m13, 32, 50 + 16*8);
-				g.drawString("[m20]" +this.trans_mat_result.m20, 32, 50 + 16*9);
-				g.drawString("[m21]" +this.trans_mat_result.m21, 32, 50 + 16*10);
-				g.drawString("[m22]" +this.trans_mat_result.m22, 32, 50 + 16*11);
-				g.drawString("[m23]" +this.trans_mat_result.m23, 32, 50 + 16*12);
+				g.drawString("マーカー検出:" + this._nya.getConfidence(), 32, 50);
+				g.drawString("[m00]" +this._trans_mat_result.m00, 32, 50 + 16*1);
+				g.drawString("[m01]" +this._trans_mat_result.m01, 32, 50 + 16*2);
+				g.drawString("[m02]" +this._trans_mat_result.m02, 32, 50 + 16*3);
+				g.drawString("[m03]" +this._trans_mat_result.m03, 32, 50 + 16*4);
+				g.drawString("[m10]" +this._trans_mat_result.m10, 32, 50 + 16*5);
+				g.drawString("[m11]" +this._trans_mat_result.m11, 32, 50 + 16*6);
+				g.drawString("[m12]" +this._trans_mat_result.m12, 32, 50 + 16*7);
+				g.drawString("[m13]" +this._trans_mat_result.m13, 32, 50 + 16*8);
+				g.drawString("[m20]" +this._trans_mat_result.m20, 32, 50 + 16*9);
+				g.drawString("[m21]" +this._trans_mat_result.m21, 32, 50 + 16*10);
+				g.drawString("[m22]" +this._trans_mat_result.m22, 32, 50 + 16*11);
+				g.drawString("[m23]" +this._trans_mat_result.m23, 32, 50 + 16*12);
 			} else {
 				g.drawString("マーカー未検出:", 32, 100);
 			}
@@ -124,7 +129,7 @@ public class NyarToolkitLinkTest extends Frame implements JmfCaptureListener
 	private void startCapture()
 	{
 		try {
-			capture.start();
+			this._capture.start();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

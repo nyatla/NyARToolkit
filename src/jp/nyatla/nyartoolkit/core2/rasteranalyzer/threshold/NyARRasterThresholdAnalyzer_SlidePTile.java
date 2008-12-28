@@ -61,7 +61,7 @@ public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresh
 
 	private int createHistgram(INyARBufferReader i_reader,NyARIntSize i_size, int[] o_histgram) throws NyARException
 	{
-		int[][] in_buf = (int[][]) i_reader.getBuffer();
+		int[] in_buf = (int[]) i_reader.getBuffer();
 		int[] histgram = o_histgram;
 
 		// ヒストグラムを作成
@@ -72,7 +72,7 @@ public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresh
 		for (int y = 0; y < i_size.h; y++) {
 			int sum2 = 0;
 			for (int x = 0; x < i_size.w; x++) {
-				int v = in_buf[y][x];
+				int v = in_buf[y* i_size.w+x];
 				histgram[v]++;
 				sum2 += v;
 			}
@@ -106,7 +106,7 @@ public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresh
 	public void analyzeRaster(INyARRaster i_input) throws NyARException
 	{
 		final INyARBufferReader buffer_reader=i_input.getBufferReader();	
-		assert (buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT2D_GLAY_8));
+		assert (buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8));
 
 		int[] histgram = new int[256];
 		// 閾値の基準値を出す。
@@ -123,16 +123,16 @@ public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresh
 	{
 		INyARBufferReader in_buffer_reader=i_input.getBufferReader();	
 		INyARBufferReader out_buffer_reader=i_output.getBufferReader();	
-		assert (in_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT2D_GLAY_8));
-		assert (out_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT2D_GLAY_8));
+		assert (in_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8));
+		assert (out_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8));
 
 		NyARIntSize size = i_output.getSize();
 
-		int[][] out_buf = (int[][]) out_buffer_reader.getBuffer();
+		int[] out_buf = (int[]) out_buffer_reader.getBuffer();
 		// 0で塗りつぶし
 		for (int y = 0; y < size.h; y++) {
 			for (int x = 0; x < size.w; x++) {
-				out_buf[y][x] = 0;
+				out_buf[y* size.w+x] = 0;
 			}
 		}
 		// ヒストグラムを計算
@@ -151,17 +151,17 @@ public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresh
 		}
 		// 目盛り
 		for (int i = 0; i < size.h; i++) {
-			out_buf[i][0] = 128;
-			out_buf[i][128] = 128;
-			out_buf[i][255] = 128;
+			out_buf[i* size.w+0] = 128;
+			out_buf[i* size.w+128] = 128;
+			out_buf[i* size.w+255] = 128;
 		}
 		// スケーリングしながら描画
 		for (int i = 0; i < 255; i++) {
-			out_buf[histgram[i] * (size.h - 1) / max_v][i] = 255;
+			out_buf[(histgram[i] * (size.h - 1) / max_v)* size.w+i] = 255;
 		}
 		// 値
 		for (int i = 0; i < size.h; i++) {
-			out_buf[i][threshold] = 255;
+			out_buf[i* size.w+threshold] = 255;
 		}
 		return;
 	}

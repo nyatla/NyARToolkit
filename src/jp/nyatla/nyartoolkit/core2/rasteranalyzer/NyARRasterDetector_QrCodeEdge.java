@@ -89,7 +89,7 @@ public class NyARRasterDetector_QrCodeEdge
 	public void analyzeRaster(INyARRaster i_input) throws NyARException
 	{
 		INyARBufferReader buffer_reader=i_input.getBufferReader();
-		assert (buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT2D_BIN_8));
+		assert (buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8));
 
 		// 結果をクリア
 		this._result.clear();
@@ -100,11 +100,12 @@ public class NyARRasterDetector_QrCodeEdge
 		w1 = b1 = w2 = b2 = w3 = b3 = 0;
 
 		NyARIntRect item;
-		int[] line;
+		int[] raster_buf=(int[])buffer_reader.getBuffer();
+		int line_ptr;
 		int s_pos, b2_spos,b3_spos;
 		b2_spos=0;
 		for (int y = size.h - 1-8; y >= 8; y--) {
-			line = ((int[][]) buffer_reader.getBuffer())[y];
+			line_ptr = y*size.w;
 			x = size.w - 1;
 			s_pos=0;
 			int token_id=0;
@@ -114,7 +115,7 @@ public class NyARRasterDetector_QrCodeEdge
 					// w1の特定
 					w1 = 0;
 					for (; x >= 0; x--) {
-						if (line[x] == 0) {
+						if (raster_buf[line_ptr+x] == 0) {
 							// 検出条件確認:w1は2以上欲しいな。
 							if (!check_w1(w1)) {
 								// 条件不十分
@@ -133,7 +134,7 @@ public class NyARRasterDetector_QrCodeEdge
 					b1 = 0;
 					s_pos = x;
 					for (; x >= 0; x--) {
-						if (line[x] > 0) {
+						if (raster_buf[line_ptr+x] > 0) {
 							// 検出条件確認:b1は1以上欲しいな。
 							if (!check_b1(b1)){
 								//条件不十分→白検出からやり直し
@@ -151,7 +152,7 @@ public class NyARRasterDetector_QrCodeEdge
 					// w2の特定
 					w2 = 0;
 					for (; x >= 0; x--) {
-						if (line[x] == 0) {
+						if (raster_buf[line_ptr+x] == 0) {
 							// 検出条件確認:w2*10/b1は80-120以上欲しいな。
 							if (!check_w2(b1,w2)) {
 								//条件不十分→w2→w1として、b1を解析
@@ -173,7 +174,7 @@ public class NyARRasterDetector_QrCodeEdge
 					b2 = 0;
 					b2_spos=x;
 					for (; x >= 0; x--) {
-						if (line[x] > 0){
+						if (raster_buf[line_ptr+x] > 0){
 							//条件:(w1+b1)/2の2～4倍
 
 							if (!check_b2(b1,b2)) {
@@ -201,7 +202,7 @@ public class NyARRasterDetector_QrCodeEdge
 					// w3の特定
 					w3 = 0;
 					for (; x >= 0; x--) {
-						if (line[x] == 0){
+						if (raster_buf[line_ptr+x] == 0){
 							if (!check_w3(w2,w3)) {
 								//w2→w1,b2->b1として解析しなおす。
 								if(check_w1(w2) && check_b1(b2)){
@@ -228,7 +229,7 @@ public class NyARRasterDetector_QrCodeEdge
 					b3 = 0;
 					b3_spos=x;
 					for (; x >= 0; x--) {
-						if (line[x] > 0) {
+						if (raster_buf[line_ptr+x] > 0) {
 							// 検出条件確認
 							if (!check_b3(b3,b1)) {
 								if(check_w1(w2) && check_b1(b2)){

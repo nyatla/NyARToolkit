@@ -36,6 +36,8 @@ import java.awt.*;
  */
 public class QtCaptureTest extends Frame implements QtCaptureListener
 {
+	private static final long serialVersionUID = -734697739607654631L;
+
 	public QtCaptureTest() throws NyARException
 	{
 		setTitle("QtCaptureTest");

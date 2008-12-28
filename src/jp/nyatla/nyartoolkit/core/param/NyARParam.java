@@ -62,6 +62,19 @@ public class NyARParam
 	{
 		return this._dist;
 	}
+	/**
+	 * 
+	 * @param i_factor
+	 * NyARCameraDistortionFactorにセットする配列を指定する。要素数は4であること。
+	 * @param i_projection
+	 * NyARPerspectiveProjectionMatrixセットする配列を指定する。要素数は12であること。
+	 */
+	public void setValue(double[] i_factor,double[] i_projection)
+	{
+		this._dist.setValue(i_factor);
+		this._projection_matrix.setValue(i_projection);
+		return;
+	}
 
 	/**
 	 * ARToolKit標準ファイルから1個目の設定をロードする。
@@ -93,13 +106,6 @@ public class NyARParam
 		//スケールを変更
 		this._dist.changeScale(scale);
 		this._projection_matrix.changeScale(scale);
-		//for (int i = 0; i < 4; i++) {
-		//	array34[0 * 4 + i] = array34[0 * 4 + i] * scale;// newparam->mat[0][i]=source->mat[0][i]* scale;
-		//	array34[1 * 4 + i] = array34[1 * 4 + i] * scale;// newparam->mat[1][i]=source->mat[1][i]* scale;
-		//	array34[2 * 4 + i] = array34[2 * 4 + i];// newparam->mat[2][i] = source->mat[2][i];
-		//}
-
-
 		this._screen_size.w = i_xsize;// newparam->xsize = xsize;
 		this._screen_size.h = i_ysize;// newparam->ysize = ysize;
 		return;

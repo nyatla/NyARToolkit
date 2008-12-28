@@ -27,110 +27,114 @@
  */
 package jp.nyatla.nyartoolkit.jmf.utils;
 
-
 import javax.media.*;
 import javax.media.protocol.*;
 import javax.media.control.*;
 
 import java.io.IOException;
 
+public class MonitorCDS extends PushBufferDataSource
+{
 
+	private PushBufferDataSource delegate = null;
 
-public class MonitorCDS extends PushBufferDataSource{
+	private PushBufferStream[] delStreams = null;
 
-    private PushBufferDataSource delegate = null;
-    private PushBufferStream [] delStreams = null;
-    private MonitorStream monitorStream = null;
-    private PushBufferStream [] monitorStreams = null;
-    boolean delStarted = false; // variable used by MonitorStream also
-    private Control [] controls;
+	private MonitorStream monitorStream = null;
 
-    public MonitorCDS(DataSource ds)
-    {
-	// Get the stream from the actual datasource
-	// and create a MonitorStream from it
-	// Export the MonitorControl interface of the MonitorStream
-	if (ds instanceof PushBufferDataSource)
+	private PushBufferStream[] monitorStreams = null;
+
+	boolean delStarted = false; // variable used by MonitorStream also
+
+	private Control[] controls;
+
+	public MonitorCDS(DataSource ds)
 	{
-	    delegate = (PushBufferDataSource) ds;
-	    delStreams = delegate.getStreams();
-	    monitorStream = new MonitorStream(delStreams[0], this);
-	    monitorStreams = new PushBufferStream[] {monitorStream};
+		// Get the stream from the actual datasource
+		// and create a MonitorStream from it
+		// Export the MonitorControl interface of the MonitorStream
+		if (ds instanceof PushBufferDataSource) {
+			delegate = (PushBufferDataSource) ds;
+			delStreams = delegate.getStreams();
+			monitorStream = new MonitorStream(delStreams[0], this);
+			monitorStreams = new PushBufferStream[] { monitorStream };
+		}
 	}
-    }
 
-    public Object [] getControls()
-    {
-	return controls;
-    }
-
-    public Object getControl(String value) {
-	if (value.equals("jmfsample.MonitorStream") || value.equals("javax.media.control.MonitorControl"))
-	    return monitorStream;
-	else
-	    return null;
-    }
-
-    public javax.media.CaptureDeviceInfo getCaptureDeviceInfo()
-    {
-	return ((CaptureDevice)delegate).getCaptureDeviceInfo();
-    }
-
-    public FormatControl[] getFormatControls()
-    {
-	return ((CaptureDevice)delegate).getFormatControls();
-    }
-
-    public String getContentType()
-    {
-	return delegate.getContentType();
-    }
-
-    public void connect() throws IOException
-    {
-	if (delegate == null)
-	    throw new IOException("Incompatible DataSource");
-	// Delegate is already connected
-    }
-
-    public void disconnect()
-    {
-	monitorStream.setEnabled(false);
-	delegate.disconnect();
-    }
-
-    public synchronized void start() throws IOException
-    {
-	startDelegate();
-	delStarted = true;
-    }
-
-    public synchronized void stop() throws IOException
-    {
-	if (!monitorStream.isEnabled()) {
-	    stopDelegate();
+	public Object[] getControls()
+	{
+		return controls;
 	}
-	delStarted = false;
-    }
 
-    public Time getDuration()
-    {
-	return delegate.getDuration();
-    }
+	public Object getControl(String value)
+	{
+		if (value.equals("jmfsample.MonitorStream") || value.equals("javax.media.control.MonitorControl")){
+			return monitorStream;
+		}else{
+			return null;
+		}
+	}
 
-    public PushBufferStream [] getStreams()
-    {
-	return monitorStreams;
-    }
+	public javax.media.CaptureDeviceInfo getCaptureDeviceInfo()
+	{
+		return ((CaptureDevice) delegate).getCaptureDeviceInfo();
+	}
 
-    void startDelegate() throws IOException
-    {
-	delegate.start();
-    }
+	public FormatControl[] getFormatControls()
+	{
+		return ((CaptureDevice) delegate).getFormatControls();
+	}
 
-    void stopDelegate() throws IOException
-    {
-	delegate.stop();
-    }
+	public String getContentType()
+	{
+		return delegate.getContentType();
+	}
+
+	public void connect() throws IOException
+	{
+		if (delegate == null)
+			throw new IOException("Incompatible DataSource");
+		// Delegate is already connected
+	}
+
+	public void disconnect()
+	{
+		monitorStream.setEnabled(false);
+		delegate.disconnect();
+	}
+
+	public synchronized void start() throws IOException
+	{
+		startDelegate();
+		delStarted = true;
+	}
+
+	public synchronized void stop() throws IOException
+	{
+		if (!monitorStream.isEnabled()) {
+			stopDelegate();
+		}
+		delStarted = false;
+	}
+
+	public Time getDuration()
+	{
+		return delegate.getDuration();
+	}
+
+	public PushBufferStream[] getStreams()
+	{
+		return monitorStreams;
+	}
+
+	void startDelegate() throws IOException
+	{
+		delegate.start();
+	}
+
+	void stopDelegate() throws IOException
+	{
+		delegate.stop();
+	}
 
 }

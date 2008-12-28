@@ -35,10 +35,15 @@ public class NyARBufferReader implements INyARBufferReader
 {
 	protected Object _buffer;
 	protected int _buffer_type;
+	protected NyARBufferReader()
+	{
+		return;
+	}
 	public NyARBufferReader(Object i_buffer,int i_buffer_type)
 	{
 		this._buffer=i_buffer;
 		this._buffer_type=i_buffer_type;
+		return;
 	}
 	public Object getBuffer()
 	{

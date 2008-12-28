@@ -50,4 +50,13 @@ public class NyARIntPoint
 		}
 		return ret;
 	}
+	public static void copyArray(final NyARIntPoint[] i_from,NyARIntPoint[] i_to)
+	{
+		for(int i=i_from.length-1;i>=0;i--)
+		{
+			i_to[i].x=i_from[i].x;
+			i_to[i].y=i_from[i].y;
+		}
+		return;
+	}
 }

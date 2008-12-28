@@ -47,8 +47,8 @@ public class NyARRasterFilter_AreaAverage implements INyARRasterFilter_GsToBin
 	public void doFilter(NyARGrayscaleRaster i_input, NyARBinRaster i_output) throws NyARException
 	{
 		final NyARIntSize size = i_output.getSize();
-		final int[][] out_buf = (int[][]) i_output.getBufferReader().getBuffer();
-		final int[][] in_buf = (int[][]) i_input.getBufferReader().getBuffer();
+		final int[] out_buf = (int[]) i_output.getBufferReader().getBuffer();
+		final int[] in_buf = (int[]) i_input.getBufferReader().getBuffer();
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
 		assert (size.h % 8 == 0 && size.w % 8 == 0);//暫定実装なので。
 
@@ -63,7 +63,7 @@ public class NyARRasterFilter_AreaAverage implements INyARRasterFilter_GsToBin
 			sum = nn = 0;
 			for (int yy = y - area; yy < y + area + 1; yy++) {
 				for (int xx = x1 - area; xx < x1 + area; xx++) {
-					sum += in_buf[yy][xx];
+					sum += in_buf[yy*size.w+xx];
 					nn++;
 				}
 			}
@@ -71,15 +71,15 @@ public class NyARRasterFilter_AreaAverage implements INyARRasterFilter_GsToBin
 			for (int x = area; x < x2; x++) {
 				if (!first) {
 					for (int yy = y - area; yy < y + area; yy++) {
-						sum += in_buf[yy][x + area];
-						sum -= in_buf[yy][x - area];
+						sum += in_buf[yy*size.w+x + area];
+						sum -= in_buf[yy*size.w+x - area];
 					}
 				}
 				first = false;
 				int th = (sum / nn);
 
-				int g = in_buf[y][x];
-				out_buf[y][x] = th < g ? 1 : 0;
+				int g = in_buf[y*size.w+x];
+				out_buf[y*size.w+x] = th < g ? 1 : 0;
 			}
 		}
 		return;

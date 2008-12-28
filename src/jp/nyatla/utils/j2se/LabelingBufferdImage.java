@@ -122,7 +122,7 @@ public class LabelingBufferdImage extends BufferedImage
 
 	public void drawImage(NyARGrayscaleRaster i_raster) throws NyARException
 	{
-		assert (i_raster.getBufferReader().getBufferType() == INyARBufferReader.BUFFERFORMAT_INT2D_GLAY_8);
+		assert (i_raster.getBufferReader().getBufferType() == INyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8);
 
 		int w = this.getWidth();
 		int h = this.getHeight();
@@ -132,12 +132,12 @@ public class LabelingBufferdImage extends BufferedImage
 			throw new NyARException();
 		}
 
-		int[][] limg;
+		int[] limg;
 		// イメージの描画
-		limg = (int[][]) i_raster.getBufferReader().getBuffer();
+		limg = (int[]) i_raster.getBufferReader().getBuffer();
 		for (int i = 0; i < h; i++) {
 			for (int i2 = 0; i2 < w; i2++) {
-				this.setRGB(i2, i,limg[i][i2]);
+				this.setRGB(i2, i,limg[i*w+i2]);
 			}
 		}
 		return;
@@ -149,7 +149,7 @@ public class LabelingBufferdImage extends BufferedImage
 	 */
 	public void drawImage(NyARBinRaster i_raster) throws NyARException
 	{
-		assert (i_raster.getBufferReader().getBufferType() == INyARBufferReader.BUFFERFORMAT_INT2D_BIN_8);
+		assert (i_raster.getBufferReader().getBufferType() == INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8);
 
 		int w = this.getWidth();
 		int h = this.getHeight();
@@ -159,12 +159,12 @@ public class LabelingBufferdImage extends BufferedImage
 			throw new NyARException();
 		}
 
-		int[][] limg;
+		int[] limg;
 		// イメージの描画
-		limg = (int[][]) i_raster.getBufferReader().getBuffer();
+		limg = (int[]) i_raster.getBufferReader().getBuffer();
 		for (int i = 0; i < h; i++) {
 			for (int i2 = 0; i2 < w; i2++) {
-				this.setRGB(i2, i, limg[i][i2] > 0 ? 255 : 0);
+				this.setRGB(i2, i, limg[i*w+i2] > 0 ? 255 : 0);
 			}
 		}
 		return;
@@ -186,12 +186,12 @@ public class LabelingBufferdImage extends BufferedImage
 		}
 		int[] index_array=i_image.getIndexArray();
 
-		int[][] limg;
+		int[] limg;
 		// イメージの描画
-		limg = (int[][]) i_image.getBufferReader().getBuffer();
+		limg = (int[]) i_image.getBufferReader().getBuffer();
 		for (int i = 0; i < h; i++) {
 			for (int i2 = 0; i2 < w; i2++) {
-				int t=limg[i][i2]-1;
+				int t=limg[i*w+i2]-1;
 				if(t<0){
 					t=0;
 				}else{

@@ -64,8 +64,8 @@ public class GLNyARRaster_RGB extends JmfNyARRaster_RGB
 		if (i_is_reverse) {
 			final int length = this._size.w * 3;
 			int src_idx = 0;
-			int dest_idx = (this._size.h - 1) * length;			
-			for (int i = 0; i < this._size.h; i++) {
+			int dest_idx = (this._size.h - 1) * length;
+			for (int i = 0; i < this._size.h; i++){
 				System.arraycopy(src_buf, src_idx, this._gl_buf, dest_idx, length);
 				src_idx += length;
 				dest_idx -= length;

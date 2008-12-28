@@ -60,11 +60,11 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 		INyARBufferReader out_buffer_reader=i_output.getBufferReader();
 		int in_buf_type=in_buffer_reader.getBufferType();
 
-		assert (out_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT2D_BIN_8));
+		assert (out_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8));
 		assert (checkInputType(in_buf_type)==true);	
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
 
-		int[][] out_buf = (int[][]) out_buffer_reader.getBuffer();
+		int[] out_buf = (int[]) out_buffer_reader.getBuffer();
 		byte[] in_buf = (byte[]) in_buffer_reader.getBuffer();
 
 		NyARIntSize size = i_output.getSize();
@@ -82,96 +82,103 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 		return;
 	}
 
-	private void convert24BitRgb(byte[] i_in, int[][] i_out, NyARIntSize i_size)
+	private void convert24BitRgb(byte[] i_in, int[] i_out, NyARIntSize i_size)
 	{
-		final int size_w=i_size.w;
-		final int x_mod_end= size_w-(size_w%8);
 		final int th=this._threshold*3;
-		int bp =(size_w*i_size.h-1)*3;	
+		int bp =(i_size.w*i_size.h-1)*3;
 		int w;
-		int x;		
-		for (int y =i_size.h-1; y>=0 ; y--){
-			//端数分
-			final int[] row_ptr=i_out[y];
-			for (x = size_w-1;x>=x_mod_end;x--) {
-				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x]=w<=th?0:1;
-				bp -= 3;
-			}
-			//タイリング		
-			for (;x>=0;x-=8) {
-				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x]=w<=th?0:1;
-				bp -= 3;
-				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-1]=w<=th?0:1;
-				bp -= 3;
-				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-2]=w<=th?0:1;
-				bp -= 3;
-				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-3]=w<=th?0:1;
-				bp -= 3;
-				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-4]=w<=th?0:1;
-				bp -= 3;
-				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-5]=w<=th?0:1;
-				bp -= 3;
-				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-6]=w<=th?0:1;
-				bp -= 3;
-				w=((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-7]=w<=th?0:1;
-				bp -= 3;
-			}
+		int xy;
+		final int pix_count   =i_size.h*i_size.w;
+		final int pix_mod_part=pix_count-(pix_count%8);
+		for(xy=pix_count-1;xy>=pix_mod_part;xy--){
+			w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+			i_out[xy]=w<=th?0:1;
+			bp -= 3;
+		}
+		//タイリング
+		for (;xy>=0;) {
+			w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+			i_out[xy]=w<=th?0:1;
+			bp -= 3;
+			xy--;
+			w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+			i_out[xy]=w<=th?0:1;
+			bp -= 3;
+			xy--;
+			w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+			i_out[xy]=w<=th?0:1;
+			bp -= 3;
+			xy--;
+			w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+			i_out[xy]=w<=th?0:1;
+			bp -= 3;
+			xy--;
+			w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+			i_out[xy]=w<=th?0:1;
+			bp -= 3;
+			xy--;
+			w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+			i_out[xy]=w<=th?0:1;
+			bp -= 3;
+			xy--;
+			w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+			i_out[xy]=w<=th?0:1;
+			bp -= 3;
+			xy--;
+			w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+			i_out[xy]=w<=th?0:1;
+			bp -= 3;
+			xy--;
 		}
 		return;
 	}
-	private void convert32BitRgbx(byte[] i_in, int[][] i_out, NyARIntSize i_size)
+	private void convert32BitRgbx(byte[] i_in, int[] i_out, NyARIntSize i_size)
 	{
-		final int size_w=i_size.w;
-		final int x_mod_end= size_w-(size_w%8);
 		final int th=this._threshold*3;
-		int bp =(size_w*i_size.h-1)*4;
+		int bp =(i_size.w*i_size.h-1)*4;
 		int w;
-		int x;
-		for (int y =i_size.h-1; y>=0 ; y--){
-			final int[] row_ptr=i_out[y];
-
-			//端数分
-			for (x = size_w-1;x>=x_mod_end;x--) {
-				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x]=w<=th?0:1;
-				bp -= 4;
-			}
-			//タイリング
-			for (;x>=0;x-=8) {
-				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x]=w<=th?0:1;
-				bp -= 4;
-				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-1]=w<=th?0:1;
-				bp -= 4;
-				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-2]=w<=th?0:1;
-				bp -= 4;
-				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-3]=w<=th?0:1;
-				bp -= 4;
-				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-4]=w<=th?0:1;
-				bp -= 4;
-				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-5]=w<=th?0:1;
-				bp -= 4;
-				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-6]=w<=th?0:1;
-				bp -= 4;
-				w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
-				row_ptr[x-7]=w<=th?0:1;
-				bp -= 4;
-			}	
+		int xy;
+		final int pix_count   =i_size.h*i_size.w;
+		final int pix_mod_part=pix_count-(pix_count%8);
+		for(xy=pix_count-1;xy>=pix_mod_part;xy--){
+			w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+			i_out[xy]=w<=th?0:1;
+			bp -= 4;
+		}
+		//タイリング
+		for (;xy>=0;) {
+			w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+			i_out[xy]=w<=th?0:1;
+			bp -= 4;
+			xy--;
+			w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+			i_out[xy]=w<=th?0:1;
+			bp -= 4;
+			xy--;
+			w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+			i_out[xy]=w<=th?0:1;
+			bp -= 4;
+			xy--;
+			w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+			i_out[xy]=w<=th?0:1;
+			bp -= 4;
+			xy--;
+			w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+			i_out[xy]=w<=th?0:1;
+			bp -= 4;
+			xy--;
+			w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+			i_out[xy]=w<=th?0:1;
+			bp -= 4;
+			xy--;
+			w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+			i_out[xy]=w<=th?0:1;
+			bp -= 4;
+			xy--;
+			w= ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff));
+			i_out[xy]=w<=th?0:1;
+			bp -= 4;
+			xy--;
 		}
 		return;
 	}

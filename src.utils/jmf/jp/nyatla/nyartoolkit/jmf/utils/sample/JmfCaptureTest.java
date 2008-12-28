@@ -40,15 +40,17 @@ import java.awt.*;
  */
 public class JmfCaptureTest extends Frame implements JmfCaptureListener
 {
+	private static final long serialVersionUID = -2110888320986446576L;
+	private JmfCaptureDevice _capture;
 	public JmfCaptureTest() throws NyARException
 	{
 		setTitle("JmfCaptureTest");
 		setBounds(0, 0, 320 + 64, 240 + 64);
-		capture = new JmfCameraCapture(320, 240, 30f, JmfCameraCapture.PIXEL_FORMAT_RGB);
-		capture.setCaptureListener(this);
+		JmfCaptureDeviceList dl=new JmfCaptureDeviceList();
+		this._capture=dl.getDevice(0);
+		this._capture.setOnCapture(this);
 	}
 
-	private JmfCameraCapture capture;
 
 	public void onUpdateBuffer(Buffer i_buffer)
 	{
@@ -61,7 +63,7 @@ public class JmfCaptureTest extends Frame implements JmfCaptureListener
 	private void startCapture()
 	{
 		try {
-			capture.start();
+			this._capture.start();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

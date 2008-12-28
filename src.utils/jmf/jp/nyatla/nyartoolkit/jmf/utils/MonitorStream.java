@@ -27,8 +27,6 @@
  */
 package jp.nyatla.nyartoolkit.jmf.utils;
 
-
-
 import javax.media.*;
 import javax.media.protocol.*;
 
@@ -36,161 +34,177 @@ import javax.media.util.BufferToImage;
 import java.io.IOException;
 import java.awt.*;
 
-public class MonitorStream implements PushBufferStream, BufferTransferHandler {
+public class MonitorStream implements PushBufferStream, BufferTransferHandler
+{
 
-    JmfCaptureListener img_listener;
-    PushBufferStream actual = null;
-    boolean dataAvailable = false;
-    boolean terminate = false;
-    boolean enabled = false;
-    Object bufferLock = new Object();
-    Buffer cbuffer = new Buffer();
-    BufferTransferHandler transferHandler = null;
-    Component component = null;
-    MonitorCDS cds;
-    BufferToImage bti = null;
-    
-    MonitorStream(PushBufferStream actual, MonitorCDS cds) {
-	this.actual = actual;
-	actual.setTransferHandler(this);
-	this.cds = cds;
-    }
+	JmfCaptureListener img_listener;
 
-    public javax.media.Format getFormat()
-    {
-	return actual.getFormat();
-    }
-    /**
-     * 非同期READ
-     */
-    public void read(Buffer buffer) throws IOException
-    {
-	// Wait for data to be available
-	// Doesn't get used much because the transferData
-	// call is made when data IS available. And most
-	// Processors/Players read the data in the same
-	// thread that called transferData, although that's
-	// not a safe assumption to make
-	if (!dataAvailable) {
-	    synchronized (bufferLock) {
-		while (!dataAvailable && !terminate) {
-		    try {
-			bufferLock.wait(100);
-		    } catch (InterruptedException ie) {
-		    }
+	PushBufferStream actual = null;
+
+	boolean dataAvailable = false;
+
+	boolean terminate = false;
+
+	boolean enabled = false;
+
+	Object bufferLock = new Object();
+
+	Buffer cbuffer = new Buffer();
+
+	BufferTransferHandler transferHandler = null;
+
+	Component component = null;
+
+	MonitorCDS cds;
+
+	BufferToImage bti = null;
+
+	MonitorStream(PushBufferStream actual, MonitorCDS cds)
+	{
+		this.actual = actual;
+		actual.setTransferHandler(this);
+		this.cds = cds;
+	}
+
+	public javax.media.Format getFormat()
+	{
+		return actual.getFormat();
+	}
+
+	/**
+	 * 非同期READ
+	 */
+	public void read(Buffer buffer) throws IOException
+	{
+		// Wait for data to be available
+		// Doesn't get used much because the transferData
+		// call is made when data IS available. And most
+		// Processors/Players read the data in the same
+		// thread that called transferData, although that's
+		// not a safe assumption to make
+		if (!dataAvailable) {
+			synchronized (bufferLock) {
+				while (!dataAvailable && !terminate) {
+					try {
+						bufferLock.wait(100);
+					} catch (InterruptedException ie) {
+					}
+				}
+			}
 		}
-	    }
-	}
 
-	if (dataAvailable) {
-	    synchronized (bufferLock) {
-		// Copy the buffer attributes, but swap the data
-		// attributes so that no extra copy is made.
-		buffer.copy(cbuffer, true);
-		//dataAvailable = false;
-	    }
-	}
-//	return;
-    }
-    public void setCaptureListener(JmfCaptureListener i_listener)
-    {
-	img_listener=i_listener;
-    }
-
-    public void transferData(PushBufferStream pbs)
-    {
-	// Get the data from the original source stream
-	synchronized (bufferLock) {
-	    try {
-		pbs.read(cbuffer);
-	    } catch (IOException ioe) {
-		return;
-	    }
-	    dataAvailable = true;
-	    bufferLock.notifyAll();
-	}
-	if(img_listener!=null){
-	    img_listener.onUpdateBuffer(cbuffer);
-	}
-	
-/*
-	// Display data if monitor is active
-	if (isEnabled()) {
-	    if (bti == null) {
-		VideoFormat vf = (VideoFormat) cbuffer.getFormat();
-		bti = new BufferToImage(vf);
-	    }
-	    if (bti != null && component != null) {
-		Image im = bti.createImage(cbuffer);
-		Graphics g = component.getGraphics();
-		Dimension size = component.getSize();
-		if (g != null)
-		    g.drawImage(im, 0, 0, component);
-	    }
-	}
-*/
-	// Maybe synchronize this with setTransferHandler() ?
-	if (transferHandler != null && cds.delStarted)
-	    transferHandler.transferData(this);
-    }
-
-    public void setTransferHandler(BufferTransferHandler transferHandler) {
-	this.transferHandler = transferHandler;
-    }
-
-    public boolean setEnabled(boolean value) {
-	enabled = value;
-	if (value == false) {
-	    if (!cds.delStarted) {
-		try {
-		    cds.stopDelegate();
-		} catch (IOException ioe) {
+		if (dataAvailable) {
+			synchronized (bufferLock) {
+				// Copy the buffer attributes, but swap the data
+				// attributes so that no extra copy is made.
+				buffer.copy(cbuffer, true);
+				//dataAvailable = false;
+			}
 		}
-	    }
-	} else {
-	    // Start the capture datasource if the monitor is enabled
-	    try {
-		cds.startDelegate();
-	    }catch (IOException ioe) {
-	    }
+		//	return;
 	}
-	return enabled;
-    }
 
-    public boolean isEnabled()
-    {
-	return enabled;
-    }
+	public void setCaptureListener(JmfCaptureListener i_listener)
+	{
+		img_listener = i_listener;
+	}
 
+	public void transferData(PushBufferStream pbs)
+	{
+		// Get the data from the original source stream
+		synchronized (bufferLock) {
+			try {
+				pbs.read(cbuffer);
+			} catch (IOException ioe) {
+				return;
+			}
+			dataAvailable = true;
+			bufferLock.notifyAll();
+		}
+		if (img_listener != null) {
+			img_listener.onUpdateBuffer(cbuffer);
+		}
 
+		/*
+		 // Display data if monitor is active
+		 if (isEnabled()) {
+		 if (bti == null) {
+		 VideoFormat vf = (VideoFormat) cbuffer.getFormat();
+		 bti = new BufferToImage(vf);
+		 }
+		 if (bti != null && component != null) {
+		 Image im = bti.createImage(cbuffer);
+		 Graphics g = component.getGraphics();
+		 Dimension size = component.getSize();
+		 if (g != null)
+		 g.drawImage(im, 0, 0, component);
+		 }
+		 }
+		 */
+		// Maybe synchronize this with setTransferHandler() ?
+		if (transferHandler != null && cds.delStarted)
+			transferHandler.transferData(this);
+	}
 
-    public float setPreviewFrameRate(float rate)
-    {
-	System.err.println("TODO");
-	return rate;
-    }
-	
-    public ContentDescriptor getContentDescriptor()
-    {
-	return actual.getContentDescriptor();
-    }
+	public void setTransferHandler(BufferTransferHandler transferHandler)
+	{
+		this.transferHandler = transferHandler;
+	}
 
-    public long getContentLength()
-    {
-	return actual.getContentLength();
-    }
+	public boolean setEnabled(boolean value)
+	{
+		enabled = value;
+		if (value == false) {
+			if (!cds.delStarted) {
+				try {
+					cds.stopDelegate();
+				} catch (IOException ioe) {
+				}
+			}
+		} else {
+			// Start the capture datasource if the monitor is enabled
+			try {
+				cds.startDelegate();
+			} catch (IOException ioe) {
+			}
+		}
+		return enabled;
+	}
 
-    public boolean endOfStream() {
-	return actual.endOfStream();
-    }
+	public boolean isEnabled()
+	{
+		return enabled;
+	}
 
-    public Object [] getControls() {
-	return new Object[0];
-    }
+	public float setPreviewFrameRate(float rate)
+	{
+		System.err.println("TODO");
+		return rate;
+	}
 
-    public Object getControl(String str) {
-	return null;
-    }
+	public ContentDescriptor getContentDescriptor()
+	{
+		return actual.getContentDescriptor();
+	}
 
+	public long getContentLength()
+	{
+		return actual.getContentLength();
+	}
+
+	public boolean endOfStream()
+	{
+		return actual.endOfStream();
+	}
+
+	public Object[] getControls()
+	{
+		return new Object[0];
+	}
+
+	public Object getControl(String str)
+	{
+		return null;
+	}
 
 }

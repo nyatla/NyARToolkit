@@ -38,14 +38,14 @@ import jp.nyatla.nyartoolkit.core.types.*;
 public final class NyARGrayscaleRaster extends NyARRaster_BasicClass
 {
 
-	protected int[][] _ref_buf;
+	protected int[] _ref_buf;
 	private INyARBufferReader _buffer_reader;
 	
 	public NyARGrayscaleRaster(int i_width, int i_height)
 	{
 		super(new NyARIntSize(i_width,i_height));
-		this._ref_buf = new int[i_height][i_width];
-		this._buffer_reader=new NyARBufferReader(this._ref_buf,INyARBufferReader.BUFFERFORMAT_INT2D_GLAY_8);
+		this._ref_buf = new int[i_height*i_width];
+		this._buffer_reader=new NyARBufferReader(this._ref_buf,INyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8);
 	}
 	public INyARBufferReader getBufferReader()
 	{

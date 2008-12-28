@@ -37,13 +37,13 @@ import jp.nyatla.nyartoolkit.core.types.*;
 public final class NyARBinRaster extends NyARRaster_BasicClass
 {
 	private INyARBufferReader _buffer_reader;
-	protected int[][] _ref_buf;
+	protected int[] _ref_buf;
 
 	public NyARBinRaster(int i_width, int i_height)
 	{
 		super(new NyARIntSize(i_width,i_height));
-		this._ref_buf = new int[i_height][i_width];
-		this._buffer_reader=new NyARBufferReader(this._ref_buf,INyARBufferReader.BUFFERFORMAT_INT2D_BIN_8);
+		this._ref_buf = new int[i_height*i_width];
+		this._buffer_reader=new NyARBufferReader(this._ref_buf,INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8);
 	}
 	public INyARBufferReader getBufferReader()
 	{

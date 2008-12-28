@@ -46,20 +46,20 @@ public class NyARRasterFilter_Edge implements INyARRasterFilter
 	{
 		INyARBufferReader in_buffer_reader=i_input.getBufferReader();	
 		INyARBufferReader out_buffer_reader=i_output.getBufferReader();	
-		assert (in_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT2D_GLAY_8));
-		assert (out_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT2D_GLAY_8));
+		assert (in_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8));
+		assert (out_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8));
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
 
-		int[][] out_buf = (int[][]) out_buffer_reader.getBuffer();
-		int[][] in_buf = (int[][]) in_buffer_reader.getBuffer();
+		int[] out_buf = (int[]) out_buffer_reader.getBuffer();
+		int[] in_buf = (int[]) in_buffer_reader.getBuffer();
 
 		int bp = 0;
 		NyARIntSize size = i_output.getSize();
 		for (int y = 1; y < size.h; y++) {
 			int prev = 128;
 			for (int x = 1; x < size.w; x++) {
-				int w = in_buf[y][x];
-				out_buf[y][x] = (Math.abs(w - prev) + Math.abs(w - in_buf[y - 1][x])) / 2;
+				int w = in_buf[y* size.w+x];
+				out_buf[y* size.w+x] = (Math.abs(w - prev) + Math.abs(w - in_buf[(y - 1)* size.w+x])) / 2;
 				prev = w;
 				bp += 3;
 			}

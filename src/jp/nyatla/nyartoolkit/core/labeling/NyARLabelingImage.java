@@ -43,7 +43,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
 public class NyARLabelingImage extends NyARRaster_BasicClass implements INyARLabelingImage
 {
 	private final static int MAX_LABELS = 1024*32;	
-	protected int[][] _ref_buf;
+	protected int[] _ref_buf;
 	private INyARBufferReader _buffer_reader;
 	protected NyARLabelingLabelStack _label_list;
 	protected int[] _index_table;
@@ -51,11 +51,11 @@ public class NyARLabelingImage extends NyARRaster_BasicClass implements INyARLab
 	public NyARLabelingImage(int i_width, int i_height)
 	{
 		super(new NyARIntSize(i_width,i_height));
-		this._ref_buf =new int[i_height][i_width];
+		this._ref_buf =new int[i_height*i_width];
 		this._label_list = new NyARLabelingLabelStack(MAX_LABELS);
 		this._index_table=new int[MAX_LABELS];
 		this._is_index_table_enable=false;
-		this._buffer_reader=new NyARBufferReader(this._ref_buf,INyARBufferReader.BUFFERFORMAT_INT2D);
+		this._buffer_reader=new NyARBufferReader(this._ref_buf,INyARBufferReader.BUFFERFORMAT_INT1D);
 		
 		return;
 	}
@@ -102,15 +102,16 @@ public class NyARLabelingImage extends NyARRaster_BasicClass implements INyARLab
 	 */
 	protected int getTopClipTangentX(NyARLabelingLabel i_label) throws NyARException
 	{
-		int w;
+		int pix;
 		int i_label_id=i_label.id;
 		int[] index_table=this._index_table;
-		int[] limage_j=this._ref_buf[i_label.clip_t];
+		int[] limage=this._ref_buf;
+		int limage_ptr=i_label.clip_t*this._size.w;
 		final int clip1 = i_label.clip_r;
 		// p1=ShortPointer.wrap(limage,j*xsize+clip.get());//p1 =&(limage[j*xsize+clip[0]]);
 		for (int i = i_label.clip_l; i <= clip1; i++) {// for( i = clip[0]; i <=clip[1]; i++, p1++ ) {
-			w = limage_j[i];
-			if (w > 0 && index_table[w-1] == i_label_id){
+			pix = limage[limage_ptr+i];
+			if (pix > 0 && index_table[pix-1] == i_label_id){
 				return i;
 			}
 		}
@@ -129,6 +130,7 @@ public class NyARLabelingImage extends NyARRaster_BasicClass implements INyARLab
 	 */
 	public int getContour(int i_index,int i_array_size,int[] o_coord_x,int[] o_coord_y) throws NyARException
 	{
+		final int width=this._size.w;
 		final int[] xdir = this._getContour_xdir;// static int xdir[8] = { 0,1, 1, 1, 0,-1,-1,-1};
 		final int[] ydir = this._getContour_ydir;// static int ydir[8] = {-1,-1,0, 1, 1, 1, 0,-1};
 		final NyARLabelingLabel label=(NyARLabelingLabel)this._label_list.getItem(i_index);		
@@ -142,13 +144,13 @@ public class NyARLabelingImage extends NyARRaster_BasicClass implements INyARLab
 		o_coord_y[0] = sy;
 		int dir = 5;
 
-		int[][] limage=this._ref_buf;
+		int[] limage=this._ref_buf;
 		int c = o_coord_x[0];
 		int r = o_coord_y[0];
 		for (;;) {
 			dir = (dir + 5) % 8;
 			for (i = 0; i < 8; i++) {
-				if (limage[r + ydir[dir]][c + xdir[dir]] > 0) {
+				if (limage[(r + ydir[dir])*width+(c + xdir[dir])] > 0) {
 					break;
 				}
 				dir = (dir + 1) % 8;

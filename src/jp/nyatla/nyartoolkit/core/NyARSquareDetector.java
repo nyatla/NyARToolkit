@@ -119,7 +119,6 @@ public class NyARSquareDetector implements INyARSquareDetector
 	 */
 	public final void detectMarker(NyARBinRaster i_raster, NyARSquareStack o_square_stack) throws NyARException
 	{
-		final INyARLabeling labeling_proc = this._labeling;
 		final NyARLabelingImage limage = this._limage;
 
 		// 初期化
@@ -128,7 +127,7 @@ public class NyARSquareDetector implements INyARSquareDetector
 		o_square_stack.clear();
 
 		// ラベリング
-		labeling_proc.labeling(i_raster);
+		this._labeling.labeling(i_raster);
 
 		// ラベル数が0ならここまで
 		final int label_num = limage.getLabelStack().getLength();

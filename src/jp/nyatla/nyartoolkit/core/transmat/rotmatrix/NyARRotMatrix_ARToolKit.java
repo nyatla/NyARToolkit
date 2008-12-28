@@ -54,6 +54,7 @@ public class NyARRotMatrix_ARToolKit extends NyARRotMatrix
 	}
 	final private NyARRotVector __initRot_vec1;
 	final private NyARRotVector __initRot_vec2;
+	
 
 	
 
@@ -126,11 +127,12 @@ public class NyARRotMatrix_ARToolKit extends NyARRotMatrix
 		double sina, cosa, sinb,cosb,sinc, cosc;
 		
 		if (this.m22 > 1.0) {// <Optimize/>if( rot[2][2] > 1.0 ) {
-			this.m22 = 1.0;// <Optimize/>rot[2][2] = 1.0;
+			cosb = 1.0;// <Optimize/>rot[2][2] = 1.0;
 		} else if (this.m22 < -1.0) {// <Optimize/>}else if( rot[2][2] < -1.0 ) {
-			this.m22 = -1.0;// <Optimize/>rot[2][2] = -1.0;
+			cosb = -1.0;// <Optimize/>rot[2][2] = -1.0;
+		}else{
+			cosb =this.m22;// <Optimize/>cosb = rot[2][2];
 		}
-		cosb =this.m22;// <Optimize/>cosb = rot[2][2];
 		b = Math.acos(cosb);
 		sinb =Math.sin(b);
 		final double rot02=this.m02;

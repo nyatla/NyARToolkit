@@ -31,7 +31,7 @@
  */
 package jp.nyatla.nyartoolkit.core.types.stack;
 
-import jp.nyatla.nyartoolkit.NyARException;
+
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.utils.NyObjectStack;
 

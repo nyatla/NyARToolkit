@@ -52,7 +52,7 @@ public abstract class NyObjectStack
 	 * 
 	 * @param i_array
 	 */
-	public NyObjectStack(Object[] i_array)
+	protected NyObjectStack(Object[] i_array)
 	{
 		// ポインタだけははじめに確保しておく
 		this._items = i_array;

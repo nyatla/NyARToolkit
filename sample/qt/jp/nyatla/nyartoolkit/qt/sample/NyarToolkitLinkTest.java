@@ -41,6 +41,8 @@ import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
  */
 public class NyarToolkitLinkTest extends Frame implements QtCaptureListener
 {
+	private static final long serialVersionUID = 6154831884117789648L;
+
 	private final String CARCODE_FILE = "../../Data/patt.hiro";
 
 	private final String PARAM_FILE = "../../Data/camera_para.dat";

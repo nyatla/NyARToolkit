@@ -32,7 +32,6 @@
 package jp.nyatla.nyartoolkit.core.pca2d;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix22;
 

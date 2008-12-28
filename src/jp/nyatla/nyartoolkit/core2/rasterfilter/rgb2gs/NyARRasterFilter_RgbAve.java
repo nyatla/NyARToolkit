@@ -46,7 +46,7 @@ public class NyARRasterFilter_RgbAve implements INyARRasterFilter_RgbToGs
 		INyARBufferReader out_buffer_reader=i_output.getBufferReader();	
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
 
-		int[][] out_buf = (int[][]) out_buffer_reader.getBuffer();
+		int[] out_buf = (int[]) out_buffer_reader.getBuffer();
 		byte[] in_buf = (byte[]) in_buffer_reader.getBuffer();
 
 		NyARIntSize size = i_output.getSize();
@@ -64,23 +64,23 @@ public class NyARRasterFilter_RgbAve implements INyARRasterFilter_RgbToGs
 		return;
 	}
 
-	private void convert24BitRgb(byte[] i_in, int[][] i_out, NyARIntSize i_size)
+	private void convert24BitRgb(byte[] i_in, int[] i_out, NyARIntSize i_size)
 	{
 		int bp = 0;
 		for (int y = 0; y < i_size.h; y++) {
 			for (int x = 0; x < i_size.w; x++) {
-				i_out[y][x] = ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff)) / 3;
+				i_out[y*i_size.w+x] = ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff)) / 3;
 				bp += 3;
 			}
 		}
 		return;
 	}
-	private void convert32BitRgbx(byte[] i_in, int[][] i_out, NyARIntSize i_size)
+	private void convert32BitRgbx(byte[] i_in, int[] i_out, NyARIntSize i_size)
 	{
 		int bp = 0;
 		for (int y = 0; y < i_size.h; y++) {
 			for (int x = 0; x < i_size.w; x++) {
-				i_out[y][x] = ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff)) / 3;
+				i_out[y*i_size.w+x] = ((i_in[bp] & 0xff) + (i_in[bp + 1] & 0xff) + (i_in[bp + 2] & 0xff)) / 3;
 				bp += 4;
 			}
 		}

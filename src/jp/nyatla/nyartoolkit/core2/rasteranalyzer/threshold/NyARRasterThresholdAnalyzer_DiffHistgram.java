@@ -48,7 +48,7 @@ public class NyARRasterThresholdAnalyzer_DiffHistgram implements INyARRasterThre
 	{
 	}
 
-	private int createHistgram(int[][] in_buf,NyARIntSize i_size, int[] o_histgram) throws NyARException
+	private int createHistgram(int[] in_buf,NyARIntSize i_size, int[] o_histgram) throws NyARException
 	{
 		int[][] fil1={
 				{-1,-2,-1},
@@ -63,11 +63,11 @@ public class NyARRasterThresholdAnalyzer_DiffHistgram implements INyARRasterThre
 		int sam1,sam2;
 		for (int y = 1; y < i_size.h-1; y++) {
 			for (int x = 1; x < i_size.w-1; x++) {
-				int v = in_buf[y][x];
+				int v = in_buf[y* i_size.w+x];
 				sam1=sam2=0;
 				for(int yy=0;yy<3;yy++){
 					for(int xx=0;xx<3;xx++){
-						int v2=in_buf[y+yy-1][x+xx-1];
+						int v2=in_buf[(y+yy-1)* i_size.w+(x+xx-1)];
 						sam1+=v2*fil1[xx][yy];
 						sam2+=v2*fil1[yy][xx];
 					}					
@@ -90,9 +90,9 @@ public class NyARRasterThresholdAnalyzer_DiffHistgram implements INyARRasterThre
 	public void analyzeRaster(INyARRaster i_input) throws NyARException
 	{
 		final INyARBufferReader buffer_reader=i_input.getBufferReader();	
-		assert (buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT2D_GLAY_8));
+		assert (buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8));
 		int[] histgram = new int[256];
-		this._threshold = createHistgram((int[][])buffer_reader.getBuffer(),i_input.getSize(), histgram);
+		this._threshold = createHistgram((int[])buffer_reader.getBuffer(),i_input.getSize(), histgram);
 	}
 
 	/**
@@ -105,20 +105,20 @@ public class NyARRasterThresholdAnalyzer_DiffHistgram implements INyARRasterThre
 	{
 		INyARBufferReader in_buffer_reader=i_input.getBufferReader();	
 		INyARBufferReader out_buffer_reader=i_output.getBufferReader();	
-		assert (in_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT2D_GLAY_8));
-		assert (out_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT2D_GLAY_8));
+		assert (in_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8));
+		assert (out_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8));
 		NyARIntSize size = i_output.getSize();
 
-		int[][] out_buf = (int[][]) out_buffer_reader.getBuffer();
+		int[] out_buf = (int[]) out_buffer_reader.getBuffer();
 		// 0で塗りつぶし
 		for (int y = 0; y < size.h; y++) {
 			for (int x = 0; x < size.w; x++) {
-				out_buf[y][x] = 0;
+				out_buf[y* size.w+x] = 0;
 			}
 		}
 		// ヒストグラムを計算
 		int[] histgram = new int[256];
-		int threshold = createHistgram((int[][])in_buffer_reader.getBuffer(),i_input.getSize(), histgram);
+		int threshold = createHistgram((int[])in_buffer_reader.getBuffer(),i_input.getSize(), histgram);
 
 		// ヒストグラムの最大値を出す
 		int max_v = 0;
@@ -129,17 +129,17 @@ public class NyARRasterThresholdAnalyzer_DiffHistgram implements INyARRasterThre
 		}
 		// 目盛り
 		for (int i = 0; i < size.h; i++) {
-			out_buf[i][0] = 128;
-			out_buf[i][128] = 128;
-			out_buf[i][255] = 128;
+			out_buf[i* size.w+0] = 128;
+			out_buf[i* size.w+128] = 128;
+			out_buf[i* size.w+255] = 128;
 		}
 		// スケーリングしながら描画
 		for (int i = 0; i < 255; i++) {
-			out_buf[histgram[i] * (size.h - 1) / max_v][i] = 255;
+			out_buf[(histgram[i] * (size.h - 1) / max_v)* size.w+i] = 255;
 		}
 		// 値
 		for (int i = 0; i < size.h; i++) {
-			out_buf[i][threshold] = 255;
+			out_buf[i* size.w+threshold] = 255;
 		}
 		return;
 	}

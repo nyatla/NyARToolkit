@@ -35,12 +35,15 @@ import java.util.*;
 import javax.media.protocol.DataSource;
 
 import jp.nyatla.nyartoolkit.NyARException;
+
 /**
  * 簡易JMFキャプチャクラス
- * @author atla
+ * @deprecated このクラスは近い将来削除します。
+ * JmfCaptureDeviceList/JmfCaptureDeviceを使用してください。
+ * {@link #JmfCaptureDeviceList()}
  *
  */
-public class JmfCameraCapture
+@Deprecated public class JmfCameraCapture
 {
 	private Dimension image_size;
 
@@ -84,7 +87,8 @@ public class JmfCameraCapture
 
 	public void setCaptureListener(JmfCaptureListener i_listener) throws NyARException
 	{
-		if (jmf_processor != null) {
+		if (jmf_processor != null)
+		{
 			throw new NyARException();
 		}
 		capture_listener = i_listener;

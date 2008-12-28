@@ -59,18 +59,20 @@ public class NyARLabeling_ARToolKit_X2 implements INyARLabeling
 		this._out_image = i_destination_image;
 
 		// NyLabelingImageのイメージ初期化(枠書き)
-		int[][] img = (int[][]) i_destination_image.getBufferReader().getBuffer();
+		int[] img = (int[])i_destination_image.getBufferReader().getBuffer();
+		int bottom_ptr=(size.h - 1)*size.w;
 		for (int i = 0; i < size.w; i++) {
-			img[0][i] = 0;
-			img[size.h - 1][i] = 0;
+			img[i] = 0;
+			img[bottom_ptr+i] = 0;
 		}
 		for (int i = 0; i < size.h; i++) {
-			img[i][0] = 0;
-			img[i][size.w - 1] = 0;
+			img[i*size.w] = 0;
+			img[(i+1)*size.w - 1] = 0;
 		}
 
 		// サイズ(参照値)を保存
 		this._dest_size = size;
+		return;
 	}
 
 	public INyARLabelingImage getAttachedDestination()
@@ -97,43 +99,43 @@ public class NyARLabeling_ARToolKit_X2 implements INyARLabeling
 
 		final int lxsize = in_size.w;// lxsize = arUtil_c.arImXsize;
 		final int lysize = in_size.h;// lysize = arUtil_c.arImYsize;
-		int[][] label_img = (int[][]) out_image.getBufferReader().getBuffer();
+		int[] label_img = (int[])out_image.getBufferReader().getBuffer();
 
 		// 枠作成はインスタンスを作った直後にやってしまう。
-
-		// ラベリング情報のリセット（ラベリングインデックスを使用）
+		
+		//ラベリング情報のリセット（ラベリングインデックスを使用）
 		out_image.reset(true);
-
-		int[] label_idxtbl = out_image.getIndexArray();
+		
+		int[] label_idxtbl=out_image.getIndexArray();
 
 		int[] work2_pt;
 		int wk_max = 0;
 
 		int label_pixel;
-		int[][] raster_buf = (int[][]) i_raster.getBufferReader().getBuffer();
-		int[] line_ptr;
+		int[] raster_buf=(int[])i_raster.getBufferReader().getBuffer();
+		int line_ptr;
 		int[][] work2 = this.work_holder.work2;
-		int[] label_img_pt0, label_img_pt1;
+		int label_img_ptr0, label_img_ptr1;
 		for (j = 1; j < lysize - 1; j++) {// for (int j = 1; j < lysize - 1;j++, pnt += poff*2, pnt2 += 2) {
-			line_ptr = raster_buf[j];
-			label_img_pt0 = label_img[j];
-			label_img_pt1 = label_img[j - 1];
+			line_ptr=j*lxsize;
+			label_img_ptr0=j*lxsize;//label_img_pt0 = label_img[j];
+			label_img_ptr1=label_img_ptr0-lxsize;//label_img_pt1 = label_img[j - 1];
 			for (i = 1; i < lxsize - 1; i++) {// for(int i = 1; i < lxsize-1;i++, pnt+=poff, pnt2++) {
 				// RGBの合計値が閾値より小さいかな？
-				if (line_ptr[i] == 0) {
+				if (raster_buf[line_ptr+i]==0) {
 					// pnt1 = ShortPointer.wrap(pnt2, -lxsize);//pnt1 =&(pnt2[-lxsize]);
-					if (label_img_pt1[i] > 0) {// if( *pnt1 > 0 ) {
-						label_pixel = label_img_pt1[i];// *pnt2 = *pnt1;
+					if (label_img[label_img_ptr1+i] > 0) {//if (label_img_pt1[i] > 0) {// if( *pnt1 > 0 ) {
+						label_pixel = label_img[label_img_ptr1+i];//label_pixel = label_img_pt1[i];// *pnt2 = *pnt1;
 
 						work2_pt = work2[label_pixel - 1];
 						work2_pt[0]++;// work2[((*pnt2)-1)*7+0] ++;
 						work2_pt[1] += i;// work2[((*pnt2)-1)*7+1] += i;
 						work2_pt[2] += j;// work2[((*pnt2)-1)*7+2] += j;
 						work2_pt[6] = j;// work2[((*pnt2)-1)*7+6] = j;
-					} else if (label_img_pt1[i + 1] > 0) {// }else if(*(pnt1+1) > 0 ) {
-						if (label_img_pt1[i - 1] > 0) {// if( *(pnt1-1) > 0 ) {
-							m = label_idxtbl[label_img_pt1[i + 1] - 1];// m =work[*(pnt1+1)-1];
-							n = label_idxtbl[label_img_pt1[i - 1] - 1];// n =work[*(pnt1-1)-1];
+					} else if (label_img[label_img_ptr1+i + 1] > 0) {//} else if (label_img_pt1[i + 1] > 0) {// }else if(*(pnt1+1) > 0 ) {
+						if (label_img[label_img_ptr1+i - 1] > 0) {//if (label_img_pt1[i - 1] > 0) {// if( *(pnt1-1) > 0 ) {
+							m = label_idxtbl[label_img[label_img_ptr1+i + 1] - 1];//m = label_idxtbl[label_img_pt1[i + 1] - 1];// m =work[*(pnt1+1)-1];
+							n = label_idxtbl[label_img[label_img_ptr1+i - 1] - 1];//n = label_idxtbl[label_img_pt1[i - 1] - 1];// n =work[*(pnt1-1)-1];
 							if (m > n) {
 								label_pixel = n;// *pnt2 = n;
 								// wk=IntPointer.wrap(work, 0);//wk =
@@ -159,9 +161,9 @@ public class NyARLabeling_ARToolKit_X2 implements INyARLabeling
 							work2_pt[1] += i;
 							work2_pt[2] += j;
 							work2_pt[6] = j;
-						} else if ((label_img_pt0[i - 1]) > 0) {// }else if(*(pnt2-1) > 0) {
-							m = label_idxtbl[(label_img_pt1[i + 1]) - 1];// m =work[*(pnt1+1)-1];
-							n = label_idxtbl[label_img_pt0[i - 1] - 1];// n =work[*(pnt2-1)-1];
+						} else if ((label_img[label_img_ptr0+i - 1]) > 0) {//} else if ((label_img_pt0[i - 1]) > 0) {// }else if(*(pnt2-1) > 0) {
+							m = label_idxtbl[label_img[label_img_ptr1+i + 1] - 1];//m = label_idxtbl[label_img_pt1[i + 1] - 1];// m =work[*(pnt1+1)-1];
+							n = label_idxtbl[label_img[label_img_ptr0+i - 1] - 1];//n = label_idxtbl[label_img_pt0[i - 1] - 1];// n =work[*(pnt2-1)-1];
 							if (m > n) {
 
 								label_pixel = n;// *pnt2 = n;
@@ -186,24 +188,24 @@ public class NyARLabeling_ARToolKit_X2 implements INyARLabeling
 							work2_pt[2] += j;// work2[((*pnt2)-1)*7+2] += j;
 						} else {
 
-							label_pixel = label_img_pt1[i + 1];// *pnt2 =
-							// *(pnt1+1);
+							label_pixel = label_img[label_img_ptr1+i + 1];//label_pixel = label_img_pt1[i + 1];// *pnt2 =
+																// *(pnt1+1);
 
 							work2_pt = work2[label_pixel - 1];
 							work2_pt[0]++;// work2[((*pnt2)-1)*7+0] ++;
 							work2_pt[1] += i;// work2[((*pnt2)-1)*7+1] += i;
 							work2_pt[2] += j;// work2[((*pnt2)-1)*7+2] += j;
 							if (work2_pt[3] > i) {// if(
-								// work2[((*pnt2)-1)*7+3] >
-								// i ){
+													// work2[((*pnt2)-1)*7+3] >
+													// i ){
 								work2_pt[3] = i;// work2[((*pnt2)-1)*7+3] = i;
 							}
 							work2_pt[6] = j;// work2[((*pnt2)-1)*7+6] = j;
 						}
-					} else if ((label_img_pt1[i - 1]) > 0) {// }else if(
-						// *(pnt1-1) > 0 ) {
-						label_pixel = label_img_pt1[i - 1];// *pnt2 =
-						// *(pnt1-1);
+					} else if ((label_img[label_img_ptr1+i - 1]) > 0) {//} else if ((label_img_pt1[i - 1]) > 0) {// }else if(
+															// *(pnt1-1) > 0 ) {
+						label_pixel = label_img[label_img_ptr1+i - 1];//label_pixel = label_img_pt1[i - 1];// *pnt2 =
+															// *(pnt1-1);
 
 						work2_pt = work2[label_pixel - 1];
 						work2_pt[0]++;// work2[((*pnt2)-1)*7+0] ++;
@@ -213,8 +215,8 @@ public class NyARLabeling_ARToolKit_X2 implements INyARLabeling
 							work2_pt[4] = i;// work2[((*pnt2)-1)*7+4] = i;
 						}
 						work2_pt[6] = j;// work2[((*pnt2)-1)*7+6] = j;
-					} else if (label_img_pt0[i - 1] > 0) {// }else if(*(pnt2-1) > 0) {
-						label_pixel = label_img_pt0[i - 1];// *pnt2 =*(pnt2-1);
+					} else if (label_img[label_img_ptr0+i - 1] > 0) {//} else if (label_img_pt0[i - 1] > 0) {// }else if(*(pnt2-1) > 0) {
+						label_pixel = label_img[label_img_ptr0+i - 1];//label_pixel = label_img_pt0[i - 1];// *pnt2 =*(pnt2-1);
 
 						work2_pt = work2[label_pixel - 1];
 						work2_pt[0]++;// work2[((*pnt2)-1)*7+0] ++;
@@ -238,9 +240,9 @@ public class NyARLabeling_ARToolKit_X2 implements INyARLabeling
 						work2_pt[5] = j;
 						work2_pt[6] = j;
 					}
-					label_img_pt0[i] = label_pixel;
+					label_img[label_img_ptr0+i] = label_pixel;//label_img_pt0[i] = label_pixel;
 				} else {
-					label_img_pt0[i] = 0;// *pnt2 = 0;
+					label_img[label_img_ptr0+i] = 0;//label_img_pt0[i] = 0;// *pnt2 = 0;
 				}
 			}
 		}

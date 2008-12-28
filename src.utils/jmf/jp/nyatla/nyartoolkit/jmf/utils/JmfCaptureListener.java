@@ -33,5 +33,4 @@ import javax.media.Buffer;
  */
 public interface  JmfCaptureListener{
     public void onUpdateBuffer(Buffer i_buffer);
-    
 }
