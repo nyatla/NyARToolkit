@@ -70,7 +70,10 @@ public class NyARTransMat implements INyARTransMat
 		final NyARCameraDistortionFactor dist=i_param.getDistortionFactor();
 		final NyARPerspectiveProjectionMatrix pmat=i_param.getPerspectiveProjectionMatrix();
 		this._calculator=new NyARFitVecCalculator(pmat,dist);
-		this._rotmatrix = new NyARRotMatrix_ARToolKit(pmat);
+		//互換性が重要な時は、NyARRotMatrix_ARToolKitを使うこと。
+		//理屈はNyARRotMatrix_NyARToolKitもNyARRotMatrix_ARToolKitも同じだけど、少しだけ値がずれる。
+		this._rotmatrix = new NyARRotMatrix_NyARToolKit(pmat);
+//		this._rotmatrix = new NyARRotMatrix_ARToolKit(pmat);
 		this._mat_optimize=new NyARRotTransOptimize_O2(pmat);
 	}
 
@@ -234,6 +237,7 @@ public class NyARTransMat implements INyARTransMat
 		o_result.m22 = i_rot.m22;
 		o_result.m23 = i_rot.m20 * i_off.x + i_rot.m21 * i_off.y + i_rot.m22 * i_off.z + i_trans.z;
 
+		o_result.angle.copyFrom(i_rot.refAngle());
 		o_result.has_value = true;
 		return;
 	}	

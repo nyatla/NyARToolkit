@@ -76,11 +76,9 @@ public class NyARRotTransOptimize_O2 implements INyARRotTransOptimize
 	}
 	
 	private final double[][] __modifyMatrix_double1D = new double[8][3];
-	private final NyARDoublePoint3d __modifyMatrix_angle = new NyARDoublePoint3d();	
 	/**
 	 * arGetRot計算を階層化したModifyMatrix 896
 	 * 
-	 * @param nyrot
 	 * @param trans
 	 * @param i_vertex3d
 	 * [m][3]
@@ -137,7 +135,6 @@ public class NyARRotTransOptimize_O2 implements INyARRotTransOptimize
 		double SACASC, SACACBSC, SACACBCC, SACACC;
 		final double[][] double1D = this.__modifyMatrix_double1D;
 
-		final NyARDoublePoint3d angle = this.__modifyMatrix_angle;
 		final double[] a_factor = double1D[1];
 		final double[] sinb = double1D[2];
 		final double[] cosb = double1D[3];
@@ -148,7 +145,7 @@ public class NyARRotTransOptimize_O2 implements INyARRotTransOptimize
 		double w, w2;
 		double wsin, wcos;
 		
-		io_rot.getAngle(angle);// arGetAngle( rot, &a, &b, &c );
+		final NyARDoublePoint3d angle = io_rot.refAngle();
 		a2 = angle.x;
 		b2 = angle.y;
 		c2 = angle.z;

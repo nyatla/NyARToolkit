@@ -177,8 +177,7 @@ public class NyARRotTransOptimize_Base implements INyARRotTransOptimize
 		double err, minerr = 0;
 		int i,i2;
 		int best_idx=0;
-
-		io_rot.getAngle(angle);// arGetAngle( rot, &a, &b, &c );
+		angle.copyFrom(io_rot.refAngle());// arGetAngle( rot, &a, &b, &c );
 		factor = 10.0 * Math.PI / 180.0;
 		for (int j = 0; j < 10; j++){
 			minerr = 1000000000.0;

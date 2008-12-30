@@ -48,13 +48,11 @@ public abstract class NyARRotMatrix extends NyARDoubleMatrix33
 	public abstract void initRotByPrevResult(NyARTransMatResult i_prev_result);
 	public abstract void initRotBySquare(final NyARLinear[] i_linear,final NyARDoublePoint2d[] i_sqvertex) throws NyARException;
 	/**
-	 * int arGetAngle( double rot[3][3], double *wa, double *wb, double *wc )
-	 * Optimize:2008.04.20:STEP[481→433]
-	 * 3x3変換行列から、回転角を復元して返します。
-	 * @param o_angle
+	 * 格納しているAngleの参照値を返します。
+	 * 返したオブジェクトはクラスに所有し続けられ、内容が変わることがあります。
 	 * @return
 	 */
-	public abstract void getAngle(final NyARDoublePoint3d o_angle);
+	public abstract NyARDoublePoint3d refAngle();
 	/**
 	 * 回転角から回転行列を計算してセットします。
 	 * @param i_x

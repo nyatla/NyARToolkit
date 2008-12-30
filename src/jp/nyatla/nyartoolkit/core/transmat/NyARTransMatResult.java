@@ -33,6 +33,7 @@ package jp.nyatla.nyartoolkit.core.transmat;
 
 
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
+import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
  * NyARTransMat戻り値専用のNyARMat
@@ -41,4 +42,5 @@ import jp.nyatla.nyartoolkit.core.types.matrix.*;
 public class NyARTransMatResult extends NyARDoubleMatrix34
 {
 	public boolean has_value = false;
+	public NyARDoublePoint3d angle=new NyARDoublePoint3d();
 }
