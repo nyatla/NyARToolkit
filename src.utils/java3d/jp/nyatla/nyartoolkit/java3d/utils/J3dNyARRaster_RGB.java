@@ -28,14 +28,14 @@ package jp.nyatla.nyartoolkit.java3d.utils;
 
 import java.awt.image.*;
 
-import javax.media.format.RGBFormat;
+import javax.media.format.VideoFormat;
 import javax.media.j3d.ImageComponent;
 import javax.media.j3d.ImageComponent2D;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
-
+import jp.nyatla.nyartoolkit.core.rasterreader.*;
 /**
  * 
  * このクラスは、Java3Dと互換性のあるNyARToolkitのラスタイメージを保持します。
@@ -57,20 +57,31 @@ public class J3dNyARRaster_RGB extends JmfNyARRaster_RGB
 	 */
 	public void setBuffer(javax.media.Buffer i_buffer) throws NyARException
 	{
-		//メモ：この時点では、ref_dataにはi_bufferの参照値が入ってる。
-		synchronized (this) {
-			//キャプチャデータをi2dのバッファにコピーする。（これ省略したいなあ…。）
-			System.arraycopy((byte[]) i_buffer.getData(), 0, this.i2d_buf, 0, this.i2d_buf.length);
+		this._reader.changeBuffer(i_buffer);
+		synchronized (this){
+			//キャプチャデータをi2dのバッファにコピーする。
+			//現在はJmfNyARRaster_RGBでRGB画像がノーマライズされているので、
+			//ここでもう一度flipする。（これ省略したいなあ…。）
+			byte[] src=(byte[])this._reader.getBuffer();
+			final int length = this._size.w * 3;
+			int src_idx = 0;
+			int dest_idx = (this._size.h - 1) * length;			
+			for (int i = 0; i < this._size.h; i++) {
+				System.arraycopy(src,src_idx, this.i2d_buf, dest_idx, length);
+				src_idx += length;
+				dest_idx -= length;
+			}
 		}
-		int buffer_type = analyzeBufferType((RGBFormat) i_buffer.getFormat());
-		this._ref_buf = this.i2d_buf;
-		this._reader.changeBuffer(buffer_type, this._ref_buf);
+		return;
 	}
 
-	public J3dNyARRaster_RGB(NyARParam i_cparam)
+	public J3dNyARRaster_RGB(NyARParam i_cparam,VideoFormat i_format) throws NyARException
 	{
-		super(i_cparam.getScreenSize());
-
+		super(i_cparam.getScreenSize(),i_format);
+		//bufferdimageの種類を決める
+		if(this._reader.getBufferType()!=INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24){
+			throw new NyARException();
+		}
 		//RGBのラスタを作る。
 		this.bufferd_image = new BufferedImage(this._size.w, this._size.h, BufferedImage.TYPE_3BYTE_BGR);
 		i2d_buf = ((DataBufferByte) bufferd_image.getRaster().getDataBuffer()).getData();

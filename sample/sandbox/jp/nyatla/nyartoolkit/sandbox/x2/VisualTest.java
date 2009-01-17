@@ -11,7 +11,7 @@ import javax.media.format.*;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
-import jp.nyatla.nyartoolkit.sandbox.quadx2.NyARRasterFilter_ARTTh_Quad;
+import jp.nyatla.nyartoolkit.sandbox.quadx2.*;
 
 import jp.nyatla.nyartoolkit.core.*;
 
@@ -34,17 +34,19 @@ public class VisualTest extends Frame implements JmfCaptureListener
 
 	private JmfNyARRaster_RGB _raster;
 
-	private JmfCameraCapture capture;
+	private JmfCaptureDevice capture;
 	private NyARParam ap;
 	public VisualTest() throws NyARException, NyARException
 	{
 		setBounds(0, 0, 640 + 64, 720 + 64);
 		// キャプチャの準備
-		capture = new JmfCameraCapture(320, 240, 30f, JmfCameraCapture.PIXEL_FORMAT_RGB);
-		capture.setCaptureListener(this);
+		JmfCaptureDeviceList list=new JmfCaptureDeviceList();
+		capture=list.getDevice(0);
+		capture.setCaptureFormat(320,240,30.0f);
+		capture.setOnCapture(this);
 
 		// キャプチャイメージ用のラスタを準備
-		this._raster = new JmfNyARRaster_RGB(320, 240);
+		this._raster = new JmfNyARRaster_RGB(320, 240,capture.getCaptureFormat());
 		
 		// AR用カメラパラメタファイルをロード
 		ap = new NyARParam();

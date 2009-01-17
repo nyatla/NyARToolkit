@@ -36,23 +36,25 @@ import jp.nyatla.nyartoolkit.NyARException;
 public class NyARIntSize
 {
 	public int h;
-
 	public int w;
 	public NyARIntSize()
 	{
 		this.w=0;
 		this.h=0;
-		return;
-		
+		return;		
 	}
-	
+	public NyARIntSize(NyARIntSize i_ref_object)
+	{
+		this.w=i_ref_object.w;
+		this.h=i_ref_object.h;
+		return;		
+	}
 	public NyARIntSize(int i_width,int i_height)
 	{
 		this.w=i_width;
 		this.h=i_height;
 		return;
 	}
-
 	/**
 	 * サイズが同一であるかを確認する。
 	 * 

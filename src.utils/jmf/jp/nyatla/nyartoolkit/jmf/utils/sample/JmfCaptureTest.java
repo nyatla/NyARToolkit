@@ -48,6 +48,11 @@ public class JmfCaptureTest extends Frame implements JmfCaptureListener
 		setBounds(0, 0, 320 + 64, 240 + 64);
 		JmfCaptureDeviceList dl=new JmfCaptureDeviceList();
 		this._capture=dl.getDevice(0);
+		if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB,320,240,30.0f)){
+			if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_YUV,320,240,30.0f)){
+				throw new NyARException("キャプチャフォーマットが見つかりません。");
+			}
+		}
 		this._capture.setOnCapture(this);
 	}
 

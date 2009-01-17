@@ -125,22 +125,6 @@ public class MonitorStream implements PushBufferStream, BufferTransferHandler
 			img_listener.onUpdateBuffer(cbuffer);
 		}
 
-		/*
-		 // Display data if monitor is active
-		 if (isEnabled()) {
-		 if (bti == null) {
-		 VideoFormat vf = (VideoFormat) cbuffer.getFormat();
-		 bti = new BufferToImage(vf);
-		 }
-		 if (bti != null && component != null) {
-		 Image im = bti.createImage(cbuffer);
-		 Graphics g = component.getGraphics();
-		 Dimension size = component.getSize();
-		 if (g != null)
-		 g.drawImage(im, 0, 0, component);
-		 }
-		 }
-		 */
 		// Maybe synchronize this with setTransferHandler() ?
 		if (transferHandler != null && cds.delStarted)
 			transferHandler.transferData(this);

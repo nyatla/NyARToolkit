@@ -55,7 +55,7 @@ public class SingleQrSample implements GLEventListener, JmfCaptureListener
 
 	private GLNyARRaster_RGB _cap_image;
 
-	private JmfCameraCapture _capture;
+	private JmfCaptureDevice _capture;
 
 	private GL _gl;
 	private NyARGLUtil _glnya;
@@ -138,8 +138,11 @@ public class SingleQrSample implements GLEventListener, JmfCaptureListener
 		//NyARToolkitの準備
 		try {
 			//キャプチャの準備
-			_capture = new JmfCameraCapture(SCREEN_X, SCREEN_Y, 15f, JmfCameraCapture.PIXEL_FORMAT_RGB);
-			_capture.setCaptureListener(this);
+			JmfCaptureDeviceList list=new JmfCaptureDeviceList();
+			_capture=list.getDevice(0);
+			_capture.setCaptureFormat(SCREEN_X, SCREEN_Y, 15f);
+			_capture.setOnCapture(this);
+			
 			//NyARToolkitの準備
 			_ar_param = new NyARParam();
 			NyARCode ar_code = new NyARCode(16, 16);
@@ -151,7 +154,7 @@ public class SingleQrSample implements GLEventListener, JmfCaptureListener
 			//NyARToolkit用の支援クラス
 			_glnya = new NyARGLUtil(_gl);
 			//GL対応のRGBラスタオブジェクト
-			_cap_image = new GLNyARRaster_RGB(_ar_param);
+			_cap_image = new GLNyARRaster_RGB(_ar_param,_capture.getCaptureFormat());
 			//キャプチャ開始
 			_capture.start();
 		} catch (Exception e) {
@@ -223,7 +226,7 @@ public class SingleQrSample implements GLEventListener, JmfCaptureListener
 	{
 		try {
 			synchronized (_cap_image) {
-				_cap_image.setBuffer(i_buffer, true);
+				_cap_image.setBuffer(i_buffer);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

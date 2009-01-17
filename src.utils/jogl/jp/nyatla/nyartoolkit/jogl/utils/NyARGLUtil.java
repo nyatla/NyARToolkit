@@ -31,9 +31,7 @@
  */
 package jp.nyatla.nyartoolkit.jogl.utils;
 
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-
+import java.nio.*;
 import javax.media.opengl.GL;
 import javax.media.opengl.glu.GLU;
 

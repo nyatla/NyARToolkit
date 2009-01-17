@@ -144,7 +144,7 @@ public class JavaSimpleLite2 implements GLEventListener, JmfCaptureListener
 			//キャプチャの準備
 			JmfCaptureDeviceList devlist=new JmfCaptureDeviceList();
 			_capture=devlist.getDevice(0);
-			_capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB,SCREEN_X, SCREEN_Y,15f);
+			_capture.setCaptureFormat(SCREEN_X, SCREEN_Y,15f);
 			_capture.setOnCapture(this);			
 			//NyARToolkitの準備
 			_ar_param = new NyARParam();
@@ -163,7 +163,7 @@ public class JavaSimpleLite2 implements GLEventListener, JmfCaptureListener
 			//NyARToolkit用の支援クラス
 			_glnya = new NyARGLUtil(_gl);
 			//GL対応のRGBラスタオブジェクト
-			_cap_image = new GLNyARRaster_RGB(_ar_param);
+			_cap_image = new GLNyARRaster_RGB(_ar_param,_capture.getCaptureFormat());
 			//キャプチャ開始
 			_capture.start();
 		} catch (Exception e) {
@@ -241,7 +241,7 @@ public class JavaSimpleLite2 implements GLEventListener, JmfCaptureListener
 	{
 		try {
 			synchronized (_cap_image) {
-				_cap_image.setBuffer(i_buffer, true);
+				_cap_image.setBuffer(i_buffer);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

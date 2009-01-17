@@ -66,9 +66,9 @@ public class NyARSingleMarkerBehaviorHolder implements JmfCaptureListener
 		//キャプチャの準備
 		JmfCaptureDeviceList devlist=new JmfCaptureDeviceList();
 		this._capture=devlist.getDevice(0);
-		this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB,scr_size.w, scr_size.h,15f);
+		this._capture.setCaptureFormat(scr_size.w, scr_size.h,15f);
 		this._capture.setOnCapture(this);		
-		this._nya_raster = new J3dNyARRaster_RGB(this._cparam);
+		this._nya_raster = new J3dNyARRaster_RGB(this._cparam,this._capture.getCaptureFormat());
 		this._nya = new NyARSingleDetectMarker(this._cparam, i_ar_code, i_marker_width);
 		this._nya_behavior = new NyARBehavior(this._nya, this._nya_raster, i_rate);
 	}
@@ -214,7 +214,12 @@ class NyARBehavior extends Behavior
 					{
 						final NyARTransMatResult src = this.trans_mat_result;
 						related_nya.getTransmationMatrix(src);
-						Matrix4d matrix = new Matrix4d(src.m00, -src.m10, -src.m20, 0, -src.m01, src.m11, src.m21, 0, -src.m02, src.m12, src.m22, 0, -src.m03, src.m13, src.m23, 1);
+//						Matrix4d matrix = new Matrix4d(src.m00, -src.m10, -src.m20, 0, -src.m01, src.m11, src.m21, 0, -src.m02, src.m12, src.m22, 0, -src.m03, src.m13, src.m23, 1);
+						Matrix4d matrix = new Matrix4d(
+								-src.m00, -src.m10, src.m20, 0,
+								-src.m01, -src.m11, src.m21, 0,
+								-src.m02, -src.m12, src.m22, 0,
+							   -src.m03,-src.m13, src.m23, 1);
 						matrix.transpose();
 						t3d = new Transform3D(matrix);
 						if (trgroup != null) {

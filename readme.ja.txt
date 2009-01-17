@@ -1,7 +1,7 @@
-﻿ARToolKit Java class library NyARToolkit.
+ARToolKit Java class library NyARToolkit.
 Copyright (C)2008 R.Iizuka
 
-version 2.1.0
+version 2.2.0
 
 http://nyatla.jp/nyartoolkit/
 airmail(at)ebony.plala.or.jp
@@ -10,14 +10,14 @@ airmail(at)ebony.plala.or.jp
 
 
 
-・NyARToolkit/2.1
+・NyARToolkit/2.2
 
 NyARToolkitは、Pure Javaで実装したARToolKitクラスライブラリです。
 
 ARToolKit 2.72.1をベースに構築されています。
 
-NyARToolkit/2.0系は、NyARToolkit/1.xと比較して構造的な最適化がされており、
-可読性と分離性が向上しています。
+NyARToolkit/2.0系はNyARToolkit/1.xと比較して、処理速度と可読性、
+モジュールの分離性が向上しています。
 
 
 
@@ -35,7 +35,7 @@ http://www.hitl.washington.edu/artoolkit/
 
 　-ARToolKitと同等な処理シーケンスを、クラスベースで再構築してあります。
 
-  -構造的な最適化がされており、ARToolKitと比較して可読性に優れています。
+  -構造的な最適化により、ARToolKitと比較して可読性に優れています。
 
 　-座標変換の演算性能が1.5倍ほど高速です。（JIT有効時）複数マーカー取り扱い時は、
 　 オリジナルよりも良い成績が得られます。
@@ -69,8 +69,8 @@ http://www.hitl.washington.edu/artoolkit/
 NyARJMF/CaptureQT/NyARJog/NyARJ3dは、下位のキャプチャモジュール
 や3Dライブラリを使いやすくするためのラッパークラス群です。
 
-これらとNyARToolkitは疎結合になっており、インタフェイスをあわせる
-ことで、自作モジュール等との差し替えが出来ます。
+各モジュールとNyARToolkitは容易に分離可能であり、個々を単独で
+使用することも可能です。
 
 
 
@@ -100,11 +100,9 @@ http://www.apple.com/quicktime/qtjava/
 ２．eclipseで空のワークスペースを作成し、sample,src,src.utils
 　　ディレクトリをインポートしてください。
 
-srcにはNyARToolkit本体、src.utilsにはキャプチャや3Dライブラリとの
-インタフェイスクラス群、sampleにはこれらを組み合わせた動作する
-サンプルプログラムがあります。
-
-
+srcディレクトリには、NyARToolkit本体（計算クラス群）があります。
+src.utilsディレクトリには、カメラキャプチャクラスや、3Dライブラリ用のラッパークラス群があります。
+sampleディレクトリには、NyARToolkitを使用したサンプルプログラムがあります。
 
 
 ・プロジェクトの説明

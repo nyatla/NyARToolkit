@@ -2,19 +2,11 @@ package jp.nyatla.nyartoolkit.jmf.utils;
 
 import java.awt.Dimension;
 
-import javax.media.CaptureDeviceInfo;
-import javax.media.Format;
-import javax.media.IncompatibleSourceException;
-import javax.media.Manager;
-import javax.media.MediaLocator;
-import javax.media.Processor;
-import javax.media.ProcessorModel;
-import javax.media.control.FormatControl;
-import javax.media.format.VideoFormat;
-import javax.media.protocol.CaptureDevice;
-import javax.media.protocol.DataSource;
-
-import jp.nyatla.nyartoolkit.NyARException;
+import javax.media.*;
+import javax.media.control.*;
+import javax.media.format.*;
+import javax.media.protocol.*;
+import jp.nyatla.nyartoolkit.*;
 
 public class JmfCaptureDevice
 {
@@ -22,11 +14,10 @@ public class JmfCaptureDevice
 	private MonitorStream _jmf_monitor_stream;
 	private Processor _jmf_processor;
 	private CaptureDeviceInfo _info;
-	private Format _capture_format;
-	public static final String PIXEL_FORMAT_RGB = "RGB";
-	public static final String PIXEL_FORMAT_YUV = "YUV";
-	
-
+	private VideoFormat _capture_format;
+	private static final String[] _enc_str={"RGB","YUV"};	
+	public static final int PIXEL_FORMAT_RGB =0;// "RGB";
+	public static final int PIXEL_FORMAT_YUV =1;// "YUV";
 	public JmfCaptureDevice(CaptureDeviceInfo i_capinfo) throws NyARException
 	{
 		this._info = i_capinfo;
@@ -34,12 +25,16 @@ public class JmfCaptureDevice
 		return;
 	}
 
+	/**
+	 * サポートしているフォーマットの一覧を返します。
+	 * @return
+	 */
 	public Format[] getSupportFormats()
 	{
 		return this._info.getFormats();
 	}
 
-	public final Format getCaptureFormat()
+	public final VideoFormat getCaptureFormat()
 	{
 		return this._capture_format;
 	}
@@ -50,7 +45,7 @@ public class JmfCaptureDevice
 	 */
 	public void setCaptureFormat(int i_index)
 	{
-		this._capture_format = this._info.getFormats()[i_index];
+		this._capture_format = (VideoFormat)this._info.getFormats()[i_index];
 		return;
 	}
 	/**
@@ -64,16 +59,24 @@ public class JmfCaptureDevice
 	 * @return
 	 * 指定に成功するとTRUEを返します。失敗するとFALSEを返します。
 	 */	
-	public boolean setCaptureFormat(String i_encode, Dimension i_size, float i_rate) throws NyARException
+	protected boolean setCaptureFormat(int i_encode, Dimension i_size, float i_rate) throws NyARException
 	{
-		if (this._jmf_processor != null) {
+		if (this._jmf_processor != null){
 			throw new NyARException();
 		}
 		Format[] formats = this._info.getFormats();
-		Format f = new VideoFormat(i_encode, i_size, Format.NOT_SPECIFIED, null, i_rate);
-		for (int i = 0; i < formats.length; i++) {
+		VideoFormat f = new VideoFormat(_enc_str[i_encode], i_size, Format.NOT_SPECIFIED, null, i_rate);
+		for (int i = 0; i < formats.length; i++){
 			if (formats[i].matches(f)) {
-				f = formats[i].intersects(f);
+				//[暫定実装]RGBの場合のみ、24bit-BGRAを強制する。他のフォーマットも取りたいときは要改造
+				//これはMacOSのJMF等で問題が出るかもしれない。問題が出たら教えて下さい。
+				if(formats[i] instanceof RGBFormat){
+					RGBFormat fmt_ref=(RGBFormat)formats[i];
+					if(fmt_ref.getBitsPerPixel()!=24 || fmt_ref.getBlueMask()!=1 || fmt_ref.getBlueMask()!=2 || fmt_ref.getRedMask()!=3){
+						continue;
+					}
+				}
+				f =(VideoFormat)formats[i].intersects(f);
 				this._capture_format = null;
 				this._capture_format = f;
 				return true;
@@ -82,10 +85,51 @@ public class JmfCaptureDevice
 		//ない。
 		return false;
 	}
-	public boolean setCaptureFormat(String i_encode,int i_size_x,int i_size_y, float i_rate) throws NyARException
+	/**
+	 * キャプチャ画像のエンコード、サイズ、レートを引数とするsetCaptureFormat関数です。
+	 * @param i_encode
+	 * PIXEL_FORMAT_XXXで定義される定数値を指定して下さい。
+	 * @param i_size_x
+	 * キャプチャする画像の横幅
+	 * @param i_size_y
+	 * キャプチャする画像の縦幅
+	 * @param i_rate
+	 * フレームレート
+	 * @return
+	 * 関数の実行結果を真偽値で返します。
+	 * @throws NyARException
+	 */	
+	public boolean setCaptureFormat(int i_encode,int i_size_x,int i_size_y, float i_rate) throws NyARException
 	{
 		return setCaptureFormat(i_encode,new Dimension(i_size_x,i_size_y),i_rate);
 	}
+	/**
+	 * キャプチャ画像のサイズ、レートを引数とするsetCaptureFormat関数です。
+	 * キャプチャ画像のエンコードは、RGB→YUVの順で検索します。
+	 * @param i_size_x
+	 * キャプチャする画像の横幅
+	 * @param i_size_y
+	 * キャプチャする画像の縦幅
+	 * @param i_rate
+	 * フレームレート
+	 * @return
+	 * 関数の実行結果を真偽値で返します。
+	 * @throws NyARException
+	 */
+	public boolean setCaptureFormat(int i_size_x,int i_size_y, float i_rate) throws NyARException
+	{
+		Dimension d=new Dimension(i_size_x,i_size_y);
+		if(setCaptureFormat(PIXEL_FORMAT_RGB,d,i_rate)){
+			return true;
+		}
+		if(setCaptureFormat(PIXEL_FORMAT_YUV,d,i_rate)){
+			return true;
+		}
+		return false;
+	}
+
+	
+	
 	/**
 	 * 画像のキャプチャイベントを受信するリスナクラスを指定します。
 	 * @param i_listener

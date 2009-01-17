@@ -34,10 +34,7 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core.param.*;
-import jp.nyatla.nyartoolkit.core.types.matrix.*;
-import jp.nyatla.nyartoolkit.core2.types.NyARI64Linear;
-import jp.nyatla.nyartoolkit.core2.types.NyARI64Point2d;
+import jp.nyatla.nyartoolkit.core2.types.*;
 import jp.nyatla.nyartoolkit.core2.types.matrix.NyARI64Matrix22;
 import jp.nyatla.nyartoolkit.core.*;
 

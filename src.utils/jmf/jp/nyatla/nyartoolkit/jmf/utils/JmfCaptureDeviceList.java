@@ -63,6 +63,7 @@ public class JmfCaptureDeviceList
 	/**
 	 * 使用できるキャプチャデバイスの数を数える
 	 * @return
+	 * キャプチャデバイスの数を返却する。
 	 */
 	public int getCount()
 	{
@@ -86,7 +87,7 @@ public class JmfCaptureDeviceList
 			JmfCaptureDeviceList j = new JmfCaptureDeviceList();
 			System.out.println(j.getCount());
 			JmfCaptureDevice d = j.getDevice(0);
-			d.setCaptureFormat("YUV", new Dimension(320, 240), 15.0f);
+			d.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB, new Dimension(320, 240), 15.0f);
 //			YUVFormat f=(YUVFormat)d.getCaptureFormat();
 			d.start();
 			d.stop();

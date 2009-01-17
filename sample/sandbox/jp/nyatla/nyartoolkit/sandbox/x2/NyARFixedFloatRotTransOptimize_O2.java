@@ -34,7 +34,6 @@ package jp.nyatla.nyartoolkit.sandbox.x2;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.*;
-import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core2.types.NyARFixedFloat16Point2d;
 import jp.nyatla.nyartoolkit.core2.types.NyARFixedFloat16Point3d;
 

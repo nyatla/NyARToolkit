@@ -61,14 +61,19 @@ public class NyarToolkitLinkTest extends Frame implements JmfCaptureListener
 
 	private NyARTransMatResult _trans_mat_result = new NyARTransMatResult();
 
-	public NyarToolkitLinkTest() throws NyARException, NyARException
+	public NyarToolkitLinkTest() throws NyARException
 	{
 		setTitle("JmfCaptureTest");
 		setBounds(0, 0, 320 + 64, 240 + 64);
 		//キャプチャの準備
 		JmfCaptureDeviceList devlist=new JmfCaptureDeviceList();
 		_capture=devlist.getDevice(0);
-		_capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB,320, 240,15f);
+		//JmfNyARRaster_RGBはYUVよりもRGBで高速に動作します。
+		if(!_capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB,320, 240,15f)){
+			if(!_capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_YUV,320, 240,15f)){
+				throw new NyARException("キャプチャフォーマットが見つかりません");
+			}		
+		}
 		_capture.setOnCapture(this);
 
 		//NyARToolkitの準備
@@ -79,7 +84,7 @@ public class NyarToolkitLinkTest extends Frame implements JmfCaptureListener
 		this._nya = new NyARSingleDetectMarker(ar_param, ar_code, 80.0);
 		ar_code.loadARPattFromFile(CARCODE_FILE);
 		//キャプチャイメージ用のラスタを準備
-		this._raster = new JmfNyARRaster_RGB(320, 240);
+		this._raster = new JmfNyARRaster_RGB(320, 240,_capture.getCaptureFormat());
 		return;
 	}
 

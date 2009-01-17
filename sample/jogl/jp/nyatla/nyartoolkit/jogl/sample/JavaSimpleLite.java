@@ -135,27 +135,29 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 
 	public void init(GLAutoDrawable drawable)
 	{
-		_gl = drawable.getGL();
-		_gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		this._gl = drawable.getGL();
+		this._gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		//NyARToolkitの準備
 		try {
 			//キャプチャの準備
 			JmfCaptureDeviceList devlist=new JmfCaptureDeviceList();
-			_capture=devlist.getDevice(0);
-			_capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB,SCREEN_X, SCREEN_Y,15f);
-			_capture.setOnCapture(this);
+			this._capture=devlist.getDevice(0);
+			if(!this._capture.setCaptureFormat(SCREEN_X, SCREEN_Y,15f)){
+				throw new Exception();
+			}
+			this._capture.setOnCapture(this);
 			//NyARToolkitの準備
-			_ar_param = new NyARParam();
+			this._ar_param = new NyARParam();
 			NyARCode ar_code = new NyARCode(16, 16);
-			_ar_param.loadARParamFromFile(PARAM_FILE);
-			_ar_param.changeScreenSize(SCREEN_X, SCREEN_Y);
-			_nya = new NyARSingleDetectMarker(_ar_param, ar_code, 80.0);
-			_nya.setContinueMode(false);//ここをtrueにすると、transMatContinueモード（History計算）になります。
+			this._ar_param.loadARParamFromFile(PARAM_FILE);
+			this._ar_param.changeScreenSize(SCREEN_X, SCREEN_Y);
+			this._nya = new NyARSingleDetectMarker(this._ar_param, ar_code, 80.0);
+			this._nya.setContinueMode(false);//ここをtrueにすると、transMatContinueモード（History計算）になります。
 			ar_code.loadARPattFromFile(CARCODE_FILE);
 			//NyARToolkit用の支援クラス
 			_glnya = new NyARGLUtil(_gl);
 			//GL対応のRGBラスタオブジェクト
-			_cap_image = new GLNyARRaster_RGB(_ar_param);
+			_cap_image = new GLNyARRaster_RGB(this._ar_param,this._capture.getCaptureFormat());
 			//キャプチャ開始
 			_capture.start();
 		} catch (Exception e) {
@@ -227,7 +229,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 	{
 		try {
 			synchronized (_cap_image) {
-				_cap_image.setBuffer(i_buffer, true);
+				_cap_image.setBuffer(i_buffer);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
