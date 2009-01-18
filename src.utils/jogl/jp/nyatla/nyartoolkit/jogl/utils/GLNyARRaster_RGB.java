@@ -46,7 +46,15 @@ import javax.media.format.*;
 public class GLNyARRaster_RGB extends JmfNyARRaster_RGB
 {
 	private int _gl_flag;
-
+	/**
+	 * コンストラクタです。i_formatを取り込めるi_paramのサイズパラメタを持つ
+	 * ラスタオブジェクトを作成します。
+	 * @param i_param
+	 * カメラパラメタを指定します。コンストラクタは、画面サイズ以外のパラメタを見ていません。
+	 * @param i_format
+	 * キャプチャ画像のピクセルフォーマットを指定します。
+	 * @throws NyARException
+	 */
 	public GLNyARRaster_RGB(NyARParam i_param,VideoFormat i_format) throws NyARException
 	{
 		super(i_param.getScreenSize(),i_format);
@@ -63,9 +71,10 @@ public class GLNyARRaster_RGB extends JmfNyARRaster_RGB
 		return;
 	}
 	/**
-	 * GLでそのまま描画できるRGBバッファを返す。
-	 * 
+	 * RGBバイト配列への参照値を返します。
+	 * バッファの並び順は、getGLPixelFlagが返すデータ順で格納されています。
 	 * @return
+	 * RGBバイト配列の参照値です。
 	 */
 	public byte[] getGLRgbArray()
 	{
@@ -73,9 +82,10 @@ public class GLNyARRaster_RGB extends JmfNyARRaster_RGB
 	}
 
 	/**
-	 * GL用のRGBバッファのバイト並びタイプを返す。
-	 * 
+	 * OpenGLの描画フラグを返します。
+	 * この値は、RGBバッファのバイト並びタイプです。
 	 * @return
+	 * GL.GL_BGR等の、RGBバイト配列の形式を表す値です。
 	 */
 	public int getGLPixelFlag()
 	{
