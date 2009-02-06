@@ -72,7 +72,7 @@ public class JmfCaptureDevice
 				//これはMacOSのJMF等で問題が出るかもしれない。問題が出たら教えて下さい。
 				if(formats[i] instanceof RGBFormat){
 					RGBFormat fmt_ref=(RGBFormat)formats[i];
-					if(fmt_ref.getBitsPerPixel()!=24 || fmt_ref.getBlueMask()!=1 || fmt_ref.getBlueMask()!=2 || fmt_ref.getRedMask()!=3){
+					if(fmt_ref.getBitsPerPixel()!=24 || fmt_ref.getBlueMask()!=1 || fmt_ref.getGreenMask()!=2 || fmt_ref.getRedMask()!=3){
 						continue;
 					}
 				}
