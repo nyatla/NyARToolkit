@@ -57,5 +57,5 @@ public interface INyARRgbPixelReader
 	 * @param i_y
 	 * yのインデックス配列
 	 */
-	public void getPixelSet(int i_x[], int i_y[], int i_num, int[] i_intrgb) throws NyARException;
+	public void getPixelSet(int[] i_x, int[] i_y, int i_num, int[] i_intrgb) throws NyARException;
 }
