@@ -171,7 +171,7 @@ public class NyARSingleDetectMarker_Quad
 		this._detected_square = (NyARSquare)l_square_list.getItem(square_index);
 		this._detected_direction = direction;
 		this._detected_confidence = confidence;
-		return false;
+		return result;
 	}
 
 	/**

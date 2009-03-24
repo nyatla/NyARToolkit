@@ -141,6 +141,7 @@ public class NyARSingleDetectMarker_X2
 		if (number_of_square < 1) {
 			return false;
 		}
+		boolean result=false;
 		NyARMatchPattResult mr=this.__detectMarkerLite_mr;
 		int square_index = 0;
 		int direction = NyARSquare.DIRECTION_UNKNOWN;
@@ -162,13 +163,14 @@ public class NyARSingleDetectMarker_X2
 			square_index = i;
 			direction = mr.direction;
 			confidence = c2;
+			result=true;
 		}
 		
 		// マーカー情報を保存
 		this._detected_square = (NyARSquare)l_square_list.getItem(square_index);
 		this._detected_direction = direction;
 		this._detected_confidence = confidence;
-		return true;
+		return result;
 	}
 
 	/**
