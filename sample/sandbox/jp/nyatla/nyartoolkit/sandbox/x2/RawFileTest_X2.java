@@ -38,6 +38,7 @@ import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
+import jp.nyatla.nyartoolkit.sandbox.quadx2.*;
 
 
 /**
@@ -79,6 +80,7 @@ public class RawFileTest_X2
 		// Blank_Raster ra=new Blank_Raster(320, 240);
 
 		// １パターンのみを追跡するクラスを作成
+//		NyARSingleDetectMarker_Quad ar = new NyARSingleDetectMarker_Quad(ap, code, 80.0);
 		NyARSingleDetectMarker_X2 ar = new NyARSingleDetectMarker_X2(ap, code, 80.0);
 		NyARTransMatResult result_mat = new NyARTransMatResult();
 		ar.setContinueMode(false);

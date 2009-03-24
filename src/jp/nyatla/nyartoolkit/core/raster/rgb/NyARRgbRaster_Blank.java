@@ -59,7 +59,7 @@ public class NyARRgbRaster_Blank extends NyARRgbRaster_BasicClass
 				o_rgb[i * 3 + 1] = 0;// G
 				o_rgb[i * 3 + 2] = 0;// B
 			}
-		}
+		}		
 	}
 
 	private INyARRgbPixelReader _reader;

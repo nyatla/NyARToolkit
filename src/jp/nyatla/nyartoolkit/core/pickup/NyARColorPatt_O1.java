@@ -36,6 +36,7 @@ import jp.nyatla.nyartoolkit.core.NyARMat;
 import jp.nyatla.nyartoolkit.core.NyARSquare;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
+import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 /**
  * 24ビットカラーのマーカーを保持するために使うクラスです。 このクラスは、ARToolkitのパターンと、ラスタから取得したパターンを保持します。
  * 演算順序以外の最適化をしたもの
@@ -43,53 +44,40 @@ import jp.nyatla.nyartoolkit.core.rasterreader.*;
  */
 public class NyARColorPatt_O1 implements INyARColorPatt
 {
-	private static final int AR_PATT_SAMPLE_NUM = 64;// #define
-														// AR_PATT_SAMPLE_NUM 64
+	private static final int AR_PATT_SAMPLE_NUM = 64;
+	
+	private int[] _patdata;
+	private NyARBufferReader _buf_reader;
 
-	private int extpat[][][];
-
-	private int width;
-
-	private int height;
+	private NyARIntSize _size;
 
 	public NyARColorPatt_O1(int i_width, int i_height)
 	{
-		this.width = i_width;
-		this.height = i_height;
-		this.extpat = new int[i_height][i_width][3];
-		this.wk_pickFromRaster_ext_pat2 = new int[i_height][i_width][3];
-	}
-
-	// public void setSize(int i_new_width,int i_new_height)
-	// {
-	// int array_w=this.extpat[0].length;
-	// int array_h=this.extpat.length;
-	// //十分なサイズのバッファがあるか確認
-	// if(array_w>=i_new_width && array_h>=i_new_height){
-	// //OK 十分だ→サイズ調整のみ
-	// }else{
-	// //足りないよ→取り直し
-	// this.wk_pickFromRaster_ext_pat2=new int[i_new_height][i_new_width][3];
-	// this.extpat=new int[i_new_height][i_new_width][3];
-	// }
-	// this.width =i_new_width;
-	// this.height=i_new_height;
-	// return;
-	// }
-
-	public int[][][] getPatArray()
-	{
-		return extpat;
+		//入力制限
+		assert i_width<=64;
+		assert i_height<=64;
+		
+		this._size=new NyARIntSize(i_width,i_height);
+		this._patdata = new int[i_height*i_width];
+		this._buf_reader=new NyARBufferReader(this._patdata,NyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32);
+		return;
 	}
 
 	public int getWidth()
 	{
-		return width;
+		return this._size.w;
 	}
-
 	public int getHeight()
 	{
-		return height;
+		return this._size.h;
+	}
+	public NyARIntSize getSize()
+	{
+		return 	this._size;
+	}
+	public INyARBufferReader getBufferReader()
+	{
+		return this._buf_reader;
 	}
 
 	private final NyARMat wk_get_cpara_a = new NyARMat(8, 8);
@@ -106,8 +94,7 @@ public class NyARColorPatt_O1 implements INyARColorPatt
 	 *            [3x3]
 	 * @throws NyARException
 	 */
-	private boolean get_cpara(double world[][], double vertex[][], double[] para)
-			throws NyARException
+	private boolean get_cpara(double world[][], double vertex[][], double[] para)throws NyARException
 	{
 		NyARMat a = wk_get_cpara_a;// 次処理で値を設定するので、初期化不要// new NyARMat( 8, 8 );
 		double[][] a_array = a.getArray();
@@ -126,35 +113,22 @@ public class NyARColorPatt_O1 implements INyARColorPatt
 			a_pt0[3] = 0.0;// a->m[i*16+3] = 0.0;
 			a_pt0[4] = 0.0;// a->m[i*16+4] = 0.0;
 			a_pt0[5] = 0.0;// a->m[i*16+5] = 0.0;
-			a_pt0[6] = -world_pti[0] * vertex[i][0];// a->m[i*16+6] =
-													// -world[i][0] *
-													// vertex[i][0];
-			a_pt0[7] = -world_pti[1] * vertex[i][0];// a->m[i*16+7] =
-													// -world[i][1] *
-													// vertex[i][0];
+			a_pt0[6] = -world_pti[0] * vertex[i][0];// a->m[i*16+6] =-world[i][0] *vertex[i][0];
+			a_pt0[7] = -world_pti[1] * vertex[i][0];// a->m[i*16+7] =-world[i][1] *vertex[i][0];
 			a_pt1[0] = 0.0;// a->m[i*16+8] = 0.0;
 			a_pt1[1] = 0.0;// a->m[i*16+9] = 0.0;
 			a_pt1[2] = 0.0;// a->m[i*16+10] = 0.0;
 			a_pt1[3] = world_pti[0];// a->m[i*16+11] = world[i][0];
 			a_pt1[4] = world_pti[1];// a->m[i*16+12] = world[i][1];
 			a_pt1[5] = 1.0;// a->m[i*16+13] = 1.0;
-			a_pt1[6] = -world_pti[0] * vertex[i][1];// a->m[i*16+14] =
-													// -world[i][0] *
-													// vertex[i][1];
-			a_pt1[7] = -world_pti[1] * vertex[i][1];// a->m[i*16+15] =
-													// -world[i][1] *
-													// vertex[i][1];
-			b_array[i * 2 + 0][0] = vertex[i][0];// b->m[i*2+0] =
-													// vertex[i][0];
-			b_array[i * 2 + 1][0] = vertex[i][1];// b->m[i*2+1] =
-													// vertex[i][1];
+			a_pt1[6] = -world_pti[0] * vertex[i][1];// a->m[i*16+14] =-world[i][0] *vertex[i][1];
+			a_pt1[7] = -world_pti[1] * vertex[i][1];// a->m[i*16+15] =-world[i][1] *vertex[i][1];
+			b_array[i * 2 + 0][0] = vertex[i][0];// b->m[i*2+0] =vertex[i][0];
+			b_array[i * 2 + 1][0] = vertex[i][1];// b->m[i*2+1] =vertex[i][1];
 		}
-		// JartkException.trap("未チェックのパス");
 		if (!a.matrixSelfInv()) {
 			return false;// 逆行列を求められないので失敗
 		}
-
-		// JartkException.trap("未チェックのパス");
 		NyARMat c = wk_get_cpara_c;// 次処理で結果を受け取るので、初期化不要//new NyARMat( 8, 1 );
 		double[][] c_array = c.getArray();
 
@@ -174,32 +148,9 @@ public class NyARColorPatt_O1 implements INyARColorPatt
 
 	private final double[] wk_pickFromRaster_para = new double[9];// [3][3];
 
-	private int[][][] wk_pickFromRaster_ext_pat2 = null;// コンストラクタでint[height][width][3]を作る
-
 	private final double[][] wk_pickFromRaster_world = {// double world[4][2];
-	{ 100.0, 100.0 }, { 100.0 + 10.0, 100.0 }, { 100.0 + 10.0, 100.0 + 10.0 },
-			{ 100.0, 100.0 + 10.0 } };
+	{ 100.0, 100.0 }, { 100.0 + 10.0, 100.0 }, { 100.0 + 10.0, 100.0 + 10.0 },{ 100.0, 100.0 + 10.0 } };
 
-	/**
-	 * pickFromRaster関数から使う変数です。
-	 * 
-	 */
-	private static void initValue_wk_pickFromRaster_ext_pat2(
-			int[][][] i_ext_pat2, int i_width, int i_height)
-	{
-		int i, i2;
-		int[][] pt2;
-		int[] pt1;
-		for (i = i_height - 1; i >= 0; i--) {
-			pt2 = i_ext_pat2[i];
-			for (i2 = i_width - 1; i2 >= 0; i2--) {
-				pt1 = pt2[i2];
-				pt1[0] = 0;
-				pt1[1] = 0;
-				pt1[2] = 0;
-			}
-		}
-	}
 
 	private final int[] wk_pickFromRaster_rgb_tmp = new int[3];
 
@@ -213,10 +164,6 @@ public class NyARColorPatt_O1 implements INyARColorPatt
 	 */
 	public boolean pickFromRaster(INyARRgbRaster image, NyARSquare i_square)throws NyARException
 	{
-		double d, xw, yw;
-		int xc, yc;
-		int xdiv, ydiv;
-		int xdiv2, ydiv2;
 		int lx1, lx2, ly1, ly2;
 
 		int img_x = image.getWidth();
@@ -246,94 +193,74 @@ public class NyARColorPatt_O1 implements INyARColorPatt
 		if (!get_cpara(world, local, para)) {
 			return false;
 		}
-		lx1 = (int) ((local[0][0] - local[1][0]) * (local[0][0] - local[1][0]) + (local[0][1] - local[1][1])
-				* (local[0][1] - local[1][1]));
-		lx2 = (int) ((local[2][0] - local[3][0]) * (local[2][0] - local[3][0]) + (local[2][1] - local[3][1])
-				* (local[2][1] - local[3][1]));
-		ly1 = (int) ((local[1][0] - local[2][0]) * (local[1][0] - local[2][0]) + (local[1][1] - local[2][1])
-				* (local[1][1] - local[2][1]));
-		ly2 = (int) ((local[3][0] - local[0][0]) * (local[3][0] - local[0][0]) + (local[3][1] - local[0][1])
-				* (local[3][1] - local[0][1]));
+		lx1 = (int) ((local[0][0] - local[1][0]) * (local[0][0] - local[1][0]) + (local[0][1] - local[1][1])* (local[0][1] - local[1][1]));
+		lx2 = (int) ((local[2][0] - local[3][0]) * (local[2][0] - local[3][0]) + (local[2][1] - local[3][1])* (local[2][1] - local[3][1]));
+		ly1 = (int) ((local[1][0] - local[2][0]) * (local[1][0] - local[2][0]) + (local[1][1] - local[2][1])* (local[1][1] - local[2][1]));
+		ly2 = (int) ((local[3][0] - local[0][0]) * (local[3][0] - local[0][0]) + (local[3][1] - local[0][1])* (local[3][1] - local[0][1]));
 		if (lx2 > lx1) {
 			lx1 = lx2;
 		}
 		if (ly2 > ly1) {
 			ly1 = ly2;
 		}
-		xdiv2 = this.width;
-		ydiv2 = this.height;
+		int sample_pixel_x = this._size.w;
+		int sample_pixel_y = this._size.h;
 
-		while (xdiv2 * xdiv2 < lx1 / 4) {
-			xdiv2 *= 2;
+		while (sample_pixel_x * sample_pixel_x < lx1 / 4) {
+			sample_pixel_x *= 2;
 		}
-		while (ydiv2 * ydiv2 < ly1 / 4) {
-			ydiv2 *= 2;
-		}
-
-		if (xdiv2 > AR_PATT_SAMPLE_NUM) {
-			xdiv2 = AR_PATT_SAMPLE_NUM;
-		}
-		if (ydiv2 > AR_PATT_SAMPLE_NUM) {
-			ydiv2 = AR_PATT_SAMPLE_NUM;
+		while (sample_pixel_y * sample_pixel_y < ly1 / 4) {
+			sample_pixel_y *= 2;
 		}
 
-		xdiv = xdiv2 / width;// xdiv = xdiv2/Config.AR_PATT_SIZE_X;
-		ydiv = ydiv2 / height;// ydiv = ydiv2/Config.AR_PATT_SIZE_Y;
+		if (sample_pixel_x > AR_PATT_SAMPLE_NUM) {
+			sample_pixel_x = AR_PATT_SAMPLE_NUM;
+		}
+		if (sample_pixel_y > AR_PATT_SAMPLE_NUM) {
+			sample_pixel_y = AR_PATT_SAMPLE_NUM;
+		}
 
-		/* wk_pickFromRaster_ext_pat2ワーク変数を初期化する。 */
-		int[][][] ext_pat2 = wk_pickFromRaster_ext_pat2;// ARUint32 ext_pat2[AR_PATT_SIZE_Y][AR_PATT_SIZE_X][3];
-		int extpat_j[][], extpat_j_i[];
-		int ext_pat2_j[][], ext_pat2_j_i[];
+		final int xdiv = sample_pixel_x / this._size.w;// xdiv = xdiv2/Config.AR_PATT_SIZE_X;
+		final int ydiv = sample_pixel_y / this._size.h;// ydiv = ydiv2/Config.AR_PATT_SIZE_Y;
 
-		initValue_wk_pickFromRaster_ext_pat2(ext_pat2, this.width, this.height);
 
-		xdiv2_reciprocal = 1.0 / xdiv2;
-		ydiv2_reciprocal = 1.0 / ydiv2;
-		int i, j;
+		xdiv2_reciprocal = 1.0 / sample_pixel_x;
+		ydiv2_reciprocal = 1.0 / sample_pixel_y;
+		int r,g,b;
 		int[] rgb_tmp = wk_pickFromRaster_rgb_tmp;
 
 		//ピクセルリーダーを取得
 		INyARRgbPixelReader reader=image.getRgbPixelReader();
-		
-		// arGetCode_put_zero(ext_pat2);//put_zero( (ARUint8 *)ext_pat2,
-		// AR_PATT_SIZE_Y*AR_PATT_SIZE_X*3*sizeof(ARUint32) );
-		for (j = 0; j < ydiv2; j++) {
-			yw = 102.5 + 5.0 * (j + 0.5) * ydiv2_reciprocal;
-			for (i = 0; i < xdiv2; i++) {
-				xw = 102.5 + 5.0 * (i + 0.5) * xdiv2_reciprocal;
-				d = para[2 * 3 + 0] * xw + para[2 * 3 + 1] * yw+ para[2 * 3 + 2];
-				if (d == 0) {
-					throw new NyARException();
-				}
-				xc = (int) ((para[0 * 3 + 0] * xw + para[0 * 3 + 1] * yw + para[0 * 3 + 2]) / d);
-				yc = (int) ((para[1 * 3 + 0] * xw + para[1 * 3 + 1] * yw + para[1 * 3 + 2]) / d);
+		final int xdiv_x_ydiv = xdiv * ydiv;
 
-				if (xc >= 0 && xc < img_x && yc >= 0 && yc < img_y) {
-					reader.getPixel(xc, yc, rgb_tmp);
-					ext_pat2_j_i = ext_pat2[j / ydiv][i / xdiv];
-
-					ext_pat2_j_i[0] += rgb_tmp[0];// R
-					ext_pat2_j_i[1] += rgb_tmp[1];// G
-					ext_pat2_j_i[2] += rgb_tmp[2];// B
-					// System.out.println(xc+":"+yc+":"+rgb_tmp[0]+":"+rgb_tmp[1]+":"+rgb_tmp[2]);
+		for(int iy=0;iy<this._size.h;iy++){
+			for(int ix=0;ix<this._size.w;ix++){
+				r=g=b=0;
+				//1ピクセルを作成
+				for(int j=0;j<ydiv;j++){
+					final double yw = 102.5 + 5.0 * (iy*ydiv+j + 0.5) * ydiv2_reciprocal;						
+					for(int i=0;i<xdiv;i++){
+						final double xw = 102.5 + 5.0 * (ix*xdiv+i + 0.5) * xdiv2_reciprocal;
+						final double d = para[2 * 3 + 0] * xw + para[2 * 3 + 1] * yw+ para[2 * 3 + 2];
+						if (d == 0) {
+							throw new NyARException();
+						}
+						final int xc = (int) ((para[0 * 3 + 0] * xw + para[0 * 3 + 1] * yw + para[0 * 3 + 2]) / d);
+						final int yc = (int) ((para[1 * 3 + 0] * xw + para[1 * 3 + 1] * yw + para[1 * 3 + 2]) / d);
+	
+						if (xc >= 0 && xc < img_x && yc >= 0 && yc < img_y) {
+							reader.getPixel(xc, yc, rgb_tmp);
+							r += rgb_tmp[0];// R
+							g += rgb_tmp[1];// G
+							b += rgb_tmp[2];// B
+							// System.out.println(xc+":"+yc+":"+rgb_tmp[0]+":"+rgb_tmp[1]+":"+rgb_tmp[2]);
+						}
+					}
 				}
-			}
-		}
-		// short[][][] ext_pat=new short[Config.AR_PATT_SIZE_Y][Config.AR_PATT_SIZE_X][3];//ARUint32
-		// ext_pat2[AR_PATT_SIZE_Y][AR_PATT_SIZE_X][3];
-		/* <Optimize> */
-		int xdiv_x_ydiv = xdiv * ydiv;
-		for (j = this.height - 1; j >= 0; j--) {
-			extpat_j = extpat[j];
-			ext_pat2_j = ext_pat2[j];
-			for (i = this.width - 1; i >= 0; i--) { // PRL 2006-06-08.
-				ext_pat2_j_i = ext_pat2_j[i];
-				extpat_j_i = extpat_j[i];
-				extpat_j_i[0] = (ext_pat2_j_i[0] / xdiv_x_ydiv);// ext_pat[j][i][0]=(byte)(ext_pat2[j][i][0] / (xdiv*ydiv));
-				extpat_j_i[1] = (ext_pat2_j_i[1] / xdiv_x_ydiv);// ext_pat[j][i][1]=(byte)(ext_pat2[j][i][1]/(xdiv*ydiv));
-				extpat_j_i[2] = (ext_pat2_j_i[2] / xdiv_x_ydiv);// ext_pat[j][i][2]=(byte)(ext_pat2[j][i][2]/(xdiv*ydiv));
+				this._patdata[iy*this._size.w+ix]=(((r / xdiv_x_ydiv)&0xff)<<16)|(((g / xdiv_x_ydiv)&0xff)<<8)|(((b / xdiv_x_ydiv)&0xff));
 			}
 		}
 		return true;
 	}
+	
 }

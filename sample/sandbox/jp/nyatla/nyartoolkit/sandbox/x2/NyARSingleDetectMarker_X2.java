@@ -57,8 +57,6 @@ public class NyARSingleDetectMarker_X2
 
 	private final NyARSquareStack _square_list = new NyARSquareStack(AR_SQUARE_MAX);
 
-	private NyARCode _code;
-
 	protected INyARTransMat _transmat;
 
 	private double _marker_width;
@@ -91,20 +89,24 @@ public class NyARSingleDetectMarker_X2
 		// 解析オブジェクトを作る
 		this._square_detect = new NyARSquareDetector_X2(dist_map,scr_size);
 		this._transmat = new NyARTransMat_X2(i_param);
-		// 比較コードを保存
-		this._code = i_code;
 		this._marker_width = i_marker_width;
+        int cw=i_code.getWidth();
+        int ch=i_code.getHeight();
 		// 評価パターンのホルダを作る
-		this._patt = new NyARColorPatt_O3(_code.getWidth(), _code.getHeight());
+		this._patt = new NyARColorPatt_O3(cw,ch);
 		// 評価器を作る。
-		this._match_patt = new NyARMatchPatt_Color_WITHOUT_PCA();
+		this._match_patt = new NyARMatchPatt_Color_WITHOUT_PCA(i_code);
 		//２値画像バッファを作る
 		this._bin_raster=new NyARBinRaster(scr_size.w,scr_size.h);
+		//差分データインスタンスの作成
+		this._deviation_data=new NyARMatchPattDeviationColorData(cw,ch);
 		return;
 	}
 
 	private NyARBinRaster _bin_raster;
 	private NyARRasterFilter_ARToolkitThreshold _tobin_filter=new NyARRasterFilter_ARToolkitThreshold(100);
+	private final NyARMatchPattResult __detectMarkerLite_mr=new NyARMatchPattResult();
+	private NyARMatchPattDeviationColorData _deviation_data;
 
 	
 	/**
@@ -139,38 +141,29 @@ public class NyARSingleDetectMarker_X2
 		if (number_of_square < 1) {
 			return false;
 		}
-
-		// 評価基準になるパターンをイメージから切り出す
-		if (!this._patt.pickFromRaster(i_raster, (NyARSquare)l_square_list.getItem(0))) {
-			// パターンの切り出しに失敗
-			return false;
-		}
-		// パターンを評価器にセット
-		if (!this._match_patt.setPatt(this._patt)) {
-			// 計算に失敗した。
-			throw new NyARException();
-		}
-		// コードと比較する
-		this._match_patt.evaluate(this._code);
+		NyARMatchPattResult mr=this.__detectMarkerLite_mr;
 		int square_index = 0;
-		int direction = this._match_patt.getDirection();
-		double confidence = this._match_patt.getConfidence();
-		for (int i = 1; i < number_of_square; i++) {
-			// 次のパターンを取得
-			this._patt.pickFromRaster(i_raster, (NyARSquare)l_square_list.getItem(i));
-			// 評価器にセットする。
-			this._match_patt.setPatt(this._patt);
-			// コードと比較する
-			this._match_patt.evaluate(this._code);
-			double c2 = this._match_patt.getConfidence();
+		int direction = NyARSquare.DIRECTION_UNKNOWN;
+		double confidence = 0;
+		for(int i=0;i<number_of_square;i++){
+			// 評価基準になるパターンをイメージから切り出す
+			if (!this._patt.pickFromRaster(i_raster, (NyARSquare)l_square_list.getItem(i))){
+				continue;
+			}
+			//取得パターンをカラー差分データに変換して評価する。
+			this._deviation_data.setRaster(this._patt);
+			this._match_patt.evaluate(this._deviation_data,mr);
+
+			final double c2 = mr.confidence;
 			if (confidence > c2) {
 				continue;
 			}
 			// もっと一致するマーカーがあったぽい
 			square_index = i;
-			direction = this._match_patt.getDirection();
+			direction = mr.direction;
 			confidence = c2;
 		}
+		
 		// マーカー情報を保存
 		this._detected_square = (NyARSquare)l_square_list.getItem(square_index);
 		this._detected_direction = direction;

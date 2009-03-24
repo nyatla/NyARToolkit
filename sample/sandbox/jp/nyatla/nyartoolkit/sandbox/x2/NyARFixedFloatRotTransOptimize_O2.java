@@ -77,7 +77,6 @@ public class NyARFixedFloatRotTransOptimize_O2
 	}
 	
 	private final long[][] __modifyMatrix_double1D = new long[8][3];
-	private final NyARFixedFloat16Point3d __modifyMatrix_angle = new NyARFixedFloat16Point3d();
 	private final long INITIAL_FACTOR=(long)(0x10000*5.0 * Math.PI / 180.0);
 	/**
 	 * arGetRot計算を階層化したModifyMatrix 896
@@ -148,7 +147,6 @@ public class NyARFixedFloatRotTransOptimize_O2
 		long SACASC, SACACBSC, SACACBCC, SACACC;
 		final long[][] double1D = this.__modifyMatrix_double1D;
 
-		final NyARFixedFloat16Point3d angle = this.__modifyMatrix_angle;
 		final long[] a_factor = double1D[1];
 		final long[] sinb = double1D[2];
 		final long[] cosb = double1D[3];
@@ -159,7 +157,7 @@ public class NyARFixedFloatRotTransOptimize_O2
 		long w, w2;
 		long wsin, wcos;
 		
-		io_rot.getAngle(angle);// arGetAngle( rot, &a, &b, &c );
+		final NyARFixedFloat16Point3d angle=io_rot.refAngle();// arGetAngle( rot, &a, &b, &c );
 		a2 =angle.x;
 		b2 =angle.y;
 		c2 =angle.z;

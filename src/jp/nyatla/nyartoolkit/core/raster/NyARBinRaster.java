@@ -34,7 +34,7 @@ package jp.nyatla.nyartoolkit.core.raster;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
-public final class NyARBinRaster extends NyARRaster_BasicClass
+public class NyARBinRaster extends NyARRaster_BasicClass
 {
 	private INyARBufferReader _buffer_reader;
 	protected int[] _ref_buf;

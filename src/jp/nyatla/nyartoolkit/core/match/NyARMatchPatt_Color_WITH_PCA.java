@@ -33,116 +33,56 @@ package jp.nyatla.nyartoolkit.core.match;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARCode;
-import jp.nyatla.nyartoolkit.core.pickup.INyARColorPatt;
+import jp.nyatla.nyartoolkit.core.NyARSquare;
 
 /**
  * AR_TEMPLATE_MATCHING_COLORかつAR_MATCHING_WITH_PCAと同等のルールで マーカーを評価します。
  * 
  */
-public class NyARMatchPatt_Color_WITH_PCA implements INyARMatchPatt
+public class NyARMatchPatt_Color_WITH_PCA extends NyARMatchPatt_Color_WITHOUT_PCA
 {
 	private final int EVEC_MAX = 10;// #define EVEC_MAX 10
 
 	private int evec_dim;// static int evec_dim;
-
-	private int[][][] input;
-
-	private double[][][][] evec;// static double evec[EVEC_MAX][AR_PATT_SIZE_Y*AR_PATT_SIZE_X*3];
-
+	private double[][] evec;// static double evec[EVEC_MAX][AR_PATT_SIZE_Y*AR_PATT_SIZE_X*3];
 	private double[][] epat = new double[4][EVEC_MAX];// static double epat[AR_PATT_NUM_MAX][4][EVEC_MAX];
 
-	private int ave;
 
-	private double datapow;
-
-	private int width;
-
-	private int height;
-
-	private double cf = 0;
-
-	private int dir = 0;// 向きか！
-
-	public double getConfidence()
+	public NyARMatchPatt_Color_WITH_PCA(int i_width, int i_height)
 	{
-		return cf;
+		super(i_width,i_height);
+		return;
 	}
-
-	public int getDirection()
+	public NyARMatchPatt_Color_WITH_PCA(NyARCode i_code_ref)
 	{
-		return dir;
-	}
-
-	public boolean setPatt(INyARColorPatt i_target_patt) throws NyARException
+		super(i_code_ref);
+		return;
+	}	
+	public boolean evaluate(NyARMatchPattDeviationColorData i_patt,NyARMatchPattResult o_result) throws NyARException
 	{
-		width = i_target_patt.getWidth();
-		height = i_target_patt.getHeight();
-		int[][][] data = i_target_patt.getPatArray();
-
-		input = new int[height][width][3];
-		evec = new double[EVEC_MAX][height][width][3];// static double evec[EVEC_MAX][AR_PATT_SIZE_Y*AR_PATT_SIZE_X*3];
+		final int[] linput = i_patt.refData();
 		int sum;
-
-		sum = ave = 0;
-		for (int i = 0; i < height; i++) {// for(int i=0;i<Config.AR_PATT_SIZE_Y;i++){
-			for (int i2 = 0; i2 < width; i2++) {// for(int i2=0;i2<Config.AR_PATT_SIZE_X;i2++){
-				ave += (255 - data[i][i2][0]) + (255 - data[i][i2][1])
-						+ (255 - data[i][i2][2]);
-			}
-		}
-		ave /= (height * width * 3);
-
-		for (int i = 0; i < height; i++) {// for(int
-											// i=0;i<Config.AR_PATT_SIZE_Y;i++){
-			for (int i2 = 0; i2 < width; i2++) {// for(int
-												// i2=0;i2<Config.AR_PATT_SIZE_X;i2++){
-				for (int i3 = 0; i3 < 3; i3++) {
-					input[i][i2][i3] = (255 - data[i][i2][i3]) - ave;
-					sum += input[i][i2][i3] * input[i][i2][i3];
-				}
-			}
-		}
-		datapow = Math.sqrt((double) sum);
-		if (datapow == 0.0) {
-			return false;// throw new NyARException();
-			// dir.set(0);//*dir = 0;
-			// cf.set(-1.0);//*cf = -1.0;
-			// return -1;
-		}
-		return true;
-	}
-
-	/**
-	 * public int pattern_match(short[][][] data,IntPointer dir,DoublePointer
-	 * cf)
-	 * 
-	 */
-	public void evaluate(NyARCode i_code)
-	{
-		int[][][][] pat = i_code.getPat();
-		double[] patpow = i_code.getPatPow();
-		double[] invec = new double[EVEC_MAX];
-
-		double max = 0.0; // fix VC7 compiler warning: uninitialized variable
-		// 確認
-		for (int i = 0; i < evec_dim; i++) {
+		double max = 0.0;
+		int res = NyARSquare.DIRECTION_UNKNOWN;
+/*		
+		NyARException.trap(
+			"NyARMatchPatt_Color_WITH_PCA\n"+
+			"この箇所の移植は不完全です！"+
+			"ARToolKitの移植条件を完全に再現できていないため、evec,epatの計算が無視されています。"+
+			"gen_evec(void)も含めて移植の必要があるはずですが、まだ未解析です。");
+*/		double[] invec = new double[EVEC_MAX];
+		for (int i = 0; i < this.evec_dim; i++) {
 			invec[i] = 0.0;
-			for (int j = 0; j < height; j++) {// for(int j = 0; j<Config.AR_PATT_SIZE_Y; j++){
-				for (int j2 = 0; j2 < width; j2++) {
-					for (int j3 = 0; j3 < 3; j3++) {
-						invec[i] += evec[i][j][j2][j3] * input[j][j2][j3];// invec[i]+=evec[i][j]*input[j];
-					}
-				}
+			for(int j=0;j<this._rgbpixels;i++){
+				invec[i] += this.evec[i][j] * linput[j];
 			}
-			invec[i] /= datapow;
+			invec[i] /= i_patt.getPow();
 		}
-
 		double min = 10000.0;
-		int res = -1;
 		for (int j = 0; j < 4; j++) {
 			double sum2 = 0;
-			for (int i = 0; i < evec_dim; i++) {
-				sum2 += (invec[i] - epat[j][i]) * (invec[i] - epat[j][i]);
+			for (int i = 0; i < this.evec_dim; i++) {
+				sum2 += (invec[i] - this.epat[j][i]) * (invec[i] - this.epat[j][i]);
 			}
 			if (sum2 < min) {
 				min = sum2;
@@ -150,19 +90,14 @@ public class NyARMatchPatt_Color_WITH_PCA implements INyARMatchPatt
 				// res2 = k;//kは常にインスタンスを刺すから、省略可能
 			}
 		}
-
-		int sum = 0;
-		for (int i = 0; i < height; i++) {// for(int
-											// i=0;i<Config.AR_PATT_SIZE_Y;i++){
-			for (int i2 = 0; i2 < width; i2++) {// for(int
-												// i2=0;i<Config.AR_PATT_SIZE_X;i2++){
-				for (int i3 = 0; i3 < 3; i3++) {
-					sum += input[i][i2][i3] * pat[res][i][i2][i3];// sum +=input[i][i2][i3]*pat[res2][res][i][i2][i3];
-				}
-			}
+		sum=0;
+		final int[] code_data=this._code_patt.getColorData(res).refData();
+		for (int i = 0; i < this._rgbpixels; i++) {// for(int
+			sum += linput[i] * code_data[i];// sum +=input[i][i2][i3]*pat[res2][res][i][i2][i3];
 		}
-		max = sum / patpow[res] / datapow;
-		dir = res;
-		cf = max;
+		max = sum /  this._code_patt.getColorData(res).getPow() / i_patt.getPow();
+		o_result.direction = res;
+		o_result.confidence = max;
+		return true;
 	}
 }

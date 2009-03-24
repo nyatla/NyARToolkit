@@ -133,7 +133,8 @@ class NyARBufferReader_Reader_RGB24 extends NyARBufferReader_Reader
 			throw new NyARException();
 		}
 		return;
-	}	
+	}
+
 }
 
 
@@ -175,7 +176,7 @@ class NyARBufferReader_Reader_YUV extends NyARBufferReader_Reader
 		this._yuv2rgb=new YUVToRGB();
 		this._rgb_buf=new javax.media.Buffer();
 		this._ref_buf=null;
-		//24bit-RGBフォーマットのものを探す
+		//24bit-BGRフォーマットのものを探す
 		Format output_format=pickRGB24Format(this._yuv2rgb.getSupportedOutputFormats(i_input_format));
 		if(output_format==null){
 			throw new NyARException();
@@ -200,26 +201,28 @@ class NyARBufferReader_Reader_YUV extends NyARBufferReader_Reader
 	}
 	public void getPixel(int i_x, int i_y, int[] o_rgb) throws NyARException
 	{
-		int bp = (i_x + i_y * this._ref_size.w) * 3;
-		byte[] ref = this._ref_buf;
-		o_rgb[0] = (ref[bp + 2] & 0xff);// B
+		//IN :BGRBGR
+		//   :012012
+		final int bp = (i_x + i_y * this._ref_size.w) * 3;
+		final byte[] ref = this._ref_buf;
+		o_rgb[0] = (ref[bp + 2] & 0xff);// R
 		o_rgb[1] = (ref[bp + 1] & 0xff);// G
-		o_rgb[2] = (ref[bp + 0] & 0xff);// R
+		o_rgb[2] = (ref[bp + 0] & 0xff);// B
 		return;
 	}
 	public void getPixelSet(int[] i_x, int i_y[], int i_num, int[] o_rgb) throws NyARException
 	{
-		int width = this._ref_size.w;
-		byte[] ref = this._ref_buf;
 		int bp;
+		final int width = this._ref_size.w;
+		final byte[] ref = this._ref_buf;
 		for (int i = i_num - 1; i >= 0; i--) {
 			bp = (i_x[i] + i_y[i] * width) * 3;
-			o_rgb[i * 3 + 0] = (ref[bp + 2] & 0xff);// B
+			o_rgb[i * 3 + 0] = (ref[bp + 2] & 0xff);// R
 			o_rgb[i * 3 + 1] = (ref[bp + 1] & 0xff);// G
-			o_rgb[i * 3 + 2] = (ref[bp + 0] & 0xff);// R
+			o_rgb[i * 3 + 2] = (ref[bp + 0] & 0xff);// B
 		}
 		return;
-	}	
+	}
 }
 
 

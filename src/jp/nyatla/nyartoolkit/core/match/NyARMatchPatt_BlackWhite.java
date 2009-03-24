@@ -33,101 +33,71 @@ package jp.nyatla.nyartoolkit.core.match;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.*;
-import jp.nyatla.nyartoolkit.core.pickup.INyARColorPatt;
 
 /**
- * AR_TEMPLATE_MATCHING_BWと同等のルールで マーカーを評価します。
+ * AR_TEMPLATE_MATCHING_BWと同等のルールで マーカを評価します。
  * 
  */
 public class NyARMatchPatt_BlackWhite implements INyARMatchPatt
 {
-	private double datapow;
-
-	private int width;
-
-	private int height;
-
-	private double cf = 0;
-
-	private int dir = 0;
-
-	private int ave;
-
-	private int[][][] input = new int[height][width][3];
-
-	public boolean setPatt(INyARColorPatt i_target_patt) throws NyARException
+	protected NyARCode _code_patt;	
+	protected int _pixels;
+	
+	public NyARMatchPatt_BlackWhite(int i_width, int i_height)
 	{
-		width = i_target_patt.getWidth();
-		height = i_target_patt.getHeight();
-		int[][][] data = i_target_patt.getPatArray();
-		input = new int[height][width][3];
-
-		int sum = ave = 0;
-		for (int i = 0; i < height; i++) {// for(int
-											// i=0;i<Config.AR_PATT_SIZE_Y;i++){
-			for (int i2 = 0; i2 < width; i2++) {// for(int
-												// i2=0;i2<Config.AR_PATT_SIZE_X;i2++){
-				ave += (255 - data[i][i2][0]) + (255 - data[i][i2][1])
-						+ (255 - data[i][i2][2]);
-			}
-		}
-		ave /= (height * width * 3);
-
-		for (int i = 0; i < height; i++) {// for(int
-											// i=0;i<Config.AR_PATT_SIZE_Y;i++){
-			for (int i2 = 0; i2 < width; i2++) {// for(int
-												// i2=0;i2<Config.AR_PATT_SIZE_X;i2++){
-				input[i][i2][0] = ((255 - data[i][i2][0])
-						+ (255 - data[i][i2][1]) + (255 - data[i][i2][2]))
-						/ 3 - ave;
-				sum += input[i][i2][0] * input[i][i2][0];
-			}
-		}
-
-		datapow = Math.sqrt((double) sum);
-		if (datapow == 0.0) {
-			return false;// throw new NyARException();
-			// dir.set(0);//*dir = 0;
-			// cf.set(-1.0);//*cf = -1.0;
-			// return -1;
-		}
-		return true;
+		//最適化定数の計算
+		this._pixels=i_height*i_width;
+		return;
 	}
-
-	public double getConfidence()
+	public NyARMatchPatt_BlackWhite(NyARCode i_code_ref)
 	{
-		return cf;
+		//最適化定数の計算
+		this._pixels=i_code_ref.getWidth()*i_code_ref.getHeight();
+		this._code_patt=i_code_ref;
+		return;
+	}	
+	/**
+	 * 比較対象のARCodeをセットします。
+	 * @throws NyARException
+	 */
+	public void setARCode(NyARCode i_code_ref)
+	{
+		this._code_patt=i_code_ref;
+		return;
 	}
-
-	public int getDirection()
+	/**
+	 * 現在セットされているコードとパターンを比較して、結果値o_resultを更新します。
+	 * 比較部分はFor文を16倍展開してあります。
+	 */
+	public boolean evaluate(NyARMatchPattDeviationBlackWhiteData i_patt,NyARMatchPattResult o_result) throws NyARException
 	{
-		return dir;
-	}
+		assert this._code_patt!=null;
 
-	public void evaluate(NyARCode i_code)
-	{
-		short[][][] patBW = i_code.getPatBW();// static int
-												// patBW[AR_PATT_NUM_MAX][4][AR_PATT_SIZE_Y*AR_PATT_SIZE_X*3];
-		double[] patpowBW = i_code.getPatPowBW();// static double
-													// patpowBW[AR_PATT_NUM_MAX][4];
-
+		final int[] linput = i_patt.refData();
+		int sum;
 		double max = 0.0;
-		int res = -1;
-		// 本家が飛ぶ。試験データで0.77767376888がが出ればOKってことで
+		int res = NyARSquare.DIRECTION_UNKNOWN;
+		
+
 		for (int j = 0; j < 4; j++) {
-			int sum = 0;
-			for (int i = 0; i < height; i++) {
-				for (int i2 = 0; i2 < width; i2++) {
-					sum += input[i][i2][0] * patBW[j][i][i2];
-				}
+			//合計値初期化
+			sum=0;
+			final NyARMatchPattDeviationBlackWhiteData code_patt=this._code_patt.getBlackWhiteData(j);
+			final int[] pat_j = code_patt.refData();
+			//<全画素について、比較(FORの1/16展開)/>
+			int i;
+			for(i=this._pixels-1;i>=0;i--){
+				sum += linput[i] * pat_j[i];
 			}
-			double sum2 = sum / patpowBW[j] / datapow;
+			//0.7776737688877927がでればOK
+			final double sum2 = sum / code_patt.getPow() / i_patt.getPow();// sum2 = sum / patpow[k][j]/ datapow;
 			if (sum2 > max) {
 				max = sum2;
 				res = j;
 			}
 		}
-		dir = res;
-		cf = max;
+		o_result.direction = res;
+		o_result.confidence= max;
+		return true;
 	}
 }

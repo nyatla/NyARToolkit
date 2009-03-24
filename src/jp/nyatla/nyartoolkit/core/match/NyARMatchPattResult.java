@@ -29,22 +29,10 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.pickup;
+package jp.nyatla.nyartoolkit.core.match;
 
-import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.NyARSquare;
-import jp.nyatla.nyartoolkit.core.raster.rgb.*;
-import jp.nyatla.nyartoolkit.core.raster.*;
-
-public interface INyARColorPatt extends INyARRaster
+public class NyARMatchPattResult
 {
-	/**
-	 * ラスタイメージからi_square部分のカラーパターンを抽出して、thisメンバに格納します。
-	 * 
-	 * @param image
-	 * @param i_square
-	 * @return ラスターの取得に成功するとTRUE/失敗するとFALSE
-	 * @throws NyARException
-	 */
-	public boolean pickFromRaster(INyARRgbRaster image, NyARSquare i_square) throws NyARException;
+	public double confidence;
+	public int direction;
 }

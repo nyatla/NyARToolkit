@@ -136,6 +136,8 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 	public void init(GLAutoDrawable drawable)
 	{
 		this._gl = drawable.getGL();
+		this._gl.glEnable(GL.GL_DEPTH_TEST);
+
 		this._gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		//NyARToolkitの準備
 		try {
@@ -149,11 +151,11 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 			//NyARToolkitの準備
 			this._ar_param = new NyARParam();
 			NyARCode ar_code = new NyARCode(16, 16);
+			ar_code.loadARPattFromFile(CARCODE_FILE);
 			this._ar_param.loadARParamFromFile(PARAM_FILE);
 			this._ar_param.changeScreenSize(SCREEN_X, SCREEN_Y);
 			this._nya = new NyARSingleDetectMarker(this._ar_param, ar_code, 80.0);
 			this._nya.setContinueMode(false);//ここをtrueにすると、transMatContinueモード（History計算）になります。
-			ar_code.loadARPattFromFile(CARCODE_FILE);
 			//NyARToolkit用の支援クラス
 			_glnya = new NyARGLUtil(_gl);
 			//GL対応のRGBラスタオブジェクト

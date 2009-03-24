@@ -31,11 +31,11 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterreader;
 
-public class NyARBufferReader implements INyARBufferReader
+public final class NyARBufferReader implements INyARBufferReader
 {
-	protected Object _buffer;
-	protected int _buffer_type;
-	protected NyARBufferReader()
+	private Object _buffer;
+	private int _buffer_type;
+	private NyARBufferReader()
 	{
 		return;
 	}

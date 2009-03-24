@@ -84,70 +84,70 @@ public class NyARDetectMarker
 
 	private boolean _is_continue = false;
 
-	private NyARMatchPatt_Color_WITHOUT_PCA _match_patt;
+	private NyARMatchPatt_Color_WITHOUT_PCA[] _match_patt;
 
 	private INyARSquareDetector _square_detect;
 
 	private final NyARSquareStack _square_list = new NyARSquareStack(AR_SQUARE_MAX);
 
-	private NyARCode[] _codes;
-
 	protected INyARTransMat _transmat;
 
-	private double[] _marker_width;
-
-	private int _number_of_code;
+	private double[] _marker_width;	
 
 	// 検出結果の保存用
 	private INyARColorPatt _patt;
 
 	private NyARDetectMarkerResultHolder _result_holder = new NyARDetectMarkerResultHolder();
-
+	private NyARMatchPattDeviationColorData _deviation_data;
 	/**
 	 * 複数のマーカーを検出し、最も一致するARCodeをi_codeから検索するオブジェクトを作ります。
 	 * 
 	 * @param i_param
 	 * カメラパラメータを指定します。
 	 * @param i_code
-	 * 検出するマーカーのARCode配列を指定します。配列要素のインデックス番号が、そのままgetARCodeIndex関数で 得られるARCodeインデックスになります。 例えば、要素[1]のARCodeに一致したマーカーである場合は、getARCodeIndexは1を返します。
-	 * 先頭からi_number_of_code個の要素には、有効な値を指定する必要があります。
+	 * 検出するマーカーのARCode配列を指定します。
+	 * 配列要素のインデックス番号が、そのままgetARCodeIndex関数で得られるARCodeインデックスになります。 
+	 * 例えば、要素[1]のARCodeに一致したマーカーである場合は、getARCodeIndexは1を返します。
 	 * @param i_marker_width
 	 * i_codeのマーカーサイズをミリメートルで指定した配列を指定します。 先頭からi_number_of_code個の要素には、有効な値を指定する必要があります。
 	 * @param i_number_of_code
 	 * i_codeに含まれる、ARCodeの数を指定します。
 	 * @throws NyARException
 	 */
-	public NyARDetectMarker(NyARParam i_param, NyARCode[] i_code, double[] i_marker_width, int i_number_of_code) throws NyARException
+	public NyARDetectMarker(NyARParam i_param,NyARCode[] i_code,double[] i_marker_width, int i_number_of_code) throws NyARException
 	{
 		final NyARIntSize scr_size=i_param.getScreenSize();
 		// 解析オブジェクトを作る
 		this._square_detect = new NyARSquareDetector(i_param.getDistortionFactor(),scr_size);
 		this._transmat = new NyARTransMat(i_param);
-		// 比較コードを保存
-		this._codes = i_code;
-		// 比較コードの解像度は全部同じかな？（違うとパターンを複数種つくらないといけないから）
+
+		//各コード用の比較器を作る。
+		this._match_patt=new NyARMatchPatt_Color_WITHOUT_PCA[i_number_of_code];
 		final int cw = i_code[0].getWidth();
 		final int ch = i_code[0].getHeight();
-		for (int i = 1; i < i_number_of_code; i++) {
+		this._match_patt[0]=new NyARMatchPatt_Color_WITHOUT_PCA(i_code[0]);
+		for (int i = 1; i < i_number_of_code; i++){
+			//解像度チェック
 			if (cw != i_code[i].getWidth() || ch != i_code[i].getHeight()) {
-				// 違う解像度のが混ざっている。
 				throw new NyARException();
 			}
-		}
+			this._match_patt[i]=new NyARMatchPatt_Color_WITHOUT_PCA(i_code[i]);
+		}		
 		// 評価パターンのホルダを作る
 		this._patt = new NyARColorPatt_O3(cw, ch);
-		this._number_of_code = i_number_of_code;
-
+		//実サイズ保存
 		this._marker_width = i_marker_width;
-		// 評価器を作る。
-		this._match_patt = new NyARMatchPatt_Color_WITHOUT_PCA();
+		//差分データインスタンスの作成
+		this._deviation_data=new NyARMatchPattDeviationColorData(cw,ch);
 		//２値画像バッファを作る
-		this._bin_raster=new NyARBinRaster(scr_size.w,scr_size.h);		
+		this._bin_raster=new NyARBinRaster(scr_size.w,scr_size.h);
+		return;
 	}
 
 	private NyARBinRaster _bin_raster;
 
 	private NyARRasterFilter_ARToolkitThreshold _tobin_filter = new NyARRasterFilter_ARToolkitThreshold(100);
+	private final NyARMatchPattResult __detectMarkerLite_mr=new NyARMatchPattResult();
 
 	/**
 	 * i_imageにマーカー検出処理を実行し、結果を記録します。
@@ -182,40 +182,37 @@ public class NyARDetectMarker
 		}
 		// 保持リストのサイズを調整
 		this._result_holder.reservHolder(number_of_square);
+		NyARMatchPattResult mr=this.__detectMarkerLite_mr;
 
 		// 1スクエア毎に、一致するコードを決定していく
 		for (int i = 0; i < number_of_square; i++) {
 			NyARSquare square = (NyARSquare)l_square_list.getItem(i);
+
 			// 評価基準になるパターンをイメージから切り出す
 			if (!this._patt.pickFromRaster(i_raster, square)) {
 				// イメージの切り出しは失敗することもある。
 				continue;
 			}
-			// パターンを評価器にセット
-			if (!this._match_patt.setPatt(this._patt)) {
-				// 計算に失敗した。
-				throw new NyARException();
-			}
-			// コードと順番に比較していく
-			int code_index = 0;
-			_match_patt.evaluate(_codes[0]);
-			double confidence = _match_patt.getConfidence();
-			int direction = _match_patt.getDirection();
-			for (int i2 = 1; i2 < this._number_of_code; i2++) {
-				// コードと比較する
-				_match_patt.evaluate(_codes[i2]);
-				double c2 = _match_patt.getConfidence();
+			//取得パターンをカラー差分データに変換する。
+			this._deviation_data.setRaster(this._patt);
+			int square_index = 0;
+			int direction = NyARSquare.DIRECTION_UNKNOWN;
+			double confidence = 0;
+			for(int i2=0;i2<this._match_patt.length;i2++){
+				this._match_patt[i2].evaluate(this._deviation_data,mr);
+
+				final double c2 = mr.confidence;
 				if (confidence > c2) {
 					continue;
 				}
-				// より一致するARCodeの情報を保存
-				code_index = i2;
-				direction = _match_patt.getDirection();
+				// もっと一致するマーカーがあったぽい
+				square_index = i2;
+				direction = mr.direction;
 				confidence = c2;
 			}
-			// i番目のパターン情報を保存する。
+			// i番目のパターン情報を記録する。
 			final NyARDetectMarkerResult result = this._result_holder.result_array[i];
-			result.arcode_id = code_index;
+			result.arcode_id = square_index;
 			result.confidence = confidence;
 			result.direction = direction;
 			result.ref_square = square;

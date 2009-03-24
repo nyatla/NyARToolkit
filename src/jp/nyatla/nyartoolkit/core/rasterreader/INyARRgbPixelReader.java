@@ -49,16 +49,13 @@ public interface INyARRgbPixelReader
 	public void getPixel(int i_x, int i_y, int[] i_rgb) throws NyARException;
 
 	/**
-	 * 複数のピクセル値をi_rgbへ返します。
+	 * 複数のピクセル値をint配列に返します。
+	 * 配列には、[R1][G1][B1][R2][G2][B2]の順でピクセル値が格納されます。
 	 * 
 	 * @param i_x
 	 * xのインデックス配列
 	 * @param i_y
 	 * yのインデックス配列
-	 * @param i_num
-	 * 返すピクセル値の数
-	 * @param i_rgb
-	 * ピクセル値を返すバッファ
 	 */
-	public void getPixelSet(int[] i_x, int[] i_y, int i_num, int[] i_rgb) throws NyARException;
+	public void getPixelSet(int i_x[], int i_y[], int i_num, int[] i_intrgb) throws NyARException;
 }

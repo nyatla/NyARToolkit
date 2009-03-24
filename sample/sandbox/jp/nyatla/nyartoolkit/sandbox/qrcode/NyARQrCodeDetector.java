@@ -132,7 +132,7 @@ public class NyARQrCodeDetector implements INyARSquareDetector
 		final int[] ycoord = this._ycoord;
 		final int coord_max = this._max_coord;
 		final int[] mkvertex = this.__detectMarker_mkvertex;
-		final int[][] buf = (int[][]) limage.getBufferReader().getBuffer();
+		final int[] buf = (int[]) limage.getBufferReader().getBuffer();
 		final int[] indextable = limage.getIndexArray();
 		int coord_num;
 		int label_area;
@@ -393,12 +393,12 @@ public class NyARQrCodeDetector implements INyARSquareDetector
 	 * @param i_label
 	 * @return
 	 */
-	private boolean hasQrEdgeFeature(int buf[][], int[] index_table, NyARLabelingLabel i_label)
+	private boolean hasQrEdgeFeature(int[] buf, int[] index_table, NyARLabelingLabel i_label)
 	{
 		int tx, bx;
 		int w;
 		int i_label_id = i_label.id;
-		int[] limage_j;
+		int limage_j_ptr;
 		final int clip_l = i_label.clip_l;
 		final int clip_b = i_label.clip_b;
 		final int clip_r = i_label.clip_r;
@@ -406,18 +406,18 @@ public class NyARQrCodeDetector implements INyARSquareDetector
 
 		tx = bx = 0;
 		// 上接点(→)
-		limage_j = buf[clip_t];
+		limage_j_ptr = clip_t*this._width;
 		for (int i = clip_l; i <= clip_r; i++) {// for( i = clip[0]; i <=clip[1]; i++, p1++ ) {
-			w = limage_j[i];
+			w = buf[limage_j_ptr+i];
 			if (w > 0 && index_table[w - 1] == i_label_id) {
 				tx = i;
 				break;
 			}
 		}
 		// 下接点(←)
-		limage_j = buf[clip_b];
+		limage_j_ptr = clip_b*this._width;
 		for (int i = clip_r; i >= clip_l; i--) {// for( i = clip[0]; i <=clip[1]; i++, p1++ ) {
-			w = limage_j[i];
+			w = buf[limage_j_ptr+i];
 			if (w > 0 && index_table[w - 1] == i_label_id) {
 				bx = i;
 				break;
@@ -446,7 +446,7 @@ public class NyARQrCodeDetector implements INyARSquareDetector
 	 * @param i_py2
 	 * @return
 	 */
-	private boolean checkDiagonalLine(int[][] buf, int i_px1, int i_py1, int i_px2, int i_py2)
+	private boolean checkDiagonalLine(int[] buf, int i_px1, int i_py1, int i_px2, int i_py2)
 	{
 		int sub_y = i_py2 - i_py1;
 		int sub_x = i_px2 - i_px1;
@@ -455,7 +455,7 @@ public class NyARQrCodeDetector implements INyARSquareDetector
 		for (; i < sub_y; i++) {
 			int yp = i_py1 + i;
 			int xp = i_px1 + i * sub_x / sub_y;
-			if (buf[yp][xp] == 0 && buf[yp][xp-1] == 0 && buf[yp][xp+1] == 0) {
+			if (buf[yp*this._width+xp] == 0 && buf[yp*this._width+(xp-1)] == 0 && buf[yp*this._width+(xp+1)] == 0) {
 				break;
 			}
 
@@ -467,7 +467,7 @@ public class NyARQrCodeDetector implements INyARSquareDetector
 		for (; i < sub_y; i++) {
 			int yp = i_py1 + i;
 			int xp = i_px1 + i * sub_x / sub_y;
-			if (buf[yp][xp] != 0 && buf[yp][xp-1] != 0 && buf[yp][xp+1] != 0) {
+			if (buf[yp*this._width+xp] != 0 && buf[yp*this._width+(xp-1)] != 0 && buf[yp*this._width+(xp+1)] != 0) {
 				break;
 			}
 
@@ -479,7 +479,7 @@ public class NyARQrCodeDetector implements INyARSquareDetector
 		for (; i < sub_y; i++) {
 			int yp = i_py1 + i;
 			int xp = i_px1 + i * sub_x / sub_y;
-			if (buf[yp][xp] == 0 && buf[yp][xp-1] == 0 && buf[yp][xp+1] == 0) {
+			if (buf[yp*this._width+xp] == 0 && buf[yp*this._width+(xp-1)] == 0 && buf[yp*this._width+(xp+1)] == 0) {
 				break;
 			}
 

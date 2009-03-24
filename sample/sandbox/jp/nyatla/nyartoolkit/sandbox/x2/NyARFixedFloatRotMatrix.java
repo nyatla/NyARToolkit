@@ -41,7 +41,7 @@ import jp.nyatla.nyartoolkit.core2.types.matrix.NyARFixedFloat24Matrix33;
 
 
 /**
- * 回転行列計算用の、3x3行列
+ * NyARRotMatrix_NyARToolKitのFixedFloat版です。
  * 
  */
 public class NyARFixedFloatRotMatrix extends NyARFixedFloat24Matrix33
@@ -60,8 +60,8 @@ public class NyARFixedFloatRotMatrix extends NyARFixedFloat24Matrix33
 	}
 
 	final private NyARFixedFloatRotVector __initRot_vec1;
-
 	final private NyARFixedFloatRotVector __initRot_vec2;
+	final private NyARFixedFloat16Point3d _angle=new NyARFixedFloat16Point3d();
 
 	public final void initRotByPrevResult(NyARTransMatResult i_prev_result)
 	{
@@ -115,16 +115,22 @@ public class NyARFixedFloatRotMatrix extends NyARFixedFloat24Matrix33
 		this.m02 = (w02<<24) / w;
 		this.m12 = (w12<<24) / w;
 		this.m22 = (w22<<24) / w;
+        //Matrixからangleをロード
+        this.updateAngleFromMatrix();
+		
 		return;
 	}
-
+    public NyARFixedFloat16Point3d refAngle()
+    {
+        return this._angle;
+    }
 	/**
 	 * int arGetAngle( double rot[3][3], double *wa, double *wb, double *wc ) Optimize:2008.04.20:STEP[481→433] 3x3変換行列から、回転角を復元して返します。
 	 * 
 	 * @param o_angle
 	 * @return
 	 */
-	public final void getAngle(final NyARFixedFloat16Point3d o_angle)
+	private final void updateAngleFromMatrix()
 	{
 		int a, b, c;
 		long sina, cosa, sinb, cosb, sinc, cosc;
@@ -162,7 +168,7 @@ public class NyARFixedFloatRotMatrix extends NyARFixedFloat24Matrix33
 				sina = -NyMath.FIXEDFLOAT24_1;
 				cosa = 0;
 			}
-			a = (int)NyMath.acosFixedFloat16((int)cosa);
+			a = NyMath.acosFixedFloat16((int)cosa);
 			if (sina < 0) {
 				a = -a;
 			}
@@ -224,14 +230,14 @@ public class NyARFixedFloatRotMatrix extends NyARFixedFloat24Matrix33
 				sinc = -NyMath.FIXEDFLOAT24_1;
 				cosc = 0;
 			}
-			c = (int)NyMath.acosFixedFloat16((int)cosc);
+			c = NyMath.acosFixedFloat16((int)cosc);
 			if (sinc < 0) {
 				c = -c;
 			}
 		}
-		o_angle.x = (long)a;// wa.value=a;//*wa = a;
-		o_angle.y = (long)b;// wb.value=b;//*wb = b;
-		o_angle.z = (long)c;// wc.value=c;//*wc = c;
+		this._angle.x = (long)a;// wa.value=a;//*wa = a;
+		this._angle.y = (long)b;// wb.value=b;//*wb = b;
+		this._angle.z = (long)c;// wc.value=c;//*wc = c;
 		return;
 	}
 	public final void setAngle(int i_x, int i_y, int i_z)
@@ -259,6 +265,10 @@ public class NyARFixedFloatRotMatrix extends NyARFixedFloat24Matrix33
 		this.m20 =(-Sb * Cac)>>24;
 		this.m21 =(-Sb * Sac)>>24;
 		this.m22 =Cb;
+		//angleを逆計算せずに直接代入
+		this._angle.x=i_x;
+		this._angle.y=i_y;
+		this._angle.z=i_z;		
 		return;
 	}
 	/**
