@@ -31,7 +31,6 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterreader;
 
-import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
 /**
  * byte[]配列に、パディング無しの8bit画素値が、RGBRGBの順で並んでいる
