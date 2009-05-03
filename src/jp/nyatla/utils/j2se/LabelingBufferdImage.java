@@ -222,7 +222,7 @@ public class LabelingBufferdImage extends BufferedImage
 	public void overlayData(NyARIntPointStack i_stack)
 	{
 		int count = i_stack.getLength();
-		NyARIntPoint[] items = (NyARIntPoint[])i_stack.getArray();
+		NyARIntPoint2d[] items = (NyARIntPoint2d[])i_stack.getArray();
 		Graphics g = this.getGraphics();
 		for (int i = 0; i < count; i++) {
 			int x = items[i].x;

@@ -31,79 +31,32 @@
  */
 package jp.nyatla.nyartoolkit.core.types;
 
-
-public class NyARDoublePoint2d
+public class NyARIntPoint2d
 {
-	public double x;
-	public double y;
+	public int x;
+
+	public int y;
 	/**
 	 * 配列ファクトリ
 	 * @param i_number
 	 * @return
 	 */
-	public static NyARDoublePoint2d[] createArray(int i_number)
+	public static NyARIntPoint2d[] createArray(int i_number)
 	{
-		NyARDoublePoint2d[] ret=new NyARDoublePoint2d[i_number];
+		NyARIntPoint2d[] ret=new NyARIntPoint2d[i_number];
 		for(int i=0;i<i_number;i++)
 		{
-			ret[i]=new NyARDoublePoint2d();
+			ret[i]=new NyARIntPoint2d();
 		}
 		return ret;
 	}
-	public static NyARDoublePoint2d[][] create2dArray(int i_length_x,int i_length_y)
+	public static void copyArray(final NyARIntPoint2d[] i_from,NyARIntPoint2d[] i_to)
 	{
-		NyARDoublePoint2d[][] ret=new NyARDoublePoint2d[i_length_y][i_length_x];
-		for(int i=0;i<i_length_y;i++)
+		for(int i=i_from.length-1;i>=0;i--)
 		{
-			for(int i2=0;i2<i_length_x;i2++)
-			{
-				ret[i][i2]=new NyARDoublePoint2d();
-			}
+			i_to[i].x=i_from[i].x;
+			i_to[i].y=i_from[i].y;
 		}
-		return ret;
-	}
-	public NyARDoublePoint2d()
-	{
-		this.x=0;
-		this.y=0;
 		return;
-	}	
-	public NyARDoublePoint2d(double i_x,double i_y)
-	{
-		this.x=i_x;
-		this.y=i_y;
-		return;
-	}
-	public NyARDoublePoint2d(NyARDoublePoint2d i_src)
-	{
-		this.x=i_src.x;
-		this.y=i_src.y;
-		return;
-	}
-	public NyARDoublePoint2d(NyARIntPoint2d i_src)
-	{
-		this.x=(double)i_src.x;
-		this.y=(double)i_src.y;
-		return;
-	}
-	public void setValue(NyARDoublePoint2d i_src)
-	{
-		this.x=i_src.x;
-		this.y=i_src.y;
-		return;
-	}
-	public void setValue(NyARIntPoint2d i_src)
-	{
-		this.x=(double)i_src.x;
-		this.y=(double)i_src.y;
-		return;
-	}
-	/**
-	 * 格納値をベクトルとして、距離を返します。
-	 * @return
-	 */
-	public double dist()
-	{
-		return Math.sqrt(this.x*this.x+this.y+this.y);
 	}
 }

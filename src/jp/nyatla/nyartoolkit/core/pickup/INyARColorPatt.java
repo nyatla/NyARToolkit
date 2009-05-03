@@ -34,9 +34,8 @@ package jp.nyatla.nyartoolkit.core.pickup;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARSquare;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
-import jp.nyatla.nyartoolkit.core.raster.*;
 
-public interface INyARColorPatt extends INyARRaster
+public interface INyARColorPatt extends INyARRgbRaster
 {
 	/**
 	 * ラスタイメージからi_square部分のカラーパターンを抽出して、thisメンバに格納します。

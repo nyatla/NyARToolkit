@@ -76,5 +76,5 @@ public class NyARDoubleMatrix34 implements INyARDoubleMatrix
 		o_value[10]=this.m22;
 		o_value[11]=this.m23;
 		return;
-	}	
+	}
 }

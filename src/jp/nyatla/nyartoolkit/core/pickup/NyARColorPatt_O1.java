@@ -36,6 +36,7 @@ import jp.nyatla.nyartoolkit.core.NyARMat;
 import jp.nyatla.nyartoolkit.core.NyARSquare;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
+import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 /**
  * 24ビットカラーのマーカーを保持するために使うクラスです。 このクラスは、ARToolkitのパターンと、ラスタから取得したパターンを保持します。
@@ -48,112 +49,91 @@ public class NyARColorPatt_O1 implements INyARColorPatt
 	
 	private int[] _patdata;
 	private NyARBufferReader _buf_reader;
+	private NyARRgbPixelReader_INT1D_X8R8G8B8_32 _pixelreader;
 
 	private NyARIntSize _size;
 
 	public NyARColorPatt_O1(int i_width, int i_height)
 	{
 		//入力制限
-		assert i_width<=64;
-		assert i_height<=64;
+		assert i_width<=64 && i_height<=64;
 		
 		this._size=new NyARIntSize(i_width,i_height);
 		this._patdata = new int[i_height*i_width];
 		this._buf_reader=new NyARBufferReader(this._patdata,NyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32);
+		this._pixelreader=new NyARRgbPixelReader_INT1D_X8R8G8B8_32(this._patdata,this._size);
 		return;
 	}
 
-	public int getWidth()
+	public final int getWidth()
 	{
 		return this._size.w;
 	}
-	public int getHeight()
+	public final int getHeight()
 	{
 		return this._size.h;
 	}
-	public NyARIntSize getSize()
+	public final NyARIntSize getSize()
 	{
 		return 	this._size;
 	}
-	public INyARBufferReader getBufferReader()
+	public final INyARBufferReader getBufferReader()
 	{
 		return this._buf_reader;
 	}
-
-	private final NyARMat wk_get_cpara_a = new NyARMat(8, 8);
-
-	private final NyARMat wk_get_cpara_b = new NyARMat(8, 1);
-
-	private final NyARMat wk_get_cpara_c = new NyARMat(8, 1);
-
-	/**
-	 * 
-	 * @param world
-	 * @param vertex
-	 * @param para
-	 *            [3x3]
-	 * @throws NyARException
-	 */
-	private boolean get_cpara(double world[][], double vertex[][], double[] para)throws NyARException
+	public final INyARRgbPixelReader getRgbPixelReader()
 	{
-		NyARMat a = wk_get_cpara_a;// 次処理で値を設定するので、初期化不要// new NyARMat( 8, 8 );
+		return this._pixelreader;
+	}
+
+	private final NyARMat __get_cpara_a = new NyARMat(8, 8);
+	private final NyARMat __get_cpara_b = new NyARMat(8, 1);
+	private final double[][] __get__cpara_world = {{ 100.0, 100.0 }, { 100.0 + 10.0, 100.0 }, { 100.0 + 10.0, 100.0 + 10.0 },{ 100.0, 100.0 + 10.0 } };
+	
+	final protected boolean get_cpara(final NyARIntPoint2d[] i_vertex, NyARMat o_para)throws NyARException
+	{
+		double[][] world = this.__get__cpara_world;
+		NyARMat a = __get_cpara_a;// 次処理で値を設定するので、初期化不要// new NyARMat( 8, 8 );
 		double[][] a_array = a.getArray();
-		NyARMat b = wk_get_cpara_b;// 次処理で値を設定するので、初期化不要// new NyARMat( 8, 1 );
+		NyARMat b = __get_cpara_b;// 次処理で値を設定するので、初期化不要// new NyARMat( 8, 1 );
 		double[][] b_array = b.getArray();
-		double[] a_pt0, a_pt1, world_pti;
+		double[] a_pt0, a_pt1;
+		double[] world_pti;
 
 		for (int i = 0; i < 4; i++) {
 			a_pt0 = a_array[i * 2];
 			a_pt1 = a_array[i * 2 + 1];
 			world_pti = world[i];
 
-			a_pt0[0] = world_pti[0];// a->m[i*16+0] = world[i][0];
-			a_pt0[1] = world_pti[1];// a->m[i*16+1] = world[i][1];
+			a_pt0[0] = (double) world_pti[0];// a->m[i*16+0] = world[i][0];
+			a_pt0[1] = (double) world_pti[1];// a->m[i*16+1] = world[i][1];
 			a_pt0[2] = 1.0;// a->m[i*16+2] = 1.0;
 			a_pt0[3] = 0.0;// a->m[i*16+3] = 0.0;
 			a_pt0[4] = 0.0;// a->m[i*16+4] = 0.0;
 			a_pt0[5] = 0.0;// a->m[i*16+5] = 0.0;
-			a_pt0[6] = -world_pti[0] * vertex[i][0];// a->m[i*16+6] =-world[i][0] *vertex[i][0];
-			a_pt0[7] = -world_pti[1] * vertex[i][0];// a->m[i*16+7] =-world[i][1] *vertex[i][0];
+			a_pt0[6] = (double) (-world_pti[0] * i_vertex[i].x);// a->m[i*16+6]= -world[i][0]*vertex[i][0];
+			a_pt0[7] = (double) (-world_pti[1] * i_vertex[i].x);// a->m[i*16+7]=-world[i][1]*vertex[i][0];
 			a_pt1[0] = 0.0;// a->m[i*16+8] = 0.0;
 			a_pt1[1] = 0.0;// a->m[i*16+9] = 0.0;
 			a_pt1[2] = 0.0;// a->m[i*16+10] = 0.0;
-			a_pt1[3] = world_pti[0];// a->m[i*16+11] = world[i][0];
-			a_pt1[4] = world_pti[1];// a->m[i*16+12] = world[i][1];
+			a_pt1[3] = (double) world_pti[0];// a->m[i*16+11] = world[i][0];
+			a_pt1[4] = (double) world_pti[1];// a->m[i*16+12] = world[i][1];
 			a_pt1[5] = 1.0;// a->m[i*16+13] = 1.0;
-			a_pt1[6] = -world_pti[0] * vertex[i][1];// a->m[i*16+14] =-world[i][0] *vertex[i][1];
-			a_pt1[7] = -world_pti[1] * vertex[i][1];// a->m[i*16+15] =-world[i][1] *vertex[i][1];
-			b_array[i * 2 + 0][0] = vertex[i][0];// b->m[i*2+0] =vertex[i][0];
-			b_array[i * 2 + 1][0] = vertex[i][1];// b->m[i*2+1] =vertex[i][1];
+			a_pt1[6] = (double) (-world_pti[0] * i_vertex[i].y);// a->m[i*16+14]=-world[i][0]*vertex[i][1];
+			a_pt1[7] = (double) (-world_pti[1] * i_vertex[i].y);// a->m[i*16+15]=-world[i][1]*vertex[i][1];
+			b_array[i * 2 + 0][0] = (double) i_vertex[i].x;// b->m[i*2+0] =vertex[i][0];
+			b_array[i * 2 + 1][0] = (double) i_vertex[i].y;// b->m[i*2+1] =vertex[i][1];
 		}
 		if (!a.matrixSelfInv()) {
-			return false;// 逆行列を求められないので失敗
+			return false;
 		}
-		NyARMat c = wk_get_cpara_c;// 次処理で結果を受け取るので、初期化不要//new NyARMat( 8, 1 );
-		double[][] c_array = c.getArray();
 
-		c.matrixMul(a, b);
-		for (int i = 0; i < 2; i++) {
-			para[i * 3 + 0] = c_array[i * 3 + 0][0];// para[i][0] = c->m[i*3+0];
-			para[i * 3 + 1] = c_array[i * 3 + 1][0];// para[i][1] = c->m[i*3+1];
-			para[i * 3 + 2] = c_array[i * 3 + 2][0];// para[i][2] = c->m[i*3+2];
-		}
-		para[2 * 3 + 0] = c_array[2 * 3 + 0][0];// para[2][0] = c->m[2*3+0];
-		para[2 * 3 + 1] = c_array[2 * 3 + 1][0];// para[2][1] = c->m[2*3+1];
-		para[2 * 3 + 2] = 1.0;// para[2][2] = 1.0;
+		o_para.matrixMul(a, b);
 		return true;
-	}
-
-	private final double[][] wk_pickFromRaster_local = new double[4][2];
-
-	private final double[] wk_pickFromRaster_para = new double[9];// [3][3];
-
-	private final double[][] wk_pickFromRaster_world = {// double world[4][2];
-	{ 100.0, 100.0 }, { 100.0 + 10.0, 100.0 }, { 100.0 + 10.0, 100.0 + 10.0 },{ 100.0, 100.0 + 10.0 } };
-
-
-	private final int[] wk_pickFromRaster_rgb_tmp = new int[3];
-
+	}	
+	private final int[] __pickFromRaster_rgb_tmp = new int[3];
+	private final NyARMat __pickFromRaster_cpara_c = new NyARMat(8, 1);
+	
 	/**
 	 * imageから、i_markerの位置にあるパターンを切り出して、保持します。 Optimize:STEP[769->]
 	 * 
@@ -164,48 +144,37 @@ public class NyARColorPatt_O1 implements INyARColorPatt
 	 */
 	public boolean pickFromRaster(INyARRgbRaster image, NyARSquare i_square)throws NyARException
 	{
-		int lx1, lx2, ly1, ly2;
+		final NyARIntPoint2d[] local = i_square.imvertex;
 
-		int img_x = image.getWidth();
-		int img_y = image.getHeight();
-
-		double xdiv2_reciprocal; // [tp]
-		double ydiv2_reciprocal; // [tp]
-
-		// int[] x_coord=i_marker.x_coord;
-		// int[] y_coord=i_marker.y_coord;
-		// int[] vertex=i_marker.mkvertex;
-		double[][] local = wk_pickFromRaster_local;// double local[4][2];
-		//
-		for (int i = 0; i < 4; i++) {
-			local[i][0] = i_square.imvertex[i].x;
-			local[i][1] = i_square.imvertex[i].y;
-		}
-
-		double[][] world = wk_pickFromRaster_world;
-		/*
-		 * world[0][0] = 100.0; world[0][1] = 100.0; world[1][0] = 100.0 + 10.0;
-		 * world[1][1] = 100.0; world[2][0] = 100.0 + 10.0; world[2][1] = 100.0 +
-		 * 10.0; world[3][0] = 100.0; world[3][1] = 100.0 + 10.0;
-		 */
-		double[] para = wk_pickFromRaster_para; // double para[3][3];
 		// パターンの切り出しに失敗することもある。
-		if (!get_cpara(world, local, para)) {
+		NyARMat cpara = this.__pickFromRaster_cpara_c;
+		if (!get_cpara(i_square.imvertex, cpara)) {
 			return false;
 		}
-		lx1 = (int) ((local[0][0] - local[1][0]) * (local[0][0] - local[1][0]) + (local[0][1] - local[1][1])* (local[0][1] - local[1][1]));
-		lx2 = (int) ((local[2][0] - local[3][0]) * (local[2][0] - local[3][0]) + (local[2][1] - local[3][1])* (local[2][1] - local[3][1]));
-		ly1 = (int) ((local[1][0] - local[2][0]) * (local[1][0] - local[2][0]) + (local[1][1] - local[2][1])* (local[1][1] - local[2][1]));
-		ly2 = (int) ((local[3][0] - local[0][0]) * (local[3][0] - local[0][0]) + (local[3][1] - local[0][1])* (local[3][1] - local[0][1]));
+		final double[][] para=cpara.getArray();
+		final double para00=para[0*3+0][0];
+		final double para01=para[0*3+1][0];
+		final double para02=para[0*3+2][0];
+		final double para10=para[1*3+0][0];
+		final double para11=para[1*3+1][0];
+		final double para12=para[1*3+2][0];
+		final double para20=para[2*3+0][0];
+		final double para21=para[2*3+1][0];
+		final double para22=1.0;
+		
+		int lx1 = (int) ((local[0].x - local[1].x) * (local[0].x - local[1].x) + (local[0].y - local[1].y)* (local[0].y - local[1].y));
+		int lx2 = (int) ((local[2].x - local[3].x) * (local[2].x - local[3].x) + (local[2].y - local[3].y)* (local[2].y - local[3].y));
+		int ly1 = (int) ((local[1].x - local[2].x) * (local[1].x - local[2].x) + (local[1].y - local[2].y)* (local[1].y - local[2].y));
+		int ly2 = (int) ((local[3].x - local[0].x) * (local[3].x - local[0].x) + (local[3].y - local[0].y)* (local[3].y - local[0].y));
 		if (lx2 > lx1) {
 			lx1 = lx2;
 		}
 		if (ly2 > ly1) {
 			ly1 = ly2;
 		}
+		
 		int sample_pixel_x = this._size.w;
 		int sample_pixel_y = this._size.h;
-
 		while (sample_pixel_x * sample_pixel_x < lx1 / 4) {
 			sample_pixel_x *= 2;
 		}
@@ -224,10 +193,13 @@ public class NyARColorPatt_O1 implements INyARColorPatt
 		final int ydiv = sample_pixel_y / this._size.h;// ydiv = ydiv2/Config.AR_PATT_SIZE_Y;
 
 
-		xdiv2_reciprocal = 1.0 / sample_pixel_x;
-		ydiv2_reciprocal = 1.0 / sample_pixel_y;
+		int img_x = image.getWidth();
+		int img_y = image.getHeight();
+
+		final double xdiv2_reciprocal = 1.0 / sample_pixel_x;
+		final double ydiv2_reciprocal = 1.0 / sample_pixel_y;
 		int r,g,b;
-		int[] rgb_tmp = wk_pickFromRaster_rgb_tmp;
+		int[] rgb_tmp = __pickFromRaster_rgb_tmp;
 
 		//ピクセルリーダーを取得
 		INyARRgbPixelReader reader=image.getRgbPixelReader();
@@ -241,12 +213,12 @@ public class NyARColorPatt_O1 implements INyARColorPatt
 					final double yw = 102.5 + 5.0 * (iy*ydiv+j + 0.5) * ydiv2_reciprocal;						
 					for(int i=0;i<xdiv;i++){
 						final double xw = 102.5 + 5.0 * (ix*xdiv+i + 0.5) * xdiv2_reciprocal;
-						final double d = para[2 * 3 + 0] * xw + para[2 * 3 + 1] * yw+ para[2 * 3 + 2];
+						final double d = para20 * xw + para21 * yw+ para22;
 						if (d == 0) {
 							throw new NyARException();
 						}
-						final int xc = (int) ((para[0 * 3 + 0] * xw + para[0 * 3 + 1] * yw + para[0 * 3 + 2]) / d);
-						final int yc = (int) ((para[1 * 3 + 0] * xw + para[1 * 3 + 1] * yw + para[1 * 3 + 2]) / d);
+						final int xc = (int) ((para00 * xw + para01 * yw + para02) / d);
+						final int yc = (int) ((para10 * xw + para11 * yw + para12) / d);
 	
 						if (xc >= 0 && xc < img_x && yc >= 0 && yc < img_y) {
 							reader.getPixel(xc, yc, rgb_tmp);

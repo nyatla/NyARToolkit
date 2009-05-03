@@ -35,7 +35,8 @@ import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
-/**このクラスは、同時に１個のマーカを処理することのできる、アプリケーションプロセッサです。
+/**
+ * このクラスは、同時に１個のマーカを処理することのできる、アプリケーションプロセッサです。
  * マーカの出現・移動・消滅を、イベントで通知することができます。
  * クラスには複数のマーカを登録できます。一つのマーカが見つかると、プロセッサは継続して同じマーカを
  * １つだけ認識し続け、見失うまでの間は他のマーカを認識しません。
@@ -43,7 +44,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
  * イベントは、 OnEnter→OnUpdate[n]→OnLeaveの順で発生します。
  * マーカが見つかるとまずOnEnterが１度発生して、何番のマーカが発見されたかがわかります。
  * 次にOnUpdateにより、現在の変換行列が連続して渡されます。最後にマーカを見失うと、OnLeave
- * イベントがコールされます。
+ * イベントが発生します。
  * 
  */
 public abstract class SingleARMarkerProcesser

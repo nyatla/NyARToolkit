@@ -50,7 +50,7 @@ public class NyARDoublePoint3d
 		}
 		return ret;
 	}
-	public void copyFrom(final NyARDoublePoint3d i_in)
+	public void setValue(final NyARDoublePoint3d i_in)
 	{
 		this.x=i_in.x;
 		this.y=i_in.y;

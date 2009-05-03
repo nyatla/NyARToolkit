@@ -14,10 +14,7 @@ import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.pca2d.INyARPca2d;
 import jp.nyatla.nyartoolkit.core.pca2d.*;
 import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
-import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
-import jp.nyatla.nyartoolkit.core.types.NyARIntPoint;
-import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
-import jp.nyatla.nyartoolkit.core.types.NyARLinear;
+import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix22;
 
 public class NyARQrCodeDetector implements INyARSquareDetector
@@ -230,7 +227,7 @@ public class NyARQrCodeDetector implements INyARSquareDetector
 	 * @return
 	 * @throws NyARException
 	 */
-	private boolean getSquareLine(int[] i_mkvertex, int[] i_xcoord, int[] i_ycoord, NyARLinear[] o_line,NyARIntPoint[] o_imvertex) throws NyARException
+	private boolean getSquareLine(int[] i_mkvertex, int[] i_xcoord, int[] i_ycoord, NyARLinear[] o_line,NyARIntPoint2d[] o_imvertex) throws NyARException
 	{
 		final NyARDoubleMatrix22 evec=this.__getSquareLine_evec;
 		final NyARDoublePoint2d mean=this.__getSquareLine_mean;

@@ -8,7 +8,7 @@
  * http://www.hitl.washington.edu/artoolkit/
  *
  * The NyARToolkit is Java version ARToolkit class library.
- * Copyright (C)2008 R.Iizuka
+ * Copyright (C)2008-2009 R.Iizuka
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,30 +29,17 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core;
-
-import jp.nyatla.nyartoolkit.core.types.*;
+package jp.nyatla.nyartoolkit.nyidmarker;
 /**
- * ARMarkerInfoに相当するクラス。 矩形情報を保持します。
- * 
- * directionは方角を表します。
- * 決定しないときはDIRECTION_UNKNOWNを設定してください。
- * 
+ * IDマーカの値を格納するクラスです。
+ * クラスは、未整形のマーカデータを格納しています。
+ *
  */
-public class NyARSquare
+public class NyARIdMarkerData
 {
-	public final static int DIRECTION_UNKNOWN=-1;
-	public int direction;
-	public NyARLinear[] line = new NyARLinear[4];
-	public NyARDoublePoint2d[] sqvertex = new NyARDoublePoint2d[4];
-	public NyARIntPoint2d[] imvertex = new NyARIntPoint2d[4];
-	public NyARSquare()
-	{
-		this.direction=DIRECTION_UNKNOWN;
-		for(int i=0;i<4;i++){
-			this.sqvertex[i]=new NyARDoublePoint2d();
-			this.imvertex[i]=new NyARIntPoint2d();
-			this.line[i]=new NyARLinear();
-		}
-	}
+	public int model;
+	public int ctrl_domain;
+	public int ctrl_mask;
+	public int check;
+	public int[] data=new int[16];
 }

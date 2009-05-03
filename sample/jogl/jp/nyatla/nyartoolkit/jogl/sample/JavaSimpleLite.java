@@ -49,9 +49,9 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 
 	private final String PARAM_FILE = "../../Data/camera_para.dat";
 
-	private final static int SCREEN_X = 320;
+	private final static int SCREEN_X = 640;
 
-	private final static int SCREEN_Y = 240;
+	private final static int SCREEN_Y = 480;
 
 	private Animator _animator;
 
@@ -144,7 +144,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 			//キャプチャの準備
 			JmfCaptureDeviceList devlist=new JmfCaptureDeviceList();
 			this._capture=devlist.getDevice(0);
-			if(!this._capture.setCaptureFormat(SCREEN_X, SCREEN_Y,15f)){
+			if(!this._capture.setCaptureFormat(SCREEN_X, SCREEN_Y,30.0f)){
 				throw new Exception();
 			}
 			this._capture.setOnCapture(this);

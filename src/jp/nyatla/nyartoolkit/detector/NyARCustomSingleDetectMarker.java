@@ -42,7 +42,6 @@ import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
 import jp.nyatla.nyartoolkit.core.types.*;
-import java.util.*;
 
 /**
  * 画像からARCodeに最も一致するマーカーを1個検出し、その変換行列を計算するクラスです。
@@ -97,7 +96,8 @@ public class NyARCustomSingleDetectMarker
 		this._marker_width = i_marker_width;
 		//パターンピックアップを作成
 //		this._patt = new NyARColorPatt_O1(i_code.getWidth(), i_code.getHeight());
-		this._patt = new NyARColorPatt_O3(i_code.getWidth(), i_code.getHeight());
+//		this._patt = new NyARColorPatt_O3(i_code.getWidth(), i_code.getHeight());
+		this._patt = new NyARColorPatt_Perspective(i_code.getWidth(), i_code.getHeight(),25);
 		//取得パターンの差分データ器を作成
 		this._deviation_data=new NyARMatchPattDeviationColorData(i_code.getWidth(),i_code.getHeight());
 		//i_code用の評価器を作成
@@ -199,9 +199,9 @@ public class NyARCustomSingleDetectMarker
 	 * @param o_point
 	 * 4要素以上の配列を指定して下さい。先頭の4要素に値がコピーされます。
 	 */
-	public void getSquarePosition(NyARIntPoint[] o_point)
+	public void getSquarePosition(NyARIntPoint2d[] o_point)
 	{
-		NyARIntPoint.copyArray(this._detected_square.imvertex,o_point);
+		NyARIntPoint2d.copyArray(this._detected_square.imvertex,o_point);
 		return;
 	}
 	/**
@@ -210,7 +210,7 @@ public class NyARCustomSingleDetectMarker
 	 * 外部でデータをストックする場合は、getSquarePositionで複製して下さい。
 	 * @return
 	 */
-	public NyARIntPoint[] refSquarePosition()
+	public NyARIntPoint2d[] refSquarePosition()
 	{
 		return this._detected_square.imvertex;
 	}

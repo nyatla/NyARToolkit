@@ -49,12 +49,16 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 	private int[] _patdata;
 	private NyARBufferReader _buf_reader;
 	private NyARIntSize _size;
+	private NyARRgbPixelReader_INT1D_X8R8G8B8_32 _pixelreader;
+	private double _edge_percent;
 	
 	public NyARColorPatt_O3(int i_width, int i_height)
 	{
 		this._size=new NyARIntSize(i_width,i_height);
 		this._patdata = new int[i_height*i_width];
 		this._buf_reader=new NyARBufferReader(this._patdata,NyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32);
+		this._pixelreader=new NyARRgbPixelReader_INT1D_X8R8G8B8_32(this._patdata,this._size);
+		this._edge_percent=50.0/100;
 	}
 	public int getWidth()
 	{
@@ -72,10 +76,13 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 	{
 		return this._buf_reader;
 	}
-
+	public INyARRgbPixelReader getRgbPixelReader()
+	{
+		return this._pixelreader;
+	}
 	private final NyARMat wk_get_cpara_a = new NyARMat(8, 8);
-
 	private final NyARMat wk_get_cpara_b = new NyARMat(8, 1);
+	private final NyARMat wk_pickFromRaster_cpara = new NyARMat(8, 1);
 
 	/**
 	 * @param world
@@ -83,7 +90,7 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 	 * @param o_para
 	 * @throws NyARException
 	 */
-	private boolean get_cpara(final NyARIntPoint[] i_vertex, NyARMat o_para)throws NyARException
+	private boolean get_cpara(final NyARIntPoint2d[] i_vertex, NyARMat o_para)throws NyARException
 	{
 		int[][] world = this.wk_pickFromRaster_world;
 		NyARMat a = wk_get_cpara_a;// 次処理で値を設定するので、初期化不要// new NyARMat( 8, 8 );
@@ -130,7 +137,6 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 	{ 100, 100 }, { 100 + 10, 100 }, { 100 + 10, 100 + 10 }, { 100, 100 + 10 } };
 
 
-	private final NyARMat wk_pickFromRaster_cpara = new NyARMat(8, 1);
 
 	/**
 	 * imageから、i_markerの位置にあるパターンを切り出して、保持します。 Optimize:STEP[769->750]
@@ -142,7 +148,7 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 	public boolean pickFromRaster(INyARRgbRaster image, NyARSquare i_square)throws NyARException
 	{
 		NyARMat cpara = this.wk_pickFromRaster_cpara;
-		NyARIntPoint[] local = i_square.imvertex;
+		NyARIntPoint2d[] local = i_square.imvertex;
 		// xdiv2,ydiv2の計算
 		int xdiv2, ydiv2;
 		int l1, l2;
@@ -247,19 +253,18 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 		int[] rgb_set = this.__updateExtpat_rgbset;
 
 		
-		
 		for(int iy=this._size.h-1;iy>=0;iy--){
 			for(int ix=pat_size_w-1;ix>=0;ix--){
 				//xw,ywマップを作成
 				reciprocal= 1.0 / i_xdiv2;
 				for(i=xdiv-1;i>=0;i--){
-					xw[i]=102.5 + 5.0 * (ix*xdiv+i + 0.5) * reciprocal;
+					xw[i]=100 + 10.0 * (ix*xdiv+i + 0.5) * reciprocal;
 				}
 				reciprocal= 1.0 / i_ydiv2;
 				for(i=ydiv-1;i>=0;i--){
-					yw[i]=102.5 + 5.0 * (iy*ydiv+i + 0.5) * reciprocal;
+					yw[i]=100 + 10.0 * (iy*ydiv+i + 0.5) * reciprocal;
 				}
-				//xc,ycマップを作成
+				//1ピクセルを構成するピクセル座標の集合をxc,yc配列に取得
 				int number_of_pix=0;
 				for(i=ydiv-1;i>=0;i--)
 				{
@@ -282,7 +287,7 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 						number_of_pix++;
 					}
 				}
-				//ピクセル取得とピクセル値の計算
+				//1ピクセル分の配列を取得
 				reader.getPixelSet(xc,yc,number_of_pix, rgb_set);
 				r=g=b=0;
 				for(i=number_of_pix*3-1;i>=0;i-=3){

@@ -31,6 +31,10 @@
  */
 package jp.nyatla.nyartoolkit;
 
+/**
+ * NyARToolkitライブラリが生成するExceptionオブジェクトです。
+ *
+ */
 public class NyARException extends Exception
 {
 	private static final long serialVersionUID = 1L;

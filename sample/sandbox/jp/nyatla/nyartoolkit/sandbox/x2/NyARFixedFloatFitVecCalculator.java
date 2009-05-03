@@ -52,7 +52,7 @@ class NyARCustomMatrix extends NyARMat
 		for (r = 0; r < this.row; r++){
 			ptr=i_mat.getArray();
 			for (c = 0; c < this.clm; c++){
-				this.m[c][r]=(double)ptr[c][r]/0x10000;
+				this._m[c][r]=(double)ptr[c][r]/0x10000;
 			}
 		}
 		return;

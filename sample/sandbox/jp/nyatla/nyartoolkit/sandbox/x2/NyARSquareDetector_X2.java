@@ -379,7 +379,7 @@ public class NyARSquareDetector_X2 implements INyARSquareDetector
 		}
 
 		final NyARDoublePoint2d[] l_sqvertex = o_square.sqvertex;
-		final NyARIntPoint[] l_imvertex = o_square.imvertex;
+		final NyARIntPoint2d[] l_imvertex = o_square.imvertex;
 		for (int i = 0; i < 4; i++) {
 			final NyARI64Linear l_line_i = i64liner[i];
 			final NyARI64Linear l_line_2 = i64liner[(i + 3) % 4];

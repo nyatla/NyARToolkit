@@ -58,7 +58,7 @@ public class NyARPca2d_MatrixPCA implements INyARPca2d
 			input_array[i][1]=i_y[i];
 		}
 		// 主成分分析
-		input.matrixPCA(this.__pca_evec, this.__pca_ev, this.__pca_mean);
+		input.pca(this.__pca_evec, this.__pca_ev, this.__pca_mean);
 		final double[] mean_array = this.__pca_mean.getArray();
 		final double[][] evec_array = this.__pca_evec.getArray();
 		final double[] ev_array=this.__pca_ev.getArray();

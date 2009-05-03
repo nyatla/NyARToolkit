@@ -31,6 +31,7 @@
  */
 package jp.nyatla.nyartoolkit.core.types.matrix;
 
+import jp.nyatla.nyartoolkit.*;
 
 public class NyARDoubleMatrix33 implements INyARDoubleMatrix
 {

@@ -41,9 +41,9 @@ public class NyARQrCodeSymbolBinder
 		int d;
 		int x,y;
 		int dmax=0x7fffffff;
-		final NyARIntPoint[] vertex0=i_sqare[0].imvertex;
-		final NyARIntPoint[] vertex1=i_sqare[1].imvertex;
-		final NyARIntPoint[] vertex2=i_sqare[2].imvertex;
+		final NyARIntPoint2d[] vertex0=i_sqare[0].imvertex;
+		final NyARIntPoint2d[] vertex1=i_sqare[1].imvertex;
+		final NyARIntPoint2d[] vertex2=i_sqare[2].imvertex;
 		for(int i=0;i<4;i++)
 		{
 			for(int i2=0;i2<4;i2++)
@@ -74,7 +74,7 @@ public class NyARQrCodeSymbolBinder
 	 * @param i_sqare
 	 * @param o_vertex_id
 	 */
-	private static void getMinimumLineVertex(NyARIntPoint[] i_sqare0,NyARIntPoint[] i_sqare1,int[] o_vertex_id)
+	private static void getMinimumLineVertex(NyARIntPoint2d[] i_sqare0,NyARIntPoint2d[] i_sqare1,int[] o_vertex_id)
 	{
 		//辺の長さが最小になる頂点の組合せを探す
 		int d;
@@ -101,14 +101,14 @@ public class NyARQrCodeSymbolBinder
 	 * @param i_sqare
 	 * @param i_center
 	 */
-	private void getSymbolGroupCenter(NyARSquare[] i_sqare,NyARIntPoint i_center)
+	private void getSymbolGroupCenter(NyARSquare[] i_sqare,NyARIntPoint2d i_center)
 	{
 		//シンボルグループの重心を計算
 		int cx,cy;
 		cx=cy=0;
 		for(int i=0;i<3;i++)
 		{
-			final NyARIntPoint[] sq_ptr=i_sqare[i].imvertex;
+			final NyARIntPoint2d[] sq_ptr=i_sqare[i].imvertex;
 			cx+=sq_ptr[0].x;			
 			cx+=sq_ptr[1].x;			
 			cx+=sq_ptr[2].x;			
@@ -129,7 +129,7 @@ public class NyARQrCodeSymbolBinder
 	 * 最小三角形の頂点IDセット
 	 * @return
 	 */
-	private static int getKeySymble(NyARSquare[] i_sqare,NyARIntPoint i_center,int[] i_vertex_id)
+	private static int getKeySymble(NyARSquare[] i_sqare,NyARIntPoint2d i_center,int[] i_vertex_id)
 	{
 		//シンボルグループの重心を計算
 		final int cx=i_center.x;
@@ -167,7 +167,7 @@ public class NyARQrCodeSymbolBinder
 		o_qr_square.line[3].copyFrom(i_sq2.line[(i_lv2+0)%4]);
 		//歪み無しの座標系を計算
 		final NyARDoublePoint2d[] l_sqvertex = o_qr_square.sqvertex;
-		final NyARIntPoint[] imvertex_ptr = o_qr_square.imvertex;
+		final NyARIntPoint2d[] imvertex_ptr = o_qr_square.imvertex;
 
 		final NyARLinear[] l_line = o_qr_square.line;
 		final NyARDoublePoint2d ideal_vertex=this.__bindSquare_ideal_vertex;
@@ -209,7 +209,7 @@ public class NyARQrCodeSymbolBinder
 		int[] minimum_triangle_vertex=new int[3];
 		int[] minimum_line_vertex=new int[2];
 		
-		NyARIntPoint center=new NyARIntPoint();
+		NyARIntPoint2d center=new NyARIntPoint2d();
 
 		//辺の長さが最小になる頂点の組合せを探す
 		getMinimumTriangleVertex(i_sq,minimum_triangle_vertex);
@@ -251,7 +251,7 @@ public class NyARQrCodeSymbolBinder
 	 * @param i_center
 	 * @return
 	 */
-	private int getDirection(NyARSquare i_square,NyARIntPoint i_vertex,NyARIntPoint i_center)
+	private int getDirection(NyARSquare i_square,NyARIntPoint2d i_vertex,NyARIntPoint2d i_center)
 	{
 		//開始点(中央シンボル)までの頂点のシフト数を決める
 		int x,y;

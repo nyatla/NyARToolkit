@@ -29,30 +29,35 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core;
+package jp.nyatla.nyartoolkit.core.rasterreader;
 
-import jp.nyatla.nyartoolkit.core.types.*;
-/**
- * ARMarkerInfoに相当するクラス。 矩形情報を保持します。
- * 
- * directionは方角を表します。
- * 決定しないときはDIRECTION_UNKNOWNを設定してください。
- * 
- */
-public class NyARSquare
+import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+
+public class NyARRgbPixelReader_INT1D_GLAY_8 implements INyARRgbPixelReader
 {
-	public final static int DIRECTION_UNKNOWN=-1;
-	public int direction;
-	public NyARLinear[] line = new NyARLinear[4];
-	public NyARDoublePoint2d[] sqvertex = new NyARDoublePoint2d[4];
-	public NyARIntPoint2d[] imvertex = new NyARIntPoint2d[4];
-	public NyARSquare()
+	protected int[] _ref_buf;
+
+	private NyARIntSize _size;
+
+	public NyARRgbPixelReader_INT1D_GLAY_8(int[] i_buf, NyARIntSize i_size)
 	{
-		this.direction=DIRECTION_UNKNOWN;
-		for(int i=0;i<4;i++){
-			this.sqvertex[i]=new NyARDoublePoint2d();
-			this.imvertex[i]=new NyARIntPoint2d();
-			this.line[i]=new NyARLinear();
+		this._ref_buf = i_buf;
+		this._size = i_size;
+	}
+
+	public void getPixel(int i_x, int i_y, int[] o_rgb)
+	{
+		o_rgb[0] = o_rgb[1]=o_rgb[2]=this._ref_buf[i_x + i_y * this._size.w];
+		return;
+	}
+
+	public void getPixelSet(int[] i_x, int[] i_y, int i_num, int[] o_rgb)
+	{
+		final int width = this._size.w;
+		final int[] ref_buf = this._ref_buf;
+		for (int i = i_num - 1; i >= 0; i--){
+			o_rgb[i * 3 + 0] = o_rgb[i * 3 + 1]=o_rgb[i * 3 + 2]=ref_buf[i_x[i] + i_y[i] * width];
 		}
+		return;
 	}
 }

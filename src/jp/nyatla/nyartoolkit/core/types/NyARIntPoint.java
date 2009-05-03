@@ -30,12 +30,12 @@
  * 
  */
 package jp.nyatla.nyartoolkit.core.types;
-
-public class NyARIntPoint
+/**
+ * @deprecated このクラスは名称変更のため、削除されます。
+ * @see NyARIntPoint2d
+ */
+public class NyARIntPoint extends NyARIntPoint2d
 {
-	public int x;
-
-	public int y;
 	/**
 	 * 配列ファクトリ
 	 * @param i_number
@@ -49,14 +49,5 @@ public class NyARIntPoint
 			ret[i]=new NyARIntPoint();
 		}
 		return ret;
-	}
-	public static void copyArray(final NyARIntPoint[] i_from,NyARIntPoint[] i_to)
-	{
-		for(int i=i_from.length-1;i>=0;i--)
-		{
-			i_to[i].x=i_from[i].x;
-			i_to[i].y=i_from[i].y;
-		}
-		return;
 	}
 }

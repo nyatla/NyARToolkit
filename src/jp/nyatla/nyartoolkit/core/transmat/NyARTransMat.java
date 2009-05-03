@@ -237,7 +237,7 @@ public class NyARTransMat implements INyARTransMat
 		o_result.m22 = i_rot.m22;
 		o_result.m23 = i_rot.m20 * i_off.x + i_rot.m21 * i_off.y + i_rot.m22 * i_off.z + i_trans.z;
 
-		o_result.angle.copyFrom(i_rot.refAngle());
+		o_result.angle.setValue(i_rot.refAngle());
 		o_result.has_value = true;
 		return;
 	}	

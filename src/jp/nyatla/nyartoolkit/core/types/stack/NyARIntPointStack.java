@@ -39,14 +39,14 @@ public class NyARIntPointStack extends NyObjectStack
 {
 	public NyARIntPointStack(int i_length)
 	{
-		super(new NyARIntPoint[i_length]);
+		super(new NyARIntPoint2d[i_length]);
 
 	}
 
 	protected void onReservRequest(int i_start, int i_end, Object[] i_buffer)
 	{
 		for (int i = i_start; i < i_end; i++) {
-			i_buffer[i] = new NyARIntPoint();
+			i_buffer[i] = new NyARIntPoint2d();
 		}
 	}
 
