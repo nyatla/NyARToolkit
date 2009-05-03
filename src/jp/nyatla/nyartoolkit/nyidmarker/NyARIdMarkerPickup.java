@@ -903,8 +903,8 @@ class MarkerPattEncoder
 		case 3:
 			t=this._bits[4] & 0x7f;
 			r=((this._bits[4] & 0xc0)>>6)|((this._bits[5] & 0x1f)<<2);
-			b=((this._bits[5] & 0xf0)>>4)|(this._bits[6]&0x07<<4);
-			l=((this._bits[7] & 0xfc)>>2)|((this._bits[4] & 0x01)<<7);
+			b=((this._bits[5] & 0xf0)>>4)|((this._bits[6] & 0x07)<<4);
+			l=((this._bits[6] & 0xfc)>>2)|((this._bits[4] & 0x01)<<6);
 			timing_pat=0x55;
 			break;
 		default:
