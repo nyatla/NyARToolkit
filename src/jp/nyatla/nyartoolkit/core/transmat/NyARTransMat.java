@@ -152,17 +152,10 @@ public class NyARTransMat implements INyARTransMat
 		this.updateMatrixValue(this._rotmatrix, this._offset.point, trans,o_result_conv);
 		return;
 	}
-	/**
-	 * double arGetTransMatCont( ARMarkerInfo *marker_info, double prev_conv[3][4],double center[2], double width, double conv[3][4] )
-	 * 
-	 * @param i_square
-	 * @param i_direction
-	 * マーカーの方位を指定する。
-	 * @param i_width
-	 * @param io_result_conv
-	 * 計算履歴を持つNyARTransMatResultオブジェクトを指定する。 履歴を持たない場合は、transMatと同じ処理を行う。
-	 * @return
-	 * @throws NyARException
+
+	/*
+	 * (non-Javadoc)
+	 * @see jp.nyatla.nyartoolkit.core.transmat.INyARTransMat#transMatContinue(jp.nyatla.nyartoolkit.core.NyARSquare, int, double, jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult)
 	 */
 	public void transMatContinue(NyARSquare i_square, int i_direction, double i_width, NyARTransMatResult io_result_conv) throws NyARException
 	{
@@ -175,6 +168,9 @@ public class NyARTransMat implements INyARTransMat
 			this.transMat(i_square, i_direction, i_width, io_result_conv);
 			return;
 		}
+
+		//計算用に頂点情報を初期化（順番調整）
+		initVertexOrder(i_square, i_direction, sqvertex_ref,linear_ref);
 		
 		//基準矩形を設定
 		this._offset.setSquare(i_width,this._center);
