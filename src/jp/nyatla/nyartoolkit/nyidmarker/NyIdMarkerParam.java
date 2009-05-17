@@ -35,7 +35,7 @@ package jp.nyatla.nyartoolkit.nyidmarker;
  * マーカを抽出した時のパラメータを格納するクラスです。
  *
  */
-public class NyARIdMarkerParam
+public class NyIdMarkerParam
 {
 	/**
 	 * マーカの方位値です。

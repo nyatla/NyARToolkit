@@ -35,7 +35,7 @@ package jp.nyatla.nyartoolkit.nyidmarker;
  * クラスは、未整形のマーカデータを格納しています。
  *
  */
-public class NyARIdMarkerPattern
+public class NyIdMarkerPattern
 {
 	public int model;
 	public int ctrl_domain;

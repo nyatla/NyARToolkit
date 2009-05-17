@@ -948,7 +948,7 @@ class MarkerPattEncoder
 	 * 成功すればマーカの方位を返却します。失敗すると-1を返します。
 	 */
 
-	public int encode(NyARIdMarkerPattern o_out)
+	public int encode(NyIdMarkerPattern o_out)
 	{
 		final int d=getDirection();
 		if(d<0){
@@ -1032,14 +1032,14 @@ class MarkerPattEncoder
  * ラスタ画像の任意矩形から、NyARIdMarkerDataを抽出します。
  *
  */
-public class NyARIdMarkerPickup
+public class NyIdMarkerPickup
 {
 	private PerspectivePixelReader _perspective_reader;
 	private final PerspectivePixelReader.TThreshold __pickFromRaster_th=new PerspectivePixelReader.TThreshold();
 	private final MarkerPattEncoder __pickFromRaster_encoder=new MarkerPattEncoder();
 
 
-	public NyARIdMarkerPickup()
+	public NyIdMarkerPickup()
 	{
 		this._perspective_reader=new PerspectivePixelReader();
 		return;
@@ -1054,7 +1054,7 @@ public class NyARIdMarkerPickup
 	 * @return
 	 * @throws NyARException
 	 */
-	public boolean pickFromRaster(INyARRgbRaster image, NyARSquare i_square,NyARIdMarkerPattern o_data,NyARIdMarkerParam o_param)throws NyARException
+	public boolean pickFromRaster(INyARRgbRaster image, NyARSquare i_square,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
 	{
 		this._perspective_reader.setSourceRaster(image);
 		

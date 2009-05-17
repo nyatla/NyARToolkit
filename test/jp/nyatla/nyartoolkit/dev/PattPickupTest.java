@@ -12,7 +12,7 @@ import javax.media.util.BufferToImage;
 import java.awt.image.*;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
-import jp.nyatla.nyartoolkit.nyidmarker.NyARIdMarkerPickup;
+import jp.nyatla.nyartoolkit.nyidmarker.NyIdMarkerPickup;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.pickup.*;
@@ -81,7 +81,7 @@ public class PattPickupTest extends Frame implements JmfCaptureListener
 
 	private INyARColorPatt _patt2 = new NyARColorPatt_Perspective(100,100);
 
-	private NyARIdMarkerPickup _patt3 = new NyARIdMarkerPickup();
+	private NyIdMarkerPickup _patt3 = new NyIdMarkerPickup();
 
 	public void onUpdateBuffer(Buffer i_buffer)
 	{
@@ -133,8 +133,8 @@ public class PattPickupTest extends Frame implements JmfCaptureListener
 						g2.drawLine(0,this._patt1.getHeight()/2,this._patt1.getWidth(),this._patt1.getHeight()/2);
 					}
 					{// IDマーカ
-						NyARIdMarkerPattern data =new NyARIdMarkerPattern();
-						NyARIdMarkerParam param =new NyARIdMarkerParam();
+						NyIdMarkerPattern data =new NyIdMarkerPattern();
+						NyIdMarkerParam param =new NyIdMarkerParam();
 						
 						// 一番それっぽいパターンを取得
 						this._patt3.pickFromRaster(this._capraster, t,data,param);

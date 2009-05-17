@@ -68,7 +68,7 @@ public abstract class SingleNyIdMarkerProcesser
 
 	private NyARRasterFilter_ARToolkitThreshold _tobin_filter = new NyARRasterFilter_ARToolkitThreshold(110);
 
-	private NyARIdMarkerPickup _id_pickup = new NyARIdMarkerPickup();
+	private NyIdMarkerPickup _id_pickup = new NyIdMarkerPickup();
 
 
 	protected SingleNyIdMarkerProcesser(NyARParam i_param,INyIdMarkerDataEncoder i_encoder) throws NyARException
@@ -135,8 +135,8 @@ public abstract class SingleNyIdMarkerProcesser
 	}
 
 	
-	private final NyARIdMarkerPattern _marker_data=new NyARIdMarkerPattern();
-	private final NyARIdMarkerParam _marker_param=new NyARIdMarkerParam();
+	private final NyIdMarkerPattern _marker_data=new NyIdMarkerPattern();
+	private final NyIdMarkerParam _marker_param=new NyIdMarkerParam();
 
 	
 
@@ -144,8 +144,8 @@ public abstract class SingleNyIdMarkerProcesser
 	 */
 	private void detectNewMarker(INyARRgbRaster i_raster, NyARSquareStack i_stack) throws NyARException
 	{
-		NyARIdMarkerParam param=this._marker_param;
-		NyARIdMarkerPattern patt_data  =this._marker_data;
+		NyIdMarkerParam param=this._marker_param;
+		NyIdMarkerPattern patt_data  =this._marker_data;
 		int number_of_square = i_stack.getLength();
 		int square_index = 0;
 		INyIdMarkerData marker_id=null;
@@ -172,8 +172,8 @@ public abstract class SingleNyIdMarkerProcesser
 	 */
 	private void detectExistMarker(INyARRgbRaster i_raster, NyARSquareStack i_stack) throws NyARException
 	{
-		NyARIdMarkerParam param=this._marker_param;
-		NyARIdMarkerPattern patt_data  =this._marker_data;
+		NyIdMarkerParam param=this._marker_param;
+		NyIdMarkerPattern patt_data  =this._marker_data;
 		int number_of_square = i_stack.getLength();
 		int square_index = 0;
 		INyIdMarkerData marker_id=null;
@@ -201,7 +201,7 @@ public abstract class SingleNyIdMarkerProcesser
 
 	/**オブジェクトのステータスを更新し、必要に応じてハンドル関数を駆動します。
 	 */
-	private void updateStatus(NyARSquare i_square, INyIdMarkerData i_marker_data,NyARIdMarkerParam i_param)  throws NyARException
+	private void updateStatus(NyARSquare i_square, INyIdMarkerData i_marker_data,NyIdMarkerParam i_param)  throws NyARException
 	{
 		boolean is_id_found=false;
 		NyARTransMatResult result = this.__NyARSquare_result;
