@@ -133,7 +133,7 @@ public class PattPickupTest extends Frame implements JmfCaptureListener
 						g2.drawLine(0,this._patt1.getHeight()/2,this._patt1.getWidth(),this._patt1.getHeight()/2);
 					}
 					{// IDマーカ
-						NyARIdMarkerData data =new NyARIdMarkerData();
+						NyARIdMarkerPattern data =new NyARIdMarkerPattern();
 						NyARIdMarkerParam param =new NyARIdMarkerParam();
 						
 						// 一番それっぽいパターンを取得

@@ -37,7 +37,13 @@ package jp.nyatla.nyartoolkit.nyidmarker;
  */
 public class NyARIdMarkerParam
 {
+	/**
+	 * マーカの方位値です。
+	 */
 	public int direction;
+	/**
+	 * マーカ周辺のパターン閾値です。
+	 */
 	public int threshold; 
 	
 }

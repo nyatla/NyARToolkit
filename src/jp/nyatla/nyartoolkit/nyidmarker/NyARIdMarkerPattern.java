@@ -31,15 +31,15 @@
  */
 package jp.nyatla.nyartoolkit.nyidmarker;
 /**
- * IDマーカの値を格納するクラスです。
+ * IDマーカパターン値を格納するクラスです。
  * クラスは、未整形のマーカデータを格納しています。
  *
  */
-public class NyARIdMarkerData
+public class NyARIdMarkerPattern
 {
 	public int model;
 	public int ctrl_domain;
 	public int ctrl_mask;
 	public int check;
-	public int[] data=new int[16];
+	public int[] data=new int[32];
 }

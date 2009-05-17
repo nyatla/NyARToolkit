@@ -104,7 +104,7 @@ public abstract class SingleARMarkerProcesser
 		this._deviation_data=new NyARMatchPattDeviationColorData(scr_size.w,scr_size.h);
 
 		// ２値画像バッファを作る
-		this._bin_raster = new NyARBinRaster(scr_size.w / 2, scr_size.h / 2);
+		this._bin_raster = new NyARBinRaster(scr_size.w, scr_size.h);
 		return;
 	}
 
