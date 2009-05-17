@@ -1,6 +1,6 @@
 package jp.nyatla.nyartoolkit.nyidmarker.data;
 
-import jp.nyatla.nyartoolkit.nyidmarker.NyIdMarkerPattern;
+import jp.nyatla.nyartoolkit.nyidmarker.*;
 
 
 public class NyIdMarkerDataEncoder_RawBit implements INyIdMarkerDataEncoder
