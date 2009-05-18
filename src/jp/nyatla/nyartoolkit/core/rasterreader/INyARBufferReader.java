@@ -101,7 +101,7 @@ public interface INyARBufferReader
 	 */
 	public static final int BUFFERFORMAT_INT1D_GLAY_8 = INT1D|0x0001;
 	/**
-	 * int[]で特に値範囲を定めない
+	 * int[]で0/1の2値画像
 	 */
 	public static final int BUFFERFORMAT_INT1D_BIN_8  = INT1D|0x0002;
 	/**

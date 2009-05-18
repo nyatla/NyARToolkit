@@ -40,6 +40,4 @@ public interface INyARRasterThresholdAnalyzer
 	public void analyzeRaster(INyARRaster i_input) throws NyARException;
 
 	public int getThreshold();
-
-	public int getThreshold(int i_x, int i_y);
 }

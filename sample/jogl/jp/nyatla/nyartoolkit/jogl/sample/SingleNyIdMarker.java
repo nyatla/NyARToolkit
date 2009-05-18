@@ -65,18 +65,70 @@ class TextPanel
 }
 
 /**
- * １個のIdマーカを認識するサンプルアプリケーション。
- * 認識したIDマーカの上に情報を表示します。
- * 構造的には、アプリケーションフレームワークのSingleNyIdMarkerProcesserにNyIdMarkerDataEncoder_RawBit
- * をバインドしてあります。
+ * １個のRawBit-Idマーカを認識するロジッククラス。
+ * detectMarker関数の呼び出しに同期して、transmatとcurrent_idパラメタを更新します。
+ * 
  *
  */
-public class SingleNyIdMarker extends SingleNyIdMarkerProcesser implements GLEventListener, JmfCaptureListener
+class MarkerProcessor extends SingleNyIdMarkerProcesser
+{	
+	private Object _sync_object=new Object();
+	public NyARTransMatResult transmat=null;
+	public int current_id=-1;
+
+	public MarkerProcessor(NyARParam i_cparam,int i_raster_format) throws NyARException
+	{
+		//アプリケーションフレームワークの初期化
+		super(i_cparam,new NyIdMarkerDataEncoder_RawBit(),i_raster_format);
+		return;
+	}
+	/**
+	 * アプリケーションフレームワークのハンドラ（マーカ出現）
+	 */
+	protected void onEnterHandler(INyIdMarkerData i_code)
+	{
+		synchronized(this._sync_object){
+			NyIdMarkerData_RawBit code=(NyIdMarkerData_RawBit)i_code;
+			if(code.length>4){
+				//4バイト以上の時はint変換しない。
+				this.current_id=-1;//undefined_id
+			}else{
+				this.current_id=0;
+				//最大4バイト繋げて１個のint値に変換
+				for(int i=0;i<code.length;i++){
+					this.current_id=(this.current_id<<8)|code.packet[i];
+				}
+			}
+			this.transmat=null;
+		}
+	}
+	/**
+	 * アプリケーションフレームワークのハンドラ（マーカ消滅）
+	 */
+	protected void onLeaveHandler()
+	{
+		synchronized(this._sync_object){
+			this.current_id=-1;
+			this.transmat=null;
+		}
+		return;
+	}
+	/**
+	 * アプリケーションフレームワークのハンドラ（マーカ更新）
+	 */
+	protected void onUpdateHandler(NyARSquare i_square, NyARTransMatResult result)
+	{
+		synchronized(this._sync_object){
+			this.transmat=result;
+		}
+	}
+}
+
+
+public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 {
 	private Animator _animator;
-
 	private GLNyARRaster_RGB _cap_image;
-
 	private JmfCaptureDevice _capture;
 
 	private GL _gl;
@@ -90,15 +142,10 @@ public class SingleNyIdMarker extends SingleNyIdMarkerProcesser implements GLEve
 	private double[] _camera_projection=new double[16];
 	
 	private Object _sync_object=new Object();
-	private NyARTransMatResult _ref_result=null;
-	private int _current_id=-1;
+	private MarkerProcessor _processor;
 
 	public SingleNyIdMarker(NyARParam i_cparam) throws NyARException
 	{
-		//アプリケーションフレームワークの初期化
-		super(i_cparam,new NyIdMarkerDataEncoder_RawBit());
-		this.setMarkerWidth(100);
-		this.setBaseThreshold(110);//基準閾値（そのうち自動にする）
 		JmfCaptureDeviceList devlist=new JmfCaptureDeviceList();
 		this._ar_param=i_cparam;
 
@@ -108,8 +155,12 @@ public class SingleNyIdMarker extends SingleNyIdMarkerProcesser implements GLEve
 			throw new NyARException();
 		}
 		this._capture.setOnCapture(this);
-		this._cap_image = new GLNyARRaster_RGB(i_cparam,this._capture.getCaptureFormat());		
+		this._cap_image = new GLNyARRaster_RGB(i_cparam,this._capture.getCaptureFormat());	
 
+		//プロセッサの準備
+		this._processor=new MarkerProcessor(i_cparam,this._cap_image.getBufferReader().getBufferType());
+		this._processor.setMarkerWidth(100);
+		
 		//OpenGLフレームの準備（OpenGLリソースの初期化、カメラの撮影開始は、initコールバック関数内で実行）
 		Frame frame = new Frame("Java simpleLite with NyARToolkit");
 		GLCanvas canvas = new GLCanvas();
@@ -171,14 +222,14 @@ public class SingleNyIdMarker extends SingleNyIdMarkerProcesser implements GLEve
 	
 	public void display(GLAutoDrawable drawable)
 	{
-		NyARTransMatResult transmat_result = this._ref_result;
+		NyARTransMatResult transmat_result = this._processor.transmat;
 		if (!_cap_image.hasData()) {
 			return;
 		}
 		// 背景を書く
 		this._gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
 		this._glnya.drawBackGround(this._cap_image, 1.0);			
-		if(this._current_id<0 || transmat_result==null){
+		if(this._processor.current_id<0 || transmat_result==null){
 			
 		}else{
 			try{
@@ -204,7 +255,7 @@ public class SingleNyIdMarker extends SingleNyIdMarkerProcesser implements GLEve
 					this._gl.glRotatef(r,0f,0f,1.0f);
 					this._gl.glTranslatef(-1.0f,0f,1.0f);
 					this._gl.glRotatef(90,1.0f,0f,0f);
-					this._panel.draw("MarkerId:"+this._current_id,0.01f);
+					this._panel.draw("MarkerId:"+this._processor.current_id,0.01f);
 					this._gl.glPopMatrix();
 				}
 				Thread.sleep(1);// タスク実行権限を一旦渡す
@@ -216,48 +267,6 @@ public class SingleNyIdMarker extends SingleNyIdMarkerProcesser implements GLEve
 
 	}
 	/**
-	 * アプリケーションフレームワークのハンドラ（マーカ出現）
-	 */
-	protected void onEnterHandler(INyIdMarkerData i_code)
-	{
-		synchronized(this._sync_object){
-			NyIdMarkerData_RawBit code=(NyIdMarkerData_RawBit)i_code;
-			if(code.length>4){
-				//4バイト以上の時はint変換しない。
-				this._current_id=-1;//undefined_id
-			}else{
-				this._current_id=0;
-				//最大4バイト繋げて１個のint値に変換
-				for(int i=0;i<code.length;i++){
-					this._current_id=(this._current_id<<8)|code.packet[i];
-				}
-			}
-			this._ref_result=null;
-		}
-	}
-	/**
-	 * アプリケーションフレームワークのハンドラ（マーカ消滅）
-	 */
-	protected void onLeaveHandler()
-	{
-		synchronized(this._sync_object){
-			this._current_id=-1;
-			this._ref_result=null;
-		}
-		return;
-	}
-	/**
-	 * アプリケーションフレームワークのハンドラ（マーカ更新）
-	 */
-	protected void onUpdateHandler(NyARSquare i_square, NyARTransMatResult result)
-	{
-		synchronized(this._sync_object){
-			this._ref_result=result;
-		}
-	}
-
-	
-	/**
 	 * カメラデバイスからのコールバック
 	 */
 	public void onUpdateBuffer(Buffer i_buffer)
@@ -266,7 +275,7 @@ public class SingleNyIdMarker extends SingleNyIdMarkerProcesser implements GLEve
 			synchronized (this._sync_object) {
 				this._cap_image.setBuffer(i_buffer);
 				//フレームワークに画像を転送
-				this.detectMarker(this._cap_image);
+				this._processor.detectMarker(this._cap_image);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -295,3 +304,4 @@ public class SingleNyIdMarker extends SingleNyIdMarkerProcesser implements GLEve
 		return;
 	}
 }
+

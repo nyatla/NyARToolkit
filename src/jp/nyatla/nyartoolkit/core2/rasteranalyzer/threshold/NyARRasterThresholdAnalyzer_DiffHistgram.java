@@ -148,9 +148,4 @@ public class NyARRasterThresholdAnalyzer_DiffHistgram implements INyARRasterThre
 	{
 		return this._threshold;
 	}
-
-	public int getThreshold(int i_x, int i_y)
-	{
-		return this._threshold;
-	}
 }

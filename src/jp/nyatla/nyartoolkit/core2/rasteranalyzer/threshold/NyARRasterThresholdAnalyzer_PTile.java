@@ -163,9 +163,4 @@ public class NyARRasterThresholdAnalyzer_PTile implements INyARRasterThresholdAn
 	{
 		return this._threshold;
 	}
-
-	public int getThreshold(int i_x, int i_y)
-	{
-		return this._threshold;
-	}
 }

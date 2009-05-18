@@ -31,11 +31,11 @@ import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
+import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.nyidmarker.*;
-import jp.nyatla.nyartoolkit.nyidmarker.data.INyIdMarkerData;
-import jp.nyatla.nyartoolkit.nyidmarker.data.INyIdMarkerDataEncoder;
-
+import jp.nyatla.nyartoolkit.nyidmarker.data.*;
+import jp.nyatla.nyartoolkit.core2.rasteranalyzer.threshold.*;
 
 public abstract class SingleNyIdMarkerProcesser
 {
@@ -60,8 +60,6 @@ public abstract class SingleNyIdMarkerProcesser
 	private INyIdMarkerData _data_temp;
 	private INyIdMarkerData _data_current;
 
-	
-	private int _base_threshold = 110;
 	private int _current_threshold;
 	// [AR]検出結果の保存用
 	private NyARBinRaster _bin_raster;
@@ -71,7 +69,7 @@ public abstract class SingleNyIdMarkerProcesser
 	private NyIdMarkerPickup _id_pickup = new NyIdMarkerPickup();
 
 
-	protected SingleNyIdMarkerProcesser(NyARParam i_param,INyIdMarkerDataEncoder i_encoder) throws NyARException
+	protected SingleNyIdMarkerProcesser(NyARParam i_param,INyIdMarkerDataEncoder i_encoder,int i_raster_format) throws NyARException
 	{
 		NyARIntSize scr_size = i_param.getScreenSize();
 		// 解析オブジェクトを作る
@@ -85,14 +83,10 @@ public abstract class SingleNyIdMarkerProcesser
 		this._is_active=false;
 		this._data_temp=i_encoder.createDataInstance();
 		this._data_current=i_encoder.createDataInstance();
+		this._threshold_detect=new NyARRasterThresholdAnalyzer_SlidePTile(15,i_raster_format);
 		return;
 	}
 
-	public void setBaseThreshold(int i_threshold)
-	{
-		this._base_threshold = i_threshold;
-		return;
-	}
 	public void setMarkerWidth(int i_width)
 	{
 		this._marker_width=i_width;
@@ -131,15 +125,15 @@ public abstract class SingleNyIdMarkerProcesser
 			// マーカ認識依頼→継続認識
 			detectExistMarker(i_raster, square_stack);
 		}
+		System.out.println(this._current_threshold);
 		return;
 	}
 
 	
 	private final NyIdMarkerPattern _marker_data=new NyIdMarkerPattern();
 	private final NyIdMarkerParam _marker_param=new NyIdMarkerParam();
-
+	private final NyARRasterThresholdAnalyzer_SlidePTile _threshold_detect;
 	
-
 	/**新規マーカ検索 現在認識中のマーカがないものとして、最も認識しやすいマーカを１個認識します。
 	 */
 	private void detectNewMarker(INyARRgbRaster i_raster, NyARSquareStack i_stack) throws NyARException
@@ -163,8 +157,20 @@ public abstract class SingleNyIdMarkerProcesser
 			marker_id=this._data_temp;
 			break;
 		}
+		
 		// 認識状態を更新
-		updateStatus((NyARSquare) this._square_list.getItem(square_index),marker_id, param);
+		final boolean is_id_found=updateStatus((NyARSquare) this._square_list.getItem(square_index),marker_id, param);
+
+		//閾値フィードバック(detectExistMarkerにもあるよ)
+		if(is_id_found){
+			//マーカがあれば、マーカの周辺閾値を反映
+			this._current_threshold=(this._current_threshold+param.threshold)/2;
+		}else{
+			//マーカがなければ、探索+DualPTailで基準輝度検索
+			this._threshold_detect.analyzeRaster(i_raster);
+			this._current_threshold=(this._current_threshold+this._threshold_detect.getThreshold())/2;
+		}
+		return;
 	}
 
 	/**マーカの継続認識 現在認識中のマーカを優先して認識します。 
@@ -194,14 +200,25 @@ public abstract class SingleNyIdMarkerProcesser
 			break;
 		}
 		// 認識状態を更新
-		updateStatus((NyARSquare) this._square_list.getItem(square_index),marker_id,param);
+		final boolean is_id_found=updateStatus((NyARSquare) this._square_list.getItem(square_index),marker_id,param);
+
+		//閾値フィードバック(detectExistMarkerにもあるよ)
+		if(is_id_found){
+			//マーカがあれば、マーカの周辺閾値を反映
+			this._current_threshold=(this._current_threshold+param.threshold)/2;
+		}else{
+			//マーカがなければ、探索+DualPTailで基準輝度検索
+			this._threshold_detect.analyzeRaster(i_raster);
+			this._current_threshold=(this._current_threshold+this._threshold_detect.getThreshold())/2;
+		}
+		return;
 	}
 
 	private NyARTransMatResult __NyARSquare_result = new NyARTransMatResult();
 
 	/**オブジェクトのステータスを更新し、必要に応じてハンドル関数を駆動します。
 	 */
-	private void updateStatus(NyARSquare i_square, INyIdMarkerData i_marker_data,NyIdMarkerParam i_param)  throws NyARException
+	private boolean updateStatus(NyARSquare i_square, INyIdMarkerData i_marker_data,NyIdMarkerParam i_param)  throws NyARException
 	{
 		boolean is_id_found=false;
 		NyARTransMatResult result = this.__NyARSquare_result;
@@ -242,15 +259,7 @@ public abstract class SingleNyIdMarkerProcesser
 				throw new  NyARException();
 			}
 		}
-		//閾値フィードバック
-		if(is_id_found){
-			//マーカがあれば、マーカの周辺閾値を反映
-			this._current_threshold=(this._current_threshold+i_param.threshold)/2;
-		}else{
-			//マーカがなければ、探索+DualPTailで基準輝度検索(省略)
-			this._current_threshold=(this._current_threshold+this._base_threshold)/2;
-		}
-		return;
+		return is_id_found;
 	}	
 	//通知ハンドラ
 	protected abstract void onEnterHandler(INyIdMarkerData i_code);

@@ -44,42 +44,89 @@ import jp.nyatla.nyartoolkit.core.types.*;
  */
 public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresholdAnalyzer
 {
+	interface ICreateHistgramImpl{
+		public void createHistgramImpl(INyARBufferReader i_reader,NyARIntSize i_size, int[] o_histgram);
+	}
+	/**
+	 * Glayscale(MAX256)のヒストグラム計算クラス
+	 */
+	final class CreateHistgramImpl_INT1D_GLAY_8 implements ICreateHistgramImpl
+	{
+		public void createHistgramImpl(INyARBufferReader i_reader,NyARIntSize i_size, int[] o_histgram)
+		{
+			final int[] input=(int[]) i_reader.getBuffer();
+			int pt = 0;
+			for (int y = i_size.h-1; y >=0 ; y--) {
+				for (int x = i_size.w-1; x >=0; x--) {
+					o_histgram[input[pt]]++;
+					pt++;
+				}
+			}
+			return;
+		}
+	}
+	final class CreateHistgramImpl_BYTE1D_RGB_24 implements ICreateHistgramImpl
+	{
+		public void createHistgramImpl(INyARBufferReader i_reader,NyARIntSize i_size, int[] o_histgram)
+		{
+			final byte[] input=(byte[]) i_reader.getBuffer();
+			int pt = 0;
+			for (int y = i_size.h-1; y >=0 ; y--) {
+				for (int x = i_size.w-1; x >=0; x--) {
+					final int v=((input[pt+0]& 0xff)+(input[pt+1]& 0xff)+(input[pt+2]& 0xff))/3;
+					o_histgram[v]++;
+					pt+=3;
+				}
+			}
+			return;			
+		}
+	}
 	private int _persentage;
-
 	private int _threshold;
-
+	private ICreateHistgramImpl _histgram;
+	
 	/**
 	 * @param i_persentage
 	 * 0<=50であること。白/黒マーカーの場合は10～20を推奨 正の場合、黒点を基準にします。 負の場合、白点を基準にします。
 	 * (CMOSカメラの場合、基準点は白点の方が良い)
 	 */
-	public NyARRasterThresholdAnalyzer_SlidePTile(int i_persentage)
+	public NyARRasterThresholdAnalyzer_SlidePTile(int i_persentage,int i_raster_format) throws NyARException
 	{
 		assert (0 <= i_persentage && i_persentage <= 50);
 		this._persentage = i_persentage;
+		switch(i_raster_format){
+		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24:
+		case INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+			this._histgram=new CreateHistgramImpl_BYTE1D_RGB_24();
+			break;
+		case INyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8:
+			this._histgram=new CreateHistgramImpl_BYTE1D_RGB_24();
+			break;
+		default:
+			throw new NyARException();
+		}
 	}
+	public void setVerticalInterval(int i_step)
+	{
+		return;//未実装一号
+	}
+
 
 	private int createHistgram(INyARBufferReader i_reader,NyARIntSize i_size, int[] o_histgram) throws NyARException
 	{
-		int[] in_buf = (int[]) i_reader.getBuffer();
-		int[] histgram = o_histgram;
+		//最大画像サイズの制限
+		assert i_size.w*i_size.h<0x40000000;
 
-		// ヒストグラムを作成
+		int[] histgram = o_histgram;
+		
+		//ヒストグラム作成		
 		for (int i = 0; i < 256; i++) {
-			histgram[i] = 0;
+			o_histgram[i] = 0;
 		}
-		int sum = 0;
-		for (int y = 0; y < i_size.h; y++) {
-			int sum2 = 0;
-			for (int x = 0; x < i_size.w; x++) {
-				int v = in_buf[y* i_size.w+x];
-				histgram[v]++;
-				sum2 += v;
-			}
-			sum = sum + sum2 / i_size.w;
-		}
+		this._histgram.createHistgramImpl(i_reader, i_size, o_histgram);
+
 		// 閾値ピクセル数確定
-		int th_pixcels = i_size.w * i_size.h * this._persentage / 100;
+		final int th_pixcels = i_size.w * i_size.h * this._persentage / 100;
 		int th_wk;
 		int th_w, th_b;
 
