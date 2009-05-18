@@ -125,7 +125,6 @@ public abstract class SingleNyIdMarkerProcesser
 			// マーカ認識依頼→継続認識
 			detectExistMarker(i_raster, square_stack);
 		}
-		System.out.println(this._current_threshold);
 		return;
 	}
 
