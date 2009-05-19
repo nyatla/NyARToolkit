@@ -1,25 +1,21 @@
 ARToolKit Java class library NyARToolkit.
 Copyright (C)2008 R.Iizuka
 
-version 2.2.0
+version 2.3.0
 
 http://nyatla.jp/nyartoolkit/
 airmail(at)ebony.plala.or.jp
+wm(at)nyatla.jp
 --------------------------------------------------
 
 
 
 
-・NyARToolkit/2.2
+・NyARToolkit/2.3
 
 NyARToolkitは、Pure Javaで実装したARToolKitクラスライブラリです。
 
 ARToolKit 2.72.1をベースに構築されています。
-
-NyARToolkit/2.0系はNyARToolkit/1.xと比較して、処理速度と可読性、
-モジュールの分離性が向上しています。
-
-
 
 J2SEでのみ動作を確認しました。
 J2MEやMIDP2.0にはそのうち対応します。
@@ -43,6 +39,8 @@ http://www.hitl.washington.edu/artoolkit/
 　-取り扱える画像サイズに制限がありません。
 
 　-取り扱えるマーカー個数の最大値が可変です。
+
+  -Idマーカシステム(NyId)が利用できます。(Version/2.3.0より)
 
 
 
@@ -135,30 +133,33 @@ NyARToolkit.sample.jogl
 　JOGL/JMFを使ったサンプルプログラムがあります。
 
   -jp.nyatla.nyartoolkit.jogl.sample.JavaSimpleLite
-   単一のマーカーを認識するARToolkitのsimpleLite相当のサンプルです。
+   単一のARToolKit用マーカーを認識するARToolkitのsimpleLite相当のサンプルです。
   -jp.nyatla.nyartoolkit.jogl.sample.JavaSimpleLite2
-   複数のマーカーを認識するサンプルです。～100個程度のマーカーを同時に
-   認識します。
+   複数のARToolKit用マーカーを認識するサンプルです。1～100個程度のマーカーを
+   同時に認識します。
+  -jp.nyatla.nyartoolkit.jogl.sample.SingleNyIdMarker
+   単一のNyIdマーカを認識するためのサンプルです。アプリケーションフレームワーク
+   SingleNyIdMarkerProcesserのリファレンス実装です。
 
 
 NyARToolkit.sample.java3d
 　JOGL/JMFを使ったサンプルプログラムです。
 　
   -jp.nyatla.nyartoolkit.java3d.sample
-  simpleLiteをJava3Dで動かすサンプルがあります。
+   simpleLiteをJava3Dで動かすサンプルがあります。
 
 NyARToolkit.sample.jmf
   JMFを使ったサンプルプログラムです。
 
   -jp.nyatla..nyartoolkit.jmf.sample
-　JMFでキャプチャした画像をNyARToolkitで処理するサンプルプログラムです。
+　 JMFでキャプチャした画像をNyARToolkitで処理するサンプルプログラムです。
 　
 
 NyARToolkit.sample.qt
 　Quicktime for Javaを使ったサンプルプログラムです。
 
 　-jp.nyatla.nyartoolkit.qt.sample
-　QuickTimeでキャプチャした画像をNyARToolkitで処理するサンプルプログラムです。
+　 QuickTimeでキャプチャした画像をNyARToolkitで処理するサンプルプログラムです。
 　
 
 
@@ -173,8 +174,21 @@ NyARToolkit.sample.qt
 
 
 ・ライセンス
-GPLv2以降です。詳しくはLICENCE.txtをみてください。
-ソースコード毎のライセンスは、各ソースファイルを参照してください。
+
+NyARToolkitは、商用ライセンスとGPLv2以降のデュアルライセンスを採用しています。
+
+GPLについては、LICENCE.txtをお読みください。
+
+商用ライセンスについては、ARToolWorks社に管理を委託しておりますので、
+下記URLを参考に、ARToolWorks社へお問い合わせください。
+http://nyatla.jp/nyartoolkit/wiki/index.php?Licence
+
+
+ライセンスに関する日本語でのお問い合わせについては、下記URLの連絡先にて受け付けています。
+http://nyatla.jp/nyartoolkit/wiki/index.php?PressRelease%2F20090407%20forward%20order%20email%20service
+
+
+ソースコード毎のライセンスについては、ソースコード先頭の署名をご確認ください。
 
 
 

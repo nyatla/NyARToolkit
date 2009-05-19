@@ -31,7 +31,6 @@ import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
-import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.nyidmarker.*;
 import jp.nyatla.nyartoolkit.nyidmarker.data.*;
@@ -83,7 +82,7 @@ public abstract class SingleNyIdMarkerProcesser
 		this._is_active=false;
 		this._data_temp=i_encoder.createDataInstance();
 		this._data_current=i_encoder.createDataInstance();
-		this._threshold_detect=new NyARRasterThresholdAnalyzer_SlidePTile(15,i_raster_format);
+		this._threshold_detect=new NyARRasterThresholdAnalyzer_SlidePTile(15,i_raster_format,4);
 		return;
 	}
 
