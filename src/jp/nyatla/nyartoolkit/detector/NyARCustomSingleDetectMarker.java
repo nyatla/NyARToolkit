@@ -96,8 +96,8 @@ public class NyARCustomSingleDetectMarker
 		this._marker_width = i_marker_width;
 		//パターンピックアップを作成
 //		this._patt = new NyARColorPatt_O1(i_code.getWidth(), i_code.getHeight());
-//		this._patt = new NyARColorPatt_O3(i_code.getWidth(), i_code.getHeight());
-		this._patt = new NyARColorPatt_Perspective(i_code.getWidth(), i_code.getHeight(),25);
+		this._patt = new NyARColorPatt_O3(i_code.getWidth(), i_code.getHeight());
+//		this._patt = new NyARColorPatt_Perspective(i_code.getWidth(), i_code.getHeight(),25);
 		//取得パターンの差分データ器を作成
 		this._deviation_data=new NyARMatchPattDeviationColorData(i_code.getWidth(),i_code.getHeight());
 		//i_code用の評価器を作成
