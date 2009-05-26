@@ -118,8 +118,8 @@ public class NyARSystemOfLinearEquationsProcessor
 					final double p=i_left[i][i2]*s;
 					dest_l_n[i2]=dest_l_n[i2]-p;
 				}
-				final double p=i_right[i]*s;
-				i_right[solve_row]=i_right[solve_row]-p;
+				final double k=i_right[i]*s;
+				i_right[solve_row]=i_right[solve_row]-k;
 				
 			}
 			//消去法の実行(割り算)

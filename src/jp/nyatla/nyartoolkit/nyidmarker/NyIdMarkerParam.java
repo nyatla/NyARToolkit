@@ -32,6 +32,7 @@
 package jp.nyatla.nyartoolkit.nyidmarker;
 
 /**
+ * [[Strage class]]
  * マーカを抽出した時のパラメータを格納するクラスです。
  *
  */

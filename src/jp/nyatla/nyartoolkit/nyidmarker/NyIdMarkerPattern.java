@@ -31,6 +31,7 @@
  */
 package jp.nyatla.nyartoolkit.nyidmarker;
 /**
+ * [[Strage class]]
  * IDマーカパターン値を格納するクラスです。
  * クラスは、未整形のマーカデータを格納しています。
  *

@@ -88,11 +88,11 @@ public class NyARColorPatt_O1 implements INyARColorPatt
 
 	private final NyARMat __get_cpara_a = new NyARMat(8, 8);
 	private final NyARMat __get_cpara_b = new NyARMat(8, 1);
-	private final double[][] __get__cpara_world = {{ 100.0, 100.0 }, { 100.0 + 10.0, 100.0 }, { 100.0 + 10.0, 100.0 + 10.0 },{ 100.0, 100.0 + 10.0 } };
+	private final static double[][] __get__cpara_world = {{ 100.0, 100.0 }, { 100.0 + 10.0, 100.0 }, { 100.0 + 10.0, 100.0 + 10.0 },{ 100.0, 100.0 + 10.0 } };
 	
 	final protected boolean get_cpara(final NyARIntPoint2d[] i_vertex, NyARMat o_para)throws NyARException
 	{
-		double[][] world = this.__get__cpara_world;
+		double[][] world = __get__cpara_world;
 		NyARMat a = __get_cpara_a;// 次処理で値を設定するので、初期化不要// new NyARMat( 8, 8 );
 		double[][] a_array = a.getArray();
 		NyARMat b = __get_cpara_b;// 次処理で値を設定するので、初期化不要// new NyARMat( 8, 1 );

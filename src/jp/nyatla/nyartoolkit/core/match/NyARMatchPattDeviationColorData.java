@@ -41,7 +41,7 @@ import jp.nyatla.nyartoolkit.core.rasterreader.*;
  */
 public class NyARMatchPattDeviationColorData
 {
-	private int _data[];
+	private int[] _data;
 	private double _pow;
 	//
 	private int _number_of_pixels;

@@ -30,7 +30,10 @@
  * 
  */
 package jp.nyatla.nyartoolkit.core.match;
-
+/**
+ * [[Strage class]]
+ *
+ */
 public class NyARMatchPattResult
 {
 	public double confidence;

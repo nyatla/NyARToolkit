@@ -50,7 +50,6 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 	private NyARBufferReader _buf_reader;
 	private NyARIntSize _size;
 	private NyARRgbPixelReader_INT1D_X8R8G8B8_32 _pixelreader;
-	private double _edge_percent;
 	
 	public NyARColorPatt_O3(int i_width, int i_height)
 	{
@@ -58,7 +57,6 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 		this._patdata = new int[i_height*i_width];
 		this._buf_reader=new NyARBufferReader(this._patdata,NyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32);
 		this._pixelreader=new NyARRgbPixelReader_INT1D_X8R8G8B8_32(this._patdata,this._size);
-		this._edge_percent=50.0/100;
 	}
 	public int getWidth()
 	{
@@ -92,7 +90,7 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 	 */
 	private boolean get_cpara(final NyARIntPoint2d[] i_vertex, NyARMat o_para)throws NyARException
 	{
-		int[][] world = this.wk_pickFromRaster_world;
+		int[][] world = wk_pickFromRaster_world;
 		NyARMat a = wk_get_cpara_a;// 次処理で値を設定するので、初期化不要// new NyARMat( 8, 8 );
 		double[][] a_array = a.getArray();
 		NyARMat b = wk_get_cpara_b;// 次処理で値を設定するので、初期化不要// new NyARMat( 8, 1 );
@@ -133,7 +131,7 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 	}
 
 	// private final double[] wk_pickFromRaster_para=new double[9];//[3][3];
-	private final int[][] wk_pickFromRaster_world = {// double world[4][2];
+	private final static int[][] wk_pickFromRaster_world = {// double world[4][2];
 	{ 100, 100 }, { 100 + 10, 100 }, { 100 + 10, 100 + 10 }, { 100, 100 + 10 } };
 
 
@@ -216,7 +214,9 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 			this.__updateExtpat_rgbset=new int[i_xdiv*i_ydiv*3];
 		}
 		return;
-	}	
+	}
+	private static double LT_POS=102.5;
+	private static double SQ_SIZE=5.0;
 	
 	//分割数16未満になると少し遅くなるかも。
 	private void updateExtpat(INyARRgbRaster image, NyARMat i_cpara, int i_xdiv2,int i_ydiv2) throws NyARException
@@ -246,8 +246,8 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 
 		//ワークバッファの準備
 		reservWorkBuffers(xdiv,ydiv);
-		final double xw[]=this.__updateExtpat_xw;
-		final double yw[]=this.__updateExtpat_yw;
+		final double[] xw=this.__updateExtpat_xw;
+		final double[] yw=this.__updateExtpat_yw;
 		final int[] xc=this.__updateExtpat_xc;
 		final int[] yc=this.__updateExtpat_yc;
 		int[] rgb_set = this.__updateExtpat_rgbset;
@@ -258,11 +258,11 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 				//xw,ywマップを作成
 				reciprocal= 1.0 / i_xdiv2;
 				for(i=xdiv-1;i>=0;i--){
-					xw[i]=100 + 10.0 * (ix*xdiv+i + 0.5) * reciprocal;
+					xw[i]=LT_POS + SQ_SIZE * (ix*xdiv+i + 0.5) * reciprocal;
 				}
 				reciprocal= 1.0 / i_ydiv2;
 				for(i=ydiv-1;i>=0;i--){
-					yw[i]=100 + 10.0 * (iy*ydiv+i + 0.5) * reciprocal;
+					yw[i]=LT_POS + SQ_SIZE * (iy*ydiv+i + 0.5) * reciprocal;
 				}
 				//1ピクセルを構成するピクセル座標の集合をxc,yc配列に取得
 				int number_of_pix=0;

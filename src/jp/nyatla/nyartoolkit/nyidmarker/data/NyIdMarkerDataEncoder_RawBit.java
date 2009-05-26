@@ -37,7 +37,7 @@ import jp.nyatla.nyartoolkit.nyidmarker.*;
 public class NyIdMarkerDataEncoder_RawBit implements INyIdMarkerDataEncoder
 {	
 	private final static int _DOMAIN_ID=0;
-	private final static int _mod_data[]={7,31,127,511,2047,4095};
+	private final static int[] _mod_data={7,31,127,511,2047,4095};
 	public boolean encode(NyIdMarkerPattern i_data,INyIdMarkerData o_dest)
 	{
 		final NyIdMarkerData_RawBit dest=(NyIdMarkerData_RawBit)o_dest;

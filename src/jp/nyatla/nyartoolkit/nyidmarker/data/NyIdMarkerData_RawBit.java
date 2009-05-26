@@ -31,6 +31,10 @@
  */
 package jp.nyatla.nyartoolkit.nyidmarker.data;
 
+/**
+ * [[Strage class]]
+ *
+ */
 public class NyIdMarkerData_RawBit implements INyIdMarkerData
 {
 	public int[] packet=new int[22];

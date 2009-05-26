@@ -31,7 +31,11 @@
  */
 package jp.nyatla.nyartoolkit.nyidmarker.data;
 
-
+/**
+ * 
+ * [[Strage class]]
+ *
+ */
 public interface INyIdMarkerData
 {
 	/**

@@ -77,7 +77,7 @@ public class PattPickupTest extends Frame implements JmfCaptureListener
 		return (int) Math.sqrt((lx1 * lx1) + (ly1 * ly1)) * (int) Math.sqrt(((lx2 * lx2) + (ly2 * ly2)));
 	}
 
-	private INyARColorPatt _patt1 = new NyARColorPatt_O3(64, 64);
+	private INyARColorPatt _patt1 = new NyARColorPatt_O3(16, 16);
 
 	private INyARColorPatt _patt2 = new NyARColorPatt_Perspective(100,100);
 
@@ -164,9 +164,6 @@ public class PattPickupTest extends Frame implements JmfCaptureListener
 							g2.drawRect(this._patt3.vertex_x[i]-1,this._patt3.vertex_y[i]-1, 2, 2);
 						}
 */						g2.setColor(Color.red);
-						for (int i = 0; i <4; i++) {
-							g2.drawRect(this._patt3.vertex2_x[i]-1,this._patt3.vertex2_y[i]-1, 2, 2);
-						}
 					}
 					g.drawImage(sink, ins.left + 320, ins.top, 128, 128, null);
 					g.drawImage(sink2, ins.left + 320, ins.top + 128, 400, 400, null);
@@ -178,9 +175,7 @@ public class PattPickupTest extends Frame implements JmfCaptureListener
 					Image img = b2i.createImage(i_buffer);
 					g.drawImage(img, ins.left, ins.top, this);
 					g.setColor(Color.blue);
-					for (int i = 0; i < 225*4; i++) {
-						g.drawRect(ins.left+this._patt3.vertex_x[i]-1,ins.top+this._patt3.vertex_y[i]-1, 2, 2);
-					}
+
 				
 				}
 				/*

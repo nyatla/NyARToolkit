@@ -61,7 +61,7 @@ public abstract class NyARRgbRaster_BasicClass implements INyARRgbRaster
 	{
 		this._size= i_size;
 	}
-	public INyARRgbPixelReader getRgbPixcelReader() throws NyARException
+	public INyARRgbPixelReader getRgbPixelReader() throws NyARException
 	{
 		NyARException.notImplement();
 		return null;

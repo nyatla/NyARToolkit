@@ -303,7 +303,7 @@ class PerspectivePixelReader
 		for(int i=0;i<10;i++){
 			freq_count_table[i]=0;
 		}
-		final int freq_table[]=this._freq_table;
+		final int[] freq_table=this._freq_table;
 		for(int i=0;i<110;i++){
 			freq_table[i]=0;
 		}
@@ -425,8 +425,8 @@ class PerspectivePixelReader
 	}	
 
 	class THighAndLow{
-		int h;
-		int l;
+		public int h;
+		public int l;
 	}
 	/**
 	 * ピクセル配列の上位、下位の4ピクセルのピクセル値平均を求めます。
@@ -604,8 +604,8 @@ class PerspectivePixelReader
 	private int detectDataBitsIndex(PerspectivePixelReader.TThreshold i_th,double[] o_index_row,double[] o_index_col) throws NyARException
 	{
 		//周波数を測定
-		final int freq_index1[]=this.__detectDataBitsIndex_freq_index1;
-		final int freq_index2[]=this.__detectDataBitsIndex_freq_index2;
+		final int[] freq_index1=this.__detectDataBitsIndex_freq_index1;
+		final int[] freq_index2=this.__detectDataBitsIndex_freq_index2;
 		
 		
 		int frq_t=getRowFrequency(i_th.lt_y,i_th.th_h,i_th.th_l,freq_index1);
@@ -871,7 +871,9 @@ class MarkerPattEncoder
 		case 4:
 		case 5:
 		case 6:
-		case 7:
+        case 7:
+        default:
+            break;
 		}
 		return -1;
 	}
@@ -888,7 +890,9 @@ class MarkerPattEncoder
 		case 4:
 		case 5:
 		case 6:
-		case 7:
+        case 7:
+        default:
+            break;
 		}
 		return -1;
 	}

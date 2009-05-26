@@ -150,19 +150,23 @@ public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresh
 		return;//未実装一号
 	}
 
-
-	private int createHistgram(INyARBufferReader i_reader,NyARIntSize i_size, int[] o_histgram) throws NyARException
+	private int[] _histgram_buf=new int[256];
+	public void analyzeRaster(INyARRaster i_input) throws NyARException
 	{
-		//最大画像サイズの制限
-		assert i_size.w*i_size.h<0x40000000;
+		final INyARBufferReader buffer_reader=i_input.getBufferReader();	
+		assert (buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8));
 
-		int[] histgram = o_histgram;
+		final int[] histgram = this._histgram_buf;
+		final NyARIntSize size=i_input.getSize();
 		
-		//ヒストグラム作成		
+		//最大画像サイズの制限
+		assert size.w*size.h<0x40000000;
+
+		//ヒストグラム初期化
 		for (int i = 0; i < 256; i++) {
-			o_histgram[i] = 0;
+			histgram[i] = 0;
 		}
-		int sum_of_pixel=this._histgram.createHistgramImpl(i_reader, i_size, o_histgram);
+		int sum_of_pixel=this._histgram.createHistgramImpl(i_input.getBufferReader(), size, histgram);
 
 		// 閾値ピクセル数確定
 		final int th_pixcels = sum_of_pixel * this._persentage / 100;
@@ -186,72 +190,9 @@ public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresh
 			}
 		}
 		// 閾値の保存
-		return (th_w + th_b) / 2;
-	}
-
-	public void analyzeRaster(INyARRaster i_input) throws NyARException
-	{
-		final INyARBufferReader buffer_reader=i_input.getBufferReader();	
-		assert (buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8));
-
-		int[] histgram = new int[256];
-		// 閾値の基準値を出す。
-		this._threshold = createHistgram(buffer_reader,i_input.getSize(), histgram);
+		this._threshold = (th_w + th_b) / 2;
 		return;
 	}
-
-	/**
-	 * ヒストグラムをラスタに書き出す。
-	 * 
-	 * @param i_output
-	 */
-	public void debugDrawHistgramMap(INyARRaster i_input, INyARRaster i_output) throws NyARException
-	{
-		INyARBufferReader in_buffer_reader=i_input.getBufferReader();	
-		INyARBufferReader out_buffer_reader=i_output.getBufferReader();	
-		assert (in_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8));
-		assert (out_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8));
-
-		NyARIntSize size = i_output.getSize();
-
-		int[] out_buf = (int[]) out_buffer_reader.getBuffer();
-		// 0で塗りつぶし
-		for (int y = 0; y < size.h; y++) {
-			for (int x = 0; x < size.w; x++) {
-				out_buf[y* size.w+x] = 0;
-			}
-		}
-		// ヒストグラムを計算
-		int[] histgram = new int[256];
-		int threshold = createHistgram(in_buffer_reader,i_input.getSize(), histgram);
-		for (int i = 255; i > 0; i--) {
-			histgram[i] = Math.abs(histgram[i]);
-		}
-
-		// ヒストグラムの最大値を出す
-		int max_v = 0;
-		for (int i = 0; i < 255; i++) {
-			if (max_v < histgram[i]) {
-				max_v = histgram[i];
-			}
-		}
-		// 目盛り
-		for (int i = 0; i < size.h; i++) {
-			out_buf[i* size.w+0] = 128;
-			out_buf[i* size.w+128] = 128;
-			out_buf[i* size.w+255] = 128;
-		}
-		// スケーリングしながら描画
-		for (int i = 0; i < 255; i++) {
-			out_buf[(histgram[i] * (size.h - 1) / max_v)* size.w+i] = 255;
-		}
-		// 値
-		for (int i = 0; i < size.h; i++) {
-			out_buf[i* size.w+threshold] = 255;
-		}
-		return;
-	}
-
 	public int getThreshold()
 	{
 		return this._threshold;
