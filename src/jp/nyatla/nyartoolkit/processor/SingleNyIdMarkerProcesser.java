@@ -59,7 +59,7 @@ public abstract class SingleNyIdMarkerProcesser
 	private INyIdMarkerData _data_temp;
 	private INyIdMarkerData _data_current;
 
-	private int _current_threshold;
+	private int _current_threshold=110;
 	// [AR]検出結果の保存用
 	private NyARBinRaster _bin_raster;
 
@@ -139,11 +139,12 @@ public abstract class SingleNyIdMarkerProcesser
 		NyIdMarkerParam param=this._marker_param;
 		NyIdMarkerPattern patt_data  =this._marker_data;
 		int number_of_square = i_stack.getLength();
-		int square_index = 0;
+		NyARSquare current_square=null;
 		INyIdMarkerData marker_id=null;
 		for (int i = 0; i < number_of_square; i++) {
 			// 評価基準になるパターンをイメージから切り出す
-			if (!this._id_pickup.pickFromRaster(i_raster, (NyARSquare) i_stack.getItem(i), patt_data, param)) {
+			current_square=(NyARSquare) i_stack.getItem(i);
+			if (!this._id_pickup.pickFromRaster(i_raster,current_square, patt_data, param)) {
 				continue;
 			}
 			//エンコード
@@ -157,7 +158,7 @@ public abstract class SingleNyIdMarkerProcesser
 		}
 		
 		// 認識状態を更新
-		final boolean is_id_found=updateStatus((NyARSquare) this._square_list.getItem(square_index),marker_id, param);
+		final boolean is_id_found=updateStatus(current_square,marker_id, param);
 
 		//閾値フィードバック(detectExistMarkerにもあるよ)
 		if(is_id_found){
@@ -179,11 +180,12 @@ public abstract class SingleNyIdMarkerProcesser
 		NyIdMarkerParam param=this._marker_param;
 		NyIdMarkerPattern patt_data  =this._marker_data;
 		int number_of_square = i_stack.getLength();
-		int square_index = 0;
+		NyARSquare current_square=null;
 		INyIdMarkerData marker_id=null;
 		for (int i = 0; i < number_of_square; i++){
 			//idマーカを認識
-			if (!this._id_pickup.pickFromRaster(i_raster, (NyARSquare) i_stack.getItem(i), patt_data, param)) {
+			current_square=(NyARSquare) i_stack.getItem(i);
+			if (!this._id_pickup.pickFromRaster(i_raster, current_square, patt_data, param)) {
 				continue;
 			}
 			if(!this._encoder.encode(patt_data,this._data_temp)){
@@ -198,7 +200,7 @@ public abstract class SingleNyIdMarkerProcesser
 			break;
 		}
 		// 認識状態を更新
-		final boolean is_id_found=updateStatus((NyARSquare) this._square_list.getItem(square_index),marker_id,param);
+		final boolean is_id_found=updateStatus(current_square,marker_id,param);
 
 		//閾値フィードバック(detectExistMarkerにもあるよ)
 		if(is_id_found){

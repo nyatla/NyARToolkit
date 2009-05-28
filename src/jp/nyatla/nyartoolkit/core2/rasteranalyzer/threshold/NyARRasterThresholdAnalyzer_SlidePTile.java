@@ -60,6 +60,8 @@ public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresh
 		}
 		public int createHistgramImpl(INyARBufferReader i_reader,NyARIntSize i_size, int[] o_histgram)
 		{
+			assert (i_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8));
+
 			int sum=0;
 			final int[] input=(int[]) i_reader.getBuffer();
 			for (int y = i_size.h-1; y >=0 ; y-=this._v_interval){
@@ -73,6 +75,10 @@ public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresh
 			return sum;
 		}
 	}
+	/**
+	 * RGB24bitのヒストグラム計算クラス
+	 *
+	 */
 	final class CreateHistgramImpl_BYTE1D_RGB_24 implements ICreateHistgramImpl
 	{
 		private int _v_interval;
@@ -83,6 +89,10 @@ public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresh
 		}
 		public int createHistgramImpl(INyARBufferReader i_reader,NyARIntSize i_size, int[] o_histgram)
 		{
+			assert (
+				i_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24)||
+				i_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24));
+			
 			final byte[] input=(byte[]) i_reader.getBuffer();
 			final int pix_count=i_size.w;
 			final int pix_mod_part=pix_count-(pix_count%8);
@@ -120,6 +130,61 @@ public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresh
 			return sum;		
 		}
 	}
+	/**
+	 * RGBX32bitのヒストグラム計算クラス
+	 *
+	 */	
+    final class CreateHistgramImpl_BYTE1D_B8G8R8X8_32 implements ICreateHistgramImpl
+    {
+        private int _v_interval;
+        public CreateHistgramImpl_BYTE1D_B8G8R8X8_32(int i_v_interval)
+        {
+            this._v_interval = i_v_interval;
+            return;
+        }
+        public int createHistgramImpl(INyARBufferReader i_reader, NyARIntSize i_size, int[] o_histgram)
+        {
+            assert(i_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8X8_32));
+            byte[] input = (byte[])i_reader.getBuffer();
+            int pix_count = i_size.w;
+            int pix_mod_part = pix_count - (pix_count % 8);
+            int sum = 0;
+            for (int y = i_size.h - 1; y >= 0; y -= this._v_interval)
+            {
+                sum += i_size.w;
+                int pt = y * i_size.w * 3;
+                int x, v;
+                for (x = pix_count - 1; x >= pix_mod_part; x--)
+                {
+                    v = ((input[pt + 0] & 0xff) + (input[pt + 1] & 0xff) + (input[pt + 2] & 0xff)) / 3;
+                    o_histgram[v]++;
+                    pt += 4;
+                }
+                //タイリング
+                for (; x >= 0; x -= 8)
+                {
+                    v = ((input[pt + 0] & 0xff) + (input[pt + 1] & 0xff) + (input[pt + 2] & 0xff)) / 3;
+                    o_histgram[v]++;
+                    v = ((input[pt + 4] & 0xff) + (input[pt + 5] & 0xff) + (input[pt + 6] & 0xff)) / 3;
+                    o_histgram[v]++;
+                    v = ((input[pt + 8] & 0xff) + (input[pt + 9] & 0xff) + (input[pt + 10] & 0xff)) / 3;
+                    o_histgram[v]++;
+                    v = ((input[pt + 12] & 0xff) + (input[pt + 13] & 0xff) + (input[pt + 14] & 0xff)) / 3;
+                    o_histgram[v]++;
+                    v = ((input[pt + 16] & 0xff) + (input[pt + 17] & 0xff) + (input[pt + 18] & 0xff)) / 3;
+                    o_histgram[v]++;
+                    v = ((input[pt + 20] & 0xff) + (input[pt + 21] & 0xff) + (input[pt + 22] & 0xff)) / 3;
+                    o_histgram[v]++;
+                    v = ((input[pt + 24] & 0xff) + (input[pt + 25] & 0xff) + (input[pt + 26] & 0xff)) / 3;
+                    o_histgram[v]++;
+                    v = ((input[pt + 28] & 0xff) + (input[pt + 29] & 0xff) + (input[pt + 30] & 0xff)) / 3;
+                    o_histgram[v]++;
+                    pt += 4 * 8;
+                }
+            }
+            return sum;
+        }
+    }	
 	private int _persentage;
 	private int _threshold;
 	private ICreateHistgramImpl _histgram;
@@ -133,17 +198,21 @@ public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresh
 	{
 		assert (0 <= i_persentage && i_persentage <= 50);
 		this._persentage = i_persentage;
-		switch(i_raster_format){
-		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24:
-		case INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24:
-			this._histgram=new CreateHistgramImpl_BYTE1D_RGB_24(i_vertical_interval);
-			break;
-		case INyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8:
-			this._histgram=new CreateHistgramImpl_INT1D_GLAY_8(i_vertical_interval);
-			break;
-		default:
-			throw new NyARException();
-		}
+        switch (i_raster_format)
+        {
+            case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24:
+            case INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+                this._histgram = new CreateHistgramImpl_BYTE1D_RGB_24(i_vertical_interval);
+                break;
+            case INyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8:
+                this._histgram = new CreateHistgramImpl_INT1D_GLAY_8(i_vertical_interval);
+                break;
+            case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8X8_32:
+                this._histgram = new CreateHistgramImpl_BYTE1D_B8G8R8X8_32(i_vertical_interval);
+                break;
+            default:
+                throw new NyARException();
+        }
 	}
 	public void setVerticalInterval(int i_step)
 	{
@@ -153,9 +222,6 @@ public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresh
 	private int[] _histgram_buf=new int[256];
 	public void analyzeRaster(INyARRaster i_input) throws NyARException
 	{
-		final INyARBufferReader buffer_reader=i_input.getBufferReader();	
-		assert (buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8));
-
 		final int[] histgram = this._histgram_buf;
 		final NyARIntSize size=i_input.getSize();
 		
