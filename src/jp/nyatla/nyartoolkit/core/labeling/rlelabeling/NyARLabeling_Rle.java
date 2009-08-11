@@ -16,8 +16,8 @@ import jp.nyatla.nyartoolkit.core.raster.*;
 
 class RleElement
 {
-	short l;
-	short r;
+	int l;
+	int r;
 	short id;
 	public static RleElement[] createArray(int i_length)
 	{
@@ -52,8 +52,8 @@ public class NyARLabeling_Rle
 	 */
 	private int toRel(int[] i_bin_buf, int i_st, int i_len, RleElement[] i_out)
 	{
-		short current = 0;
-		short r = -1;
+		int current = 0;
+		int r = -1;
 		// 行確定開始
 		int x = i_st;
 		final int right_edge = i_st + i_len - 1;
@@ -64,7 +64,7 @@ public class NyARLabeling_Rle
 				continue;
 			}
 			// 暗点発見→暗点長を調べる
-			r = (short) (x - i_st);
+			r = (x - i_st);
 			i_out[current].l = r;
 			r++;// 暗点+1
 			x++;
@@ -93,11 +93,11 @@ public class NyARLabeling_Rle
 		} else {
 			// 暗点→カウント中でなければl1で追加
 			if (r >= 0) {
-				i_out[current].r = (short) (r + 1);
+				i_out[current].r = (r + 1);
 			} else {
 				// 最後の1点の場合
-				i_out[current].l = (short) (i_st + i_len - 1);
-				i_out[current].r = (short) (i_st + i_len);
+				i_out[current].l = (i_st + i_len - 1);
+				i_out[current].r = (i_st + i_len);
 			}
 			current++;
 		}
@@ -107,12 +107,21 @@ public class NyARLabeling_Rle
 
 	private void addFragment(RleElement i_rel_img, short i_nof, int i_row_index, int i_rel_index,RleLabelFragmentInfoStack o_stack) throws NyARException
 	{
+		int l=i_rel_img.l;
+		final int len=i_rel_img.r - l;
 		i_rel_img.id = i_nof;// REL毎の固有ID
 		RleLabelFragmentInfoStack.RleLabelFragmentInfo v = o_stack.prePush();
 		v.id = i_nof;
-		v.entry_x = i_rel_img.l;
-		v.entry_y = (short) i_row_index;
-		v.area = i_rel_img.r - i_rel_img.l;
+		v.entry_x = l;
+		v.area =len;
+		v.clip_l=l;
+		v.clip_r=i_rel_img.r;
+		v.clip_t=i_row_index;
+		v.clip_b=i_row_index;
+		v.pos_x+=len*(2*l+(len-1)*1);
+		v.pos_y+=i_row_index*len;
+
+		
 		return;
 	}
 
@@ -169,10 +178,18 @@ public class NyARLabeling_Rle
 					final RleLabelFragmentInfoStack.RleLabelFragmentInfo id_ptr = f_array[id];
 					prev_ptr = f_array[rle_prev[index_prev].id];
 					rle_current[i].id = id;
-					id_ptr.area += (rle_current[i].r - rle_current[i].l);
-					// エントリポイントの情報をコピー
+					//
+					final int l= rle_current[i].l;
+					final int r= rle_current[i].r;
+					final int len=rle_current[i].r - rle_current[i].l;
+					id_ptr.area += len;
 					id_ptr.entry_x = prev_ptr.entry_x;
-					id_ptr.entry_y = prev_ptr.entry_y;
+					id_ptr.clip_l=l<prev_ptr.clip_l?l:prev_ptr.clip_l;
+					id_ptr.clip_r=r>prev_ptr.clip_r?r:prev_ptr.clip_r;
+					//id_ptr.clip_tは変更無し。
+					id_ptr.clip_b=y;
+					id_ptr.pos_x+=len*(2*l+(len-1)*1);
+					id_ptr.pos_y+=y*len;
 					// 多重リンクの確認
 
 					index_prev++;
@@ -193,21 +210,32 @@ public class NyARLabeling_Rle
 							prev_ptr.area = 0;
 							// 結合対象->現在のidをインデクスにセット
 							prev_ptr.id = id;
-							// エントリポイントを訂正
-							if (id_ptr.entry_y > prev_ptr.entry_y) {
-								// 現在のエントリポイントの方が下にある。(何もしない)
-							}
-							if (id_ptr.entry_y < prev_ptr.entry_y) {
-								// 現在のエントリポイントの方が上にある。（エントリポイントの交換）
-								prev_ptr.entry_y = id_ptr.entry_y;
-								prev_ptr.entry_x = id_ptr.entry_x;
+							//tとentry_xの決定
+							if (id_ptr.clip_t > prev_ptr.clip_t) {
+								// 現在の方が下にある。
+								id_ptr.clip_t = prev_ptr.clip_t;
+								id_ptr.entry_x = prev_ptr.entry_x;
+							}else if (id_ptr.clip_t < prev_ptr.clip_t) {
+								// 現在の方が上にある。なにもしない。
 							} else {
 								// 水平方向で小さい方がエントリポイント。
-								if (id_ptr.entry_x < prev_ptr.entry_x) {
-									prev_ptr.entry_y = id_ptr.entry_y;
-									prev_ptr.entry_x = id_ptr.entry_x;
+								if (id_ptr.entry_x > prev_ptr.entry_x) {
+									id_ptr.entry_x = prev_ptr.entry_x;
 								}
+							}							
+							//bの決定(現状のまま)
+							//lの決定
+							if (id_ptr.clip_l > prev_ptr.clip_l) {
+								id_ptr.clip_l=prev_ptr.clip_l;
 							}
+							//rの決定
+							if (id_ptr.clip_r < prev_ptr.clip_r) {
+								id_ptr.clip_r=prev_ptr.clip_r;
+							}
+							id_ptr.pos_x+=prev_ptr.pos_x;
+							id_ptr.pos_y+=prev_ptr.pos_y;							
+							
+
 						}
 						index_prev++;
 					}

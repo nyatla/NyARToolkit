@@ -1,5 +1,6 @@
 package jp.nyatla.nyartoolkit.core.squaredetect;
 
+
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.INyARSquareDetector;
 import jp.nyatla.nyartoolkit.core.NyARSquare;
@@ -67,7 +68,6 @@ public class NyARSquareDetector_Rle implements INyARSquareDetector
 	public final void detectMarker(NyARBinRaster i_raster, NyARSquareStack o_square_stack) throws NyARException
 	{
 		final RleLabelFragmentInfoStack flagment=this._stack;
-		// 初期化
 
 		// マーカーホルダをリセット
 		o_square_stack.clear();
@@ -124,7 +124,7 @@ public class NyARSquareDetector_Rle implements INyARSquareDetector
 //				continue;
 //			}
 			// 輪郭を取得
-			coord_num = _cpickup.getContour(i_raster,label_pt.entry_x,label_pt.entry_y, coord_max, xcoord, ycoord);
+			coord_num = _cpickup.getContour(i_raster,label_pt.entry_x,label_pt.clip_t, coord_max, xcoord, ycoord);
 			if (coord_num == coord_max) {
 				// 輪郭が大きすぎる。
 				continue;
