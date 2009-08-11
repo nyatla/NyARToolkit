@@ -37,7 +37,7 @@ package jp.nyatla.nyartoolkit.nyidmarker.data;
  */
 public class NyIdMarkerData_RawBit implements INyIdMarkerData
 {
-	public int[] packet=new int[22];
+	public final int[] packet=new int[22];
 	public int length;
 	public boolean isEqual(INyIdMarkerData i_target)
 	{

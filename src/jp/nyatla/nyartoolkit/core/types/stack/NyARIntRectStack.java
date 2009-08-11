@@ -35,18 +35,15 @@ package jp.nyatla.nyartoolkit.core.types.stack;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.utils.NyObjectStack;
 
-public class NyARIntRectStack extends NyObjectStack
+public class NyARIntRectStack extends NyObjectStack<NyARIntRect>
 {
 	public NyARIntRectStack(int i_length)
 	{
-		super(new NyARIntRect[i_length]);
-
+		super(i_length,NyARIntRect.class);
 	}
-
-	protected void onReservRequest(int i_start, int i_end, Object[] i_buffer)
+	protected NyARIntRect createElement()
 	{
-		for (int i = i_start; i < i_end; i++) {
-			i_buffer[i] = new NyARIntRect();
-		}
+		return new NyARIntRect();
 	}
+	
 }

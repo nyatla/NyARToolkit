@@ -112,14 +112,17 @@ public class NyARDetectMarker
 	 * i_codeのマーカーサイズをミリメートルで指定した配列を指定します。 先頭からi_number_of_code個の要素には、有効な値を指定する必要があります。
 	 * @param i_number_of_code
 	 * i_codeに含まれる、ARCodeの数を指定します。
+	 * @param i_input_raster_type
+	 * 入力ラスタのピクセルタイプを指定します。この値は、INyARBufferReaderインタフェイスのgetBufferTypeの戻り値を指定します。
 	 * @throws NyARException
 	 */
-	public NyARDetectMarker(NyARParam i_param,NyARCode[] i_code,double[] i_marker_width, int i_number_of_code) throws NyARException
+	public NyARDetectMarker(NyARParam i_param,NyARCode[] i_code,double[] i_marker_width, int i_number_of_code,int i_input_raster_type) throws NyARException
 	{
 		final NyARIntSize scr_size=i_param.getScreenSize();
 		// 解析オブジェクトを作る
 		this._square_detect = new NyARSquareDetector(i_param.getDistortionFactor(),scr_size);
 		this._transmat = new NyARTransMat(i_param);
+		this._tobin_filter=new NyARRasterFilter_ARToolkitThreshold(100,i_input_raster_type);
 
 		//各コード用の比較器を作る。
 		this._match_patt=new NyARMatchPatt_Color_WITHOUT_PCA[i_number_of_code];
@@ -146,7 +149,7 @@ public class NyARDetectMarker
 
 	private NyARBinRaster _bin_raster;
 
-	private NyARRasterFilter_ARToolkitThreshold _tobin_filter = new NyARRasterFilter_ARToolkitThreshold(100);
+	private NyARRasterFilter_ARToolkitThreshold _tobin_filter;
 	private final NyARMatchPattResult __detectMarkerLite_mr=new NyARMatchPattResult();
 
 	/**
@@ -186,7 +189,7 @@ public class NyARDetectMarker
 
 		// 1スクエア毎に、一致するコードを決定していく
 		for (int i = 0; i < number_of_square; i++) {
-			NyARSquare square = (NyARSquare)l_square_list.getItem(i);
+			NyARSquare square = (l_square_list.getItem(i));
 
 			// 評価基準になるパターンをイメージから切り出す
 			if (!this._patt.pickFromRaster(i_raster, square)) {

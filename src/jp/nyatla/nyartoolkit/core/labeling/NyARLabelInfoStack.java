@@ -31,30 +31,20 @@
  */
 package jp.nyatla.nyartoolkit.core.labeling;
 
+
 import jp.nyatla.utils.*;
 
 /**
  * NyLabelの予約型動的配列
  * 
  */
-public class NyARLabelingLabelStack extends NyObjectStack
+public abstract class NyARLabelInfoStack<T extends NyARLabelInfo> extends NyObjectStack<T>
 {
-	protected NyARLabelingLabelStack(NyARLabelingLabel[] i_label_array)
+	public NyARLabelInfoStack(int i_length,Class<T> i_element_type)
 	{
-		super(i_label_array);		
+		super(i_length,i_element_type);
 	}
-	public NyARLabelingLabelStack(int i_max_array_size)
-	{
-		super(new NyARLabelingLabel[i_max_array_size]);
-	}
-
-	protected void onReservRequest(int i_start, int i_end, Object[] i_buffer)
-	{
-		for (int i = i_start; i < i_end; i++) {
-			i_buffer[i] = new NyARLabelingLabel();
-		}
-	}
-
+		
 	/**
 	 * エリアの大きい順にラベルをソートします。
 	 */
@@ -62,12 +52,12 @@ public class NyARLabelingLabelStack extends NyObjectStack
 	{
 		int len=this._length;
 		int h = len *13/10;
-		NyARLabelingLabel[] item=(NyARLabelingLabel[])this._items;
+		T[] item=this._items;
 		for(;;){
 		    int swaps = 0;
 		    for (int i = 0; i + h < len; i++) {
 		        if (item[i + h].area > item[i].area) {
-		            final NyARLabelingLabel temp = item[i + h];
+		            final T temp = item[i + h];
 		            item[i + h] = item[i];
 		            item[i] = temp;
 		            swaps++;

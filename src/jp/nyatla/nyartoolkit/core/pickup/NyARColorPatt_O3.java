@@ -212,6 +212,8 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 			this.__updateExtpat_xw=new double[i_xdiv];
 			this.__updateExtpat_yw=new double[i_ydiv];
 			this.__updateExtpat_rgbset=new int[i_xdiv*i_ydiv*3];
+			this._last_pix_resolution_x=i_xdiv;
+			this._last_pix_resolution_y=i_ydiv;
 		}
 		return;
 	}

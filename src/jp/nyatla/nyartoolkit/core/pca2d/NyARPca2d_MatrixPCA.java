@@ -67,7 +67,7 @@ public class NyARPca2d_MatrixPCA implements INyARPca2d
 		o_evec.m10=evec_array[1][0];
 		o_evec.m11=evec_array[1][1];
 		o_ev.x=ev_array[0];
-		o_ev.x=ev_array[1];
+		o_ev.y=ev_array[1];
 		o_mean.x=mean_array[0];
 		o_mean.y=mean_array[1];
 		return;

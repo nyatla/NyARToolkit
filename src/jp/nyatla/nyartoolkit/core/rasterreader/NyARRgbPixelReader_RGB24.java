@@ -31,6 +31,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterreader;
 
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
 /**
  * byte[]配列に、パディング無しの8bit画素値が、RGBRGBの順で並んでいる
@@ -71,5 +72,14 @@ public class NyARRgbPixelReader_RGB24 implements INyARRgbPixelReader
 			o_rgb[i * 3 + 2] = (ref_buf[bp + 2] & 0xff);// B
 		}
 		return;
-	}	
+	}
+	public void setPixel(int i_x, int i_y, int[] i_rgb) throws NyARException
+	{
+		NyARException.notImplement();		
+	}
+	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intrgb) throws NyARException
+	{
+		NyARException.notImplement();		
+	}
+	
 }

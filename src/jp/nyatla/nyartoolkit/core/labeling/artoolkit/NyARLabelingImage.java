@@ -29,7 +29,7 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.labeling;
+package jp.nyatla.nyartoolkit.core.labeling.artoolkit;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
@@ -40,7 +40,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
 /**
  *
  */
-public class NyARLabelingImage extends NyARRaster_BasicClass implements INyARLabelingImage
+public class NyARLabelingImage extends NyARRaster_BasicClass
 {
 	private final static int MAX_LABELS = 1024*32;	
 	protected int[] _ref_buf;
@@ -56,14 +56,34 @@ public class NyARLabelingImage extends NyARRaster_BasicClass implements INyARLab
 		this._index_table=new int[MAX_LABELS];
 		this._is_index_table_enable=false;
 		this._buffer_reader=new NyARBufferReader(this._ref_buf,INyARBufferReader.BUFFERFORMAT_INT1D);
-		
+		//生成時に枠を書きます。
+		drawFrameEdge();
 		return;
 	}
 	public INyARBufferReader getBufferReader()
 	{
 		return this._buffer_reader;
 	}
-
+	/**
+	 * エッジを書きます。
+	 */
+	public void drawFrameEdge()
+	{
+		int w=this._size.w;
+		int h=this._size.h;
+		// NyLabelingImageのイメージ初期化(枠書き)
+		int[] img = (int[]) this._ref_buf;
+		int bottom_ptr = (h - 1) * w;
+		for (int i = 0; i < w; i++) {
+			img[i] = 0;
+			img[bottom_ptr + i] = 0;
+		}
+		for (int i = 0; i < h; i++) {
+			img[i * w] = 0;
+			img[(i + 1) * w - 1] = 0;
+		}
+		return;
+	}
 
 	/**
 	 * ラベリング結果がインデックステーブルを持つ場合、その配列を返します。
@@ -92,15 +112,16 @@ public class NyARLabelingImage extends NyARRaster_BasicClass implements INyARLab
 		this._is_index_table_enable=i_label_index_enable;
 		return;
 	}
-	
-	protected final int[] _getContour_xdir = { 0, 1, 1, 1, 0,-1,-1,-1};
-	protected final int[] _getContour_ydir = {-1,-1, 0, 1, 1, 1, 0,-1};
+	//巡回参照できるように、テーブルを二重化
+	//                                           0  1  2  3  4  5  6  7   0  1  2  3  4  5  6
+	protected final static int[] _getContour_xdir = { 0, 1, 1, 1, 0,-1,-1,-1 , 0, 1, 1, 1, 0,-1,-1};
+	protected final static int[] _getContour_ydir = {-1,-1, 0, 1, 1, 1, 0,-1 ,-1,-1, 0, 1, 1, 1, 0};
 	/**
 	 * i_labelのラベルの、クリップ領域が上辺に接しているx座標を返します。
 	 * @param i_index
 	 * @return
 	 */
-	protected int getTopClipTangentX(NyARLabelingLabel i_label) throws NyARException
+	public int getTopClipTangentX(NyARLabelingLabel i_label) throws NyARException
 	{
 		int pix;
 		int i_label_id=i_label.id;
@@ -117,65 +138,5 @@ public class NyARLabelingImage extends NyARRaster_BasicClass implements INyARLab
 		}
 		//あれ？見つからないよ？
 		throw new NyARException();
-	}
-	/**
-	 * i_index番目のラベルの輪郭線を配列に返します。
-	 * @param i_index
-	 * @param i_array_size
-	 * @param o_coord_x
-	 * @param o_coord_y
-	 * @return
-	 * 輪郭線の長さを返します。
-	 * @throws NyARException
-	 */
-	public int getContour(int i_index,int i_array_size,int[] o_coord_x,int[] o_coord_y) throws NyARException
-	{
-		final int width=this._size.w;
-		final int[] xdir = this._getContour_xdir;// static int xdir[8] = { 0,1, 1, 1, 0,-1,-1,-1};
-		final int[] ydir = this._getContour_ydir;// static int ydir[8] = {-1,-1,0, 1, 1, 1, 0,-1};
-		final NyARLabelingLabel label=(NyARLabelingLabel)this._label_list.getItem(i_index);		
-		int i;
-		//クリップ領域の上端に接しているポイントを得る。
-		int sx=getTopClipTangentX(label);
-		int sy=label.clip_t;
-
-		int coord_num = 1;
-		o_coord_x[0] = sx;
-		o_coord_y[0] = sy;
-		int dir = 5;
-
-		int[] limage=this._ref_buf;
-		int c = o_coord_x[0];
-		int r = o_coord_y[0];
-		for (;;) {
-			dir = (dir + 5) % 8;
-			for (i = 0; i < 8; i++) {
-				if (limage[(r + ydir[dir])*width+(c + xdir[dir])] > 0) {
-					break;
-				}
-				dir = (dir + 1) % 8;
-			}
-			if (i == 8) {
-				//8方向全て調べたけどラベルが無いよ？
-				throw new NyARException();// return(-1);
-			}
-			// xcoordとycoordをc,rにも保存
-			c = c + xdir[dir];
-			r = r + ydir[dir];
-			o_coord_x[coord_num] = c;
-			o_coord_y[coord_num] = r;
-			// 終了条件判定
-			if (c == sx && r == sy){
-				coord_num++;
-				break;
-			}
-			coord_num++;
-			if (coord_num == i_array_size) {
-				//輪郭が末端に達した
-				return coord_num;
-			}
-		}
-		return coord_num;		
-		
 	}
 }

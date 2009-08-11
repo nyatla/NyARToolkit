@@ -252,7 +252,7 @@ public class NyARRasterDetector_QrCodeEdge
 					break;
 				case 10:
 					/* コード特定→保管 */
-					item = (NyARIntRect)this._result.prePush();
+					item = this._result.prePush();
 					item.x = x;
 					item.y = y;
 					item.w =s_pos-x;

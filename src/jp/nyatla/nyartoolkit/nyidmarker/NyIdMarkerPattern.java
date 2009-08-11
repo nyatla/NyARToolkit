@@ -42,5 +42,5 @@ public class NyIdMarkerPattern
 	public int ctrl_domain;
 	public int ctrl_mask;
 	public int check;
-	public int[] data=new int[32];
+	public final int[] data=new int[32];
 }

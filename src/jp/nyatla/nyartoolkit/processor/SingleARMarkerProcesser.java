@@ -88,20 +88,20 @@ public abstract class SingleARMarkerProcesser
 	// [AR]検出結果の保存用
 	private NyARBinRaster _bin_raster;
 
-	private NyARRasterFilter_ARToolkitThreshold _tobin_filter = new NyARRasterFilter_ARToolkitThreshold(110);
+	private NyARRasterFilter_ARToolkitThreshold _tobin_filter;
 
 	protected int _current_arcode_index = -1;
 
 	private NyARMatchPattDeviationColorData _deviation_data;
 
 
-	public SingleARMarkerProcesser(NyARParam i_param) throws NyARException
+	public SingleARMarkerProcesser(NyARParam i_param,int i_raster_type) throws NyARException
 	{
 		NyARIntSize scr_size = i_param.getScreenSize();
 		// 解析オブジェクトを作る
 		this._square_detect = new NyARSquareDetector(i_param.getDistortionFactor(), scr_size);
 		this._transmat = new NyARTransMat(i_param);
-		this._deviation_data=new NyARMatchPattDeviationColorData(scr_size.w,scr_size.h);
+		this._tobin_filter=new NyARRasterFilter_ARToolkitThreshold(110,i_raster_type);
 
 		// ２値画像バッファを作る
 		this._bin_raster = new NyARBinRaster(scr_size.w, scr_size.h);
@@ -125,6 +125,7 @@ public abstract class SingleARMarkerProcesser
 		}
 		// 検出するマーカセット、情報、検出器を作り直す。
 		this._patt = new NyARColorPatt_O3(i_code_resolution, i_code_resolution);
+		this._deviation_data=new NyARMatchPattDeviationColorData(i_code_resolution, i_code_resolution);
 		this._marker_width = i_marker_width;
 
 		this._match_patt = new NyARMatchPatt_Color_WITHOUT_PCA[i_ref_code_table.length];
@@ -148,9 +149,7 @@ public abstract class SingleARMarkerProcesser
 	public void detectMarker(INyARRgbRaster i_raster) throws NyARException
 	{
 		// サイズチェック
-		if (!this._bin_raster.getSize().isEqualSize(i_raster.getSize().w / 2, i_raster.getSize().h / 2)) {
-			throw new NyARException();
-		}
+		assert(this._bin_raster.getSize().isEqualSize(i_raster.getSize().w, i_raster.getSize().h));
 
 		// コードテーブルが無ければここで終わり
 		if (this._match_patt== null) {
@@ -223,7 +222,7 @@ public abstract class SingleARMarkerProcesser
 		int square_index = 0;
 		TResult_selectARCodeIndex detect_result = this.__detect_X_Marker_detect_result;
 		for (int i = 0; i < number_of_square; i++) {
-			if (!selectARCodeIndexFromList(i_raster, (NyARSquare) i_stack.getItem(i), detect_result)) {
+			if (!selectARCodeIndexFromList(i_raster, (i_stack.getItem(i)), detect_result)) {
 				// 見つからない。
 				return;
 			}
@@ -240,7 +239,7 @@ public abstract class SingleARMarkerProcesser
 			dir = detect_result.direction;
 		}
 		// 認識状態を更新
-		updateStatus((NyARSquare) this._square_list.getItem(square_index), code_index, cf, dir);
+		updateStatus(this._square_list.getItem(square_index), code_index, cf, dir);
 	}
 
 	/**マーカの継続認識 現在認識中のマーカを優先して認識します。 
@@ -255,7 +254,7 @@ public abstract class SingleARMarkerProcesser
 		int square_index = 0;
 		TResult_selectARCodeIndex detect_result = this.__detect_X_Marker_detect_result;
 		for (int i = 0; i < number_of_square; i++) {
-			if (!selectARCodeIndexFromList(i_raster, (NyARSquare) i_stack.getItem(i), detect_result)) {
+			if (!selectARCodeIndexFromList(i_raster,i_stack.getItem(i), detect_result)) {
 				// 見つからない。
 				return;
 			}
@@ -277,7 +276,7 @@ public abstract class SingleARMarkerProcesser
 			square_index = i;
 		}
 		// 認識状態を更新
-		updateStatus((NyARSquare) this._square_list.getItem(square_index), code_index, cf, dir);
+		updateStatus(this._square_list.getItem(square_index), code_index, cf, dir);
 	}
 
 	private NyARTransMatResult __NyARSquare_result = new NyARTransMatResult();

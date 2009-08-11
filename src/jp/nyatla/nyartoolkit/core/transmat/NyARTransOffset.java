@@ -36,8 +36,8 @@ import jp.nyatla.nyartoolkit.core.types.*;
 
 final public class NyARTransOffset
 {
-	public NyARDoublePoint3d[] vertex=NyARDoublePoint3d.createArray(4);
-	public NyARDoublePoint3d point=new NyARDoublePoint3d();	
+	public final NyARDoublePoint3d[] vertex=NyARDoublePoint3d.createArray(4);
+	public final NyARDoublePoint3d point=new NyARDoublePoint3d();	
 	/**
 	 * 中心位置と辺長から、オフセット情報を作成して設定する。
 	 * @param i_width

@@ -90,7 +90,7 @@ public class NyARRasterThresholdAnalyzer_DiffHistgram implements INyARRasterThre
 	public void analyzeRaster(INyARRaster i_input) throws NyARException
 	{
 		final INyARBufferReader buffer_reader=i_input.getBufferReader();	
-		assert (buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8));
+		assert (buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
 		int[] histgram = new int[256];
 		this._threshold = createHistgram((int[])buffer_reader.getBuffer(),i_input.getSize(), histgram);
 	}
@@ -105,8 +105,8 @@ public class NyARRasterThresholdAnalyzer_DiffHistgram implements INyARRasterThre
 	{
 		INyARBufferReader in_buffer_reader=i_input.getBufferReader();	
 		INyARBufferReader out_buffer_reader=i_output.getBufferReader();	
-		assert (in_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8));
-		assert (out_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8));
+		assert (in_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
+		assert (out_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
 		NyARIntSize size = i_output.getSize();
 
 		int[] out_buf = (int[]) out_buffer_reader.getBuffer();

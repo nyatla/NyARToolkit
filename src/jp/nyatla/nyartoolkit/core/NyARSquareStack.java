@@ -31,20 +31,18 @@
  */
 package jp.nyatla.nyartoolkit.core;
 
+
 import jp.nyatla.utils.*;
 
-public class NyARSquareStack extends NyObjectStack
+public class NyARSquareStack extends NyObjectStack<NyARSquare>
 {
 	public NyARSquareStack(int i_length)
 	{
-		super(new NyARSquare[i_length]);
+		super(i_length,NyARSquare.class);
 
 	}
-
-	protected void onReservRequest(int i_start, int i_end, Object[] i_buffer)
+	protected NyARSquare createElement()
 	{
-		for (int i = i_start; i < i_end; i++) {
-			i_buffer[i] = new NyARSquare();
-		}
-	}
+		return new NyARSquare();
+	}	
 }

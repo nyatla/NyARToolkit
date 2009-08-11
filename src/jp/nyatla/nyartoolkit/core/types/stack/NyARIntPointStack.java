@@ -35,19 +35,15 @@ package jp.nyatla.nyartoolkit.core.types.stack;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.utils.NyObjectStack;
 
-public class NyARIntPointStack extends NyObjectStack
+public class NyARIntPointStack extends NyObjectStack<NyARIntPoint2d>
 {
 	public NyARIntPointStack(int i_length)
 	{
-		super(new NyARIntPoint2d[i_length]);
-
+		super(i_length,NyARIntPoint2d.class);
+		return;
 	}
-
-	protected void onReservRequest(int i_start, int i_end, Object[] i_buffer)
+	protected NyARIntPoint2d createElement()
 	{
-		for (int i = i_start; i < i_end; i++) {
-			i_buffer[i] = new NyARIntPoint2d();
-		}
-	}
-
+		return new NyARIntPoint2d();
+	}	
 }

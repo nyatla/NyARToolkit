@@ -63,7 +63,7 @@ public abstract class SingleNyIdMarkerProcesser
 	// [AR]検出結果の保存用
 	private NyARBinRaster _bin_raster;
 
-	private NyARRasterFilter_ARToolkitThreshold _tobin_filter = new NyARRasterFilter_ARToolkitThreshold(110);
+	private NyARRasterFilter_ARToolkitThreshold _tobin_filter;
 
 	private NyIdMarkerPickup _id_pickup = new NyIdMarkerPickup();
 
@@ -82,6 +82,7 @@ public abstract class SingleNyIdMarkerProcesser
 		this._is_active=false;
 		this._data_temp=i_encoder.createDataInstance();
 		this._data_current=i_encoder.createDataInstance();
+		this._tobin_filter = new NyARRasterFilter_ARToolkitThreshold(110,i_raster_format);
 		this._threshold_detect=new NyARRasterThresholdAnalyzer_SlidePTile(15,i_raster_format,4);
 		return;
 	}
@@ -143,7 +144,7 @@ public abstract class SingleNyIdMarkerProcesser
 		INyIdMarkerData marker_id=null;
 		for (int i = 0; i < number_of_square; i++) {
 			// 評価基準になるパターンをイメージから切り出す
-			current_square=(NyARSquare) i_stack.getItem(i);
+			current_square=i_stack.getItem(i);
 			if (!this._id_pickup.pickFromRaster(i_raster,current_square, patt_data, param)) {
 				continue;
 			}
@@ -184,7 +185,7 @@ public abstract class SingleNyIdMarkerProcesser
 		INyIdMarkerData marker_id=null;
 		for (int i = 0; i < number_of_square; i++){
 			//idマーカを認識
-			current_square=(NyARSquare) i_stack.getItem(i);
+			current_square=i_stack.getItem(i);
 			if (!this._id_pickup.pickFromRaster(i_raster, current_square, patt_data, param)) {
 				continue;
 			}

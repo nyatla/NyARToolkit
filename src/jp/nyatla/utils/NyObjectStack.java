@@ -24,18 +24,21 @@
  * 
  */
 package jp.nyatla.utils;
-
+import java.lang.reflect.*;
 import jp.nyatla.nyartoolkit.NyARException;
+
+
+
 
 /**
  * オンデマンド割り当てをするオブジェクト配列。
  * 配列には実体を格納します。
  */
-public abstract class NyObjectStack
+public abstract class NyObjectStack<T>
 {
 	private final static int ARRAY_APPEND_STEP = 64;
 
-	protected final Object[] _items;
+	protected final T[] _items;
 
 	private int _allocated_size;
 
@@ -45,21 +48,25 @@ public abstract class NyObjectStack
 	 * 最大ARRAY_MAX個の動的割り当てバッファを準備する。
 	 * 
 	 * @param i_array
+	 * @param i_element_type
+	 * JavaのGenedicsの制限突破
 	 */
-	protected NyObjectStack(Object[] i_array)
+	@SuppressWarnings("unchecked")
+	protected NyObjectStack(int i_length,Class<T> i_element_type)
 	{
 		// ポインタだけははじめに確保しておく
-		this._items = i_array;
+		this._items = (T[])Array.newInstance(i_element_type, i_length);
 		// アロケート済サイズと、使用中個数をリセット
 		this._allocated_size = 0;
 		this._length = 0;
+		return;
 	}
-
+	protected abstract T createElement();
 	/**
 	 * ポインタを1進めて、その要素を予約し、その要素へのポインタを返します。
 	 * 特定型に依存させるときには、継承したクラスでこの関数をオーバーライドしてください。
 	 */
-	public final Object prePush() throws NyARException
+	public final T prePush() throws NyARException
 	{
 		// 必要に応じてアロケート
 		if (this._length >= this._allocated_size) {
@@ -77,15 +84,15 @@ public abstract class NyObjectStack
 			this._allocated_size = range;
 		}
 		// 使用領域を+1して、予約した領域を返す。
-		Object ret = this._items[this._length];
+		T ret = this._items[this._length];
 		this._length++;
 		return ret;
 	}
-	/**
+	/** 
 	 * 見かけ上の要素数を1減らして、最後尾のアイテムを返します。
 	 * @return
 	 */
-	public final Object pop() throws NyARException
+	public final T pop() throws NyARException
 	{
 		if(this._length<1){
 			throw new NyARException();
@@ -119,28 +126,36 @@ public abstract class NyObjectStack
 		this._length=i_number_of_item;
 		return;
 	}
-
-
-
 	/**
-	 * この関数を継承先クラスで実装して下さい。
+	 * 必要に応じて、この関数を継承先クラスで実装して下さい。
 	 * i_bufferの配列の、i_start番目からi_end-1番目までの要素に、オブジェクトを割り当てて下さい。
-	 * 
 	 * @param i_start
 	 * @param i_end
 	 * @param i_buffer
-	 */
-	protected abstract void onReservRequest(int i_start, int i_end, Object[] i_buffer);
+	 */	
+	final protected void onReservRequest(int i_start, int i_end, Object[] i_buffer)
+	{
+		try {  
+			for (int i = i_start; i < i_end; i++){
+				i_buffer[i] =createElement();
+			}
+		} catch(Exception e) {  
+			e.printStackTrace();  
+		}
+		return;
+	}
+
+
 	/**
 	 * 配列を返します。
 	 * 
 	 * @return
 	 */
-	public final Object[] getArray()
+	public final T[] getArray()
 	{
 		return this._items;
 	}
-	public final Object getItem(int i_index)
+	public final T getItem(int i_index)
 	{
 		return this._items[i_index];
 	}

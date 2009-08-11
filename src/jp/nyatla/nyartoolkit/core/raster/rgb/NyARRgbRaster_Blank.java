@@ -31,6 +31,7 @@
  */
 package jp.nyatla.nyartoolkit.core.raster.rgb;
 
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.rasterreader.INyARRgbPixelReader;
 import jp.nyatla.nyartoolkit.core.rasterreader.NyARBufferReader;
@@ -59,7 +60,16 @@ public class NyARRgbRaster_Blank extends NyARRgbRaster_BasicClass
 				o_rgb[i * 3 + 1] = 0;// G
 				o_rgb[i * 3 + 2] = 0;// B
 			}
-		}		
+		}
+		public void setPixel(int i_x, int i_y, int[] i_rgb) throws NyARException
+		{
+			NyARException.notImplement();		
+		}
+		public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intrgb) throws NyARException
+		{
+			NyARException.notImplement();		
+		}
+		
 	}
 
 	private INyARRgbPixelReader _reader;

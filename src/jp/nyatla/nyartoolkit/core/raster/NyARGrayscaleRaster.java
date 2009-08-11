@@ -45,7 +45,7 @@ public final class NyARGrayscaleRaster extends NyARRaster_BasicClass
 	{
 		super(new NyARIntSize(i_width,i_height));
 		this._ref_buf = new int[i_height*i_width];
-		this._buffer_reader=new NyARBufferReader(this._ref_buf,INyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8);
+		this._buffer_reader=new NyARBufferReader(this._ref_buf,INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8);
 	}
 	public INyARBufferReader getBufferReader()
 	{

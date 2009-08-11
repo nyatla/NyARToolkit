@@ -43,6 +43,8 @@ import jp.nyatla.nyartoolkit.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.stack.*;
 import jp.nyatla.nyartoolkit.core.labeling.*;
+import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingImage;
+import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabel;
 
 /**
  * bitmapとして利用可能なラベリングイメージです。
@@ -122,7 +124,7 @@ public class LabelingBufferdImage extends BufferedImage
 
 	public void drawImage(NyARGrayscaleRaster i_raster) throws NyARException
 	{
-		assert (i_raster.getBufferReader().getBufferType() == INyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8);
+		assert (i_raster.getBufferReader().getBufferType() == INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8);
 
 		int w = this.getWidth();
 		int h = this.getHeight();
@@ -222,7 +224,7 @@ public class LabelingBufferdImage extends BufferedImage
 	public void overlayData(NyARIntPointStack i_stack)
 	{
 		int count = i_stack.getLength();
-		NyARIntPoint2d[] items = (NyARIntPoint2d[])i_stack.getArray();
+		NyARIntPoint2d[] items = i_stack.getArray();
 		Graphics g = this.getGraphics();
 		for (int i = 0; i < count; i++) {
 			int x = items[i].x;
@@ -237,7 +239,7 @@ public class LabelingBufferdImage extends BufferedImage
 	{
 		Color[] c=new Color[]{Color.cyan,Color.red,Color.green};
 		int count = i_stack.getLength();
-		NyARIntRect[] items = (NyARIntRect[])i_stack.getArray();
+		NyARIntRect[] items = i_stack.getArray();
 		Graphics g = this.getGraphics();
 		for (int i = 0; i < count; i++) {
 			int x = items[i].x;

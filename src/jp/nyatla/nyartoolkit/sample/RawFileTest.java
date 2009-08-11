@@ -79,7 +79,7 @@ public class RawFileTest
 		// Blank_Raster ra=new Blank_Raster(320, 240);
 
 		// １パターンのみを追跡するクラスを作成
-		NyARSingleDetectMarker ar = new NyARSingleDetectMarker(ap, code, 80.0);
+		NyARSingleDetectMarker ar = new NyARSingleDetectMarker(ap, code, 80.0,ra.getBufferReader().getBufferType());
 		NyARTransMatResult result_mat = new NyARTransMatResult();
 		ar.setContinueMode(false);
 		ar.detectMarkerLite(ra, 100);
@@ -87,7 +87,7 @@ public class RawFileTest
 
 		// マーカーを検出
 		Date d2 = new Date();
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < 100; i++) {
 			// 変換行列を取得
 			ar.detectMarkerLite(ra, 100);
 			ar.getTransmationMatrix(result_mat);

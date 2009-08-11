@@ -46,8 +46,8 @@ public class NyARRasterFilter_Edge implements INyARRasterFilter
 	{
 		INyARBufferReader in_buffer_reader=i_input.getBufferReader();	
 		INyARBufferReader out_buffer_reader=i_output.getBufferReader();	
-		assert (in_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8));
-		assert (out_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8));
+		assert (in_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
+		assert (out_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
 
 		int[] out_buf = (int[]) out_buffer_reader.getBuffer();

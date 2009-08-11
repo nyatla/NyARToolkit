@@ -42,5 +42,5 @@ import jp.nyatla.nyartoolkit.core.types.*;
 public class NyARTransMatResult extends NyARDoubleMatrix34
 {
 	public boolean has_value = false;
-	public NyARDoublePoint3d angle=new NyARDoublePoint3d();
+	public final NyARDoublePoint3d angle=new NyARDoublePoint3d();
 }

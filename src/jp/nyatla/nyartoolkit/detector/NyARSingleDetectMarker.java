@@ -52,11 +52,13 @@ public class NyARSingleDetectMarker extends NyARCustomSingleDetectMarker
 	 * 検出するARCodeを指定します。
 	 * @param i_marker_width
 	 * ARコードの物理サイズを、ミリメートルで指定します。
+	 * @param i_input_raster_type
+	 * 入力ラスタのピクセルタイプを指定します。この値は、INyARBufferReaderインタフェイスのgetBufferTypeの戻り値を指定します。
 	 * @throws NyARException
 	 */
-	public NyARSingleDetectMarker(NyARParam i_param, NyARCode i_code, double i_marker_width) throws NyARException
+	public NyARSingleDetectMarker(NyARParam i_param, NyARCode i_code, double i_marker_width,int i_input_raster_type) throws NyARException
 	{
-		super(i_param,i_code,i_marker_width,new NyARRasterFilter_ARToolkitThreshold(100));
+		super(i_param,i_code,i_marker_width,new NyARRasterFilter_ARToolkitThreshold(100,i_input_raster_type));
 	}
 
 
@@ -64,8 +66,8 @@ public class NyARSingleDetectMarker extends NyARCustomSingleDetectMarker
 	 * i_imageにマーカー検出処理を実行し、結果を記録します。
 	 * 
 	 * @param i_raster
-	 * マーカーを検出するイメージを指定します。イメージサイズは、カメラパラメータ
-	 * と一致していなければなりません。
+	 * マーカーを検出するイメージを指定します。イメージサイズは、コンストラクタで指定i_paramの
+	 * スクリーンサイズと一致し、かつi_input_raster_typeに指定した形式でなければいけません。
 	 * @return マーカーが検出できたかを真偽値で返します。
 	 * @throws NyARException
 	 */

@@ -29,7 +29,7 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.labeling;
+package jp.nyatla.nyartoolkit.core.labeling.artoolkit;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
@@ -39,43 +39,12 @@ import jp.nyatla.nyartoolkit.core.types.*;
  * ARToolKit互換のラベリングクラスです。 ARToolKitと同一な評価結果を返します。
  * 
  */
-public class NyARLabeling_ARToolKit implements INyARLabeling
+final public class NyARLabeling_ARToolKit
 {
 	private static final int WORK_SIZE = 1024 * 32;// #define WORK_SIZE 1024*32
 
 	private final NyARWorkHolder work_holder = new NyARWorkHolder(WORK_SIZE);
 
-	private NyARIntSize _dest_size;
-
-	private INyARLabelingImage _out_image;
-
-	public void attachDestination(INyARLabelingImage i_destination_image) throws NyARException
-	{
-		// サイズチェック
-		NyARIntSize size = i_destination_image.getSize();
-		this._out_image = i_destination_image;
-
-		// NyLabelingImageのイメージ初期化(枠書き)
-		int[] img = (int[]) i_destination_image.getBufferReader().getBuffer();
-		int bottom_ptr = (size.h - 1) * size.w;
-		for (int i = 0; i < size.w; i++) {
-			img[i] = 0;
-			img[bottom_ptr + i] = 0;
-		}
-		for (int i = 0; i < size.h; i++) {
-			img[i * size.w] = 0;
-			img[(i + 1) * size.w - 1] = 0;
-		}
-
-		// サイズ(参照値)を保存
-		this._dest_size = size;
-		return;
-	}
-
-	public INyARLabelingImage getAttachedDestination()
-	{
-		return this._out_image;
-	}
 
 	/**
 	 * static ARInt16 *labeling2( ARUint8 *image, int thresh,int *label_num, int **area, double **pos, int **clip,int **label_ref, int LorR ) 関数の代替品
@@ -84,26 +53,26 @@ public class NyARLabeling_ARToolKit implements INyARLabeling
 	 * @param i_raster
 	 * @throws NyARException
 	 */
-	public void labeling(NyARBinRaster i_raster) throws NyARException
+	public void labeling(NyARBinRaster i_raster,NyARLabelingImage o_destination) throws NyARException
 	{
 		int label_img_ptr1, label_pixel;
 		int i, j;
 		int n, k; /* work */
-
+		
 		// サイズチェック
 		NyARIntSize in_size = i_raster.getSize();
-		this._dest_size.isEqualSize(in_size);
+		assert(o_destination.getSize().isEqualSize(in_size));
 
 		final int lxsize = in_size.w;// lxsize = arUtil_c.arImXsize;
 		final int lysize = in_size.h;// lysize = arUtil_c.arImYsize;
-		final int[] label_img = (int[]) this._out_image.getBufferReader().getBuffer();
+		final int[] label_img = (int[]) o_destination.getBufferReader().getBuffer();
 
 		// 枠作成はインスタンスを作った直後にやってしまう。
 
 		// ラベリング情報のリセット（ラベリングインデックスを使用）
-		this._out_image.reset(true);
+		o_destination.reset(true);
 
-		int[] label_idxtbl = this._out_image.getIndexArray();
+		int[] label_idxtbl = o_destination.getIndexArray();
 		int[] raster_buf = (int[]) i_raster.getBufferReader().getBuffer();
 
 		int[] work2_pt;
@@ -243,18 +212,18 @@ public class NyARLabeling_ARToolKit implements INyARLabeling
 		wlabel_num -= 1;// *label_num = *wlabel_num = j - 1;
 		if (wlabel_num == 0) {// if( *label_num == 0 ) {
 			// 発見数0
-			this._out_image.getLabelStack().clear();
+			o_destination.getLabelStack().clear();
 			return;
 		}
 		// ラベル情報の保存等
-		NyARLabelingLabelStack label_list = this._out_image.getLabelStack();
+		NyARLabelingLabelStack label_list = o_destination.getLabelStack();
 
 		// ラベルバッファを予約
 		label_list.reserv(wlabel_num);
 
 		// エリアと重心、クリップ領域を計算
 		NyARLabelingLabel label_pt;
-		NyARLabelingLabel[] labels = (NyARLabelingLabel[]) label_list.getArray();
+		NyARLabelingLabel[] labels =label_list.getArray();
 		for (i = 0; i < wlabel_num; i++) {
 			label_pt = labels[i];
 			label_pt.id = i + 1;

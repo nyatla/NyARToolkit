@@ -29,12 +29,16 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.labeling;
+package jp.nyatla.nyartoolkit.core.labeling.artoolkit;
 
-public class NyARLabelingLabel
+import jp.nyatla.nyartoolkit.core.labeling.*;
+/**
+ * [[Strage class]]
+ *
+ */
+public class NyARLabelingLabel extends NyARLabelInfo
 {
 	public int id;
-	public int area;
 	public int clip_r;// 0
 	public int clip_l;// 1
 	public int clip_b;// 2

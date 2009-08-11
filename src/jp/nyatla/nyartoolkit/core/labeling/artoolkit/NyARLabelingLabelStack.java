@@ -29,15 +29,25 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.labeling;
+package jp.nyatla.nyartoolkit.core.labeling.artoolkit;
 
-import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.*;
 
-public interface INyARLabeling
+
+import jp.nyatla.nyartoolkit.core.labeling.*;
+
+/**
+ * NyLabelの予約型動的配列
+ * 
+ */
+public class NyARLabelingLabelStack extends NyARLabelInfoStack<NyARLabelingLabel>
 {
-	public void attachDestination(INyARLabelingImage i_destination_image) throws NyARException;
-	public INyARLabelingImage getAttachedDestination();
-
-	public void labeling(NyARBinRaster i_raster) throws NyARException;
+	public NyARLabelingLabelStack(int i_max_array_size)
+	{
+		super(i_max_array_size,NyARLabelingLabel.class);
+	}
+	protected NyARLabelingLabel createElement()
+	{
+		return new NyARLabelingLabel();
+	}		
 }
+	

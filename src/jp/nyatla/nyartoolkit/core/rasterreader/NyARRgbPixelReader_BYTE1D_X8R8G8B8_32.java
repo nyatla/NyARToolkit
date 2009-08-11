@@ -31,15 +31,20 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterreader;
 
-import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
-
-public class NyARRgbPixelReader_INT1D_GLAY_8 implements INyARRgbPixelReader
+import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.types.*;
+/**
+ * byte[]配列に、パディング無しの8bit画素値が、XRGBXRGBの順で並んでいる
+ * バッファに使用できるピクセルリーダー
+ *
+ */
+public class NyARRgbPixelReader_BYTE1D_X8R8G8B8_32 implements INyARRgbPixelReader
 {
-	protected int[] _ref_buf;
+	protected byte[] _ref_buf;
 
 	private NyARIntSize _size;
 
-	public NyARRgbPixelReader_INT1D_GLAY_8(int[] i_buf, NyARIntSize i_size)
+	public NyARRgbPixelReader_BYTE1D_X8R8G8B8_32(byte[] i_buf, NyARIntSize i_size)
 	{
 		this._ref_buf = i_buf;
 		this._size = i_size;
@@ -47,17 +52,34 @@ public class NyARRgbPixelReader_INT1D_GLAY_8 implements INyARRgbPixelReader
 
 	public void getPixel(int i_x, int i_y, int[] o_rgb)
 	{
-		o_rgb[0] = o_rgb[1]=o_rgb[2]=this._ref_buf[i_x + i_y * this._size.w];
+		final byte[] ref_buf = this._ref_buf;
+		final int bp = (i_x + i_y * this._size.w) * 4;
+		o_rgb[0] = (ref_buf[bp + 1] & 0xff);// R
+		o_rgb[1] = (ref_buf[bp + 2] & 0xff);// G
+		o_rgb[2] = (ref_buf[bp + 3] & 0xff);// B
 		return;
 	}
 
 	public void getPixelSet(int[] i_x, int[] i_y, int i_num, int[] o_rgb)
 	{
+		int bp;
 		final int width = this._size.w;
-		final int[] ref_buf = this._ref_buf;
-		for (int i = i_num - 1; i >= 0; i--){
-			o_rgb[i * 3 + 0] = o_rgb[i * 3 + 1]=o_rgb[i * 3 + 2]=ref_buf[i_x[i] + i_y[i] * width];
+		final byte[] ref_buf = this._ref_buf;
+		for (int i = i_num - 1; i >= 0; i--) {
+			bp = (i_x[i] + i_y[i] * width) * 4;
+			o_rgb[i * 3 + 0] = (ref_buf[bp + 1] & 0xff);// R
+			o_rgb[i * 3 + 1] = (ref_buf[bp + 2] & 0xff);// G
+			o_rgb[i * 3 + 2] = (ref_buf[bp + 3] & 0xff);// B
 		}
 		return;
 	}
+	public void setPixel(int i_x, int i_y, int[] i_rgb) throws NyARException
+	{
+		NyARException.notImplement();		
+	}
+	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intrgb) throws NyARException
+	{
+		NyARException.notImplement();		
+	}
+	
 }

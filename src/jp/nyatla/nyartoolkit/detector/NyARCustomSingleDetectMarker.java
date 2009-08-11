@@ -42,6 +42,7 @@ import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
 import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.squaredetect.*;
 
 /**
  * 画像からARCodeに最も一致するマーカーを1個検出し、その変換行列を計算するクラスです。
@@ -90,7 +91,8 @@ public class NyARCustomSingleDetectMarker
 	{
 		final NyARIntSize scr_size=i_param.getScreenSize();		
 		// 解析オブジェクトを作る
-		this._square_detect = new NyARSquareDetector(i_param.getDistortionFactor(),scr_size);
+//		this._square_detect = new NyARSquareDetector_ARToolKit(i_param.getDistortionFactor(),scr_size);
+		this._square_detect = new NyARSquareDetector_Rle(i_param.getDistortionFactor(),scr_size);
 		this._transmat = new NyARTransMat(i_param);
 		// 比較コードを保存
 		this._marker_width = i_marker_width;
@@ -129,8 +131,8 @@ public class NyARCustomSingleDetectMarker
 
 		//ラスタを２値イメージに変換する.
 		this._tobin_filter.doFilter(i_raster,this._bin_raster);
-		
-		
+
+	
 		this._detected_square = null;
 		NyARSquareStack l_square_list = this._square_list;
 		// スクエアコードを探す
@@ -150,7 +152,7 @@ public class NyARCustomSingleDetectMarker
 		double confidence = 0;
 		for(int i=0;i<number_of_square;i++){
 			// 評価基準になるパターンをイメージから切り出す
-			if (!this._patt.pickFromRaster(i_raster, (NyARSquare)l_square_list.getItem(i))){
+			if (!this._patt.pickFromRaster(i_raster, l_square_list.getItem(i))){
 				continue;
 			}
 			//取得パターンをカラー差分データに変換して評価する。
@@ -170,7 +172,7 @@ public class NyARCustomSingleDetectMarker
 		}
 		
 		// マーカー情報を保存
-		this._detected_square = (NyARSquare)l_square_list.getItem(square_index);
+		this._detected_square = l_square_list.getItem(square_index);
 		this._detected_direction = direction;
 		this._detected_confidence = confidence;
 		return result;

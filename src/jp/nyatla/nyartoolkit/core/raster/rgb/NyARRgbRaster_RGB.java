@@ -46,12 +46,12 @@ public class NyARRgbRaster_RGB extends NyARRgbRaster_BasicClass
 		return new NyARRgbRaster_RGB(i_buffer, i_width, i_height);
 	}
 
-	private NyARRgbRaster_RGB(byte[] i_buffer, int i_width, int i_height)
+	private NyARRgbRaster_RGB(byte[] i_ref_buffer, int i_width, int i_height)
 	{
 		super(new NyARIntSize(i_width,i_height));
-		this._ref_buf = i_buffer;
-		this._reader = new NyARRgbPixelReader_RGB24(i_buffer, this._size);
-		this._buffer_reader=new NyARBufferReader(i_buffer,INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24);
+		this._ref_buf = i_ref_buffer;
+		this._reader = new NyARRgbPixelReader_RGB24(i_ref_buffer, this._size);
+		this._buffer_reader=new NyARBufferReader(i_ref_buffer,INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24);
 		return;
 	}
 	public INyARRgbPixelReader getRgbPixelReader()

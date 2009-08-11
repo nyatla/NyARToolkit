@@ -58,4 +58,23 @@ public interface INyARRgbPixelReader
 	 * yのインデックス配列
 	 */
 	public void getPixelSet(int[] i_x, int[] i_y, int i_num, int[] i_intrgb) throws NyARException;
+	
+	/**
+	 * 1ピクセルを設定します。
+	 * @param i_x
+	 * @param i_y
+	 * @param i_rgb
+	 * @throws NyARException
+	 */
+	public void setPixel(int i_x, int i_y, int[] i_rgb) throws NyARException;
+	/**
+	 * 複数のピクセル値をint配列から設定します。
+	 * @param i_x
+	 * @param i_y
+	 * @param i_num
+	 * @param i_intrgb
+	 * @throws NyARException
+	 */
+	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intrgb) throws NyARException;
+	
 }
