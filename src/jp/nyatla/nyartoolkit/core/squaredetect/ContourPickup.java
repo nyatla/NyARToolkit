@@ -1,5 +1,10 @@
 package jp.nyatla.nyartoolkit.core.squaredetect;
-
+/*
+import java.awt.color.ColorSpace;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import javax.imageio.*;
+import jp.nyatla.utils.j2se.*;*/
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.*;
@@ -32,16 +37,15 @@ public class ContourPickup
 		final int width=i_raster.getWidth();
 		final int height=i_raster.getHeight();
 		//クリップ領域の上端に接しているポイントを得る。
-		int sx=i_entry_x;
-		int sy=i_entry_y;
+
 
 		int coord_num = 1;
-		o_coord_x[0] = sx;
-		o_coord_y[0] = sy;
+		o_coord_x[0] = i_entry_x;
+		o_coord_y[0] = i_entry_y;
 		int dir = 5;
 
-		int c = o_coord_x[0];
-		int r = o_coord_y[0];
+		int c = i_entry_x;
+		int r = i_entry_y;
 		for (;;) {
 			dir = (dir + 5) % 8;//dirの正規化
 			//ここは頑張ればもっと最適化できると思うよ。
@@ -80,11 +84,19 @@ public class ContourPickup
 					if (i_buf[(r + ydir[dir])*width+(c + xdir[dir])] == 0) {
 						break;
 					}
+/*
+					try{
+						BufferedImage b=new BufferedImage(width,height,ColorSpace.TYPE_RGB);
+						NyARRasterImageIO.copy(i_raster, b);
+					ImageIO.write(b,"png",new File("bug.png"));
+					}catch(Exception e){
+						
+					}*/
 					//8方向全て調べたけどラベルが無いよ？
 					throw new NyARException();			
 				}
 			}else{
-				//境界に接しているとき
+				//境界に接しているとき				
 				int i;
 				for (i = 0; i < 8; i++){				
 					final int x=c + xdir[dir];
@@ -111,7 +123,7 @@ public class ContourPickup
 			o_coord_x[coord_num] = c;
 			o_coord_y[coord_num] = r;
 			// 終了条件判定
-			if (c == sx && r == sy){
+			if (c == i_entry_x && r == i_entry_y){
 				coord_num++;
 				break;
 			}
@@ -222,6 +234,6 @@ public class ContourPickup
 			}
 		}
 		return coord_num;
-	}	
+	}
 
 }

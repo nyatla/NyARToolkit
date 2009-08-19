@@ -18,7 +18,7 @@ class RleElement
 {
 	int l;
 	int r;
-	short id;
+	int fid;
 	public static RleElement[] createArray(int i_length)
 	{
 		RleElement[] ret = new RleElement[i_length];
@@ -35,8 +35,6 @@ public class NyARLabeling_Rle
 	private RleElement[] _rle1;
 
 	private RleElement[] _rle2;
-
-	private short number_of_fragment; // 現在のフラグメントの数
 
 	public NyARLabeling_Rle(int i_width)
 	{
@@ -96,8 +94,8 @@ public class NyARLabeling_Rle
 				i_out[current].r = (r + 1);
 			} else {
 				// 最後の1点の場合
-				i_out[current].l = (i_st + i_len - 1);
-				i_out[current].r = (i_st + i_len);
+				i_out[current].l = (i_len - 1);
+				i_out[current].r = (i_len);
 			}
 			current++;
 		}
@@ -105,31 +103,28 @@ public class NyARLabeling_Rle
 		return current;
 	}
 
-	private void addFragment(RleElement i_rel_img, short i_nof, int i_row_index, int i_rel_index,RleLabelFragmentInfoStack o_stack) throws NyARException
+	private void addFragment(RleElement i_rel_img, int i_nof, int i_row_index, int i_rel_index,RleLabelFragmentInfoStack o_stack) throws NyARException
 	{
 		int l=i_rel_img.l;
 		final int len=i_rel_img.r - l;
-		i_rel_img.id = i_nof;// REL毎の固有ID
+		i_rel_img.fid = i_nof;// REL毎の固有ID
 		RleLabelFragmentInfoStack.RleLabelFragmentInfo v = o_stack.prePush();
-		v.id = i_nof;
 		v.entry_x = l;
 		v.area =len;
 		v.clip_l=l;
-		v.clip_r=i_rel_img.r;
+		v.clip_r=i_rel_img.r-1;
 		v.clip_t=i_row_index;
 		v.clip_b=i_row_index;
-		v.pos_x+=len*(2*l+(len-1)*1);
+		v.pos_x+=(len*(2*l+(len-1)))/2;
 		v.pos_y+=i_row_index*len;
 
-		
 		return;
 	}
 
 	//
-	public void labeling(NyARBinRaster i_bin_raster, int i_top, int i_bottom,RleLabelFragmentInfoStack o_stack) throws NyARException
+	public int labeling(NyARBinRaster i_bin_raster, int i_top, int i_bottom,RleLabelFragmentInfoStack o_stack) throws NyARException
 	{
 		// リセット処理
-		this.number_of_fragment = 0;
 		o_stack.clear();
 		//
 		RleElement[] rle_prev = this._rle1;
@@ -139,15 +134,17 @@ public class NyARLabeling_Rle
 		final int width = i_bin_raster.getWidth();
 		int[] in_buf = (int[]) i_bin_raster.getBufferReader().getBuffer();
 
-		short nof = this.number_of_fragment;
+		int id_max = 0;
+		int label_count=0;
 		// 初段登録
 
 		len_prev = toRel(in_buf, i_top, width, rle_prev);
 		for (int i = 0; i < len_prev; i++) {
 			// フラグメントID=フラグメント初期値、POS=Y値、RELインデクス=行
-			addFragment(rle_prev[i], nof, i_top, i,o_stack);
-			nof++;
+			addFragment(rle_prev[i], id_max, i_top, i,o_stack);
+			id_max++;
 			// nofの最大値チェック
+			label_count++;
 		}
 		RleLabelFragmentInfoStack.RleLabelFragmentInfo[] f_array = o_stack.getArray();
 		// 次段結合
@@ -158,7 +155,7 @@ public class NyARLabeling_Rle
 
 			SCAN_CUR: for (int i = 0; i < len_current; i++) {
 				// index_prev,len_prevの位置を調整する
-				short id = -1;
+				int id = -1;
 				// チェックすべきprevがあれば確認
 				SCAN_PREV: while (index_prev < len_prev) {
 					if (rle_current[i].l - rle_prev[index_prev].r > 0) {// 0なら8方位ラベリング
@@ -167,31 +164,29 @@ public class NyARLabeling_Rle
 						continue;
 					} else if (rle_prev[index_prev].l - rle_current[i].r > 0) {// 0なら8方位ラベリングになる
 						// prevがcur右方にある→独立フラグメント
-						addFragment(rle_current[i], nof, y, i,o_stack);
-						nof++;
+						addFragment(rle_current[i], id_max, y, i,o_stack);
+						id_max++;
+						label_count++;
 						// 次のindexをしらべる
 						continue SCAN_CUR;
 					}
-					// 結合対象->prevのIDをコピーして、対象フラグメントの情報を更新
-					id = f_array[rle_prev[index_prev].id].id;
-					RleLabelFragmentInfoStack.RleLabelFragmentInfo prev_ptr;
-					final RleLabelFragmentInfoStack.RleLabelFragmentInfo id_ptr = f_array[id];
-					prev_ptr = f_array[rle_prev[index_prev].id];
-					rle_current[i].id = id;
+					id=rle_prev[index_prev].fid;//ルートフラグメントid
+					RleLabelFragmentInfoStack.RleLabelFragmentInfo id_ptr = f_array[id];
+					//結合対象(初回)->prevのIDをコピーして、ルートフラグメントの情報を更新
+					rle_current[i].fid = id;//フラグメントIDを保存
 					//
 					final int l= rle_current[i].l;
 					final int r= rle_current[i].r;
-					final int len=rle_current[i].r - rle_current[i].l;
+					final int len=r-l;
+					//結合先フラグメントの情報を更新する。
 					id_ptr.area += len;
-					id_ptr.entry_x = prev_ptr.entry_x;
-					id_ptr.clip_l=l<prev_ptr.clip_l?l:prev_ptr.clip_l;
-					id_ptr.clip_r=r>prev_ptr.clip_r?r:prev_ptr.clip_r;
-					//id_ptr.clip_tは変更無し。
+					//tとentry_xは、結合先のを使うので更新しない。
+					id_ptr.clip_l=l<id_ptr.clip_l?l:id_ptr.clip_l;
+					id_ptr.clip_r=r>id_ptr.clip_r?r-1:id_ptr.clip_r;
 					id_ptr.clip_b=y;
-					id_ptr.pos_x+=len*(2*l+(len-1)*1);
+					id_ptr.pos_x+=(len*(2*l+(len-1)))/2;
 					id_ptr.pos_y+=y*len;
-					// 多重リンクの確認
-
+					//多重結合の確認（２個目以降）
 					index_prev++;
 					while (index_prev < len_prev) {
 						if (rle_current[i].l - rle_prev[index_prev].r > 0) {// 0なら8方位ラベリング
@@ -202,41 +197,65 @@ public class NyARLabeling_Rle
 							index_prev--;
 							continue SCAN_CUR;
 						}
-						// prevとcurは連結している。
-						final short prev_id = rle_prev[index_prev].id;
-						prev_ptr = f_array[prev_id];
-						if (id != prev_id) {
-							id_ptr.area += prev_ptr.area;
-							prev_ptr.area = 0;
-							// 結合対象->現在のidをインデクスにセット
-							prev_ptr.id = id;
+						// prevとcurは連結している→ルートフラグメントの統合
+						
+						//結合するルートフラグメントを取得
+						final int prev_id =rle_prev[index_prev].fid;
+						RleLabelFragmentInfoStack.RleLabelFragmentInfo prev_ptr = f_array[prev_id];
+						if (id != prev_id){
+							if(prev_ptr.area==0){
+								System.out.println("ERRRR");
+							}
+							label_count--;
+							//prevとcurrentのフラグメントidを書き換える。
+							for(int i2=index_prev;i2<len_prev;i2++){
+								//prevは現在のidから最後まで
+								if(rle_prev[i2].fid==prev_id){
+									rle_prev[i2].fid=id;
+								}
+							}
+							for(int i2=0;i2<i;i2++){
+								//currentは0から現在-1まで
+								if(rle_current[i2].fid==prev_id){
+									rle_current[i2].fid=id;
+								}
+							}
+							
+							//現在のルートフラグメントに情報を集約
+							id_ptr.area +=prev_ptr.area;
+							id_ptr.pos_x+=prev_ptr.pos_x;
+							id_ptr.pos_y+=prev_ptr.pos_y;
 							//tとentry_xの決定
 							if (id_ptr.clip_t > prev_ptr.clip_t) {
 								// 現在の方が下にある。
 								id_ptr.clip_t = prev_ptr.clip_t;
 								id_ptr.entry_x = prev_ptr.entry_x;
 							}else if (id_ptr.clip_t < prev_ptr.clip_t) {
-								// 現在の方が上にある。なにもしない。
+								// 現在の方が上にある。prevにフィードバック
 							} else {
 								// 水平方向で小さい方がエントリポイント。
 								if (id_ptr.entry_x > prev_ptr.entry_x) {
 									id_ptr.entry_x = prev_ptr.entry_x;
+								}else{
 								}
-							}							
-							//bの決定(現状のまま)
+							}
 							//lの決定
 							if (id_ptr.clip_l > prev_ptr.clip_l) {
 								id_ptr.clip_l=prev_ptr.clip_l;
+							}else{
 							}
 							//rの決定
 							if (id_ptr.clip_r < prev_ptr.clip_r) {
 								id_ptr.clip_r=prev_ptr.clip_r;
+							}else{
 							}
-							id_ptr.pos_x+=prev_ptr.pos_x;
-							id_ptr.pos_y+=prev_ptr.pos_y;							
-							
+							//bの決定
 
+							//結合済のルートフラグメントを無効化する。
+							prev_ptr.area=0;
 						}
+
+
 						index_prev++;
 					}
 					index_prev--;
@@ -244,9 +263,10 @@ public class NyARLabeling_Rle
 				}
 				// curにidが割り当てられたかを確認
 				// 右端独立フラグメントを追加
-				if (id < 0) {
-					addFragment(rle_current[i], nof, y, i,o_stack);
-					nof++;
+				if (id < 0){
+					addFragment(rle_current[i], id_max, y, i,o_stack);
+					id_max++;
+					label_count++;
 				}
 			}
 			// prevとrelの交換
@@ -255,8 +275,18 @@ public class NyARLabeling_Rle
 			len_prev = len_current;
 			rle_current = tmp;
 		}
-		// フラグメントの数を更新
-		this.number_of_fragment = nof;
+		//ソートする。
+		o_stack.sortByArea();
+		//ラベル数を再設定
+		o_stack.reserv(label_count);
+		//posを計算
+		for(int i=0;i<label_count;i++){
+			final RleLabelFragmentInfoStack.RleLabelFragmentInfo tmp=f_array[i];
+			tmp.pos_x/=tmp.area;
+			tmp.pos_y/=tmp.area;
+		}
+		//ラベル数を返却
+		return label_count;
 	}	
 }
 

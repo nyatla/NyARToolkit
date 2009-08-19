@@ -29,21 +29,27 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.squaredetect;
+package jp.nyatla.nyartoolkit.core.labeling;
 
-import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabel;
+import java.lang.reflect.Array;
+import jp.nyatla.nyartoolkit.core.labeling.*;
 
 /**
  * ラベル同士の重なり（内包関係）を調べるクラスです。 
  * ラベルリストに内包するラベルを蓄積し、それにターゲットのラベルが内包されているか を確認します。
  */
-public class LabelOverlapChecker
+public class LabelOverlapChecker<T extends NyARLabelInfo>
 {
-	private NyARLabelingLabel[] _labels = new NyARLabelingLabel[32];
+	private T[] _labels;
 	private int _length;
-	public LabelOverlapChecker(int i_max_label)
+	private Class<T> _element_type;
+	/*
+	*/
+	@SuppressWarnings("unchecked")
+	public LabelOverlapChecker(int i_max_label,Class<T> i_element_type)
 	{
-		this._labels = new NyARLabelingLabel[i_max_label];
+		this._element_type=i_element_type;
+		this._labels = (T[])Array.newInstance(i_element_type, 32);
 	}
 
 	/**
@@ -51,7 +57,7 @@ public class LabelOverlapChecker
 	 * 
 	 * @param i_label_ref
 	 */
-	public void push(NyARLabelingLabel i_label_ref)
+	public void push(T i_label_ref)
 	{
 		this._labels[this._length] = i_label_ref;
 		this._length++;
@@ -63,10 +69,10 @@ public class LabelOverlapChecker
 	 * @param i_label
 	 * @return 何れかのラベルの内側にあるならばfalse,独立したラベルである可能性が高ければtrueです．
 	 */
-	public boolean check(NyARLabelingLabel i_label)
+	public boolean check(T i_label)
 	{
 		// 重なり処理かな？
-		final NyARLabelingLabel[] label_pt = this._labels;
+		final T[] label_pt = this._labels;
 		final int px1 = (int) i_label.pos_x;
 		final int py1 = (int) i_label.pos_y;
 		for (int i = this._length - 1; i >= 0; i--) {
@@ -86,10 +92,11 @@ public class LabelOverlapChecker
 	 * 
 	 * @param i_max_label
 	 */
-	public void setMaxlabel(int i_max_label)
+	@SuppressWarnings("unchecked")
+	public void setMaxLabels(int i_max_label)
 	{
 		if (i_max_label > this._labels.length) {
-			this._labels = new NyARLabelingLabel[i_max_label];
+			this._labels = (T[])Array.newInstance(this._element_type, i_max_label);
 		}
 		this._length = 0;
 	}	

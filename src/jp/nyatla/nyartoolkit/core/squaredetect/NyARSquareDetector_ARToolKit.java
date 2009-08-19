@@ -4,6 +4,7 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.INyARSquareDetector;
 import jp.nyatla.nyartoolkit.core.NyARSquare;
 import jp.nyatla.nyartoolkit.core.NyARSquareStack;
+import jp.nyatla.nyartoolkit.core.labeling.LabelOverlapChecker;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingImage;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabel;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabelStack;
@@ -25,7 +26,7 @@ public class NyARSquareDetector_ARToolKit implements INyARSquareDetector
 
 	private final NyARLabelingImage _limage;
 
-	private final LabelOverlapChecker _overlap_checker = new LabelOverlapChecker(32);
+	private final LabelOverlapChecker<NyARLabelingLabel> _overlap_checker = new LabelOverlapChecker<NyARLabelingLabel>(32,NyARLabelingLabel.class);
 	private final SquareContourDetector _sqconvertor;
 	private final ContourPickup _cpickup=new ContourPickup();
 	
@@ -76,21 +77,14 @@ public class NyARSquareDetector_ARToolKit implements INyARSquareDetector
 		// マーカーホルダをリセット
 		o_square_stack.clear();
 
-		// ラベリング
-		this._labeling.labeling(i_raster,this._limage);
-
-		// ラベル数が0ならここまで
-		final int label_num = limage.getLabelStack().getLength();
+		// ラベル数が0ならここまで(Labeling内部でソートするようにした。)
+		final int label_num = this._labeling.labeling(i_raster,this._limage);
 		if (label_num < 1) {
 			return;
 		}
 
 		final NyARLabelingLabelStack stack = limage.getLabelStack();
 		final NyARLabelingLabel[] labels = stack.getArray();
-		
-		
-		// ラベルを大きい順に整列
-		stack.sortByArea();
 
 		// デカいラベルを読み飛ばし
 		int i;
@@ -106,17 +100,14 @@ public class NyARSquareDetector_ARToolKit implements INyARSquareDetector
 		final int[] xcoord = this._xcoord;
 		final int[] ycoord = this._ycoord;
 		final int coord_max = this._max_coord;
-		final LabelOverlapChecker overlap = this._overlap_checker;
-		int coord_num;
-		int label_area;
-		NyARLabelingLabel label_pt;
+		final LabelOverlapChecker<NyARLabelingLabel> overlap = this._overlap_checker;
 
 		//重なりチェッカの最大数を設定
-		overlap.setMaxlabel(label_num);
+		overlap.setMaxLabels(label_num);
 
 		for (; i < label_num; i++) {
-			label_pt = labels[i];
-			label_area = label_pt.area;
+			final NyARLabelingLabel label_pt = labels[i];
+			final int label_area = label_pt.area;
 			// 検査対象サイズよりも小さくなったら終了
 			if (label_area < AR_AREA_MIN) {
 				break;
@@ -134,7 +125,7 @@ public class NyARSquareDetector_ARToolKit implements INyARSquareDetector
 				continue;
 			}
 			// 輪郭を取得
-			coord_num = _cpickup.getContour(limage,limage.getTopClipTangentX(label_pt),label_pt.clip_t, coord_max, xcoord, ycoord);
+			final int coord_num = _cpickup.getContour(limage,limage.getTopClipTangentX(label_pt),label_pt.clip_t, coord_max, xcoord, ycoord);
 			if (coord_num == coord_max) {
 				// 輪郭が大きすぎる。
 				continue;
@@ -150,7 +141,7 @@ public class NyARSquareDetector_ARToolKit implements INyARSquareDetector
 			}
 			// 検出済の矩形の属したラベルを重なりチェックに追加する。
 			overlap.push(label_pt);
-		}	
+		}
 		return;
 	}
 

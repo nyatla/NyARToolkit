@@ -51,6 +51,9 @@ public abstract class NyARLabelInfoStack<T extends NyARLabelInfo> extends NyObje
 	final public void sortByArea()
 	{
 		int len=this._length;
+		if(len<1){
+			return;
+		}
 		int h = len *13/10;
 		T[] item=this._items;
 		for(;;){
@@ -71,6 +74,6 @@ public abstract class NyARLabelInfoStack<T extends NyARLabelInfo> extends NyObje
 		        h=h*10/13;
 		    }
 		}		
-	} 
+	}
 }
 	

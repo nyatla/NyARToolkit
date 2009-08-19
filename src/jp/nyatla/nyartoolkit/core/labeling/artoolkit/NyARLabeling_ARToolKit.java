@@ -53,7 +53,7 @@ final public class NyARLabeling_ARToolKit
 	 * @param i_raster
 	 * @throws NyARException
 	 */
-	public void labeling(NyARBinRaster i_raster,NyARLabelingImage o_destination) throws NyARException
+	public int labeling(NyARBinRaster i_raster,NyARLabelingImage o_destination) throws NyARException
 	{
 		int label_img_ptr1, label_pixel;
 		int i, j;
@@ -213,7 +213,7 @@ final public class NyARLabeling_ARToolKit
 		if (wlabel_num == 0) {// if( *label_num == 0 ) {
 			// 発見数0
 			o_destination.getLabelStack().clear();
-			return;
+			return 0;
 		}
 		// ラベル情報の保存等
 		NyARLabelingLabelStack label_list = o_destination.getLabelStack();
@@ -226,7 +226,7 @@ final public class NyARLabeling_ARToolKit
 		NyARLabelingLabel[] labels =label_list.getArray();
 		for (i = 0; i < wlabel_num; i++) {
 			label_pt = labels[i];
-			label_pt.id = i + 1;
+			label_pt.id = (short)(i + 1);
 			label_pt.area = 0;
 			label_pt.pos_x = label_pt.pos_y = 0;
 			label_pt.clip_l = lxsize;// wclip[i*4+0] = lxsize;
@@ -259,7 +259,9 @@ final public class NyARLabeling_ARToolKit
 			label_pt.pos_x /= label_pt.area;
 			label_pt.pos_y /= label_pt.area;
 		}
-		return;
+		// ラベルを大きい順に整列
+		label_list.sortByArea();		
+		return wlabel_num;
 	}
 
 }
