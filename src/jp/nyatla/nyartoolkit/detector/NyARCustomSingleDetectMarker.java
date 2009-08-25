@@ -52,7 +52,7 @@ import jp.nyatla.nyartoolkit.core.squaredetect.*;
  * 
  */
 public class NyARCustomSingleDetectMarker
-{
+{	
 	private static final int AR_SQUARE_MAX = 100;
 
 	private boolean _is_continue = false;
@@ -74,41 +74,36 @@ public class NyARCustomSingleDetectMarker
 	protected INyARRasterFilter_RgbToBin _tobin_filter;
 
 	private NyARMatchPattDeviationColorData _deviation_data;
-	/**
-	 * 検出するARCodeとカメラパラメータから、1個のARCodeを検出するNyARSingleDetectMarkerインスタンスを作ります。
-	 * 
-	 * @param i_param
-	 * カメラパラメータを指定します。
-	 * @param i_code
-	 * 検出するARCodeを指定します。
-	 * @param i_marker_width
-	 * ARコードの物理サイズを、ミリメートルで指定します。
-	 * @param i_filter
-	 * RGB→BIN変換フィルタを指定します。
-	 * @throws NyARException
-	 */
-	public NyARCustomSingleDetectMarker(NyARParam i_param, NyARCode i_code, double i_marker_width,INyARRasterFilter_RgbToBin i_filter) throws NyARException
+
+	protected NyARCustomSingleDetectMarker()
 	{
-		final NyARIntSize scr_size=i_param.getScreenSize();		
+		return;
+	}
+	protected void initInstance(
+		INyARColorPatt i_patt_inst,
+		INyARSquareDetector i_sqdetect_inst,
+		INyARRasterFilter_RgbToBin i_filter,
+		NyARParam	i_ref_param,
+		NyARCode	i_ref_code,
+		double		i_marker_width) throws NyARException
+	{
+		final NyARIntSize scr_size=i_ref_param.getScreenSize();		
 		// 解析オブジェクトを作る
-//		this._square_detect = new NyARSquareDetector_ARToolKit(i_param.getDistortionFactor(),scr_size);
-		this._square_detect = new NyARSquareDetector_Rle(i_param.getDistortionFactor(),scr_size);
-		this._transmat = new NyARTransMat(i_param);
+		this._square_detect = i_sqdetect_inst;
+		this._transmat = new NyARTransMat(i_ref_param);
+		this._tobin_filter=i_filter;
 		// 比較コードを保存
 		this._marker_width = i_marker_width;
 		//パターンピックアップを作成
-//		this._patt = new NyARColorPatt_O1(i_code.getWidth(), i_code.getHeight());
-		this._patt = new NyARColorPatt_O3(i_code.getWidth(), i_code.getHeight());
-//		this._patt = new NyARColorPatt_Perspective(i_code.getWidth(), i_code.getHeight(),25);
+		this._patt = i_patt_inst;
 		//取得パターンの差分データ器を作成
-		this._deviation_data=new NyARMatchPattDeviationColorData(i_code.getWidth(),i_code.getHeight());
+		this._deviation_data=new NyARMatchPattDeviationColorData(i_ref_code.getWidth(),i_ref_code.getHeight());
 		//i_code用の評価器を作成
-		this._match_patt = new NyARMatchPatt_Color_WITHOUT_PCA(i_code);
-		
+		this._match_patt = new NyARMatchPatt_Color_WITHOUT_PCA(i_ref_code);
 		//２値画像バッファを作る
 		this._bin_raster=new NyARBinRaster(scr_size.w,scr_size.h);
-		this._tobin_filter=i_filter;
 		return;
+		
 	}
 
 	private final NyARMatchPattResult __detectMarkerLite_mr=new NyARMatchPattResult();

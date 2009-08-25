@@ -157,13 +157,13 @@ public class JavaSimpleLite_X2 implements GLEventListener, JmfCaptureListener
 			NyARCode ar_code = new NyARCode(16, 16);
 			_ar_param.loadARParamFromFile(PARAM_FILE);
 			_ar_param.changeScreenSize(SCREEN_X, SCREEN_Y);
-			_nya = new NyARSingleDetectMarker_X2(_ar_param, ar_code, 80.0);
 			_nya.setContinueMode(false);//ここをtrueにすると、transMatContinueモード（History計算）になります。
 			ar_code.loadARPattFromFile(CARCODE_FILE);
 			//NyARToolkit用の支援クラス
 			_glnya = new NyARGLUtil(_gl);
 			//GL対応のRGBラスタオブジェクト
 			_cap_image = new GLNyARRaster_RGB(_ar_param,_capture.getCaptureFormat());
+			_nya = new NyARSingleDetectMarker_X2(_ar_param, ar_code, 80.0,this._cap_image.getBufferReader().getBufferType());
 			//キャプチャ開始
 			_capture.start();
 		} catch (Exception e) {

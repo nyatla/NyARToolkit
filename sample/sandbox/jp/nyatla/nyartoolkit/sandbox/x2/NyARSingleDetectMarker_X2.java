@@ -41,6 +41,9 @@ import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilter_ARToolkitThreshold;
+import jp.nyatla.nyartoolkit.core.squaredetect.INyARSquareDetector;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareStack;
 
 
 /**
@@ -81,7 +84,7 @@ public class NyARSingleDetectMarker_X2
 	 * ARコードの物理サイズを、ミリメートルで指定します。
 	 * @throws NyARException
 	 */
-	public NyARSingleDetectMarker_X2(NyARParam i_param, NyARCode i_code, double i_marker_width) throws NyARException
+	public NyARSingleDetectMarker_X2(NyARParam i_param, NyARCode i_code, double i_marker_width,int i_raster_type) throws NyARException
 	{
 		final NyARIntSize scr_size=i_param.getScreenSize();	
         final NyARFixedFloatObserv2IdealMap dist_map = new NyARFixedFloatObserv2IdealMap(i_param.getDistortionFactor(), scr_size);
@@ -100,11 +103,12 @@ public class NyARSingleDetectMarker_X2
 		this._bin_raster=new NyARBinRaster(scr_size.w,scr_size.h);
 		//差分データインスタンスの作成
 		this._deviation_data=new NyARMatchPattDeviationColorData(cw,ch);
+		this._tobin_filter=new NyARRasterFilter_ARToolkitThreshold(100,i_raster_type);
 		return;
 	}
 
 	private NyARBinRaster _bin_raster;
-	private NyARRasterFilter_ARToolkitThreshold _tobin_filter=new NyARRasterFilter_ARToolkitThreshold(100);
+	private NyARRasterFilter_ARToolkitThreshold _tobin_filter;
 	private final NyARMatchPattResult __detectMarkerLite_mr=new NyARMatchPattResult();
 	private NyARMatchPattDeviationColorData _deviation_data;
 
@@ -148,7 +152,7 @@ public class NyARSingleDetectMarker_X2
 		double confidence = 0;
 		for(int i=0;i<number_of_square;i++){
 			// 評価基準になるパターンをイメージから切り出す
-			if (!this._patt.pickFromRaster(i_raster, (NyARSquare)l_square_list.getItem(i))){
+			if (!this._patt.pickFromRaster(i_raster, l_square_list.getItem(i))){
 				continue;
 			}
 			//取得パターンをカラー差分データに変換して評価する。

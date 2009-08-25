@@ -32,7 +32,7 @@
 package jp.nyatla.nyartoolkit.core.labeling;
 
 import java.lang.reflect.Array;
-import jp.nyatla.nyartoolkit.core.labeling.*;
+
 
 /**
  * ラベル同士の重なり（内包関係）を調べるクラスです。 

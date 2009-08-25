@@ -35,6 +35,9 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.labeling.*;
+import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingImage;
+import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabel;
+import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabelStack;
 
 /**
  * 計算部から浮動小数点計算を除外したNyARLabeling_ARToolKit
@@ -42,7 +45,7 @@ import jp.nyatla.nyartoolkit.core.labeling.*;
  * 画面サイズが1600ｘ1600を超えると挙動が怪しくなる。
  * 
  */
-public class NyARLabeling_ARToolKit_X2 implements INyARLabeling
+public class NyARLabeling_ARToolKit_X2
 {
 	private static final int WORK_SIZE = 1024 * 32;// #define WORK_SIZE 1024*32
 
@@ -50,9 +53,9 @@ public class NyARLabeling_ARToolKit_X2 implements INyARLabeling
 
 	private NyARIntSize _dest_size;
 
-	private INyARLabelingImage _out_image;
+	private NyARLabelingImage _out_image;
 
-	public void attachDestination(INyARLabelingImage i_destination_image) throws NyARException
+	public void attachDestination(NyARLabelingImage i_destination_image) throws NyARException
 	{
 		// サイズチェック
 		NyARIntSize size = i_destination_image.getSize();
@@ -75,7 +78,7 @@ public class NyARLabeling_ARToolKit_X2 implements INyARLabeling
 		return;
 	}
 
-	public INyARLabelingImage getAttachedDestination()
+	public NyARLabelingImage getAttachedDestination()
 	{
 		return this._out_image;
 	}
@@ -91,7 +94,7 @@ public class NyARLabeling_ARToolKit_X2 implements INyARLabeling
 	{
 		int m, n; /* work */
 		int i, j, k;
-		INyARLabelingImage out_image = this._out_image;
+		NyARLabelingImage out_image = this._out_image;
 
 		// サイズチェック
 		NyARIntSize in_size = i_raster.getSize();
@@ -278,7 +281,7 @@ public class NyARLabeling_ARToolKit_X2 implements INyARLabeling
 		// ラベルバッファを予約
 		i_stack.reserv(i_number_of_label);
 		// エリアと重心、クリップ領域を計算
-		final NyARLabelingLabel[] labels = (NyARLabelingLabel[])i_stack.getArray();
+		final NyARLabelingLabel[] labels = i_stack.getArray();
 		for (int i = 0; i < i_number_of_label; i++) {
 			final int[] temp_ptr = temp[i];
 			temp_ptr[0]=0;//area

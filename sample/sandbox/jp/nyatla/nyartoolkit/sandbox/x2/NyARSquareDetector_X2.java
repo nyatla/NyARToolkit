@@ -32,7 +32,13 @@
 package jp.nyatla.nyartoolkit.sandbox.x2;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.*;
+import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingImage;
+import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabel;
+import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabelStack;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.squaredetect.INyARSquareDetector;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareStack;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core2.types.*;
 import jp.nyatla.nyartoolkit.core2.types.matrix.NyARI64Matrix22;
@@ -53,7 +59,7 @@ public class NyARSquareDetector_X2 implements INyARSquareDetector
 	private final int _width;
 	private final int _height;
 
-	private final INyARLabeling _labeling;
+	private final NyARLabeling_ARToolKit_X2 _labeling;
 
 	private final NyARLabelingImage _limage;
 
@@ -117,7 +123,7 @@ public class NyARSquareDetector_X2 implements INyARSquareDetector
 	 */
 	public final void detectMarker(NyARBinRaster i_raster, NyARSquareStack o_square_stack) throws NyARException
 	{
-		final INyARLabeling labeling_proc = this._labeling;
+		final NyARLabeling_ARToolKit_X2 labeling_proc = this._labeling;
 		final NyARLabelingImage limage = this._limage;
 
 		// 初期化
@@ -135,7 +141,7 @@ public class NyARSquareDetector_X2 implements INyARSquareDetector
 		}
 
 		final NyARLabelingLabelStack stack = limage.getLabelStack();
-		final NyARLabelingLabel[] labels = (NyARLabelingLabel[])stack.getArray();
+		final NyARLabelingLabel[] labels = stack.getArray();
 		
 		
 		// ラベルを大きい順に整列

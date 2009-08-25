@@ -37,6 +37,9 @@ import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.squaredetect.INyARSquareDetector;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareStack;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core2.rasterfilter.rgb2gs.*;
@@ -121,7 +124,7 @@ public class NyARSingleQrDetector
 		if (number_of_square < 1) {
 			return false;
 		}
-		this._detected_square=(NyARSquare)l_square_list.getItem(0);
+		this._detected_square=l_square_list.getItem(0);
 		return true;
 	}
 

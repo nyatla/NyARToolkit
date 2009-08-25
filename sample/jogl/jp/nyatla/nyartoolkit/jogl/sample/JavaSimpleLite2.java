@@ -158,22 +158,23 @@ public class JavaSimpleLite2 implements GLEventListener, JmfCaptureListener
 			ar_codes[0].loadARPattFromFile(CARCODE_FILE1);
 			ar_codes[1] = new NyARCode(16, 16);
 			ar_codes[1].loadARPattFromFile(CARCODE_FILE2);
-			_nya = new NyARDetectMarker(_ar_param, ar_codes, width, 2);
-			_nya.setContinueMode(false);//ここをtrueにすると、transMatContinueモード（History計算）になります。
-			//NyARToolkit用の支援クラス
-			_glnya = new NyARGLUtil(_gl);
 			//GL対応のRGBラスタオブジェクト
-			_cap_image = new GLNyARRaster_RGB(_ar_param,_capture.getCaptureFormat());
+			this._cap_image = new GLNyARRaster_RGB(this._ar_param,_capture.getCaptureFormat());
+
+			this._nya = new NyARDetectMarker(this._ar_param, ar_codes, width, 2,this._cap_image.getBufferReader().getBufferType());
+			this._nya.setContinueMode(false);//ここをtrueにすると、transMatContinueモード（History計算）になります。
+			//NyARToolkit用の支援クラス
+			this._glnya = new NyARGLUtil(_gl);
 			//キャプチャ開始
-			_capture.start();
+			this._capture.start();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		//カメラパラメータの計算
-		_glnya.toCameraFrustumRH(_ar_param,_camera_projection);
+		this._glnya.toCameraFrustumRH(_ar_param,_camera_projection);
 		
-		_animator = new Animator(drawable);
-		_animator.start();
+		this._animator = new Animator(drawable);
+		this._animator.start();
 
 	}
 

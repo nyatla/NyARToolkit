@@ -46,89 +46,76 @@ import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
 import jp.nyatla.nyartoolkit.processor.*;
 
+/*
 
-class TextPanel
+
+*/
+
+
+public class SingleARMarker implements GLEventListener, JmfCaptureListener
 {
-	private TextRenderer _tr;
-	public TextPanel(int i_size)
+	class TextPanel
 	{
-		this._tr=new TextRenderer(new Font("SansSerif", Font.BOLD, 36));
+		private TextRenderer _tr;
+		public TextPanel(int i_size)
+		{
+			this._tr=new TextRenderer(new Font("SansSerif", Font.BOLD, 36));
 
-	}
-	public void draw(String i_str,float i_scale)
-	{
-		this._tr.begin3DRendering();
-	    this._tr.setColor(1.0f, 0.2f, 0.2f, 0.8f);
-	    this._tr.draw3D(i_str, 0f,0f,0f,i_scale);
-		this._tr.end3DRendering();
-		return;
-	}
-}
-
-/**
- * １個のRawBit-Idマーカを認識するロジッククラス。
- * detectMarker関数の呼び出しに同期して、transmatとcurrent_idパラメタを更新します。
- * 
- *
- */
-class MarkerProcessor extends SingleNyIdMarkerProcesser
-{	
-	private Object _sync_object=new Object();
-	public NyARTransMatResult transmat=null;
-	public int current_id=-1;
-
-	public MarkerProcessor(NyARParam i_cparam,int i_raster_format) throws NyARException
-	{
-		//アプリケーションフレームワークの初期化
-		super();
-		initInstance(i_cparam,new NyIdMarkerDataEncoder_RawBit(),i_raster_format);
-		return;
-	}
+		}
+		public void draw(String i_str,float i_scale)
+		{
+			this._tr.begin3DRendering();
+		    this._tr.setColor(1.0f, 0.2f, 0.2f, 0.8f);
+		    this._tr.draw3D(i_str, 0f,0f,0f,i_scale);
+			this._tr.end3DRendering();
+			return;
+		}
+	}	
 	/**
-	 * アプリケーションフレームワークのハンドラ（マーカ出現）
+	 * １個のRawBit-Idマーカを認識するロジッククラス。
+	 * detectMarker関数の呼び出しに同期して、transmatとcurrent_idパラメタを更新します。
+	 * 
+	 *
 	 */
-	protected void onEnterHandler(INyIdMarkerData i_code)
-	{
-		synchronized(this._sync_object){
-			NyIdMarkerData_RawBit code=(NyIdMarkerData_RawBit)i_code;
-			if(code.length>4){
-				//4バイト以上の時はint変換しない。
-				this.current_id=-1;//undefined_id
-			}else{
-				this.current_id=0;
-				//最大4バイト繋げて１個のint値に変換
-				for(int i=0;i<code.length;i++){
-					this.current_id=(this.current_id<<8)|code.packet[i];
-				}
+	class MarkerProcessor extends SingleARMarkerProcesser
+	{	
+		private Object _sync_object=new Object();
+		public NyARTransMatResult transmat=null;
+		public int current_code=-1;
+
+		public MarkerProcessor(NyARParam i_cparam,int i_raster_format) throws NyARException
+		{
+			//アプリケーションフレームワークの初期化
+			super();
+			initInstance(i_cparam,i_raster_format);
+			return;
+		}
+		protected void onEnterHandler(int i_code)
+		{
+			synchronized(this._sync_object){
+				current_code=i_code;
 			}
-			this.transmat=null;
 		}
-	}
-	/**
-	 * アプリケーションフレームワークのハンドラ（マーカ消滅）
-	 */
-	protected void onLeaveHandler()
-	{
-		synchronized(this._sync_object){
-			this.current_id=-1;
-			this.transmat=null;
+		protected void onLeaveHandler()
+		{
+			synchronized(this._sync_object){
+				current_code=-1;
+				this.transmat=null;
+			}
+			return;			
 		}
-		return;
-	}
-	/**
-	 * アプリケーションフレームワークのハンドラ（マーカ更新）
-	 */
-	protected void onUpdateHandler(NyARSquare i_square, NyARTransMatResult result)
-	{
-		synchronized(this._sync_object){
-			this.transmat=result;
-		}
-	}
-}
 
-
-public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
-{
+		protected void onUpdateHandler(NyARSquare i_square, NyARTransMatResult result)
+		{
+			synchronized(this._sync_object){
+				this.transmat=result;
+			}			
+		}
+	}
+	
+	private final String CARCODE_FILE1 = "../../Data/patt.hiro";
+	
+	
 	private Animator _animator;
 	private GLNyARRaster_RGB _cap_image;
 	private JmfCaptureDevice _capture;
@@ -145,8 +132,9 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 	
 	private Object _sync_object=new Object();
 	private MarkerProcessor _processor;
+	private NyARCode[] _code_table=new NyARCode[1];
 
-	public SingleNyIdMarker(NyARParam i_cparam) throws NyARException
+	public SingleARMarker(NyARParam i_cparam) throws NyARException
 	{
 		JmfCaptureDeviceList devlist=new JmfCaptureDeviceList();
 		this._ar_param=i_cparam;
@@ -159,9 +147,11 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 		this._capture.setOnCapture(this);
 		this._cap_image = new GLNyARRaster_RGB(i_cparam,this._capture.getCaptureFormat());	
 
+		this._code_table[0]=new NyARCode(16,16);
+		this._code_table[0].loadARPattFromFile(CARCODE_FILE1);
 		//プロセッサの準備
 		this._processor=new MarkerProcessor(i_cparam,this._cap_image.getBufferReader().getBufferType());
-		this._processor.setMarkerWidth(100);
+		this._processor.setARCodeTable(_code_table,16,80.0);
 		
 		//OpenGLフレームの準備（OpenGLリソースの初期化、カメラの撮影開始は、initコールバック関数内で実行）
 		Frame frame = new Frame("Java simpleLite with NyARToolkit");
@@ -231,7 +221,7 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 		// 背景を書く
 		this._gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
 		this._glnya.drawBackGround(this._cap_image, 1.0);			
-		if(this._processor.current_id<0 || transmat_result==null){
+		if(this._processor.current_code<0 || transmat_result==null){
 			
 		}else{
 			try{
@@ -257,7 +247,7 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 					this._gl.glRotatef(r,0f,0f,1.0f);
 					this._gl.glTranslatef(-1.0f,0f,1.0f);
 					this._gl.glRotatef(90,1.0f,0f,0f);
-					this._panel.draw("MarkerId:"+this._processor.current_id,0.01f);
+					this._panel.draw("MarkerId:"+this._processor.current_code,0.01f);
 					this._gl.glPopMatrix();
 				}
 				Thread.sleep(1);// タスク実行権限を一旦渡す
@@ -299,7 +289,7 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 			NyARParam cparam= new NyARParam();
 			cparam.loadARParamFromFile(PARAM_FILE);
 			cparam.changeScreenSize(SCREEN_X, SCREEN_Y);		
-			new SingleNyIdMarker(cparam);
+			new SingleARMarker(cparam);
 		}catch(Exception e){
 			e.printStackTrace();
 		}

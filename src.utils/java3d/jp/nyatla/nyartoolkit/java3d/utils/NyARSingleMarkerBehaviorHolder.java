@@ -69,7 +69,7 @@ public class NyARSingleMarkerBehaviorHolder implements JmfCaptureListener
 		this._capture.setCaptureFormat(scr_size.w, scr_size.h,15f);
 		this._capture.setOnCapture(this);		
 		this._nya_raster = new J3dNyARRaster_RGB(this._cparam,this._capture.getCaptureFormat());
-		this._nya = new NyARSingleDetectMarker(this._cparam, i_ar_code, i_marker_width);
+		this._nya = new NyARSingleDetectMarker(this._cparam, i_ar_code, i_marker_width,this._nya_raster.getBufferReader().getBufferType());
 		this._nya_behavior = new NyARBehavior(this._nya, this._nya_raster, i_rate);
 	}
 

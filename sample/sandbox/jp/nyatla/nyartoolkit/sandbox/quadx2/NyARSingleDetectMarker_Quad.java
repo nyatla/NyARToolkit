@@ -38,6 +38,9 @@ import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.pickup.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.squaredetect.INyARSquareDetector;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareStack;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
@@ -149,7 +152,7 @@ public class NyARSingleDetectMarker_Quad
 		double confidence = 0;
 		for(int i=0;i<number_of_square;i++){
 			// 評価基準になるパターンをイメージから切り出す
-			if (!this._patt.pickFromRaster(i_raster, (NyARSquare)l_square_list.getItem(i))){
+			if (!this._patt.pickFromRaster(i_raster,l_square_list.getItem(i))){
 				continue;
 			}
 			//取得パターンをカラー差分データに変換して評価する。

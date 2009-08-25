@@ -32,12 +32,12 @@
 package jp.nyatla.nyartoolkit.dev;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.NyARSquare;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.utils.*;
-import jp.nyatla.nyartoolkit.core.labeling.NyARLabelingLabel;
+import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabel;
 import jp.nyatla.nyartoolkit.core.pickup.*;
 import jp.nyatla.nyartoolkit.nyidmarker.MarkerPattEncoder;
 import jp.nyatla.nyartoolkit.nyidmarker.PerspectivePixelReader;
@@ -728,7 +728,7 @@ public class CopyOfNyARColorPatt_NyIdMarker implements INyARColorPatt
 {
 	private int[] _patdata;
 	private NyARBufferReader _buf_reader;
-	private NyARRgbPixelReader_INT1D_GLAY_8 _pixelreader;
+	private NyARRgbPixelReader_INT1D_GRAY_8 _pixelreader;
 	private NyARIntSize _size;
 	PerspectivePixelReader2 _perspective_gen;
 	private static final int LOCAL_LT=1;
@@ -749,7 +749,7 @@ public class CopyOfNyARColorPatt_NyIdMarker implements INyARColorPatt
 		this._size=new NyARIntSize(resolution,resolution);
 		this._patdata = new int[resolution*resolution];
 		this._buf_reader=new NyARBufferReader(this._patdata,NyARBufferReader.BUFFERFORMAT_INT1D_GLAY_8);
-		this._pixelreader=new NyARRgbPixelReader_INT1D_GLAY_8(this._patdata,this._size);
+		this._pixelreader=new NyARRgbPixelReader_INT1D_GRAY_8(this._patdata,this._size);
 		this._perspective_gen=new PerspectivePixelReader2(LOCAL_LT,LOCAL_LT,100,100);
 		return;
 	}	

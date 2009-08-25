@@ -34,6 +34,7 @@ import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
 import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.squaredetect.*;
 
 /**
  * このクラスは、同時に１個のマーカを処理することのできる、アプリケーションプロセッサです。
@@ -68,7 +69,7 @@ public abstract class SingleARMarkerProcesser
 
 	private int _lost_delay = 5;
 
-	private NyARSquareDetector _square_detect;
+	private INyARSquareDetector _square_detect;
 
 	protected NyARTransMat _transmat;
 
@@ -78,10 +79,9 @@ public abstract class SingleARMarkerProcesser
 
 	private NyARSquareStack _square_list = new NyARSquareStack(100);
 
-	private NyARColorPatt_O3 _patt = null;
+	private INyARColorPatt _patt = null;
 
 	private double _cf_threshold_new = 0.30;
-
 	private double _cf_threshold_exist = 0.15;
 	
 	private int _threshold = 110;
@@ -93,13 +93,18 @@ public abstract class SingleARMarkerProcesser
 	protected int _current_arcode_index = -1;
 
 	private NyARMatchPattDeviationColorData _deviation_data;
+	
+	protected SingleARMarkerProcesser()
+	{
+		return;
+	}
 
 
-	public SingleARMarkerProcesser(NyARParam i_param,int i_raster_type) throws NyARException
+	protected void initInstance(NyARParam i_param,int i_raster_type) throws NyARException
 	{
 		NyARIntSize scr_size = i_param.getScreenSize();
 		// 解析オブジェクトを作る
-		this._square_detect = new NyARSquareDetector(i_param.getDistortionFactor(), scr_size);
+		this._square_detect = new NyARSquareDetector_Rle(i_param.getDistortionFactor(), scr_size);
 		this._transmat = new NyARTransMat(i_param);
 		this._tobin_filter=new NyARRasterFilter_ARToolkitThreshold(110,i_raster_type);
 
@@ -108,6 +113,7 @@ public abstract class SingleARMarkerProcesser
 		return;
 	}
 
+	
 	public void setThreshold(int i_threshold)
 	{
 		this._threshold = i_threshold;
@@ -123,8 +129,8 @@ public abstract class SingleARMarkerProcesser
 			// 強制リセット
 			reset(true);
 		}
-		// 検出するマーカセット、情報、検出器を作り直す。
-		this._patt = new NyARColorPatt_O3(i_code_resolution, i_code_resolution);
+		//検出するマーカセット、情報、検出器を作り直す。(1ピクセル4ポイントサンプリング,マーカのパターン領域は50%)
+		this._patt = new NyARColorPatt_Perspective_O2(i_code_resolution, i_code_resolution,4,25);
 		this._deviation_data=new NyARMatchPattDeviationColorData(i_code_resolution, i_code_resolution);
 		this._marker_width = i_marker_width;
 

@@ -116,7 +116,6 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 		this._ar_param = i_param;
 
 		Frame frame = new Frame("Java simpleLite with NyARToolkit");
-		this._nya = new NyARSingleDetectMarker(this._ar_param, i_ar_code, 80.0);
 
 		
 		// キャプチャの準備
@@ -126,11 +125,12 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 			throw new NyARException();
 		}
 		this._capture.setOnCapture(this);
-		// NyARToolkitの準備
-		this._nya.setContinueMode(true);// ここをtrueにすると、transMatContinueモード（History計算）になります。
 		// GL対応のRGBラスタオブジェクト
 		this._cap_image = new GLNyARRaster_RGB(this._ar_param, this._capture.getCaptureFormat());
 		
+		// NyARToolkitの準備
+		this._nya = new NyARSingleDetectMarker(this._ar_param, i_ar_code, 80.0,this._cap_image.getBufferReader().getBufferType());
+		this._nya.setContinueMode(true);// ここをtrueにすると、transMatContinueモード（History計算）になります。
 		
 		// 3Dを描画するコンポーネント
 		GLCanvas canvas = new GLCanvas();

@@ -32,13 +32,12 @@
 package jp.nyatla.nyartoolkit.sample;
 
 import java.io.*;
-import java.util.*;
 
-import jp.nyatla.nyartoolkit.core.*;
+
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.transmat.*;
-import jp.nyatla.nyartoolkit.nyidmarker.*;
 import jp.nyatla.nyartoolkit.nyidmarker.data.*;
 import jp.nyatla.nyartoolkit.processor.*;
 
@@ -57,7 +56,8 @@ public class NyIdTest
 
         public MarkerProcessor(NyARParam i_cparam, int i_raster_format) throws Exception
         {
-            super(i_cparam, new NyIdMarkerDataEncoder_RawBit(), i_raster_format);
+        	super();//
+            initInstance(i_cparam, new NyIdMarkerDataEncoder_RawBit(), i_raster_format);
             //アプリケーションフレームワークの初期化
             return;
         }

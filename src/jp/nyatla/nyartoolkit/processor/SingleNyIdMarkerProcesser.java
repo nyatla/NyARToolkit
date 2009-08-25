@@ -35,6 +35,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.nyidmarker.*;
 import jp.nyatla.nyartoolkit.nyidmarker.data.*;
 import jp.nyatla.nyartoolkit.core2.rasteranalyzer.threshold.*;
+import jp.nyatla.nyartoolkit.core.squaredetect.*;
 
 public abstract class SingleNyIdMarkerProcesser
 {
@@ -49,7 +50,7 @@ public abstract class SingleNyIdMarkerProcesser
 	private int _lost_delay_count = 0;
 	private int _lost_delay = 5;
 
-	private NyARSquareDetector _square_detect;
+	private NyARSquareDetector_Rle _square_detect;
 	protected NyARTransMat _transmat;
 	private double _marker_width=100;
 
@@ -68,11 +69,15 @@ public abstract class SingleNyIdMarkerProcesser
 	private NyIdMarkerPickup _id_pickup = new NyIdMarkerPickup();
 
 
-	protected SingleNyIdMarkerProcesser(NyARParam i_param,INyIdMarkerDataEncoder i_encoder,int i_raster_format) throws NyARException
+	protected SingleNyIdMarkerProcesser()
+	{
+		return;
+	}
+	protected void initInstance(NyARParam i_param,INyIdMarkerDataEncoder i_encoder,int i_raster_format) throws NyARException
 	{
 		NyARIntSize scr_size = i_param.getScreenSize();
 		// 解析オブジェクトを作る
-		this._square_detect = new NyARSquareDetector(i_param.getDistortionFactor(), scr_size);
+		this._square_detect = new NyARSquareDetector_Rle(i_param.getDistortionFactor(), scr_size);
 		this._transmat = new NyARTransMat(i_param);
 		this._encoder=i_encoder;
 
@@ -85,6 +90,7 @@ public abstract class SingleNyIdMarkerProcesser
 		this._tobin_filter = new NyARRasterFilter_ARToolkitThreshold(110,i_raster_format);
 		this._threshold_detect=new NyARRasterThresholdAnalyzer_SlidePTile(15,i_raster_format,4);
 		return;
+		
 	}
 
 	public void setMarkerWidth(int i_width)
@@ -131,7 +137,7 @@ public abstract class SingleNyIdMarkerProcesser
 	
 	private final NyIdMarkerPattern _marker_data=new NyIdMarkerPattern();
 	private final NyIdMarkerParam _marker_param=new NyIdMarkerParam();
-	private final NyARRasterThresholdAnalyzer_SlidePTile _threshold_detect;
+	private NyARRasterThresholdAnalyzer_SlidePTile _threshold_detect;
 	
 	/**新規マーカ検索 現在認識中のマーカがないものとして、最も認識しやすいマーカを１個認識します。
 	 */

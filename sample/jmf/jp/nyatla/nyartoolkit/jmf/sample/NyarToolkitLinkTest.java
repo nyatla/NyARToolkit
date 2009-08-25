@@ -35,6 +35,8 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
@@ -67,24 +69,29 @@ public class NyarToolkitLinkTest extends Frame implements JmfCaptureListener
 		setBounds(0, 0, 320 + 64, 240 + 64);
 		//キャプチャの準備
 		JmfCaptureDeviceList devlist=new JmfCaptureDeviceList();
-		_capture=devlist.getDevice(0);
+		this._capture=devlist.getDevice(0);
 		//JmfNyARRaster_RGBはYUVよりもRGBで高速に動作します。
-		if(!_capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB,320, 240,15f)){
-			if(!_capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_YUV,320, 240,15f)){
+		if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB,320, 240,15f)){
+			if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_YUV,320, 240,15f)){
 				throw new NyARException("キャプチャフォーマットが見つかりません");
 			}		
 		}
-		_capture.setOnCapture(this);
-
+		this._capture.setOnCapture(this);
+		this.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e)
+			{
+				System.exit(0);
+			}
+		});
 		//NyARToolkitの準備
 		NyARParam ar_param = new NyARParam();
 		NyARCode ar_code = new NyARCode(16, 16);
 		ar_param.loadARParamFromFile(PARAM_FILE);
 		ar_param.changeScreenSize(320, 240);
-		this._nya = new NyARSingleDetectMarker(ar_param, ar_code, 80.0);
+		this._raster = new JmfNyARRaster_RGB(320, 240,this._capture.getCaptureFormat());
+		this._nya = new NyARSingleDetectMarker(ar_param, ar_code, 80.0,this._raster.getBufferReader().getBufferType());
 		ar_code.loadARPattFromFile(CARCODE_FILE);
 		//キャプチャイメージ用のラスタを準備
-		this._raster = new JmfNyARRaster_RGB(320, 240,_capture.getCaptureFormat());
 		return;
 	}
 

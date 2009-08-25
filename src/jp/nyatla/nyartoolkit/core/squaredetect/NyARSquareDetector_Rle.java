@@ -1,12 +1,8 @@
 package jp.nyatla.nyartoolkit.core.squaredetect;
 
 
-import java.util.Date;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.INyARSquareDetector;
-import jp.nyatla.nyartoolkit.core.NyARSquare;
-import jp.nyatla.nyartoolkit.core.NyARSquareStack;
 import jp.nyatla.nyartoolkit.core.labeling.LabelOverlapChecker;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.*;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;

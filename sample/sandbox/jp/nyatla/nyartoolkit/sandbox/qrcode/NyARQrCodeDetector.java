@@ -1,19 +1,17 @@
 package jp.nyatla.nyartoolkit.sandbox.qrcode;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.INyARSquareDetector;
-import jp.nyatla.nyartoolkit.core.NyARSquare;
-import jp.nyatla.nyartoolkit.core.NyARSquareStack;
 import jp.nyatla.nyartoolkit.core.NyARVertexCounter;
-import jp.nyatla.nyartoolkit.core.labeling.INyARLabeling;
-import jp.nyatla.nyartoolkit.core.labeling.NyARLabelingImage;
-import jp.nyatla.nyartoolkit.core.labeling.NyARLabelingLabel;
-import jp.nyatla.nyartoolkit.core.labeling.NyARLabelingLabelStack;
-import jp.nyatla.nyartoolkit.core.labeling.NyARLabeling_ARToolKit;
+import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingImage;
+import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabel;
+import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabelStack;
+import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabeling_ARToolKit;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
-import jp.nyatla.nyartoolkit.core.pca2d.INyARPca2d;
 import jp.nyatla.nyartoolkit.core.pca2d.*;
 import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
+import jp.nyatla.nyartoolkit.core.squaredetect.INyARSquareDetector;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareStack;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix22;
 
@@ -91,7 +89,7 @@ public class NyARQrCodeDetector implements INyARSquareDetector
 	 */
 	public final void detectMarker(NyARBinRaster i_raster, NyARSquareStack o_square_stack) throws NyARException
 	{
-		final INyARLabeling labeling_proc = this._labeling;
+		final NyARLabeling_ARToolKit labeling_proc = this._labeling;
 		final NyARLabelingImage limage = this._limage;
 
 		// 初期化
@@ -109,7 +107,7 @@ public class NyARQrCodeDetector implements INyARSquareDetector
 		}
 
 		final NyARLabelingLabelStack stack = limage.getLabelStack();
-		final NyARLabelingLabel[] labels = (NyARLabelingLabel[]) stack.getArray();
+		final NyARLabelingLabel[] labels = stack.getArray();
 
 		// ラベルを大きい順に整列
 		stack.sortByArea();
@@ -197,7 +195,7 @@ public class NyARQrCodeDetector implements INyARSquareDetector
 		if(number_of_edge<3){
 			return;
 		}
-		NyARSquare[] sa=(NyARSquare[])i_square_stack.getArray();
+		NyARSquare[] sa=i_square_stack.getArray();
 		for(int i=0;i<number_of_edge-2;i++)
 		{	
 			group[0]=sa[i];

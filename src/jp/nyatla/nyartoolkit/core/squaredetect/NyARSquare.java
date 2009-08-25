@@ -29,12 +29,29 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core;
+package jp.nyatla.nyartoolkit.core.squaredetect;
 
-import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
-
-public interface INyARSquareDetector
+import jp.nyatla.nyartoolkit.core.types.*;
+/**
+ * ARMarkerInfoに相当するクラス。 矩形情報を保持します。
+ * 
+ * directionは方角を表します。
+ * 決定しないときはDIRECTION_UNKNOWNを設定してください。
+ * 
+ */
+public class NyARSquare
 {
-	public void detectMarker(NyARBinRaster i_raster, NyARSquareStack o_square_stack) throws NyARException;
+	public final static int DIRECTION_UNKNOWN=-1;
+	public int direction;
+    public NyARLinear[] line = NyARLinear.createArray(4);
+    public NyARDoublePoint2d[] sqvertex = NyARDoublePoint2d.createArray(4);
+    public NyARIntPoint2d[] imvertex = NyARIntPoint2d.createArray(4);
+    public NyARSquare()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            this.line[i] = new NyARLinear();
+        }
+    }
+
 }

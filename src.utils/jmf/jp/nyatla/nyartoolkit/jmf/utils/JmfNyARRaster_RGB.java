@@ -134,6 +134,14 @@ class NyARBufferReader_Reader_RGB24 extends NyARBufferReader_Reader
 		}
 		return;
 	}
+	public void setPixel(int i_x, int i_y, int[] i_rgb) throws NyARException
+	{
+		NyARException.notImplement();		
+	}
+	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intrgb) throws NyARException
+	{
+		NyARException.notImplement();		
+	}
 
 }
 
@@ -223,6 +231,15 @@ class NyARBufferReader_Reader_YUV extends NyARBufferReader_Reader
 		}
 		return;
 	}
+	public void setPixel(int i_x, int i_y, int[] i_rgb) throws NyARException
+	{
+		NyARException.notImplement();		
+	}
+	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intrgb) throws NyARException
+	{
+		NyARException.notImplement();		
+	}
+	
 }
 
 

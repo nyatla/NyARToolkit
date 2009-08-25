@@ -32,8 +32,8 @@
 package jp.nyatla.nyartoolkit.core.pickup;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.NyARSquare;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 
 public interface INyARColorPatt extends INyARRgbRaster
 {

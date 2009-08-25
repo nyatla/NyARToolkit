@@ -16,8 +16,11 @@ import jp.nyatla.nyartoolkit.core.*;
 
 import java.awt.*;
 
-import jp.nyatla.nyartoolkit.core.INyARSquareDetector;
 import jp.nyatla.nyartoolkit.core.labeling.*;
+import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingImage;
+import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabel;
+import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabelStack;
+import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabeling_ARToolKit;
 import jp.nyatla.nyartoolkit.core.match.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.pca2d.INyARPca2d;
@@ -33,6 +36,9 @@ import jp.nyatla.nyartoolkit.core2.rasterfilter.rgb2gs.NyARRasterFilter_RgbAve;
 import jp.nyatla.utils.NyObjectStack;
 import jp.nyatla.utils.j2se.LabelingBufferdImage;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
+import jp.nyatla.nyartoolkit.core.squaredetect.INyARSquareDetector;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareStack;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix22;
@@ -361,7 +367,7 @@ class NyARQRCodeDetector implements INyARSquareDetector
 		}
 
 		final NyARLabelingLabelStack stack = limage.getLabelStack();
-		final NyARLabelingLabel[] labels = (NyARLabelingLabel[]) stack.getArray();
+		final NyARLabelingLabel[] labels = stack.getArray();
 
 		// ラベルを大きい順に整列
 		stack.sortByArea();
@@ -464,7 +470,7 @@ class NyARQRCodeDetector implements INyARSquareDetector
 		if(number_of_edge<3){
 			return;
 		}
-		NyARSquare[] sa=(NyARSquare[])i_square_stack.getArray();
+		NyARSquare[] sa=i_square_stack.getArray();
 		for(int i=0;i<number_of_edge;i++)
 		{	
 			for(int i2=i+1;i2<number_of_edge;i2++)
@@ -864,7 +870,7 @@ public class LabelingCamera extends Frame implements JmfCaptureListener
 			labeling.attachDestination(limage);
 			labeling.labeling(_binraster1);
 			this._bimg.drawImage(this._gsraster1);
-			NyARLabelingLabel[] labels = (NyARLabelingLabel[]) limage.getLabelStack().getArray();
+			NyARLabelingLabel[] labels =  limage.getLabelStack().getArray();
 
 			NyARSquareStack stack = new NyARSquareStack(100);
 			NyARQRCodeDetector detect = new NyARQRCodeDetector(ap.getDistortionFactor(), new NyARIntSize(320,240));

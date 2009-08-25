@@ -33,6 +33,7 @@ package jp.nyatla.nyartoolkit.core.match;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.*;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 
 /**
  * AR_TEMPLATE_MATCHING_BWと同等のルールで マーカを評価します。

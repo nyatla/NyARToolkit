@@ -68,10 +68,10 @@ public class NyarToolkitLinkTest extends Frame implements QtCaptureListener
 		NyARCode ar_code = new NyARCode(16, 16);
 		ar_param.loadARParamFromFile(PARAM_FILE);
 		ar_param.changeScreenSize(320, 240);
-		nya = new NyARSingleDetectMarker(ar_param, ar_code, 80.0);
+		raster = new QtNyARRaster_RGB(320, 240);
+		nya = new NyARSingleDetectMarker(ar_param, ar_code, 80.0,raster.getBufferReader().getBufferType());
 		ar_code.loadARPattFromFile(CARCODE_FILE);
 		//キャプチャイメージ用のラスタを準備
-		raster = new QtNyARRaster_RGB(320, 240);
 	}
 
 	public void onUpdateBuffer(byte[] pixels)
