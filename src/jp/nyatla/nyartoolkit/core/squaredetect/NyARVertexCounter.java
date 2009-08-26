@@ -29,7 +29,7 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core;
+package jp.nyatla.nyartoolkit.core.squaredetect;
 
 /**
  * get_vertex関数を切り離すためのクラス

@@ -39,8 +39,6 @@ public class NyARSquareDetector_ARToolKit implements INyARSquareDetector
 	{
 		this._width = i_size.w;
 		this._height = i_size.h;
-		//歪み計算テーブルを作ると、8*width/height*2の領域を消費します。
-		//領域を取りたくない場合は、i_dist_factor_refの値をそのまま使ってください。
 		this._labeling = new NyARLabeling_ARToolKit();
 		this._sqconvertor=new SquareContourDetector(i_size,i_dist_factor_ref);
 		this._limage = new NyARLabelingImage(this._width, this._height);

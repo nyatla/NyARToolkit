@@ -49,7 +49,7 @@ public class LabelOverlapChecker<T extends NyARLabelInfo>
 	public LabelOverlapChecker(int i_max_label,Class<T> i_element_type)
 	{
 		this._element_type=i_element_type;
-		this._labels = (T[])Array.newInstance(i_element_type, 32);
+		this._labels = (T[])Array.newInstance(i_element_type, i_max_label);
 	}
 
 	/**

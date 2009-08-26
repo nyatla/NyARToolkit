@@ -224,9 +224,6 @@ public class NyARLabeling_Rle
 						final int prev_id =rle_prev[index_prev].fid;
 						RleLabelFragmentInfoStack.RleLabelFragmentInfo prev_ptr = f_array[prev_id];
 						if (id != prev_id){
-							if(prev_ptr.area==0){
-								System.out.println("ERRRR");
-							}
 							label_count--;
 							//prevとcurrentのフラグメントidを書き換える。
 							for(int i2=index_prev;i2<len_prev;i2++){
