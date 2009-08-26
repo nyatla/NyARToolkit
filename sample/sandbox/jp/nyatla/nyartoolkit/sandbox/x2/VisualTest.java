@@ -100,8 +100,7 @@ public class VisualTest extends Frame implements JmfCaptureListener
 			// 画像3
 			NyARLabelingImage limage = new NyARLabelingImage(320, 240);
 			NyARLabeling_ARToolKit labeling = new NyARLabeling_ARToolKit();
-			labeling.attachDestination(limage);
-			labeling.labeling(_binraster1);
+			labeling.labeling(_binraster1,limage);
 			this._bimg.drawImage(this._gsraster1);
 
 			NyARSquareStack stack = new NyARSquareStack(100);

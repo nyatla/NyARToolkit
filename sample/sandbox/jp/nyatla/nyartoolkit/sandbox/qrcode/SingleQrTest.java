@@ -12,11 +12,9 @@ import javax.media.format.*;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 
-import jp.nyatla.nyartoolkit.core.*;
 
 import java.awt.*;
 
-import jp.nyatla.nyartoolkit.core.labeling.*;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingImage;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabeling_ARToolKit;
 import jp.nyatla.nyartoolkit.core.param.*;
@@ -100,8 +98,7 @@ public class SingleQrTest extends Frame implements JmfCaptureListener
 			// 画像3
 			NyARLabelingImage limage = new NyARLabelingImage(320, 240);
 			NyARLabeling_ARToolKit labeling = new NyARLabeling_ARToolKit();
-			labeling.attachDestination(limage);
-			labeling.labeling(_binraster1);
+			labeling.labeling(_binraster1,limage);
 			this._bimg.drawImage(this._gsraster1);
 
 			NyARSquareStack stack = new NyARSquareStack(100);
