@@ -47,9 +47,6 @@ import jp.nyatla.nyartoolkit.core.param.*;
  */
 public class NyARSquareDetector_X2 implements INyARSquareDetector
 {
-	private static final int AR_AREA_MAX = 100000;// #define AR_AREA_MAX 100000
-
-	private static final int AR_AREA_MIN = 70;// #define AR_AREA_MIN 70
 	private final int _width;
 	private final int _height;
 
@@ -70,7 +67,7 @@ public class NyARSquareDetector_X2 implements INyARSquareDetector
 	{
 		this._width = i_size.w;
 		this._height = i_size.h;
-		this._labeling = new NyARLabeling_Rle(this._width);
+		this._labeling = new NyARLabeling_Rle(this._width,this._height);
 		this._sqconvertor=new SquareContourDetector_X2(i_size,i_dist_factor_ref);
 		this._stack=new RleLabelFragmentInfoStack(i_size.w*i_size.h*2048/(320*240)+32);//検出可能な最大ラベル数
 		
@@ -113,17 +110,10 @@ public class NyARSquareDetector_X2 implements INyARSquareDetector
 		if (label_num < 1) {
 			return;
 		}
-
+		//ラベルをソートしておく
+		flagment.sortByArea();
 		RleLabelFragmentInfoStack.RleLabelFragmentInfo[] labels=flagment.getArray();
 
-		// デカいラベルを読み飛ばし
-		int i;
-		for (i = 0; i < label_num; i++) {
-			// 検査対象内のラベルサイズになるまで無視
-			if (labels[i].area <= AR_AREA_MAX) {
-				break;
-			}
-		}
 
 		final int xsize = this._width;
 		final int ysize = this._height;
@@ -134,14 +124,10 @@ public class NyARSquareDetector_X2 implements INyARSquareDetector
 		//重なりチェッカの最大数を設定
 		overlap.setMaxLabels(label_num);
 
-		for (; i < label_num; i++) {
+		for (int i=0; i < label_num; i++) {
 			final RleLabelFragmentInfoStack.RleLabelFragmentInfo label_pt=labels[i];
 			final int label_area = label_pt.area;
-			// 検査対象サイズよりも小さくなったら終了
-			if (label_pt.area < AR_AREA_MIN) {
-				break;
-			}
-		
+
 			// クリップ領域が画面の枠に接していれば除外
 			if (label_pt.clip_l == 0 || label_pt.clip_r == xsize-1){
 				continue;

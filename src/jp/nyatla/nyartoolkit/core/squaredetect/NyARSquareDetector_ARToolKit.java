@@ -79,6 +79,9 @@ public class NyARSquareDetector_ARToolKit implements INyARSquareDetector
 		}
 
 		final NyARLabelingLabelStack stack = limage.getLabelStack();
+		//ラベルをソートしておく
+		stack.sortByArea();
+		//
 		final NyARLabelingLabel[] labels = stack.getArray();
 
 		// デカいラベルを読み飛ばし

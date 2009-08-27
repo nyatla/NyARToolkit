@@ -110,13 +110,13 @@ public class NyARVertexDetector implements INyARSquareDetector
 		if (label_num < 1) {
 			return;
 		}
+		
 
 		final NyARLabelingLabelStack stack = limage.getLabelStack();
-		final NyARLabelingLabel[] labels = stack.getArray();
-		
-		
 		// ラベルを大きい順に整列
 		stack.sortByArea();
+		
+		final NyARLabelingLabel[] labels = stack.getArray();
 
 		// デカいラベルを読み飛ばし
 		int i;

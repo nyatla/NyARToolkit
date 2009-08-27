@@ -37,9 +37,9 @@ public class NyARSquareDetector_Rle implements INyARSquareDetector
 	{
 		this._width = i_size.w;
 		this._height = i_size.h;
-		//歪み計算テーブルを作ると、8*width/height*2の領域を消費します。
-		//領域を取りたくない場合は、i_dist_factor_refの値をそのまま使ってください。
-		this._labeling = new NyARLabeling_Rle(this._width);
+		//ラベリングのサイズを指定したいときはsetAreaRangeを使ってね。
+		this._labeling = new NyARLabeling_Rle(this._width,this._height);
+		this._labeling.setAreaRange(AR_AREA_MAX, AR_AREA_MIN);
 		this._sqconvertor=new SquareContourDetector(i_size,i_dist_factor_ref);
 		this._stack=new RleLabelFragmentInfoStack(i_size.w*i_size.h*2048/(320*240)+32);//検出可能な最大ラベル数
 		
@@ -72,22 +72,15 @@ public class NyARSquareDetector_Rle implements INyARSquareDetector
 		// マーカーホルダをリセット
 		o_square_stack.clear();
 
-		// ラベル数が0ならここまで(Labeling内部でソートするようにした。)
+		// ラベル数が0ならここまで
 		final int label_num=this._labeling.labeling(i_raster, 0, i_raster.getHeight(), flagment);
 		if (label_num < 1) {
 			return;
 		}
-		// ラベルを大きい順に整列
+		//ラベルをソートしておく
+		flagment.sortByArea();
+		//ラベルリストを取得
 		RleLabelFragmentInfoStack.RleLabelFragmentInfo[] labels=flagment.getArray();
-
-		// デカいラベルを読み飛ばし
-		int i;
-		for (i = 0; i < label_num; i++) {
-			// 検査対象内のラベルサイズになるまで無視
-			if (labels[i].area <= AR_AREA_MAX) {
-				break;
-			}
-		}
 
 		final int xsize = this._width;
 		final int ysize = this._height;
@@ -95,16 +88,13 @@ public class NyARSquareDetector_Rle implements INyARSquareDetector
 		final int[] ycoord = this._ycoord;
 		final int coord_max = this._max_coord;
 
+
 		//重なりチェッカの最大数を設定
 		overlap.setMaxLabels(label_num);
 
-		for (; i < label_num; i++) {
+		for (int i=0; i < label_num; i++) {
 			final RleLabelFragmentInfoStack.RleLabelFragmentInfo label_pt=labels[i];
 			final int label_area = label_pt.area;
-			// 検査対象サイズよりも小さくなったら終了
-			if (label_pt.area < AR_AREA_MIN) {
-				break;
-			}
 		
 			// クリップ領域が画面の枠に接していれば除外
 			if (label_pt.clip_l == 0 || label_pt.clip_r == xsize-1){
