@@ -263,7 +263,72 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 				xy--;
 			}			
 		}		
+	}
+	
+	class doThFilterImpl_BUFFERFORMAT_WORD1D_R5G6B5_16LE implements IdoThFilterImpl
+	{
+		public void doThFilter(INyARBufferReader i_input, INyARBufferReader i_output,NyARIntSize i_size,int i_threshold)
+		{
+			int[] out_buf = (int[]) i_output.getBuffer();
+			short[] in_buf = (short[]) i_input.getBuffer();
+			
+			final int th=i_threshold*3;
+			int w;
+			int xy;
+			final int pix_count   =i_size.h*i_size.w;
+			final int pix_mod_part=pix_count-(pix_count%8);
+
+			for(xy=pix_count-1;xy>=pix_mod_part;xy--){				
+                w =(int)in_buf[xy];
+                w = ((w & 0xf800) >> 8) + ((w & 0x07e0) >> 3) + ((w & 0x001f) << 3);
+                out_buf[xy] = w <= th ? 0 : 1;
+			}
+			//タイリング
+			for (;xy>=0;) {
+                w =(int)in_buf[xy];
+                w = ((w & 0xf800) >> 8) + ((w & 0x07e0) >> 3) + ((w & 0x001f) << 3);
+                out_buf[xy] = w <= th ? 0 : 1;
+				xy--;
+                w =(int)in_buf[xy];
+                w = ((w & 0xf800) >> 8) + ((w & 0x07e0) >> 3) + ((w & 0x001f) << 3);
+                out_buf[xy] = w <= th ? 0 : 1;
+				xy--;
+                w =(int)in_buf[xy];
+                w = ((w & 0xf800) >> 8) + ((w & 0x07e0) >> 3) + ((w & 0x001f) << 3);
+                out_buf[xy] = w <= th ? 0 : 1;
+				xy--;
+                w =(int)in_buf[xy];
+                w = ((w & 0xf800) >> 8) + ((w & 0x07e0) >> 3) + ((w & 0x001f) << 3);
+                out_buf[xy] = w <= th ? 0 : 1;
+				xy--;
+                w =(int)in_buf[xy];
+                w = ((w & 0xf800) >> 8) + ((w & 0x07e0) >> 3) + ((w & 0x001f) << 3);
+                out_buf[xy] = w <= th ? 0 : 1;
+				xy--;
+                w =(int)in_buf[xy];
+                w = ((w & 0xf800) >> 8) + ((w & 0x07e0) >> 3) + ((w & 0x001f) << 3);
+                out_buf[xy] = w <= th ? 0 : 1;
+				xy--;
+                w =(int)in_buf[xy];
+                w = ((w & 0xf800) >> 8) + ((w & 0x07e0) >> 3) + ((w & 0x001f) << 3);
+                out_buf[xy] = w <= th ? 0 : 1;
+				xy--;
+                w =(int)in_buf[xy];
+                w = ((w & 0xf800) >> 8) + ((w & 0x07e0) >> 3) + ((w & 0x001f) << 3);
+                out_buf[xy] = w <= th ? 0 : 1;
+				xy--;
+			}
+		}		
 	}	
+	
+	
+	
+	
+
+	
+	
+	
+	
 	private int _threshold;
 	private IdoThFilterImpl _do_threshold_impl;
 
@@ -284,7 +349,9 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 		case INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32:
 			this._do_threshold_impl=new doThFilterImpl_BUFFERFORMAT_INT1D_X8R8G8B8_32();
 			break;
-			
+		case INyARBufferReader.BUFFERFORMAT_WORD1D_R5G6B5_16LE:
+			this._do_threshold_impl=new doThFilterImpl_BUFFERFORMAT_WORD1D_R5G6B5_16LE();
+			break;
 		default:
 			throw new NyARException();
 		}
