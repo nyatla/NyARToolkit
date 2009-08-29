@@ -44,6 +44,11 @@ final public class NyARFixedFloatObserv2IdealMap
 	private int _stride;
 	private int[] _mapx;
 	private int[] _mapy;
+	public NyARFixedFloatObserv2IdealMap(double[] i_map_x,double[] i_map_y,NyARIntSize i_screen_size)
+	{
+		
+	}
+	
 	public NyARFixedFloatObserv2IdealMap(NyARCameraDistortionFactor i_distfactor,NyARIntSize i_screen_size)
 	{
 		NyARDoublePoint2d opoint=new NyARDoublePoint2d();

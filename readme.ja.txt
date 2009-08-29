@@ -1,7 +1,7 @@
 ARToolKit Java class library NyARToolkit.
 Copyright (C)2008 R.Iizuka
 
-version 2.3.1
+version 2.4.0
 
 http://nyatla.jp/nyartoolkit/
 airmail(at)ebony.plala.or.jp
@@ -11,7 +11,7 @@ wm(at)nyatla.jp
 
 
 
-・NyARToolkit/2.3
+・NyARToolkit/2.4
 
 NyARToolkitは、Pure Javaで実装したARToolKitクラスライブラリです。
 
@@ -67,8 +67,8 @@ http://www.hitl.washington.edu/artoolkit/
 NyARJMF/CaptureQT/NyARJog/NyARJ3dは、下位のキャプチャモジュール
 や3Dライブラリを使いやすくするためのラッパークラス群です。
 
-各モジュールとNyARToolkitは容易に分離可能であり、個々を単独で
-使用することも可能です。
+各モジュールとNyARToolkitは分離可能であり、個々を単独で使用する
+ことも可能です。
 
 
 
@@ -179,7 +179,7 @@ NyARToolkitは、商用ライセンスとGPLv2以降のデュアルライセン�
 
 GPLについては、LICENCE.txtをお読みください。
 
-商用ライセンスについては、ARToolWorks社に管理を委託しておりますので、
+商用ライセンスについては、ARToolWorks社に管理を委託しております。
 下記URLを参考に、ARToolWorks社へお問い合わせください。
 http://nyatla.jp/nyartoolkit/wiki/index.php?Licence
 

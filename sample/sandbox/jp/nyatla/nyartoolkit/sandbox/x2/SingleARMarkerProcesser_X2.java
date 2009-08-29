@@ -22,7 +22,7 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.processor;
+package jp.nyatla.nyartoolkit.sandbox.x2;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.*;
@@ -49,7 +49,7 @@ import jp.nyatla.nyartoolkit.core2.rasteranalyzer.threshold.NyARRasterThresholdA
  * イベントが発生します。
  * 
  */
-public abstract class SingleARMarkerProcesser
+public abstract class SingleARMarkerProcesser_X2
 {
 	/**selectARCodeIndexFromListが値を返す時に使う変数型です。
 	 */
@@ -72,8 +72,9 @@ public abstract class SingleARMarkerProcesser
 
 	private INyARSquareDetector _square_detect;
 
-	protected NyARTransMat _transmat;
-
+	//<X2 patch>
+	protected NyARTransMat_X2 _transmat;
+	//</X2 patch>
 	private double _marker_width;
 
 	private NyARMatchPatt_Color_WITHOUT_PCA[] _match_patt;
@@ -96,7 +97,7 @@ public abstract class SingleARMarkerProcesser
 	private NyARMatchPattDeviationColorData _deviation_data;
 	private NyARRasterThresholdAnalyzer_SlidePTile _threshold_detect;
 	
-	protected SingleARMarkerProcesser()
+	protected SingleARMarkerProcesser_X2()
 	{
 		return;
 	}
@@ -106,8 +107,11 @@ public abstract class SingleARMarkerProcesser
 	{
 		NyARIntSize scr_size = i_param.getScreenSize();
 		// 解析オブジェクトを作る
-		this._square_detect = new NyARSquareDetector_Rle(i_param.getDistortionFactor(), scr_size);
-		this._transmat = new NyARTransMat(i_param);
+//<X2 patch>
+		this._square_detect = new NyARSquareDetector_X2(i_param.getDistortionFactor(), scr_size);
+		this._transmat = new NyARTransMat_X2(i_param);
+//</X2 patch>
+
 		this._tobin_filter=new NyARRasterFilter_ARToolkitThreshold(110,i_raster_type);
 
 		// ２値画像バッファを作る
@@ -115,13 +119,6 @@ public abstract class SingleARMarkerProcesser
 		this._threshold_detect=new NyARRasterThresholdAnalyzer_SlidePTile(15,i_raster_type,4);
 		return;
 	}
-
-	/*自動・手動の設定が出来ないので、コメントアウト
-	public void setThreshold(int i_threshold)
-	{
-		this._threshold = i_threshold;
-		return;
-	}*/
 
 	/**検出するマーカコードの配列を指定します。 検出状態でこの関数を実行すると、
 	 * オブジェクト状態に強制リセットがかかります。
