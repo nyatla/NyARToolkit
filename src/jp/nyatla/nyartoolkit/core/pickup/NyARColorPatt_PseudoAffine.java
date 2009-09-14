@@ -32,7 +32,7 @@ import jp.nyatla.nyartoolkit.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
-import jp.nyatla.nyartoolkit.core.utils.NyARDoubleMatrixProcessor;
+
 
 
 /**
@@ -101,7 +101,7 @@ public class NyARColorPatt_PseudoAffine implements INyARColorPatt
 		mat.m31=0;
 		mat.m32=i_height-1;
 		mat.m33=1.0;
-		NyARDoubleMatrixProcessor.inverse(mat,mat);
+		mat.inverse(mat);
 		return;
 	}	
 

@@ -46,7 +46,7 @@ import jp.nyatla.nyartoolkit.core.pickup.*;
  */
 public class NyARSingleDetectMarker extends NyARCustomSingleDetectMarker
 {
-	public final static int PF_ARTOOLKIT_CONPATIBLE=1;
+	public final static int PF_ARTOOLKIT_COMPATIBLE=1;
 	public final static int PF_NYARTOOLKIT=2;
 	
 	/**
@@ -95,7 +95,7 @@ public class NyARSingleDetectMarker extends NyARCustomSingleDetectMarker
 		INyARSquareDetector sqdetect_inst;
 
 		switch(i_profile_id){
-		case PF_ARTOOLKIT_CONPATIBLE:
+		case PF_ARTOOLKIT_COMPATIBLE:
 			patt_inst=new NyARColorPatt_O3(i_ref_code.getWidth(), i_ref_code.getHeight());
 			sqdetect_inst=new NyARSquareDetector_ARToolKit(i_ref_param.getDistortionFactor(),i_ref_param.getScreenSize());
 			break;

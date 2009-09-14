@@ -1,12 +1,6 @@
 /* 
- * PROJECT: NyARToolkit
+ * PROJECT: NyARToolkit(Extension)
  * --------------------------------------------------------------------------------
- * This work is based on the original ARToolKit developed by
- *   Hirokazu Kato
- *   Mark Billinghurst
- *   HITLab, University of Washington, Seattle
- * http://www.hitl.washington.edu/artoolkit/
- *
  * The NyARToolkit is Java version ARToolkit class library.
  * Copyright (C)2008 R.Iizuka
  *
@@ -59,4 +53,22 @@ public class NyARDoubleMatrix22 implements INyARDoubleMatrix
 		o_value[4]=this.m11;
 		return;
 	}
+	public boolean inverse(NyARDoubleMatrix22 i_src)
+	{
+		final double a11,a12,a21,a22;
+		a11=i_src.m00;
+		a12=i_src.m01;
+		a21=i_src.m10;
+		a22=i_src.m11;
+		double det=a11*a22-a12*a21;
+		if(det==0){
+			return false;
+		}
+		det=1/det;
+		this.m00=a22*det;
+		this.m01=-a12*det;
+		this.m10=a21*det;
+		this.m11=-a11*det;
+		return true;
+	}	
 }

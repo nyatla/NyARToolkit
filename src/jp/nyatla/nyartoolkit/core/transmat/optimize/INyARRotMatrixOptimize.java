@@ -32,12 +32,26 @@
 package jp.nyatla.nyartoolkit.core.transmat.optimize;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.transmat.fitveccalc.NyARFitVecCalculator;
 import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.NyARRotMatrix;
-import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
+import jp.nyatla.nyartoolkit.core.types.*;
 
-public interface INyARRotTransOptimize
+public interface INyARRotMatrixOptimize
 {
-	public double optimize(NyARRotMatrix io_rotmat,NyARDoublePoint3d io_transvec,NyARFitVecCalculator i_calculator) throws NyARException;
-
+	/**
+	 * @param io_rotmat
+	 * 初期回転行列
+	 * @param io_transvec
+	 * 初期並進ベクトル
+	 * @param i_solver
+	 * i_offset_3dを設定したsolver
+	 * @param i_offset_3d
+	 * 3dオフセット座標
+	 * @param i_2d_vertex
+	 * 画面上の点
+	 * @return
+	 * @throws NyARException
+	 */
+//	public double optimize(NyARRotMatrix io_rotmat,NyARDoublePoint3d io_transvec,INyARTransportVectorSolver i_solver,NyARDoublePoint3d[] i_offset_3d,NyARDoublePoint2d[] i_2d_vertex) throws NyARException;
+	public double modifyMatrix(NyARRotMatrix io_rot, NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d) throws NyARException;
+	
 }

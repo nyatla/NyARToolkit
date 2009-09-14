@@ -34,7 +34,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
 
 interface IpickFromRaster_Impl
 {
-	public void pickFromRaster(double[] i_cpara,INyARRgbRaster image, NyARSquare i_square,int[] o_patt)throws NyARException;
+	public void pickFromRaster(double[] i_cpara,INyARRgbRaster image, int[] o_patt)throws NyARException;
 }
 
 /**
@@ -68,7 +68,7 @@ class pickFromRaster_N implements IpickFromRaster_Impl
 	private double[] _cp4cy_cp5;
 	private double[] _cp7cy_1;
 	
-	public void pickFromRaster(double[] i_cpara,INyARRgbRaster image, NyARSquare i_square,int[] o_patt)throws NyARException
+	public void pickFromRaster(double[] i_cpara,INyARRgbRaster image,int[] o_patt)throws NyARException
 	{
 		int i2x,i2y;//プライム変数
 		int x,y;
@@ -186,7 +186,7 @@ class pickFromRaster_1 implements IpickFromRaster_Impl
 	private int[] _rgb_py;
 
 	
-	public void pickFromRaster(double[] i_cpara,INyARRgbRaster image, NyARSquare i_square,int[] o_patt)throws NyARException
+	public void pickFromRaster(double[] i_cpara,INyARRgbRaster image,int[] o_patt)throws NyARException
 	{
 		double d0,m0;
 		int x,y;
@@ -289,7 +289,7 @@ class pickFromRaster_2x implements IpickFromRaster_Impl
 	private int[] _rgb_py;
 
 
-	public void pickFromRaster(double[] i_cpara,INyARRgbRaster image, NyARSquare i_square,int[] o_patt)throws NyARException
+	public void pickFromRaster(double[] i_cpara,INyARRgbRaster image,int[] o_patt)throws NyARException
 	{
 		double d0,m0,d1,m1;
 		int x,y;
@@ -418,7 +418,7 @@ class pickFromRaster_4x implements IpickFromRaster_Impl
 	private int[] _rgb_px;
 	private int[] _rgb_py;
 	
-	public void pickFromRaster(double[] i_cpara,INyARRgbRaster image, NyARSquare i_square,int[] o_patt)throws NyARException
+	public void pickFromRaster(double[] i_cpara,INyARRgbRaster image,int[] o_patt)throws NyARException
 	{
 		int x,y;
 		double d,m;
@@ -680,7 +680,7 @@ public class NyARColorPatt_Perspective_O2 extends NyARColorPatt_Perspective
 		if (!this._perspective_gen.getParam(i_square.imvertex, cpara)) {
 			return false;
 		} 		
- 		this._pickup.pickFromRaster(cpara, image, i_square, this._patdata);
+ 		this._pickup.pickFromRaster(cpara, image,this._patdata);
  		return true;
  	}
 

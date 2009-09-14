@@ -34,7 +34,6 @@ package jp.nyatla.nyartoolkit.core.transmat.optimize;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.*;
-import jp.nyatla.nyartoolkit.core.transmat.fitveccalc.NyARFitVecCalculator;
 import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.NyARRotMatrix;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
@@ -43,38 +42,14 @@ import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
  * を繰り返して、変換行列を最適化する。
  *
  */
-public class NyARRotTransOptimize_O2 implements INyARRotTransOptimize
+public class NyARRotMatrixOptimize_O2 implements INyARRotMatrixOptimize
 {
-	private final static int AR_GET_TRANS_MAT_MAX_LOOP_COUNT = 5;// #define AR_GET_TRANS_MAT_MAX_LOOP_COUNT 5
-	private final static double AR_GET_TRANS_MAT_MAX_FIT_ERROR = 1.0;// #define AR_GET_TRANS_MAT_MAX_FIT_ERROR 1.0
 	private final NyARPerspectiveProjectionMatrix _projection_mat_ref;
-	public NyARRotTransOptimize_O2(NyARPerspectiveProjectionMatrix i_projection_mat_ref)
+	public NyARRotMatrixOptimize_O2(NyARPerspectiveProjectionMatrix i_projection_mat_ref)
 	{
 		this._projection_mat_ref=i_projection_mat_ref;
 		return;
 	}
-	
-	final public double optimize(NyARRotMatrix io_rotmat,NyARDoublePoint3d io_transvec,NyARFitVecCalculator i_calculator) throws NyARException
-	{
-		final NyARDoublePoint2d[] fit_vertex=i_calculator.getFitSquare();
-		final NyARDoublePoint3d[] offset_square=i_calculator.getOffsetVertex().vertex;
-		
-		double err = -1;
-		/*ループを抜けるタイミングをARToolKitと合わせるために変なことしてます。*/
-		for (int i = 0;; i++) {
-			// <arGetTransMat3>
-			err = modifyMatrix(io_rotmat,io_transvec,offset_square,fit_vertex);
-			i_calculator.calculateTransfer(io_rotmat, io_transvec);
-			err = modifyMatrix(io_rotmat,io_transvec,offset_square,fit_vertex);			
-			// //</arGetTransMat3>
-			if (err < AR_GET_TRANS_MAT_MAX_FIT_ERROR || i == AR_GET_TRANS_MAT_MAX_LOOP_COUNT-1) {
-				break;
-			}
-			i_calculator.calculateTransfer(io_rotmat, io_transvec);
-		}		
-		return err;
-	}
-	
 	private final double[][] __modifyMatrix_double1D = new double[8][3];
 	/**
 	 * arGetRot計算を階層化したModifyMatrix 896
@@ -87,7 +62,7 @@ public class NyARRotTransOptimize_O2 implements INyARRotTransOptimize
 	 * @return
 	 * @throws NyARException
 	 */
-	private double modifyMatrix(NyARRotMatrix io_rot,NyARDoublePoint3d trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d) throws NyARException
+	public double modifyMatrix(NyARRotMatrix io_rot,NyARDoublePoint3d trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d) throws NyARException
 	{
 		double factor;
 		double a2, b2, c2;

@@ -167,7 +167,7 @@ public class NyARLabeling_Rle
 		return current;
 	}
 
-	private void addFragment(RleElement i_rel_img, int i_nof, int i_row_index, int i_rel_index,RleInfoStack o_stack) throws NyARException
+	private void addFragment(RleElement i_rel_img, int i_nof, int i_row_index,RleInfoStack o_stack) throws NyARException
 	{
 		int l=i_rel_img.l;
 		final int len=i_rel_img.r - l;
@@ -207,7 +207,7 @@ public class NyARLabeling_Rle
 		len_prev = toRel(in_buf, i_top, width, rle_prev);
 		for (int i = 0; i < len_prev; i++) {
 			// フラグメントID=フラグメント初期値、POS=Y値、RELインデクス=行
-			addFragment(rle_prev[i], id_max, i_top, i,rlestack);
+			addFragment(rle_prev[i], id_max, i_top,rlestack);
 			id_max++;
 			// nofの最大値チェック
 			label_count++;
@@ -230,7 +230,7 @@ public class NyARLabeling_Rle
 						continue;
 					} else if (rle_prev[index_prev].l - rle_current[i].r > 0) {// 0なら8方位ラベリングになる
 						// prevがcur右方にある→独立フラグメント
-						addFragment(rle_current[i], id_max, y, i,rlestack);
+						addFragment(rle_current[i], id_max, y,rlestack);
 						id_max++;
 						label_count++;
 						// 次のindexをしらべる
@@ -327,7 +327,7 @@ public class NyARLabeling_Rle
 				// curにidが割り当てられたかを確認
 				// 右端独立フラグメントを追加
 				if (id < 0){
-					addFragment(rle_current[i], id_max, y, i,rlestack);
+					addFragment(rle_current[i], id_max, y,rlestack);
 					id_max++;
 					label_count++;
 				}

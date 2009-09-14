@@ -33,7 +33,6 @@ package jp.nyatla.nyartoolkit.core.transmat.optimize;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.*;
-import jp.nyatla.nyartoolkit.core.transmat.fitveccalc.NyARFitVecCalculator;
 import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.NyARRotMatrix;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -42,39 +41,14 @@ import jp.nyatla.nyartoolkit.core.types.*;
  * 処理構造がわかる程度に展開したNyARRotTransOptimize
  * 
  */
-public class NyARRotTransOptimize_Base implements INyARRotTransOptimize
+public class NyARRotMatrixOptimize_Base implements INyARRotMatrixOptimize
 {
-	private final static int AR_GET_TRANS_MAT_MAX_LOOP_COUNT = 5;// #define AR_GET_TRANS_MAT_MAX_LOOP_COUNT 5
-
-	private final static double AR_GET_TRANS_MAT_MAX_FIT_ERROR = 1.0;// #define AR_GET_TRANS_MAT_MAX_FIT_ERROR 1.0
-
 	private final NyARPerspectiveProjectionMatrix _projection_mat_ref;
 
-	public NyARRotTransOptimize_Base(NyARPerspectiveProjectionMatrix i_projection_mat_ref)
+	public NyARRotMatrixOptimize_Base(NyARPerspectiveProjectionMatrix i_projection_mat_ref)
 	{
 		this._projection_mat_ref = i_projection_mat_ref;
 		return;
-	}
-
-	final public double optimize(NyARRotMatrix io_rotmat, NyARDoublePoint3d io_transvec, NyARFitVecCalculator i_calculator) throws NyARException
-	{
-		final NyARDoublePoint2d[] fit_vertex = i_calculator.getFitSquare();
-		final NyARDoublePoint3d[] offset_square = i_calculator.getOffsetVertex().vertex;
-
-		double err = -1;
-		/* ループを抜けるタイミングをARToolKitと合わせるために変なことしてます。 */
-		for (int i = 0;; i++) {
-			// <arGetTransMat3>
-			err = modifyMatrix(io_rotmat, io_transvec, offset_square, fit_vertex);
-			i_calculator.calculateTransfer(io_rotmat, io_transvec);
-			err = modifyMatrix(io_rotmat, io_transvec, offset_square, fit_vertex);
-			// //</arGetTransMat3>
-			if (err < AR_GET_TRANS_MAT_MAX_FIT_ERROR || i == AR_GET_TRANS_MAT_MAX_LOOP_COUNT - 1) {
-				break;
-			}
-			i_calculator.calculateTransfer(io_rotmat, io_transvec);
-		}
-		return err;
 	}
 	private double[] __createRotationMap_b_map=new double[6];
 	private double[] __createRotationMap_c_map=new double[6];
@@ -167,7 +141,7 @@ public class NyARRotTransOptimize_Base implements INyARRotTransOptimize
 	private final NyARDoublePoint3d __modifyMatrix_angle = new NyARDoublePoint3d();
 	private final NyARDoubleMatrix34 __modifyMatrix_combo=new NyARDoubleMatrix34();
 	private final NyARDoubleMatrix33[] __modifyMatrix_next_rot_matrix=NyARDoubleMatrix33.createArray(27); 
-	public final double modifyMatrix(NyARRotMatrix io_rot, NyARDoublePoint3d trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d) throws NyARException
+	public double modifyMatrix(NyARRotMatrix io_rot, NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d) throws NyARException
 	{
 		final NyARDoublePoint3d angle = this.__modifyMatrix_angle;
 		final NyARDoubleMatrix34 combo=this.__modifyMatrix_combo;
@@ -186,7 +160,7 @@ public class NyARRotTransOptimize_Base implements INyARRotTransOptimize
 			//評価して一番宜しいIDを保存
 			best_idx=(1+1*3+1*9);
 			for(i2=0;i2<27;i2++){
-				this.getNewMatrix(next_rot_matrix[i2],trans,combo);
+				this.getNewMatrix(next_rot_matrix[i2],i_trans,combo);
 				err = 0.0;
 				for (i = 0; i < 4; i++) {
 					hx =  combo.m00 * i_vertex3d[i].x + combo.m01 * i_vertex3d[i].y + combo.m02 * i_vertex3d[i].z + combo.m03;
