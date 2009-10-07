@@ -38,17 +38,16 @@ import jp.nyatla.nyartoolkit.core.types.*;
 public interface INyARRotMatrixOptimize
 {
 	/**
-	 * @param io_rotmat
+	 * @param io_rot
 	 * 初期回転行列
-	 * @param io_transvec
+	 * @param i_trans
 	 * 初期並進ベクトル
-	 * @param i_solver
-	 * i_offset_3dを設定したsolver
-	 * @param i_offset_3d
-	 * 3dオフセット座標
-	 * @param i_2d_vertex
-	 * 画面上の点
+	 * @param i_vertex3d
+	 * 初期3次元座標
+	 * @param i_vertex2d
+	 * 画面上の頂点群
 	 * @return
+	 * エラーレート
 	 * @throws NyARException
 	 */
 //	public double optimize(NyARRotMatrix io_rotmat,NyARDoublePoint3d io_transvec,INyARTransportVectorSolver i_solver,NyARDoublePoint3d[] i_offset_3d,NyARDoublePoint2d[] i_2d_vertex) throws NyARException;

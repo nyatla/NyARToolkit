@@ -26,7 +26,6 @@
  */
 package jp.nyatla.nyartoolkit.jogl.sample;
 
-import jp.nyatla.nyartoolkit.nyidmarker.data.*;
 
 import java.awt.event.*;
 import java.awt.*;

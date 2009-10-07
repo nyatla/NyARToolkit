@@ -51,7 +51,7 @@ public abstract class SingleNyIdMarkerProcesser
 	private int _lost_delay = 5;
 
 	private NyARSquareDetector_Rle _square_detect;
-	protected NyARTransMat _transmat;
+	protected INyARTransMat _transmat;
 	private double _marker_width=100;
 
 	private NyARSquareStack _square_list = new NyARSquareStack(100);
@@ -78,7 +78,7 @@ public abstract class SingleNyIdMarkerProcesser
 		NyARIntSize scr_size = i_param.getScreenSize();
 		// 解析オブジェクトを作る
 		this._square_detect = new NyARSquareDetector_Rle(i_param.getDistortionFactor(), scr_size);
-		this._transmat = new NyARTransMat(i_param);
+		this._transmat = new NyARTransMat_NyARToolkit(i_param);
 		this._encoder=i_encoder;
 
 		// ２値画像バッファを作る

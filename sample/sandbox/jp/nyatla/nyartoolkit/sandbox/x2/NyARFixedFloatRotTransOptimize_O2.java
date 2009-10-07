@@ -269,7 +269,7 @@ public class NyARFixedFloatRotTransOptimize_O2
 		}
 		io_rot.setAngle((int)a2,(int)b2,(int)c2);
 		/* printf("factor = %10.5f\n", factor*180.0/MD_PI); */
-		return minerr /4;
+		return minerr /4;//この設定値おかしくね？16bitfixedfloatなら16で割らないと。
 	}	
 	
 	

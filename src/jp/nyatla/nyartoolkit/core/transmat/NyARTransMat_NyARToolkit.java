@@ -1,5 +1,5 @@
 /* 
- * PROJECT: NyARToolkit
+ * PROJECT: NyARToolkit (Extension)
  * --------------------------------------------------------------------------------
  * This work is based on the original ARToolKit developed by
  *   Hirokazu Kato
@@ -10,24 +10,22 @@
  * The NyARToolkit is Java version ARToolkit class library.
  * Copyright (C)2008 R.Iizuka
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as 
+ * published by the Free Software Foundation; either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, 
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this framework; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public 
+ * License along with this program. If not, see <http://www.gnu.org/licenses/>.
  * 
  * For further information please contact.
- *	http://nyatla.jp/nyatoolkit/
+ *	http://nyatla.jp/
  *	<airmail(at)ebony.plala.or.jp>
- * 
  */
 package jp.nyatla.nyartoolkit.core.transmat;
 
@@ -35,40 +33,42 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.transmat.solver.*;
-import jp.nyatla.nyartoolkit.core.transmat.optimize.*;
+import jp.nyatla.nyartoolkit.core.transmat.optimize.NyARPartialDifferentiationOptimize;
 import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.*;
 import jp.nyatla.nyartoolkit.core.types.*;
-
+import jp.nyatla.nyartoolkit.core.types.matrix.*;
 
 /**
  * This class calculates ARMatrix from square information and holds it. --
  * 変換行列を計算して、結果を保持するクラス。
  * 
  */
-public class NyARTransMat implements INyARTransMat
+public class NyARTransMat_NyARToolkit implements INyARTransMat
 {
-	private final static int AR_GET_TRANS_MAT_MAX_LOOP_COUNT = 5;// #define AR_GET_TRANS_MAT_MAX_LOOP_COUNT 5
-	private final static double AR_GET_TRANS_MAT_MAX_FIT_ERROR = 1.0;// #define AR_GET_TRANS_MAT_MAX_FIT_ERROR 1.0
-	private final static double AR_GET_TRANS_CONT_MAT_MAX_FIT_ERROR = 1.0;
+	private final static double FIT_DIFF_THRESHOLD = 0.01;
+	private final static double FIT_DIFF_THRESHOLD_CONT = 1.0;
 
 	private final NyARDoublePoint2d _center=new NyARDoublePoint2d(0,0);
 	private final NyARTransOffset _offset=new NyARTransOffset();
+	private NyARPerspectiveProjectionMatrix _projection_mat_ref;
 	protected NyARRotMatrix _rotmatrix;
 	protected INyARTransportVectorSolver _transsolver;
-	protected INyARRotMatrixOptimize _mat_optimize;
+	protected NyARPartialDifferentiationOptimize _mat_optimize;
+
+
 	private NyARCameraDistortionFactor _ref_dist_factor;
 
 	/**
 	 * 派生クラスで自分でメンバオブジェクトを指定したい場合はこちらを使う。
 	 *
 	 */
-	protected NyARTransMat()
+	protected NyARTransMat_NyARToolkit()
 	{
 		//_calculator,_rotmatrix,_mat_optimizeをコンストラクタの終了後に
 		//作成して割り当ててください。
 		return;
 	}
-	public NyARTransMat(NyARParam i_param) throws NyARException
+	public NyARTransMat_NyARToolkit(NyARParam i_param) throws NyARException
 	{
 		final NyARCameraDistortionFactor dist=i_param.getDistortionFactor();
 		final NyARPerspectiveProjectionMatrix pmat=i_param.getPerspectiveProjectionMatrix();
@@ -76,8 +76,9 @@ public class NyARTransMat implements INyARTransMat
 		//互換性が重要な時は、NyARRotMatrix_ARToolKitを使うこと。
 		//理屈はNyARRotMatrix_NyARToolKitもNyARRotMatrix_ARToolKitも同じだけど、少しだけ値がずれる。
 		this._rotmatrix = new NyARRotMatrix_NyARToolKit(pmat);
-		this._mat_optimize=new NyARRotMatrixOptimize_O2(pmat);
+		this._mat_optimize=new NyARPartialDifferentiationOptimize(pmat);
 		this._ref_dist_factor=dist;
+		this._projection_mat_ref=pmat;
 	}
 
 	public void setCenter(double i_x, double i_y)
@@ -194,51 +195,104 @@ public class NyARTransMat implements INyARTransMat
 		//回転後の3D座標系から、平行移動量を計算
 		this._rotmatrix.getPoint3dBatch(this._offset.vertex,vertex_3d,4);
 		this._transsolver.solveTransportVector(vertex_3d,trans);
-		
-		//計算結果の最適化(平行移動量と回転行列の最適化)
-		double err=this.optimize(this._rotmatrix, trans, this._transsolver, this._offset.vertex, vertex_2d);
-		
-		// マトリクスの保存
-		this.updateMatrixValue(this._rotmatrix, this._offset.point, trans,o_result_conv);
-		
-		// エラー値が許容範囲でなければTransMatをやり直し
-		if (err > AR_GET_TRANS_CONT_MAT_MAX_FIT_ERROR) {
-			// rotationを矩形情報で初期化
+
+		//現在のエラーレートを計算しておく
+		double min_err=errRate(this._rotmatrix,trans, this._offset.vertex, vertex_2d,4,vertex_3d);
+		NyARDoubleMatrix33 rot=this.__rot;
+		//エラーレートが閾値超えてたらアゲイン
+		if(min_err<FIT_DIFF_THRESHOLD_CONT){
+			rot.setValue(this._rotmatrix);
+			//最適化してみる。
+			for (int i = 0;i<5; i++) {
+				//変換行列の最適化
+				this._mat_optimize.modifyMatrix(rot, trans, this._offset.vertex, vertex_2d, 4);
+				double err=errRate(rot,trans,this._offset.vertex, vertex_2d,4,vertex_3d);
+				//System.out.println("E:"+err);
+				if(min_err-err<FIT_DIFF_THRESHOLD){
+					//System.out.println("BREAK");
+					break;
+				}
+				this._transsolver.solveTransportVector(vertex_3d, trans);
+				this._rotmatrix.setValue(rot);
+				min_err=err;
+			}
+			this.updateMatrixValue(this._rotmatrix, this._offset.point, trans,o_result_conv);
+		}else{
+			//回転行列を計算
 			this._rotmatrix.initRotBySquare(linear_ref,sqvertex_ref);
-			//回転行列の平行移動量の計算
+			
+			//回転後の3D座標系から、平行移動量を計算
 			this._rotmatrix.getPoint3dBatch(this._offset.vertex,vertex_3d,4);
 			this._transsolver.solveTransportVector(vertex_3d,trans);
-			//計算結果の最適化(this._rotmatrix,trans)
-			final double err2=this.optimize(this._rotmatrix, trans, this._transsolver, this._offset.vertex, vertex_2d);
-			//エラー値が低かったら値を差換え
-			if (err2 < err) {
-				// 良い値が取れたら、差換え
-				this.updateMatrixValue(this._rotmatrix, this._offset.point, trans,o_result_conv);
-			}
+			
+			//計算結果の最適化(平行移動量と回転行列の最適化)
+			this.optimize(this._rotmatrix, trans, this._transsolver,this._offset.vertex, vertex_2d);
+			this.updateMatrixValue(this._rotmatrix, this._offset.point, trans,o_result_conv);
 		}
 		return;
 	}
+	private NyARDoubleMatrix33 __rot=new NyARDoubleMatrix33();
 	private double optimize(NyARRotMatrix io_rotmat,NyARDoublePoint3d io_transvec,INyARTransportVectorSolver i_solver,NyARDoublePoint3d[] i_offset_3d,NyARDoublePoint2d[] i_2d_vertex) throws NyARException
 	{
+		//System.out.println("START");
 		NyARDoublePoint3d[] vertex_3d=this.__transMat_vertex_3d;
-		double err = -1;
-		// ループを抜けるタイミングをARToolKitと合わせるために変なことしてます。 
-		for (int i = 0;; i++) {
-			// <arGetTransMat3>
-			err = this._mat_optimize.modifyMatrix(io_rotmat, io_transvec, i_offset_3d, i_2d_vertex);
-			io_rotmat.getPoint3dBatch(i_offset_3d,vertex_3d,4);
-			i_solver.solveTransportVector(vertex_3d, io_transvec);
-			
-			err = this._mat_optimize.modifyMatrix(io_rotmat, io_transvec, i_offset_3d, i_2d_vertex);
-			// //</arGetTransMat3>
-			if (err < AR_GET_TRANS_MAT_MAX_FIT_ERROR || i == AR_GET_TRANS_MAT_MAX_LOOP_COUNT - 1) {
+		//初期のエラー値を計算
+		double min_err=errRate(io_rotmat, io_transvec, i_offset_3d, i_2d_vertex,4,vertex_3d);
+		NyARDoubleMatrix33 rot=this.__rot;
+		rot.setValue(io_rotmat);
+		for (int i = 0;i<5; i++) {
+			//変換行列の最適化
+			this._mat_optimize.modifyMatrix(rot, io_transvec, i_offset_3d, i_2d_vertex, 4);
+			double err=errRate(rot,io_transvec, i_offset_3d, i_2d_vertex,4,vertex_3d);
+			//System.out.println("E:"+err);
+			if(min_err-err<FIT_DIFF_THRESHOLD){
+				//System.out.println("BREAK");
 				break;
 			}
-			io_rotmat.getPoint3dBatch(i_offset_3d,vertex_3d,4);
 			i_solver.solveTransportVector(vertex_3d, io_transvec);
+			io_rotmat.setValue(rot);
+			min_err=err;
 		}
-		return err;
-	}	
+		//System.out.println("END");
+		return min_err;
+	}
+	
+	//エラーレート計算機
+	public double errRate(NyARDoubleMatrix33 io_rot,NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d,int i_number_of_vertex,NyARDoublePoint3d[] o_rot_vertex) throws NyARException
+	{
+		NyARPerspectiveProjectionMatrix cp = this._projection_mat_ref;
+		final double cp00=cp.m00;
+		final double cp01=cp.m01;
+		final double cp02=cp.m02;
+		final double cp11=cp.m11;
+		final double cp12=cp.m12;
+
+		double err=0;
+		for(int i=0;i<i_number_of_vertex;i++){
+			double x3d,y3d,z3d;
+			o_rot_vertex[i].x=x3d=io_rot.m00*i_vertex3d[i].x+io_rot.m01*i_vertex3d[i].y+io_rot.m02*i_vertex3d[i].z;
+			o_rot_vertex[i].y=y3d=io_rot.m10*i_vertex3d[i].x+io_rot.m11*i_vertex3d[i].y+io_rot.m12*i_vertex3d[i].z;
+			o_rot_vertex[i].z=z3d=io_rot.m20*i_vertex3d[i].x+io_rot.m21*i_vertex3d[i].y+io_rot.m22*i_vertex3d[i].z;
+			x3d+=i_trans.x;
+			y3d+=i_trans.y;
+			z3d+=i_trans.z;
+			
+			//射影変換
+			double x2d=x3d*cp00+y3d*cp01+z3d*cp02;
+			double y2d=y3d*cp11+z3d*cp12;
+			double h2d=z3d;
+			
+			//エラーレート計算
+			double t1=i_vertex2d[i].x-x2d/h2d;
+			double t2=i_vertex2d[i].y-y2d/h2d;
+			err+=t1*t1+t2*t2;
+			
+		}
+		return err/i_number_of_vertex;
+	}		
+	
+	
+	
 	/**
 	 * パラメータで変換行列を更新します。
 	 * 

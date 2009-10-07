@@ -82,6 +82,7 @@ public class NyARCustomSingleDetectMarker
 	protected void initInstance(
 		INyARColorPatt i_patt_inst,
 		INyARSquareDetector i_sqdetect_inst,
+		INyARTransMat i_transmat_inst,
 		INyARRasterFilter_RgbToBin i_filter,
 		NyARParam	i_ref_param,
 		NyARCode	i_ref_code,
@@ -90,7 +91,7 @@ public class NyARCustomSingleDetectMarker
 		final NyARIntSize scr_size=i_ref_param.getScreenSize();		
 		// 解析オブジェクトを作る
 		this._square_detect = i_sqdetect_inst;
-		this._transmat = new NyARTransMat(i_ref_param);
+		this._transmat = i_transmat_inst;
 		this._tobin_filter=i_filter;
 		// 比較コードを保存
 		this._marker_width = i_marker_width;

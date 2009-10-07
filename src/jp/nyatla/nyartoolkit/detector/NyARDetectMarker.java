@@ -136,7 +136,7 @@ public class NyARDetectMarker
 		final NyARIntSize scr_size=i_ref_param.getScreenSize();
 		// 解析オブジェクトを作る
 
-		this._transmat = new NyARTransMat(i_ref_param);
+		this._transmat = new NyARTransMat_NyARToolkit(i_ref_param);
 		//各コード用の比較器を作る。
 		this._match_patt=new NyARMatchPatt_Color_WITHOUT_PCA[i_number_of_code];
 		final int cw = i_ref_code[0].getWidth();

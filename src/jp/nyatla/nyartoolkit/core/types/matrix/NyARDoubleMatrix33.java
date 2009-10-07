@@ -26,6 +26,7 @@
 package jp.nyatla.nyartoolkit.core.types.matrix;
 
 import jp.nyatla.nyartoolkit.*;
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 
 public class NyARDoubleMatrix33 implements INyARDoubleMatrix
 {
@@ -63,6 +64,19 @@ public class NyARDoubleMatrix33 implements INyARDoubleMatrix
 		this.m22=i_value[8];
 		return;
 	}
+	public void setValue(NyARDoubleMatrix33 i_value)
+	{
+		this.m00=i_value.m00;
+		this.m01=i_value.m01;
+		this.m02=i_value.m02;
+		this.m10=i_value.m10;
+		this.m11=i_value.m11;
+		this.m12=i_value.m12;
+		this.m20=i_value.m20;
+		this.m21=i_value.m21;
+		this.m22=i_value.m22;
+		return;
+	}	
 	/**
 	 * 遅いからあんまり使わないでね。
 	 */
@@ -118,6 +132,44 @@ public class NyARDoubleMatrix33 implements INyARDoubleMatrix
 		this.m22=b33*det_1;
 		
 		return true;
-	}		
-	
+	}
+	/**
+	 * この関数は、0-PIの間で値を返します。
+	 * @param o_out
+	 */
+	public final void getZXYAngle(NyARDoublePoint3d o_out)
+	{
+		double sina = this.m21;
+		if (sina >= 1.0) {
+			o_out.x = Math.PI / 2;
+			o_out.y = 0;
+			o_out.z = Math.atan2(-this.m10, this.m00);
+		} else if (sina <= -1.0) {
+			o_out.x = -Math.PI / 2;
+			o_out.y = 0;
+			o_out.z = Math.atan2(-this.m10, this.m00);
+		} else {
+			o_out.x = Math.asin(sina);
+			o_out.z = Math.atan2(-this.m01, this.m11);
+			o_out.y = Math.atan2(-this.m20, this.m22);
+		}
+	}
+	public final void setZXYAngle(final double i_x, final double i_y, final double i_z)
+	{
+		final double sina = Math.sin(i_x);
+		final double cosa = Math.cos(i_x);
+		final double sinb = Math.sin(i_y);
+		final double cosb = Math.cos(i_y);
+		final double sinc = Math.sin(i_z);
+		final double cosc = Math.cos(i_z);
+		this.m00 = cosc * cosb - sinc * sina * sinb;
+		this.m01 = -sinc * cosa;
+		this.m02 = cosc * sinb + sinc * sina * cosb;
+		this.m10 = sinc * cosb + cosc * sina * sinb;
+		this.m11 = cosc * cosa;
+		this.m12 = sinc * sinb - cosc * sina * cosb;
+		this.m20 = -cosa * sinb;
+		this.m21 = sina;
+		this.m22 = cosb * cosa;
+	}	
 }
