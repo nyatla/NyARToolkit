@@ -79,7 +79,7 @@ public class NyARSingleQrDetector
 		final NyARIntSize scr_size=i_param.getScreenSize();		
 		// 解析オブジェクトを作る
 		this._square_detect = new NyARQrCodeDetector(i_param.getDistortionFactor(),scr_size);
-		this._transmat = new NyARTransMat(i_param);
+		this._transmat = new NyARTransMat_ARToolKit(i_param);
 		this._marker_width = i_marker_width;
 		//２値画像バッファを作る
 		this._bin_raster=new NyARBinRaster(scr_size.w,scr_size.h);

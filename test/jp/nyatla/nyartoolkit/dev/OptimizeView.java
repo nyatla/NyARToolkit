@@ -45,8 +45,8 @@ class Program implements JmfCaptureListener
 	public Object _sync_object=new Object();	
 	public NyARParam _ar_param;
 	public NyARCode _ar_code;
-	private final static int SCREEN_X = 320;
-	private final static int SCREEN_Y = 240;
+	private final static int SCREEN_X = 640;
+	private final static int SCREEN_Y = 480;
 	private JmfCaptureDevice _capture;
 	public GLNyARRaster_RGB _cap_image;
 	public Program(NyARParam i_param, NyARCode i_ar_code) throws NyARException
@@ -63,7 +63,7 @@ class Program implements JmfCaptureListener
 		// GL対応のRGBラスタオブジェクト
 		this._cap_image = new GLNyARRaster_RGB(i_param, this._capture.getCaptureFormat());	
 		this._view1=new OptimizeView(this,NyARSingleDetectMarker.PF_NYARTOOLKIT);
-		this._view2=new OptimizeView(this,NyARSingleDetectMarker.PF_TEST1);
+		this._view2=new OptimizeView(this,NyARSingleDetectMarker.PF_NYARTOOLKIT_ARTOOLKIT_FITTING);
 		this._capture.start();
 		return;
 	}
@@ -127,9 +127,9 @@ class Program implements JmfCaptureListener
  */
 public class OptimizeView implements GLEventListener
 {
-	private final static int SCREEN_X = 320;
+	private final static int SCREEN_X = 640;
 
-	private final static int SCREEN_Y = 240;
+	private final static int SCREEN_Y = 480;
 
 	private Animator _animator;
 	
@@ -157,7 +157,7 @@ public class OptimizeView implements GLEventListener
 
 		// NyARToolkitの準備
 		this._nya = new NyARSingleDetectMarker(this._ar_param, i_program._ar_code, 80.0,i_program._cap_image.getBufferReader().getBufferType(),i_pf);
-		this._nya.setContinueMode(true);// ここをtrueにすると、transMatContinueモード（History計算）になります。
+		this._nya.setContinueMode(false);// ここをtrueにすると、transMatContinueモード（History計算）になります。
 		
 		// 3Dを描画するコンポーネント
 		GLCanvas canvas = new GLCanvas();

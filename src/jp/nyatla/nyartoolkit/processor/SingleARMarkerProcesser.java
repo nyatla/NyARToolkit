@@ -107,7 +107,7 @@ public abstract class SingleARMarkerProcesser
 		NyARIntSize scr_size = i_param.getScreenSize();
 		// 解析オブジェクトを作る
 		this._square_detect = new NyARSquareDetector_Rle(i_param.getDistortionFactor(), scr_size);
-		this._transmat = new NyARTransMat_NyARToolkit(i_param);
+		this._transmat = new NyARTransMat(i_param);
 		this._tobin_filter=new NyARRasterFilter_ARToolkitThreshold(110,i_raster_type);
 
 		// ２値画像バッファを作る

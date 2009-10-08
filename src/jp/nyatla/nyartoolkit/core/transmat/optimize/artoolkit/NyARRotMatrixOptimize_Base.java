@@ -29,11 +29,11 @@
  *	<airmail(at)ebony.plala.or.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.transmat.optimize;
+package jp.nyatla.nyartoolkit.core.transmat.optimize.artoolkit;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.*;
-import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.NyARRotMatrix;
+import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
@@ -141,7 +141,7 @@ public class NyARRotMatrixOptimize_Base implements INyARRotMatrixOptimize
 	private final NyARDoublePoint3d __modifyMatrix_angle = new NyARDoublePoint3d();
 	private final NyARDoubleMatrix34 __modifyMatrix_combo=new NyARDoubleMatrix34();
 	private final NyARDoubleMatrix33[] __modifyMatrix_next_rot_matrix=NyARDoubleMatrix33.createArray(27); 
-	public double modifyMatrix(NyARRotMatrix io_rot, NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d) throws NyARException
+	public double modifyMatrix(NyARRotMatrix_ARToolKit io_rot, NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d) throws NyARException
 	{
 		final NyARDoublePoint3d angle = this.__modifyMatrix_angle;
 		final NyARDoubleMatrix34 combo=this.__modifyMatrix_combo;

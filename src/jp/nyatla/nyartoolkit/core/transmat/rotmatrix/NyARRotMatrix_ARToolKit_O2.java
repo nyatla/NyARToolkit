@@ -39,14 +39,14 @@ import jp.nyatla.nyartoolkit.core.param.*;
  * 処理を省略しているため、下位12桁目の計算値が異なる。
  *
  */
-public class NyARRotMatrix_NyARToolKit extends NyARRotMatrix_ARToolKit
+public class NyARRotMatrix_ARToolKit_O2 extends NyARRotMatrix_ARToolKit
 {	
 	/**
 	 * インスタンスを準備します。
 	 * 
 	 * @param i_param
 	 */
-	public NyARRotMatrix_NyARToolKit(NyARPerspectiveProjectionMatrix i_matrix) throws NyARException
+	public NyARRotMatrix_ARToolKit_O2(NyARPerspectiveProjectionMatrix i_matrix) throws NyARException
 	{
 		super(i_matrix);
 		return;
