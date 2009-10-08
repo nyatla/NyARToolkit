@@ -183,13 +183,12 @@ public class NyARPartialDifferentiationOptimize
 			O += f * f + c * c;
 
 		}
-		L *= 2;
-		J = (J + J) / L;
-		K = (K + K) / L;
-		N /= L;
-		M /= L;
-		O /= L;
-		return getMinimumErrorAngleFromParam(J, K, M, N, O, i_hint_angle);
+		L *=2;
+		J *=2;
+		K *=2;
+
+		return getMinimumErrorAngleFromParam(L,J, K, M, N, O, i_hint_angle);
+
 
 	}
 
@@ -244,12 +243,10 @@ public class NyARPartialDifferentiationOptimize
 
 		}
 		L *= 2;
-		J = (J + J) / L;
-		K = (K + K) / L;
-		N /= L;
-		M /= L;
-		O /= L;
-		return getMinimumErrorAngleFromParam(J, K, M, N, O, i_hint_angle);
+		J *= 2;
+		K *= 2;
+		return getMinimumErrorAngleFromParam(L,J, K, M, N, O, i_hint_angle);
+
 	}
 
 	private double optimizeParamZ(TSinCosValue i_angle_x, TSinCosValue i_angle_y, NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d, int i_number_of_vertex, double i_hint_angle) throws NyARException
@@ -302,13 +299,11 @@ public class NyARPartialDifferentiationOptimize
 			O += f * f + c * c;
 
 		}
-		L *= 2;
-		J = (J + J) / L;
-		K = (K + K) / L;
-		N /= L;
-		M /= L;
-		O /= L;
-		return getMinimumErrorAngleFromParam(J, K, M, N, O, i_hint_angle);
+		L *=2;
+		J *=2;
+		K *=2;
+		
+		return getMinimumErrorAngleFromParam(L,J, K, M, N, O, i_hint_angle);
 	}
 	private TSinCosValue[] __angles_in=TSinCosValue.createArray(3);
 	private NyARDoublePoint3d __ang=new NyARDoublePoint3d();
@@ -329,13 +324,13 @@ public class NyARPartialDifferentiationOptimize
 	/**
 	 * エラーレートが最小になる点を得る。
 	 */
-	private double getMinimumErrorAngleFromParam(double iJ, double iK, double iM, double iN, double iO, double i_hint_angle) throws NyARException
+	private double getMinimumErrorAngleFromParam(double iL,double iJ, double iK, double iM, double iN, double iO, double i_hint_angle) throws NyARException
 	{
 		double[] sin_table = this.__sin_table;
 
-		double M = iN - iM;
-		double J = iJ;
-		double K = -iK;
+		double M = (iN - iM)/iL;
+		double J = iJ/iL;
+		double K = -iK/iL;
 
 		// パラメータからsinテーブルを作成
 		// (- 4*M^2-4)*x^4 + (4*K- 4*J*M)*x^3 + (4*M^2 -(K^2- 4)- J^2)*x^2 +(4*J*M- 2*K)*x + J^2-1 = 0
@@ -361,7 +356,7 @@ public class NyARPartialDifferentiationOptimize
 			cos_rt = (a1 < a2) ? cos_rt : -cos_rt;
 			double ang = Math.atan2(sin_rt, cos_rt);
 			// エラー値を計算
-			double err = iN * sin_rt * sin_rt + (cos_rt + iJ) * sin_rt + iM * cos_rt * cos_rt + iK * cos_rt + iO;
+			double err = iN * sin_rt * sin_rt + (iL*cos_rt + iJ) * sin_rt + iM * cos_rt * cos_rt + iK * cos_rt + iO;
 			// 最小の２個を獲得する。
 			if (min_err_0 > err) {
 				min_err_1 = min_err_0;
