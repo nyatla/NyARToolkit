@@ -29,18 +29,25 @@ http://www.hitl.washington.edu/artoolkit/
 
 ・NyARToolkitの特徴
 
-　-ARToolKitと同等な処理シーケンスを、クラスベースで再構築してあります。
+ -ARToolKitと同等な処理シーケンスを、クラスベースで再構築しています。
 
-  -構造的な最適化により、ARToolKitと比較して可読性に優れています。
+ -処理構造の最適化により、ARToolKitと比較して可読性に優れています。
 
-　-座標変換の演算性能が1.5倍ほど高速です。（JIT有効時）複数マーカー取り扱い時は、
-　 オリジナルよりも良い成績が得られます。
+ -ARToolKit互換モードと、NyARToolkit最適化モードを搭載しています。(Version/2.4.0より)
+　 
+  --NyARToolkit最適化モード
+    いくつかのアルゴリズムをARToolKitのものと差換え、高速化・精度の向上を図ります。
+    ARToolKit比で、約2倍高速です。（JIT有効時）複数マーカー取り扱い時は、
+    更に高速になります。ただし、計算結果はARToolKitのそれと若干ズレがでます。
 
-　-取り扱える画像サイズに制限がありません。
+  --ARToolKit互換モード
+    ARToolKitのアルゴリズムを最適化し、高速化を図ります。
+    ARToolKit比で、約1倍高速です。（JIT有効時）
 
-　-取り扱えるマーカー個数の最大値が可変です。
+ -取り扱える画像サイズに制限がありません。
+ -取り扱えるマーカー個数の最大値が可変です。
+ -Idマーカシステム(NyId)が利用できます。(Version/2.3.0より)
 
-  -Idマーカシステム(NyId)が利用できます。(Version/2.3.0より)
 
 
 
@@ -175,21 +182,18 @@ NyARToolkit.sample.qt
 
 ・ライセンス
 
-NyARToolkitは、商用ライセンスとGPLv2以降のデュアルライセンスを採用しています。
+NyARToolkitは、商用ライセンスとGPLv3以降のデュアルライセンスを採用しています。
+(Version/2.4.0より、GPLv3ライセンスになりました。)
 
-GPLについては、LICENCE.txtをお読みください。
+ -GPL
+ GPLについては、LICENCE.txtをお読みください。
 
-商用ライセンスについては、ARToolWorks社に管理を委託しております。
-下記URLを参考に、ARToolWorks社へお問い合わせください。
-http://nyatla.jp/nyartoolkit/wiki/index.php?Licence
+ -商用ライセンス
+ 商用ライセンスについては、ARToolWorks社に管理を委託しております。
+ http://www.artoolworks.com/Home.html
 
-
-ライセンスに関する日本語でのお問い合わせについては、下記URLの連絡先にて受け付けています。
-http://nyatla.jp/nyartoolkit/wiki/index.php?PressRelease%2F20090407%20forward%20order%20email%20service
-
-
-ソースコード毎のライセンスについては、ソースコード先頭の署名をご確認ください。
-
+ 日本国内での販売については、下記にお問い合わせ下さい。
+ http://www.msoft.co.jp/pressrelease/press090928-1.html
 
 
 

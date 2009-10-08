@@ -39,7 +39,7 @@ import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
-
+import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
  * 320x240のBGRA32で記録されたRAWイメージから、１種類のパターンを認識し、
@@ -94,6 +94,8 @@ public class RawFileTest
 			ar.getTransmationMatrix(result_mat);
 		}
 		Date d = new Date();
+		NyARDoublePoint3d ang=new NyARDoublePoint3d();
+		result_mat.getZXYAngle(ang);
 		System.out.println(d.getTime() - d2.getTime());
 	}
 

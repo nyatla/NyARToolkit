@@ -32,6 +32,7 @@
 package jp.nyatla.nyartoolkit.core.transmat;
 
 
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 
 /**
@@ -41,4 +42,25 @@ import jp.nyatla.nyartoolkit.core.types.matrix.*;
 public class NyARTransMatResult extends NyARDoubleMatrix34
 {
 	public boolean has_value = false;
+	/**
+	 * この関数は、0-PIの間で値を返します。
+	 * @param o_out
+	 */
+	public final void getZXYAngle(NyARDoublePoint3d o_out)
+	{
+		double sina = this.m21;
+		if (sina >= 1.0) {
+			o_out.x = Math.PI / 2;
+			o_out.y = 0;
+			o_out.z = Math.atan2(-this.m10, this.m00);
+		} else if (sina <= -1.0) {
+			o_out.x = -Math.PI / 2;
+			o_out.y = 0;
+			o_out.z = Math.atan2(-this.m10, this.m00);
+		} else {
+			o_out.x = Math.asin(sina);
+			o_out.z = Math.atan2(-this.m01, this.m11);
+			o_out.y = Math.atan2(-this.m20, this.m22);
+		}
+	}	
 }
