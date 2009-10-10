@@ -33,7 +33,7 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.transmat.solver.*;
-import jp.nyatla.nyartoolkit.core.transmat.optimize.NyARPartialDifferentiationOptimize;
+import jp.nyatla.nyartoolkit.core.transmat.optimize.*;
 import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
@@ -72,7 +72,7 @@ public class NyARTransMat implements INyARTransMat
 	{
 		final NyARCameraDistortionFactor dist=i_param.getDistortionFactor();
 		final NyARPerspectiveProjectionMatrix pmat=i_param.getPerspectiveProjectionMatrix();
-		this._transsolver=new NyARTransportVectorSolver_ARToolKit(pmat);
+		this._transsolver=new NyARTransportVectorSolver(pmat,4);
 		//互換性が重要な時は、NyARRotMatrix_ARToolKitを使うこと。
 		//理屈はNyARRotMatrix_NyARToolKitもNyARRotMatrix_ARToolKitも同じだけど、少しだけ値がずれる。
 		this._rotmatrix = new NyARRotMatrix(pmat);
