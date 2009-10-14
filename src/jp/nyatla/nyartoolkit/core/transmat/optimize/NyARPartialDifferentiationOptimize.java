@@ -314,9 +314,9 @@ public class NyARPartialDifferentiationOptimize
 
 		// ZXY系のsin/cos値を抽出
 		rotation2Sincos_ZXY(io_rot, angles_in,ang);
-		ang.x += optimizeParamX(angles_in[1], angles_in[2], i_trans, i_vertex3d, i_vertex2d, 4, ang.x);
-		ang.y += optimizeParamY(angles_in[0], angles_in[2], i_trans, i_vertex3d, i_vertex2d, 4, ang.y);
-		ang.z += optimizeParamZ(angles_in[0], angles_in[1], i_trans, i_vertex3d, i_vertex2d, 4, ang.z);
+		ang.x += optimizeParamX(angles_in[1], angles_in[2], i_trans, i_vertex3d, i_vertex2d, i_number_of_vertex, ang.x);
+		ang.y += optimizeParamY(angles_in[0], angles_in[2], i_trans, i_vertex3d, i_vertex2d, i_number_of_vertex, ang.y);
+		ang.z += optimizeParamZ(angles_in[0], angles_in[1], i_trans, i_vertex3d, i_vertex2d, i_number_of_vertex, ang.z);
 		io_rot.setZXYAngle(ang.x, ang.y, ang.z);
 		return;
 	}
