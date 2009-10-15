@@ -31,7 +31,7 @@ http://www.hitl.washington.edu/artoolkit/
 
  -ARToolKitと同等な処理シーケンスを、クラスベースで再構築しています。
 
- -処理構造の最適化により、ARToolKitと比較して可読性に優れています。
+ -ARToolKitと比較して、処理構造が最適化されています。
 
  -ARToolKit互換モードと、NyARToolkit最適化モードを搭載しています。(Version/2.4.0より)
 　 
