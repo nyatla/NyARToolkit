@@ -72,8 +72,12 @@ public abstract class SingleNyIdMarkerProcesser
 	{
 		return;
 	}
+	private boolean _initialized=false;
 	protected void initInstance(NyARParam i_param,INyIdMarkerDataEncoder i_encoder,int i_raster_format) throws NyARException
 	{
+		//初期化済？
+		assert this._initialized==false;
+		
 		NyARIntSize scr_size = i_param.getScreenSize();
 		// 解析オブジェクトを作る
 		this._square_detect = new NyARSquareDetector_Rle(i_param.getDistortionFactor(), scr_size);
@@ -88,6 +92,7 @@ public abstract class SingleNyIdMarkerProcesser
 		this._data_current=i_encoder.createDataInstance();
 		this._tobin_filter = new NyARRasterFilter_ARToolkitThreshold(110,i_raster_format);
 		this._threshold_detect=new NyARRasterThresholdAnalyzer_SlidePTile(15,i_raster_format,4);
+		this._initialized=true;
 		return;
 		
 	}

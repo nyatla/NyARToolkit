@@ -101,9 +101,13 @@ public abstract class SingleARMarkerProcesser
 		return;
 	}
 
+	private boolean _initialized=false;
 
 	protected void initInstance(NyARParam i_param,int i_raster_type) throws NyARException
 	{
+		//初期化済？
+		assert this._initialized==false;
+		
 		NyARIntSize scr_size = i_param.getScreenSize();
 		// 解析オブジェクトを作る
 		this._square_detect = new NyARSquareDetector_Rle(i_param.getDistortionFactor(), scr_size);
@@ -113,6 +117,7 @@ public abstract class SingleARMarkerProcesser
 		// ２値画像バッファを作る
 		this._bin_raster = new NyARBinRaster(scr_size.w, scr_size.h);
 		this._threshold_detect=new NyARRasterThresholdAnalyzer_SlidePTile(15,i_raster_type,4);
+		this._initialized=true;
 		return;
 	}
 
