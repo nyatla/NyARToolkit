@@ -223,6 +223,7 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 	{
 		NyARDoublePoint3d[] vertex_3d=this.__transMat_vertex_3d;
 		double err = -1;
+		//System.out.println("START");
 		// ループを抜けるタイミングをARToolKitと合わせるために変なことしてます。 
 		for (int i = 0;; i++) {
 			// <arGetTransMat3>
@@ -231,6 +232,7 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 			i_solver.solveTransportVector(vertex_3d, io_transvec);
 			
 			err = this._mat_optimize.modifyMatrix(io_rotmat, io_transvec, i_offset_3d, i_2d_vertex);
+			//System.out.println("E:"+err*4);
 			// //</arGetTransMat3>
 			if (err < AR_GET_TRANS_MAT_MAX_FIT_ERROR || i == AR_GET_TRANS_MAT_MAX_LOOP_COUNT - 1) {
 				break;
@@ -238,6 +240,7 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 			io_rotmat.getPoint3dBatch(i_offset_3d,vertex_3d,4);
 			i_solver.solveTransportVector(vertex_3d, io_transvec);
 		}
+		//System.out.println("END");
 		return err;
 	}	
 	/**

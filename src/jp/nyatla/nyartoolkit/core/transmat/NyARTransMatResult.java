@@ -61,5 +61,12 @@ public class NyARTransMatResult extends NyARDoubleMatrix34
 			o_out.z = Math.atan2(-this.m01, this.m11);
 			o_out.y = Math.atan2(-this.m20, this.m22);
 		}
-	}	
+	}
+	public final void transformVertex(double i_x,double i_y,double i_z,NyARDoublePoint3d o_out)
+	{
+		o_out.x=this.m00*i_x+this.m01*i_y+this.m02*i_z+this.m03;
+		o_out.y=this.m10*i_x+this.m11*i_y+this.m12*i_z+this.m13;
+		o_out.z=this.m20*i_x+this.m21*i_y+this.m22*i_z+this.m23;
+		return;
+	}
 }

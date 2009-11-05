@@ -18,35 +18,46 @@ import java.util.Date;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
+import jp.nyatla.nyartoolkit.detector.*;
 import jp.nyatla.nyartoolkit.nyidmarker.NyIdMarkerPickup;
+import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.pickup.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
 import jp.nyatla.utils.j2se.*;
 import jp.nyatla.nyartoolkit.nyidmarker.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.*;
 
+
+
 public class PattPickupTest extends Frame implements JmfCaptureListener
 {
 	private final String PARAM_FILE = "../Data/camera_para.dat";
+
+	private final static String CARCODE_FILE = "../Data/patt.hiro";
 
 	private static final long serialVersionUID = -2110888320986446576L;
 
 	private JmfCaptureDevice _capture;
 
 	private JmfNyARRaster_RGB _capraster;
-	private int W=320;
-	private int H=240;
 
+	private int W = 320;
 
+	private int H = 240;
+
+	private NyARParam _param;
 
 	private NyARBinRaster _bin_raster;
 
 	private NyARSquareStack _stack = new NyARSquareStack(100);
-	private NyARSquareDetector_Rle detect;
+
+	private NyARSingleDetectMarker detect;
+
 	public PattPickupTest() throws NyARException
 	{
 		setTitle("JmfCaptureTest");
@@ -62,10 +73,14 @@ public class PattPickupTest extends Frame implements JmfCaptureListener
 		NyARParam ar_param = new NyARParam();
 		ar_param.loadARParamFromFile(PARAM_FILE);
 		ar_param.changeScreenSize(W, H);
-		this.detect=new NyARSquareDetector_Rle(ar_param.getDistortionFactor(),ar_param.getScreenSize());
+
+		NyARCode code = new NyARCode(16, 16);
+		code.loadARPattFromFile(CARCODE_FILE);
 		this._capraster = new JmfNyARRaster_RGB(W, H, this._capture.getCaptureFormat());
+		this.detect = new NyARSingleDetectMarker(ar_param, code, 80, this._capraster.getBufferReader().getBufferType());
 		this._capture.setOnCapture(this);
 		this._bin_raster = new NyARBinRaster(W, H);
+		this._param = ar_param;
 		return;
 	}
 
@@ -88,10 +103,6 @@ public class PattPickupTest extends Frame implements JmfCaptureListener
 
 	private INyARColorPatt _patt1 = new NyARColorPatt_O3(16, 16);
 
-	private INyARColorPatt _patt2 = new NyARColorPatt_Perspective_O2(16,16,4,25);
-
-	private INyARColorPatt _patt3 = new NyARColorPatt_Perspective(16,16,4,25);
-
 	public void draw(INyARRgbRaster i_raster)
 	{
 		try {
@@ -100,89 +111,61 @@ public class PattPickupTest extends Frame implements JmfCaptureListener
 
 			{// ピックアップ画像の表示
 				// 矩形抽出
-				INyARRasterFilter_RgbToBin to_binfilter= new NyARRasterFilter_ARToolkitThreshold(110,i_raster.getBufferReader().getBufferType());				
+				INyARRasterFilter_RgbToBin to_binfilter = new NyARRasterFilter_ARToolkitThreshold(110, i_raster.getBufferReader().getBufferType());
 				to_binfilter.doFilter(i_raster, this._bin_raster);
-				this.detect.detectMarker(this._bin_raster, this._stack);
+				if (this.detect.detectMarkerLite(i_raster, 100)) {
 
-				int max_point = 0;
-				NyARSquare t = null;
-				// ど れ に し よ う か なー
-				for (int i = this._stack.getLength() - 1; i >= 0; i--) {
-					NyARSquare sq = this._stack.getItem(i);
-					int wp = getSQPoint(sq);
-					if (wp < max_point) {
-						continue;
-					}
-					t = sq;
-				}
-//				NyARSquare t=new NyARSquare();
-				if (t != null) {
-					BufferedImage sink=new BufferedImage(this._patt1.getWidth(),this._patt1.getHeight(),ColorSpace.TYPE_RGB);
-					BufferedImage sink2=new BufferedImage(this._patt2.getWidth(),this._patt2.getHeight(),ColorSpace.TYPE_RGB);
-/*					t.imvertex[0].x=(int)483.0639377595418;
-					t.imvertex[0].y=(int)303.17616747966747;
+					NyARTransMatResult res = new NyARTransMatResult();
+					this.detect.getTransmationMatrix(res);
+					int max_point = 0;
 
-					t.imvertex[1].x=(int)506.1019505415998;
-					t.imvertex[1].y=(int)310.5313224526344;
+					// NyARSquare t=new NyARSquare();
 
-					t.imvertex[2].x=(int)589.3605435960492;
-					t.imvertex[2].y=(int)258.46261716798523;
+						TransformedBitmapPickup patt2 = new TransformedBitmapPickup(this._param.getPerspectiveProjectionMatrix(), 100, 100, 1);
 
-					t.imvertex[3].x=(int)518.1385869954609;
-					t.imvertex[3].y=(int)325.1434618295405;
-*/				
-					Graphics g1,g2,g3;
-					{// ARToolkit
-						// 一番それっぽいパターンを取得
-						this._patt1.pickFromRaster(i_raster, t);
-						Date d2 = new Date();
-						for (int i = 0; i < 10000; i++) {
-							this._patt1.pickFromRaster(i_raster, t);
-						}
-						Date d = new Date();
-						System.out.println(d.getTime() - d2.getTime());						
-
-						
-						// パターンを書く
-						NyARRasterImageIO.copy(this._patt1,sink);
-						g1=sink.getGraphics();
-						g1.setColor(Color.red);
-					}
-					{// 疑似アフィン変換
-						// 一番それっぽいパターンを取得
-						for(int i2=0;i2<5;i2++){
-						Date d2 = new Date();
-						for (int i = 0; i < 10000; i++) {
-							this._patt2.pickFromRaster(i_raster, t);
-						}
-						Date d = new Date();
-						System.out.println(d.getTime() - d2.getTime());						
-						// パターンを書く
-						}
-						NyARRasterImageIO.copy(this._patt2,sink2);						
-						g2=sink2.getGraphics();
-						g2.setColor(Color.red);
-						this._patt3.pickFromRaster(i_raster, t);
-						{//比較
-							int[] p2=(int[])this._patt2.getBufferReader().getBuffer();
-							int[] p3=(int[])this._patt3.getBufferReader().getBuffer();
-							for(int i=0;i<this._patt2.getHeight()*this._patt2.getWidth();i++){
-								if(p2[i]!=p3[i]){
-									System.out.print(i+",");
-								}
+						BufferedImage sink = new BufferedImage(this._patt1.getWidth(), this._patt1.getHeight(), ColorSpace.TYPE_RGB);
+						BufferedImage sink2 = new BufferedImage(patt2.getWidth(), patt2.getHeight(), ColorSpace.TYPE_RGB);
+						patt2.pickupImage2d(i_raster,-20,-40,20,-80,res);
+						/*
+						 * t.imvertex[0].x=(int)483.0639377595418; t.imvertex[0].y=(int)303.17616747966747;
+						 * 
+						 * t.imvertex[1].x=(int)506.1019505415998; t.imvertex[1].y=(int)310.5313224526344;
+						 * 
+						 * t.imvertex[2].x=(int)589.3605435960492; t.imvertex[2].y=(int)258.46261716798523;
+						 * 
+						 * t.imvertex[3].x=(int)518.1385869954609; t.imvertex[3].y=(int)325.1434618295405;
+						 */
+						Graphics g1, g2, g3;
+					/*	{// ARToolkit
+							// 一番それっぽいパターンを取得
+							this._patt1.pickFromRaster(i_raster, t.imvertex);
+							Date d2 = new Date();
+							for (int i = 0; i < 10000; i++) {
+								this._patt1.pickFromRaster(i_raster, t.imvertex);
 							}
+							Date d = new Date();
+							System.out.println(d.getTime() - d2.getTime());
+
+							// パターンを書く
+							NyARRasterImageIO.copy(this._patt1, sink);
+							g1 = sink.getGraphics();
+							g1.setColor(Color.red);
+						}*/
+						{// 疑似アフィン変換
+							NyARRasterImageIO.copy(patt2, sink2);
+							g2 = sink2.getGraphics();
+							g2.setColor(Color.red);
+
 						}
-
-					}
-					g.drawImage(sink, ins.left + 320, ins.top, 128, 128, null);
-					g.drawImage(sink2, ins.left + 320, ins.top + 128, 128, 128, null);
-//					g.drawImage(sink3, ins.left + 100, ins.top + 240, this._patt3.getWidth() * 10, this._patt3.getHeight() * 10, null);
+						g.drawImage(sink, ins.left + 320, ins.top, 128, 128, null);
+						g.drawImage(sink2, ins.left + 320, ins.top + 128, 128, 128, null);
+						// g.drawImage(sink3, ins.left + 100, ins.top + 240, this._patt3.getWidth() * 10, this._patt3.getHeight() * 10, null);
+					
 				}
-
 				{// 撮影画像
-					BufferedImage sink=new BufferedImage(i_raster.getWidth(),i_raster.getHeight(),ColorSpace.TYPE_RGB);
+					BufferedImage sink = new BufferedImage(i_raster.getWidth(), i_raster.getHeight(), ColorSpace.TYPE_RGB);
 					NyARRasterImageIO.copy(i_raster, sink);
-					g.drawImage(sink, ins.left, ins.top, this);			
+					g.drawImage(sink, ins.left, ins.top, this);
 				}
 
 				{// 信号取得テスト
@@ -193,6 +176,7 @@ public class PattPickupTest extends Frame implements JmfCaptureListener
 			e.printStackTrace();
 		}
 	}
+
 	public void onUpdateBuffer(Buffer i_buffer)
 	{
 		try {
@@ -215,20 +199,21 @@ public class PattPickupTest extends Frame implements JmfCaptureListener
 			e.printStackTrace();
 		}
 	}
+
 	public void startImage()
 	{
 		try {
 			// 試験イメージの読み出し(320x240 BGRAのRAWデータ)
 			File f = new File(data_file);
 			FileInputStream fs = new FileInputStream(data_file);
-			byte[] buf = new byte[(int) f.length()*4];
+			byte[] buf = new byte[(int) f.length() * 4];
 			fs.read(buf);
 			INyARRgbRaster ra = NyARRgbRaster_BGRA.wrap(buf, W, H);
 			draw(ra);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	public static void main(String[] args)
@@ -236,8 +221,8 @@ public class PattPickupTest extends Frame implements JmfCaptureListener
 		try {
 			PattPickupTest mainwin = new PattPickupTest();
 			mainwin.setVisible(true);
-			//mainwin.startCapture();
-			mainwin.startImage();
+			mainwin.startCapture();
+			// mainwin.startImage();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

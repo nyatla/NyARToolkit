@@ -28,7 +28,6 @@ package jp.nyatla.nyartoolkit.core.pickup;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 
@@ -141,7 +140,10 @@ public class NyARColorPatt_PseudoAffine implements INyARColorPatt
 	 */
 	private double[] _convparam=new double[8];
 	
-	public boolean pickFromRaster(INyARRgbRaster image, NyARSquare i_square)throws NyARException
+	/**
+	 * @see INyARColorPatt#pickFromRaster
+	 */
+	public boolean pickFromRaster(INyARRgbRaster image,NyARIntPoint2d[] i_vertexs)throws NyARException
 	{
 		final double[] conv_param=this._convparam;
 	    int rx2,ry2;
@@ -153,7 +155,7 @@ public class NyARColorPatt_PseudoAffine implements INyARColorPatt
 		// 変形先領域の頂点を取得
 
 		//変換行列から現在の座標系への変換パラメタを作成
-		calcPara(i_square.imvertex,conv_param);// 変換パラメータを求める
+		calcPara(i_vertexs,conv_param);// 変換パラメータを求める
 		for(int y=0;y<ry2;y++){
 			for(int x=0;x<rx2;x++){
 				final int ttx=(int)((conv_param[0]*x*y+conv_param[1]*x+conv_param[2]*y+conv_param[3])+0.5);

@@ -32,7 +32,7 @@ package jp.nyatla.nyartoolkit.core.pickup;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
+import jp.nyatla.nyartoolkit.core.types.*;
 
 public interface INyARColorPatt extends INyARRgbRaster
 {
@@ -40,9 +40,19 @@ public interface INyARColorPatt extends INyARRgbRaster
 	 * ラスタイメージからi_square部分のカラーパターンを抽出して、thisメンバに格納します。
 	 * 
 	 * @param image
-	 * @param i_square
-	 * @return ラスターの取得に成功するとTRUE/失敗するとFALSE
+	 * Source raster object.
+	 * ----
+	 * 抽出元のラスタオブジェクト
+	 * @param i_vertexs
+	 * Vertexes of the square. Number of element must be 4.
+	 * ----
+	 * 射影変換元の４角形を構成する頂点群頂群。要素数は4であること。
+	 * @return
+	 * True if sucessfull; otherwise false.
+	 * ----
+	 * ラスターの取得に成功するとTRUE/失敗するとFALSE
 	 * @throws NyARException
 	 */
-	public boolean pickFromRaster(INyARRgbRaster image, NyARSquare i_square) throws NyARException;
+//	public boolean pickFromRaster(INyARRgbRaster image, NyARSquare i_square) throws NyARException;
+	public boolean pickFromRaster(INyARRgbRaster image, NyARIntPoint2d[] i_vertexs) throws NyARException;
 }

@@ -34,7 +34,6 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARMat;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.*;
 /**
  * 24ビットカラーのマーカーを保持するために使うクラスです。 このクラスは、ARToolkitのパターンと、ラスタから取得したパターンを保持します。
@@ -136,26 +135,21 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 
 
 	/**
-	 * imageから、i_markerの位置にあるパターンを切り出して、保持します。 Optimize:STEP[769->750]
-	 * 
-	 * @param image
-	 * @param i_marker
-	 * @throws Exception
+	 * @see INyARColorPatt#pickFromRaster
 	 */
-	public boolean pickFromRaster(INyARRgbRaster image, NyARSquare i_square)throws NyARException
+	public boolean pickFromRaster(INyARRgbRaster image,NyARIntPoint2d[] i_vertexs)throws NyARException
 	{
 		NyARMat cpara = this.wk_pickFromRaster_cpara;
-		NyARIntPoint2d[] local = i_square.imvertex;
 		// xdiv2,ydiv2の計算
 		int xdiv2, ydiv2;
 		int l1, l2;
 		int w1, w2;
 		// x計算
-		w1 = local[0].x - local[1].x;
-		w2 = local[0].y - local[1].y;
+		w1 = i_vertexs[0].x - i_vertexs[1].x;
+		w2 = i_vertexs[0].y - i_vertexs[1].y;
 		l1 = (w1 * w1 + w2 * w2);
-		w1 = local[2].x - local[3].x;
-		w2 = local[2].y - local[3].y;
+		w1 = i_vertexs[2].x - i_vertexs[3].x;
+		w2 = i_vertexs[2].y - i_vertexs[3].y;
 		l2 = (w1 * w1 + w2 * w2);
 		if (l2 > l1) {
 			l1 = l2;
@@ -170,11 +164,11 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 		}
 
 		// y計算
-		w1 = local[1].x - local[2].x;
-		w2 = local[1].y - local[2].y;
+		w1 = i_vertexs[1].x - i_vertexs[2].x;
+		w2 = i_vertexs[1].y - i_vertexs[2].y;
 		l1 = (w1 * w1 + w2 * w2);
-		w1 = local[3].x - local[0].x;
-		w2 = local[3].y - local[0].y;
+		w1 = i_vertexs[3].x - i_vertexs[0].x;
+		w2 = i_vertexs[3].y - i_vertexs[0].y;
 		l2 = (w1 * w1 + w2 * w2);
 		if (l2 > l1) {
 			l1 = l2;
@@ -189,7 +183,7 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 		}
 
 		// cparaの計算
-		if (!get_cpara(local, cpara)) {
+		if (!get_cpara(i_vertexs, cpara)) {
 			return false;
 		}
 		updateExtpat(image, cpara, xdiv2, ydiv2);

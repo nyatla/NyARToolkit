@@ -198,7 +198,7 @@ public abstract class SingleARMarkerProcesser
 			return false;
 		}
 		// 評価基準になるパターンをイメージから切り出す
-		if (!this._patt.pickFromRaster(i_raster, i_square)) {
+		if (!this._patt.pickFromRaster(i_raster, i_square.imvertex)) {
 			return false;
 		}
 		//評価データを作成して、評価器にセット

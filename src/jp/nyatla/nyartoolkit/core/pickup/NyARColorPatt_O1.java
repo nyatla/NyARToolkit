@@ -34,7 +34,6 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARMat;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.*;
 /**
  * 24ビットカラーのマーカーを保持するために使うクラスです。 このクラスは、ARToolkitのパターンと、ラスタから取得したパターンを保持します。
@@ -133,20 +132,13 @@ public class NyARColorPatt_O1 implements INyARColorPatt
 	private final NyARMat __pickFromRaster_cpara_c = new NyARMat(8, 1);
 	
 	/**
-	 * imageから、i_markerの位置にあるパターンを切り出して、保持します。 Optimize:STEP[769->]
-	 * 
-	 * @param image
-	 * @param i_marker
-	 * @return 切り出しに失敗した
-	 * @throws Exception
+	 * @see INyARColorPatt#pickFromRaster
 	 */
-	public boolean pickFromRaster(INyARRgbRaster image, NyARSquare i_square)throws NyARException
+	public boolean pickFromRaster(INyARRgbRaster image,NyARIntPoint2d[] i_vertexs)throws NyARException
 	{
-		final NyARIntPoint2d[] local = i_square.imvertex;
-
 		// パターンの切り出しに失敗することもある。
 		NyARMat cpara = this.__pickFromRaster_cpara_c;
-		if (!get_cpara(i_square.imvertex, cpara)) {
+		if (!get_cpara(i_vertexs, cpara)) {
 			return false;
 		}
 		final double[][] para=cpara.getArray();
@@ -160,10 +152,10 @@ public class NyARColorPatt_O1 implements INyARColorPatt
 		final double para21=para[2*3+1][0];
 		final double para22=1.0;
 		
-		int lx1 = (int) ((local[0].x - local[1].x) * (local[0].x - local[1].x) + (local[0].y - local[1].y)* (local[0].y - local[1].y));
-		int lx2 = (int) ((local[2].x - local[3].x) * (local[2].x - local[3].x) + (local[2].y - local[3].y)* (local[2].y - local[3].y));
-		int ly1 = (int) ((local[1].x - local[2].x) * (local[1].x - local[2].x) + (local[1].y - local[2].y)* (local[1].y - local[2].y));
-		int ly2 = (int) ((local[3].x - local[0].x) * (local[3].x - local[0].x) + (local[3].y - local[0].y)* (local[3].y - local[0].y));
+		int lx1 = (int) ((i_vertexs[0].x - i_vertexs[1].x) * (i_vertexs[0].x - i_vertexs[1].x) + (i_vertexs[0].y - i_vertexs[1].y)* (i_vertexs[0].y - i_vertexs[1].y));
+		int lx2 = (int) ((i_vertexs[2].x - i_vertexs[3].x) * (i_vertexs[2].x - i_vertexs[3].x) + (i_vertexs[2].y - i_vertexs[3].y)* (i_vertexs[2].y - i_vertexs[3].y));
+		int ly1 = (int) ((i_vertexs[1].x - i_vertexs[2].x) * (i_vertexs[1].x - i_vertexs[2].x) + (i_vertexs[1].y - i_vertexs[2].y)* (i_vertexs[1].y - i_vertexs[2].y));
+		int ly2 = (int) ((i_vertexs[3].x - i_vertexs[0].x) * (i_vertexs[3].x - i_vertexs[0].x) + (i_vertexs[3].y - i_vertexs[0].y)* (i_vertexs[3].y - i_vertexs[0].y));
 		if (lx2 > lx1) {
 			lx1 = lx2;
 		}

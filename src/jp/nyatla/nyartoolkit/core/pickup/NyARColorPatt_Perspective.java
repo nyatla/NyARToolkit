@@ -27,7 +27,6 @@ package jp.nyatla.nyartoolkit.core.pickup;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.utils.NyARPerspectiveParamGenerator_O1;
 
@@ -145,18 +144,15 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 	}
 	private final int[] __pickFromRaster_rgb_tmp = new int[3];
 	protected final double[] __pickFromRaster_cpara=new double[8];
+	
 	/**
-	 * 
-	 * @param image
-	 * @param i_marker
-	 * @return 切り出しに失敗した
-	 * @throws Exception
+	 * @see INyARColorPatt#pickFromRaster
 	 */
-	public boolean pickFromRaster(INyARRgbRaster image, NyARSquare i_square)throws NyARException
+	public boolean pickFromRaster(INyARRgbRaster image,NyARIntPoint2d[] i_vertexs)throws NyARException
 	{
 		//遠近法のパラメータを計算
 		final double[] cpara = this.__pickFromRaster_cpara;
-		if (!this._perspective_gen.getParam(i_square.imvertex, cpara)) {
+		if (!this._perspective_gen.getParam(i_vertexs, cpara)) {
 			return false;
 		}
 		

@@ -147,7 +147,7 @@ public class NyARCustomSingleDetectMarker
 		double confidence = 0;
 		for(int i=0;i<number_of_square;i++){
 			// 評価基準になるパターンをイメージから切り出す
-			if (!this._patt.pickFromRaster(i_raster, l_square_list.getItem(i))){
+			if (!this._patt.pickFromRaster(i_raster, l_square_list.getItem(i).imvertex)){
 				continue;
 			}
 			//取得パターンをカラー差分データに変換して評価する。

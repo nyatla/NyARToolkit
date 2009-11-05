@@ -207,7 +207,7 @@ public class NyARDetectMarker
 			NyARSquare square = (l_square_list.getItem(i));
 
 			// 評価基準になるパターンをイメージから切り出す
-			if (!this._patt.pickFromRaster(i_raster, square)) {
+			if (!this._patt.pickFromRaster(i_raster, square.imvertex)) {
 				// イメージの切り出しは失敗することもある。
 				continue;
 			}

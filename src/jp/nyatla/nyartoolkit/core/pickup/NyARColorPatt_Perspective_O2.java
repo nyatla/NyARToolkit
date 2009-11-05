@@ -27,7 +27,6 @@ package jp.nyatla.nyartoolkit.core.pickup;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 
@@ -671,12 +670,14 @@ public class NyARColorPatt_Perspective_O2 extends NyARColorPatt_Perspective
 		}		
 		return;
 	}
-
- 	public boolean pickFromRaster(INyARRgbRaster image, NyARSquare i_square)throws NyARException
+	/**
+	 * @see INyARColorPatt#pickFromRaster
+	 */
+	public boolean pickFromRaster(INyARRgbRaster image,NyARIntPoint2d[] i_vertexs)throws NyARException
  	{
 		//遠近法のパラメータを計算
  		final double[] cpara = this.__pickFromRaster_cpara;
-		if (!this._perspective_gen.getParam(i_square.imvertex, cpara)) {
+		if (!this._perspective_gen.getParam(i_vertexs, cpara)) {
 			return false;
 		} 		
  		this._pickup.pickFromRaster(cpara, image,this._patdata);
