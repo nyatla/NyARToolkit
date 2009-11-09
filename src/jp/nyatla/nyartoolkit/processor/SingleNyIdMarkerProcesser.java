@@ -25,15 +25,15 @@
 package jp.nyatla.nyartoolkit.processor;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.analyzer.raster.threshold.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilter_ARToolkitThreshold;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.nyidmarker.*;
 import jp.nyatla.nyartoolkit.nyidmarker.data.*;
-import jp.nyatla.nyartoolkit.core2.rasteranalyzer.threshold.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.*;
 
 public abstract class SingleNyIdMarkerProcesser
@@ -90,7 +90,7 @@ public abstract class SingleNyIdMarkerProcesser
 		this._is_active=false;
 		this._data_temp=i_encoder.createDataInstance();
 		this._data_current=i_encoder.createDataInstance();
-		this._tobin_filter = new NyARRasterFilter_ARToolkitThreshold(110,i_raster_format);
+		this._tobin_filter =new NyARRasterFilter_ARToolkitThreshold(110,i_raster_format);
 		this._threshold_detect=new NyARRasterThresholdAnalyzer_SlidePTile(15,i_raster_format,4);
 		this._initialized=true;
 		return;
@@ -177,8 +177,8 @@ public abstract class SingleNyIdMarkerProcesser
 			this._current_threshold=(this._current_threshold+param.threshold)/2;
 		}else{
 			//マーカがなければ、探索+DualPTailで基準輝度検索
-			this._threshold_detect.analyzeRaster(i_raster);
-			this._current_threshold=(this._current_threshold+this._threshold_detect.getThreshold())/2;
+			int th=this._threshold_detect.analyzeRaster(i_raster);
+			this._current_threshold=(this._current_threshold+th)/2;
 		}
 		return;
 	}
@@ -219,8 +219,8 @@ public abstract class SingleNyIdMarkerProcesser
 			this._current_threshold=(this._current_threshold+param.threshold)/2;
 		}else{
 			//マーカがなければ、探索+DualPTailで基準輝度検索
-			this._threshold_detect.analyzeRaster(i_raster);
-			this._current_threshold=(this._current_threshold+this._threshold_detect.getThreshold())/2;
+			int th=this._threshold_detect.analyzeRaster(i_raster);
+			this._current_threshold=(this._current_threshold+th)/2;
 		}
 		return;
 	}

@@ -36,6 +36,9 @@ import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
 
+/**
+ * BufferdImageとRasterイメージ間で、ビットマップをコピーします。
+ */
 public class NyARRasterImageIO
 {
 	/**
@@ -59,6 +62,28 @@ public class NyARRasterImageIO
 		}
 		return;
 	}
+	/**
+	 * GrayScale用
+	 * @param i_in
+	 * @throws NyARException
+	 */
+	public static void copy(NyARGrayscaleRaster i_in,BufferedImage o_out) throws NyARException
+	{
+		assert i_in.getSize().isEqualSize(o_out.getWidth(), o_out.getHeight());
+		if(i_in.getBufferReader().isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8))
+		{
+			final int[] buf=(int[])i_in.getBufferReader().getBuffer();
+			final int w=o_out.getWidth();
+			final int h=o_out.getHeight();
+			for(int y=h-1;y>=0;y--){
+				for(int x=w-1;x>=0;x--){
+					int v=buf[x+y*w];
+					o_out.setRGB(x, y,v*(1+0x100+0x10000));
+				}
+			}
+		}
+		return;
+	}	
 	/**
 	 * BIN_8用
 	 * @param i_in

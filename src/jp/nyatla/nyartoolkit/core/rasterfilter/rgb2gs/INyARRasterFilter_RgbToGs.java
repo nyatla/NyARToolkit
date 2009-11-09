@@ -1,6 +1,12 @@
 /* 
- * PROJECT: NyARToolkit(Extension)
+ * PROJECT: NyARToolkit
  * --------------------------------------------------------------------------------
+ * This work is based on the original ARToolKit developed by
+ *   Hirokazu Kato
+ *   Mark Billinghurst
+ *   HITLab, University of Washington, Seattle
+ * http://www.hitl.washington.edu/artoolkit/
+ *
  * The NyARToolkit is Java edition ARToolKit class library.
  * Copyright (C)2008-2009 Ryo Iizuka
  *
@@ -22,15 +28,17 @@
  *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core2.rasteranalyzer.threshold;
-
+package jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 
-public interface INyARRasterThresholdAnalyzer
+/**
+ * このインタフェイスは、RGBラスタをグレースケールラスタに変換します。
+ *
+ */
+public interface INyARRasterFilter_RgbToGs
 {
-	public void analyzeRaster(INyARRaster i_input) throws NyARException;
-
-	public int getThreshold();
+	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output) throws NyARException;
 }

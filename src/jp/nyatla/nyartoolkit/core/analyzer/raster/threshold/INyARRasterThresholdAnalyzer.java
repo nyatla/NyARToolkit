@@ -1,12 +1,6 @@
 /* 
- * PROJECT: NyARToolkit
+ * PROJECT: NyARToolkit(Extension)
  * --------------------------------------------------------------------------------
- * This work is based on the original ARToolKit developed by
- *   Hirokazu Kato
- *   Mark Billinghurst
- *   HITLab, University of Washington, Seattle
- * http://www.hitl.washington.edu/artoolkit/
- *
  * The NyARToolkit is Java edition ARToolKit class library.
  * Copyright (C)2008-2009 Ryo Iizuka
  *
@@ -28,12 +22,13 @@
  *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.rasterfilter;
+package jp.nyatla.nyartoolkit.core.analyzer.raster.threshold;
+
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 
-public interface INyARRasterFilter_GsToBin
+public interface INyARRasterThresholdAnalyzer
 {
-	public void doFilter(NyARGrayscaleRaster i_input, NyARBinRaster i_output) throws NyARException;
+	public int analyzeRaster(INyARRaster i_input) throws NyARException;
 }
