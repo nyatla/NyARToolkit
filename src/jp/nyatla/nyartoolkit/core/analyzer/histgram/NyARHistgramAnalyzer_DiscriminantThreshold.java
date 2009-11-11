@@ -13,6 +13,7 @@ public class NyARHistgramAnalyzer_DiscriminantThreshold implements INyARHistgram
 {
 	private double _score;
 
+
 	public int getThreshold(NyARHistgram i_histgram)
 	{
 		int[] hist=i_histgram.data;

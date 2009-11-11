@@ -30,11 +30,14 @@
  */
 package jp.nyatla.utils.j2se;
 
+import java.awt.Graphics.*;
 import java.awt.image.*;
+import java.awt.*;
 import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
+import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
  * BufferdImageとRasterイメージ間で、ビットマップをコピーします。
@@ -106,6 +109,28 @@ public class NyARRasterImageIO
 		return;
 	}	
 	/**
+	 * ヒストグラムを書き出します。
+	 * @param i_in
+	 * @param o_out
+	 * @throws NyARException
+	 */
+	public static void copy(NyARHistgram i_in,Graphics i_g,int i_l,int i_t,int i_h) throws NyARException
+	{
+		//正規化のための定数を出す。
+		int max=0;
+		for(int i=0;i<i_in.length;i++){
+			max=max<i_in.data[i]?i_in.data[i]:max;
+		}
+		if(max==0){
+			return;
+		}
+		//ヒストグラムを書く
+		for(int i=0;i<i_in.length;i++){
+			i_g.drawLine(i_l+i,i_t,i_l+i,i_h-i_h*i_in.data[i]/max);
+		}
+		return;
+	}	
+	/**
 	 * i_outへこのイメージを出力します。
 	 * 
 	 * @param i_out
@@ -149,5 +174,6 @@ public class NyARRasterImageIO
 			}
 		}
 		return;
-	}	
+	}
+	
 }

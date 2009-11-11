@@ -10,7 +10,7 @@ public class NyARHistgram
 	 */
 	public int[] data;
 	/**
-	 * 有効なサンプリング値の範囲。[0-i_length-1]
+	 * 有効なサンプリング値の範囲。[0-data.length-1]
 	 */
 	public int length;
 	/**
@@ -39,4 +39,31 @@ public class NyARHistgram
 		}
 		return result;
 	}
+	/**
+	 * 指定したi_pos未満サンプルを０にします。
+	 * @param i_pos
+	 */
+	public void lowCut(int i_pos)
+	{
+		int s=0;
+		for(int i=0;i<i_pos;i++){
+			s+=this.data[i];
+			this.data[i]=0;
+		}
+		this.total_of_data-=s;
+	}
+	/**
+	 * 指定したi_pos未満サンプルを０にします。
+	 * @param i_pos
+	 */
+	public void highCut(int i_pos)
+	{
+		int s=0;
+		for(int i=this.length-1;i>=i_pos;i--){
+			s+=this.data[i];
+			this.data[i]=0;
+		}
+		this.total_of_data-=s;
+	}
+	
 }

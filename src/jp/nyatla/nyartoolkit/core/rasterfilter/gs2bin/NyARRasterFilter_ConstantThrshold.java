@@ -14,6 +14,10 @@ public class NyARRasterFilter_ConstantThrshold implements INyARRasterFilter_Gs2B
 		//初期化
 		this._threshold=i_initial_threshold;
 	}
+	public NyARRasterFilter_ConstantThrshold() throws NyARException
+	{
+		this._threshold=0;
+	}
 
 	
 	public void setThreshold(int i_threshold)

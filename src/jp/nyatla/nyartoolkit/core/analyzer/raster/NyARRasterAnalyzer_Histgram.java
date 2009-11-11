@@ -73,6 +73,7 @@ public class NyARRasterAnalyzer_Histgram
 		for (int i = o_histgram.length-1; i >=0; i--){
 			h[i] = 0;
 		}
+		o_histgram.total_of_data=size.w*size.h;
 		return this._histImpl.createHistgram(i_input.getBufferReader(), size,h,this._vertical_skip);		
 	}
 	
