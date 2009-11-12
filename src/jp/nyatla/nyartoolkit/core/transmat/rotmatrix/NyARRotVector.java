@@ -82,9 +82,9 @@ public class NyARRotVector
 	{
 		//1行目
 		final NyARPerspectiveProjectionMatrix cmat= this._projection_mat_ref;
-		final double w1 = i_linear1.run * i_linear2.rise - i_linear2.run * i_linear1.rise;
-		final double w2 = i_linear1.rise * i_linear2.intercept - i_linear2.rise * i_linear1.intercept;
-		final double w3 = i_linear1.intercept * i_linear2.run - i_linear2.intercept * i_linear1.run;
+		final double w1 = i_linear1.dy * i_linear2.dx - i_linear2.dy * i_linear1.dx;
+		final double w2 = i_linear1.dx * i_linear2.c - i_linear2.dx * i_linear1.c;
+		final double w3 = i_linear1.c * i_linear2.dy - i_linear2.c * i_linear1.dy;
 
 		final double m0 = w1 * (cmat.m01 * cmat.m12 - cmat.m02 * cmat.m11) + w2 * cmat.m11 - w3 * cmat.m01;//w1 * (cpara[0 * 4 + 1] * cpara[1 * 4 + 2] - cpara[0 * 4 + 2] * cpara[1 * 4 + 1]) + w2 * cpara[1 * 4 + 1] - w3 * cpara[0 * 4 + 1];
 		final double m1 = -w1 * cmat.m00 * cmat.m12 + w3 * cmat.m00;//-w1 * cpara[0 * 4 + 0] * cpara[1 * 4 + 2] + w3 * cpara[0 * 4 + 0];

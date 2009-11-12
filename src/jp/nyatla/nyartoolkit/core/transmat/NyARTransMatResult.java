@@ -40,6 +40,10 @@ import jp.nyatla.nyartoolkit.core.types.matrix.*;
  */
 public class NyARTransMatResult extends NyARDoubleMatrix34
 {
+	/**
+	 * エラーレート。この値はINyARTransMatの派生クラスが使います。
+	 */
+	public double error;	
 	public boolean has_value = false;
 	/**
 	 * この関数は、0-PIの間で値を返します。

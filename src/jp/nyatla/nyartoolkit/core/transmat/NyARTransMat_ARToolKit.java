@@ -153,7 +153,7 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 		this._transsolver.solveTransportVector(vertex_3d,trans);
 		
 		//計算結果の最適化(平行移動量と回転行列の最適化)
-		this.optimize(this._rotmatrix, trans, this._transsolver,this._offset.vertex, vertex_2d);
+		o_result_conv.error=this.optimize(this._rotmatrix, trans, this._transsolver,this._offset.vertex, vertex_2d);
 		
 		// マトリクスの保存
 		this.updateMatrixValue(this._rotmatrix, this._offset.point, trans,o_result_conv);
@@ -216,7 +216,10 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 				// 良い値が取れたら、差換え
 				this.updateMatrixValue(this._rotmatrix, this._offset.point, trans,o_result_conv);
 			}
+			err=err2;
 		}
+		//エラー値保存
+		o_result_conv.error=err;
 		return;
 	}
 	private double optimize(NyARRotMatrix_ARToolKit io_rotmat,NyARDoublePoint3d io_transvec,INyARTransportVectorSolver i_solver,NyARDoublePoint3d[] i_offset_3d,NyARDoublePoint2d[] i_2d_vertex) throws NyARException

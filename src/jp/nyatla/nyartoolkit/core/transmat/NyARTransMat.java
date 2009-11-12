@@ -47,7 +47,9 @@ import jp.nyatla.nyartoolkit.core.types.matrix.*;
 public class NyARTransMat implements INyARTransMat
 {
 	private final static double FIT_DIFF_THRESHOLD = 1.0;
-	private final static double FIT_DIFF_THRESHOLD_CONT = 1.0;
+	private final static double FIT_DIFF_THRESHOLD_CONT = 0.1;
+	private final static double FIT_DIFF_THRESHOLD_OPT = 0.01;
+	
 
 	private final NyARDoublePoint2d _center=new NyARDoublePoint2d(0,0);
 	private final NyARTransOffset _offset=new NyARTransOffset();
@@ -154,7 +156,7 @@ public class NyARTransMat implements INyARTransMat
 		this._transsolver.solveTransportVector(vertex_3d,trans);
 		
 		//計算結果の最適化(平行移動量と回転行列の最適化)
-		this.optimize(this._rotmatrix, trans, this._transsolver,this._offset.vertex, vertex_2d);
+		o_result_conv.error=this.optimize(this._rotmatrix, trans, this._transsolver,this._offset.vertex, vertex_2d);
 		
 		// マトリクスの保存
 		this.updateMatrixValue(this._rotmatrix, this._offset.point, trans,o_result_conv);
@@ -200,8 +202,8 @@ public class NyARTransMat implements INyARTransMat
 		//現在のエラーレートを計算しておく
 		double min_err=errRate(this._rotmatrix,trans, this._offset.vertex, vertex_2d,4,vertex_3d);
 		NyARDoubleMatrix33 rot=this.__rot;
-		//エラーレートが閾値超えてたらアゲイン
-		if(min_err<FIT_DIFF_THRESHOLD_CONT){
+		//エラーレートが前回のエラー値より閾値分大きかったらアゲイン
+		if(min_err<o_result_conv.error+FIT_DIFF_THRESHOLD_CONT){
 			rot.setValue(this._rotmatrix);
 			//最適化してみる。
 			for (int i = 0;i<5; i++) {
@@ -227,9 +229,10 @@ public class NyARTransMat implements INyARTransMat
 			this._transsolver.solveTransportVector(vertex_3d,trans);
 			
 			//計算結果の最適化(平行移動量と回転行列の最適化)
-			this.optimize(this._rotmatrix, trans, this._transsolver,this._offset.vertex, vertex_2d);
+			min_err=this.optimize(this._rotmatrix, trans, this._transsolver,this._offset.vertex, vertex_2d);
 			this.updateMatrixValue(this._rotmatrix, this._offset.point, trans,o_result_conv);
 		}
+		o_result_conv.error=min_err;
 		return;
 	}
 	private NyARDoubleMatrix33 __rot=new NyARDoubleMatrix33();
@@ -246,7 +249,7 @@ public class NyARTransMat implements INyARTransMat
 			this._mat_optimize.modifyMatrix(rot, io_transvec, i_offset_3d, i_2d_vertex, 4);
 			double err=errRate(rot,io_transvec, i_offset_3d, i_2d_vertex,4,vertex_3d);
 			//System.out.println("E:"+err);
-			if(min_err-err<FIT_DIFF_THRESHOLD){
+			if(min_err-err<FIT_DIFF_THRESHOLD_OPT){
 				//System.out.println("BREAK");
 				break;
 			}
