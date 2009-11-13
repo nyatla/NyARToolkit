@@ -50,4 +50,46 @@ public final class NyARGrayscaleRaster extends NyARRaster_BasicClass
 	{
 		return this._buffer_reader;
 	}
+	/**
+	 * 4近傍の画素ベクトルを取得します。
+	 * 0,1,0
+	 * 1,x,1
+	 * 0,1,0
+	 * @param i_raster
+	 * @param x
+	 * @param y
+	 * @param o_v
+	 */
+	public void getPixelVector4(int x,int y,NyARIntPoint2d o_v)
+	{
+		int[] buf=this._ref_buf;
+		int w=this._size.w;
+		int idx=w*y+x;
+		o_v.x=buf[idx+1]-buf[idx-1];
+		o_v.y=buf[idx+w]-buf[idx-w];
+	}
+	/**
+	 * 8近傍画素ベクトル
+	 * 1,2,1
+	 * 2,x,2
+	 * 1,2,1
+	 * @param i_raster
+	 * @param x
+	 * @param y
+	 * @param o_v
+	 */
+	public void getPixelVector8(int x,int y,NyARIntPoint2d o_v)
+	{
+		int[] buf=this._ref_buf;
+		NyARIntSize s=this._size;
+		int idx_0 =s.w*y+x;
+		int idx_p1=idx_0+s.w;
+		int idx_m1=idx_0-s.w;
+		int b=buf[idx_m1-1];
+		int d=buf[idx_m1+1];
+		int h=buf[idx_p1-1];
+		int f=buf[idx_p1+1];
+		o_v.x=buf[idx_0+1]-buf[idx_0-1]+(d-b+f-h)/2;
+		o_v.y=buf[idx_p1]-buf[idx_m1]+(f-d+h-b)/2;
+	}	
 }

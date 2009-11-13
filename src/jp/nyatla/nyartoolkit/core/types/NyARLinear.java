@@ -30,11 +30,16 @@
  */
 package jp.nyatla.nyartoolkit.core.types;
 
+/**
+ * 0=dx*x+dy*y+cのパラメータを格納します。
+ * x,yの増加方向は、x=L→R,y=B→Tです。 
+ *
+ */
 public class NyARLinear
 {
-	public double rise;//y軸の増加量
-	public double run;//x軸の増加量
-	public double intercept;//切片
+	public double dx;//dx軸の増加量
+	public double dy;//dy軸の増加量
+	public double c;//切片
 	public static NyARLinear[] createArray(int i_number)
 	{
 		NyARLinear[] ret=new NyARLinear[i_number];
@@ -46,9 +51,9 @@ public class NyARLinear
 	}	
 	public final void copyFrom(NyARLinear i_source)
 	{
-		this.rise=i_source.rise;
-		this.run=i_source.run;
-		this.intercept=i_source.intercept;
+		this.dx=i_source.dx;
+		this.dy=i_source.dy;
+		this.c=i_source.c;
 		return;
 	}
 }

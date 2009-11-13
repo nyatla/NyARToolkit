@@ -43,6 +43,10 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 
 		
 	}
+	/**
+	 * 画像を２値化するための閾値。暗点<=th<明点となります。
+	 * @param i_threshold
+	 */
 	public void setThreshold(int i_threshold)
 	{
 		this._threshold = i_threshold;

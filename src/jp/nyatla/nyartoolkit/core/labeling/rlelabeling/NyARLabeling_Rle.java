@@ -73,6 +73,7 @@ class RleElement
 	}
 }
 
+
 // RleImageをラベリングする。
 public class NyARLabeling_Rle
 {
@@ -107,11 +108,18 @@ public class NyARLabeling_Rle
 	}
 
 	/**
-	 * i_bin_bufのbinイメージをREL圧縮する。
-	 * 
-	 * @param i_bin_raster
+	 * i_bin_bufのgsイメージをREL圧縮する。
+	 * @param i_bin_buf
+	 * @param i_st
+	 * @param i_len
+	 * @param i_out
+	 * @param i_th
+	 * BINラスタのときは0,GSラスタの時は閾値を指定する。
+	 * この関数は、閾値を暗点と認識します。
+	 * 暗点<=th<明点
+	 * @return
 	 */
-	private int toRel(int[] i_bin_buf, int i_st, int i_len, RleElement[] i_out)
+	private int toRel(int[] i_bin_buf, int i_st, int i_len, RleElement[] i_out,int i_th)
 	{
 		int current = 0;
 		int r = -1;
@@ -120,8 +128,8 @@ public class NyARLabeling_Rle
 		final int right_edge = i_st + i_len - 1;
 		while (x < right_edge) {
 			// 暗点(0)スキャン
-			if (i_bin_buf[x] != 0) {
-				x++;
+			if (i_bin_buf[x] > i_th) {
+				x++;//明点
 				continue;
 			}
 			// 暗点発見→暗点長を調べる
@@ -130,7 +138,7 @@ public class NyARLabeling_Rle
 			r++;// 暗点+1
 			x++;
 			while (x < right_edge) {
-				if (i_bin_buf[x] != 0) {
+				if (i_bin_buf[x] > i_th) {
 					// 明点(1)→暗点(0)配列終了>登録
 					i_out[current].r = r;
 					current++;
@@ -145,7 +153,7 @@ public class NyARLabeling_Rle
 			}
 		}
 		// 最後の1点だけ判定方法が少し違うの。
-		if (i_bin_buf[x] != 0) {
+		if (i_bin_buf[x] > i_th) {
 			// 明点→rカウント中なら暗点配列終了>登録
 			if (r >= 0) {
 				i_out[current].r = r;
@@ -183,9 +191,37 @@ public class NyARLabeling_Rle
 
 		return;
 	}
-
-	//
+	//所望のラスタからBIN-RLEに変換しながらの低速系も準備しようかな
+	
+	/**
+	 * 単一閾値を使ってGSラスタをBINラスタに変換しながらラベリングします。
+	 * @param i_gs_raster
+	 * @param i_top
+	 * @param i_bottom
+	 * @param o_stack
+	 * @return
+	 * @throws NyARException
+	 */
 	public int labeling(NyARBinRaster i_bin_raster, int i_top, int i_bottom,RleLabelFragmentInfoStack o_stack) throws NyARException
+	{
+		return this.imple_labeling(i_bin_raster,0,i_top,i_bottom,o_stack);
+	}
+	/**
+	 * BINラスタをラベリングします。
+	 * @param i_gs_raster
+	 * @param i_th
+	 * 画像を２値化するための閾値。暗点<=th<明点となります。
+	 * @param i_top
+	 * @param i_bottom
+	 * @param o_stack
+	 * @return
+	 * @throws NyARException
+	 */
+	public int labeling(NyARGrayscaleRaster i_gs_raster,int i_th, int i_top, int i_bottom,RleLabelFragmentInfoStack o_stack) throws NyARException
+	{
+		return this.imple_labeling(i_gs_raster,i_th,i_top,i_bottom,o_stack);
+	}
+	private int imple_labeling(INyARRaster i_raster,int i_th,int i_top, int i_bottom,RleLabelFragmentInfoStack o_stack) throws NyARException
 	{
 		// リセット処理
 		final RleInfoStack rlestack=this._rlestack;
@@ -196,14 +232,14 @@ public class NyARLabeling_Rle
 		RleElement[] rle_current = this._rle2;
 		int len_prev = 0;
 		int len_current = 0;
-		final int width = i_bin_raster.getWidth();
-		int[] in_buf = (int[]) i_bin_raster.getBufferReader().getBuffer();
+		final int width = i_raster.getWidth();
+		int[] in_buf = (int[]) i_raster.getBufferReader().getBuffer();
 
 		int id_max = 0;
 		int label_count=0;
 		// 初段登録
 
-		len_prev = toRel(in_buf, i_top, width, rle_prev);
+		len_prev = toRel(in_buf, i_top, width, rle_prev,i_th);
 		for (int i = 0; i < len_prev; i++) {
 			// フラグメントID=フラグメント初期値、POS=Y値、RELインデクス=行
 			addFragment(rle_prev[i], id_max, i_top,rlestack);
@@ -215,7 +251,7 @@ public class NyARLabeling_Rle
 		// 次段結合
 		for (int y = i_top + 1; y < i_bottom; y++) {
 			// カレント行の読込
-			len_current = toRel(in_buf, y * width, width, rle_current);
+			len_current = toRel(in_buf, y * width, width, rle_current,i_th);
 			int index_prev = 0;
 
 			SCAN_CUR: for (int i = 0; i < len_current; i++) {

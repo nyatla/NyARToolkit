@@ -92,6 +92,7 @@ public interface INyARBufferReader
 	public static final int BUFFERFORMAT_INT2D_GRAY_8 = INT2D|0x0001;
 	/**
 	 * int[][]で0/1の2値画像
+	 * これは、階調値1bitのBUFFERFORMAT_INT2D_GRAY_1と同じです。
 	 */
 	public static final int BUFFERFORMAT_INT2D_BIN_8  = INT2D|0x0002;
 
@@ -105,6 +106,7 @@ public interface INyARBufferReader
 	public static final int BUFFERFORMAT_INT1D_GRAY_8 = INT1D|0x0001;
 	/**
 	 * int[]で0/1の2値画像
+	 * これは、階調1bitのBUFFERFORMAT_INT1D_GRAY_1と同じです。
 	 */
 	public static final int BUFFERFORMAT_INT1D_BIN_8  = INT1D|0x0002;
 

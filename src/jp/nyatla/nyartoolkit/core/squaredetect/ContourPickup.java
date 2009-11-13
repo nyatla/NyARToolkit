@@ -40,10 +40,34 @@ public class ContourPickup
 	//                                           0  1  2  3  4  5  6  7   0  1  2  3  4  5  6
 	protected final static int[] _getContour_xdir = { 0, 1, 1, 1, 0,-1,-1,-1 , 0, 1, 1, 1, 0,-1,-1};
 	protected final static int[] _getContour_ydir = {-1,-1, 0, 1, 1, 1, 0,-1 ,-1,-1, 0, 1, 1, 1, 0};
+	public int getContour(NyARBinRaster i_raster,int i_entry_x,int i_entry_y,int i_array_size,int[] o_coord_x,int[] o_coord_y) throws NyARException
+	{
+		return impl_getContour(i_raster,0,i_entry_x,i_entry_y,i_array_size,o_coord_x,o_coord_y);
+	}
+	/**
+	 * 
+	 * @param i_raster
+	 * @param i_th
+	 * 画像を２値化するための閾値。暗点<=i_th<明点となります。
+	 * @param i_entry_x
+	 * 輪郭の追跡開始点を指定します。
+	 * @param i_entry_y
+	 * @param i_array_size
+	 * @param o_coord_x
+	 * @param o_coord_y
+	 * @return
+	 * @throws NyARException
+	 */
+	public int getContour(NyARGrayscaleRaster i_raster,int i_th,int i_entry_x,int i_entry_y,int i_array_size,int[] o_coord_x,int[] o_coord_y) throws NyARException
+	{
+		return impl_getContour(i_raster,i_th,i_entry_x,i_entry_y,i_array_size,o_coord_x,o_coord_y);
+	}
 
 	/**
 	 * ラスタのエントリポイントから辿れる輪郭線を配列に返します。
 	 * @param i_raster
+	 * @param i_th
+	 * 暗点<=th<明点
 	 * @param i_entry_x
 	 * @param i_entry_y
 	 * @param i_array_size
@@ -53,7 +77,7 @@ public class ContourPickup
 	 * 輪郭線の長さを返します。
 	 * @throws NyARException
 	 */
-	public int getContour(NyARBinRaster i_raster,int i_entry_x,int i_entry_y,int i_array_size,int[] o_coord_x,int[] o_coord_y) throws NyARException
+	public int impl_getContour(INyARRaster i_raster,int i_th,int i_entry_x,int i_entry_y,int i_array_size,int[] o_coord_x,int[] o_coord_y) throws NyARException
 	{
 		final int[] xdir = _getContour_xdir;// static int xdir[8] = { 0, 1, 1, 1, 0,-1,-1,-1};
 		final int[] ydir = _getContour_ydir;// static int ydir[8] = {-1,-1, 0, 1, 1, 1, 0,-1};
@@ -77,36 +101,36 @@ public class ContourPickup
 			//4隅以外の境界接地の場合に、境界チェックを省略するとかね。
 			if(c>=1 && c<width-1 && r>=1 && r<height-1){
 				for(;;){//gotoのエミュレート用のfor文
-					//境界に接していないとき
-					if (i_buf[(r + ydir[dir])*width+(c + xdir[dir])] == 0) {
+					//境界に接していないとき(暗点判定)
+					if (i_buf[(r + ydir[dir])*width+(c + xdir[dir])] <= i_th) {
 						break;
 					}
 					dir++;
-					if (i_buf[(r + ydir[dir])*width+(c + xdir[dir])] == 0) {
+					if (i_buf[(r + ydir[dir])*width+(c + xdir[dir])] <= i_th) {
 						break;
 					}
 					dir++;
-					if (i_buf[(r + ydir[dir])*width+(c + xdir[dir])] == 0) {
+					if (i_buf[(r + ydir[dir])*width+(c + xdir[dir])] <= i_th) {
 						break;
 					}
 					dir++;
-					if (i_buf[(r + ydir[dir])*width+(c + xdir[dir])] == 0) {
+					if (i_buf[(r + ydir[dir])*width+(c + xdir[dir])] <= i_th) {
 						break;
 					}
 					dir++;
-					if (i_buf[(r + ydir[dir])*width+(c + xdir[dir])] == 0) {
+					if (i_buf[(r + ydir[dir])*width+(c + xdir[dir])] <= i_th) {
 						break;
 					}
 					dir++;
-					if (i_buf[(r + ydir[dir])*width+(c + xdir[dir])] == 0) {
+					if (i_buf[(r + ydir[dir])*width+(c + xdir[dir])] <= i_th) {
 						break;
 					}
 					dir++;
-					if (i_buf[(r + ydir[dir])*width+(c + xdir[dir])] == 0) {
+					if (i_buf[(r + ydir[dir])*width+(c + xdir[dir])] <= i_th) {
 						break;
 					}
 					dir++;
-					if (i_buf[(r + ydir[dir])*width+(c + xdir[dir])] == 0) {
+					if (i_buf[(r + ydir[dir])*width+(c + xdir[dir])] <= i_th) {
 						break;
 					}
 /*
@@ -128,7 +152,7 @@ public class ContourPickup
 					final int y=r + ydir[dir];
 					//境界チェック
 					if(x>=0 && x<width && y>=0 && y<height){
-						if (i_buf[(y)*width+(x)] == 0) {
+						if (i_buf[(y)*width+(x)] <= i_th) {
 							break;
 						}
 					}

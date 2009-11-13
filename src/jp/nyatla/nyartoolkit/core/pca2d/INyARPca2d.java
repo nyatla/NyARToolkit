@@ -38,16 +38,18 @@ public interface INyARPca2d
 {
 	/**
 	 * 通常のPCA
-	 * @param i_x
-	 * @param i_y
+	 * @param i_v1
+	 * @param i_v2
 	 * @param i_start
 	 * @param i_number_of_point
 	 * @param o_evec
+	 * 要素2の変数を指定してください。
 	 * @param o_ev
+	 * 要素2の変数を指定してください。
 	 * @param o_mean
 	 * @throws NyARException
 	 */
-	public void pca(double[] i_x,double[] i_y,int i_number_of_point,NyARDoubleMatrix22 o_evec, NyARDoublePoint2d o_ev,NyARDoublePoint2d o_mean) throws NyARException;
+	public void pca(double[] i_v1,double[] i_v2,int i_number_of_point,NyARDoubleMatrix22 o_evec, double[] o_ev,double[] o_mean) throws NyARException;
 	/**
 	 * カメラ歪み補正つきのPCA
 	 * @param i_x

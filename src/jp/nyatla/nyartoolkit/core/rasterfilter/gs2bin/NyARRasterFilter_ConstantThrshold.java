@@ -14,6 +14,11 @@ public class NyARRasterFilter_ConstantThrshold implements INyARRasterFilter_Gs2B
 		//初期化
 		this._threshold=i_initial_threshold;
 	}
+	/**
+	 * ２値化の閾値を設定する。
+	 * 暗点<=th<明点となります。
+	 * @throws NyARException
+	 */
 	public NyARRasterFilter_ConstantThrshold() throws NyARException
 	{
 		this._threshold=0;

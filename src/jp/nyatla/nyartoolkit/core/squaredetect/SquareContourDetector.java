@@ -51,8 +51,8 @@ public class SquareContourDetector
 	private final NyARVertexCounter __getSquareVertex_wv2 = new NyARVertexCounter();
 	private final INyARPca2d _pca;
 	private final NyARDoubleMatrix22 __getSquareLine_evec=new NyARDoubleMatrix22();
-	private final NyARDoublePoint2d __getSquareLine_mean=new NyARDoublePoint2d();
-	private final NyARDoublePoint2d __getSquareLine_ev=new NyARDoublePoint2d();	
+	private final double[] __getSquareLine_mean=new double[2];
+	private final double[] __getSquareLine_ev=new double[2];
 	private final NyARObserv2IdealMap _dist_factor;
 	public SquareContourDetector(NyARIntSize i_size,NyARCameraDistortionFactor i_distfactor_ref)
 	{
@@ -90,8 +90,8 @@ public class SquareContourDetector
 	{
 		final NyARLinear[] l_line = o_square.line;
 		final NyARDoubleMatrix22 evec=this.__getSquareLine_evec;
-		final NyARDoublePoint2d mean=this.__getSquareLine_mean;
-		final NyARDoublePoint2d ev=this.__getSquareLine_ev;
+		final double[] mean=this.__getSquareLine_mean;
+		final double[] ev=this.__getSquareLine_ev;
 	
 		
 		for (int i = 0; i < 4; i++) {
@@ -109,9 +109,9 @@ public class SquareContourDetector
 			//主成分分析する。
 			this._pca.pca(this._xpos,this._ypos,n,evec, ev,mean);
 			final NyARLinear l_line_i = l_line[i];
-			l_line_i.run = evec.m01;// line[i][0] = evec->m[1];
-			l_line_i.rise = -evec.m00;// line[i][1] = -evec->m[0];
-			l_line_i.intercept = -(l_line_i.run * mean.x + l_line_i.rise * mean.y);// line[i][2] = -(line[i][0]*mean->v[0] + line[i][1]*mean->v[1]);
+			l_line_i.dy = evec.m01;// line[i][0] = evec->m[1];
+			l_line_i.dx = -evec.m00;// line[i][1] = -evec->m[0];
+			l_line_i.c = -(l_line_i.dy * mean[0] + l_line_i.dx * mean[1]);// line[i][2] = -(line[i][0]*mean->v[0] + line[i][1]*mean->v[1]);
 		}
 
 		final NyARDoublePoint2d[] l_sqvertex = o_square.sqvertex;
@@ -119,12 +119,12 @@ public class SquareContourDetector
 		for (int i = 0; i < 4; i++) {
 			final NyARLinear l_line_i = l_line[i];
 			final NyARLinear l_line_2 = l_line[(i + 3) % 4];
-			final double w1 = l_line_2.run * l_line_i.rise - l_line_i.run * l_line_2.rise;
+			final double w1 = l_line_2.dy * l_line_i.dx - l_line_i.dy * l_line_2.dx;
 			if (w1 == 0.0) {
 				return false;
 			}
-			l_sqvertex[i].x = (l_line_2.rise * l_line_i.intercept - l_line_i.rise * l_line_2.intercept) / w1;
-			l_sqvertex[i].y = (l_line_i.run * l_line_2.intercept - l_line_2.run * l_line_i.intercept) / w1;
+			l_sqvertex[i].x = (l_line_2.dx * l_line_i.c - l_line_i.dx * l_line_2.c) / w1;
+			l_sqvertex[i].y = (l_line_i.dy * l_line_2.c - l_line_2.dy * l_line_i.c) / w1;
 			// 頂点インデクスから頂点座標を得て保存
 			l_imvertex[i].x = i_xcoord[i_mkvertex[i]];
 			l_imvertex[i].y = i_ycoord[i_mkvertex[i]];

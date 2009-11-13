@@ -53,7 +53,7 @@ public class NyARPca2d_MatrixPCA_O2 implements INyARPca2d
 	 * @param dv
 	 * @throws NyARException
 	 */
-	private static void PCA_QRM(NyARDoubleMatrix22 o_matrix, NyARDoublePoint2d dv) throws NyARException
+	private static void PCA_QRM(NyARDoubleMatrix22 o_matrix, double[] dv) throws NyARException
 	{
 		double w, t, s, x, y, c;
 		double ev1;
@@ -139,8 +139,8 @@ public class NyARPca2d_MatrixPCA_O2 implements INyARPca2d
 			o_matrix.m10 = mat10;		
 			o_matrix.m11 = mat11;
 		}
-		dv.x=dv_x;
-		dv.y=dv_y;
+		dv[0]=dv_x;
+		dv[1]=dv_y;
 		return;
 	}
 
@@ -151,7 +151,7 @@ public class NyARPca2d_MatrixPCA_O2 implements INyARPca2d
 	 * @param o_ev
 	 * @throws NyARException
 	 */
-	private void PCA_PCA(double[] i_x,double[] i_y,int i_number_of_data,NyARDoubleMatrix22 o_matrix, NyARDoublePoint2d o_ev,NyARDoublePoint2d o_mean) throws NyARException
+	private void PCA_PCA(double[] i_v1,double[] i_v2,int i_number_of_data,NyARDoubleMatrix22 o_matrix, double[] o_ev,double[] o_mean) throws NyARException
 	{
 		// double[] mean_array=mean.getArray();
 		// mean.zeroClear();
@@ -160,8 +160,8 @@ public class NyARPca2d_MatrixPCA_O2 implements INyARPca2d
 		double sx = 0;
 		double sy = 0;
 		for (int i = 0; i < i_number_of_data; i++) {
-			sx += i_x[i];
-			sy += i_y[i];
+			sx += i_v1[i];
+			sy += i_v2[i];
 		}
 		sx = sx / i_number_of_data;
 		sy = sy / i_number_of_data;
@@ -171,8 +171,8 @@ public class NyARPca2d_MatrixPCA_O2 implements INyARPca2d
 		double w00, w11, w10;
 		w00 = w11 = w10 = 0.0;// *out = 0.0;
 		for (int i = 0; i < i_number_of_data; i++) {
-			final double x = (i_x[i] - sx) / srow;
-			final double y = (i_y[i] - sy) / srow;
+			final double x = (i_v1[i] - sx) / srow;
+			final double y = (i_v2[i] - sy) / srow;
 			w00 += (x * x);// *out += *in1 * *in2;
 			w10 += (x * y);// *out += *in1 * *in2;
 			w11 += (y * y);// *out += *in1 * *in2;
@@ -184,30 +184,30 @@ public class NyARPca2d_MatrixPCA_O2 implements INyARPca2d
 		//PCA_PCAの処理
 		PCA_QRM(o_matrix, o_ev);
 		// m2 = o_output.m;// m2 = output->m;
-		if (o_ev.x < PCA_VZERO) {// if( ev->v[i] < VZERO ){
-			o_ev.x = 0.0;// ev->v[i] = 0.0;
+		if (o_ev[0] < PCA_VZERO) {// if( ev->v[i] < VZERO ){
+			o_ev[0] = 0.0;// ev->v[i] = 0.0;
 			o_matrix.m00 = 0.0;// *(m2++) = 0.0;
 			o_matrix.m01 = 0.0;// *(m2++) = 0.0;
 		}
 
-		if (o_ev.y < PCA_VZERO) {// if( ev->v[i] < VZERO ){
-			o_ev.y = 0.0;// ev->v[i] = 0.0;
+		if (o_ev[1] < PCA_VZERO) {// if( ev->v[i] < VZERO ){
+			o_ev[1] = 0.0;// ev->v[i] = 0.0;
 			o_matrix.m10 = 0.0;// *(m2++) = 0.0;
 			o_matrix.m11 = 0.0;// *(m2++) = 0.0;
 		}
-		o_mean.x=sx;
-		o_mean.y=sy;
+		o_mean[0]=sx;
+		o_mean[1]=sy;
 		// }
 		return;
 	}
-	public void pca(double[] i_x,double[] i_y,int i_number_of_point,NyARDoubleMatrix22 o_evec, NyARDoublePoint2d o_ev,NyARDoublePoint2d o_mean) throws NyARException
+	public void pca(double[] i_v1,double[] i_v2,int i_number_of_point,NyARDoubleMatrix22 o_evec, double[] o_ev,double[] o_mean) throws NyARException
 	{
-		PCA_PCA(i_x,i_y,i_number_of_point,o_evec, o_ev,o_mean);
+		PCA_PCA(i_v1,i_v2,i_number_of_point,o_evec, o_ev,o_mean);
 
-		final double sum = o_ev.x + o_ev.y;
+		final double sum = o_ev[0] + o_ev[1];
 		// For順変更禁止
-		o_ev.x /= sum;// ev->v[i] /= sum;
-		o_ev.y /= sum;// ev->v[i] /= sum;
+		o_ev[0] /= sum;// ev->v[i] /= sum;
+		o_ev[1] /= sum;// ev->v[i] /= sum;
 		return;	
 	}
 
