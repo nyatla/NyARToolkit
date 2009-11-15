@@ -67,10 +67,10 @@ final public class NyARObserv2IdealMap
 		o_point.y=this._mapy[idx];
 		return;
 	}
-	public void observ2IdealBatch(int[] i_x_coord, int[] i_y_coord,int i_start, int i_num, double[] o_x_coord,double[] o_y_coord)
+	public void observ2IdealBatch(int[] i_x_coord, int[] i_y_coord,int i_start, int i_num, double[] o_x_coord,double[] o_y_coord,int i_out_start_index)
 	{
 		int idx;
-		int ptr=0;
+		int ptr=i_out_start_index;
 		for (int j = 0; j < i_num; j++) {
 			idx=i_x_coord[i_start + j]+i_y_coord[i_start + j]*this._stride;
 			o_x_coord[ptr]=this._mapx[idx];

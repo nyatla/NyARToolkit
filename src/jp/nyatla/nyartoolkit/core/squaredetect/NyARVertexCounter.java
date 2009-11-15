@@ -46,13 +46,13 @@ final public class NyARVertexCounter
 
 	private int[] y_coord;
 
-	public boolean getVertex(int[] i_x_coord, int[] i_y_coord, int st, int ed, double i_thresh)
+	public boolean getVertex(int[] i_x_coord, int[] i_y_coord,int i_coord_len,int st, int ed, double i_thresh)
 	{
 		this.number_of_vertex = 0;
 		this.thresh = i_thresh;
 		this.x_coord = i_x_coord;
 		this.y_coord = i_y_coord;
-		return get_vertex(st, ed);
+		return get_vertex(st, ed,i_coord_len);
 	}
 
 	/**
@@ -65,7 +65,7 @@ final public class NyARVertexCounter
 	 * @param thresh
 	 * @return
 	 */
-	private boolean get_vertex(int st, int ed)
+	private boolean get_vertex(int st, int ed,int i_coord_len)
 	{
 		//メモ:座標値は65536を超えなければint32で扱って大丈夫なので変更。
 		//dmaxは4乗なのでやるとしてもint64じゃないとマズイ
@@ -76,15 +76,36 @@ final public class NyARVertexCounter
 		final int b = lx_coord[st] - lx_coord[ed];
 		final int c = lx_coord[ed] * ly_coord[st] - ly_coord[ed] * lx_coord[st];
 		double dmax = 0;
-		for (int i = st + 1; i < ed; i++) {
-			final double d = a * lx_coord[i] + b * ly_coord[i] + c;
-			if (d * d > dmax) {
-				dmax = d * d;
-				v1 = i;
+		if(st<ed){
+			//stとedが1区間
+			for (int i = st + 1; i < ed; i++) {
+				final double d = a * lx_coord[i] + b * ly_coord[i] + c;
+				if (d * d > dmax) {
+					dmax = d * d;
+					v1 = i;
+				}
+			}
+		}else{
+			//stとedが2区間
+			for (int i = st + 1; i < i_coord_len; i++) {
+				final double d = a * lx_coord[i] + b * ly_coord[i] + c;
+				if (d * d > dmax) {
+					dmax = d * d;
+					v1 = i;
+				}
+			}
+			for (int i = 0; i < ed; i++) {
+				final double d = a * lx_coord[i] + b * ly_coord[i] + c;
+				if (d * d > dmax) {
+					dmax = d * d;
+					v1 = i;
+				}
 			}
 		}
+
+		
 		if (dmax / (double)(a * a + b * b) > thresh) {
-			if (!get_vertex(st, v1)) {
+			if (!get_vertex(st, v1,i_coord_len)) {
 				return false;
 			}
 			if (number_of_vertex > 5) {
@@ -93,7 +114,7 @@ final public class NyARVertexCounter
 			vertex[number_of_vertex] = v1;// vertex[(*vnum)] = v1;
 			number_of_vertex++;// (*vnum)++;
 
-			if (!get_vertex(v1, ed)) {
+			if (!get_vertex(v1, ed,i_coord_len)) {
 				return false;
 			}
 		}

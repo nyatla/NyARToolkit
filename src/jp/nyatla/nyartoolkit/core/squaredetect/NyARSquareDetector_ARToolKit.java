@@ -78,8 +78,8 @@ public class NyARSquareDetector_ARToolKit implements INyARSquareDetector
 
 		// 輪郭バッファは頂点変換をするので、輪郭バッファの２倍取る。
 		this._max_coord = number_of_coord;
-		this._xcoord = new int[number_of_coord * 2];
-		this._ycoord = new int[number_of_coord * 2];
+		this._xcoord = new int[number_of_coord];
+		this._ycoord = new int[number_of_coord];
 		return;
 	}
 
@@ -158,12 +158,9 @@ public class NyARSquareDetector_ARToolKit implements INyARSquareDetector
 				// 輪郭が大きすぎる。
 				continue;
 			}
-			//輪郭分析用に正規化する。
-			final int vertex1 = SquareContourDetector.normalizeCoord(xcoord, ycoord, coord_num);
-
 			//ここから先が輪郭分析
 			NyARSquare square_ptr = o_square_stack.prePush();
-			if(!this._sqconvertor.coordToSquare(xcoord,ycoord,vertex1,coord_num,label_area,square_ptr)){
+			if(!this._sqconvertor.coordToSquare(xcoord,ycoord,coord_num,label_area,square_ptr)){
 				o_square_stack.pop();// 頂点の取得が出来なかったので破棄
 				continue;				
 			}

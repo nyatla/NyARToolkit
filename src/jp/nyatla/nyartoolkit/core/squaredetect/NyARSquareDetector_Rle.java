@@ -75,10 +75,10 @@ public class NyARSquareDetector_Rle implements INyARSquareDetector
 		// 輪郭の最大長は画面に映りうる最大の長方形サイズ。
 		int number_of_coord = (this._width + this._height) * 2;
 
-		// 輪郭バッファは頂点変換をするので、輪郭バッファの２倍取る。
+		// 輪郭バッファ
 		this._max_coord = number_of_coord;
-		this._xcoord = new int[number_of_coord * 2];
-		this._ycoord = new int[number_of_coord * 2];
+		this._xcoord = new int[number_of_coord];
+		this._ycoord = new int[number_of_coord];
 		return;
 	}
 
@@ -112,8 +112,8 @@ public class NyARSquareDetector_Rle implements INyARSquareDetector
 
 		final int xsize = this._width;
 		final int ysize = this._height;
-		final int[] xcoord = this._xcoord;
-		final int[] ycoord = this._ycoord;
+		int[] xcoord = this._xcoord;
+		int[] ycoord = this._ycoord;
 		final int coord_max = this._max_coord;
 
 
@@ -122,7 +122,7 @@ public class NyARSquareDetector_Rle implements INyARSquareDetector
 
 		for (int i=0; i < label_num; i++) {
 			final RleLabelFragmentInfoStack.RleLabelFragmentInfo label_pt=labels[i];
-			final int label_area = label_pt.area;
+			int label_area = label_pt.area;
 		
 			// クリップ領域が画面の枠に接していれば除外
 			if (label_pt.clip_l == 0 || label_pt.clip_r == xsize-1){
@@ -136,22 +136,23 @@ public class NyARSquareDetector_Rle implements INyARSquareDetector
 				// 重なっているようだ。
 				continue;
 			}
-			
+
 			// 輪郭を取得
-			final int coord_num = _cpickup.getContour(i_raster,label_pt.entry_x,label_pt.clip_t, coord_max, xcoord, ycoord);
+			int coord_num = _cpickup.getContour(i_raster,label_pt.entry_x,label_pt.clip_t, coord_max, xcoord, ycoord);
 			if (coord_num == coord_max) {
 				// 輪郭が大きすぎる。
 				continue;
 			}
-			//輪郭分析用に正規化する。
-			final int vertex1 = SquareContourDetector.normalizeCoord(xcoord, ycoord, coord_num);
+			
+			NyARSquare square_ptr = o_square_stack.prePush();
 
 			//ここから先が輪郭分析
-			NyARSquare square_ptr = o_square_stack.prePush();
-			if(!this._sqconvertor.coordToSquare(xcoord,ycoord,vertex1,coord_num,label_area,square_ptr)){
+			if(!this._sqconvertor.coordToSquare(xcoord,ycoord,coord_num,label_area,square_ptr)){
 				o_square_stack.pop();// 頂点の取得が出来なかったので破棄
 				continue;				
 			}
+					
+			
 			// 検出済の矩形の属したラベルを重なりチェックに追加する。
 			overlap.push(label_pt);
 		}
