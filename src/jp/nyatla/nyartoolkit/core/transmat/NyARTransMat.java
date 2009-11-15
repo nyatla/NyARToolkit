@@ -46,9 +46,9 @@ import jp.nyatla.nyartoolkit.core.types.matrix.*;
  */
 public class NyARTransMat implements INyARTransMat
 {
-	private final static double FIT_DIFF_THRESHOLD = 1.0;
+	private final static double FIT_DIFF_THRESHOLD_CONT_OPT = 1.0;
 	private final static double FIT_DIFF_THRESHOLD_CONT = 0.1;
-	private final static double FIT_DIFF_THRESHOLD_OPT = 0.01;
+	private final static double FIT_DIFF_THRESHOLD_OPT = 1.0;
 	
 
 	private final NyARDoublePoint2d _center=new NyARDoublePoint2d(0,0);
@@ -211,7 +211,7 @@ public class NyARTransMat implements INyARTransMat
 				this._mat_optimize.modifyMatrix(rot, trans, this._offset.vertex, vertex_2d, 4);
 				double err=errRate(rot,trans,this._offset.vertex, vertex_2d,4,vertex_3d);
 				//System.out.println("E:"+err);
-				if(min_err-err<FIT_DIFF_THRESHOLD){
+				if(min_err-err<FIT_DIFF_THRESHOLD_CONT_OPT){
 					//System.out.println("BREAK");
 					break;
 				}
