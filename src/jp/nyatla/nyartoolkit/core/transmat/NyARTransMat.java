@@ -45,12 +45,7 @@ import jp.nyatla.nyartoolkit.core.types.matrix.*;
  * 
  */
 public class NyARTransMat implements INyARTransMat
-{
-	private final static double FIT_DIFF_THRESHOLD_CONT_OPT = 1.0;
-	private final static double FIT_DIFF_THRESHOLD_CONT = 0.1;
-	private final static double FIT_DIFF_THRESHOLD_OPT = 1.0;
-	
-
+{	
 	private final NyARDoublePoint2d _center=new NyARDoublePoint2d(0,0);
 	private final NyARTransOffset _offset=new NyARTransOffset();
 	private NyARPerspectiveProjectionMatrix _projection_mat_ref;
@@ -120,6 +115,23 @@ public class NyARTransMat implements INyARTransMat
 	private final NyARDoublePoint3d[] __transMat_vertex_3d = NyARDoublePoint3d.createArray(4);
 	private final NyARLinear[] __transMat_linear_ref=new NyARLinear[4];
 	private final NyARDoublePoint3d __transMat_trans=new NyARDoublePoint3d();
+	
+	/**
+	 * 頂点情報を元に、エラー閾値を計算します。
+	 * @param i_vertex
+	 */
+	private double makeErrThreshold(NyARDoublePoint2d[] i_vertex)
+	{
+		double a,b,l1,l2;
+		a=i_vertex[0].x-i_vertex[2].x;
+		b=i_vertex[0].y-i_vertex[2].y;
+		l1=a*a+b*b;
+		a=i_vertex[1].x-i_vertex[3].x;
+		b=i_vertex[1].y-i_vertex[3].y;
+		l2=a*a+b*b;
+		return (Math.sqrt(l1>l2?l1:l2))/200;
+	}
+	
 	/**
 	 * double arGetTransMat( ARMarkerInfo *marker_info,double center[2], double width, double conv[3][4] )
 	 * 
@@ -136,6 +148,7 @@ public class NyARTransMat implements INyARTransMat
 		final NyARLinear[] linear_ref=__transMat_linear_ref;
 		final NyARDoublePoint3d trans=this.__transMat_trans;
 		
+		double err_threshold=makeErrThreshold(i_square.sqvertex);
 		//計算用に頂点情報を初期化（順番調整）
 		initVertexOrder(i_square, i_direction, sqvertex_ref,linear_ref);
 		
@@ -156,7 +169,7 @@ public class NyARTransMat implements INyARTransMat
 		this._transsolver.solveTransportVector(vertex_3d,trans);
 		
 		//計算結果の最適化(平行移動量と回転行列の最適化)
-		o_result_conv.error=this.optimize(this._rotmatrix, trans, this._transsolver,this._offset.vertex, vertex_2d);
+		o_result_conv.error=this.optimize(this._rotmatrix, trans, this._transsolver,this._offset.vertex, vertex_2d,err_threshold);
 		
 		// マトリクスの保存
 		this.updateMatrixValue(this._rotmatrix, this._offset.point, trans,o_result_conv);
@@ -178,7 +191,9 @@ public class NyARTransMat implements INyARTransMat
 			this.transMat(i_square, i_direction, i_width, o_result_conv);
 			return;
 		}
-
+		
+		//最適化計算の閾値を決定
+		double err_threshold=makeErrThreshold(i_square.sqvertex);
 		//計算用に頂点情報を初期化（順番調整）
 		initVertexOrder(i_square, i_direction, sqvertex_ref,linear_ref);
 
@@ -203,7 +218,7 @@ public class NyARTransMat implements INyARTransMat
 		double min_err=errRate(this._rotmatrix,trans, this._offset.vertex, vertex_2d,4,vertex_3d);
 		NyARDoubleMatrix33 rot=this.__rot;
 		//エラーレートが前回のエラー値より閾値分大きかったらアゲイン
-		if(min_err<o_result_conv.error+FIT_DIFF_THRESHOLD_CONT){
+		if(min_err<o_result_conv.error+err_threshold){
 			rot.setValue(this._rotmatrix);
 			//最適化してみる。
 			for (int i = 0;i<5; i++) {
@@ -211,7 +226,7 @@ public class NyARTransMat implements INyARTransMat
 				this._mat_optimize.modifyMatrix(rot, trans, this._offset.vertex, vertex_2d, 4);
 				double err=errRate(rot,trans,this._offset.vertex, vertex_2d,4,vertex_3d);
 				//System.out.println("E:"+err);
-				if(min_err-err<FIT_DIFF_THRESHOLD_CONT_OPT){
+				if(min_err-err<err_threshold/2){
 					//System.out.println("BREAK");
 					break;
 				}
@@ -229,14 +244,14 @@ public class NyARTransMat implements INyARTransMat
 			this._transsolver.solveTransportVector(vertex_3d,trans);
 			
 			//計算結果の最適化(平行移動量と回転行列の最適化)
-			min_err=this.optimize(this._rotmatrix, trans, this._transsolver,this._offset.vertex, vertex_2d);
+			min_err=this.optimize(this._rotmatrix, trans, this._transsolver,this._offset.vertex, vertex_2d,err_threshold);
 			this.updateMatrixValue(this._rotmatrix, this._offset.point, trans,o_result_conv);
 		}
 		o_result_conv.error=min_err;
 		return;
 	}
 	private NyARDoubleMatrix33 __rot=new NyARDoubleMatrix33();
-	private double optimize(NyARRotMatrix io_rotmat,NyARDoublePoint3d io_transvec,INyARTransportVectorSolver i_solver,NyARDoublePoint3d[] i_offset_3d,NyARDoublePoint2d[] i_2d_vertex) throws NyARException
+	private double optimize(NyARRotMatrix io_rotmat,NyARDoublePoint3d io_transvec,INyARTransportVectorSolver i_solver,NyARDoublePoint3d[] i_offset_3d,NyARDoublePoint2d[] i_2d_vertex,double i_err_threshold) throws NyARException
 	{
 		//System.out.println("START");
 		NyARDoublePoint3d[] vertex_3d=this.__transMat_vertex_3d;
@@ -249,7 +264,7 @@ public class NyARTransMat implements INyARTransMat
 			this._mat_optimize.modifyMatrix(rot, io_transvec, i_offset_3d, i_2d_vertex, 4);
 			double err=errRate(rot,io_transvec, i_offset_3d, i_2d_vertex,4,vertex_3d);
 			//System.out.println("E:"+err);
-			if(min_err-err<FIT_DIFF_THRESHOLD_OPT){
+			if(min_err-err<i_err_threshold){
 				//System.out.println("BREAK");
 				break;
 			}
