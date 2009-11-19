@@ -56,4 +56,21 @@ public class NyARLinear
 		this.c=i_source.c;
 		return;
 	}
+	/**
+	 * 2直線の交点を計算します。
+	 * @param l_line_i
+	 * @param l_line_2
+	 * @param o_point
+	 * @return
+	 */
+	public final static boolean crossPos(NyARLinear l_line_i,NyARLinear l_line_2,NyARDoublePoint2d o_point)
+	{
+		final double w1 = l_line_2.dy * l_line_i.dx - l_line_i.dy * l_line_2.dx;
+		if (w1 == 0.0) {
+			return false;
+		}
+		o_point.x = (l_line_2.dx * l_line_i.c - l_line_i.dx * l_line_2.c) / w1;
+		o_point.y = (l_line_i.dy * l_line_2.c - l_line_2.dy * l_line_i.c) / w1;
+		return true;
+	}	
 }

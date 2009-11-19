@@ -33,26 +33,27 @@ package jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRasterFilter_RgbToGs;
 import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
+
 /**
  * RGBラスタをGrayScaleに変換するフィルタを作成します。
- * このフィルタは、RGB値の平均値を、(R+G+B)/3で算出します。
+ * このフィルタは、RGB値の平均値を、(R*G*B)/(255*255)で算出します。
+ * 
+ * この値は、RGB成分の作る立方体の体積を0-255スケールにした値です。
  *
  */
-public class NyARRasterFilter_RgbAveAdd implements INyARRasterFilter_RgbToGs
+public class NyARRasterFilter_Rgb2Gs_RgbCube implements INyARRasterFilter_RgbToGs
 {
-	IdoThFilterImpl _do_filter_impl;
-	public NyARRasterFilter_RgbAveAdd(int i_raster_type) throws NyARException
+	private IdoFilterImpl _dofilterimpl;
+	public NyARRasterFilter_Rgb2Gs_RgbCube(int i_raster_type) throws NyARException
 	{
 		switch (i_raster_type) {
 		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24:
 		case INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24:
-			this._do_filter_impl=new doThFilterImpl_BYTE1D_B8G8R8_24();
-			break;
-		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8X8_32:
-			this._do_filter_impl=new doThFilterImpl_BYTE1D_B8G8R8X8_32();
+			this._dofilterimpl=new IdoFilterImpl_BYTE1D_B8G8R8_24();
 			break;
 		default:
 			throw new NyARException();
@@ -60,61 +61,37 @@ public class NyARRasterFilter_RgbAveAdd implements INyARRasterFilter_RgbToGs
 	}
 	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output) throws NyARException
 	{
-		INyARBufferReader in_buffer_reader=i_input.getBufferReader();	
-		INyARBufferReader out_buffer_reader=i_output.getBufferReader();	
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
-		this._do_filter_impl.doFilter(in_buffer_reader,out_buffer_reader,i_input.getSize());
-		return;
+		this._dofilterimpl.doFilter(i_input.getBufferReader(),i_output.getBufferReader(),i_input.getSize());
 	}
 	
-	/*
-	 * ここから各種ラスタ向けのフィルタ実装
-	 *
-	 */
-	interface IdoThFilterImpl
+	interface IdoFilterImpl
 	{
-		public void doFilter(INyARBufferReader i_input, INyARBufferReader i_output,NyARIntSize i_size);
+		public void doFilter(INyARBufferReader i_input, INyARBufferReader i_output,NyARIntSize i_size) throws NyARException;
 	}
-	class doThFilterImpl_BYTE1D_B8G8R8_24 implements IdoThFilterImpl
+	class IdoFilterImpl_BYTE1D_B8G8R8_24 implements IdoFilterImpl
 	{
-		public void doFilter(INyARBufferReader i_input, INyARBufferReader i_output,NyARIntSize i_size)
+		/**
+		 * This function is not optimized.
+		 */
+		public void doFilter(INyARBufferReader i_input, INyARBufferReader i_output,NyARIntSize i_size) throws NyARException
 		{
+			assert(		i_input.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24)
+					||	i_input.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24));
+			
 			int[] out_buf = (int[]) i_output.getBuffer();
 			byte[] in_buf = (byte[]) i_input.getBuffer();
-			
+
 			int bp = 0;
 			for (int y = 0; y < i_size.h; y++) {
 				for (int x = 0; x < i_size.w; x++) {
-					out_buf[y*i_size.w+x] = ((in_buf[bp] & 0xff) + (in_buf[bp + 1] & 0xff) + (in_buf[bp + 2] & 0xff)) / 3;
+					out_buf[y*i_size.w+x] = ((in_buf[bp] & 0xff) * (in_buf[bp + 1] & 0xff) * (in_buf[bp + 2] & 0xff)) >> 16;
 					bp += 3;
 				}
 			}
 			return;
-		}		
-	}
-	class doThFilterImpl_BYTE1D_B8G8R8X8_32 implements IdoThFilterImpl
-	{
-		public void doFilter(INyARBufferReader i_input, INyARBufferReader i_output,NyARIntSize i_size)
-		{
-			int[] out_buf = (int[]) i_output.getBuffer();
-			byte[] in_buf = (byte[]) i_input.getBuffer();
-
-			int bp = 0;
-			for (int y = 0; y < i_size.h; y++) {
-				for (int x = 0; x < i_size.w; x++) {
-					out_buf[y*i_size.w+x] = ((in_buf[bp] & 0xff) + (in_buf[bp + 1] & 0xff) + (in_buf[bp + 2] & 0xff)) / 3;
-					bp += 4;
-				}
-			}
 		}
 	}
 	
-	
-	
 }
-
-
-
-
-
 

@@ -53,7 +53,7 @@ public class NyARHistgram
 		this.total_of_data-=s;
 	}
 	/**
-	 * 指定したi_pos未満サンプルを０にします。
+	 * 指定したi_pos以上のサンプルを０にします。
 	 * @param i_pos
 	 */
 	public void highCut(int i_pos)

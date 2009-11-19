@@ -41,18 +41,19 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix22;
 
+
+
+
 public class SquareContourDetector
 {
-	private static final double VERTEX_FACTOR = 1.0;// 線検出のファクタ	
 	private final double[] _xpos;
 	private final double[] _ypos;	
-	private final int[] __detectMarker_mkvertex = new int[5];
-	private final NyARVertexCounter __getSquareVertex_wv1 = new NyARVertexCounter();
-	private final NyARVertexCounter __getSquareVertex_wv2 = new NyARVertexCounter();
+	private final int[] __detectMarker_mkvertex = new int[4];
 	private final INyARPca2d _pca;
 	private final NyARDoubleMatrix22 __getSquareLine_evec=new NyARDoubleMatrix22();
 	private final double[] __getSquareLine_mean=new double[2];
 	private final double[] __getSquareLine_ev=new double[2];
+	private final Coord2SquareVertexIndexes _coord2vertex=new Coord2SquareVertexIndexes();
 	private final NyARObserv2IdealMap _dist_factor;
 	public SquareContourDetector(NyARIntSize i_size,NyARCameraDistortionFactor i_distfactor_ref)
 	{
@@ -61,7 +62,7 @@ public class SquareContourDetector
 		this._dist_factor = new NyARObserv2IdealMap(i_distfactor_ref,i_size);
 
 
-		// 輪郭バッファは頂点変換をするので、輪郭バッファの２倍取る。
+		// 輪郭バッファ
 		this._pca=new NyARPca2d_MatrixPCA_O2();
 		this._xpos=new double[i_size.w+i_size.h];//最大辺長はthis._width+this._height
 		this._ypos=new double[i_size.w+i_size.h];//最大辺長はthis._width+this._height
@@ -72,9 +73,8 @@ public class SquareContourDetector
 	{
 
 		final int[] mkvertex = this.__detectMarker_mkvertex;
-		int vertex_1=getFarPoint(i_xcoord,i_ycoord,i_coord_num,0);
 		// 頂点情報を取得
-		if (!getSquareVertex(i_xcoord, i_ycoord, vertex_1, i_coord_num-1, i_label_area, mkvertex)) {
+		if (!this._coord2vertex.getVertexIndexes(i_xcoord, i_ycoord, i_coord_num, i_label_area, mkvertex)) {
 			// 頂点の取得が出来なかったので破棄
 			return false;
 		}
@@ -93,22 +93,25 @@ public class SquareContourDetector
 		final double[] mean=this.__getSquareLine_mean;
 		final double[] ev=this.__getSquareLine_ev;
 	
-		double w1;		
+		double w1;
 		for (int i = 0; i < 4; i++){
+			//頂点を取得
+			int ver1=i_mkvertex[i];
+			int ver2=i_mkvertex[(i+1)%4];
 			int n,st,ed;
 			//探索区間の決定
-			if(i_mkvertex[i + 1]>=i_mkvertex[i]){
+			if(ver2>=i_mkvertex[i]){
 				//頂点[i]から頂点[i+1]までの輪郭が、1区間にあるとき
-				w1 = (double) (i_mkvertex[i + 1] - i_mkvertex[i] + 1) * 0.05 + 0.5;
+				w1 = (double) (ver2 - ver1 + 1) * 0.05 + 0.5;
 				//探索区間の決定
-				st = (int) (i_mkvertex[i]+w1);
-				ed = (int) (i_mkvertex[i+1] - w1);
+				st = (int) (ver1+w1);
+				ed = (int) (ver2 - w1);
 			}else{
 				//頂点[i]から頂点[i+1]までの輪郭が、2区間に分かれているとき
-				w1 = (double) (i_mkvertex[i + 1]+i_cood_num-i_mkvertex[i]+1)%i_cood_num * 0.05 + 0.5;
+				w1 = (double) (ver2+i_cood_num-ver1+1)%i_cood_num * 0.05 + 0.5;
 				//探索区間の決定
-				st = (int) (i_mkvertex[i]+w1)%i_cood_num;
-				ed = (int) (i_mkvertex[i+1]+i_cood_num-w1)%i_cood_num;
+				st = (int) (ver1+w1)%i_cood_num;
+				ed = (int) (ver2+i_cood_num-w1)%i_cood_num;
 			}
 			//探索区間数を確認
 			if(st<=ed){
@@ -137,126 +140,14 @@ public class SquareContourDetector
 		final NyARDoublePoint2d[] l_sqvertex = o_square.sqvertex;
 		final NyARIntPoint2d[] l_imvertex = o_square.imvertex;
 		for (int i = 0; i < 4; i++) {
-			final NyARLinear l_line_i = l_line[i];
-			final NyARLinear l_line_2 = l_line[(i + 3) % 4];
-			w1 = l_line_2.dy * l_line_i.dx - l_line_i.dy * l_line_2.dx;
-			if (w1 == 0.0) {
+			//直線同士の交点計算
+			if(!NyARLinear.crossPos(l_line[i],l_line[(i + 3) % 4],l_sqvertex[i])){
 				return false;
 			}
-			l_sqvertex[i].x = (l_line_2.dx * l_line_i.c - l_line_i.dx * l_line_2.c) / w1;
-			l_sqvertex[i].y = (l_line_i.dy * l_line_2.c - l_line_2.dy * l_line_i.c) / w1;
 			// 頂点インデクスから頂点座標を得て保存
 			l_imvertex[i].x = i_xcoord[i_mkvertex[i]];
 			l_imvertex[i].y = i_ycoord[i_mkvertex[i]];
 		}
 		return true;
-	}	
-	
-
-	private boolean getSquareVertex(int[] i_x_coord, int[] i_y_coord, int i_vertex1_index, int i_coord_num, int i_area, int[] o_vertex)
-	{
-		final NyARVertexCounter wv1 = this.__getSquareVertex_wv1;
-		final NyARVertexCounter wv2 = this.__getSquareVertex_wv2;
-		int prev_vertex_index=(i_vertex1_index+i_coord_num)%i_coord_num;
-		int v1=getFarPoint(i_x_coord,i_y_coord,i_coord_num,i_vertex1_index);
-		final double thresh = (i_area / 0.75) * 0.01 * VERTEX_FACTOR;
-
-		o_vertex[0] = i_vertex1_index;
-
-		if (!wv1.getVertex(i_x_coord, i_y_coord,i_coord_num, i_vertex1_index, v1, thresh)) {
-			return false;
-		}
-		if (!wv2.getVertex(i_x_coord, i_y_coord,i_coord_num, v1,prev_vertex_index, thresh)) {
-			return false;
-		}
-
-		int v2;
-		if (wv1.number_of_vertex == 1 && wv2.number_of_vertex == 1) {// if(wvnum1 == 1 && wvnum2== 1) {
-			o_vertex[1] = wv1.vertex[0];
-			o_vertex[2] = v1;
-			o_vertex[3] = wv2.vertex[0];
-		} else if (wv1.number_of_vertex > 1 && wv2.number_of_vertex == 0) {// }else if( wvnum1 > 1 && wvnum2== 0) {
-			//頂点位置を、起点から対角点の間の1/2にあると予想して、検索する。
-			if(v1>=i_vertex1_index){
-				v2 = (v1-i_vertex1_index)/2+i_vertex1_index;
-			}else{
-				v2 = ((v1+i_coord_num-i_vertex1_index)/2+i_vertex1_index)%i_coord_num;
-			}
-			if (!wv1.getVertex(i_x_coord, i_y_coord,i_coord_num, i_vertex1_index, v2, thresh)) {
-				return false;
-			}
-			if (!wv2.getVertex(i_x_coord, i_y_coord,i_coord_num, v2, v1, thresh)) {
-				return false;
-			}
-			if (wv1.number_of_vertex == 1 && wv2.number_of_vertex == 1) {
-				o_vertex[1] = wv1.vertex[0];
-				o_vertex[2] = wv2.vertex[0];
-				o_vertex[3] = v1;
-			} else {
-				return false;
-			}
-		} else if (wv1.number_of_vertex == 0 && wv2.number_of_vertex > 1) {
-			//v2 = (v1+ end_of_coord)/2;
-			if(v1<=prev_vertex_index){
-				v2 = (v1+prev_vertex_index)/2;
-			}else{
-				v2 = ((v1+i_coord_num+prev_vertex_index)/2)%i_coord_num;
-				
-			}
-			if (!wv1.getVertex(i_x_coord, i_y_coord,i_coord_num, v1, v2, thresh)) {
-				return false;
-			}
-			if (!wv2.getVertex(i_x_coord, i_y_coord,i_coord_num, v2, prev_vertex_index, thresh)) {
-				return false;
-			}
-			if (wv1.number_of_vertex == 1 && wv2.number_of_vertex == 1) {
-				o_vertex[1] = v1;
-				o_vertex[2] = wv1.vertex[0];
-				o_vertex[3] = wv2.vertex[0];
-			} else {
-				
-				return false;
-			}
-		} else {
-			return false;
-		}
-		o_vertex[4] = prev_vertex_index;
-		return true;
-	}
-
-	/**
-	 * i_pointの輪郭座標から、最も遠方にある輪郭座標のインデクスを探します。
-	 * @param i_xcoord
-	 * @param i_ycoord
-	 * @param i_coord_num
-	 * @return
-	 */
-	private static int getFarPoint(int[] i_coord_x, int[] i_coord_y,int i_coord_num,int i_point)
-	{
-		//
-		final int sx = i_coord_x[i_point];
-		final int sy = i_coord_y[i_point];
-		int d = 0;
-		int w, x, y;
-		int ret = 0;
-		for (int i = i_point+1; i < i_coord_num; i++) {
-			x = i_coord_x[i] - sx;
-			y = i_coord_y[i] - sy;
-			w = x * x + y * y;
-			if (w > d) {
-				d = w;
-				ret = i;
-			}
-		}
-		for (int i = 0; i < i_point; i++) {
-			x = i_coord_x[i] - sx;
-			y = i_coord_y[i] - sy;
-			w = x * x + y * y;
-			if (w > d) {
-				d = w;
-				ret = i;
-			}
-		}		
-		return ret;
 	}	
 }

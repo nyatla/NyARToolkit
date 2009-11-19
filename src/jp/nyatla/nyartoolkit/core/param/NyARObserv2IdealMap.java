@@ -32,14 +32,17 @@ package jp.nyatla.nyartoolkit.core.param;
 
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.*;
+
 /**
- * 歪み成分マップを使用するINyARCameraDistortionFactor
+ * 歪み矯正した座標系を格納したクラスです。
+ * ２次元ラスタを１次元配列で表現します。
+ *
  */
-final public class NyARObserv2IdealMap
+public class NyARObserv2IdealMap
 {
-	private int _stride;
-	private double[] _mapx;
-	private double[] _mapy;
+	protected int _stride;
+	protected double[] _mapx;
+	protected double[] _mapy;
 	public NyARObserv2IdealMap(NyARCameraDistortionFactor i_distfactor,NyARIntSize i_screen_size)
 	{
 		NyARDoublePoint2d opoint=new NyARDoublePoint2d();
@@ -60,9 +63,9 @@ final public class NyARObserv2IdealMap
 		}
 		return;
 	}
-	public void observ2Ideal(double ix, double iy, NyARDoublePoint2d o_point)
+	public void observ2Ideal(int ix, int iy, NyARDoublePoint2d o_point)
 	{
-		int idx=(int)ix+(int)iy*this._stride;
+		int idx=ix+iy*this._stride;
 		o_point.x=this._mapx[idx];
 		o_point.y=this._mapy[idx];
 		return;
@@ -71,10 +74,13 @@ final public class NyARObserv2IdealMap
 	{
 		int idx;
 		int ptr=i_out_start_index;
-		for (int j = 0; j < i_num; j++) {
-			idx=i_x_coord[i_start + j]+i_y_coord[i_start + j]*this._stride;
-			o_x_coord[ptr]=this._mapx[idx];
-			o_y_coord[ptr]=this._mapy[idx];
+		final double[] mapx=this._mapx;
+		final double[] mapy=this._mapy;
+		final int stride=this._stride;
+		for (int j = 0; j < i_num; j++){
+			idx=i_x_coord[i_start + j]+i_y_coord[i_start + j]*stride;
+			o_x_coord[ptr]=mapx[idx];
+			o_y_coord[ptr]=mapy[idx];
 			ptr++;
 		}
 		return;
