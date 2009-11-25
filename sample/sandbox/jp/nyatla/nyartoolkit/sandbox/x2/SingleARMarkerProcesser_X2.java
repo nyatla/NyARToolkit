@@ -26,16 +26,18 @@ package jp.nyatla.nyartoolkit.sandbox.x2;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.*;
+import jp.nyatla.nyartoolkit.core.analyzer.threshold.NyARRasterThresholdAnalyzerBuilder_Threshold;
 import jp.nyatla.nyartoolkit.core.match.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.pickup.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
+import jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin.*;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilterBuilder_RgbToBin;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilter_ARToolkitThreshold;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.*;
-import jp.nyatla.nyartoolkit.core2.rasteranalyzer.threshold.NyARRasterThresholdAnalyzer_SlidePTile;
 
 /**
  * このクラスは、同時に１個のマーカを処理することのできる、アプリケーションプロセッサです。
@@ -95,7 +97,7 @@ public abstract class SingleARMarkerProcesser_X2
 	protected int _current_arcode_index = -1;
 
 	private NyARMatchPattDeviationColorData _deviation_data;
-	private NyARRasterThresholdAnalyzer_SlidePTile _threshold_detect;
+	private NyARRasterThresholdAnalyzerBuilder_Threshold _threshold_detect;
 	
 	protected SingleARMarkerProcesser_X2()
 	{
@@ -116,7 +118,7 @@ public abstract class SingleARMarkerProcesser_X2
 
 		// ２値画像バッファを作る
 		this._bin_raster = new NyARBinRaster(scr_size.w, scr_size.h);
-		this._threshold_detect=new NyARRasterThresholdAnalyzer_SlidePTile(15,i_raster_type,4);
+		this._threshold_detect=new NyARRasterThresholdAnalyzerBuilder_Threshold(15,i_raster_type,4);
 		return;
 	}
 

@@ -35,8 +35,6 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 import jp.nyatla.nyartoolkit.core.pca2d.*;
-import jp.nyatla.nyartoolkit.core2.types.NyARI64Point2d;
-import jp.nyatla.nyartoolkit.core2.types.matrix.NyARI64Matrix22;
 /**
  * 64bit(小数部16bit)の固定小数点を利用したPCA関数
  *

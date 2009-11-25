@@ -34,9 +34,10 @@ package jp.nyatla.nyartoolkit.sandbox.x2;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARMat;
 import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.types.matrix.*;
 import jp.nyatla.nyartoolkit.core.param.*;
-import jp.nyatla.nyartoolkit.core2.types.matrix.*;
-import jp.nyatla.nyartoolkit.core2.types.*;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARFixedFloat16Matrix33;
+import jp.nyatla.nyartoolkit.core.types.NyARFixedFloat16Point2d;
 
 public class NyARFixedFloatRotVector
 {
@@ -94,9 +95,9 @@ public class NyARFixedFloatRotVector
     {
         //1行目
         NyARPerspectiveProjectionMatrix cmat = this._projection_mat_ref;
-        final double w1 = i_linear1.run * i_linear2.rise - i_linear2.run * i_linear1.rise;
-        final double w2 = i_linear1.rise * i_linear2.intercept - i_linear2.rise * i_linear1.intercept;
-        final double w3 = i_linear1.intercept * i_linear2.run - i_linear2.intercept * i_linear1.run;
+        final double w1 = i_linear1.dy * i_linear2.dx - i_linear2.dy * i_linear1.dx;
+        final double w2 = i_linear1.dx * i_linear2.c - i_linear2.dx * i_linear1.c;
+        final double w3 = i_linear1.c * i_linear2.dy - i_linear2.c * i_linear1.dy;
 
         final double m0 = w1 * (cmat.m01 * cmat.m12 - cmat.m02 * cmat.m11) + w2 * cmat.m11 - w3 * cmat.m01;//w1 * (cpara[0 * 4 + 1] * cpara[1 * 4 + 2] - cpara[0 * 4 + 2] * cpara[1 * 4 + 1]) + w2 * cpara[1 * 4 + 1] - w3 * cpara[0 * 4 + 1];
         final double m1 = -w1 * cmat.m00 * cmat.m12 + w3 * cmat.m00;//-w1 * cpara[0 * 4 + 0] * cpara[1 * 4 + 2] + w3 * cpara[0 * 4 + 0];

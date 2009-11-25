@@ -36,7 +36,8 @@ import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core2.types.*;
+import jp.nyatla.nyartoolkit.core.types.NyARFixedFloat16Point2d;
+import jp.nyatla.nyartoolkit.core.types.NyARFixedFloat16Point3d;
 
 
 /**

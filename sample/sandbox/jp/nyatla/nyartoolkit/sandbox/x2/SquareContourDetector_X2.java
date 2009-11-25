@@ -3,13 +3,13 @@ package jp.nyatla.nyartoolkit.sandbox.x2;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
+import jp.nyatla.nyartoolkit.core.types.NyARI64Linear;
+import jp.nyatla.nyartoolkit.core.types.NyARI64Point2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARI64Matrix22;
 import jp.nyatla.nyartoolkit.core.squaredetect.*;
-import jp.nyatla.nyartoolkit.core2.types.NyARI64Linear;
-import jp.nyatla.nyartoolkit.core2.types.NyARI64Point2d;
-import jp.nyatla.nyartoolkit.core2.types.matrix.NyARI64Matrix22;
 
 public class SquareContourDetector_X2
 {
@@ -97,9 +97,9 @@ public class SquareContourDetector_X2
 			// 頂点インデクスから頂点座標を得て保存
 			l_imvertex[i].x = i_xcoord[i_mkvertex[i]];
 			l_imvertex[i].y = i_ycoord[i_mkvertex[i]];
-			l_line[i].run=(double)l_line_i.run/65536.0;
-			l_line[i].rise=(double)l_line_i.rise/65536.0;
-			l_line[i].intercept=(double)l_line_i.intercept/65536.0;
+			l_line[i].dy=(double)l_line_i.run/65536.0;
+			l_line[i].dx=(double)l_line_i.rise/65536.0;
+			l_line[i].c=(double)l_line_i.intercept/65536.0;
 		}
 		return true;
 	}	

@@ -34,8 +34,8 @@ package jp.nyatla.nyartoolkit.sandbox.x2;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.*;
-import jp.nyatla.nyartoolkit.core2.types.NyARFixedFloat16Point2d;
-import jp.nyatla.nyartoolkit.core2.types.NyARFixedFloat16Point3d;
+import jp.nyatla.nyartoolkit.core.types.NyARFixedFloat16Point2d;
+import jp.nyatla.nyartoolkit.core.types.NyARFixedFloat16Point3d;
 
 /**
  * 基本姿勢と実画像を一致するように、角度を微調整→平行移動量を再計算

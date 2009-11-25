@@ -175,12 +175,12 @@ public class NyARQrCodeSymbolBinder
 		for (int i = 0; i < 4; i++) {
 			final NyARLinear l_line_i = l_line[i];
 			final NyARLinear l_line_2 = l_line[(i + 3) % 4];
-			final double w1 = l_line_2.run * l_line_i.rise - l_line_i.run * l_line_2.rise;
+			final double w1 = l_line_2.dy * l_line_i.dx - l_line_i.dy * l_line_2.dx;
 			if (w1 == 0.0) {
 				return;
 			}
-			l_sqvertex[i].x = (l_line_2.rise * l_line_i.intercept - l_line_i.rise * l_line_2.intercept) / w1;
-			l_sqvertex[i].y = (l_line_i.run * l_line_2.intercept - l_line_2.run * l_line_i.intercept) / w1;
+			l_sqvertex[i].x = (l_line_2.dx * l_line_i.c - l_line_i.dx * l_line_2.c) / w1;
+			l_sqvertex[i].y = (l_line_i.dy * l_line_2.c - l_line_2.dy * l_line_i.c) / w1;
 			_distfactor.ideal2Observ(l_sqvertex[i], ideal_vertex);
 			//Ideal→observに変換して、画面上の座標とする。
 			imvertex_ptr[i].x=(int)l_sqvertex[i].x;

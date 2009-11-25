@@ -40,6 +40,8 @@ import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+import jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin.*;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilterBuilder_RgbToBin;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilter_ARToolkitThreshold;
 import jp.nyatla.nyartoolkit.core.squaredetect.INyARSquareDetector;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
@@ -101,7 +103,7 @@ public class NyARSingleDetectMarker_X2
 		this._bin_raster=new NyARBinRaster(scr_size.w,scr_size.h);
 		//差分データインスタンスの作成
 		this._deviation_data=new NyARMatchPattDeviationColorData(cw,ch);
-		this._tobin_filter=new NyARRasterFilter_ARToolkitThreshold(100,i_raster_type);
+		this._tobin_filter=new NyARRasterFilterBuilder_RgbToBin(100,i_raster_type);
 		return;
 	}
 

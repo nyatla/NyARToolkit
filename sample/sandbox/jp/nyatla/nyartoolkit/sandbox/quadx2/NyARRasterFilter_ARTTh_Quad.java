@@ -36,13 +36,13 @@ import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
+import jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin.*;
 
 /**
  * 1/4のサイズの画像に変換しながら閾値判定する関数
  * 
  */
-public class NyARRasterFilter_ARTTh_Quad implements INyARRasterFilter_RgbToBin
+public class NyARRasterFilter_ARTTh_Quad implements INyARRasterFilter_Bin
 {
 	private int _threshold;
 
