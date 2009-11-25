@@ -30,6 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.raster;
 
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.rasterreader.NyARBufferReader;
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -91,5 +92,14 @@ public final class NyARGrayscaleRaster extends NyARRaster_BasicClass
 		int f=buf[idx_p1+1];
 		o_v.x=buf[idx_0+1]-buf[idx_0-1]+(d-b+f-h)/2;
 		o_v.y=buf[idx_p1]-buf[idx_m1]+(f-d+h-b)/2;
+	}
+	
+	public void copyFrom(NyARGrayscaleRaster i_input) throws NyARException
+	{
+		int[] out_buf = (int[])this._ref_buf;
+		int[] in_buf = (int[]) i_input._ref_buf;
+		System.arraycopy(in_buf,0,out_buf,0,this._size.h*this._size.w);
+		return;
 	}	
+	
 }

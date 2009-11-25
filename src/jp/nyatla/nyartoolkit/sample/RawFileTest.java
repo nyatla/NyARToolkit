@@ -79,7 +79,7 @@ public class RawFileTest
 
 		// １パターンのみを追跡するクラスを作成
 		NyARSingleDetectMarker ar = new NyARSingleDetectMarker(
-				ap, code, 80.0,ra.getBufferReader().getBufferType());
+				ap, code, 80.0,ra.getBufferReader().getBufferType(),NyARSingleDetectMarker.PF_NYARTOOLKIT);
 		NyARTransMatResult result_mat = new NyARTransMatResult();
 		ar.setContinueMode(false);
 		ar.detectMarkerLite(ra, 100);

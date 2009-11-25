@@ -1,7 +1,7 @@
 package jp.nyatla.nyartoolkit.core.types;
 
 /**
- * 順データ型
+ * ヒストグラムを格納するクラスです。
  */
 public class NyARHistgram
 {
@@ -64,6 +64,44 @@ public class NyARHistgram
 			this.data[i]=0;
 		}
 		this.total_of_data-=s;
+	}
+	/**
+	 * 最小の値が格納されているサンプル番号を返します。
+	 */
+	public int getMinSample()
+	{
+		int[] data=this.data;
+		int ret=this.length-1;
+		int min=data[ret];
+		for(int i=this.length-2;i>=0;i--)
+		{
+			if(data[i]<min){
+				min=data[i];
+				ret=i;
+			}
+		}
+		return ret;
+	}
+	/**
+	 * サンプルの中で最小の値を返します。
+	 * @return
+	 */
+	public int getMinData()
+	{
+		return this.data[this.getMinSample()];
+	}
+	/**
+	 * 平均値を計算します。
+	 * @return
+	 */
+	public int getAverage()
+	{
+		long sum=0;
+		for(int i=this.length-1;i>=0;i--)
+		{
+			sum+=this.data[i]*i;
+		}
+		return (int)(sum/this.total_of_data);
 	}
 	
 }
