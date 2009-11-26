@@ -35,6 +35,7 @@ import jp.nyatla.nyartoolkit.core2.rasterfilter.gs2bin.*;
 import jp.nyatla.nyartoolkit.core2.rasterfilter.rgb2gs.NyARRasterFilter_RgbAve;
 import jp.nyatla.utils.NyObjectStack;
 import jp.nyatla.utils.j2se.LabelingBufferdImage;
+import jp.nyatla.nyartoolkit.core.rasterfilter.bin.INyARRasterFilter_RgbToGs;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.INyARSquareDetector;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;

@@ -38,15 +38,20 @@ import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.detector.*;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
+/**
+ * 2種類の最適化アルゴリズムを比較するテストプログラム
+ *
+ */
+
 class Program implements JmfCaptureListener
 {
-	private OptimizeView _view1;
-	private OptimizeView _view2;
+	private OptimizeCompareTest _view1;
+	private OptimizeCompareTest _view2;
 	public Object _sync_object=new Object();	
 	public NyARParam _ar_param;
 	public NyARCode _ar_code;
-	private final static int SCREEN_X = 640;
-	private final static int SCREEN_Y = 480;
+	private final static int SCREEN_X = 320;
+	private final static int SCREEN_Y = 240;
 	private JmfCaptureDevice _capture;
 	public GLNyARRaster_RGB _cap_image;
 	public Program(NyARParam i_param, NyARCode i_ar_code) throws NyARException
@@ -62,8 +67,8 @@ class Program implements JmfCaptureListener
 		this._capture.setOnCapture(this);
 		// GL対応のRGBラスタオブジェクト
 		this._cap_image = new GLNyARRaster_RGB(i_param, this._capture.getCaptureFormat());	
-		this._view1=new OptimizeView(this,NyARSingleDetectMarker.PF_NYARTOOLKIT);
-		this._view2=new OptimizeView(this,NyARSingleDetectMarker.PF_NYARTOOLKIT_ARTOOLKIT_FITTING);
+		this._view1=new OptimizeCompareTest(this,NyARSingleDetectMarker.PF_NYARTOOLKIT);
+		this._view2=new OptimizeCompareTest(this,NyARSingleDetectMarker.PF_NYARTOOLKIT_ARTOOLKIT_FITTING);
 		this._capture.start();
 		return;
 	}
@@ -125,11 +130,11 @@ class Program implements JmfCaptureListener
  * simpleLiteと同じようなテストプログラム 出来る限りARToolKitのサンプルと似せて作ってあります。 最も一致する"Hiro"マーカーを一つ選択して、その上に立方体を表示します。
  * 
  */
-public class OptimizeView implements GLEventListener
+public class OptimizeCompareTest implements GLEventListener
 {
-	private final static int SCREEN_X = 640;
+	private final static int SCREEN_X = 320;
 
-	private final static int SCREEN_Y = 480;
+	private final static int SCREEN_Y = 240;
 
 	private Animator _animator;
 	
@@ -148,7 +153,7 @@ public class OptimizeView implements GLEventListener
 	private double[] _camera_projection = new double[16];
 
 
-	public OptimizeView(Program i_program,int i_pf) throws NyARException
+	public OptimizeCompareTest(Program i_program,int i_pf) throws NyARException
 	{
 		this._parent=i_program;
 		this._ar_param = i_program._ar_param;
@@ -157,7 +162,7 @@ public class OptimizeView implements GLEventListener
 
 		// NyARToolkitの準備
 		this._nya = new NyARSingleDetectMarker(this._ar_param, i_program._ar_code, 80.0,i_program._cap_image.getBufferReader().getBufferType(),i_pf);
-		this._nya.setContinueMode(false);// ここをtrueにすると、transMatContinueモード（History計算）になります。
+		this._nya.setContinueMode(true);// ここをtrueにすると、transMatContinueモード（History計算）になります。
 		
 		// 3Dを描画するコンポーネント
 		GLCanvas canvas = new GLCanvas();

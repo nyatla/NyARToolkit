@@ -1,6 +1,12 @@
 /* 
- * PROJECT: NyARToolkit(Extension)
+ * PROJECT: NyARToolkit
  * --------------------------------------------------------------------------------
+ * This work is based on the original ARToolKit developed by
+ *   Hirokazu Kato
+ *   Mark Billinghurst
+ *   HITLab, University of Washington, Seattle
+ * http://www.hitl.washington.edu/artoolkit/
+ *
  * The NyARToolkit is Java edition ARToolKit class library.
  * Copyright (C)2008-2009 Ryo Iizuka
  *
@@ -22,12 +28,26 @@
  *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.rasterfilter;
+package jp.nyatla.nyartoolkit.core.raster;
 
-import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
+import jp.nyatla.nyartoolkit.core.rasterreader.NyARBufferReader;
+import jp.nyatla.nyartoolkit.core.types.*;
 
-public interface INyARRasterFilter
+public final class NyARHsvRaster extends NyARRaster_BasicClass
 {
-	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException;
+
+	protected int[] _ref_buf;
+	private INyARBufferReader _buffer_reader;
+	
+	public NyARHsvRaster(int i_width, int i_height)
+	{
+		super(new NyARIntSize(i_width,i_height));
+		this._ref_buf = new int[i_height*i_width];
+		this._buffer_reader=new NyARBufferReader(this._ref_buf,INyARBufferReader.BUFFERFORMAT_INT1D_X7H9S8V8_32);
+	}
+	public INyARBufferReader getBufferReader()
+	{
+		return this._buffer_reader;
+	}
 }

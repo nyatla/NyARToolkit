@@ -4,7 +4,6 @@
  */
 package jp.nyatla.nyartoolkit.dev;
 
-import java.awt.Frame;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -14,7 +13,8 @@ import java.io.FileInputStream;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_BGRA;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
+import jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin.*;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilterBuilder_RgbToBin;
 
 
 import jp.nyatla.utils.j2se.*;
@@ -33,7 +33,7 @@ public class LabelingTest extends Frame
 		fs.read(buf);
 		NyARRgbRaster_BGRA ra = NyARRgbRaster_BGRA.wrap(buf, W, H);
 		// 二値化
-		NyARRasterFilter_ARToolkitThreshold filter = new NyARRasterFilter_ARToolkitThreshold(110, ra.getBufferReader().getBufferType());
+		NyARRasterFilterBuilder_RgbToBin filter = new NyARRasterFilterBuilder_RgbToBin(110, ra.getBufferReader().getBufferType());
 		NyARBinRaster bin = new NyARBinRaster(W,240);
 		filter.doFilter(ra, bin);
 		int[] t = (int[]) bin.getBufferReader().getBuffer();

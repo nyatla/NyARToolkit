@@ -27,7 +27,8 @@ import jp.nyatla.nyartoolkit.core.pickup.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
+import jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin.*;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilterBuilder_RgbToBin;
 import jp.nyatla.utils.j2se.*;
 import jp.nyatla.nyartoolkit.nyidmarker.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.*;
@@ -111,7 +112,7 @@ public class PattPickupTest extends Frame implements JmfCaptureListener
 
 			{// ピックアップ画像の表示
 				// 矩形抽出
-				INyARRasterFilter_RgbToBin to_binfilter = new NyARRasterFilter_ARToolkitThreshold(110, i_raster.getBufferReader().getBufferType());
+				INyARRasterFilter_Bin to_binfilter = new NyARRasterFilterBuilder_RgbToBin(110, i_raster.getBufferReader().getBufferType());
 				to_binfilter.doFilter(i_raster, this._bin_raster);
 				if (this.detect.detectMarkerLite(i_raster, 100)) {
 
