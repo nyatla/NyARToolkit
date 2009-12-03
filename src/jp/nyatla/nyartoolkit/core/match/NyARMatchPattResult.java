@@ -29,12 +29,16 @@
  * 
  */
 package jp.nyatla.nyartoolkit.core.match;
+
+
+
 /**
  * [[Strage class]]
  *
  */
 public class NyARMatchPattResult
 {
+	public static final int DIRECTION_UNKNOWN=-1;
 	public double confidence;
 	public int direction;
 }

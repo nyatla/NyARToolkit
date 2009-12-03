@@ -8,7 +8,7 @@ public class NyARHistgram
 	/**
 	 * サンプリング値の格納変数
 	 */
-	public int[] data;
+	public final int[] data;
 	/**
 	 * 有効なサンプリング値の範囲。[0-data.length-1]
 	 */
@@ -17,6 +17,9 @@ public class NyARHistgram
 	 * 有効なサンプルの総数 data[i]
 	 */
 	public int total_of_data;
+	
+	
+	
 	public NyARHistgram(int i_length)
 	{
 		this.data=new int[i_length];

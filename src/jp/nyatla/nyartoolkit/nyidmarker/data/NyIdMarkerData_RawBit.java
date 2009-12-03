@@ -39,7 +39,7 @@ public class NyIdMarkerData_RawBit implements INyIdMarkerData
 			return false;
 		}
 		for(int i=s.length-1;i>=0;i--){
-			if(s.packet[i]!=s.packet[i]){
+			if(s.packet[i]!=this.packet[i]){
 				return false;
 			}
 		}

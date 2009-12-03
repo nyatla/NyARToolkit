@@ -35,11 +35,11 @@ import jp.nyatla.nyartoolkit.core.labeling.LabelOverlapChecker;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.*;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
-import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+import jp.nyatla.nyartoolkit.core.types.*;
+import java.util.*;
 
 
-
-public class NyARSquareDetector_Rle implements INyARSquareDetector
+public class NyARSquareContourDetector_Rle implements INyARSquareContourDetector
 {
 	private static final int AR_AREA_MAX = 100000;// #define AR_AREA_MAX 100000
 	private static final int AR_AREA_MIN = 70;// #define AR_AREA_MIN 70
@@ -49,9 +49,9 @@ public class NyARSquareDetector_Rle implements INyARSquareDetector
 	private final NyARLabeling_Rle _labeling;
 
 	private final LabelOverlapChecker<RleLabelFragmentInfoStack.RleLabelFragmentInfo> _overlap_checker = new LabelOverlapChecker<RleLabelFragmentInfoStack.RleLabelFragmentInfo>(32,RleLabelFragmentInfoStack.RleLabelFragmentInfo.class);
-	private final SquareContourDetector _sqconvertor;
 	private final ContourPickup _cpickup=new ContourPickup();
 	private final RleLabelFragmentInfoStack _stack;
+	private final Coord2SquareVertexIndexes _coord2vertex=new Coord2SquareVertexIndexes();
 	
 	private final int _max_coord;
 	private final int[] _xcoord;
@@ -61,14 +61,13 @@ public class NyARSquareDetector_Rle implements INyARSquareDetector
 	 * 
 	 * @param i_param
 	 */
-	public NyARSquareDetector_Rle(NyARCameraDistortionFactor i_dist_factor_ref,NyARIntSize i_size) throws NyARException
+	public NyARSquareContourDetector_Rle(NyARCameraDistortionFactor i_dist_factor_ref,NyARIntSize i_size) throws NyARException
 	{
 		this._width = i_size.w;
 		this._height = i_size.h;
 		//ラベリングのサイズを指定したいときはsetAreaRangeを使ってね。
 		this._labeling = new NyARLabeling_Rle(this._width,this._height);
 		this._labeling.setAreaRange(AR_AREA_MAX, AR_AREA_MIN);
-		this._sqconvertor=new SquareContourDetector(i_size,i_dist_factor_ref);
 		this._stack=new RleLabelFragmentInfoStack(i_size.w*i_size.h*2048/(320*240)+32);//検出可能な最大ラベル数
 		
 
@@ -82,23 +81,12 @@ public class NyARSquareDetector_Rle implements INyARSquareDetector
 		return;
 	}
 
-	/**
-	 * arDetectMarker2を基にした関数
-	 * この関数はNyARSquare要素のうち、directionを除くパラメータを取得して返します。
-	 * directionの確定は行いません。
-	 * @param i_raster
-	 * 解析する２値ラスタイメージを指定します。
-	 * @param o_square_stack
-	 * 抽出した正方形候補を格納するリスト
-	 * @throws NyARException
-	 */
-	public final void detectMarker(NyARBinRaster i_raster, NyARSquareStack o_square_stack) throws NyARException
+	private final int[] __detectMarker_mkvertex = new int[4];
+	
+	public void detectMarkerCB(NyARBinRaster i_raster, DetectMarkerCallback i_callback) throws NyARException
 	{
 		final RleLabelFragmentInfoStack flagment=this._stack;
 		final LabelOverlapChecker<RleLabelFragmentInfoStack.RleLabelFragmentInfo> overlap = this._overlap_checker;
-
-		// マーカーホルダをリセット
-		o_square_stack.clear();
 
 		// ラベル数が0ならここまで
 		final int label_num=this._labeling.labeling(i_raster, 0, i_raster.getHeight(), flagment);
@@ -115,6 +103,7 @@ public class NyARSquareDetector_Rle implements INyARSquareDetector
 		int[] xcoord = this._xcoord;
 		int[] ycoord = this._ycoord;
 		final int coord_max = this._max_coord;
+		final int[] mkvertex =this.__detectMarker_mkvertex;
 
 
 		//重なりチェッカの最大数を設定
@@ -136,25 +125,24 @@ public class NyARSquareDetector_Rle implements INyARSquareDetector
 				// 重なっているようだ。
 				continue;
 			}
-
-			// 輪郭を取得
+			
+			//輪郭を取得
 			int coord_num = _cpickup.getContour(i_raster,label_pt.entry_x,label_pt.clip_t, coord_max, xcoord, ycoord);
 			if (coord_num == coord_max) {
 				// 輪郭が大きすぎる。
 				continue;
 			}
-			
-			NyARSquare square_ptr = o_square_stack.prePush();
-
-			//ここから先が輪郭分析
-			if(!this._sqconvertor.coordToSquare(xcoord,ycoord,coord_num,label_area,square_ptr)){
-				o_square_stack.pop();// 頂点の取得が出来なかったので破棄
-				continue;				
+			//輪郭線をチェックして、矩形かどうかを判定。矩形ならばmkvertexに取得
+			if (!this._coord2vertex.getVertexIndexes(xcoord, ycoord,coord_num,label_area, mkvertex)) {
+				// 頂点の取得が出来なかった
+				continue;
 			}
-					
-			
+			//矩形を発見したことをコールバック関数で通知
+			i_callback.onSquareDetect(this,xcoord,ycoord,coord_num,mkvertex);
+
 			// 検出済の矩形の属したラベルを重なりチェックに追加する。
 			overlap.push(label_pt);
+		
 		}
 		return;
 	}

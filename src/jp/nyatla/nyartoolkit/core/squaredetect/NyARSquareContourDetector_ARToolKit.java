@@ -42,7 +42,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 
 
-public class NyARSquareDetector_ARToolKit implements INyARSquareDetector
+public class NyARSquareContourDetector_ARToolKit implements INyARSquareContourDetector
 {
 	private static final int AR_AREA_MAX = 100000;// #define AR_AREA_MAX 100000
 	private static final int AR_AREA_MIN = 70;// #define AR_AREA_MIN 70
@@ -54,23 +54,23 @@ public class NyARSquareDetector_ARToolKit implements INyARSquareDetector
 	private final NyARLabelingImage _limage;
 
 	private final LabelOverlapChecker<NyARLabelingLabel> _overlap_checker = new LabelOverlapChecker<NyARLabelingLabel>(32,NyARLabelingLabel.class);
-	private final SquareContourDetector _sqconvertor;
 	private final ContourPickup _cpickup=new ContourPickup();
+	private final Coord2SquareVertexIndexes _coord2vertex=new Coord2SquareVertexIndexes();
 	
 	private final int _max_coord;
 	private final int[] _xcoord;
 	private final int[] _ycoord;	
+	private final int[] __detectMarker_mkvertex = new int[4];
 	/**
 	 * 最大i_squre_max個のマーカーを検出するクラスを作成する。
 	 * 
 	 * @param i_param
 	 */
-	public NyARSquareDetector_ARToolKit(NyARCameraDistortionFactor i_dist_factor_ref,NyARIntSize i_size) throws NyARException
+	public NyARSquareContourDetector_ARToolKit(NyARCameraDistortionFactor i_dist_factor_ref,NyARIntSize i_size) throws NyARException
 	{
 		this._width = i_size.w;
 		this._height = i_size.h;
 		this._labeling = new NyARLabeling_ARToolKit();
-		this._sqconvertor=new SquareContourDetector(i_size,i_dist_factor_ref);
 		this._limage = new NyARLabelingImage(this._width, this._height);
 
 		// 輪郭の最大長は画面に映りうる最大の長方形サイズ。
@@ -93,16 +93,11 @@ public class NyARSquareDetector_ARToolKit implements INyARSquareDetector
 	 * 抽出した正方形候補を格納するリスト
 	 * @throws NyARException
 	 */
-	public final void detectMarker(NyARBinRaster i_raster, NyARSquareStack o_square_stack) throws NyARException
+	public final void detectMarkerCB(NyARBinRaster i_raster, DetectMarkerCallback i_callback) throws NyARException
 	{
 		final NyARLabelingImage limage = this._limage;
 
-		// 初期化
-
-		// マーカーホルダをリセット
-		o_square_stack.clear();
-
-		// ラベル数が0ならここまで(Labeling内部でソートするようにした。)
+		// ラベル数が0ならここまで
 		final int label_num = this._labeling.labeling(i_raster,this._limage);
 		if (label_num < 1) {
 			return;
@@ -122,17 +117,17 @@ public class NyARSquareDetector_ARToolKit implements INyARSquareDetector
 				break;
 			}
 		}
-
 		final int xsize = this._width;
 		final int ysize = this._height;
 		final int[] xcoord = this._xcoord;
 		final int[] ycoord = this._ycoord;
 		final int coord_max = this._max_coord;
+		final int[] mkvertex =this.__detectMarker_mkvertex;
+		
 		final LabelOverlapChecker<NyARLabelingLabel> overlap = this._overlap_checker;
 
 		//重なりチェッカの最大数を設定
 		overlap.setMaxLabels(label_num);
-
 		for (; i < label_num; i++) {
 			final NyARLabelingLabel label_pt = labels[i];
 			final int label_area = label_pt.area;
@@ -158,14 +153,17 @@ public class NyARSquareDetector_ARToolKit implements INyARSquareDetector
 				// 輪郭が大きすぎる。
 				continue;
 			}
-			//ここから先が輪郭分析
-			NyARSquare square_ptr = o_square_stack.prePush();
-			if(!this._sqconvertor.coordToSquare(xcoord,ycoord,coord_num,label_area,square_ptr)){
-				o_square_stack.pop();// 頂点の取得が出来なかったので破棄
-				continue;				
+			//輪郭線をチェックして、矩形かどうかを判定。矩形ならばmkvertexに取得
+			if (!this._coord2vertex.getVertexIndexes(xcoord, ycoord,coord_num,label_area, mkvertex)) {
+				// 頂点の取得が出来なかった
+				continue;
 			}
+			//矩形を発見したことをコールバック関数で通知
+			i_callback.onSquareDetect(this,xcoord,ycoord,coord_num,mkvertex);
+
 			// 検出済の矩形の属したラベルを重なりチェックに追加する。
 			overlap.push(label_pt);
+			
 		}
 		return;
 	}

@@ -62,7 +62,7 @@ public class NyARMatchPatt_Color_WITH_PCA extends NyARMatchPatt_Color_WITHOUT_PC
 		final int[] linput = i_patt.refData();
 		int sum;
 		double max = 0.0;
-		int res = NyARSquare.DIRECTION_UNKNOWN;
+		int res = NyARMatchPattResult.DIRECTION_UNKNOWN;
 /*		
 		NyARException.trap(
 			"NyARMatchPatt_Color_WITH_PCA\n"+

@@ -76,7 +76,7 @@ public class NyARMatchPatt_BlackWhite implements INyARMatchPatt
 		final int[] linput = i_patt.refData();
 		int sum;
 		double max = 0.0;
-		int res = NyARSquare.DIRECTION_UNKNOWN;
+		int res = NyARMatchPattResult.DIRECTION_UNKNOWN;
 		
 
 		for (int j = 0; j < 4; j++) {

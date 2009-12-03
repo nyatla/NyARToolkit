@@ -8,13 +8,13 @@ import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabeling_ARToolKit;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.squaredetect.ContourPickup;
-import jp.nyatla.nyartoolkit.core.squaredetect.INyARSquareDetector;
+import jp.nyatla.nyartoolkit.core.squaredetect.INyARSquareContourDetector;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareStack;
-import jp.nyatla.nyartoolkit.core.squaredetect.SquareContourDetector;
+import jp.nyatla.nyartoolkit.core.squaredetect.Coord2Linear;
 import jp.nyatla.nyartoolkit.core.types.*;
 
-public class NyARQrCodeDetector implements INyARSquareDetector
+public class NyARQrCodeDetector implements INyARSquareContourDetector
 {
 	private NyARQrCodeSymbolBinder _binder;
 
@@ -30,7 +30,7 @@ public class NyARQrCodeDetector implements INyARSquareDetector
 
 	private final NyARLabelingImage _limage;
 
-	private final SquareContourDetector _sqconvertor;
+	private final Coord2Linear _sqconvertor;
 	private final ContourPickup _cpickup=new ContourPickup();
 	
 	/**
@@ -45,7 +45,7 @@ public class NyARQrCodeDetector implements INyARSquareDetector
 		this._labeling = new NyARLabeling_ARToolKit();
 		this._limage = new NyARLabelingImage(this._width, this._height);
 		this._binder=new NyARQrCodeSymbolBinder(i_dist_factor_ref);
-		this._sqconvertor=new SquareContourDetector(i_size,i_dist_factor_ref);
+		this._sqconvertor=new Coord2Linear(i_size,i_dist_factor_ref);
 
 		// 輪郭の最大長はMAX_COORD_NUMの2倍に制限
 		int number_of_coord = MAX_COORD_NUM* 2;
@@ -144,7 +144,7 @@ public class NyARQrCodeDetector implements INyARSquareDetector
 				continue;
 			}
 			//輪郭分析用に正規化する。
-			final int vertex1 = SquareContourDetector.normalizeCoord(xcoord, ycoord, coord_num);
+			final int vertex1 = Coord2Linear.normalizeCoord(xcoord, ycoord, coord_num);
 
 			//ここから先が輪郭分析
 			NyARSquare square_ptr = o_square_stack.prePush();

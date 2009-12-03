@@ -35,10 +35,10 @@ import jp.nyatla.nyartoolkit.core.labeling.*;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.ContourPickup;
-import jp.nyatla.nyartoolkit.core.squaredetect.INyARSquareDetector;
+import jp.nyatla.nyartoolkit.core.squaredetect.INyARSquareContourDetector;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareStack;
-import jp.nyatla.nyartoolkit.core.squaredetect.SquareContourDetector;
+import jp.nyatla.nyartoolkit.core.squaredetect.Coord2Linear;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 
@@ -49,7 +49,7 @@ import jp.nyatla.nyartoolkit.sandbox.x2.*;
  * 1/4に解像度を落して解析するNyARSquareDetector_X2
  * 与えるBinRasterが既に1/4のサイズになっていないといけないことに注意
  */
-public class NyARSquareDetector_Quad implements INyARSquareDetector
+public class NyARSquareDetector_Quad implements INyARSquareContourDetector
 {
     private static int AR_AREA_MAX = 25000;// #define AR_AREA_MAX 100000
 
@@ -62,7 +62,7 @@ public class NyARSquareDetector_Quad implements INyARSquareDetector
     private NyARLabelingImage _limage;
 
 	private final LabelOverlapChecker<NyARLabelingLabel> _overlap_checker = new LabelOverlapChecker<NyARLabelingLabel>(32,NyARLabelingLabel.class);
-	private final SquareContourDetector _sqconvertor;
+	private final Coord2Linear _sqconvertor;
 	private final ContourPickup _cpickup=new ContourPickup();
     /**
      * 最大i_squre_max個のマーカーを検出するクラスを作成する。
@@ -75,7 +75,7 @@ public class NyARSquareDetector_Quad implements INyARSquareDetector
         this._height = i_size.h / 2;
         this._labeling = new NyARLabeling_ARToolKit();
         this._limage = new NyARLabelingImage(this._width, this._height);
-        this._sqconvertor=new SquareContourDetector(i_size,i_dist_factor_ref);        
+        this._sqconvertor=new Coord2Linear(i_size,i_dist_factor_ref);        
 
         // 輪郭の最大長は画面に映りうる最大の長方形サイズ。
         int number_of_coord = (this._width + this._height) * 2;
@@ -190,7 +190,7 @@ public class NyARSquareDetector_Quad implements INyARSquareDetector
 				continue;
 			}
 			//輪郭分析用に正規化する。
-			final int vertex1 = SquareContourDetector.normalizeCoord(xcoord, ycoord, coord_num);
+			final int vertex1 = Coord2Linear.normalizeCoord(xcoord, ycoord, coord_num);
 
 			//ここから先が輪郭分析
 			NyARSquare square_ptr = o_square_stack.prePush();

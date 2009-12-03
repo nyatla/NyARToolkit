@@ -43,7 +43,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilterBuilder_RgbToBin;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilter_ARToolkitThreshold;
-import jp.nyatla.nyartoolkit.core.squaredetect.INyARSquareDetector;
+import jp.nyatla.nyartoolkit.core.squaredetect.INyARSquareContourDetector;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareStack;
 
@@ -58,7 +58,7 @@ public class NyARSingleDetectMarker_X2
 
 	private boolean _is_continue = false;
 	private NyARMatchPatt_Color_WITHOUT_PCA _match_patt;
-	private INyARSquareDetector _square_detect;
+	private INyARSquareContourDetector _square_detect;
 
 	private final NyARSquareStack _square_list = new NyARSquareStack(AR_SQUARE_MAX);
 
@@ -137,7 +137,7 @@ public class NyARSingleDetectMarker_X2
 		this._detected_square = null;
 		NyARSquareStack l_square_list = this._square_list;
 		// スクエアコードを探す
-		this._square_detect.detectMarker(this._bin_raster, l_square_list);
+		this._square_detect.detectMarkerCB(this._bin_raster, l_square_list);
 
 
 		int number_of_square = l_square_list.getLength();

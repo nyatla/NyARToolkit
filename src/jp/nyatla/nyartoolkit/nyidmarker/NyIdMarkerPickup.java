@@ -1043,11 +1043,11 @@ public class NyIdMarkerPickup
 	 * @return
 	 * @throws NyARException
 	 */
-	public boolean pickFromRaster(INyARRgbRaster image, NyARSquare i_square,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
+	public boolean pickFromRaster(INyARRgbRaster image, NyARIntPoint2d[] i_vertex,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
 	{
 		
 		//遠近法のパラメータを計算
-		if(!this._perspective_reader.setSourceSquare(i_square.imvertex)){
+		if(!this._perspective_reader.setSourceSquare(i_vertex)){
 			return false;
 		};
 		

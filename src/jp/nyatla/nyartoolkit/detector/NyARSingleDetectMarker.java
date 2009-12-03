@@ -94,23 +94,23 @@ public class NyARSingleDetectMarker extends NyARCustomSingleDetectMarker
 	{
 		final NyARRasterFilter_ARToolkitThreshold th=new NyARRasterFilter_ARToolkitThreshold(100,i_input_raster_type);
 		INyARColorPatt patt_inst;
-		INyARSquareDetector sqdetect_inst;
+		INyARSquareContourDetector sqdetect_inst;
 		INyARTransMat transmat_inst;
 
 		switch(i_profile_id){
 		case PF_ARTOOLKIT_COMPATIBLE:
 			patt_inst=new NyARColorPatt_O3(i_ref_code.getWidth(), i_ref_code.getHeight());
-			sqdetect_inst=new NyARSquareDetector_ARToolKit(i_ref_param.getDistortionFactor(),i_ref_param.getScreenSize());
+			sqdetect_inst=new NyARSquareContourDetector_ARToolKit(i_ref_param.getDistortionFactor(),i_ref_param.getScreenSize());
 			transmat_inst=new NyARTransMat_ARToolKit(i_ref_param);
 			break;
 		case PF_NYARTOOLKIT_ARTOOLKIT_FITTING:
 			patt_inst=new NyARColorPatt_Perspective_O2(i_ref_code.getWidth(), i_ref_code.getHeight(),4,25);
-			sqdetect_inst=new NyARSquareDetector_Rle(i_ref_param.getDistortionFactor(),i_ref_param.getScreenSize());
+			sqdetect_inst=new NyARSquareContourDetector_Rle(i_ref_param.getDistortionFactor(),i_ref_param.getScreenSize());
 			transmat_inst=new NyARTransMat_ARToolKit(i_ref_param);
 			break;
 		case PF_NYARTOOLKIT://default
 			patt_inst=new NyARColorPatt_Perspective_O2(i_ref_code.getWidth(), i_ref_code.getHeight(),4,25);
-			sqdetect_inst=new NyARSquareDetector_Rle(i_ref_param.getDistortionFactor(),i_ref_param.getScreenSize());
+			sqdetect_inst=new NyARSquareContourDetector_Rle(i_ref_param.getDistortionFactor(),i_ref_param.getScreenSize());
 			transmat_inst=new NyARTransMat(i_ref_param);
 			break;
 		default:

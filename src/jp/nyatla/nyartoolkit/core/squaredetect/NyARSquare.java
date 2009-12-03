@@ -40,8 +40,6 @@ import jp.nyatla.nyartoolkit.core.types.*;
  */
 public class NyARSquare
 {
-	public final static int DIRECTION_UNKNOWN=-1;
-	public int direction;
     public NyARLinear[] line = NyARLinear.createArray(4);
     public NyARDoublePoint2d[] sqvertex = NyARDoublePoint2d.createArray(4);
     public NyARIntPoint2d[] imvertex = NyARIntPoint2d.createArray(4);

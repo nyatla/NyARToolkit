@@ -33,7 +33,6 @@ package jp.nyatla.nyartoolkit.sandbox.qrcode;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.INyARRasterFilter_GsToBin;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**

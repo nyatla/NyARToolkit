@@ -41,7 +41,7 @@ import jp.nyatla.nyartoolkit.core.param.*;
  * PCAではなく、頂点座標そのものからSquare位置を計算するクラス
  *
  */
-public class NyARVertexDetector implements INyARSquareDetector
+public class NyARVertexDetector implements INyARSquareContourDetector
 {
 	private static final int AR_AREA_MAX = 100000;// #define AR_AREA_MAX 100000
 
@@ -54,7 +54,7 @@ public class NyARVertexDetector implements INyARSquareDetector
 	private final NyARLabelingImage _limage;
 
 	private final LabelOverlapChecker<NyARLabelingLabel> _overlap_checker = new LabelOverlapChecker<NyARLabelingLabel>(32,NyARLabelingLabel.class);
-	private final SquareContourDetector _sqconvertor;
+	private final Coord2Linear _sqconvertor;
 	private final ContourPickup _cpickup=new ContourPickup();
 
 	/**
@@ -68,7 +68,7 @@ public class NyARVertexDetector implements INyARSquareDetector
 		this._height = i_size.h;
 		this._labeling = new NyARLabeling_ARToolKit();
 		this._limage = new NyARLabelingImage(this._width, this._height);
-        this._sqconvertor=new SquareContourDetector(i_size,i_dist_factor_ref);        
+        this._sqconvertor=new Coord2Linear(i_size,i_dist_factor_ref);        
 
 		// 輪郭の最大長は画面に映りうる最大の長方形サイズ。
 		int number_of_coord = (this._width + this._height) * 2;
@@ -165,7 +165,7 @@ public class NyARVertexDetector implements INyARSquareDetector
 				continue;
 			}
 			//輪郭分析用に正規化する。
-			final int vertex1 = SquareContourDetector.normalizeCoord(xcoord, ycoord, coord_num);
+			final int vertex1 = Coord2Linear.normalizeCoord(xcoord, ycoord, coord_num);
 
 			//ここから先が輪郭分析
 			NyARSquare square_ptr = o_square_stack.prePush();

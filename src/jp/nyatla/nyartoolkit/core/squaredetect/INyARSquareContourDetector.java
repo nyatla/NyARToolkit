@@ -33,7 +33,18 @@ package jp.nyatla.nyartoolkit.core.squaredetect;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
 
-public interface INyARSquareDetector
+public interface INyARSquareContourDetector
 {
-	public void detectMarker(NyARBinRaster i_raster, NyARSquareStack o_square_stack) throws NyARException;
+	public interface DetectMarkerCallback
+	{
+		public void onSquareDetect(INyARSquareContourDetector i_sender,int[] i_coordx,int[] i_coordy,int i_coor_num,int[] i_vertex_index)  throws NyARException;
+	}
+	/**
+	 *
+	 * @param i_raster
+	 * @param o_square_stack
+	 * @throws NyARException
+	 */
+	public void detectMarkerCB(NyARBinRaster i_raster, DetectMarkerCallback i_callback) throws NyARException;
 }
+

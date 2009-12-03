@@ -34,6 +34,10 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.*;
 
+/**
+ * 輪郭線を取得するクラスです。
+ *
+ */
 public class ContourPickup
 {
 	//巡回参照できるように、テーブルを二重化
@@ -77,7 +81,7 @@ public class ContourPickup
 	 * 輪郭線の長さを返します。
 	 * @throws NyARException
 	 */
-	public int impl_getContour(INyARRaster i_raster,int i_th,int i_entry_x,int i_entry_y,int i_array_size,int[] o_coord_x,int[] o_coord_y) throws NyARException
+	private int impl_getContour(INyARRaster i_raster,int i_th,int i_entry_x,int i_entry_y,int i_array_size,int[] o_coord_x,int[] o_coord_y) throws NyARException
 	{
 		final int[] xdir = _getContour_xdir;// static int xdir[8] = { 0, 1, 1, 1, 0,-1,-1,-1};
 		final int[] ydir = _getContour_ydir;// static int ydir[8] = {-1,-1, 0, 1, 1, 1, 0,-1};

@@ -72,7 +72,7 @@ public abstract class SingleARMarkerProcesser_X2
 
 	private int _lost_delay = 5;
 
-	private INyARSquareDetector _square_detect;
+	private INyARSquareContourDetector _square_detect;
 
 	//<X2 patch>
 	protected NyARTransMat_X2 _transmat;
@@ -170,7 +170,7 @@ public abstract class SingleARMarkerProcesser_X2
 
 		NyARSquareStack square_stack = this._square_list;
 		// スクエアコードを探す
-		this._square_detect.detectMarker(this._bin_raster, square_stack);
+		this._square_detect.detectMarkerCB(this._bin_raster, square_stack);
 		// 認識処理
 		if (this._current_arcode_index == -1) { // マーカ未認識
 			detectNewMarker(i_raster, square_stack);
