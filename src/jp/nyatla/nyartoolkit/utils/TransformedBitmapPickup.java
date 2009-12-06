@@ -53,7 +53,7 @@ class TransformedBitmapPickup extends NyARColorPatt_Perspective_O2
 	 * @param i_base_mat
 	 * @return 画像の取得の成否を返す。
 	 */
-	boolean pickupImage2d(INyARRgbRaster i_src_imege, double i_l, double i_t, double i_r, double i_b, NyARTransMatResult i_base_mat) throws NyARException
+	public boolean pickupImage2d(INyARRgbRaster i_src_imege, double i_l, double i_t, double i_r, double i_b, NyARTransMatResult i_base_mat) throws NyARException
 	{
 		double cp00, cp01, cp02, cp11, cp12;
 		cp00 = this._ref_perspective.m00;
