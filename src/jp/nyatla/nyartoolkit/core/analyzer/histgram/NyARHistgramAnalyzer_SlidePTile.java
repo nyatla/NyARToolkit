@@ -9,7 +9,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARHistgram;
  * 
  * 
  */
-public class NyARHistgramAnalyzer_SlidePTile
+public class NyARHistgramAnalyzer_SlidePTile implements INyARHistgramAnalyzer_Threshold
 {
 	private int _persentage;
 	public NyARHistgramAnalyzer_SlidePTile(int i_persentage)

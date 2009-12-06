@@ -54,13 +54,13 @@ public class NyARRasterFilter_CustomToneTable implements INyARRasterFilter
 		this._dofilterimpl.doFilter(i_input.getBufferReader(),i_output.getBufferReader(),i_input.getSize());
 	}
 	
-	abstract class IdoFilterImpl
+	private abstract class IdoFilterImpl
 	{
-		int[] _table_ref;
+		public int[] _table_ref;
 		public abstract void doFilter(INyARBufferReader i_input, INyARBufferReader i_output,NyARIntSize i_size) throws NyARException;
 		
 	}
-	class IdoFilterImpl_INT1D_GRAY_8 extends IdoFilterImpl
+	private class IdoFilterImpl_INT1D_GRAY_8 extends IdoFilterImpl
 	{
 		public void doFilter(INyARBufferReader i_input, INyARBufferReader i_output,NyARIntSize i_size) throws NyARException
 		{

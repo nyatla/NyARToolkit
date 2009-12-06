@@ -26,6 +26,7 @@ package jp.nyatla.nyartoolkit.core.labeling.rlelabeling;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.types.stack.NyObjectStack;
 import jp.nyatla.utils.*;
 
 class RleInfoStack extends NyObjectStack<RleInfoStack.RleInfo>

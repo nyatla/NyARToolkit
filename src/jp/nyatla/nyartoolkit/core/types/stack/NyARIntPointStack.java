@@ -32,7 +32,6 @@ package jp.nyatla.nyartoolkit.core.types.stack;
 
 
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.utils.NyObjectStack;
 
 public class NyARIntPointStack extends NyObjectStack<NyARIntPoint2d>
 {

@@ -29,8 +29,8 @@ import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilterBuilder_RgbToBin;
-import jp.nyatla.utils.j2se.*;
 import jp.nyatla.nyartoolkit.nyidmarker.*;
+import jp.nyatla.nyartoolkit.utils.j2se.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.*;
 
 

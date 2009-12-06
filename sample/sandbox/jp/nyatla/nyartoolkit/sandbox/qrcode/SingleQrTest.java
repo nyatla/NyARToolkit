@@ -11,6 +11,7 @@ import javax.media.format.*;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
+import jp.nyatla.nyartoolkit.utils.j2se.LabelingBufferdImage;
 
 
 import java.awt.*;
@@ -27,7 +28,6 @@ import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareStack;
 import jp.nyatla.nyartoolkit.core2.rasterfilter.rgb2gs.*;
 import jp.nyatla.nyartoolkit.core2.rasterfilter.gs2bin.*;
-import jp.nyatla.utils.j2se.LabelingBufferdImage;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core2.rasteranalyzer.threshold.*;
 

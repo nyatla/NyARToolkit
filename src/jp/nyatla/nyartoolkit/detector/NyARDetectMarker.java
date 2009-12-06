@@ -44,7 +44,7 @@ import jp.nyatla.nyartoolkit.core.squaredetect.INyARSquareContourDetector;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector_Rle;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.utils.NyObjectStack;
+import jp.nyatla.nyartoolkit.core.types.stack.NyObjectStack;
 
 class NyARDetectMarkerResult
 {

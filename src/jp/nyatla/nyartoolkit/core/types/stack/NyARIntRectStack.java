@@ -32,7 +32,6 @@ package jp.nyatla.nyartoolkit.core.types.stack;
 
 
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
-import jp.nyatla.utils.NyObjectStack;
 
 public class NyARIntRectStack extends NyObjectStack<NyARIntRect>
 {

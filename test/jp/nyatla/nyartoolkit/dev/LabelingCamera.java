@@ -33,7 +33,6 @@ import jp.nyatla.nyartoolkit.core2.rasteranalyzer.*;
 import jp.nyatla.nyartoolkit.core2.rasteranalyzer.threshold.*;
 import jp.nyatla.nyartoolkit.core2.rasterfilter.gs2bin.*;
 import jp.nyatla.nyartoolkit.core2.rasterfilter.rgb2gs.NyARRasterFilter_RgbAve;
-import jp.nyatla.utils.NyObjectStack;
 import jp.nyatla.utils.j2se.LabelingBufferdImage;
 import jp.nyatla.nyartoolkit.core.rasterfilter.bin.INyARRasterFilter_RgbToGs;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
@@ -44,6 +43,7 @@ import jp.nyatla.nyartoolkit.core.squaredetect.NyARVertexCounter;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix22;
+import jp.nyatla.nyartoolkit.core.types.stack.NyObjectStack;
 
 
 ///**
