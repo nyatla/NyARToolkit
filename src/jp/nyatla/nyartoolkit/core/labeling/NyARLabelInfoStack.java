@@ -32,7 +32,6 @@ package jp.nyatla.nyartoolkit.core.labeling;
 
 
 import jp.nyatla.nyartoolkit.core.types.stack.NyObjectStack;
-import jp.nyatla.utils.*;
 
 /**
  * NyLabelの予約型動的配列

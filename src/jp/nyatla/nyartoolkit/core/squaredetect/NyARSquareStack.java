@@ -32,7 +32,6 @@ package jp.nyatla.nyartoolkit.core.squaredetect;
 
 
 import jp.nyatla.nyartoolkit.core.types.stack.NyObjectStack;
-import jp.nyatla.utils.*;
 
 public class NyARSquareStack extends NyObjectStack<NyARSquare>
 {
