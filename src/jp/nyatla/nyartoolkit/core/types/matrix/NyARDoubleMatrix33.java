@@ -153,6 +153,11 @@ public class NyARDoubleMatrix33 implements INyARDoubleMatrix
 			o_out.y = Math.atan2(-this.m20, this.m22);
 		}
 	}
+	public final void setZXYAngle(NyARDoublePoint3d i_angle)
+	{
+		setZXYAngle(i_angle.x,i_angle.y,i_angle.z);
+		return;
+	}
 	public final void setZXYAngle(final double i_x, final double i_y, final double i_z)
 	{
 		final double sina = Math.sin(i_x);
@@ -170,5 +175,24 @@ public class NyARDoubleMatrix33 implements INyARDoubleMatrix
 		this.m20 = -cosa * sinb;
 		this.m21 = sina;
 		this.m22 = cosb * cosa;
-	}	
+		return;
+	}
+	/**
+	 * 回転行列を適応して座標変換します。
+	 * @param i_angle
+	 * @param o_out
+	 */
+	public final void transformVertex(NyARDoublePoint3d i_position,NyARDoublePoint3d o_out)
+	{
+		transformVertex(i_position.x,i_position.y,i_position.z,o_out);
+		return;
+	}
+	
+	public final void transformVertex(double i_x,double i_y,double i_z,NyARDoublePoint3d o_out)
+	{
+		o_out.x=this.m00*i_x+this.m01*i_y+this.m02*i_z;
+		o_out.y=this.m10*i_x+this.m11*i_y+this.m12*i_z;
+		o_out.z=this.m20*i_x+this.m21*i_y+this.m22*i_z;
+		return;
+	}
 }

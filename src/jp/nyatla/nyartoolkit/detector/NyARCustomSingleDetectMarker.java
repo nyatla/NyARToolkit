@@ -117,8 +117,6 @@ public class NyARCustomSingleDetectMarker
 			//directionを考慮して、squareを更新する。
 			for(int i=0;i<4;i++){
 				int idx=(i+4 - mr.direction) % 4;
-				sq.imvertex[i].x=vertex[idx].x;
-				sq.imvertex[i].y=vertex[idx].y;
 				this._coordline.coord2Line(i_vertex_index[idx],i_vertex_index[(idx+1)%4],i_coordx,i_coordy,i_coor_num,sq.line[i]);
 			}
 			for (int i = 0; i < 4; i++) {
@@ -139,11 +137,11 @@ public class NyARCustomSingleDetectMarker
 	private boolean _is_continue = false;
 	private INyARSquareContourDetector _square_detect;
 	protected INyARTransMat _transmat;
-	private double _marker_width;
 	//画処理用
 	private NyARBinRaster _bin_raster;
 	protected INyARRasterFilter_RgbToBin _tobin_filter;
 	private DetectSquareCB _detect_cb;
+	private NyARRectOffset _offset; 
 
 
 	protected NyARCustomSingleDetectMarker()
@@ -164,12 +162,13 @@ public class NyARCustomSingleDetectMarker
 		this._square_detect = i_sqdetect_inst;
 		this._transmat = i_transmat_inst;
 		this._tobin_filter=i_filter;
-		// 比較コードを保存
-		this._marker_width = i_marker_width;
 		//２値画像バッファを作る
 		this._bin_raster=new NyARBinRaster(scr_size.w,scr_size.h);
 		//_detect_cb
 		this._detect_cb=new DetectSquareCB(i_patt_inst,i_ref_code,i_ref_param);
+		//オフセットを作成
+		this._offset=new NyARRectOffset();
+		this._offset.setSquare(i_marker_width);
 		return;
 		
 	}
@@ -205,7 +204,6 @@ public class NyARCustomSingleDetectMarker
 		}
 		return true;
 	}
-
 	/**
 	 * 検出したマーカーの変換行列を計算して、o_resultへ値を返します。
 	 * 直前に実行したdetectMarkerLiteが成功していないと使えません。
@@ -218,34 +216,12 @@ public class NyARCustomSingleDetectMarker
 	{
 		// 一番一致したマーカーの位置とかその辺を計算
 		if (this._is_continue) {
-			this._transmat.transMatContinue(this._detect_cb.square,this._marker_width, o_result);
+			this._transmat.transMatContinue(this._detect_cb.square,this._offset, o_result);
 		} else {
-			this._transmat.transMat(this._detect_cb.square,this._marker_width, o_result);
+			this._transmat.transMat(this._detect_cb.square,this._offset, o_result);
 		}
 		return;
 	}
-	/**
-	 * 画面上のマーカ頂点情報を配列へ取得します。
-	 * @param o_point
-	 * 4要素以上の配列を指定して下さい。先頭の4要素に値がコピーされます。
-	 */
-	public void getSquarePosition(NyARIntPoint2d[] o_point)
-	{
-		NyARIntPoint2d.copyArray(this._detect_cb.square.imvertex,o_point);
-		return;
-	}
-	/**
-	 * 画面上のマーカ頂点情報を配列へのリファレンスを返します。
-	 * 返されたオブジェクトはクラスに所有し続けられています。クラスのメンバ関数を実行すると内容が書き変わります。
-	 * 外部でデータをストックする場合は、getSquarePositionで複製して下さい。
-	 * @return
-	 */
-	public NyARIntPoint2d[] refSquarePosition()
-	{
-		return this._detect_cb.square.imvertex;
-	}
-	
-
 	/**
 	 * 検出したマーカーの一致度を返します。
 	 * 

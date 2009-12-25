@@ -179,8 +179,6 @@ public abstract class SingleARMarkerProcesser
 			//directionを考慮して、squareを更新する。
 			for(int i=0;i<4;i++){
 				int idx=(i+4 - dir) % 4;
-				sq.imvertex[i].x=vertex[idx].x;
-				sq.imvertex[i].y=vertex[idx].y;
 				this._coordline.coord2Line(i_vertex_index[idx],i_vertex_index[(idx+1)%4],i_coordx,i_coordy,i_coor_num,sq.line[i]);
 			}
 			for (int i = 0; i < 4; i++) {
@@ -203,7 +201,7 @@ public abstract class SingleARMarkerProcesser
 
 	protected INyARTransMat _transmat;
 
-	private double _marker_width;
+	private NyARRectOffset _offset; 
 	private int _threshold = 110;
 	// [AR]検出結果の保存用
 	private NyARBinRaster _bin_raster;
@@ -238,7 +236,7 @@ public abstract class SingleARMarkerProcesser
 		this._initialized=true;
 		//コールバックハンドラ
 		this._detectmarker_cb=new DetectSquareCB(i_param);
-		
+		this._offset=new NyARRectOffset();
 		return;
 	}
 
@@ -260,7 +258,7 @@ public abstract class SingleARMarkerProcesser
 		}
 		//検出するマーカセット、情報、検出器を作り直す。(1ピクセル4ポイントサンプリング,マーカのパターン領域は50%)
 		this._detectmarker_cb.setNyARCodeTable(i_ref_code_table,i_code_resolution);
-		this._marker_width = i_marker_width;
+		this._offset.setSquare(i_marker_width);
 		return;
 	}
 
@@ -319,7 +317,7 @@ public abstract class SingleARMarkerProcesser
 				// OnEnter
 				this.onEnterHandler(i_code_index);
 				// 変換行列を作成
-				this._transmat.transMat(i_square, this._marker_width, result);
+				this._transmat.transMat(i_square, this._offset, result);
 				// OnUpdate
 				this.onUpdateHandler(i_square, result);
 				this._lost_delay_count = 0;
@@ -337,7 +335,7 @@ public abstract class SingleARMarkerProcesser
 			} else if (i_code_index == this._current_arcode_index) {// 同じARCodeの再認識
 				// イベント生成
 				// 変換行列を作成
-				this._transmat.transMat(i_square, this._marker_width, result);
+				this._transmat.transMat(i_square, this._offset, result);
 				// OnUpdate
 				this.onUpdateHandler(i_square, result);
 				this._lost_delay_count = 0;

@@ -46,8 +46,6 @@ import jp.nyatla.nyartoolkit.core.types.matrix.*;
  */
 public class NyARTransMat implements INyARTransMat
 {	
-	private final NyARDoublePoint2d _center=new NyARDoublePoint2d(0,0);
-	private final NyARTransOffset _offset=new NyARTransOffset();
 	private NyARPerspectiveProjectionMatrix _projection_mat_ref;
 	protected NyARRotMatrix _rotmatrix;
 	protected INyARTransportVectorSolver _transsolver;
@@ -79,17 +77,6 @@ public class NyARTransMat implements INyARTransMat
 		this._projection_mat_ref=pmat;
 	}
 
-	public void setCenter(double i_x, double i_y)
-	{
-		this._center.x= i_x;
-		this._center.y= i_y;
-	}
-
-
-
-
-
-
 	private final NyARDoublePoint2d[] __transMat_vertex_2d = NyARDoublePoint2d.createArray(4);
 	private final NyARDoublePoint3d[] __transMat_vertex_3d = NyARDoublePoint3d.createArray(4);
 	private final NyARDoublePoint3d __transMat_trans=new NyARDoublePoint3d();
@@ -120,7 +107,7 @@ public class NyARTransMat implements INyARTransMat
 	 * @return
 	 * @throws NyARException
 	 */
-	public void transMat(final NyARSquare i_square, double i_width, NyARTransMatResult o_result_conv) throws NyARException
+	public void transMat(final NyARSquare i_square,NyARRectOffset i_offset, NyARTransMatResult o_result_conv) throws NyARException
 	{
 		final NyARDoublePoint3d trans=this.__transMat_trans;
 		
@@ -132,21 +119,18 @@ public class NyARTransMat implements INyARTransMat
 		this._ref_dist_factor.ideal2ObservBatch(i_square.sqvertex, vertex_2d,4);		
 		this._transsolver.set2dVertex(vertex_2d,4);
 		
-		//基準矩形の3D座標系を作成
-		this._offset.setSquare(i_width,this._center);
-
 		//回転行列を計算
 		this._rotmatrix.initRotBySquare(i_square.line,i_square.sqvertex);
 		
 		//回転後の3D座標系から、平行移動量を計算
-		this._rotmatrix.getPoint3dBatch(this._offset.vertex,vertex_3d,4);
+		this._rotmatrix.getPoint3dBatch(i_offset.vertex,vertex_3d,4);
 		this._transsolver.solveTransportVector(vertex_3d,trans);
 		
 		//計算結果の最適化(平行移動量と回転行列の最適化)
-		o_result_conv.error=this.optimize(this._rotmatrix, trans, this._transsolver,this._offset.vertex, vertex_2d,err_threshold);
+		o_result_conv.error=this.optimize(this._rotmatrix, trans, this._transsolver,i_offset.vertex, vertex_2d,err_threshold);
 		
 		// マトリクスの保存
-		this.updateMatrixValue(this._rotmatrix, this._offset.point, trans,o_result_conv);
+		this.updateMatrixValue(this._rotmatrix, trans,o_result_conv);
 		return;
 	}
 
@@ -154,13 +138,13 @@ public class NyARTransMat implements INyARTransMat
 	 * (non-Javadoc)
 	 * @see jp.nyatla.nyartoolkit.core.transmat.INyARTransMat#transMatContinue(jp.nyatla.nyartoolkit.core.NyARSquare, int, double, jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult)
 	 */
-	public void transMatContinue(NyARSquare i_square, double i_width, NyARTransMatResult o_result_conv) throws NyARException
+	public void transMatContinue(NyARSquare i_square,NyARRectOffset i_offset, NyARTransMatResult o_result_conv) throws NyARException
 	{
 		final NyARDoublePoint3d trans=this.__transMat_trans;
 
 		// io_result_convが初期値なら、transMatで計算する。
 		if (!o_result_conv.has_value) {
-			this.transMat(i_square,i_width, o_result_conv);
+			this.transMat(i_square,i_offset, o_result_conv);
 			return;
 		}
 		
@@ -174,18 +158,15 @@ public class NyARTransMat implements INyARTransMat
 		this._ref_dist_factor.ideal2ObservBatch(i_square.sqvertex, vertex_2d,4);		
 		this._transsolver.set2dVertex(vertex_2d,4);
 		
-		//基準矩形の3D座標系を作成
-		this._offset.setSquare(i_width,this._center);
-
 		//回転行列を計算
 		this._rotmatrix.initRotByPrevResult(o_result_conv);
 		
 		//回転後の3D座標系から、平行移動量を計算
-		this._rotmatrix.getPoint3dBatch(this._offset.vertex,vertex_3d,4);
+		this._rotmatrix.getPoint3dBatch(i_offset.vertex,vertex_3d,4);
 		this._transsolver.solveTransportVector(vertex_3d,trans);
 
 		//現在のエラーレートを計算しておく
-		double min_err=errRate(this._rotmatrix,trans, this._offset.vertex, vertex_2d,4,vertex_3d);
+		double min_err=errRate(this._rotmatrix,trans,i_offset.vertex, vertex_2d,4,vertex_3d);
 		NyARDoubleMatrix33 rot=this.__rot;
 		//エラーレートが前回のエラー値より閾値分大きかったらアゲイン
 		if(min_err<o_result_conv.error+err_threshold){
@@ -193,8 +174,8 @@ public class NyARTransMat implements INyARTransMat
 			//最適化してみる。
 			for (int i = 0;i<5; i++) {
 				//変換行列の最適化
-				this._mat_optimize.modifyMatrix(rot, trans, this._offset.vertex, vertex_2d, 4);
-				double err=errRate(rot,trans,this._offset.vertex, vertex_2d,4,vertex_3d);
+				this._mat_optimize.modifyMatrix(rot, trans, i_offset.vertex, vertex_2d, 4);
+				double err=errRate(rot,trans,i_offset.vertex, vertex_2d,4,vertex_3d);
 				//System.out.println("E:"+err);
 				if(min_err-err<err_threshold/2){
 					//System.out.println("BREAK");
@@ -204,18 +185,18 @@ public class NyARTransMat implements INyARTransMat
 				this._rotmatrix.setValue(rot);
 				min_err=err;
 			}
-			this.updateMatrixValue(this._rotmatrix, this._offset.point, trans,o_result_conv);
+			this.updateMatrixValue(this._rotmatrix,  trans,o_result_conv);
 		}else{
 			//回転行列を計算
 			this._rotmatrix.initRotBySquare(i_square.line,i_square.sqvertex);
 			
 			//回転後の3D座標系から、平行移動量を計算
-			this._rotmatrix.getPoint3dBatch(this._offset.vertex,vertex_3d,4);
+			this._rotmatrix.getPoint3dBatch(i_offset.vertex,vertex_3d,4);
 			this._transsolver.solveTransportVector(vertex_3d,trans);
 			
 			//計算結果の最適化(平行移動量と回転行列の最適化)
-			min_err=this.optimize(this._rotmatrix, trans, this._transsolver,this._offset.vertex, vertex_2d,err_threshold);
-			this.updateMatrixValue(this._rotmatrix, this._offset.point, trans,o_result_conv);
+			min_err=this.optimize(this._rotmatrix, trans, this._transsolver,i_offset.vertex, vertex_2d,err_threshold);
+			this.updateMatrixValue(this._rotmatrix, trans,o_result_conv);
 		}
 		o_result_conv.error=min_err;
 		return;
@@ -289,22 +270,22 @@ public class NyARTransMat implements INyARTransMat
 	 * @param i_off
 	 * @param i_trans
 	 */
-	public void updateMatrixValue(NyARRotMatrix i_rot, NyARDoublePoint3d i_off, NyARDoublePoint3d i_trans,NyARTransMatResult o_result)
+	public void updateMatrixValue(NyARRotMatrix i_rot, NyARDoublePoint3d i_trans,NyARTransMatResult o_result)
 	{
 		o_result.m00=i_rot.m00;
 		o_result.m01=i_rot.m01;
 		o_result.m02=i_rot.m02;
-		o_result.m03=i_rot.m00 * i_off.x + i_rot.m01 * i_off.y + i_rot.m02 * i_off.z + i_trans.x;
+		o_result.m03=i_trans.x;
 
-		o_result.m10 = i_rot.m10;
-		o_result.m11 = i_rot.m11;
-		o_result.m12 = i_rot.m12;
-		o_result.m13 = i_rot.m10 * i_off.x + i_rot.m11 * i_off.y + i_rot.m12 * i_off.z + i_trans.y;
+		o_result.m10 =i_rot.m10;
+		o_result.m11 =i_rot.m11;
+		o_result.m12 =i_rot.m12;
+		o_result.m13 =i_trans.y;
 
 		o_result.m20 = i_rot.m20;
 		o_result.m21 = i_rot.m21;
 		o_result.m22 = i_rot.m22;
-		o_result.m23 = i_rot.m20 * i_off.x + i_rot.m21 * i_off.y + i_rot.m22 * i_off.z + i_trans.z;
+		o_result.m23 = i_trans.z;
 
 		o_result.has_value = true;
 		return;

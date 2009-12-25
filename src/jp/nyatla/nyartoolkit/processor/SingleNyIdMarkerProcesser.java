@@ -130,8 +130,6 @@ public abstract class SingleNyIdMarkerProcesser
 			//directionを考慮して、squareを更新する。
 			for(int i=0;i<4;i++){
 				int idx=(i+4 - param.direction) % 4;
-				sq.imvertex[i].x=vertex[idx].x;
-				sq.imvertex[i].y=vertex[idx].y;
 				this._coordline.coord2Line(i_vertex_index[idx],i_vertex_index[(idx+1)%4],i_coordx,i_coordy,i_coor_num,sq.line[i]);
 			}
 			for (int i = 0; i < 4; i++) {
@@ -157,7 +155,7 @@ public abstract class SingleNyIdMarkerProcesser
 
 	private NyARSquareContourDetector_Rle _square_detect;
 	protected INyARTransMat _transmat;
-	private double _marker_width=100;
+	private NyARRectOffset _offset; 
 	private boolean _is_active;
 	private int _current_threshold=110;
 	// [AR]検出結果の保存用
@@ -191,13 +189,14 @@ public abstract class SingleNyIdMarkerProcesser
 		this._threshold_detect=new NyARRasterThresholdAnalyzer_SlidePTile(15,i_raster_format,4);
 		this._initialized=true;
 		this._is_active=false;
+		this._offset=new NyARRectOffset();
 		return;
 		
 	}
 
 	public void setMarkerWidth(int i_width)
 	{
-		this._marker_width=i_width;
+		this._offset.setSquare(i_width);
 		return;
 	}
 
@@ -261,7 +260,7 @@ public abstract class SingleNyIdMarkerProcesser
 				// OnEnter
 				this.onEnterHandler(this._data_current);
 				// 変換行列を作成
-				this._transmat.transMat(i_square, this._marker_width, result);
+				this._transmat.transMat(i_square, this._offset, result);
 				// OnUpdate
 				this.onUpdateHandler(i_square, result);
 				this._lost_delay_count = 0;
@@ -279,7 +278,7 @@ public abstract class SingleNyIdMarkerProcesser
 				}
 			} else if(this._data_current.isEqual(i_marker_data)) {
 				//同じidの再認識
-				this._transmat.transMat(i_square, this._marker_width, result);
+				this._transmat.transMat(i_square, this._offset, result);
 				// OnUpdate
 				this.onUpdateHandler(i_square, result);
 				this._lost_delay_count = 0;

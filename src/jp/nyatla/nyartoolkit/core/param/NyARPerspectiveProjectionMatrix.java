@@ -31,7 +31,8 @@
 package jp.nyatla.nyartoolkit.core.param;
 
 import jp.nyatla.nyartoolkit.core.*;
-import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix34;
+import jp.nyatla.nyartoolkit.core.types.matrix.*;
+import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
  * 透視変換行列を格納します。
@@ -173,7 +174,17 @@ final public class NyARPerspectiveProjectionMatrix extends NyARDoubleMatrix34
 		//}
 		return;
 	}
-
+	/**
+	 * 現在の行列で３次元座標を射影変換します。
+	 * @param i_3dvertex
+	 * @param o_2d
+	 */
+	public void projectionConvert(NyARDoublePoint3d i_3dvertex,NyARDoublePoint2d o_2d)
+	{
+		o_2d.x=(i_3dvertex.x*this.m00+i_3dvertex.y*this.m01+i_3dvertex.z*this.m02)/i_3dvertex.z;
+		o_2d.y=(i_3dvertex.y*this.m11+i_3dvertex.z*this.m12)/i_3dvertex.z;
+		return;
+	}
 	
 	
 	

@@ -32,17 +32,26 @@ package jp.nyatla.nyartoolkit.core.transmat;
 
 import jp.nyatla.nyartoolkit.core.types.*;
 
-
-final public class NyARTransOffset
+/**
+ * 矩形の頂点情報を格納します。
+ */
+final public class NyARRectOffset
 {
 	public final NyARDoublePoint3d[] vertex=NyARDoublePoint3d.createArray(4);
-	public final NyARDoublePoint3d point=new NyARDoublePoint3d();	
+	public static NyARRectOffset[] createArray(int i_number)
+	{
+		NyARRectOffset[] ret=new NyARRectOffset[i_number];
+		for(int i=0;i<i_number;i++)
+		{
+			ret[i]=new NyARRectOffset();
+		}
+		return ret;
+	}	
 	/**
 	 * 中心位置と辺長から、オフセット情報を作成して設定する。
 	 * @param i_width
-	 * @param i_center
 	 */
-	public void setSquare(double i_width,NyARDoublePoint2d i_center)
+	public void setSquare(double i_width)
 	{
 		final double w_2 = i_width / 2.0;
 		
@@ -64,9 +73,6 @@ final public class NyARTransOffset
 		vertex3d_ptr.y = -w_2;
 		vertex3d_ptr.z = 0.0;
 		
-		this.point.x=-i_center.x;
-		this.point.y=-i_center.y;
-		this.point.z=0;
 		return;
 	}
 }

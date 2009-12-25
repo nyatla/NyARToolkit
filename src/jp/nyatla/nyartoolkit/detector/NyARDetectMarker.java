@@ -165,8 +165,6 @@ public class NyARDetectMarker
 			//directionを考慮して、squareを更新する。
 			for(int i=0;i<4;i++){
 				int idx=(i+4 - direction) % 4;
-				sq.imvertex[i].x=vertex[idx].x;
-				sq.imvertex[i].y=vertex[idx].y;
 				this._coordline.coord2Line(i_vertex_index[idx],i_vertex_index[(idx+1)%4],i_coordx,i_coordy,i_coor_num,sq.line[i]);
 			}
 			for (int i = 0; i < 4; i++) {
@@ -190,7 +188,7 @@ public class NyARDetectMarker
 	private boolean _is_continue = false;
 	private INyARSquareContourDetector _square_detect;
 	protected INyARTransMat _transmat;
-	private double[] _marker_width;	
+	private NyARRectOffset[] _offset;	
 
 
 	/**
@@ -238,7 +236,10 @@ public class NyARDetectMarker
 		this._tobin_filter=new NyARRasterFilter_ARToolkitThreshold(100,i_input_raster_type);
 
 		//実サイズ保存
-		this._marker_width = i_marker_width;
+		this._offset = NyARRectOffset.createArray(i_number_of_code);
+		for(int i=0;i<i_number_of_code;i++){
+			this._offset[i].setSquare(i_marker_width[i]);
+		}
 		//２値画像バッファを作る
 		this._bin_raster=new NyARBinRaster(scr_size.w,scr_size.h);
 		return;		
@@ -291,9 +292,9 @@ public class NyARDetectMarker
 		final NyARDetectMarkerResult result = this._detect_cb.result_stack.getItem(i_index);
 		// 一番一致したマーカーの位置とかその辺を計算
 		if (_is_continue) {
-			_transmat.transMatContinue(result.square, _marker_width[result.arcode_id], o_result);
+			_transmat.transMatContinue(result.square, this._offset[result.arcode_id], o_result);
 		} else {
-			_transmat.transMat(result.square, _marker_width[result.arcode_id], o_result);
+			_transmat.transMat(result.square, this._offset[result.arcode_id], o_result);
 		}
 		return;
 	}
