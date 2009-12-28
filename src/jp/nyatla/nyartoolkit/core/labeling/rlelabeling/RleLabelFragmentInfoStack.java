@@ -25,6 +25,7 @@
 package jp.nyatla.nyartoolkit.core.labeling.rlelabeling;
 
 
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.NyARLabelInfo;
 import jp.nyatla.nyartoolkit.core.labeling.NyARLabelInfoStack;
 
@@ -37,7 +38,7 @@ public class RleLabelFragmentInfoStack  extends NyARLabelInfoStack<RleLabelFragm
 		//int area; // フラグメントラベルの領域数
 		public int entry_x; // フラグメントラベルの位置
 	}	
-	public RleLabelFragmentInfoStack(int i_length)
+	public RleLabelFragmentInfoStack(int i_length) throws NyARException
 	{
 		super(i_length, RleLabelFragmentInfoStack.RleLabelFragmentInfo.class);
 		return;

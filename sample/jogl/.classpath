@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry path="" kind="src"/>
-	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" kind="con"/>
-	<classpathentry path="C:/Program Files/JMF2.1.1e/lib/jmf.jar" kind="lib"/>
-	<classpathentry path="/NyARToolKit" combineaccessrules="false" kind="src"/>
-	<classpathentry path="/NyARToolkit.utils.jmf" combineaccessrules="false" kind="src"/>
-	<classpathentry path="/NyARToolkit.utils.jogl" combineaccessrules="false" kind="src"/>
-	<classpathentry path="C:/Program Files/Java/jre1.6.0_03/lib/gluegen-rt.jar" kind="lib"/>
-	<classpathentry path="C:/Program Files/Java/jre1.6.0_03/lib/jogl.jar" kind="lib"/>
-	<classpathentry path="" kind="output"/>
+	<classpathentry kind="src" path=""/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolKit"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolkit.utils.jmf"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolkit.utils.jogl"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/JMF2.1.1e/lib/jmf.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/Java/jre6/lib/ext/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/Java/jre6/lib/ext/jogl.jar"/>
+	<classpathentry kind="output" path=""/>
 </classpath>

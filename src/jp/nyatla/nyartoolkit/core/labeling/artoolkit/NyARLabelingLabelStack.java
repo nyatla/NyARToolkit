@@ -32,6 +32,7 @@ package jp.nyatla.nyartoolkit.core.labeling.artoolkit;
 
 
 
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.*;
 
 /**
@@ -40,7 +41,7 @@ import jp.nyatla.nyartoolkit.core.labeling.*;
  */
 public class NyARLabelingLabelStack extends NyARLabelInfoStack<NyARLabelingLabel>
 {
-	public NyARLabelingLabelStack(int i_max_array_size)
+	public NyARLabelingLabelStack(int i_max_array_size) throws NyARException
 	{
 		super(i_max_array_size,NyARLabelingLabel.class);
 	}

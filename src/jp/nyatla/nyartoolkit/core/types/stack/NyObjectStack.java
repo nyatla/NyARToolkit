@@ -30,17 +30,12 @@ import jp.nyatla.nyartoolkit.NyARException;
 
 
 /**
- * オンデマンド割り当てをするオブジェクト配列。
+ * スタック型の可変長配列。
  * 配列には実体を格納します。
  */
 public abstract class NyObjectStack<T>
 {
-	private final static int ARRAY_APPEND_STEP = 64;
-
 	protected final T[] _items;
-
-	private int _allocated_size;
-
 	protected int _length;
 
 	/**
@@ -51,44 +46,54 @@ public abstract class NyObjectStack<T>
 	 * JavaのGenedicsの制限突破
 	 */
 	@SuppressWarnings("unchecked")
-	protected NyObjectStack(int i_length,Class<T> i_element_type)
+	protected NyObjectStack(int i_length,Class<T> i_element_type) throws NyARException
 	{
-		// ポインタだけははじめに確保しておく
+		//領域確保
 		this._items = (T[])Array.newInstance(i_element_type, i_length);
-		// アロケート済サイズと、使用中個数をリセット
-		this._allocated_size = 0;
+		for (int i =0; i < i_length; i++){
+			this._items[i] =createElement();
+		}
+		//使用中個数をリセット
 		this._length = 0;
 		return;
 	}
 	protected abstract T createElement();
+	
 	/**
-	 * ポインタを1進めて、その要素を予約し、その要素へのポインタを返します。
-	 * 特定型に依存させるときには、継承したクラスでこの関数をオーバーライドしてください。
+	 * 新しい領域を予約します。
+	 * @return
+	 * 失敗するとnull
+	 * @throws NyARException
 	 */
-	public final T prePush() throws NyARException
+	public final T prePush()
 	{
 		// 必要に応じてアロケート
-		if (this._length >= this._allocated_size) {
-			// 要求されたインデクスは範囲外
-			if (this._length >= this._items.length) {
-				throw new NyARException();
-			}
-			// 追加アロケート範囲を計算
-			int range = this._length + ARRAY_APPEND_STEP;
-			if (range >= this._items.length) {
-				range = this._items.length;
-			}
-			// アロケート
-			this.onReservRequest(this._allocated_size, range, this._items);
-			this._allocated_size = range;
+		if (this._length >= this._items.length){
+			return null;
 		}
 		// 使用領域を+1して、予約した領域を返す。
 		T ret = this._items[this._length];
 		this._length++;
 		return ret;
 	}
+	/**
+	 * スタックを初期化します。
+	 * @param i_reserv_length
+	 * 使用済みにするサイズ
+	 * @return
+	 */
+	public final void init(int i_reserv_length) throws NyARException
+	{
+		// 必要に応じてアロケート
+		if (i_reserv_length >= this._items.length){
+			throw new NyARException();
+		}
+		this._length=i_reserv_length;
+	}	
+	
 	/** 
-	 * 見かけ上の要素数を1減らして、最後尾のアイテムを返します。
+	 * 見かけ上の要素数を1減らして、そのオブジェクトを返します。
+	 * 返却したオブジェクトの内容は、次回のpushまで有効です。
 	 * @return
 	 */
 	public final T pop()
@@ -101,7 +106,6 @@ public abstract class NyObjectStack<T>
 	 * 見かけ上の要素数をi_count個減らします。
 	 * @param i_count
 	 * @return
-	 * NULLを返します。
 	 */
 	public final void pops(int i_count)
 	{
@@ -109,53 +113,6 @@ public abstract class NyObjectStack<T>
 		this._length-=i_count;
 		return;
 	}	
-	
-	/**
-	 * 0～i_number_of_item-1までの領域を予約します。
-	 * 予約済の領域よりも小さい場合には、現在の長さを調整します。
-	 * @param i_number_of_reserv
-	 */
-	final public void reserv(int i_number_of_item) throws NyARException
-	{
-		// 必要に応じてアロケート
-		if (i_number_of_item >= this._allocated_size) {
-			// 要求されたインデクスは範囲外
-			if (i_number_of_item >= this._items.length) {
-				throw new NyARException();
-			}
-			// 追加アロケート範囲を計算
-			int range = i_number_of_item+ARRAY_APPEND_STEP;
-			if (range >= this._items.length) {
-				range = this._items.length;
-			}
-			// アロケート
-			this.onReservRequest(this._allocated_size, range, this._items);
-			this._allocated_size = range;
-		}
-		//見かけ上の配列サイズを指定
-		this._length=i_number_of_item;
-		return;
-	}
-	/**
-	 * 必要に応じて、この関数を継承先クラスで実装して下さい。
-	 * i_bufferの配列の、i_start番目からi_end-1番目までの要素に、オブジェクトを割り当てて下さい。
-	 * @param i_start
-	 * @param i_end
-	 * @param i_buffer
-	 */	
-	final protected void onReservRequest(int i_start, int i_end, Object[] i_buffer)
-	{
-		try {  
-			for (int i = i_start; i < i_end; i++){
-				i_buffer[i] =createElement();
-			}
-		} catch(Exception e) {  
-			e.printStackTrace();  
-		}
-		return;
-	}
-
-
 	/**
 	 * 配列を返します。
 	 * 

@@ -31,11 +31,12 @@
 package jp.nyatla.nyartoolkit.core.squaredetect;
 
 
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.stack.NyObjectStack;
 
 public class NyARSquareStack extends NyObjectStack<NyARSquare>
 {
-	public NyARSquareStack(int i_length)
+	public NyARSquareStack(int i_length) throws NyARException
 	{
 		super(i_length,NyARSquare.class);
 

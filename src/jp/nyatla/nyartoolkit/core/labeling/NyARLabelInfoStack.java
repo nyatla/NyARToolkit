@@ -31,6 +31,7 @@
 package jp.nyatla.nyartoolkit.core.labeling;
 
 
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.stack.NyObjectStack;
 
 /**
@@ -39,7 +40,7 @@ import jp.nyatla.nyartoolkit.core.types.stack.NyObjectStack;
  */
 public abstract class NyARLabelInfoStack<T extends NyARLabelInfo> extends NyObjectStack<T>
 {
-	public NyARLabelInfoStack(int i_length,Class<T> i_element_type)
+	public NyARLabelInfoStack(int i_length,Class<T> i_element_type) throws NyARException
 	{
 		super(i_length,i_element_type);
 	}

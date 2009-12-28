@@ -57,7 +57,7 @@ class NyARDetectMarkerResult
 
 class NyARDetectMarkerResultStack extends NyObjectStack<NyARDetectMarkerResult>
 {
-	public NyARDetectMarkerResultStack(int i_length)
+	public NyARDetectMarkerResultStack(int i_length) throws NyARException
 	{
 		super(i_length,NyARDetectMarkerResult.class);
 		return;

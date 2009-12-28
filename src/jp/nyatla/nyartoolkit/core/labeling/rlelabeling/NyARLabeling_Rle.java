@@ -42,7 +42,7 @@ class RleInfoStack extends NyObjectStack<RleInfoStack.RleInfo>
 		public long pos_x;
 		public long pos_y;		
 	}	
-	public RleInfoStack(int i_length)
+	public RleInfoStack(int i_length) throws NyARException
 	{
 		super(i_length, RleInfoStack.RleInfo.class);
 		return;
@@ -86,7 +86,7 @@ public class NyARLabeling_Rle
 	private int _max_area;
 	private int _min_area;
 
-	public NyARLabeling_Rle(int i_width,int i_height)
+	public NyARLabeling_Rle(int i_width,int i_height) throws NyARException
 	{
 		this._rlestack=new RleInfoStack(i_width*i_height*2048/(320*240)+32);
 		this._rle1 = RleElement.createArray(i_width/2+1);
@@ -374,7 +374,7 @@ public class NyARLabeling_Rle
 			rle_current = tmp;
 		}
 		//対象のラベルだけ転写
-		o_stack.reserv(label_count);
+		o_stack.init(label_count);
 		RleLabelFragmentInfoStack.RleLabelFragmentInfo[] o_dest_array=o_stack.getArray();
 		final int max=this._max_area;
 		final int min=this._min_area;

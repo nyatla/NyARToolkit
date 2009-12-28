@@ -42,13 +42,11 @@ public class NyARSquare
 {
     public NyARLinear[] line = NyARLinear.createArray(4);
     public NyARDoublePoint2d[] sqvertex = NyARDoublePoint2d.createArray(4);
-//    public NyARIntPoint2d[] imvertex = NyARIntPoint2d.createArray(4);
-    public NyARSquare()
+    public void getCenter2d(NyARDoublePoint2d o_out)
     {
-        for (int i = 0; i < 4; i++)
-        {
-            this.line[i] = new NyARLinear();
-        }
+    	o_out.x=(this.sqvertex[0].x+this.sqvertex[1].x+this.sqvertex[2].x+this.sqvertex[3].x)/4;
+    	o_out.y=(this.sqvertex[0].y+this.sqvertex[1].y+this.sqvertex[2].y+this.sqvertex[3].y)/4;
+    	return;
     }
 
 }

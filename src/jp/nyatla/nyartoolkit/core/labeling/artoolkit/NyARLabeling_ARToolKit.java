@@ -218,7 +218,7 @@ final public class NyARLabeling_ARToolKit
 		NyARLabelingLabelStack label_list = o_destination.getLabelStack();
 
 		// ラベルバッファを予約
-		label_list.reserv(wlabel_num);
+		label_list.init(wlabel_num);
 
 		// エリアと重心、クリップ領域を計算
 		NyARLabelingLabel label_pt;
