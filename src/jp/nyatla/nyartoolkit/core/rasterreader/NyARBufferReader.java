@@ -34,10 +34,6 @@ public final class NyARBufferReader implements INyARBufferReader
 {
 	private Object _buffer;
 	private int _buffer_type;
-	private NyARBufferReader()
-	{
-		return;
-	}
 	public NyARBufferReader(Object i_buffer,int i_buffer_type)
 	{
 		this._buffer=i_buffer;

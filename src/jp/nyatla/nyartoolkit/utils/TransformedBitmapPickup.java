@@ -27,7 +27,7 @@ class TransformedBitmapPickup extends NyARColorPatt_Perspective_O2
 	 * @param i_resolution
 	 * resolution of reading pixel per point. ---- 取得時の解像度。高解像度のときは1を指定してください。低解像度のときは2以上を指定します。
 	 */
-	TransformedBitmapPickup(NyARPerspectiveProjectionMatrix i_ref_cparam, int i_width, int i_height, int i_resolution)
+	public TransformedBitmapPickup(NyARPerspectiveProjectionMatrix i_ref_cparam, int i_width, int i_height, int i_resolution)
 	{
 		super(i_width, i_height, i_resolution, 0);
 		this._ref_perspective = i_ref_cparam;

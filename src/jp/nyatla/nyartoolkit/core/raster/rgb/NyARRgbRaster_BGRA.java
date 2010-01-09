@@ -103,7 +103,7 @@ public class NyARRgbRaster_BGRA extends NyARRgbRaster_BasicClass implements INyA
 	public NyARRgbRaster_BGRA(int i_width, int i_height)
 	{
 		super(new NyARIntSize(i_width,i_height));
-		this._ref_buf = new byte[i_width*i_height];
+		this._ref_buf = new byte[i_width*i_height*4];
 		this._rgb_reader = new PixelReader(this);
 		this._buffer_reader=new NyARBufferReader(this._ref_buf,INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8X8_32);
 		return;

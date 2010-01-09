@@ -30,6 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.raster;
 
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
@@ -43,11 +44,24 @@ public final class NyARRaster extends NyARRaster_BasicClass
 	public INyARBufferReader getBufferReader()
 	{
 		return this._reader;
-	}
-	public NyARRaster(NyARIntSize i_size,Object i_ref_buf,int i_buf_type)
+	}	
+	public NyARRaster(NyARIntSize i_size,int i_buf_type) throws NyARException
 	{
 		super(i_size);
-		this._reader=new NyARBufferReader(i_ref_buf,i_buf_type);
+		init(i_size,i_buf_type);
 		return;
 	}
+	private void init(NyARIntSize i_size,int i_buf_type) throws NyARException
+	{
+		Object buf;
+		switch(i_buf_type)
+		{
+			case INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32:
+				buf=new int[i_size.w*i_size.h];
+				break;
+			default:
+				throw new NyARException();
+		}
+		this._reader=new NyARBufferReader(buf,i_buf_type);
+	}	
 }

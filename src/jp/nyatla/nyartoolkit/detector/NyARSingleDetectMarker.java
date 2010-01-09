@@ -67,13 +67,13 @@ public class NyARSingleDetectMarker extends NyARCustomSingleDetectMarker
 	public NyARSingleDetectMarker(NyARParam i_param, NyARCode i_code, double i_marker_width,int i_input_raster_type,int i_profile_id) throws NyARException
 	{
 		super();
-		initInstance(i_param,i_code,i_marker_width,i_input_raster_type,i_profile_id);
+		initialize(i_param,i_code,i_marker_width,i_input_raster_type,i_profile_id);
 		return;
 	}
 	public NyARSingleDetectMarker(NyARParam i_param, NyARCode i_code, double i_marker_width,int i_input_raster_type) throws NyARException
 	{
 		super();
-		initInstance(i_param,i_code,i_marker_width,i_input_raster_type,PF_NYARTOOLKIT);
+		initialize(i_param,i_code,i_marker_width,i_input_raster_type,PF_NYARTOOLKIT);
 		return;
 	}
 	/**
@@ -85,7 +85,7 @@ public class NyARSingleDetectMarker extends NyARCustomSingleDetectMarker
 	 * @param i_profile_id
 	 * @throws NyARException
 	 */
-	protected void initInstance(
+	private void initialize(
 		NyARParam	i_ref_param,
 		NyARCode	i_ref_code,
 		double		i_marker_width,

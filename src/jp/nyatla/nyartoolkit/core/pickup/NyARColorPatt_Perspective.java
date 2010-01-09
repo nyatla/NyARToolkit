@@ -53,7 +53,7 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 		this._resolution=i_point_per_pix;	
 		this._size=new NyARIntSize(i_width,i_height);
 		this._patdata = new int[i_height*i_width];
-		this._buf_reader=new NyARBufferReader(this._patdata,NyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32);
+		this._buf_reader=new NyARBufferReader(this._patdata,INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32);
 		this._pixelreader=new NyARRgbPixelReader_INT1D_X8R8G8B8_32(this._patdata,this._size);
 		return;		
 	}
@@ -81,11 +81,11 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 	 * @param i_edge_percentage
 	 * エッジ幅の割合(ARToolKit標準と同じなら、25)
 	 */
-	public NyARColorPatt_Perspective(int i_width, int i_height,int i_resolution,int i_edge_percentage)
+	public NyARColorPatt_Perspective(int i_width, int i_height,int i_point_per_pix,int i_edge_percentage)
 	{
 		//入力制限
-		initializeInstance(i_width,i_height,i_resolution);
-		setEdgeSizeByPercent(i_edge_percentage,i_edge_percentage,i_resolution);
+		initializeInstance(i_width,i_height,i_point_per_pix);
+		setEdgeSizeByPercent(i_edge_percentage,i_edge_percentage,i_point_per_pix);
 		return;
 	}	
 	/**

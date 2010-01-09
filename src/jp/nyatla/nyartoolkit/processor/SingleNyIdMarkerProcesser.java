@@ -170,7 +170,7 @@ public abstract class SingleNyIdMarkerProcesser
 		return;
 	}
 	private boolean _initialized=false;
-	protected void initInstance(NyARParam i_param,INyIdMarkerDataEncoder i_encoder,int i_raster_format) throws NyARException
+	protected void initInstance(NyARParam i_param,INyIdMarkerDataEncoder i_encoder,int i_marker_width,int i_raster_format) throws NyARException
 	{
 		//初期化済？
 		assert this._initialized==false;
@@ -190,6 +190,7 @@ public abstract class SingleNyIdMarkerProcesser
 		this._initialized=true;
 		this._is_active=false;
 		this._offset=new NyARRectOffset();
+		this._offset.setSquare(i_marker_width);
 		return;
 		
 	}

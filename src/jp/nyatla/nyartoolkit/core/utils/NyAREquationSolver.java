@@ -261,7 +261,7 @@ public class NyAREquationSolver
 	 * @param i_in
 	 * @return
 	 */
-	private double cuberoot(double i_in) {
+	private static double cuberoot(double i_in) {
 		double res = Math.pow(Math.abs(i_in), 1.0 / 3.0);
 		return (i_in >= 0) ? res : -res;
 	}

@@ -40,7 +40,7 @@ public interface INyARBufferReader
 	public static final int INT2D  =0x00020000;
 	public static final int SHORT1D=0x00030000;
 	public static final int INT1D  =0x00040000;
-    //  ID規約
+	public static final int OBJECT =0x00100000;    //  ID規約
 	//  24-31(8)予約
 	//  16-27(8)型ID
 	//      00:無効/01:byte[]/02:int[][]/03:short[]
@@ -121,7 +121,18 @@ public interface INyARBufferReader
 	 */
 	public static final int BUFFERFORMAT_INT1D_X7H9S8V8_32=INT1D|0x0103;
     
+	public static final int BUFFERFORMAT_OBJECT_Javat= OBJECT|0x0100;
+	public static final int BUFFERFORMAT_OBJECT_CS= OBJECT|0x0200;
+	public static final int BUFFERFORMAT_OBJECT_AS3= OBJECT|0x0300;
 
+	/**
+	 * ActionScript3のBitmapDataを格納するラスタ
+	 */
+
+	public static final int BUFFERFORMAT_OBJECT_AS3_BitmapData= BUFFERFORMAT_OBJECT_AS3|0x01;
+
+	
+	
 	/**
 	 * バッファオブジェクトを返します。
 	 * @return

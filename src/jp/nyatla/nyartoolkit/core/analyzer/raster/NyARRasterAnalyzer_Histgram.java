@@ -41,6 +41,9 @@ public class NyARRasterAnalyzer_Histgram
 		case INyARBufferReader.BUFFERFORMAT_WORD1D_R5G6B5_16LE:
 			this._histImpl = new NyARRasterThresholdAnalyzer_Histgram_WORD1D_R5G6B5_16LE();
 			break;
+		case INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32:
+			this._histImpl = new NyARRasterThresholdAnalyzer_Histgram_INT1D_X8R8G8B8_32();
+			break;
 		default:
 			throw new NyARException();
 		}
@@ -98,7 +101,25 @@ public class NyARRasterAnalyzer_Histgram
 			return i_size.w*i_size.h;
 		}	
 	}
+	class NyARRasterThresholdAnalyzer_Histgram_INT1D_X8R8G8B8_32 implements ICreateHistgramImpl
+	{
+		public int createHistgram(INyARBufferReader i_reader,NyARIntSize i_size, int[] o_histgram,int i_skip)
+		{
+			assert (i_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32));
+			final int[] input=(int[]) i_reader.getBuffer();
+			for (int y = i_size.h-1; y >=0 ; y-=i_skip){
+				int pt=y*i_size.w;
+				for (int x = i_size.w-1; x >=0; x--) {
+					int p=input[pt];
+					o_histgram[((p& 0xff)+(p& 0xff)+(p& 0xff))/3]++;
+					pt++;
+				}
+			}
+			return i_size.w*i_size.h;
+		}	
+	}
 
+	
 	class NyARRasterThresholdAnalyzer_Histgram_BYTE1D_RGB_24 implements ICreateHistgramImpl
 	{
 		public int createHistgram(INyARBufferReader i_reader,NyARIntSize i_size, int[] o_histgram,int i_skip)

@@ -77,11 +77,11 @@ class MarkerProcessor extends SingleNyIdMarkerProcesser
 	public NyARTransMatResult transmat=null;
 	public int current_id=-1;
 
-	public MarkerProcessor(NyARParam i_cparam,int i_raster_format) throws NyARException
+	public MarkerProcessor(NyARParam i_cparam,int i_width,int i_raster_format) throws NyARException
 	{
 		//アプリケーションフレームワークの初期化
 		super();
-		initInstance(i_cparam,new NyIdMarkerDataEncoder_RawBit(),i_raster_format);
+		initInstance(i_cparam,new NyIdMarkerDataEncoder_RawBit(),100,i_raster_format);
 		return;
 	}
 	/**
@@ -160,8 +160,7 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 		this._cap_image = new GLNyARRaster_RGB(i_cparam,this._capture.getCaptureFormat());	
 
 		//プロセッサの準備
-		this._processor=new MarkerProcessor(i_cparam,this._cap_image.getBufferReader().getBufferType());
-		this._processor.setMarkerWidth(100);
+		this._processor=new MarkerProcessor(i_cparam,100,this._cap_image.getBufferReader().getBufferType());
 		
 		//OpenGLフレームの準備（OpenGLリソースの初期化、カメラの撮影開始は、initコールバック関数内で実行）
 		Frame frame = new Frame("Java simpleLite with NyARToolkit");

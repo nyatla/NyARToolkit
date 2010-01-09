@@ -56,7 +56,7 @@ public class NyIdTest
         public MarkerProcessor(NyARParam i_cparam, int i_raster_format) throws Exception
         {
         	super();//
-            initInstance(i_cparam, new NyIdMarkerDataEncoder_RawBit(), i_raster_format);
+            initInstance(i_cparam, new NyIdMarkerDataEncoder_RawBit(),100, i_raster_format);
             //アプリケーションフレームワークの初期化
             return;
         }

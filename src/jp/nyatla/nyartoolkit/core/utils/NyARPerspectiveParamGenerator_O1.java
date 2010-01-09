@@ -35,10 +35,6 @@ public class NyARPerspectiveParamGenerator_O1 extends NyARPerspectiveParamGenera
 	public NyARPerspectiveParamGenerator_O1(int i_local_x,int i_local_y,int i_width, int i_height)
 	{
 		super(i_local_x,i_local_y,i_width,i_height);
-		this._height=i_height;
-		this._width=i_width;
-		this._local_x=i_local_x;
-		this._local_y=i_local_y;
 		return;
 	}
 	final public boolean getParam(final NyARIntPoint2d[] i_vertex,double[] o_param)throws NyARException

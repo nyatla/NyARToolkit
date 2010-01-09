@@ -62,7 +62,7 @@ public class NyARDoublePoint3d
 	 */
 	public double dist(NyARDoublePoint3d i_point)
 	{
-		double x,y;
+		double x,y,z;
 		x=this.x-i_point.x;
 		y=this.y-i_point.y;
 		z=this.z-i_point.z;
