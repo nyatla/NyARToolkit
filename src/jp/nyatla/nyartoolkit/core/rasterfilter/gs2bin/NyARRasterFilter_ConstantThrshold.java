@@ -9,10 +9,13 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 public class NyARRasterFilter_ConstantThrshold implements INyARRasterFilter_Gs2Bin
 {
 	public int _threshold;
-	public NyARRasterFilter_ConstantThrshold(int i_initial_threshold) throws NyARException
+	public NyARRasterFilter_ConstantThrshold(int i_initial_threshold,int i_in_raster_type,int i_out_raster_type) throws NyARException
 	{
+		assert(i_in_raster_type==INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8);
+		assert(i_out_raster_type==INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8);
 		//初期化
 		this._threshold=i_initial_threshold;
+		
 	}
 	/**
 	 * ２値化の閾値を設定する。
@@ -31,10 +34,10 @@ public class NyARRasterFilter_ConstantThrshold implements INyARRasterFilter_Gs2B
 	}
 	public void doFilter(NyARGrayscaleRaster i_input, NyARBinRaster i_output) throws NyARException
 	{
-		INyARBufferReader in_buffer_reader=i_input.getBufferReader();	
-		INyARBufferReader out_buffer_reader=i_output.getBufferReader();
-		int[] out_buf = (int[]) out_buffer_reader.getBuffer();
-		int[] in_buf = (int[]) in_buffer_reader.getBuffer();
+		assert(i_input.getBufferReader().getBufferType()==INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8);
+		assert(i_output.getBufferReader().getBufferType()==INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8);
+		int[] out_buf = (int[]) i_output.getBufferReader().getBuffer();
+		int[] in_buf = (int[]) i_input.getBufferReader().getBuffer();
 		NyARIntSize s=i_input.getSize();
 		
 		final int th=this._threshold;

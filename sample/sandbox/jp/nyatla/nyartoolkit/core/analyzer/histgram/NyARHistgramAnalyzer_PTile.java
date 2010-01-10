@@ -37,7 +37,6 @@ public class NyARHistgramAnalyzer_PTile
 	private int _persentage;
 	public NyARHistgramAnalyzer_PTile(int i_persentage)
 	{
-		assert (0 <= i_persentage && i_persentage <= 50);
 		//初期化
 		this._persentage=i_persentage;
 	}	

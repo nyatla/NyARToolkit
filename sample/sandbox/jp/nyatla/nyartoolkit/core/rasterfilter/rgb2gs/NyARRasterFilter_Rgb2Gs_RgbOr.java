@@ -41,8 +41,10 @@ public class NyARRasterFilter_Rgb2Gs_RgbOr implements INyARRasterFilter_RgbToGs
 {
 	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output) throws NyARException
 	{
+		
 		INyARBufferReader in_buffer_reader=i_input.getBufferReader();	
 		INyARBufferReader out_buffer_reader=i_output.getBufferReader();			
+		assert(	out_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
 
 		final int[] out_buf = (int[]) out_buffer_reader.getBuffer();

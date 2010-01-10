@@ -6,6 +6,6 @@ import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 
 public interface INyARRasterFilter_Gs2Bin
 {
-	public abstract void doFilter(NyARGrayscaleRaster i_input, NyARBinRaster i_output) throws NyARException;
+	public void doFilter(NyARGrayscaleRaster i_input, NyARBinRaster i_output) throws NyARException;
 
 }

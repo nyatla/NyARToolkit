@@ -48,17 +48,40 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 public class NyARRasterFilter_Rgb2Gs_RgbCube implements INyARRasterFilter_RgbToGs
 {
 	private IdoFilterImpl _dofilterimpl;
-	public NyARRasterFilter_Rgb2Gs_RgbCube(int i_raster_type) throws NyARException
+	public NyARRasterFilter_Rgb2Gs_RgbCube(int i_in_raster_type) throws NyARException
 	{
-		switch (i_raster_type) {
-		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24:
-		case INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24:
-			this._dofilterimpl=new IdoFilterImpl_BYTE1D_B8G8R8_24();
-			break;
-		default:
+		if(!initInstance(i_in_raster_type,INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8))
+		{
 			throw new NyARException();
 		}
 	}
+	public NyARRasterFilter_Rgb2Gs_RgbCube(int i_in_raster_type,int i_out_raster) throws NyARException
+	{
+		if(!initInstance(i_in_raster_type,i_out_raster))
+		{
+			throw new NyARException();
+		}
+	}	
+	protected boolean initInstance(int i_in_raster_type,int i_out_raster_type)
+	{
+		switch(i_out_raster_type){
+		case INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8:
+			switch (i_in_raster_type) {
+			case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24:
+			case INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+				this._dofilterimpl=new IdoFilterImpl_BYTE1D_B8G8R8_24();
+				break;
+			default:
+				return false;
+			}
+			break;
+		default:
+			return false;
+		}
+		return true;
+	}	
+	
+	
 	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output) throws NyARException
 	{
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
@@ -78,6 +101,7 @@ public class NyARRasterFilter_Rgb2Gs_RgbCube implements INyARRasterFilter_RgbToG
 		{
 			assert(		i_input.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24)
 					||	i_input.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24));
+			assert(i_output.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
 			
 			int[] out_buf = (int[]) i_output.getBuffer();
 			byte[] in_buf = (byte[]) i_input.getBuffer();

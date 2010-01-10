@@ -43,7 +43,6 @@ public class NyARRasterFilter_EqualizeHist extends NyARRasterFilter_CustomToneTa
 	}
 	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException
 	{
-		assert (i_input!=i_output);
 		//ヒストグラムを得る
 		NyARHistgram hist=this._histgram;
 		this._hist_analyzer.analyzeRaster(i_input,hist);

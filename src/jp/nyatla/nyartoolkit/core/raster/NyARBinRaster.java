@@ -32,20 +32,43 @@ package jp.nyatla.nyartoolkit.core.raster;
 
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.*;
 
 public class NyARBinRaster extends NyARRaster_BasicClass
 {
-	private INyARBufferReader _buffer_reader;
-	protected int[] _ref_buf;
+	protected Object _buf;
+	protected INyARBufferReader _buffer_reader;
 
-	public NyARBinRaster(int i_width, int i_height)
+	public NyARBinRaster(int i_width, int i_height,int i_raster_type) throws NyARException
 	{
 		super(new NyARIntSize(i_width,i_height));
-		this._ref_buf = new int[i_height*i_width];
-		this._buffer_reader=new NyARBufferReader(this._ref_buf,INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8);
+		if(!initInstance(this._size,i_raster_type)){
+			throw new NyARException();
+		}
 	}
+	public NyARBinRaster(int i_width, int i_height) throws NyARException
+	{
+		super(new NyARIntSize(i_width,i_height));
+		if(!initInstance(this._size,INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8)){
+			throw new NyARException();
+		}
+	}	
 	public INyARBufferReader getBufferReader()
 	{
 		return this._buffer_reader;
 	}
+	protected boolean initInstance(NyARIntSize i_size,int i_buf_type)
+	{
+		switch(i_buf_type)
+		{
+			case INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8:
+				this._buf = new int[i_size.w*i_size.h];
+				this._buffer_reader=new NyARBufferReader(this._buf,INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8);
+				break;
+			default:
+				return false;
+		}
+		this._buffer_reader=new NyARBufferReader(this._buf,i_buf_type);
+		return true;
+	}	
 }

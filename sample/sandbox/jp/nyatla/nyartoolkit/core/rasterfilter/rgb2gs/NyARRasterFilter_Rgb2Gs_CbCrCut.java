@@ -53,7 +53,8 @@ public class NyARRasterFilter_Rgb2Gs_CbCrCut implements INyARRasterFilter_RgbToG
 	{
 		public void doFilter(INyARBufferReader i_input, INyARBufferReader i_output,NyARIntSize i_size) throws NyARException
 		{
-			assert(		i_input.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24));
+			assert(	i_input.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24));
+			assert(	i_output.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
 			
 			int[] out_buf = (int[]) i_output.getBuffer();
 			byte[] in_buf = (byte[]) i_input.getBuffer();

@@ -40,7 +40,8 @@ import jp.nyatla.nyartoolkit.core.types.*;
  */
 public final class NyARRaster extends NyARRaster_BasicClass
 {
-	private NyARBufferReader _reader;
+	protected NyARBufferReader _reader;
+	protected Object _buf;
 	public INyARBufferReader getBufferReader()
 	{
 		return this._reader;
@@ -48,20 +49,22 @@ public final class NyARRaster extends NyARRaster_BasicClass
 	public NyARRaster(NyARIntSize i_size,int i_buf_type) throws NyARException
 	{
 		super(i_size);
-		init(i_size,i_buf_type);
+		if(!initInstance(i_size,i_buf_type)){
+			throw new NyARException();
+		}
 		return;
 	}
-	private void init(NyARIntSize i_size,int i_buf_type) throws NyARException
+	protected boolean initInstance(NyARIntSize i_size,int i_buf_type)
 	{
-		Object buf;
 		switch(i_buf_type)
 		{
 			case INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32:
-				buf=new int[i_size.w*i_size.h];
+				this._buf=new int[i_size.w*i_size.h];
 				break;
 			default:
-				throw new NyARException();
+				return false;
 		}
-		this._reader=new NyARBufferReader(buf,i_buf_type);
+		this._reader=new NyARBufferReader(this._buf,i_buf_type);
+		return true;
 	}	
 }

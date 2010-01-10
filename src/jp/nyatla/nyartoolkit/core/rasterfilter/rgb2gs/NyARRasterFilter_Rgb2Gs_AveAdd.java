@@ -44,20 +44,42 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 public class NyARRasterFilter_Rgb2Gs_AveAdd implements INyARRasterFilter_RgbToGs
 {
 	IdoThFilterImpl _do_filter_impl;
-	public NyARRasterFilter_Rgb2Gs_AveAdd(int i_raster_type) throws NyARException
+	public NyARRasterFilter_Rgb2Gs_AveAdd(int i_in_raster_type,int i_out_raster_type) throws NyARException
 	{
-		switch (i_raster_type) {
-		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24:
-		case INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24:
-			this._do_filter_impl=new doThFilterImpl_BYTE1D_B8G8R8_24();
-			break;
-		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8X8_32:
-			this._do_filter_impl=new doThFilterImpl_BYTE1D_B8G8R8X8_32();
-			break;
-		default:
+		if(!initInstance(i_in_raster_type,i_out_raster_type))
+		{
 			throw new NyARException();
 		}
 	}
+	public NyARRasterFilter_Rgb2Gs_AveAdd(int i_in_raster_type) throws NyARException
+	{
+		if(!initInstance(i_in_raster_type,INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8))
+		{
+			throw new NyARException();
+		}
+	}
+	protected boolean initInstance(int i_in_raster_type,int i_out_raster_type)
+	{
+		switch(i_out_raster_type){
+		case INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8:
+			switch (i_in_raster_type){
+			case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24:
+			case INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+				this._do_filter_impl=new doThFilterImpl_BYTE1D_B8G8R8_24();
+				break;
+			case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8X8_32:
+				this._do_filter_impl=new doThFilterImpl_BYTE1D_B8G8R8X8_32();
+				break;
+			default:
+				return false;
+			}
+			break;
+		default:
+			return false;
+		}
+		return true;
+	}
+	
 	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output) throws NyARException
 	{
 		INyARBufferReader in_buffer_reader=i_input.getBufferReader();	
@@ -79,6 +101,7 @@ public class NyARRasterFilter_Rgb2Gs_AveAdd implements INyARRasterFilter_RgbToGs
 	{
 		public void doFilter(INyARBufferReader i_input, INyARBufferReader i_output,NyARIntSize i_size)
 		{
+			assert(i_output.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
 			int[] out_buf = (int[]) i_output.getBuffer();
 			byte[] in_buf = (byte[]) i_input.getBuffer();
 			
@@ -96,6 +119,7 @@ public class NyARRasterFilter_Rgb2Gs_AveAdd implements INyARRasterFilter_RgbToGs
 	{
 		public void doFilter(INyARBufferReader i_input, INyARBufferReader i_output,NyARIntSize i_size)
 		{
+			assert(i_output.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
 			int[] out_buf = (int[]) i_output.getBuffer();
 			byte[] in_buf = (byte[]) i_input.getBuffer();
 

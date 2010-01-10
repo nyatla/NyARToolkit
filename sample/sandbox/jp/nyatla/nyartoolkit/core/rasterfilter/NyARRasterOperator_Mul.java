@@ -70,6 +70,10 @@ public class NyARRasterOperator_Mul
 	{
 		public void doFilter(INyARBufferReader i_input_a,INyARBufferReader i_input_b,INyARBufferReader i_output,NyARIntSize i_size) throws NyARException
 		{
+			assert(i_input_a.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
+			assert(i_input_b.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
+			assert(i_output.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
+			
 			int[] out_buf = (int[]) i_output.getBuffer();
 			int[] in_buf1 = (int[]) i_input_a.getBuffer();
 			int[] in_buf2 = (int[]) i_input_b.getBuffer();
