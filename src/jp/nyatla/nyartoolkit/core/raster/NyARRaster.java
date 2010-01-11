@@ -42,10 +42,7 @@ public final class NyARRaster extends NyARRaster_BasicClass
 {
 	protected NyARBufferReader _reader;
 	protected Object _buf;
-	public INyARBufferReader getBufferReader()
-	{
-		return this._reader;
-	}	
+	
 	public NyARRaster(NyARIntSize i_size,int i_buf_type) throws NyARException
 	{
 		super(i_size);
@@ -66,5 +63,9 @@ public final class NyARRaster extends NyARRaster_BasicClass
 		}
 		this._reader=new NyARBufferReader(this._buf,i_buf_type);
 		return true;
+	}
+	public INyARBufferReader getBufferReader()
+	{
+		return this._reader;
 	}	
 }

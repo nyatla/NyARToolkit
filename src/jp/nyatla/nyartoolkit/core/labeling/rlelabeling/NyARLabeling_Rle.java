@@ -205,7 +205,7 @@ public class NyARLabeling_Rle
 	 */
 	public int labeling(NyARBinRaster i_bin_raster, int i_top, int i_bottom,RleLabelFragmentInfoStack o_stack) throws NyARException
 	{
-		assert(i_bin_raster.getBufferReader().getBufferType()==INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8);
+		assert(i_bin_raster.getBufferReader().isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8));
 		return this.imple_labeling(i_bin_raster,0,i_top,i_bottom,o_stack);
 	}
 	/**
@@ -221,7 +221,7 @@ public class NyARLabeling_Rle
 	 */
 	public int labeling(NyARGrayscaleRaster i_gs_raster,int i_th, int i_top, int i_bottom,RleLabelFragmentInfoStack o_stack) throws NyARException
 	{
-		assert(i_gs_raster.getBufferReader().getBufferType()==INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8);
+		assert(i_gs_raster.getBufferReader().isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
 		return this.imple_labeling(i_gs_raster,i_th,i_top,i_bottom,o_stack);
 	}
 	private int imple_labeling(INyARRaster i_raster,int i_th,int i_top, int i_bottom,RleLabelFragmentInfoStack o_stack) throws NyARException

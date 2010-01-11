@@ -3,6 +3,8 @@ package jp.nyatla.nyartoolkit.core.analyzer.raster;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
+import jp.nyatla.nyartoolkit.core.rasterreader.NyARBufferReader;
+import jp.nyatla.nyartoolkit.core.rasterreader.NyARRgbPixelReader_INT1D_X8R8G8B8_32;
 import jp.nyatla.nyartoolkit.core.types.NyARHistgram;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.analyzer.histgram.*;
@@ -14,7 +16,7 @@ import jp.nyatla.nyartoolkit.core.analyzer.histgram.*;
  */
 public class NyARRasterAnalyzer_Histgram
 {
-	private ICreateHistgramImpl _histImpl;
+	protected ICreateHistgramImpl _histImpl;
 	/**
 	 * ヒストグラム解析の縦方向スキップ数。継承クラスはこのライン数づつ
 	 * スキップしながらヒストグラム計算を行うこと。
@@ -23,6 +25,12 @@ public class NyARRasterAnalyzer_Histgram
 	
 	
 	public NyARRasterAnalyzer_Histgram(int i_raster_format,int i_vertical_interval) throws NyARException
+	{
+		if(!initInstance(i_raster_format,i_vertical_interval)){
+			throw new NyARException();
+		}
+	}
+	protected boolean initInstance(int i_raster_format,int i_vertical_interval)
 	{
 		switch (i_raster_format) {
 		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24:
@@ -45,11 +53,14 @@ public class NyARRasterAnalyzer_Histgram
 			this._histImpl = new NyARRasterThresholdAnalyzer_Histgram_INT1D_X8R8G8B8_32();
 			break;
 		default:
-			throw new NyARException();
+			return false;
 		}
 		//初期化
 		this._vertical_skip=i_vertical_interval;
+		return true;
 	}	
+	
+	
 	public void setVerticalInterval(int i_step)
 	{
 		this._vertical_skip=i_step;

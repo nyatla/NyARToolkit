@@ -12,7 +12,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARHistgram;
  */
 public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresholdAnalyzer
 {
-	private NyARRasterAnalyzer_Histgram _raster_analyzer;
+	protected NyARRasterAnalyzer_Histgram _raster_analyzer;
 	private NyARHistgramAnalyzer_SlidePTile _sptile;
 	private NyARHistgram _histgram;
 	public void setVerticalInterval(int i_step)
@@ -24,11 +24,17 @@ public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresh
 	{
 		assert (0 <= i_persentage && i_persentage <= 50);
 		//初期化
+		if(!initInstance(i_raster_format,i_vertical_interval)){
+			throw new NyARException();
+		}
 		this._sptile=new NyARHistgramAnalyzer_SlidePTile(i_persentage);
 		this._histgram=new NyARHistgram(256);
-		this._raster_analyzer=new NyARRasterAnalyzer_Histgram(i_raster_format,i_vertical_interval);
 	}
-	
+	protected boolean initInstance(int i_raster_format,int i_vertical_interval) throws NyARException
+	{
+		this._raster_analyzer=new NyARRasterAnalyzer_Histgram(i_raster_format,i_vertical_interval);
+		return true;
+	}
 	public int analyzeRaster(INyARRaster i_input) throws NyARException
 	{
 		this._raster_analyzer.analyzeRaster(i_input, this._histgram);

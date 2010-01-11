@@ -32,6 +32,7 @@ package jp.nyatla.nyartoolkit.core.squaredetect;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.*;
 
 /**
@@ -46,6 +47,7 @@ public class ContourPickup
 	protected final static int[] _getContour_ydir = {-1,-1, 0, 1, 1, 1, 0,-1 ,-1,-1, 0, 1, 1, 1, 0};
 	public int getContour(NyARBinRaster i_raster,int i_entry_x,int i_entry_y,int i_array_size,int[] o_coord_x,int[] o_coord_y) throws NyARException
 	{
+		assert(i_raster.getBufferReader().isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8));
 		return impl_getContour(i_raster,0,i_entry_x,i_entry_y,i_array_size,o_coord_x,o_coord_y);
 	}
 	/**
@@ -64,6 +66,7 @@ public class ContourPickup
 	 */
 	public int getContour(NyARGrayscaleRaster i_raster,int i_th,int i_entry_x,int i_entry_y,int i_array_size,int[] o_coord_x,int[] o_coord_y) throws NyARException
 	{
+		assert(i_raster.getBufferReader().isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
 		return impl_getContour(i_raster,i_th,i_entry_x,i_entry_y,i_array_size,o_coord_x,o_coord_y);
 	}
 

@@ -111,10 +111,6 @@ public class NyARLabelingImage extends NyARRaster_BasicClass
 		this._is_index_table_enable=i_label_index_enable;
 		return;
 	}
-	//巡回参照できるように、テーブルを二重化
-	//                                           0  1  2  3  4  5  6  7   0  1  2  3  4  5  6
-	protected final static int[] _getContour_xdir = { 0, 1, 1, 1, 0,-1,-1,-1 , 0, 1, 1, 1, 0,-1,-1};
-	protected final static int[] _getContour_ydir = {-1,-1, 0, 1, 1, 1, 0,-1 ,-1,-1, 0, 1, 1, 1, 0};
 	/**
 	 * i_labelのラベルの、クリップ領域が上辺に接しているx座標を返します。
 	 * @param i_index
