@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.utils.j2se;
 
-import java.awt.Graphics.*;
+
 import java.awt.image.*;
 import java.awt.*;
 import jp.nyatla.nyartoolkit.*;

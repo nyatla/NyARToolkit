@@ -35,7 +35,6 @@ import jp.nyatla.nyartoolkit.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**このクラスは、単機能のNyARRasterです。
- * 特定タイプのバッファをラップする、INyARBufferReaderインタフェイスを提供します。
  *
  */
 public final class NyARRaster extends NyARRaster_BasicClass

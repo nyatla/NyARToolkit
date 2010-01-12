@@ -121,9 +121,15 @@ public interface INyARBufferReader
 	 */
 	public static final int BUFFERFORMAT_INT1D_X7H9S8V8_32=INT1D|0x0103;
     
-	public static final int BUFFERFORMAT_OBJECT_Javat= OBJECT|0x0100;
+	public static final int BUFFERFORMAT_OBJECT_Java= OBJECT|0x0100;
 	public static final int BUFFERFORMAT_OBJECT_CS= OBJECT|0x0200;
 	public static final int BUFFERFORMAT_OBJECT_AS3= OBJECT|0x0300;
+
+	
+	/**
+	 * JavaのBufferedImageを格納するラスタ
+	 */
+	public static final int BUFFERFORMAT_OBJECT_Java_BufferedImage= BUFFERFORMAT_OBJECT_Java|0x01;
 
 	/**
 	 * ActionScript3のBitmapDataを格納するラスタ
