@@ -1,16 +1,16 @@
-package jp.nyatla.nyartoolkit.core.analyzer.histgram;
+package jp.nyatla.nyartoolkit.core.analyzer.histogram;
 
-import jp.nyatla.nyartoolkit.core.types.NyARHistgram;
+import jp.nyatla.nyartoolkit.core.types.NyARHistogram;
 
 
 /**
  * kittlerThresholdの方式で閾値を求めます。
- * @param i_histgram
+ * @param i_histogram
  * @return
  */
-public class NyARHistgramAnalyzer_KittlerThreshold implements INyARHistgramAnalyzer_Threshold
+public class NyARHistogramAnalyzer_KittlerThreshold implements INyARHistogramAnalyzer_Threshold
 {
-	public int getThreshold(NyARHistgram i_histgram)
+	public int getThreshold(NyARHistogram i_histogram)
 	{
 		int i;		
 		double min=Double.MAX_VALUE;
@@ -18,8 +18,8 @@ public class NyARHistgramAnalyzer_KittlerThreshold implements INyARHistgramAnaly
 		int da,sa,db,sb,pa,pb;
 		double oa,ob;
 		
-		int[] hist=i_histgram.data;
-		int n=i_histgram.length;
+		int[] hist=i_histogram.data;
+		int n=i_histogram.length;
 		//Low側
 		da=pa=0;
 		int h;
@@ -28,7 +28,7 @@ public class NyARHistgramAnalyzer_KittlerThreshold implements INyARHistgramAnaly
 			da+=h*i;	//i*h[i]
 			pa+=h*i*i;	//i*i*h[i]
 		}
-		sa=i_histgram.total_of_data;
+		sa=i_histogram.total_of_data;
 		//High側(i=n-1)
 		db=0;
 		sb=0;
@@ -75,12 +75,12 @@ public class NyARHistgramAnalyzer_KittlerThreshold implements INyARHistgramAnaly
 	}
 	public static void main(String[] args)
 	{
-		NyARHistgram data=new NyARHistgram(256);
+		NyARHistogram data=new NyARHistogram(256);
 		for(int i=0;i<256;i++){
 			data.data[i]=128-i>0?128-i:i-128;
 		}
 		data.total_of_data=data.getTotal(0,255);
-		NyARHistgramAnalyzer_KittlerThreshold an=new NyARHistgramAnalyzer_KittlerThreshold();
+		NyARHistogramAnalyzer_KittlerThreshold an=new NyARHistogramAnalyzer_KittlerThreshold();
 		int th=an.getThreshold(data);
 		System.out.print(th);
 		return;

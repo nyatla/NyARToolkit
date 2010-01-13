@@ -21,7 +21,7 @@ import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingImage;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabeling_ARToolKit;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.rasteranalyzer.threshold.NyARRasterThresholdAnalyzer_DiffHistgram;
+import jp.nyatla.nyartoolkit.core.rasteranalyzer.threshold.NyARRasterThresholdAnalyzer_DiffHistogram;
 import jp.nyatla.nyartoolkit.core.rasterfilter.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin.*;
@@ -62,7 +62,7 @@ public class SingleQrTest extends Frame implements JmfCaptureListener
 	private NyARBinRaster _binraster1 = new NyARBinRaster(320, 240);
 
 	private NyARGrayscaleRaster _gsraster1 = new NyARGrayscaleRaster(320, 240);
-	private INyARRasterThresholdAnalyzer _tha=new NyARRasterThresholdAnalyzer_DiffHistgram();
+	private INyARRasterThresholdAnalyzer _tha=new NyARRasterThresholdAnalyzer_DiffHistogram();
 
 	private LabelingBufferdImage _bimg = new LabelingBufferdImage(320, 240);
 
@@ -125,7 +125,7 @@ public class SingleQrTest extends Frame implements JmfCaptureListener
 			this.getGraphics().drawImage(this._bimg, 32 + 320, 32 + 240, 320 + 32 + 320, 240 + 32 + 240, 0, 240, 320, 0, this);
 
 			// 画像3
-			// threshold.debugDrawHistgramMap(_workraster, _workraster2);
+			// threshold.debugDrawHistogramMap(_workraster, _workraster2);
 			// this._bimg2.setImage(this._workraster2);
 			// this.getGraphics().drawImage(this._bimg2, 32+320, 32+240,320+32+320,240+32+240,0,240,320,0, this);
 
@@ -145,7 +145,7 @@ public class SingleQrTest extends Frame implements JmfCaptureListener
 			// 画像5
 
 			/*
-			 * threshold2.debugDrawHistgramMap(_workraster, _workraster2); this._bimg2.drawImage(this._workraster2); this.getGraphics().drawImage(this._bimg2,
+			 * threshold2.debugDrawHistogramMap(_workraster, _workraster2); this._bimg2.drawImage(this._workraster2); this.getGraphics().drawImage(this._bimg2,
 			 * 32+320, 32+480,320+32+320,480+32+240,0,240,320,0, this);
 			 */
 

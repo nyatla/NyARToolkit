@@ -41,7 +41,6 @@ import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilterBuilder_RgbToBin;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilter_ARToolkitThreshold;
 import jp.nyatla.nyartoolkit.core.squaredetect.INyARSquareContourDetector;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;

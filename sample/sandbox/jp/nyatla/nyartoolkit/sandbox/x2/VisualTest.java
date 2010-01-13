@@ -24,7 +24,7 @@ import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingImage;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabeling_ARToolKit;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.rasteranalyzer.threshold.NyARRasterThresholdAnalyzer_DiffHistgram;
+import jp.nyatla.nyartoolkit.core.rasteranalyzer.threshold.NyARRasterThresholdAnalyzer_DiffHistogram;
 import jp.nyatla.nyartoolkit.core.rasterfilter.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRasterFilter_Rgb2Gs;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareStack;
@@ -65,7 +65,7 @@ public class VisualTest extends Frame implements JmfCaptureListener
 	private NyARBinRaster _binraster1 = new NyARBinRaster(160,120);
 
 	private NyARGrayscaleRaster _gsraster1 = new NyARGrayscaleRaster(320, 240);
-	private INyARRasterThresholdAnalyzer _tha=new NyARRasterThresholdAnalyzer_DiffHistgram();
+	private INyARRasterThresholdAnalyzer _tha=new NyARRasterThresholdAnalyzer_DiffHistogram();
 
 	private LabelingBufferdImage _bimg = new LabelingBufferdImage(320, 240);
 	private LabelingBufferdImage _bimg2 = new LabelingBufferdImage(160, 120);

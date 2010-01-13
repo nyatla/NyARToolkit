@@ -3,7 +3,7 @@ package jp.nyatla.nyartoolkit.core.types;
 /**
  * ヒストグラムを格納するクラスです。
  */
-public class NyARHistgram
+public class NyARHistogram
 {
 	/**
 	 * サンプリング値の格納変数
@@ -20,7 +20,7 @@ public class NyARHistgram
 	
 	
 	
-	public NyARHistgram(int i_length)
+	public NyARHistogram(int i_length)
 	{
 		this.data=new int[i_length];
 		this.length=i_length;

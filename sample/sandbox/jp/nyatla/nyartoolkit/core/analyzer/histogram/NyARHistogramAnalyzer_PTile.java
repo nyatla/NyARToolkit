@@ -22,7 +22,7 @@
  *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.analyzer.histgram;
+package jp.nyatla.nyartoolkit.core.analyzer.histogram;
 
 
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -32,25 +32,25 @@ import jp.nyatla.nyartoolkit.core.types.*;
  * Pタイル法による閾値検出
  * 
  */
-public class NyARHistgramAnalyzer_PTile
+public class NyARHistogramAnalyzer_PTile
 {
 	private int _persentage;
-	public NyARHistgramAnalyzer_PTile(int i_persentage)
+	public NyARHistogramAnalyzer_PTile(int i_persentage)
 	{
 		//初期化
 		this._persentage=i_persentage;
 	}	
-	public int getThreshold(NyARHistgram i_histgram)
+	public int getThreshold(NyARHistogram i_histogram)
 	{
 		// 閾値ピクセル数確定
-		int th_pixcels = i_histgram.total_of_data * this._persentage / 100;
+		int th_pixcels = i_histogram.total_of_data * this._persentage / 100;
 
 		// 閾値判定
 		int i;
 		if (th_pixcels > 0) {
 			// 黒点基準
 			for (i = 0; i < 254; i++) {
-				th_pixcels -= i_histgram.data[i];
+				th_pixcels -= i_histogram.data[i];
 				if (th_pixcels <= 0) {
 					break;
 				}
@@ -58,7 +58,7 @@ public class NyARHistgramAnalyzer_PTile
 		} else {
 			// 白点基準
 			for (i = 255; i > 1; i--) {
-				th_pixcels += i_histgram.data[i];
+				th_pixcels += i_histogram.data[i];
 				if (th_pixcels >= 0) {
 					break;
 				}

@@ -114,7 +114,7 @@ public class NyARRasterImageIO
 	 * @param o_out
 	 * @throws NyARException
 	 */
-	public static void copy(NyARHistgram i_in,int i_l,int i_t,int i_h,Graphics i_g) throws NyARException
+	public static void copy(NyARHistogram i_in,int i_l,int i_t,int i_h,Graphics i_g) throws NyARException
 	{
 		//正規化のための定数を出す。
 		int max=0;

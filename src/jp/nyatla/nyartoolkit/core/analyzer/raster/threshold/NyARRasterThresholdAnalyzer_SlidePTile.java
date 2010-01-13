@@ -1,10 +1,10 @@
 package jp.nyatla.nyartoolkit.core.analyzer.raster.threshold;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.analyzer.histgram.*;
+import jp.nyatla.nyartoolkit.core.analyzer.histogram.*;
 import jp.nyatla.nyartoolkit.core.analyzer.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
-import jp.nyatla.nyartoolkit.core.types.NyARHistgram;
+import jp.nyatla.nyartoolkit.core.types.NyARHistogram;
 /**
  * 明点と暗点をPタイル法で検出して、その中央値を閾値とする。
  * 
@@ -12,9 +12,9 @@ import jp.nyatla.nyartoolkit.core.types.NyARHistgram;
  */
 public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresholdAnalyzer
 {
-	protected NyARRasterAnalyzer_Histgram _raster_analyzer;
-	private NyARHistgramAnalyzer_SlidePTile _sptile;
-	private NyARHistgram _histgram;
+	protected NyARRasterAnalyzer_Histogram _raster_analyzer;
+	private NyARHistogramAnalyzer_SlidePTile _sptile;
+	private NyARHistogram _histogram;
 	public void setVerticalInterval(int i_step)
 	{
 		this._raster_analyzer.setVerticalInterval(i_step);
@@ -27,17 +27,17 @@ public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresh
 		if(!initInstance(i_raster_format,i_vertical_interval)){
 			throw new NyARException();
 		}
-		this._sptile=new NyARHistgramAnalyzer_SlidePTile(i_persentage);
-		this._histgram=new NyARHistgram(256);
+		this._sptile=new NyARHistogramAnalyzer_SlidePTile(i_persentage);
+		this._histogram=new NyARHistogram(256);
 	}
 	protected boolean initInstance(int i_raster_format,int i_vertical_interval) throws NyARException
 	{
-		this._raster_analyzer=new NyARRasterAnalyzer_Histgram(i_raster_format,i_vertical_interval);
+		this._raster_analyzer=new NyARRasterAnalyzer_Histogram(i_raster_format,i_vertical_interval);
 		return true;
 	}
 	public int analyzeRaster(INyARRaster i_input) throws NyARException
 	{
-		this._raster_analyzer.analyzeRaster(i_input, this._histgram);
-		return this._sptile.getThreshold(this._histgram);
+		this._raster_analyzer.analyzeRaster(i_input, this._histogram);
+		return this._sptile.getThreshold(this._histogram);
 	}
 }

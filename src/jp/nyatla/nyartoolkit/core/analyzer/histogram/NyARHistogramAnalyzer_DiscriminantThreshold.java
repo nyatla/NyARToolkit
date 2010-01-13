@@ -1,23 +1,23 @@
-package jp.nyatla.nyartoolkit.core.analyzer.histgram;
+package jp.nyatla.nyartoolkit.core.analyzer.histogram;
 
-import jp.nyatla.nyartoolkit.core.types.NyARHistgram;
+import jp.nyatla.nyartoolkit.core.types.NyARHistogram;
 
 /**
  * 判別法で閾値を求めます。
  * 画素数が2048^2に満たない場合は、fixedint(24-8)で計算できます。
- * @param i_histgram
+ * @param i_histogram
  * @param o_value
  * @return
  */
-public class NyARHistgramAnalyzer_DiscriminantThreshold implements INyARHistgramAnalyzer_Threshold
+public class NyARHistogramAnalyzer_DiscriminantThreshold implements INyARHistogramAnalyzer_Threshold
 {
 	private double _score;
 
 
-	public int getThreshold(NyARHistgram i_histgram)
+	public int getThreshold(NyARHistogram i_histogram)
 	{
-		int[] hist=i_histgram.data;
-		int n=i_histgram.length;
+		int[] hist=i_histogram.data;
+		int n=i_histogram.length;
 		int da,sa,db,sb,dt,pt,st;
 		int i;		
 		int th=0;
@@ -28,7 +28,7 @@ public class NyARHistgramAnalyzer_DiscriminantThreshold implements INyARHistgram
 			dt+=h*i;
 			pt+=h*i*i;//正規化の時に使う定数
 		}
-		st=i_histgram.total_of_data;
+		st=i_histogram.total_of_data;
 		//Low側(0<=i<=n-2)
 		da=dt;
 		sa=st;
@@ -78,12 +78,12 @@ public class NyARHistgramAnalyzer_DiscriminantThreshold implements INyARHistgram
 	 */
 	public static void main(String[] args)
 	{
-		NyARHistgram data=new NyARHistgram(256);
+		NyARHistogram data=new NyARHistogram(256);
 		for(int i=0;i<256;i++){
 			data.data[i]=128-i>0?128-i:i-128;
 		}
 		data.total_of_data=data.getTotal(0,255);
-		NyARHistgramAnalyzer_DiscriminantThreshold an=new NyARHistgramAnalyzer_DiscriminantThreshold();
+		NyARHistogramAnalyzer_DiscriminantThreshold an=new NyARHistogramAnalyzer_DiscriminantThreshold();
 		int th=an.getThreshold(data);
 		System.out.print(th);
 		return;

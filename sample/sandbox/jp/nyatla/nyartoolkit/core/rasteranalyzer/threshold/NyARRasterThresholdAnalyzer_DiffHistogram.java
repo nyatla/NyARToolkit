@@ -33,15 +33,15 @@ import jp.nyatla.nyartoolkit.core.types.*;
  * 微分ヒストグラム法による閾値検出
  * 
  */
-public class NyARRasterThresholdAnalyzer_DiffHistgram implements INyARRasterThresholdAnalyzer
+public class NyARRasterThresholdAnalyzer_DiffHistogram implements INyARRasterThresholdAnalyzer
 {
 	private int _threshold;
 
-	public NyARRasterThresholdAnalyzer_DiffHistgram()
+	public NyARRasterThresholdAnalyzer_DiffHistogram()
 	{
 	}
 
-	private int createHistgram(int[] in_buf,NyARIntSize i_size, int[] o_histgram) throws NyARException
+	private int createHistogram(int[] in_buf,NyARIntSize i_size, int[] o_histogram) throws NyARException
 	{
 		int[][] fil1={
 				{-1,-2,-1},
@@ -50,7 +50,7 @@ public class NyARRasterThresholdAnalyzer_DiffHistgram implements INyARRasterThre
 
 		// ヒストグラムを作成
 		for (int i = 0; i < 256; i++) {
-			o_histgram[i] = 0;
+			o_histogram[i] = 0;
 		}
 		int sam;
 		int sam1,sam2;
@@ -66,15 +66,15 @@ public class NyARRasterThresholdAnalyzer_DiffHistgram implements INyARRasterThre
 					}					
 				}
 				sam=sam1*sam1+sam2*sam2;
-				o_histgram[v]+=sam;
+				o_histogram[v]+=sam;
 			}
 		}
 		int th=0;
-		int max=o_histgram[0];
+		int max=o_histogram[0];
 		for(int i=1;i<256;i++){
-			if(max<o_histgram[i]){
+			if(max<o_histogram[i]){
 				th=i;
-				max=o_histgram[i];
+				max=o_histogram[i];
 			}
 		}
 		return th;
@@ -83,8 +83,8 @@ public class NyARRasterThresholdAnalyzer_DiffHistgram implements INyARRasterThre
 	public int analyzeRaster(INyARRaster i_input) throws NyARException
 	{
 		assert (i_input.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
-		int[] histgram = new int[256];
-		return createHistgram((int[])i_input.getBuffer(),i_input.getSize(), histgram);
+		int[] histogram = new int[256];
+		return createHistogram((int[])i_input.getBuffer(),i_input.getSize(), histogram);
 	}
 
 	/**
@@ -93,7 +93,7 @@ public class NyARRasterThresholdAnalyzer_DiffHistgram implements INyARRasterThre
 	 * @param i_output
 	 * 書き出し先のラスタオブジェクト 256ピクセル以上の幅があること。
 	 */
-	public void debugDrawHistgramMap(INyARRaster i_input, INyARRaster i_output) throws NyARException
+	public void debugDrawHistogramMap(INyARRaster i_input, INyARRaster i_output) throws NyARException
 	{
 		assert (i_input.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
 		assert (i_output.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
@@ -107,14 +107,14 @@ public class NyARRasterThresholdAnalyzer_DiffHistgram implements INyARRasterThre
 			}
 		}
 		// ヒストグラムを計算
-		int[] histgram = new int[256];
-		int threshold = createHistgram((int[])i_input.getBuffer(),i_input.getSize(), histgram);
+		int[] histogram = new int[256];
+		int threshold = createHistogram((int[])i_input.getBuffer(),i_input.getSize(), histogram);
 
 		// ヒストグラムの最大値を出す
 		int max_v = 0;
 		for (int i = 0; i < 255; i++) {
-			if (max_v < histgram[i]) {
-				max_v = histgram[i];
+			if (max_v < histogram[i]) {
+				max_v = histogram[i];
 			}
 		}
 		// 目盛り
@@ -125,7 +125,7 @@ public class NyARRasterThresholdAnalyzer_DiffHistgram implements INyARRasterThre
 		}
 		// スケーリングしながら描画
 		for (int i = 0; i < 255; i++) {
-			out_buf[(histgram[i] * (size.h - 1) / max_v)* size.w+i] = 255;
+			out_buf[(histogram[i] * (size.h - 1) / max_v)* size.w+i] = 255;
 		}
 		// 値
 		for (int i = 0; i < size.h; i++) {
