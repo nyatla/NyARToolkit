@@ -3,40 +3,69 @@ package jp.nyatla.nyartoolkit.core.raster.rgb;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.*;
+import jp.nyatla.nyartoolkit.core.raster.*;
 
 public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 {
 	protected Object _buf;
 	protected INyARRgbPixelReader _reader;
-	protected INyARBufferReader _buffer_reader;
-	public NyARRgbRaster(NyARIntSize i_size,int i_raster_type) throws NyARException
+	/**
+	 * バッファオブジェクトがアタッチされていればtrue
+	 */
+	protected boolean _is_attached_buffer;
+	public NyARRgbRaster(int i_width, int i_height,int i_raster_type,boolean i_is_alloc) throws NyARException
 	{
-		super(i_size);
-		if(!initInstance(i_size,i_raster_type)){
+		super(new NyARIntSize(i_width,i_height),i_raster_type);
+		if(!initInstance(this._size,i_raster_type,i_is_alloc)){
 			throw new NyARException();
 		}
-		return;
 	}
-	public INyARRgbPixelReader getRgbPixelReader()
+	public NyARRgbRaster(int i_width, int i_height,int i_raster_type) throws NyARException
 	{
-		return this._reader;
+		super(new NyARIntSize(i_width,i_height),i_raster_type);
+		if(!initInstance(this._size,i_raster_type,true)){
+			throw new NyARException();
+		}
 	}
-	public INyARBufferReader getBufferReader()
-	{
-		return this._buffer_reader;
-	}
-	protected boolean initInstance(NyARIntSize i_size,int i_raster_type)
+	protected boolean initInstance(NyARIntSize i_size,int i_raster_type,boolean i_is_alloc)
 	{
 		switch(i_raster_type)
 		{
-			case INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32:
-				this._buf=new int[i_size.w*i_size.h];
+			case INyARRaster.BUFFERFORMAT_INT1D_X8R8G8B8_32:
+				this._buf=i_is_alloc?new int[i_size.w*i_size.h]:null;
 				this._reader=new NyARRgbPixelReader_INT1D_X8R8G8B8_32((int[])this._buf,i_size);
+				break;
+			case INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8X8_32:
+				this._buf=i_is_alloc?new byte[i_size.w*i_size.h*4]:null;
+				this._reader=new NyARRgbPixelReader_BYTE1D_B8G8R8X8_32((byte[])this._buf,i_size);
+				break;
+			case INyARRaster.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+				this._buf=i_is_alloc?new byte[i_size.w*i_size.h*3]:null;
+				this._reader=new NyARRgbPixelReader_BYTE1D_R8G8B8_24((byte[])this._buf,i_size);
 				break;
 			default:
 				return false;
 		}
-		this._buffer_reader=new NyARBufferReader(this._buf,i_raster_type);
+		this._is_attached_buffer=i_is_alloc;
 		return true;
-	}	
+	}
+	public INyARRgbPixelReader getRgbPixelReader() throws NyARException
+	{
+		return this._reader;
+	}
+	public Object getBuffer()
+	{
+		return this._buf;
+	}
+	public boolean hasBuffer()
+	{
+		return this._buf!=null;
+	}
+	public void wrapBuffer(Object i_ref_buf) throws NyARException
+	{
+		assert(!this._is_attached_buffer);//バッファがアタッチされていたら機能しない。
+		this._buf=i_ref_buf;
+		//ピクセルリーダーの参照バッファを切り替える。
+		this._reader.switchBuffer(i_ref_buf);
+	}
 }

@@ -36,7 +36,7 @@ import javax.media.opengl.GL;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
-import jp.nyatla.nyartoolkit.core.rasterreader.*;
+import jp.nyatla.nyartoolkit.core.raster.*;
 import javax.media.format.*;
 
 /**
@@ -57,11 +57,22 @@ public class GLNyARRaster_RGB extends JmfNyARRaster_RGB
 	public GLNyARRaster_RGB(NyARParam i_param,VideoFormat i_format) throws NyARException
 	{
 		super(i_param.getScreenSize(),i_format);
-		switch(this._reader.getBufferType()){
-		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24:
+		initMember(this.getBufferType());
+		return;
+	}
+	public GLNyARRaster_RGB(int i_width,int i_height,VideoFormat i_format) throws NyARException
+	{
+		super(i_width,i_height,i_format);
+		initMember(this.getBufferType());
+		return;
+	}	
+	private void initMember(int i_buffer_type) throws NyARException
+	{
+		switch(i_buffer_type){
+		case INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8_24:
 			this._gl_flag = GL.GL_BGR;
 			break;
-		case INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+		case INyARRaster.BUFFERFORMAT_BYTE1D_R8G8B8_24:
 			this._gl_flag = GL.GL_RGB;
 			break;
 		default:
@@ -77,7 +88,7 @@ public class GLNyARRaster_RGB extends JmfNyARRaster_RGB
 	 */
 	public byte[] getGLRgbArray()
 	{
-		return (byte[])this._reader.getBuffer();
+		return (byte[])this.getBuffer();
 	}
 
 	/**
@@ -90,4 +101,5 @@ public class GLNyARRaster_RGB extends JmfNyARRaster_RGB
 	{
 		return this._gl_flag;
 	}
+
 }

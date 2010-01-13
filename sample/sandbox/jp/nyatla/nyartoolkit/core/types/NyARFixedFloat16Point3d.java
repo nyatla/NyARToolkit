@@ -30,7 +30,6 @@
  */
 package jp.nyatla.nyartoolkit.core.types;
 
-import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.NyARFixedFloat16Point3d;
 import jp.nyatla.nyartoolkit.core.types.NyARI64Point3d;
 

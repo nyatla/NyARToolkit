@@ -31,44 +31,68 @@
 package jp.nyatla.nyartoolkit.core.raster;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
-import jp.nyatla.nyartoolkit.core.rasterreader.NyARBufferReader;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 public final class NyARGrayscaleRaster extends NyARRaster_BasicClass
 {
 
 	protected Object _buf;
-	protected INyARBufferReader _buffer_reader;
+	/**
+	 * バッファオブジェクトがアタッチされていればtrue
+	 */
+	protected boolean _is_attached_buffer;
+
 	public NyARGrayscaleRaster(int i_width, int i_height) throws NyARException
 	{
-		super(new NyARIntSize(i_width,i_height));
-		if(!initInstance(this._size,INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8)){
+		super(new NyARIntSize(i_width,i_height),INyARRaster.BUFFERFORMAT_INT1D_GRAY_8);
+		if(!initInstance(this._size,INyARRaster.BUFFERFORMAT_INT1D_GRAY_8,true)){
 			throw new NyARException();
 		}
 	}	
-	public NyARGrayscaleRaster(int i_width, int i_height,int i_raster_type) throws NyARException
+	public NyARGrayscaleRaster(int i_width, int i_height,boolean i_is_alloc) throws NyARException
 	{
-		super(new NyARIntSize(i_width,i_height));
-		if(!initInstance(this._size,i_raster_type)){
+		super(new NyARIntSize(i_width,i_height),INyARRaster.BUFFERFORMAT_INT1D_GRAY_8);
+		if(!initInstance(this._size,INyARRaster.BUFFERFORMAT_INT1D_GRAY_8,i_is_alloc)){
+			throw new NyARException();
+		}
+	}	
+	public NyARGrayscaleRaster(int i_width, int i_height,int i_raster_type,boolean i_is_alloc) throws NyARException
+	{
+		super(new NyARIntSize(i_width,i_height),i_raster_type);
+		if(!initInstance(this._size,i_raster_type,i_is_alloc)){
 			throw new NyARException();
 		}
 	}
-	public INyARBufferReader getBufferReader()
-	{
-		return this._buffer_reader;
-	}
-	protected boolean initInstance(NyARIntSize i_size,int i_buf_type)
+	protected boolean initInstance(NyARIntSize i_size,int i_buf_type,boolean i_is_alloc)
 	{
 		switch(i_buf_type)
 		{
-			case INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8:
-				this._buf = new int[i_size.w*i_size.h];
+			case INyARRaster.BUFFERFORMAT_INT1D_GRAY_8:
+				this._buf =i_is_alloc?new int[i_size.w*i_size.h]:null;
 				break;
 			default:
 				return false;
 		}
-		this._buffer_reader=new NyARBufferReader(this._buf,i_buf_type);
+		this._is_attached_buffer=i_is_alloc;
 		return true;
 	}
+	public Object getBuffer()
+	{
+		return this._buf;
+	}
+	/**
+	 * インスタンスがバッファを所有するかを返します。
+	 * コンストラクタでi_is_allocをfalseにしてラスタを作成した場合、
+	 * バッファにアクセスするまえに、バッファの有無をこの関数でチェックしてください。
+	 * @return
+	 */
+	public boolean hasBuffer()
+	{
+		return this._buf!=null;
+	}
+	public void wrapBuffer(Object i_ref_buf)
+	{
+		assert(!this._is_attached_buffer);//バッファがアタッチされていたら機能しない。
+		this._buf=i_ref_buf;
+	}	
 }

@@ -161,7 +161,7 @@ public class OptimizeCompareTest implements GLEventListener
 		Frame frame = new Frame("["+i_pf+"]");
 
 		// NyARToolkitの準備
-		this._nya = new NyARSingleDetectMarker(this._ar_param, i_program._ar_code, 80.0,i_program._cap_image.getBufferReader().getBufferType(),i_pf);
+		this._nya = new NyARSingleDetectMarker(this._ar_param, i_program._ar_code, 80.0,i_program._cap_image.getBufferType(),i_pf);
 		this._nya.setContinueMode(true);// ここをtrueにすると、transMatContinueモード（History計算）になります。
 		
 		// 3Dを描画するコンポーネント

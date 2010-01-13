@@ -26,7 +26,6 @@ package jp.nyatla.nyartoolkit.core.rasterfilter;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
-import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 
@@ -41,7 +40,7 @@ public class NyARRasterFilter_GaussianSmooth implements INyARRasterFilter
 	public NyARRasterFilter_GaussianSmooth(int i_raster_type) throws NyARException
 	{
 		switch (i_raster_type) {
-		case INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8:
+		case INyARRaster.BUFFERFORMAT_INT1D_GRAY_8:
 			this._do_filter_impl=new IdoFilterImpl_GRAY_8();
 			break;
 		default:
@@ -51,19 +50,19 @@ public class NyARRasterFilter_GaussianSmooth implements INyARRasterFilter
 	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException
 	{
 		assert (i_input!=i_output);
-		this._do_filter_impl.doFilter(i_input.getBufferReader(),i_output.getBufferReader(),i_input.getSize());
+		this._do_filter_impl.doFilter(i_input,i_output,i_input.getSize());
 	}
 	
 	interface IdoFilterImpl
 	{
-		public void doFilter(INyARBufferReader i_input, INyARBufferReader i_output,NyARIntSize i_size) throws NyARException;
+		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException;
 	}
 	class IdoFilterImpl_GRAY_8 implements IdoFilterImpl
 	{
-		public void doFilter(INyARBufferReader i_input, INyARBufferReader i_output,NyARIntSize i_size) throws NyARException
+		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException
 		{
-			assert (i_input.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
-			assert (i_output.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
+			assert (i_input.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
+			assert (i_output.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
 			int[] in_ptr =(int[])i_input.getBuffer();
 			int[] out_ptr=(int[])i_output.getBuffer();
 			int width=i_size.w;

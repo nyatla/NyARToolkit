@@ -35,6 +35,8 @@ import jp.nyatla.nyartoolkit.core.NyARMat;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.raster.*;
+
 /**
  * 24ビットカラーのマーカーを保持するために使うクラスです。 このクラスは、ARToolkitのパターンと、ラスタから取得したパターンを保持します。
  * 演算順序を含む最適化をしたもの
@@ -43,9 +45,9 @@ import jp.nyatla.nyartoolkit.core.types.*;
 public class NyARColorPatt_O3 implements INyARColorPatt
 {
 	private static final int AR_PATT_SAMPLE_NUM = 64;
+	private static final int BUFFER_FORMAT=INyARRaster.BUFFERFORMAT_INT1D_X8R8G8B8_32;
 
 	private int[] _patdata;
-	private NyARBufferReader _buf_reader;
 	private NyARIntSize _size;
 	private NyARRgbPixelReader_INT1D_X8R8G8B8_32 _pixelreader;
 	
@@ -53,7 +55,6 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 	{
 		this._size=new NyARIntSize(i_width,i_height);
 		this._patdata = new int[i_height*i_width];
-		this._buf_reader=new NyARBufferReader(this._patdata,NyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32);
 		this._pixelreader=new NyARRgbPixelReader_INT1D_X8R8G8B8_32(this._patdata,this._size);
 	}
 	public int getWidth()
@@ -68,13 +69,29 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 	{
 		return 	this._size;
 	}
-	public INyARBufferReader getBufferReader()
-	{
-		return this._buf_reader;
-	}
 	public INyARRgbPixelReader getRgbPixelReader()
 	{
 		return this._pixelreader;
+	}
+	public Object getBuffer()
+	{
+		return this._patdata;
+	}
+	public boolean hasBuffer()
+	{
+		return this._patdata!=null;
+	}
+	public void wrapBuffer(Object i_ref_buf) throws NyARException
+	{
+		NyARException.notImplement();
+	}
+	final public int getBufferType()
+	{
+		return BUFFER_FORMAT;
+	}
+	final public boolean isEqualBufferType(int i_type_value)
+	{
+		return BUFFER_FORMAT==i_type_value;
 	}
 	private final NyARMat wk_get_cpara_a = new NyARMat(8, 8);
 	private final NyARMat wk_get_cpara_b = new NyARMat(8, 1);

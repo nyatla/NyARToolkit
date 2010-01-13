@@ -26,7 +26,6 @@ package jp.nyatla.nyartoolkit.core.labeling.rlelabeling;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.types.stack.NyObjectStack;
 
 class RleInfoStack extends NyObjectStack<RleInfoStack.RleInfo>
@@ -205,7 +204,7 @@ public class NyARLabeling_Rle
 	 */
 	public int labeling(NyARBinRaster i_bin_raster, int i_top, int i_bottom,RleLabelFragmentInfoStack o_stack) throws NyARException
 	{
-		assert(i_bin_raster.getBufferReader().isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8));
+		assert(i_bin_raster.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_BIN_8));
 		return this.imple_labeling(i_bin_raster,0,i_top,i_bottom,o_stack);
 	}
 	/**
@@ -221,7 +220,7 @@ public class NyARLabeling_Rle
 	 */
 	public int labeling(NyARGrayscaleRaster i_gs_raster,int i_th, int i_top, int i_bottom,RleLabelFragmentInfoStack o_stack) throws NyARException
 	{
-		assert(i_gs_raster.getBufferReader().isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
+		assert(i_gs_raster.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
 		return this.imple_labeling(i_gs_raster,i_th,i_top,i_bottom,o_stack);
 	}
 	private int imple_labeling(INyARRaster i_raster,int i_th,int i_top, int i_bottom,RleLabelFragmentInfoStack o_stack) throws NyARException
@@ -236,7 +235,7 @@ public class NyARLabeling_Rle
 		int len_prev = 0;
 		int len_current = 0;
 		final int width = i_raster.getWidth();
-		int[] in_buf = (int[]) i_raster.getBufferReader().getBuffer();
+		int[] in_buf = (int[]) i_raster.getBuffer();
 
 		int id_max = 0;
 		int label_count=0;

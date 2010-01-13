@@ -80,5 +80,9 @@ public class NyARRgbPixelReader_BYTE1D_X8R8G8B8_32 implements INyARRgbPixelReade
 	{
 		NyARException.notImplement();		
 	}
-	
+	public void switchBuffer(Object i_ref_buffer) throws NyARException
+	{
+		assert(((byte[])i_ref_buffer).length>=this._size.w*this._size.h*4);
+		this._ref_buf=(byte[])i_ref_buffer;
+	}
 }

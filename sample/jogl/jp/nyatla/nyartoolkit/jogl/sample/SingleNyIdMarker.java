@@ -38,7 +38,6 @@ import javax.media.opengl.*;
 import com.sun.opengl.util.*;
 import com.sun.opengl.util.j2d.*;
 import jp.nyatla.nyartoolkit.*;
-import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.transmat.*;
@@ -160,7 +159,7 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 		this._cap_image = new GLNyARRaster_RGB(i_cparam,this._capture.getCaptureFormat());	
 
 		//プロセッサの準備
-		this._processor=new MarkerProcessor(i_cparam,100,this._cap_image.getBufferReader().getBufferType());
+		this._processor=new MarkerProcessor(i_cparam,100,this._cap_image.getBufferType());
 		
 		//OpenGLフレームの準備（OpenGLリソースの初期化、カメラの撮影開始は、initコールバック関数内で実行）
 		Frame frame = new Frame("Java simpleLite with NyARToolkit");
@@ -224,7 +223,7 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 	public void display(GLAutoDrawable drawable)
 	{
 		NyARTransMatResult transmat_result = this._processor.transmat;
-		if (!_cap_image.hasData()) {
+		if (!_cap_image.hasBuffer()) {
 			return;
 		}
 		// 背景を書く

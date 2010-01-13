@@ -35,7 +35,7 @@ import javax.media.j3d.ImageComponent2D;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
-import jp.nyatla.nyartoolkit.core.rasterreader.*;
+import jp.nyatla.nyartoolkit.core.raster.*;
 /**
  * 
  * このクラスは、Java3Dと互換性のあるNyARToolkitのラスタイメージを保持します。
@@ -57,12 +57,12 @@ public class J3dNyARRaster_RGB extends JmfNyARRaster_RGB
 	 */
 	public void setBuffer(javax.media.Buffer i_buffer) throws NyARException
 	{
-		this._reader.changeBuffer(i_buffer);
+		super.setBuffer(i_buffer);
 		synchronized (this){
 			//キャプチャデータをi2dのバッファにコピーする。
 			//現在はJmfNyARRaster_RGBでRGB画像がノーマライズされているので、
 			//ここでもう一度flipする。（これ省略したいなあ…。）
-			byte[] src=(byte[])this._reader.getBuffer();
+			byte[] src=(byte[])this.getBuffer();
 			final int length = this._size.w * 3;
 			int src_idx = 0;
 			int dest_idx = (this._size.h - 1) * length;			
@@ -79,7 +79,7 @@ public class J3dNyARRaster_RGB extends JmfNyARRaster_RGB
 	{
 		super(i_cparam.getScreenSize(),i_format);
 		//bufferdimageの種類を決める
-		if(this._reader.getBufferType()!=INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24){
+		if(this.getBufferType()!=INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8_24){
 			throw new NyARException();
 		}
 		//RGBのラスタを作る。

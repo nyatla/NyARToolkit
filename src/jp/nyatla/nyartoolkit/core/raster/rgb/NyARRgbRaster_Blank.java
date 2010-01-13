@@ -31,10 +31,9 @@
 package jp.nyatla.nyartoolkit.core.raster.rgb;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
+import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.INyARRgbPixelReader;
-import jp.nyatla.nyartoolkit.core.rasterreader.NyARBufferReader;
-import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+import jp.nyatla.nyartoolkit.core.types.*;
 
 /*
  * 真っ黒の矩形を定義する。
@@ -68,25 +67,35 @@ public class NyARRgbRaster_Blank extends NyARRgbRaster_BasicClass
 		{
 			NyARException.notImplement();		
 		}
+		public void switchBuffer(Object i_ref_buffer) throws NyARException
+		{
+			NyARException.notImplement();		
+		}		
 		
 	}
 
 	private INyARRgbPixelReader _reader;
-	private INyARBufferReader _buffer_reader;
 	
 	public NyARRgbRaster_Blank(int i_width, int i_height)
 	{
-		super(new NyARIntSize(i_width,i_height));
+		super(new NyARIntSize(i_width,i_height),INyARRaster.BUFFERFORMAT_NULL_ALLZERO);
 		this._reader = new PixelReader();
-		this._buffer_reader=new NyARBufferReader(null,INyARBufferReader.BUFFERFORMAT_NULL_ALLZERO);
 		return;
 	}
-	public INyARRgbPixelReader getRgbPixelReader()
+	public INyARRgbPixelReader getRgbPixelReader() throws NyARException
 	{
 		return this._reader;
 	}
-	public INyARBufferReader getBufferReader()
+	public Object getBuffer()
 	{
-		return this._buffer_reader;
+		return null;
+	}
+	public boolean hasBuffer()
+	{
+		return false;
+	}
+	public void wrapBuffer(Object i_ref_buf) throws NyARException
+	{
+		NyARException.notImplement();
 	}
 }

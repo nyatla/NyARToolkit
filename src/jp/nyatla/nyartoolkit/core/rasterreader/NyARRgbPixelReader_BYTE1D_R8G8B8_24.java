@@ -37,13 +37,13 @@ import jp.nyatla.nyartoolkit.core.types.*;
  * バッファに使用できるピクセルリーダー
  *
  */
-public class NyARRgbPixelReader_RGB24 implements INyARRgbPixelReader
+public class NyARRgbPixelReader_BYTE1D_R8G8B8_24 implements INyARRgbPixelReader
 {
 	protected byte[] _ref_buf;
 
 	private NyARIntSize _size;
 
-	public NyARRgbPixelReader_RGB24(byte[] i_buf, NyARIntSize i_size)
+	public NyARRgbPixelReader_BYTE1D_R8G8B8_24(byte[] i_buf, NyARIntSize i_size)
 	{
 		this._ref_buf = i_buf;
 		this._size = i_size;
@@ -80,5 +80,9 @@ public class NyARRgbPixelReader_RGB24 implements INyARRgbPixelReader
 	{
 		NyARException.notImplement();		
 	}
-	
+	public void switchBuffer(Object i_ref_buffer) throws NyARException
+	{
+		assert(((byte[])i_ref_buffer).length>=this._size.w*this._size.h*3);
+		this._ref_buf=(byte[])i_ref_buffer;
+	}	
 }

@@ -19,16 +19,16 @@ import jp.nyatla.nyartoolkit.*;
  */
 public class JmfCaptureDeviceList
 {
-	private Vector _devices;
+	private Vector<CaptureDeviceInfo> _devices;
 
 	public JmfCaptureDeviceList() throws NyARException
-	{
-		this._devices = (Vector) CaptureDeviceManager.getDeviceList(null).clone();
+	{ 
+		this._devices = (Vector<CaptureDeviceInfo>)(CaptureDeviceManager.getDeviceList(null).clone());
 		// ビデオソースのデバイスだけ残す
 		try {
 
 			for (int i = 0; i < this._devices.size();) {
-				CaptureDeviceInfo cdi = (CaptureDeviceInfo) this._devices.elementAt(i);
+				CaptureDeviceInfo cdi =this._devices.elementAt(i);
 				// VideoFormatもってるかな？
 				if (!isCaptureDevice(cdi)) {
 					this._devices.remove(i);

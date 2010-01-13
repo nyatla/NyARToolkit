@@ -36,14 +36,14 @@ import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRasterFilter_RgbToGs;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.*;
+import jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.INyARSquareContourDetector;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareStack;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core2.rasterfilter.rgb2gs.*;
 
 /**
  * 画像からARCodeに最も一致するマーカーを1個検出し、その変換行列を計算するクラスです。
@@ -90,8 +90,8 @@ public class NyARSingleQrDetector
 	private NyARBinRaster _bin_raster;
 	private NyARGrayscaleRaster _gs_raster;
 	//画処理フィルター
-	private INyARRasterFilter_RgbToGs _rgb2gs_filter=new NyARRasterFilter_RgbAve();
-	private INyARRasterFilter_GsToBin _gstobin_filter=new NyARRasterFilter_QrAreaAverage();
+	private INyARRasterFilter_Rgb2Gs _rgb2gs_filter=new NyARRasterFilter_Rgb2Gs_AveAdd();
+	private INyARRasterFilter_Gs2Bin _gstobin_filter=new NyARRasterFilter_QrAreaAverage();
 
 	/**
 	 * i_imageにマーカー検出処理を実行し、結果を記録します。

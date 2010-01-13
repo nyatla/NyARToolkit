@@ -139,7 +139,7 @@ public class NyARCustomSingleDetectMarker
 	protected INyARTransMat _transmat;
 	//画処理用
 	private NyARBinRaster _bin_raster;
-	protected INyARRasterFilter_RgbToBin _tobin_filter;
+	protected INyARRasterFilter_Rgb2Bin _tobin_filter;
 	private DetectSquareCB _detect_cb;
 	private NyARRectOffset _offset; 
 
@@ -152,7 +152,7 @@ public class NyARCustomSingleDetectMarker
 		INyARColorPatt i_patt_inst,
 		INyARSquareContourDetector i_sqdetect_inst,
 		INyARTransMat i_transmat_inst,
-		INyARRasterFilter_RgbToBin i_filter,
+		INyARRasterFilter_Rgb2Bin i_filter,
 		NyARParam	i_ref_param,
 		NyARCode	i_ref_code,
 		double		i_marker_width) throws NyARException

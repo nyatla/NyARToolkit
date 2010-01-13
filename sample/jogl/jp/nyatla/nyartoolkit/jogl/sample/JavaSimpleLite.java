@@ -129,7 +129,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 		this._cap_image = new GLNyARRaster_RGB(this._ar_param, this._capture.getCaptureFormat());
 		
 		// NyARToolkitの準備
-		this._nya = new NyARSingleDetectMarker(this._ar_param, i_ar_code, 80.0,this._cap_image.getBufferReader().getBufferType());
+		this._nya = new NyARSingleDetectMarker(this._ar_param, i_ar_code, 80.0,this._cap_image.getBufferType());
 		this._nya.setContinueMode(false);// ここをtrueにすると、transMatContinueモード（History計算）になります。
 		
 		// 3Dを描画するコンポーネント
@@ -191,7 +191,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 	public void display(GLAutoDrawable drawable)
 	{
 		NyARTransMatResult transmat_result = __display_transmat_result;
-		if (!_cap_image.hasData()) {
+		if (!_cap_image.hasBuffer()) {
 			return;
 		}
 		// 背景を書く

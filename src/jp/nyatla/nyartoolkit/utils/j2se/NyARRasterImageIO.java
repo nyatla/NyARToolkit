@@ -73,9 +73,9 @@ public class NyARRasterImageIO
 	public static void copy(NyARGrayscaleRaster i_in,BufferedImage o_out) throws NyARException
 	{
 		assert i_in.getSize().isEqualSize(o_out.getWidth(), o_out.getHeight());
-		if(i_in.getBufferReader().isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8))
+		if(i_in.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8))
 		{
-			final int[] buf=(int[])i_in.getBufferReader().getBuffer();
+			final int[] buf=(int[])i_in.getBuffer();
 			final int w=o_out.getWidth();
 			final int h=o_out.getHeight();
 			for(int y=h-1;y>=0;y--){
@@ -95,9 +95,9 @@ public class NyARRasterImageIO
 	public static void copy(INyARRaster i_in,BufferedImage o_out) throws NyARException
 	{
 		assert i_in.getSize().isEqualSize(o_out.getWidth(), o_out.getHeight());
-		if(i_in.getBufferReader().isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8))
+		if(i_in.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_BIN_8))
 		{
-			final int[] buf=(int[])i_in.getBufferReader().getBuffer();
+			final int[] buf=(int[])i_in.getBuffer();
 			final int w=o_out.getWidth();
 			final int h=o_out.getHeight();
 			for(int y=h-1;y>=0;y--){
@@ -162,9 +162,9 @@ public class NyARRasterImageIO
 	public static void copy(BufferedImage i_in,INyARRaster o_out) throws NyARException
 	{
 		assert o_out.getSize().isEqualSize(i_in.getWidth(), i_in.getHeight());
-		if(o_out.getBufferReader().isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8))
+		if(o_out.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_BIN_8))
 		{
-			final int[] buf=(int[])o_out.getBufferReader().getBuffer();
+			final int[] buf=(int[])o_out.getBuffer();
 			final int w=i_in.getWidth();
 			final int h=i_in.getHeight();
 			for(int y=h-1;y>=0;y--){

@@ -34,7 +34,6 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.stack.*;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core.rasterreader.*;
 
 /**
  * QRコードの4頂点候補を探そうとするクラス。
@@ -45,7 +44,7 @@ public class NyARRasterDetector_QrCodeEdge
 {
 	private NyARIntRectStack _result;
 
-	public NyARRasterDetector_QrCodeEdge(int i_result_max)
+	public NyARRasterDetector_QrCodeEdge(int i_result_max) throws NyARException
 	{
 		this._result = new NyARIntRectStack(i_result_max);
 		return;
@@ -87,8 +86,7 @@ public class NyARRasterDetector_QrCodeEdge
 	}	
 	public void analyzeRaster(INyARRaster i_input) throws NyARException
 	{
-		INyARBufferReader buffer_reader=i_input.getBufferReader();
-		assert (buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8));
+		assert (i_input.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_BIN_8));
 
 		// 結果をクリア
 		this._result.clear();
@@ -99,7 +97,7 @@ public class NyARRasterDetector_QrCodeEdge
 		w1 = b1 = w2 = b2 = w3 = b3 = 0;
 
 		NyARIntRect item;
-		int[] raster_buf=(int[])buffer_reader.getBuffer();
+		int[] raster_buf=(int[])i_input.getBuffer();
 		int line_ptr;
 		int s_pos, b2_spos,b3_spos;
 		b2_spos=0;

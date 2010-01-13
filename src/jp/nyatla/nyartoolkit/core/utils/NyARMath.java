@@ -37,6 +37,16 @@ public class NyARMath
 		z=i_p2.z-i_p1.z;
 		return x*x+y*y+z*z;
 	}
-
+	/**
+	 * 3乗根を求められないシステムで、３乗根を求めます。
+	 * http://aoki2.si.gunma-u.ac.jp/JavaScript/src/3jisiki.html
+	 * @param i_in
+	 * @return
+	 */
+	public static double cubeRoot(double i_in)
+	{
+		double res = Math.pow(Math.abs(i_in), 1.0 / 3.0);
+		return (i_in >= 0) ? res : -res;
+	}
 
 }

@@ -38,10 +38,8 @@ import java.awt.*;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.stack.*;
-import jp.nyatla.nyartoolkit.core.labeling.*;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingImage;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabel;
 
@@ -123,7 +121,7 @@ public class LabelingBufferdImage extends BufferedImage
 
 	public void drawImage(NyARGrayscaleRaster i_raster) throws NyARException
 	{
-		assert (i_raster.getBufferReader().getBufferType() == INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8);
+		assert (i_raster.getBufferType() == INyARRaster.BUFFERFORMAT_INT1D_GRAY_8);
 
 		int w = this.getWidth();
 		int h = this.getHeight();
@@ -135,7 +133,7 @@ public class LabelingBufferdImage extends BufferedImage
 
 		int[] limg;
 		// イメージの描画
-		limg = (int[]) i_raster.getBufferReader().getBuffer();
+		limg = (int[]) i_raster.getBuffer();
 		for (int i = 0; i < h; i++) {
 			for (int i2 = 0; i2 < w; i2++) {
 				this.setRGB(i2, i,limg[i*w+i2]);
@@ -150,7 +148,7 @@ public class LabelingBufferdImage extends BufferedImage
 	 */
 	public void drawImage(NyARBinRaster i_raster) throws NyARException
 	{
-		assert (i_raster.getBufferReader().getBufferType() == INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8);
+		assert (i_raster.getBufferType() == INyARRaster.BUFFERFORMAT_INT1D_BIN_8);
 
 		int w = this.getWidth();
 		int h = this.getHeight();
@@ -162,7 +160,7 @@ public class LabelingBufferdImage extends BufferedImage
 
 		int[] limg;
 		// イメージの描画
-		limg = (int[]) i_raster.getBufferReader().getBuffer();
+		limg = (int[]) i_raster.getBuffer();
 		for (int i = 0; i < h; i++) {
 			for (int i2 = 0; i2 < w; i2++) {
 				this.setRGB(i2, i, limg[i*w+i2] > 0 ? 255 : 0);
@@ -189,7 +187,7 @@ public class LabelingBufferdImage extends BufferedImage
 
 		int[] limg;
 		// イメージの描画
-		limg = (int[]) i_image.getBufferReader().getBuffer();
+		limg = (int[]) i_image.getBuffer();
 		for (int i = 0; i < h; i++) {
 			for (int i2 = 0; i2 < w; i2++) {
 				int t=limg[i*w+i2]-1;

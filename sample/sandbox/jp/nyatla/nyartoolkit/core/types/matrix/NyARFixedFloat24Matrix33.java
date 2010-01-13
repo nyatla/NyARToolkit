@@ -30,7 +30,6 @@
  */
 package jp.nyatla.nyartoolkit.core.types.matrix;
 
-import jp.nyatla.nyartoolkit.core.types.matrix.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARFixedFloat24Matrix33;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARI64Matrix33;
 

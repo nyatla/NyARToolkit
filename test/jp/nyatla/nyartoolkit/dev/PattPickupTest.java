@@ -78,7 +78,7 @@ public class PattPickupTest extends Frame implements JmfCaptureListener
 		NyARCode code = new NyARCode(16, 16);
 		code.loadARPattFromFile(CARCODE_FILE);
 		this._capraster = new JmfNyARRaster_RGB(W, H, this._capture.getCaptureFormat());
-		this.detect = new NyARSingleDetectMarker(ar_param, code, 80, this._capraster.getBufferReader().getBufferType());
+		this.detect = new NyARSingleDetectMarker(ar_param, code, 80, this._capraster.getBufferType());
 		this._capture.setOnCapture(this);
 		this._bin_raster = new NyARBinRaster(W, H);
 		this._param = ar_param;
@@ -112,7 +112,7 @@ public class PattPickupTest extends Frame implements JmfCaptureListener
 
 			{// ピックアップ画像の表示
 				// 矩形抽出
-				INyARRasterFilter_Bin to_binfilter = new NyARRasterFilterBuilder_RgbToBin(110, i_raster.getBufferReader().getBufferType());
+				INyARRasterFilter_Bin to_binfilter = new NyARRasterFilterBuilder_RgbToBin(110, i_raster.getBufferType());
 				to_binfilter.doFilter(i_raster, this._bin_raster);
 				if (this.detect.detectMarkerLite(i_raster, 100)) {
 

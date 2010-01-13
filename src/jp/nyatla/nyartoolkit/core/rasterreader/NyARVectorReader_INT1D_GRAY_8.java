@@ -34,8 +34,8 @@ public 	class NyARVectorReader_INT1D_GRAY_8
 	private NyARIntSize _ref_size;
 	public NyARVectorReader_INT1D_GRAY_8(INyARRaster i_ref_raster)
 	{
-		assert(i_ref_raster.getBufferReader().getBufferType()==INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8);
-		this._ref_buf=(int[])(i_ref_raster.getBufferReader().getBuffer());
+		assert(i_ref_raster.getBufferType()==INyARRaster.BUFFERFORMAT_INT1D_GRAY_8);
+		this._ref_buf=(int[])(i_ref_raster.getBuffer());
 		this._ref_size=i_ref_raster.getSize();
 	}
 	/**

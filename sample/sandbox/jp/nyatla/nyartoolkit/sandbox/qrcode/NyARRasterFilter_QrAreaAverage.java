@@ -33,21 +33,22 @@ package jp.nyatla.nyartoolkit.sandbox.qrcode;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
  * 平均移動法を使った２値化フィルタ
  * 
  */
-public class NyARRasterFilter_QrAreaAverage implements INyARRasterFilter_GsToBin
+public class NyARRasterFilter_QrAreaAverage implements INyARRasterFilter_Gs2Bin
 {
 	private int _area = 8;
 
 	public void doFilter(NyARGrayscaleRaster i_input, NyARBinRaster i_output) throws NyARException
 	{
 		final NyARIntSize size = i_output.getSize();
-		final int[] out_buf = (int[]) i_output.getBufferReader().getBuffer();
-		final int[] in_buf = (int[]) i_input.getBufferReader().getBuffer();
+		final int[] out_buf = (int[]) i_output.getBuffer();
+		final int[] in_buf = (int[]) i_input.getBuffer();
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
 		assert (size.h % 8 == 0 && size.w % 8 == 0);//暫定実装なので。
 

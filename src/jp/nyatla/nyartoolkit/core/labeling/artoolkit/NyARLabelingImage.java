@@ -32,8 +32,6 @@ package jp.nyatla.nyartoolkit.core.labeling.artoolkit;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
-import jp.nyatla.nyartoolkit.core.rasterreader.NyARBufferReader;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
@@ -41,28 +39,35 @@ import jp.nyatla.nyartoolkit.core.types.*;
  */
 public class NyARLabelingImage extends NyARRaster_BasicClass
 {
-	private final static int MAX_LABELS = 1024*32;	
+	private final static int MAX_LABELS = 1024*32;
+
 	protected int[] _ref_buf;
-	private INyARBufferReader _buffer_reader;
 	protected NyARLabelingLabelStack _label_list;
 	protected int[] _index_table;
 	protected boolean _is_index_table_enable;
 	public NyARLabelingImage(int i_width, int i_height) throws NyARException
 	{
-		super(new NyARIntSize(i_width,i_height));
+		super(new NyARIntSize(i_width,i_height),INyARRaster.BUFFERFORMAT_INT1D);
 		this._ref_buf =new int[i_height*i_width];
 		this._label_list = new NyARLabelingLabelStack(MAX_LABELS);
 		this._index_table=new int[MAX_LABELS];
 		this._is_index_table_enable=false;
-		this._buffer_reader=new NyARBufferReader(this._ref_buf,INyARBufferReader.BUFFERFORMAT_INT1D);
 		//生成時に枠を書きます。
 		drawFrameEdge();
 		return;
 	}
-	public INyARBufferReader getBufferReader()
+	public Object getBuffer()
 	{
-		return this._buffer_reader;
+		return this._ref_buf;
 	}
+	public boolean hasBuffer()
+	{
+		return this._ref_buf!=null;
+	}
+	public void wrapBuffer(Object i_ref_buf) throws NyARException
+	{
+		NyARException.notImplement();
+	}	
 	/**
 	 * エッジを書きます。
 	 */
@@ -133,5 +138,5 @@ public class NyARLabelingImage extends NyARRaster_BasicClass
 		}
 		//あれ？見つからないよ？
 		throw new NyARException();
-	}
+	}	
 }

@@ -2,7 +2,6 @@ package jp.nyatla.nyartoolkit.core.rasterfilter;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
-import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
@@ -15,10 +14,10 @@ public class NyARRasterFilter_Rgb2Hsv implements INyARRasterFilter
 	public NyARRasterFilter_Rgb2Hsv(int i_raster_type) throws NyARException
 	{
 		switch (i_raster_type) {
-		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24:
+		case INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8_24:
 			this._dofilterimpl=new IdoFilterImpl_BYTE1D_B8G8R8_24();
 			break;
-		case INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+		case INyARRaster.BUFFERFORMAT_BYTE1D_R8G8B8_24:
 		default:
 			throw new NyARException();
 		}
@@ -26,19 +25,19 @@ public class NyARRasterFilter_Rgb2Hsv implements INyARRasterFilter
 	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException
 	{
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
-		this._dofilterimpl.doFilter(i_input.getBufferReader(),i_output.getBufferReader(),i_input.getSize());
+		this._dofilterimpl.doFilter(i_input,i_output,i_input.getSize());
 	}
 	
 	abstract class IdoFilterImpl
 	{
-		public abstract void doFilter(INyARBufferReader i_input, INyARBufferReader i_output,NyARIntSize i_size) throws NyARException;
+		public abstract void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException;
 		
 	}
 	class IdoFilterImpl_BYTE1D_B8G8R8_24 extends IdoFilterImpl
 	{
-		public void doFilter(INyARBufferReader i_input, INyARBufferReader i_output,NyARIntSize i_size) throws NyARException
+		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException
 		{
-			assert(		i_input.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_X7H9S8V8_32));
+			assert(		i_input.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_X7H9S8V8_32));
 			
 			int[] out_buf = (int[]) i_output.getBuffer();
 			byte[] in_buf = (byte[]) i_input.getBuffer();

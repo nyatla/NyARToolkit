@@ -3,7 +3,6 @@ package jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
-import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 
@@ -12,14 +11,14 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
  * 定数閾値による2値化をする。
  * 
  */
-public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_RgbToBin
+public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rgb2Bin
 {
 	protected int _threshold;
 	private IdoThFilterImpl _do_threshold_impl;
 
 	public NyARRasterFilter_ARToolkitThreshold(int i_threshold,int i_in_raster_type) throws NyARException
 	{
-		if(!initInstance(i_threshold,i_in_raster_type,INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8)){
+		if(!initInstance(i_threshold,i_in_raster_type,INyARRaster.BUFFERFORMAT_INT1D_BIN_8)){
 			throw new NyARException();
 		}
 	}
@@ -32,22 +31,22 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 	protected boolean initInstance(int i_threshold,int i_in_raster_type,int i_out_raster_type)
 	{
 		switch(i_out_raster_type){
-		case INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8:
+		case INyARRaster.BUFFERFORMAT_INT1D_BIN_8:
 			switch (i_in_raster_type){
-			case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24:
-			case INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+			case INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8_24:
+			case INyARRaster.BUFFERFORMAT_BYTE1D_R8G8B8_24:
 				this._do_threshold_impl=new doThFilterImpl_BUFFERFORMAT_BYTE1D_RGB_24();
 				break;
-			case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8X8_32:
+			case INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8X8_32:
 				this._do_threshold_impl=new doThFilterImpl_BUFFERFORMAT_BYTE1D_B8G8R8X8_32();
 				break;
-			case INyARBufferReader.BUFFERFORMAT_BYTE1D_X8R8G8B8_32:
+			case INyARRaster.BUFFERFORMAT_BYTE1D_X8R8G8B8_32:
 				this._do_threshold_impl=new doThFilterImpl_BUFFERFORMAT_BYTE1D_X8R8G8B8_32();
 				break;
-			case INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32:
+			case INyARRaster.BUFFERFORMAT_INT1D_X8R8G8B8_32:
 				this._do_threshold_impl=new doThFilterImpl_BUFFERFORMAT_INT1D_X8R8G8B8_32();
 				break;
-			case INyARBufferReader.BUFFERFORMAT_WORD1D_R5G6B5_16LE:
+			case INyARRaster.BUFFERFORMAT_WORD1D_R5G6B5_16LE:
 				this._do_threshold_impl=new doThFilterImpl_BUFFERFORMAT_WORD1D_R5G6B5_16LE();
 				break;
 			default:
@@ -72,11 +71,9 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 
 	public void doFilter(INyARRgbRaster i_input, NyARBinRaster i_output) throws NyARException
 	{
-		INyARBufferReader in_buffer_reader=i_input.getBufferReader();	
-		INyARBufferReader out_buffer_reader=i_output.getBufferReader();
 
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
-		this._do_threshold_impl.doThFilter(in_buffer_reader,out_buffer_reader,i_output.getSize(), this._threshold);
+		this._do_threshold_impl.doThFilter(i_input,i_output,i_output.getSize(), this._threshold);
 		return;
 	}
 	/*
@@ -84,13 +81,13 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 	 */
 	interface IdoThFilterImpl
 	{
-		public void doThFilter(INyARBufferReader i_input, INyARBufferReader i_output,NyARIntSize i_size,int i_threshold);
+		public void doThFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size,int i_threshold);
 	}
 	class doThFilterImpl_BUFFERFORMAT_BYTE1D_RGB_24 implements IdoThFilterImpl
 	{
-		public void doThFilter(INyARBufferReader i_input, INyARBufferReader i_output,NyARIntSize i_size,int i_threshold)
+		public void doThFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size,int i_threshold)
 		{
-			assert (i_output.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8));
+			assert (i_output.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_BIN_8));
 			
 			int[] out_buf = (int[]) i_output.getBuffer();
 			byte[] in_buf = (byte[]) i_input.getBuffer();
@@ -147,10 +144,10 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 	}
 	class doThFilterImpl_BUFFERFORMAT_BYTE1D_B8G8R8X8_32 implements IdoThFilterImpl
 	{
-		public void doThFilter(INyARBufferReader i_input, INyARBufferReader i_output,NyARIntSize i_size,int i_threshold)
+		public void doThFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size,int i_threshold)
 		{
-			assert (i_input.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8X8_32));
-			assert (i_output.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8));
+			assert (i_input.isEqualBufferType(INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8X8_32));
+			assert (i_output.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_BIN_8));
 			
 			int[] out_buf = (int[]) i_output.getBuffer();
 			byte[] in_buf = (byte[]) i_input.getBuffer();
@@ -206,9 +203,9 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 	
 	class doThFilterImpl_BUFFERFORMAT_BYTE1D_X8R8G8B8_32 implements IdoThFilterImpl
 	{
-		public void doThFilter(INyARBufferReader i_input, INyARBufferReader i_output,NyARIntSize i_size,int i_threshold)
+		public void doThFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size,int i_threshold)
 		{
-			assert (i_output.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8));
+			assert (i_output.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_BIN_8));
 			
 			int[] out_buf = (int[]) i_output.getBuffer();
 			byte[] in_buf = (byte[]) i_input.getBuffer();
@@ -266,9 +263,9 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 	
 	class doThFilterImpl_BUFFERFORMAT_INT1D_X8R8G8B8_32 implements IdoThFilterImpl
 	{
-		public void doThFilter(INyARBufferReader i_input, INyARBufferReader i_output,NyARIntSize i_size,int i_threshold)
+		public void doThFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size,int i_threshold)
 		{
-			assert (i_output.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8));
+			assert (i_output.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_BIN_8));
 			
 			int[] out_buf = (int[]) i_output.getBuffer();
 			int[] in_buf = (int[]) i_input.getBuffer();
@@ -315,9 +312,9 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 	
 	class doThFilterImpl_BUFFERFORMAT_WORD1D_R5G6B5_16LE implements IdoThFilterImpl
 	{
-		public void doThFilter(INyARBufferReader i_input, INyARBufferReader i_output,NyARIntSize i_size,int i_threshold)
+		public void doThFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size,int i_threshold)
 		{
-			assert (i_output.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8));
+			assert (i_output.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_BIN_8));
 			
 			int[] out_buf = (int[]) i_output.getBuffer();
 			short[] in_buf = (short[]) i_input.getBuffer();

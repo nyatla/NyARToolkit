@@ -38,8 +38,6 @@ import java.io.StreamTokenizer;
 import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.match.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core.rasterreader.*;
 
 class NyARCodeFileReader
 {
@@ -58,9 +56,9 @@ class NyARCodeFileReader
 			StreamTokenizer st = new StreamTokenizer(new InputStreamReader(i_stream));
 			//GBRAで一度読みだす。
 			for (int h = 0; h < 4; h++) {
-				assert o_raster[h].getBufferReader().isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32);
+				assert o_raster[h].isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_X8R8G8B8_32);
 				final NyARRaster ra=o_raster[h];
-				readBlock(st,ra.getWidth(),ra.getHeight(),(int[])ra.getBufferReader().getBuffer());
+				readBlock(st,ra.getWidth(),ra.getHeight(),(int[])ra.getBuffer());
 			}
 		} catch (Exception e) {
 			throw new NyARException(e);
@@ -77,11 +75,11 @@ class NyARCodeFileReader
 	{
 		int width=o_code.getWidth();
 		int height=o_code.getHeight();
-		NyARRaster tmp_raster=new NyARRaster(new NyARIntSize(width,height),INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32);
+		NyARRaster tmp_raster=new NyARRaster(width,height,INyARRaster.BUFFERFORMAT_INT1D_X8R8G8B8_32);
 		//4個の要素をラスタにセットする。
 		try {
 			StreamTokenizer st = new StreamTokenizer(new InputStreamReader(i_stream));
-			int[] buf=(int[])tmp_raster.getBufferReader().getBuffer();
+			int[] buf=(int[])tmp_raster.getBuffer();
 			//GBRAで一度読みだす。
 			for (int h = 0; h < 4; h++){
 				readBlock(st,width,height,buf);

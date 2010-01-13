@@ -149,7 +149,7 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 		this._code_table[0]=new NyARCode(16,16);
 		this._code_table[0].loadARPattFromFile(CARCODE_FILE1);
 		//プロセッサの準備
-		this._processor=new MarkerProcessor(i_cparam,this._cap_image.getBufferReader().getBufferType());
+		this._processor=new MarkerProcessor(i_cparam,this._cap_image.getBufferType());
 		this._processor.setARCodeTable(_code_table,16,80.0);
 		
 		//OpenGLフレームの準備（OpenGLリソースの初期化、カメラの撮影開始は、initコールバック関数内で実行）
@@ -214,7 +214,7 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 	public void display(GLAutoDrawable drawable)
 	{
 		NyARTransMatResult transmat_result = this._processor.transmat;
-		if (!_cap_image.hasData()) {
+		if (!_cap_image.hasBuffer()) {
 			return;
 		}
 		// 背景を書く

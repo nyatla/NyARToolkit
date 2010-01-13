@@ -26,6 +26,7 @@ package jp.nyatla.nyartoolkit.core.pickup;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
+import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.utils.NyARPerspectiveParamGenerator_O1;
@@ -41,11 +42,11 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 	protected int[] _patdata;
 	protected NyARIntPoint2d _pickup_lt=new NyARIntPoint2d();	
 	protected int _resolution;
-	protected NyARBufferReader _buf_reader;
 	protected NyARIntSize _size;
 	protected NyARPerspectiveParamGenerator_O1 _perspective_gen;
 	private NyARRgbPixelReader_INT1D_X8R8G8B8_32 _pixelreader;
 	private static final int LOCAL_LT=1;
+	private static final int BUFFER_FORMAT=INyARRaster.BUFFERFORMAT_INT1D_X8R8G8B8_32;
 	
 	private void initializeInstance(int i_width, int i_height,int i_point_per_pix)
 	{
@@ -53,7 +54,6 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 		this._resolution=i_point_per_pix;	
 		this._size=new NyARIntSize(i_width,i_height);
 		this._patdata = new int[i_height*i_width];
-		this._buf_reader=new NyARBufferReader(this._patdata,INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32);
 		this._pixelreader=new NyARRgbPixelReader_INT1D_X8R8G8B8_32(this._patdata,this._size);
 		return;		
 	}
@@ -134,13 +134,29 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 	{
 		return 	this._size;
 	}
-	public final INyARBufferReader getBufferReader()
-	{
-		return this._buf_reader;
-	}
 	public final INyARRgbPixelReader getRgbPixelReader()
 	{
 		return this._pixelreader;
+	}
+	public Object getBuffer()
+	{
+		return this._patdata;
+	}
+	public boolean hasBuffer()
+	{
+		return this._patdata!=null;
+	}
+	public void wrapBuffer(Object i_ref_buf) throws NyARException
+	{
+		NyARException.notImplement();
+	}
+	final public int getBufferType()
+	{
+		return BUFFER_FORMAT;
+	}
+	final public boolean isEqualBufferType(int i_type_value)
+	{
+		return BUFFER_FORMAT==i_type_value;
 	}
 	private final int[] __pickFromRaster_rgb_tmp = new int[3];
 	protected final double[] __pickFromRaster_cpara=new double[8];

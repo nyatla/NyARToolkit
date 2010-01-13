@@ -24,117 +24,84 @@
  */
 package jp.nyatla.nyartoolkit.qt.utils;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
-import java.awt.image.WritableRaster;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_BasicClass;
+import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.core.types.*;
+
 /**
  * RGB形式のbyte配列をラップするNyARRasterです。
  * 保持したデータからBufferedImageを出力する機能も持ちます。
  */
-public class QtNyARRaster_RGB extends NyARRgbRaster_BasicClass
+public class QtNyARRaster_RGB implements INyARRgbRaster
 {
-	private class PixcelReader extends NyARRgbPixelReader_RGB24 implements INyARBufferReader
-	{
-		public PixcelReader(NyARIntSize i_size)
-		{
-			super(null, i_size);
-			return;
-		}
-
-		public void syncBuffer(byte[] i_ref_buffer)
-		{
-			this._ref_buf = i_ref_buffer;
-			return;
-		}
-
-		//
-		// INyARBufferReader
-		//
-		public Object getBuffer()
-		{
-			return this._ref_buf;
-		}
-
-		public int getBufferType()
-		{
-			return INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24;
-		}
-
-		public boolean isEqualBufferType(int i_type_value)
-		{
-			return i_type_value == INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24;
-		}
-	}
-
-	protected byte[] _ref_buf;
-
-	protected PixcelReader _reader;
-
-	private WritableRaster _raster;
-
-	private BufferedImage _image;
+	private NyARIntSize _size;
+	private byte[] _buffer;
+	private NyARRgbPixelReader_BYTE1D_R8G8B8_24 _reader;
+	private int _buffer_type;
 
 	/**
-	 * RGB形式のJMFバッファをラップするオブジェクトをつくります。 生成直後のオブジェクトはデータを持ちません。 メンバ関数はsetBufferを実行後に使用可能になります。
+	 * QuickTimeオブジェクトからイメージを取得するラスタオブジェクトを作ります。
+	 * この
+	 * @param i_width
+	 * @param i_height
 	 */
 	public QtNyARRaster_RGB(int i_width, int i_height)
 	{
-		super(new NyARIntSize(i_width,i_height));
-		this._ref_buf = null;
-		this._reader = new PixcelReader(this._size);
-		_raster = WritableRaster.createInterleavedRaster(DataBuffer.TYPE_BYTE, i_width, i_height, i_width * 3, 3, new int[] { 0, 1, 2 }, null);
-		_image = new BufferedImage(i_width, i_height, BufferedImage.TYPE_3BYTE_BGR);
+		this._size=new NyARIntSize(i_width,i_height);
+		this._buffer= null;
+		this._buffer_type=INyARRaster.BUFFERFORMAT_BYTE1D_R8G8B8_24;
+		this._reader = new NyARRgbPixelReader_BYTE1D_R8G8B8_24(null,this._size);
 	}
-
-	/**
-	 * javax.media.Bufferを分析して、その分析結果をNyARRasterに適合する形で保持します。 関数実行後に外部でi_bufferの内容変更した場合には、再度setBuffer関数を呼び出してください。
-	 * 
-	 * @param i_buffer
-	 * RGB形式のデータを格納したjavax.media.Bufferオブジェクトを指定してください。
-	 * @return i_bufferをラップしたオブジェクトを返します。
-	 * @throws NyARException
-	 */
-	public void setBuffer(byte[] i_buffer)
+	
+	final public int getWidth()
 	{
-		this._ref_buf = i_buffer;
-		this._reader.syncBuffer(i_buffer);
+		return this._size.w;
 	}
 
-	public INyARBufferReader getBufferReader()
+	final public int getHeight()
 	{
-		return this._reader;
+		return this._size.h;
 	}
 
-	public INyARRgbPixelReader getRgbPixelReader()
+	final public NyARIntSize getSize()
+	{
+		return this._size;
+	}
+	final public int getBufferType()
+	{
+		return this._buffer_type;
+	}
+	final public INyARRgbPixelReader getRgbPixelReader()
 	{
 		return this._reader;
 	}
-
-	/**
-	 * データを持っているかを返します。
-	 * 
-	 * @return
-	 */
-	public boolean hasData()
+	final public boolean hasBuffer()
 	{
-		return this._ref_buf != null;
+		return this._buffer!=null;
 	}
-
-	/**
-	 * 保持しているデータからBufferedImageを作って返します。
-	 * 
-	 * @return
-	 */
-	public BufferedImage createImage()
+	final public Object getBuffer()
 	{
-		_raster.setDataElements(0, 0, this._size.w, this._size.h, this._ref_buf);
-		_image.setData(_raster);
-		return _image;
+		assert(this._buffer!=null);
+		return this._buffer;
 	}
-
+	final public boolean isEqualBufferType(int i_type_value)
+	{
+		return this._buffer_type==i_type_value;
+	}
+	final public void wrapBuffer(Object i_ref_buf) throws NyARException
+	{
+		this._buffer=(byte[])i_ref_buf;
+		this._reader.switchBuffer(i_ref_buf);
+	}
+	/**
+	 *	@deprecated hasBuffer()関数を使ってください。
+	 * 
+	 */
+	final public boolean hasData()
+	{
+		return this.hasBuffer();
+	}
 }

@@ -70,7 +70,7 @@ public class NyARMatchPattDeviationBlackWhiteData
 		int ave;//<PV/>
 		int rgb;//<PV/>
 		final int[] linput=this._data;//<PV/>
-		final int[] buf=(int[])i_raster.getBufferReader().getBuffer();
+		final int[] buf=(int[])i_raster.getBuffer();
 
 		// input配列のサイズとwhも更新// input=new int[height][width][3];
 		final int number_of_pixels=this._number_of_pixels;

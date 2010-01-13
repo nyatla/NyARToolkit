@@ -74,12 +74,13 @@ public class RawFileTest
 		FileInputStream fs = new FileInputStream(data_file);
 		byte[] buf = new byte[(int) f.length()];
 		fs.read(buf);
-		INyARRgbRaster ra = NyARRgbRaster_BGRA.wrap(buf, 320, 240);
+		INyARRgbRaster ra = new NyARRgbRaster_BGRA(320, 240,false);
+		ra.wrapBuffer(buf);
 		// Blank_Raster ra=new Blank_Raster(320, 240);
 
 		// １パターンのみを追跡するクラスを作成
 		NyARSingleDetectMarker ar = new NyARSingleDetectMarker(
-				ap, code, 80.0,ra.getBufferReader().getBufferType(),NyARSingleDetectMarker.PF_NYARTOOLKIT);
+				ap, code, 80.0,ra.getBufferType(),NyARSingleDetectMarker.PF_NYARTOOLKIT);
 		NyARTransMatResult result_mat = new NyARTransMatResult();
 		ar.setContinueMode(false);
 		ar.detectMarkerLite(ra, 100);

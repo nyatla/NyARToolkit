@@ -27,7 +27,6 @@ package jp.nyatla.nyartoolkit.core.rasteranalyzer.threshold;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.analyzer.raster.threshold.INyARRasterThresholdAnalyzer;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
@@ -83,10 +82,9 @@ public class NyARRasterThresholdAnalyzer_DiffHistgram implements INyARRasterThre
 
 	public int analyzeRaster(INyARRaster i_input) throws NyARException
 	{
-		final INyARBufferReader buffer_reader=i_input.getBufferReader();	
-		assert (buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
+		assert (i_input.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
 		int[] histgram = new int[256];
-		return createHistgram((int[])buffer_reader.getBuffer(),i_input.getSize(), histgram);
+		return createHistgram((int[])i_input.getBuffer(),i_input.getSize(), histgram);
 	}
 
 	/**
@@ -97,13 +95,11 @@ public class NyARRasterThresholdAnalyzer_DiffHistgram implements INyARRasterThre
 	 */
 	public void debugDrawHistgramMap(INyARRaster i_input, INyARRaster i_output) throws NyARException
 	{
-		INyARBufferReader in_buffer_reader=i_input.getBufferReader();	
-		INyARBufferReader out_buffer_reader=i_output.getBufferReader();	
-		assert (in_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
-		assert (out_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
+		assert (i_input.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
+		assert (i_output.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
 		NyARIntSize size = i_output.getSize();
 
-		int[] out_buf = (int[]) out_buffer_reader.getBuffer();
+		int[] out_buf = (int[]) i_output.getBuffer();
 		// 0で塗りつぶし
 		for (int y = 0; y < size.h; y++) {
 			for (int x = 0; x < size.w; x++) {
@@ -112,7 +108,7 @@ public class NyARRasterThresholdAnalyzer_DiffHistgram implements INyARRasterThre
 		}
 		// ヒストグラムを計算
 		int[] histgram = new int[256];
-		int threshold = createHistgram((int[])in_buffer_reader.getBuffer(),i_input.getSize(), histgram);
+		int threshold = createHistgram((int[])i_input.getBuffer(),i_input.getSize(), histgram);
 
 		// ヒストグラムの最大値を出す
 		int max_v = 0;

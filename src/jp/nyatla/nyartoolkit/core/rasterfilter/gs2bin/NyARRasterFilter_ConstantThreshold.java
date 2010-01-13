@@ -1,18 +1,17 @@
 package jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
+import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
-import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
-public class NyARRasterFilter_ConstantThrshold implements INyARRasterFilter_Gs2Bin
+public class NyARRasterFilter_ConstantThreshold implements INyARRasterFilter_Gs2Bin
 {
 	public int _threshold;
-	public NyARRasterFilter_ConstantThrshold(int i_initial_threshold,int i_in_raster_type,int i_out_raster_type) throws NyARException
+	public NyARRasterFilter_ConstantThreshold(int i_initial_threshold,int i_in_raster_type,int i_out_raster_type) throws NyARException
 	{
-		assert(i_in_raster_type==INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8);
-		assert(i_out_raster_type==INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8);
+		assert(i_in_raster_type==INyARRaster.BUFFERFORMAT_INT1D_GRAY_8);
+		assert(i_out_raster_type==INyARRaster.BUFFERFORMAT_INT1D_BIN_8);
 		//初期化
 		this._threshold=i_initial_threshold;
 		
@@ -22,7 +21,7 @@ public class NyARRasterFilter_ConstantThrshold implements INyARRasterFilter_Gs2B
 	 * 暗点<=th<明点となります。
 	 * @throws NyARException
 	 */
-	public NyARRasterFilter_ConstantThrshold() throws NyARException
+	public NyARRasterFilter_ConstantThreshold() throws NyARException
 	{
 		this._threshold=0;
 	}
@@ -34,10 +33,10 @@ public class NyARRasterFilter_ConstantThrshold implements INyARRasterFilter_Gs2B
 	}
 	public void doFilter(NyARGrayscaleRaster i_input, NyARBinRaster i_output) throws NyARException
 	{
-		assert(i_input.getBufferReader().getBufferType()==INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8);
-		assert(i_output.getBufferReader().getBufferType()==INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8);
-		int[] out_buf = (int[]) i_output.getBufferReader().getBuffer();
-		int[] in_buf = (int[]) i_input.getBufferReader().getBuffer();
+		assert(i_input.getBufferType()==INyARRaster.BUFFERFORMAT_INT1D_GRAY_8);
+		assert(i_output.getBufferType()==INyARRaster.BUFFERFORMAT_INT1D_BIN_8);
+		int[] out_buf = (int[]) i_output.getBuffer();
+		int[] in_buf = (int[]) i_input.getBuffer();
 		NyARIntSize s=i_input.getSize();
 		
 		final int th=this._threshold;

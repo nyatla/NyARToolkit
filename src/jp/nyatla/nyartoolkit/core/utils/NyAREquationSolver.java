@@ -256,16 +256,6 @@ public class NyAREquationSolver
 		}
 	}
 	/**
-	 * 3乗根を求められないシステムで、３乗根を求めます。
-	 * http://aoki2.si.gunma-u.ac.jp/JavaScript/src/3jisiki.html
-	 * @param i_in
-	 * @return
-	 */
-	private static double cuberoot(double i_in) {
-		double res = Math.pow(Math.abs(i_in), 1.0 / 3.0);
-		return (i_in >= 0) ? res : -res;
-	}
-	/**
 	 * 3次方程式の実根を１個だけ求める。
 	 * 4字方程式で使う。
 	 * @param i_b
@@ -296,7 +286,7 @@ public class NyAREquationSolver
 			return tmp * Math.cos(t / 3) - b;
 		}
 	}		
-
+/*
 	public static void main(String[] args)
 	{
 		NyAREquationSolver n = new NyAREquationSolver();
@@ -308,5 +298,5 @@ public class NyAREquationSolver
 			e.printStackTrace();
 		}
 		System.out.println(l);
-	}
+	}*/
 }

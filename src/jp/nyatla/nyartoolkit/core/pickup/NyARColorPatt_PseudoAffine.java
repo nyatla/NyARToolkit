@@ -30,6 +30,7 @@ import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
+import jp.nyatla.nyartoolkit.core.raster.*;
 
 
 
@@ -41,9 +42,9 @@ import jp.nyatla.nyartoolkit.core.types.matrix.*;
 public class NyARColorPatt_PseudoAffine implements INyARColorPatt
 {
 	private int[] _patdata;
-	private NyARBufferReader _buf_reader;
 	private NyARRgbPixelReader_INT1D_X8R8G8B8_32 _pixelreader;
 	private NyARIntSize _size;
+	private static final int BUFFER_FORMAT=INyARRaster.BUFFERFORMAT_INT1D_X8R8G8B8_32;
 		
 	public final int getWidth()
 	{
@@ -59,16 +60,30 @@ public class NyARColorPatt_PseudoAffine implements INyARColorPatt
 	{
 		return 	this._size;
 	}
-	
-	public final INyARBufferReader getBufferReader()
-	{
-		return this._buf_reader;
-	}
-	
 	public final INyARRgbPixelReader getRgbPixelReader()
 	{
 		return this._pixelreader;
 	}
+	public Object getBuffer()
+	{
+		return this._patdata;
+	}
+	public boolean hasBuffer()
+	{
+		return this._patdata!=null;
+	}
+	public void wrapBuffer(Object i_ref_buf) throws NyARException
+	{
+		NyARException.notImplement();
+	}
+	final public int getBufferType()
+	{
+		return BUFFER_FORMAT;
+	}
+	final public boolean isEqualBufferType(int i_type_value)
+	{
+		return BUFFER_FORMAT==i_type_value;
+	}	
 	NyARDoubleMatrix44 _invmat=new NyARDoubleMatrix44();
 	/**
 	 * @param i_width
@@ -78,7 +93,6 @@ public class NyARColorPatt_PseudoAffine implements INyARColorPatt
 	{		
 		this._size=new NyARIntSize(i_width,i_height);
 		this._patdata = new int[i_height*i_width];
-		this._buf_reader=new NyARBufferReader(this._patdata,NyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32);
 		this._pixelreader=new NyARRgbPixelReader_INT1D_X8R8G8B8_32(this._patdata,this._size);
 		//疑似アフィン変換のパラメタマトリクスを計算します。
 		//長方形から計算すると、有効要素がm00,m01,m02,m03,m10,m11,m20,m23,m30になります。

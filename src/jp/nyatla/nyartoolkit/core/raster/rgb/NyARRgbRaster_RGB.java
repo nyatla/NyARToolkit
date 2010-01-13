@@ -30,35 +30,19 @@
  */
 package jp.nyatla.nyartoolkit.core.raster.rgb;
 
-import jp.nyatla.nyartoolkit.core.rasterreader.*;
-import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 
-public class NyARRgbRaster_RGB extends NyARRgbRaster_BasicClass
+public class NyARRgbRaster_RGB extends NyARRgbRaster
 {
-	protected byte[] _ref_buf;
-
-	private NyARRgbPixelReader_RGB24 _reader;
-	private INyARBufferReader _buffer_reader;
-	
-	public static NyARRgbRaster_RGB wrap(byte[] i_buffer, int i_width, int i_height)
+	public NyARRgbRaster_RGB(int i_width, int i_height,Boolean i_is_alloc) throws NyARException
 	{
-		return new NyARRgbRaster_RGB(i_buffer, i_width, i_height);
+		super(i_width,i_height,INyARRaster.BUFFERFORMAT_BYTE1D_R8G8B8_24,i_is_alloc);
 	}
 
-	private NyARRgbRaster_RGB(byte[] i_ref_buffer, int i_width, int i_height)
+	public NyARRgbRaster_RGB(int i_width, int i_height) throws NyARException
 	{
-		super(new NyARIntSize(i_width,i_height));
-		this._ref_buf = i_ref_buffer;
-		this._reader = new NyARRgbPixelReader_RGB24(i_ref_buffer, this._size);
-		this._buffer_reader=new NyARBufferReader(i_ref_buffer,INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24);
+		super(i_width,i_height,INyARRaster.BUFFERFORMAT_BYTE1D_R8G8B8_24);
 		return;
 	}
-	public INyARRgbPixelReader getRgbPixelReader()
-	{
-		return this._reader;
-	}
-	public INyARBufferReader getBufferReader()
-	{
-		return this._buffer_reader;
-	}	
 }

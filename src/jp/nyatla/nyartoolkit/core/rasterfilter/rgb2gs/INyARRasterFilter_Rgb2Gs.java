@@ -28,28 +28,17 @@
  *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.rasterreader;
+package jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs;
 
-public final class NyARBufferReader implements INyARBufferReader
+import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
+
+/**
+ * このインタフェイスは、RGBラスタをグレースケールラスタに変換します。
+ *
+ */
+public interface INyARRasterFilter_Rgb2Gs
 {
-	private Object _buffer;
-	private int _buffer_type;
-	public NyARBufferReader(Object i_buffer,int i_buffer_type)
-	{
-		this._buffer=i_buffer;
-		this._buffer_type=i_buffer_type;
-		return;
-	}
-	public Object getBuffer()
-	{
-		return this._buffer;
-	}
-	public int getBufferType()
-	{
-		return _buffer_type;
-	}
-	public boolean isEqualBufferType(int i_type_value)
-	{
-		return this._buffer_type==i_type_value;
-	}
+	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output) throws NyARException;
 }

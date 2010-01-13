@@ -39,32 +39,67 @@ import jp.nyatla.nyartoolkit.core.types.*;
  */
 public final class NyARRaster extends NyARRaster_BasicClass
 {
-	protected NyARBufferReader _reader;
 	protected Object _buf;
-	
-	public NyARRaster(NyARIntSize i_size,int i_buf_type) throws NyARException
+	protected int _buf_type;
+	/**
+	 * バッファオブジェクトがアタッチされていればtrue
+	 */
+	protected boolean _is_attached_buffer;
+	/**
+	 * 指定したバッファタイプのラスタを作成します。
+	 * @param i_width
+	 * @param i_height
+	 * @param i_buffer_type
+	 * @param i_is_alloc
+	 * @throws NyARException
+	 */
+	public NyARRaster(int i_width, int i_height,int i_buffer_type,boolean i_is_alloc) throws NyARException
 	{
-		super(i_size);
-		if(!initInstance(i_size,i_buf_type)){
+		super(new NyARIntSize(i_width,i_height),i_buffer_type);
+		if(!initInstance(this._size,i_buffer_type,i_is_alloc)){
 			throw new NyARException();
 		}
 		return;
-	}
-	protected boolean initInstance(NyARIntSize i_size,int i_buf_type)
+	}	
+
+	public NyARRaster(int i_width, int i_height,int i_buffer_type) throws NyARException
+	{
+		super(new NyARIntSize(i_width,i_height),i_buffer_type);
+		if(!initInstance(this._size,i_buffer_type,true)){
+			throw new NyARException();
+		}
+		return;
+	}	
+	protected boolean initInstance(NyARIntSize i_size,int i_buf_type,boolean i_is_alloc)
 	{
 		switch(i_buf_type)
 		{
-			case INyARBufferReader.BUFFERFORMAT_INT1D_X8R8G8B8_32:
-				this._buf=new int[i_size.w*i_size.h];
+			case INyARRaster.BUFFERFORMAT_INT1D_X8R8G8B8_32:
+				this._buf=i_is_alloc?new int[i_size.w*i_size.h]:null;
 				break;
 			default:
 				return false;
 		}
-		this._reader=new NyARBufferReader(this._buf,i_buf_type);
+		this._is_attached_buffer=i_is_alloc;
 		return true;
 	}
-	public INyARBufferReader getBufferReader()
+	public Object getBuffer()
 	{
-		return this._reader;
-	}	
+		return this._buf;
+	}
+	/**
+	 * インスタンスがバッファを所有するかを返します。
+	 * コンストラクタでi_is_allocをfalseにしてラスタを作成した場合、
+	 * バッファにアクセスするまえに、バッファの有無をこの関数でチェックしてください。
+	 * @return
+	 */	
+	public boolean hasBuffer()
+	{
+		return this._buf!=null;
+	}
+	public void wrapBuffer(Object i_ref_buf) throws NyARException
+	{
+		assert(!this._is_attached_buffer);//バッファがアタッチされていたら機能しない。
+		this._buf=i_ref_buf;
+	}
 }

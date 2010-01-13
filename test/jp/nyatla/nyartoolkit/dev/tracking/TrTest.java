@@ -89,7 +89,7 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 		this._capture.setOnCapture(this);
 
 		addMouseMotionListener(this);
-		this._tr=new Tracking(ar_param,code,80,this._capraster.getBufferReader().getBufferType());
+		this._tr=new Tracking(ar_param,code,80,this._capraster.getBufferType());
 		this._trm=new TransMat2MarkerRect(ar_param);
 		return;
 	}

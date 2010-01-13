@@ -26,7 +26,6 @@ package jp.nyatla.nyartoolkit.core.rasterfilter;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
-import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
@@ -40,7 +39,7 @@ public class NyARRasterFilter_CustomToneTable implements INyARRasterFilter
 	protected NyARRasterFilter_CustomToneTable(int i_raster_type) throws NyARException
 	{
 		switch (i_raster_type) {
-		case INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8:
+		case INyARRaster.BUFFERFORMAT_INT1D_GRAY_8:
 			this._dofilterimpl=new IdoFilterImpl_INT1D_GRAY_8();
 			break;
 		default:
@@ -51,20 +50,20 @@ public class NyARRasterFilter_CustomToneTable implements INyARRasterFilter
 	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException
 	{
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
-		this._dofilterimpl.doFilter(i_input.getBufferReader(),i_output.getBufferReader(),i_input.getSize());
+		this._dofilterimpl.doFilter(i_input,i_output,i_input.getSize());
 	}
 	
 	private abstract class IdoFilterImpl
 	{
 		public int[] _table_ref;
-		public abstract void doFilter(INyARBufferReader i_input, INyARBufferReader i_output,NyARIntSize i_size) throws NyARException;
+		public abstract void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException;
 		
 	}
 	private class IdoFilterImpl_INT1D_GRAY_8 extends IdoFilterImpl
 	{
-		public void doFilter(INyARBufferReader i_input, INyARBufferReader i_output,NyARIntSize i_size) throws NyARException
+		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException
 		{
-			assert(		i_input.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
+			assert(		i_input.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
 			
 			int[] out_buf = (int[]) i_output.getBuffer();
 			int[] in_buf = (int[]) i_input.getBuffer();

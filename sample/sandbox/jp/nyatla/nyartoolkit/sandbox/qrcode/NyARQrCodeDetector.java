@@ -111,7 +111,7 @@ public class NyARQrCodeDetector implements INyARSquareContourDetector
 		final int[] xcoord = this._xcoord;
 		final int[] ycoord = this._ycoord;
 		final int coord_max = this._max_coord;
-		final int[] buf = (int[]) limage.getBufferReader().getBuffer();
+		final int[] buf = (int[]) limage.getBuffer();
 		final int[] indextable = limage.getIndexArray();
 
 		int label_area;

@@ -161,7 +161,7 @@ public class JavaSimpleLite2 implements GLEventListener, JmfCaptureListener
 			//GL対応のRGBラスタオブジェクト
 			this._cap_image = new GLNyARRaster_RGB(this._ar_param,_capture.getCaptureFormat());
 
-			this._nya = new NyARDetectMarker(this._ar_param, ar_codes, width, 2,this._cap_image.getBufferReader().getBufferType());
+			this._nya = new NyARDetectMarker(this._ar_param, ar_codes, width, 2,this._cap_image.getBufferType());
 			this._nya.setContinueMode(false);//ここをtrueにすると、transMatContinueモード（History計算）になります。
 			//NyARToolkit用の支援クラス
 			this._glnya = new NyARGLUtil(_gl);
@@ -198,7 +198,7 @@ public class JavaSimpleLite2 implements GLEventListener, JmfCaptureListener
 		NyARTransMatResult transmat_result=__display_transmat_result;
 
 		try {
-			if (!_cap_image.hasData()) {
+			if (!_cap_image.hasBuffer()) {
 				return;
 			}
 			_gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.          

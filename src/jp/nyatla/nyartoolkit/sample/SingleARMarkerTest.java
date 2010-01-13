@@ -98,9 +98,10 @@ public class SingleARMarkerTest
 		byte[] buf = new byte[(int) f.length()];
 		fs.read(buf);		
 
-        NyARRgbRaster_BGRA ra = NyARRgbRaster_BGRA.wrap(buf, 320, 240);
+        NyARRgbRaster_BGRA ra = new NyARRgbRaster_BGRA(320, 240,false);
+        ra.wrapBuffer(buf);
 
-        MarkerProcessor pr = new MarkerProcessor(ap, ra.getBufferReader().getBufferType());
+        MarkerProcessor pr = new MarkerProcessor(ap, ra.getBufferType());
         NyARCode[] codes=new NyARCode[1];
         codes[0]=new NyARCode(16,16);
         codes[0].loadARPattFromFile(CARCODE_FILE);

@@ -30,24 +30,30 @@
  */
 package jp.nyatla.nyartoolkit.core.raster;
 
-import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
-import jp.nyatla.nyartoolkit.core.rasterreader.NyARBufferReader;
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 public final class NyARHsvRaster extends NyARRaster_BasicClass
 {
 
 	protected int[] _ref_buf;
-	private INyARBufferReader _buffer_reader;
 	
 	public NyARHsvRaster(int i_width, int i_height)
 	{
-		super(new NyARIntSize(i_width,i_height));
+		//このクラスは外部参照バッファ/形式多重化が使えない簡易実装です。
+		super(new NyARIntSize(i_width,i_height),INyARRaster.BUFFERFORMAT_INT1D_X7H9S8V8_32);
 		this._ref_buf = new int[i_height*i_width];
-		this._buffer_reader=new NyARBufferReader(this._ref_buf,INyARBufferReader.BUFFERFORMAT_INT1D_X7H9S8V8_32);
 	}
-	public INyARBufferReader getBufferReader()
+	public Object getBuffer()
 	{
-		return this._buffer_reader;
+		return this._ref_buf;
 	}
+	public boolean hasBuffer()
+	{
+		return true;
+	}
+	public void wrapBuffer(Object i_ref_buf) throws NyARException
+	{
+		NyARException.notImplement();
+	}	
 }

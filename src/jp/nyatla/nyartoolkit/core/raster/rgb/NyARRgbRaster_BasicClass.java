@@ -30,8 +30,6 @@
  */
 package jp.nyatla.nyartoolkit.core.raster.rgb;
 
-import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.rasterreader.INyARRgbPixelReader;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
@@ -42,11 +40,17 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 public abstract class NyARRgbRaster_BasicClass implements INyARRgbRaster
 {
 	final protected NyARIntSize _size;
+	private int _buffer_type;
+	
+	protected NyARRgbRaster_BasicClass(final NyARIntSize i_size,int i_buffer_type)
+	{
+		this._size= i_size;
+		this._buffer_type=i_buffer_type;
+	}
 	final public int getWidth()
 	{
 		return this._size.w;
 	}
-
 	final public int getHeight()
 	{
 		return this._size.h;
@@ -55,14 +59,13 @@ public abstract class NyARRgbRaster_BasicClass implements INyARRgbRaster
 	final public NyARIntSize getSize()
 	{
 		return this._size;
+	}
+	final public int getBufferType()
+	{
+		return _buffer_type;
+	}
+	final public boolean isEqualBufferType(int i_type_value)
+	{
+		return this._buffer_type==i_type_value;
 	}	
-	protected NyARRgbRaster_BasicClass(final NyARIntSize i_size)
-	{
-		this._size= i_size;
-	}
-	public INyARRgbPixelReader getRgbPixelReader() throws NyARException
-	{
-		NyARException.notImplement();
-		return null;
-	}
 }

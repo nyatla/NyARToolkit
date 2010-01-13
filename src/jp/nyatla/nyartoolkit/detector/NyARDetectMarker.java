@@ -247,7 +247,7 @@ public class NyARDetectMarker
 	
 	private NyARBinRaster _bin_raster;
 
-	private INyARRasterFilter_RgbToBin _tobin_filter;
+	private INyARRasterFilter_Rgb2Bin _tobin_filter;
 
 	/**
 	 * i_imageにマーカー検出処理を実行し、結果を記録します。

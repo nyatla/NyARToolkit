@@ -32,7 +32,6 @@ package jp.nyatla.nyartoolkit.core.labeling.artoolkit;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
@@ -55,7 +54,7 @@ final public class NyARLabeling_ARToolKit
 	 */
 	public int labeling(NyARBinRaster i_raster,NyARLabelingImage o_destination) throws NyARException
 	{
-		assert(i_raster.getBufferReader().getBufferType()==INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8);
+		assert(i_raster.getBufferType()==INyARRaster.BUFFERFORMAT_INT1D_BIN_8);
 		int label_img_ptr1, label_pixel;
 		int i, j;
 		int n, k; /* work */
@@ -66,7 +65,7 @@ final public class NyARLabeling_ARToolKit
 
 		final int lxsize = in_size.w;// lxsize = arUtil_c.arImXsize;
 		final int lysize = in_size.h;// lysize = arUtil_c.arImYsize;
-		final int[] label_img = (int[]) o_destination.getBufferReader().getBuffer();
+		final int[] label_img = (int[]) o_destination.getBuffer();
 
 		// 枠作成はインスタンスを作った直後にやってしまう。
 
@@ -74,7 +73,7 @@ final public class NyARLabeling_ARToolKit
 		o_destination.reset(true);
 
 		int[] label_idxtbl = o_destination.getIndexArray();
-		int[] raster_buf = (int[]) i_raster.getBufferReader().getBuffer();
+		int[] raster_buf = (int[]) i_raster.getBuffer();
 
 		int[] work2_pt;
 		int wk_max = 0;

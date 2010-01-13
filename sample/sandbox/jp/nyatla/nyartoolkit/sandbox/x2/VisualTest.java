@@ -26,7 +26,7 @@ import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasteranalyzer.threshold.NyARRasterThresholdAnalyzer_DiffHistgram;
 import jp.nyatla.nyartoolkit.core.rasterfilter.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRasterFilter_RgbToGs;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRasterFilter_Rgb2Gs;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareStack;
 import jp.nyatla.nyartoolkit.core2.rasterfilter.rgb2gs.*;
 import jp.nyatla.nyartoolkit.core2.rasterfilter.gs2bin.*;
@@ -85,7 +85,7 @@ public class VisualTest extends Frame implements JmfCaptureListener
 			this.getGraphics().drawImage(img, 32, 32, this);
 
 			// 画像1
-			INyARRasterFilter_RgbToGs filter_rgb2gs = new NyARRasterFilter_RgbAve();
+			INyARRasterFilter_Rgb2Gs filter_rgb2gs = new NyARRasterFilter_RgbAve();
 //			INyARRasterFilter_RgbToGs filter_rgb2gs = new NyARRasterFilter_RgbMul();
 			
 			filter_rgb2gs.doFilter(_raster, _gsraster1);

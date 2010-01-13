@@ -126,9 +126,10 @@ public class NyIdTest
 		byte[] buf = new byte[(int) f.length()];
 		fs.read(buf);		
 
-        NyARRgbRaster_RGB ra = NyARRgbRaster_RGB.wrap(buf, 320, 240);
+        NyARRgbRaster_RGB ra = new NyARRgbRaster_RGB(320, 240,false);
+        ra.wrapBuffer(buf);
 
-        MarkerProcessor pr = new MarkerProcessor(ap, ra.getBufferReader().getBufferType());
+        MarkerProcessor pr = new MarkerProcessor(ap, ra.getBufferType());
         pr.detectMarker(ra);
         return;
     }

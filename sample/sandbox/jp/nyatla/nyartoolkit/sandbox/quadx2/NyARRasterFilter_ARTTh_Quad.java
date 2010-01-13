@@ -33,16 +33,15 @@ package jp.nyatla.nyartoolkit.sandbox.quadx2;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
-import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
+import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin.*;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
 
 /**
  * 1/4のサイズの画像に変換しながら閾値判定する関数
  * 
  */
-public class NyARRasterFilter_ARTTh_Quad implements INyARRasterFilter_Bin
+public class NyARRasterFilter_ARTTh_Quad implements INyARRasterFilter_Rgb2Bin
 {
 	private int _threshold;
 
@@ -57,21 +56,19 @@ public class NyARRasterFilter_ARTTh_Quad implements INyARRasterFilter_Bin
 
 	public void doFilter(INyARRgbRaster i_input, NyARBinRaster i_output) throws NyARException
 	{
-		INyARBufferReader in_buffer_reader=i_input.getBufferReader();	
-		INyARBufferReader out_buffer_reader=i_output.getBufferReader();
-		int in_buf_type=in_buffer_reader.getBufferType();
+		int in_buf_type=i_input.getBufferType();
 
 		NyARIntSize size = i_output.getSize();
-		assert (out_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_BIN_8));
+		assert (i_output.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_BIN_8));
 		assert (checkInputType(in_buf_type)==true);	
 		assert (i_input.getSize().isEqualSize(size.w*2,size.h*2) == true);
 
-		int[] out_buf = (int[]) out_buffer_reader.getBuffer();
-		byte[] in_buf = (byte[]) in_buffer_reader.getBuffer();
+		int[] out_buf = (int[]) i_output.getBuffer();
+		byte[] in_buf = (byte[]) i_input.getBuffer();
 
-		switch (in_buffer_reader.getBufferType()) {
-		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24:
-		case INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+		switch (i_input.getBufferType()) {
+		case INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8_24:
+		case INyARRaster.BUFFERFORMAT_BYTE1D_R8G8B8_24:
 			convert24BitRgb(in_buf, out_buf, size);
 			break;
 //		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8X8_32:
@@ -182,10 +179,10 @@ public class NyARRasterFilter_ARTTh_Quad implements INyARRasterFilter_Bin
 	private boolean checkInputType(int i_input_type) throws NyARException
 	{
 		switch(i_input_type){
-		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24:
-		case INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24:
-//		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8X8_32:
-//		case INyARBufferReader.BUFFERFORMAT_BYTE1D_R5G6B5_16LE:
+		case INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8_24:
+		case INyARRaster.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+//		case INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8X8_32:
+//		case INyARRaster.BUFFERFORMAT_BYTE1D_R5G6B5_16LE:
 			return true;
 		default:
 			return false;

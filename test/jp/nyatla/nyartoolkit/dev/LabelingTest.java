@@ -36,7 +36,7 @@ public class LabelingTest extends Frame
 		NyARRasterFilterBuilder_RgbToBin filter = new NyARRasterFilterBuilder_RgbToBin(110, ra.getBufferReader().getBufferType());
 		NyARBinRaster bin = new NyARBinRaster(W,240);
 		filter.doFilter(ra, bin);
-		int[] t = (int[]) bin.getBufferReader().getBuffer();
+		int[] t = (int[]) bin.getBuffer();
 		int[] s = {
 				1,1,1,1,1,1,1,1,1,1,
 
@@ -168,7 +168,7 @@ public class LabelingTest extends Frame
 		{
 			final int width = this._width;
 			final int height = this._height;
-			int[] in_buf = (int[]) i_bin_raster.getBufferReader().getBuffer();
+			int[] in_buf = (int[]) i_bin_raster.getBuffer();
 
 			short current = 0;
 			short r = -1;

@@ -34,10 +34,12 @@ import jp.nyatla.nyartoolkit.core.types.*;
 
 public abstract class NyARRaster_BasicClass implements INyARRaster
 {
-	final protected NyARIntSize _size;
-	protected NyARRaster_BasicClass(final NyARIntSize i_size)
+	protected NyARIntSize _size;
+	private int _buffer_type;
+	protected NyARRaster_BasicClass(final NyARIntSize i_size,int i_buffer_type)
 	{
 		this._size= i_size;
+		this._buffer_type=i_buffer_type;
 	}
 
 	final public int getWidth()
@@ -53,5 +55,13 @@ public abstract class NyARRaster_BasicClass implements INyARRaster
 	final public NyARIntSize getSize()
 	{
 		return this._size;
+	}
+	final public int getBufferType()
+	{
+		return _buffer_type;
+	}
+	final public boolean isEqualBufferType(int i_type_value)
+	{
+		return this._buffer_type==i_type_value;
 	}
 }

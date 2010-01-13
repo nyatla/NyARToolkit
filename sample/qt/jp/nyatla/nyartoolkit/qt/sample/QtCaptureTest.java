@@ -28,10 +28,21 @@ package jp.nyatla.nyartoolkit.qt.sample;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.qt.utils.*;
+import jp.nyatla.nyartoolkit.core.types.*;
 
 import java.awt.*;
+import java.awt.image.*;
 /**
  * QuickTimeキャプチャプログラム
+ *
+ * On windows, You might get couldntGetRequiredComponent error.
+ * If you got error try to install WinVDIG. 
+ * http://www.eden.net.nz/7/20071008/
+ * --
+ * Windowsの場合、WinVDIGが無いとキャプチャプログラムが動かないことがあります。
+ * couldntGetRequiredComponentエラーが出たら、WinVDIGをインストールしてみてね。
+ * WinVIDGはとりあえずここから入手可能。http://www.eden.net.nz/7/20071008/
+ * 
  *
  */
 public class QtCaptureTest extends Frame implements QtCaptureListener
@@ -49,15 +60,28 @@ public class QtCaptureTest extends Frame implements QtCaptureListener
 	}
 
 	private QtCameraCapture capture;
-
 	private QtNyARRaster_RGB raster;
-
+	
 	public void onUpdateBuffer(byte[] pixels)
 	{
-		raster.setBuffer(pixels);
-		Image img = raster.createImage();
+		try{
+			this.raster.wrapBuffer(pixels);
+		}catch(Exception e){
+			e.printStackTrace();
+			return;
+		}
+		//Imageに変換してみよう！
+
+		
+		NyARIntSize s=raster.getSize();
+		WritableRaster wr = WritableRaster.createInterleavedRaster(DataBuffer.TYPE_BYTE, s.w,s.h, s.w * 3, 3, new int[] { 0, 1, 2 }, null);
+		BufferedImage  bi = new BufferedImage(s.w, s.h, BufferedImage.TYPE_3BYTE_BGR);
+
+		wr.setDataElements(0, 0, s.w, s.h,raster.getBuffer());
+		bi.setData(wr);
+		
 		Graphics g = getGraphics();
-		g.drawImage(img, 32, 32, this);
+		g.drawImage(bi, 32, 32, this);
 	}
 
 	private void startCapture()

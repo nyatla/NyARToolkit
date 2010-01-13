@@ -32,7 +32,6 @@ package jp.nyatla.nyartoolkit.core.rasterfilter;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
-import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
@@ -45,7 +44,7 @@ public class NyARRasterOperator_Mul
 	public NyARRasterOperator_Mul(int i_raster_type) throws NyARException
 	{
 		switch (i_raster_type) {
-		case INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8:
+		case INyARRaster.BUFFERFORMAT_INT1D_GRAY_8:
 			this._dofilterimpl=new IdoFilterImpl_INT1D_GRAY_8();
 			break;
 		default:
@@ -57,22 +56,22 @@ public class NyARRasterOperator_Mul
 	{
 		assert (i_input_a.getSize().isEqualSize(i_output.getSize()) == true);
 		assert (i_input_b.getSize().isEqualSize(i_output.getSize()) == true);
-		this._dofilterimpl.doFilter(i_input_a.getBufferReader(),i_input_b.getBufferReader(),i_output.getBufferReader(),i_output.getSize());
+		this._dofilterimpl.doFilter(i_input_a,i_input_b,i_output,i_output.getSize());
 	}
 	
 	abstract class IdoFilterImpl
 	{
 		int[] _window_ref;
-		public abstract void doFilter(INyARBufferReader i_input_a,INyARBufferReader i_input_b,INyARBufferReader i_output,NyARIntSize i_size) throws NyARException;
+		public abstract void doFilter(INyARRaster i_input_a,INyARRaster i_input_b,INyARRaster i_output,NyARIntSize i_size) throws NyARException;
 		
 	}
 	class IdoFilterImpl_INT1D_GRAY_8 extends IdoFilterImpl
 	{
-		public void doFilter(INyARBufferReader i_input_a,INyARBufferReader i_input_b,INyARBufferReader i_output,NyARIntSize i_size) throws NyARException
+		public void doFilter(INyARRaster i_input_a,INyARRaster i_input_b,INyARRaster i_output,NyARIntSize i_size) throws NyARException
 		{
-			assert(i_input_a.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
-			assert(i_input_b.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
-			assert(i_output.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
+			assert(i_input_a.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
+			assert(i_input_b.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
+			assert(i_output.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
 			
 			int[] out_buf = (int[]) i_output.getBuffer();
 			int[] in_buf1 = (int[]) i_input_a.getBuffer();

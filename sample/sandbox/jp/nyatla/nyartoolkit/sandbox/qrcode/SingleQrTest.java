@@ -23,13 +23,11 @@ import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasteranalyzer.threshold.NyARRasterThresholdAnalyzer_DiffHistgram;
 import jp.nyatla.nyartoolkit.core.rasterfilter.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRasterFilter_RgbToGs;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.*;
+import jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareStack;
-import jp.nyatla.nyartoolkit.core2.rasterfilter.rgb2gs.*;
-import jp.nyatla.nyartoolkit.core2.rasterfilter.gs2bin.*;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core2.rasteranalyzer.threshold.*;
 
 
 
@@ -83,14 +81,14 @@ public class SingleQrTest extends Frame implements JmfCaptureListener
 			this.getGraphics().drawImage(img, 32, 32, this);
 
 			// 画像1
-			INyARRasterFilter_RgbToGs filter_rgb2gs = new NyARRasterFilter_RgbAve();
+			INyARRasterFilter_Rgb2Gs filter_rgb2gs = new NyARRasterFilter_AveAdd();
 //			INyARRasterFilter_RgbToGs filter_rgb2gs = new NyARRasterFilter_RgbMul();
 			
 			filter_rgb2gs.doFilter(_raster, _gsraster1);
 			this._bimg.drawImage(this._gsraster1);
 			this.getGraphics().drawImage(this._bimg, 32 + 320, 32, 320 + 320 + 32, 240 + 32, 0, 240, 320, 0, this);
 			_tha.analyzeRaster(_gsraster1);
-			NyARRasterFilter_Threshold gs2bin=new NyARRasterFilter_Threshold(_tha.getThreshold());
+			NyARRasterFilter_ConstantThreshold gs2bin=new NyARRasterFilter_ConstantThreshold(_tha.getThreshold());
 			
 
 			// 画像2

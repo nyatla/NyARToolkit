@@ -33,27 +33,24 @@ package jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRasterFilter_RgbToGs;
-import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRasterFilter_Rgb2Gs;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
-public class NyARRasterFilter_Rgb2Gs_RgbOr implements INyARRasterFilter_RgbToGs
+public class NyARRasterFilter_Rgb2Gs_RgbOr implements INyARRasterFilter_Rgb2Gs
 {
 	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output) throws NyARException
 	{
 		
-		INyARBufferReader in_buffer_reader=i_input.getBufferReader();	
-		INyARBufferReader out_buffer_reader=i_output.getBufferReader();			
-		assert(	out_buffer_reader.isEqualBufferType(INyARBufferReader.BUFFERFORMAT_INT1D_GRAY_8));
+		assert(	i_output.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
 
-		final int[] out_buf = (int[]) out_buffer_reader.getBuffer();
-		final byte[] in_buf = (byte[]) in_buffer_reader.getBuffer();
+		final int[] out_buf = (int[]) i_output.getBuffer();
+		final byte[] in_buf = (byte[]) i_input.getBuffer();
 
 		NyARIntSize size = i_output.getSize();
-		switch (in_buffer_reader.getBufferType()) {
-		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8_24:
-		case INyARBufferReader.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+		switch (i_input.getBufferType()) {
+		case INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8_24:
+		case INyARRaster.BUFFERFORMAT_BYTE1D_R8G8B8_24:
 			convert24BitRgb(in_buf, out_buf, size);
 			break;
 		default:
