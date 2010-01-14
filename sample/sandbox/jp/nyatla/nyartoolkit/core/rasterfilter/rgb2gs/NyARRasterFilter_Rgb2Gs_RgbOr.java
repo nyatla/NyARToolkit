@@ -41,7 +41,7 @@ public class NyARRasterFilter_Rgb2Gs_RgbOr implements INyARRasterFilter_Rgb2Gs
 	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output) throws NyARException
 	{
 		
-		assert(	i_output.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
+		assert(	i_output.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
 
 		final int[] out_buf = (int[]) i_output.getBuffer();
@@ -49,8 +49,8 @@ public class NyARRasterFilter_Rgb2Gs_RgbOr implements INyARRasterFilter_Rgb2Gs
 
 		NyARIntSize size = i_output.getSize();
 		switch (i_input.getBufferType()) {
-		case INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8_24:
-		case INyARRaster.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+		case NyARBufferType.BYTE1D_B8G8R8_24:
+		case NyARBufferType.BYTE1D_R8G8B8_24:
 			convert24BitRgb(in_buf, out_buf, size);
 			break;
 		default:

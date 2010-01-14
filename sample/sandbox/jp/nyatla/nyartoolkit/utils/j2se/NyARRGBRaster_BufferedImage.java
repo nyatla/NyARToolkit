@@ -21,14 +21,14 @@ public class NyARRGBRaster_BufferedImage extends NyARRgbRaster_BasicClass
 	protected boolean _is_attached_buffer;
 	public NyARRGBRaster_BufferedImage(int i_width, int i_height,boolean i_is_alloc) throws NyARException
 	{
-		super( new NyARIntSize(i_width,i_height),INyARRaster.BUFFERFORMAT_OBJECT_Java_BufferedImage);
+		super( new NyARIntSize(i_width,i_height),NyARBufferType.OBJECT_Java_BufferedImage);
 		if(!initInstance(this._size,i_is_alloc)){
 			throw new NyARException();
 		}
 	}
 	public NyARRGBRaster_BufferedImage(int i_width, int i_height) throws NyARException
 	{
-		super( new NyARIntSize(i_width,i_height),INyARRaster.BUFFERFORMAT_OBJECT_Java_BufferedImage);
+		super( new NyARIntSize(i_width,i_height),NyARBufferType.OBJECT_Java_BufferedImage);
 		if(!initInstance(this._size,true)){
 			throw new NyARException();
 		}

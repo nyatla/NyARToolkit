@@ -33,7 +33,7 @@ package jp.nyatla.nyartoolkit.core.raster;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
 
-public final class NyARGrayscaleRaster extends NyARRaster_BasicClass
+public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 {
 
 	protected Object _buf;
@@ -44,18 +44,26 @@ public final class NyARGrayscaleRaster extends NyARRaster_BasicClass
 
 	public NyARGrayscaleRaster(int i_width, int i_height) throws NyARException
 	{
-		super(new NyARIntSize(i_width,i_height),INyARRaster.BUFFERFORMAT_INT1D_GRAY_8);
-		if(!initInstance(this._size,INyARRaster.BUFFERFORMAT_INT1D_GRAY_8,true)){
+		super(new NyARIntSize(i_width,i_height),NyARBufferType.INT1D_GRAY_8);
+		if(!initInstance(this._size,NyARBufferType.INT1D_GRAY_8,true)){
 			throw new NyARException();
 		}
 	}	
 	public NyARGrayscaleRaster(int i_width, int i_height,boolean i_is_alloc) throws NyARException
 	{
-		super(new NyARIntSize(i_width,i_height),INyARRaster.BUFFERFORMAT_INT1D_GRAY_8);
-		if(!initInstance(this._size,INyARRaster.BUFFERFORMAT_INT1D_GRAY_8,i_is_alloc)){
+		super(new NyARIntSize(i_width,i_height),NyARBufferType.INT1D_GRAY_8);
+		if(!initInstance(this._size,NyARBufferType.INT1D_GRAY_8,i_is_alloc)){
 			throw new NyARException();
 		}
-	}	
+	}
+	/**
+	 * @param i_width
+	 * @param i_height
+	 * @param i_raster_type
+	 * NyARBufferTypeに定義された定数値を指定してください。
+	 * @param i_is_alloc
+	 * @throws NyARException
+	 */
 	public NyARGrayscaleRaster(int i_width, int i_height,int i_raster_type,boolean i_is_alloc) throws NyARException
 	{
 		super(new NyARIntSize(i_width,i_height),i_raster_type);
@@ -67,7 +75,7 @@ public final class NyARGrayscaleRaster extends NyARRaster_BasicClass
 	{
 		switch(i_buf_type)
 		{
-			case INyARRaster.BUFFERFORMAT_INT1D_GRAY_8:
+			case NyARBufferType.INT1D_GRAY_8:
 				this._buf =i_is_alloc?new int[i_size.w*i_size.h]:null;
 				break;
 			default:

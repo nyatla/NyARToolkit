@@ -41,7 +41,7 @@ public abstract class SingleNyIdMarkerProcesser
 	/**
 	 * detectMarkerのコールバック関数
 	 */
-	private class DetectSquareCB implements INyARSquareContourDetector.DetectMarkerCallback
+	private class DetectSquareCB implements NyARSquareContourDetector.DetectMarkerCallback
 	{
 		//公開プロパティ
 		public final NyARSquare square=new NyARSquare();
@@ -86,7 +86,7 @@ public abstract class SingleNyIdMarkerProcesser
 		 * 矩形が見付かるたびに呼び出されます。
 		 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
 		 */
-		public void onSquareDetect(INyARSquareContourDetector i_sender,int[] i_coordx,int[] i_coordy,int i_coor_num,int[] i_vertex_index) throws NyARException
+		public void onSquareDetect(NyARSquareContourDetector i_sender,int[] i_coordx,int[] i_coordy,int i_coor_num,int[] i_vertex_index) throws NyARException
 		{
 			//既に発見済なら終了
 			if(this.marker_data!=null){
@@ -173,7 +173,7 @@ public abstract class SingleNyIdMarkerProcesser
 	protected void initInstance(NyARParam i_param,INyIdMarkerDataEncoder i_encoder,int i_marker_width,int i_raster_format) throws NyARException
 	{
 		//初期化済？
-		assert this._initialized==false;
+		assert(this._initialized==false);
 		
 		NyARIntSize scr_size = i_param.getScreenSize();
 		// 解析オブジェクトを作る

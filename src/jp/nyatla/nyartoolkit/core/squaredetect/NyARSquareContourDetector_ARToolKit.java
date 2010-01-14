@@ -42,7 +42,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 
 
-public class NyARSquareContourDetector_ARToolKit implements INyARSquareContourDetector
+public class NyARSquareContourDetector_ARToolKit extends NyARSquareContourDetector
 {
 	private static final int AR_AREA_MAX = 100000;// #define AR_AREA_MAX 100000
 	private static final int AR_AREA_MIN = 70;// #define AR_AREA_MIN 70

@@ -79,7 +79,7 @@ public class J3dNyARRaster_RGB extends JmfNyARRaster_RGB
 	{
 		super(i_cparam.getScreenSize(),i_format);
 		//bufferdimageの種類を決める
-		if(this.getBufferType()!=INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8_24){
+		if(this.getBufferType()!=NyARBufferType.BYTE1D_B8G8R8_24){
 			throw new NyARException();
 		}
 		//RGBのラスタを作る。

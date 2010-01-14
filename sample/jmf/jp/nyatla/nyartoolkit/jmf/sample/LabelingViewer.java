@@ -42,7 +42,7 @@ import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.RleLabelFragmentInfoStack
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilter_ARToolkitThreshold;
-import jp.nyatla.nyartoolkit.core.squaredetect.INyARSquareContourDetector;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector_Rle;
 
 /**
@@ -96,7 +96,7 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 	/**
 	 * detectMarkerのコールバック関数
 	 */
-	private class DetectSquareCB implements INyARSquareContourDetector.DetectMarkerCallback
+	private class DetectSquareCB implements NyARSquareContourDetector.DetectMarkerCallback
 	{
 		public DetectSquareCB()
 		{
@@ -106,7 +106,7 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 		 * 矩形が見付かるたびに呼び出されます。
 		 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
 		 */
-		public void onSquareDetect(INyARSquareContourDetector i_sender,int[] i_coordx,int[] i_coordy,int i_coor_num,int[] i_vertex_index) throws NyARException
+		public void onSquareDetect(NyARSquareContourDetector i_sender,int[] i_coordx,int[] i_coordy,int i_coor_num,int[] i_vertex_index) throws NyARException
 		{			
 		}
 	}

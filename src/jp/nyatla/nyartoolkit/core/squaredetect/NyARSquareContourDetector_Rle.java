@@ -39,7 +39,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
 import java.util.*;
 
 
-public class NyARSquareContourDetector_Rle implements INyARSquareContourDetector
+public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 {
 	private static final int AR_AREA_MAX = 100000;// #define AR_AREA_MAX 100000
 	private static final int AR_AREA_MIN = 70;// #define AR_AREA_MIN 70

@@ -22,10 +22,10 @@ public class NyARRasterFilter_Rgb2Gs_CbCrCut implements INyARRasterFilter_Rgb2Gs
 	public NyARRasterFilter_Rgb2Gs_CbCrCut(int i_raster_type,double i_sigma) throws NyARException
 	{
 		switch (i_raster_type) {
-		case INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8_24:
+		case NyARBufferType.BYTE1D_B8G8R8_24:
 			this._dofilterimpl=new IdoFilterImpl_BYTE1D_B8G8R8_24();
 			break;
-		case INyARRaster.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+		case NyARBufferType.BYTE1D_R8G8B8_24:
 		default:
 			throw new NyARException();
 		}
@@ -52,8 +52,8 @@ public class NyARRasterFilter_Rgb2Gs_CbCrCut implements INyARRasterFilter_Rgb2Gs
 	{
 		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException
 		{
-			assert(	i_input.isEqualBufferType(INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8_24));
-			assert(	i_output.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
+			assert(	i_input.isEqualBufferType(NyARBufferType.BYTE1D_B8G8R8_24));
+			assert(	i_output.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
 			
 			int[] out_buf = (int[]) i_output.getBuffer();
 			byte[] in_buf = (byte[]) i_input.getBuffer();

@@ -44,7 +44,7 @@ public class NyARColorPatt_PseudoAffine implements INyARColorPatt
 	private int[] _patdata;
 	private NyARRgbPixelReader_INT1D_X8R8G8B8_32 _pixelreader;
 	private NyARIntSize _size;
-	private static final int BUFFER_FORMAT=INyARRaster.BUFFERFORMAT_INT1D_X8R8G8B8_32;
+	private static final int BUFFER_FORMAT=NyARBufferType.INT1D_X8R8G8B8_32;
 		
 	public final int getWidth()
 	{

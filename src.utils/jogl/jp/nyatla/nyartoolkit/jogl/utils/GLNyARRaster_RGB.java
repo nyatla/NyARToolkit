@@ -69,10 +69,10 @@ public class GLNyARRaster_RGB extends JmfNyARRaster_RGB
 	private void initMember(int i_buffer_type) throws NyARException
 	{
 		switch(i_buffer_type){
-		case INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8_24:
+		case NyARBufferType.BYTE1D_B8G8R8_24:
 			this._gl_flag = GL.GL_BGR;
 			break;
-		case INyARRaster.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+		case NyARBufferType.BYTE1D_R8G8B8_24:
 			this._gl_flag = GL.GL_RGB;
 			break;
 		default:

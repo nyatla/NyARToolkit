@@ -59,7 +59,7 @@ public class NyARRasterFilter_ARTTh_Quad implements INyARRasterFilter_Rgb2Bin
 		int in_buf_type=i_input.getBufferType();
 
 		NyARIntSize size = i_output.getSize();
-		assert (i_output.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_BIN_8));
+		assert (i_output.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
 		assert (checkInputType(in_buf_type)==true);	
 		assert (i_input.getSize().isEqualSize(size.w*2,size.h*2) == true);
 
@@ -67,8 +67,8 @@ public class NyARRasterFilter_ARTTh_Quad implements INyARRasterFilter_Rgb2Bin
 		byte[] in_buf = (byte[]) i_input.getBuffer();
 
 		switch (i_input.getBufferType()) {
-		case INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8_24:
-		case INyARRaster.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+		case NyARBufferType.BYTE1D_B8G8R8_24:
+		case NyARBufferType.BYTE1D_R8G8B8_24:
 			convert24BitRgb(in_buf, out_buf, size);
 			break;
 //		case INyARBufferReader.BUFFERFORMAT_BYTE1D_B8G8R8X8_32:
@@ -179,10 +179,10 @@ public class NyARRasterFilter_ARTTh_Quad implements INyARRasterFilter_Rgb2Bin
 	private boolean checkInputType(int i_input_type) throws NyARException
 	{
 		switch(i_input_type){
-		case INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8_24:
-		case INyARRaster.BUFFERFORMAT_BYTE1D_R8G8B8_24:
-//		case INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8X8_32:
-//		case INyARRaster.BUFFERFORMAT_BYTE1D_R5G6B5_16LE:
+		case NyARBufferType.BYTE1D_B8G8R8_24:
+		case NyARBufferType.BYTE1D_R8G8B8_24:
+//		case NyARBufferType.BYTE1D_B8G8R8X8_32:
+//		case NyARBufferType.BYTE1D_R5G6B5_16LE:
 			return true;
 		default:
 			return false;

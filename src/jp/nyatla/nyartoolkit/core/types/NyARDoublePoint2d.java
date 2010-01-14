@@ -105,8 +105,4 @@ public class NyARDoublePoint2d
 	{
 		return Math.sqrt(this.x*this.x+this.y+this.y);
 	}
-	public final double sqNorm()
-	{
-		return this.x*this.x+this.y+this.y;
-	}
 }

@@ -42,7 +42,7 @@ import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilter_ARToolkitThreshold;
-import jp.nyatla.nyartoolkit.core.squaredetect.INyARSquareContourDetector;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareStack;
 
@@ -57,7 +57,7 @@ public class NyARSingleDetectMarker_X2
 
 	private boolean _is_continue = false;
 	private NyARMatchPatt_Color_WITHOUT_PCA _match_patt;
-	private INyARSquareContourDetector _square_detect;
+	private NyARSquareContourDetector _square_detect;
 
 	private final NyARSquareStack _square_list = new NyARSquareStack(AR_SQUARE_MAX);
 

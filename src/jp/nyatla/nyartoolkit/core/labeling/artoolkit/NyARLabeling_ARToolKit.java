@@ -54,7 +54,7 @@ final public class NyARLabeling_ARToolKit
 	 */
 	public int labeling(NyARBinRaster i_raster,NyARLabelingImage o_destination) throws NyARException
 	{
-		assert(i_raster.getBufferType()==INyARRaster.BUFFERFORMAT_INT1D_BIN_8);
+		assert(i_raster.getBufferType()==NyARBufferType.INT1D_BIN_8);
 		int label_img_ptr1, label_pixel;
 		int i, j;
 		int n, k; /* work */

@@ -82,7 +82,7 @@ public class NyARRasterThresholdAnalyzer_DiffHistogram implements INyARRasterThr
 
 	public int analyzeRaster(INyARRaster i_input) throws NyARException
 	{
-		assert (i_input.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
+		assert (i_input.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
 		int[] histogram = new int[256];
 		return createHistogram((int[])i_input.getBuffer(),i_input.getSize(), histogram);
 	}
@@ -95,8 +95,8 @@ public class NyARRasterThresholdAnalyzer_DiffHistogram implements INyARRasterThr
 	 */
 	public void debugDrawHistogramMap(INyARRaster i_input, INyARRaster i_output) throws NyARException
 	{
-		assert (i_input.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
-		assert (i_output.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
+		assert (i_input.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
+		assert (i_output.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
 		NyARIntSize size = i_output.getSize();
 
 		int[] out_buf = (int[]) i_output.getBuffer();

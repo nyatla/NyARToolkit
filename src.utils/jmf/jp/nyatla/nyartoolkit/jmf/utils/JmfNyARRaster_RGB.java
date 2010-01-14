@@ -184,9 +184,9 @@ class NyARGLPixelReader_RGB24 extends JmfRGB24RasterHolder
 		int r=fm.getRedMask();
 		int b=fm.getBlueMask();
 		if(r==1 && b==3){
-			this.buffer_type=INyARRaster.BUFFERFORMAT_BYTE1D_R8G8B8_24;
+			this.buffer_type=NyARBufferType.BYTE1D_R8G8B8_24;
 		}else if(r==3 && b==1){
-			this.buffer_type=INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8_24;			
+			this.buffer_type=NyARBufferType.BYTE1D_B8G8R8_24;			
 		}else{
 			throw new NyARException();
 		}
@@ -221,12 +221,12 @@ class NyARGLPixelReader_RGB24 extends JmfRGB24RasterHolder
 		int bp = (i_x + i_y * this._ref_size.w) * 3;
 		byte[] ref = this.buffer;
 		switch(this.buffer_type){
-		case INyARRaster.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+		case NyARBufferType.BYTE1D_R8G8B8_24:
 			o_rgb[0] = (ref[bp + 0] & 0xff);// R
 			o_rgb[1] = (ref[bp + 1] & 0xff);// G
 			o_rgb[2] = (ref[bp + 2] & 0xff);// B
 			break;
-		case INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8_24:
+		case NyARBufferType.BYTE1D_B8G8R8_24:
 			o_rgb[0] = (ref[bp + 2] & 0xff);// B
 			o_rgb[1] = (ref[bp + 1] & 0xff);// G
 			o_rgb[2] = (ref[bp + 0] & 0xff);// R
@@ -242,7 +242,7 @@ class NyARGLPixelReader_RGB24 extends JmfRGB24RasterHolder
 		byte[] ref = this.buffer;
 		int bp;
 		switch(this.buffer_type){
-		case INyARRaster.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+		case NyARBufferType.BYTE1D_R8G8B8_24:
 			for (int i = i_num - 1; i >= 0; i--) {
 				bp = (i_x[i] + i_y[i] * width) * 3;
 				o_rgb[i * 3 + 0] = (ref[bp + 0] & 0xff);// R
@@ -250,7 +250,7 @@ class NyARGLPixelReader_RGB24 extends JmfRGB24RasterHolder
 				o_rgb[i * 3 + 2] = (ref[bp + 2] & 0xff);// B
 			}
 			break;
-		case INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8_24:
+		case NyARBufferType.BYTE1D_B8G8R8_24:
 			for (int i = i_num - 1; i >= 0; i--) {
 				bp = (i_x[i] + i_y[i] * width) * 3;
 				o_rgb[i * 3 + 0] = (ref[bp + 2] & 0xff);// B
@@ -315,7 +315,7 @@ class NyARGLPixelReader_YUV extends JmfRGB24RasterHolder
 	public NyARGLPixelReader_YUV(NyARIntSize i_ref_size,YUVFormat i_input_format) throws NyARException
 	{
 		this._ref_size=i_ref_size;
-		this.buffer_type=INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8_24;
+		this.buffer_type=NyARBufferType.BYTE1D_B8G8R8_24;
 		this.buffer=null;
 		this._yuv2rgb=new YUVToRGB();
 		this._rgb_buf=new javax.media.Buffer();

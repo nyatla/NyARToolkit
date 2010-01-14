@@ -31,13 +31,12 @@
 package jp.nyatla.nyartoolkit.core.raster;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**このクラスは、単機能のNyARRasterです。
  *
  */
-public final class NyARRaster extends NyARRaster_BasicClass
+public class NyARRaster extends NyARRaster_BasicClass
 {
 	protected Object _buf;
 	protected int _buf_type;
@@ -50,6 +49,7 @@ public final class NyARRaster extends NyARRaster_BasicClass
 	 * @param i_width
 	 * @param i_height
 	 * @param i_buffer_type
+	 * NyARBufferTypeに定義された定数値を指定してください。
 	 * @param i_is_alloc
 	 * @throws NyARException
 	 */
@@ -74,7 +74,7 @@ public final class NyARRaster extends NyARRaster_BasicClass
 	{
 		switch(i_buf_type)
 		{
-			case INyARRaster.BUFFERFORMAT_INT1D_X8R8G8B8_32:
+			case NyARBufferType.INT1D_X8R8G8B8_32:
 				this._buf=i_is_alloc?new int[i_size.w*i_size.h]:null;
 				break;
 			default:

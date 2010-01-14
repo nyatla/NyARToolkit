@@ -41,7 +41,7 @@ public class NyARRasterFilter_Reverse implements INyARRasterFilter
 	public NyARRasterFilter_Reverse(int i_raster_type) throws NyARException
 	{
 		switch (i_raster_type) {
-		case INyARRaster.BUFFERFORMAT_INT1D_GRAY_8:
+		case NyARBufferType.INT1D_GRAY_8:
 			this._do_filter_impl=new IdoFilterImpl_GRAY_8();
 			break;
 		default:
@@ -61,8 +61,8 @@ public class NyARRasterFilter_Reverse implements INyARRasterFilter
 	{
 		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException
 		{
-			assert (i_input.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
-			assert (i_output.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
+			assert (i_input.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
+			assert (i_output.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
 			int[] in_ptr =(int[])i_input.getBuffer();
 			int[] out_ptr=(int[])i_output.getBuffer();
 

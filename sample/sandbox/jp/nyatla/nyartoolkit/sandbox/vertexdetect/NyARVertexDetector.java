@@ -41,7 +41,7 @@ import jp.nyatla.nyartoolkit.core.param.*;
  * PCAではなく、頂点座標そのものからSquare位置を計算するクラス
  *
  */
-public class NyARVertexDetector implements INyARSquareContourDetector
+public class NyARVertexDetector extends NyARSquareContourDetector
 {
 	private static final int AR_AREA_MAX = 100000;// #define AR_AREA_MAX 100000
 

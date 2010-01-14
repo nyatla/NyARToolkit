@@ -45,7 +45,7 @@ import jp.nyatla.nyartoolkit.core.param.*;
  * このクラスは、arDetectMarker2.cとの置き換えになります。
  * 
  */
-public class NyARSquareDetector_X2 implements INyARSquareContourDetector
+public class NyARSquareDetector_X2 extends NyARSquareContourDetector
 {
 	private final int _width;
 	private final int _height;

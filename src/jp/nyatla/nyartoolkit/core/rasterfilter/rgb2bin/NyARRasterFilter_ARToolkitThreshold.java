@@ -18,7 +18,7 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 
 	public NyARRasterFilter_ARToolkitThreshold(int i_threshold,int i_in_raster_type) throws NyARException
 	{
-		if(!initInstance(i_threshold,i_in_raster_type,INyARRaster.BUFFERFORMAT_INT1D_BIN_8)){
+		if(!initInstance(i_threshold,i_in_raster_type,NyARBufferType.INT1D_BIN_8)){
 			throw new NyARException();
 		}
 	}
@@ -31,22 +31,22 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 	protected boolean initInstance(int i_threshold,int i_in_raster_type,int i_out_raster_type)
 	{
 		switch(i_out_raster_type){
-		case INyARRaster.BUFFERFORMAT_INT1D_BIN_8:
+		case NyARBufferType.INT1D_BIN_8:
 			switch (i_in_raster_type){
-			case INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8_24:
-			case INyARRaster.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+			case NyARBufferType.BYTE1D_B8G8R8_24:
+			case NyARBufferType.BYTE1D_R8G8B8_24:
 				this._do_threshold_impl=new doThFilterImpl_BUFFERFORMAT_BYTE1D_RGB_24();
 				break;
-			case INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8X8_32:
+			case NyARBufferType.BYTE1D_B8G8R8X8_32:
 				this._do_threshold_impl=new doThFilterImpl_BUFFERFORMAT_BYTE1D_B8G8R8X8_32();
 				break;
-			case INyARRaster.BUFFERFORMAT_BYTE1D_X8R8G8B8_32:
+			case NyARBufferType.BYTE1D_X8R8G8B8_32:
 				this._do_threshold_impl=new doThFilterImpl_BUFFERFORMAT_BYTE1D_X8R8G8B8_32();
 				break;
-			case INyARRaster.BUFFERFORMAT_INT1D_X8R8G8B8_32:
+			case NyARBufferType.INT1D_X8R8G8B8_32:
 				this._do_threshold_impl=new doThFilterImpl_BUFFERFORMAT_INT1D_X8R8G8B8_32();
 				break;
-			case INyARRaster.BUFFERFORMAT_WORD1D_R5G6B5_16LE:
+			case NyARBufferType.WORD1D_R5G6B5_16LE:
 				this._do_threshold_impl=new doThFilterImpl_BUFFERFORMAT_WORD1D_R5G6B5_16LE();
 				break;
 			default:
@@ -87,7 +87,7 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 	{
 		public void doThFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size,int i_threshold)
 		{
-			assert (i_output.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_BIN_8));
+			assert (i_output.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
 			
 			int[] out_buf = (int[]) i_output.getBuffer();
 			byte[] in_buf = (byte[]) i_input.getBuffer();
@@ -146,8 +146,8 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 	{
 		public void doThFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size,int i_threshold)
 		{
-			assert (i_input.isEqualBufferType(INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8X8_32));
-			assert (i_output.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_BIN_8));
+			assert (i_input.isEqualBufferType(NyARBufferType.BYTE1D_B8G8R8X8_32));
+			assert (i_output.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
 			
 			int[] out_buf = (int[]) i_output.getBuffer();
 			byte[] in_buf = (byte[]) i_input.getBuffer();
@@ -205,7 +205,7 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 	{
 		public void doThFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size,int i_threshold)
 		{
-			assert (i_output.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_BIN_8));
+			assert (i_output.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
 			
 			int[] out_buf = (int[]) i_output.getBuffer();
 			byte[] in_buf = (byte[]) i_input.getBuffer();
@@ -265,7 +265,7 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 	{
 		public void doThFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size,int i_threshold)
 		{
-			assert (i_output.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_BIN_8));
+			assert (i_output.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
 			
 			int[] out_buf = (int[]) i_output.getBuffer();
 			int[] in_buf = (int[]) i_input.getBuffer();
@@ -314,7 +314,7 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 	{
 		public void doThFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size,int i_threshold)
 		{
-			assert (i_output.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_BIN_8));
+			assert (i_output.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
 			
 			int[] out_buf = (int[]) i_output.getBuffer();
 			short[] in_buf = (short[]) i_input.getBuffer();

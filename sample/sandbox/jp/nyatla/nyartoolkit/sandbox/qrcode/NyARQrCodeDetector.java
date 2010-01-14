@@ -8,13 +8,13 @@ import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabeling_ARToolKit;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.squaredetect.ContourPickup;
-import jp.nyatla.nyartoolkit.core.squaredetect.INyARSquareContourDetector;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareStack;
 import jp.nyatla.nyartoolkit.core.squaredetect.Coord2Linear;
 import jp.nyatla.nyartoolkit.core.types.*;
 
-public class NyARQrCodeDetector implements INyARSquareContourDetector
+public class NyARQrCodeDetector extends NyARSquareContourDetector
 {
 	private NyARQrCodeSymbolBinder _binder;
 

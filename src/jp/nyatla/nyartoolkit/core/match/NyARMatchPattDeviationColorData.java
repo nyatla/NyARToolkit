@@ -71,7 +71,7 @@ public class NyARMatchPattDeviationColorData
 	public void setRaster(INyARRaster i_raster)
 	{
 		//画素フォーマット、サイズ制限
-		assert i_raster.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_X8R8G8B8_32);
+		assert i_raster.isEqualBufferType(NyARBufferType.INT1D_X8R8G8B8_32);
 		assert i_raster.getSize().isEqualSize(i_raster.getSize());
 
 		final int[] buf=(int[])i_raster.getBuffer();

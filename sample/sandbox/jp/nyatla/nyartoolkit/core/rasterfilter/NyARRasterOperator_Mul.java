@@ -31,7 +31,7 @@
 package jp.nyatla.nyartoolkit.core.rasterfilter;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
+import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
@@ -44,7 +44,7 @@ public class NyARRasterOperator_Mul
 	public NyARRasterOperator_Mul(int i_raster_type) throws NyARException
 	{
 		switch (i_raster_type) {
-		case INyARRaster.BUFFERFORMAT_INT1D_GRAY_8:
+		case NyARBufferType.INT1D_GRAY_8:
 			this._dofilterimpl=new IdoFilterImpl_INT1D_GRAY_8();
 			break;
 		default:
@@ -69,9 +69,9 @@ public class NyARRasterOperator_Mul
 	{
 		public void doFilter(INyARRaster i_input_a,INyARRaster i_input_b,INyARRaster i_output,NyARIntSize i_size) throws NyARException
 		{
-			assert(i_input_a.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
-			assert(i_input_b.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
-			assert(i_output.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
+			assert(i_input_a.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
+			assert(i_input_b.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
+			assert(i_output.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
 			
 			int[] out_buf = (int[]) i_output.getBuffer();
 			int[] in_buf1 = (int[]) i_input_a.getBuffer();

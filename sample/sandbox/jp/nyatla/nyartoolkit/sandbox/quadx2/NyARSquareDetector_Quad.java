@@ -35,7 +35,7 @@ import jp.nyatla.nyartoolkit.core.labeling.*;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.ContourPickup;
-import jp.nyatla.nyartoolkit.core.squaredetect.INyARSquareContourDetector;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareStack;
 import jp.nyatla.nyartoolkit.core.squaredetect.Coord2Linear;
@@ -49,7 +49,7 @@ import jp.nyatla.nyartoolkit.sandbox.x2.*;
  * 1/4に解像度を落して解析するNyARSquareDetector_X2
  * 与えるBinRasterが既に1/4のサイズになっていないといけないことに注意
  */
-public class NyARSquareDetector_Quad implements INyARSquareContourDetector
+public class NyARSquareDetector_Quad extends NyARSquareContourDetector
 {
     private static int AR_AREA_MAX = 25000;// #define AR_AREA_MAX 100000
 

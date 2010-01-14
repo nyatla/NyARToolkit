@@ -56,7 +56,7 @@ public class NyARCustomSingleDetectMarker
 	/**
 	 * detectMarkerのコールバック関数
 	 */
-	private class DetectSquareCB implements INyARSquareContourDetector.DetectMarkerCallback
+	private class DetectSquareCB implements NyARSquareContourDetector.DetectMarkerCallback
 	{
 		//公開プロパティ
 		public double confidence;
@@ -84,7 +84,7 @@ public class NyARCustomSingleDetectMarker
 		 * 矩形が見付かるたびに呼び出されます。
 		 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
 		 */
-		public void onSquareDetect(INyARSquareContourDetector i_sender,int[] i_coordx,int[] i_coordy,int i_coor_num,int[] i_vertex_index) throws NyARException
+		public void onSquareDetect(NyARSquareContourDetector i_sender,int[] i_coordx,int[] i_coordy,int i_coor_num,int[] i_vertex_index) throws NyARException
 		{
 			NyARMatchPattResult mr=this.__detectMarkerLite_mr;
 			//輪郭座標から頂点リストに変換
@@ -135,7 +135,7 @@ public class NyARCustomSingleDetectMarker
 	}
 	
 	private boolean _is_continue = false;
-	private INyARSquareContourDetector _square_detect;
+	private NyARSquareContourDetector _square_detect;
 	protected INyARTransMat _transmat;
 	//画処理用
 	private NyARBinRaster _bin_raster;
@@ -150,7 +150,7 @@ public class NyARCustomSingleDetectMarker
 	}
 	protected void initInstance(
 		INyARColorPatt i_patt_inst,
-		INyARSquareContourDetector i_sqdetect_inst,
+		NyARSquareContourDetector i_sqdetect_inst,
 		INyARTransMat i_transmat_inst,
 		INyARRasterFilter_Rgb2Bin i_filter,
 		NyARParam	i_ref_param,

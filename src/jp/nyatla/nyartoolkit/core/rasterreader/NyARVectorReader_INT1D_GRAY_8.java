@@ -24,7 +24,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterreader;
 
-import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
+import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
@@ -34,7 +34,7 @@ public 	class NyARVectorReader_INT1D_GRAY_8
 	private NyARIntSize _ref_size;
 	public NyARVectorReader_INT1D_GRAY_8(INyARRaster i_ref_raster)
 	{
-		assert(i_ref_raster.getBufferType()==INyARRaster.BUFFERFORMAT_INT1D_GRAY_8);
+		assert(i_ref_raster.getBufferType()==NyARBufferType.INT1D_GRAY_8);
 		this._ref_buf=(int[])(i_ref_raster.getBuffer());
 		this._ref_size=i_ref_raster.getSize();
 	}

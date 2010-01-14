@@ -36,12 +36,12 @@ import jp.nyatla.nyartoolkit.core.types.*;
 public final class NyARHsvRaster extends NyARRaster_BasicClass
 {
 
-	protected int[] _ref_buf;
+	private int[] _ref_buf;
 	
 	public NyARHsvRaster(int i_width, int i_height)
 	{
 		//このクラスは外部参照バッファ/形式多重化が使えない簡易実装です。
-		super(new NyARIntSize(i_width,i_height),INyARRaster.BUFFERFORMAT_INT1D_X7H9S8V8_32);
+		super(new NyARIntSize(i_width,i_height),NyARBufferType.INT1D_X7H9S8V8_32);
 		this._ref_buf = new int[i_height*i_width];
 	}
 	public Object getBuffer()

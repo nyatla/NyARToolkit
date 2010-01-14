@@ -72,7 +72,7 @@ public abstract class SingleARMarkerProcesser_X2
 
 	private int _lost_delay = 5;
 
-	private INyARSquareContourDetector _square_detect;
+	private NyARSquareContourDetector _square_detect;
 
 	//<X2 patch>
 	protected NyARTransMat_X2 _transmat;

@@ -121,7 +121,7 @@ public class LabelingBufferdImage extends BufferedImage
 
 	public void drawImage(NyARGrayscaleRaster i_raster) throws NyARException
 	{
-		assert (i_raster.getBufferType() == INyARRaster.BUFFERFORMAT_INT1D_GRAY_8);
+		assert (i_raster.getBufferType() == NyARBufferType.INT1D_GRAY_8);
 
 		int w = this.getWidth();
 		int h = this.getHeight();
@@ -148,7 +148,7 @@ public class LabelingBufferdImage extends BufferedImage
 	 */
 	public void drawImage(NyARBinRaster i_raster) throws NyARException
 	{
-		assert (i_raster.getBufferType() == INyARRaster.BUFFERFORMAT_INT1D_BIN_8);
+		assert (i_raster.getBufferType() == NyARBufferType.INT1D_BIN_8);
 
 		int w = this.getWidth();
 		int h = this.getHeight();

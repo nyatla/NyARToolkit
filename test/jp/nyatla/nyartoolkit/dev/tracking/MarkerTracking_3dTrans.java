@@ -3,7 +3,7 @@ package jp.nyatla.nyartoolkit.dev.tracking;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARCode;
 import jp.nyatla.nyartoolkit.core.squaredetect.Coord2Linear;
-import jp.nyatla.nyartoolkit.core.squaredetect.INyARSquareContourDetector;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
@@ -27,7 +27,7 @@ public class MarkerTracking_3dTrans
 	/**
 	 * detectMarkerのコールバック関数
 	 */
-	private class DetectSquareCB implements INyARSquareContourDetector.DetectMarkerCallback
+	private class DetectSquareCB implements NyARSquareContourDetector.DetectMarkerCallback
 	{
 		//公開プロパティ
 		public NyARSquare square=new NyARSquare();
@@ -71,7 +71,7 @@ public class MarkerTracking_3dTrans
 		 * 矩形が見付かるたびに呼び出されます。
 		 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
 		 */
-		public void onSquareDetect(INyARSquareContourDetector i_sender,int[] i_coordx,int[] i_coordy,int i_coor_num,int[] i_vertex_index) throws NyARException
+		public void onSquareDetect(NyARSquareContourDetector i_sender,int[] i_coordx,int[] i_coordy,int i_coor_num,int[] i_vertex_index) throws NyARException
 		{
 			//輪郭座標から頂点リストに変換
 			NyARIntPoint2d[] vertex=this.__tmp_vertex;
@@ -249,7 +249,7 @@ public class MarkerTracking_3dTrans
 			return index==-1?null:items[index];
 		}		
 	}
-	private INyARSquareContourDetector _square_detect;
+	private NyARSquareContourDetector _square_detect;
 	protected INyARTransMat _transmat;
 	//画処理用
 	private NyARBinRaster _bin_raster;
@@ -266,7 +266,7 @@ public class MarkerTracking_3dTrans
 	}
 	protected void initInstance(
 		INyARColorPatt i_patt_inst,
-		INyARSquareContourDetector i_sqdetect_inst,
+		NyARSquareContourDetector i_sqdetect_inst,
 		INyARTransMat i_transmat_inst,
 		INyARRasterFilter_Rgb2Bin i_filter,
 		NyARParam	i_ref_param,

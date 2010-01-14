@@ -46,7 +46,7 @@ public class ContourPickup
 	protected final static int[] _getContour_ydir = {-1,-1, 0, 1, 1, 1, 0,-1 ,-1,-1, 0, 1, 1, 1, 0};
 	public int getContour(NyARBinRaster i_raster,int i_entry_x,int i_entry_y,int i_array_size,int[] o_coord_x,int[] o_coord_y) throws NyARException
 	{
-		assert(i_raster.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_BIN_8));
+		assert(i_raster.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
 		return impl_getContour(i_raster,0,i_entry_x,i_entry_y,i_array_size,o_coord_x,o_coord_y);
 	}
 	/**
@@ -65,7 +65,7 @@ public class ContourPickup
 	 */
 	public int getContour(NyARGrayscaleRaster i_raster,int i_th,int i_entry_x,int i_entry_y,int i_array_size,int[] o_coord_x,int[] o_coord_y) throws NyARException
 	{
-		assert(i_raster.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
+		assert(i_raster.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
 		return impl_getContour(i_raster,i_th,i_entry_x,i_entry_y,i_array_size,o_coord_x,o_coord_y);
 	}
 

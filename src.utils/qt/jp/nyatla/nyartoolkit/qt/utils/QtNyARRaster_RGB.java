@@ -52,7 +52,7 @@ public class QtNyARRaster_RGB implements INyARRgbRaster
 	{
 		this._size=new NyARIntSize(i_width,i_height);
 		this._buffer= null;
-		this._buffer_type=INyARRaster.BUFFERFORMAT_BYTE1D_R8G8B8_24;
+		this._buffer_type=NyARBufferType.BYTE1D_R8G8B8_24;
 		this._reader = new NyARRgbPixelReader_BYTE1D_R8G8B8_24(null,this._size);
 	}
 	

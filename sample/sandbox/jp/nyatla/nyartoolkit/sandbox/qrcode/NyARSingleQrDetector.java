@@ -39,7 +39,7 @@ import jp.nyatla.nyartoolkit.core.rasterfilter.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.squaredetect.INyARSquareContourDetector;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareStack;
 import jp.nyatla.nyartoolkit.core.transmat.*;
@@ -54,7 +54,7 @@ public class NyARSingleQrDetector
 	private static final int AR_SQUARE_MAX = 100;
 
 	private boolean _is_continue = false;
-	private INyARSquareContourDetector _square_detect;
+	private NyARSquareContourDetector _square_detect;
 
 	private final NyARSquareStack _square_list = new NyARSquareStack(AR_SQUARE_MAX);
 

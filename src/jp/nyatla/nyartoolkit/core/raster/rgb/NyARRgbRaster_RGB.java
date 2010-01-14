@@ -31,18 +31,18 @@
 package jp.nyatla.nyartoolkit.core.raster.rgb;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
+import jp.nyatla.nyartoolkit.core.raster.*;
 
 public class NyARRgbRaster_RGB extends NyARRgbRaster
 {
-	public NyARRgbRaster_RGB(int i_width, int i_height,Boolean i_is_alloc) throws NyARException
+	public NyARRgbRaster_RGB(int i_width, int i_height,boolean i_is_alloc) throws NyARException
 	{
-		super(i_width,i_height,INyARRaster.BUFFERFORMAT_BYTE1D_R8G8B8_24,i_is_alloc);
+		super(i_width,i_height,NyARBufferType.BYTE1D_R8G8B8_24,i_is_alloc);
 	}
 
 	public NyARRgbRaster_RGB(int i_width, int i_height) throws NyARException
 	{
-		super(i_width,i_height,INyARRaster.BUFFERFORMAT_BYTE1D_R8G8B8_24);
+		super(i_width,i_height,NyARBufferType.BYTE1D_R8G8B8_24);
 		return;
 	}
 }

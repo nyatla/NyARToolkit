@@ -56,7 +56,7 @@ class NyARCodeFileReader
 			StreamTokenizer st = new StreamTokenizer(new InputStreamReader(i_stream));
 			//GBRAで一度読みだす。
 			for (int h = 0; h < 4; h++) {
-				assert o_raster[h].isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_X8R8G8B8_32);
+				assert o_raster[h].isEqualBufferType(NyARBufferType.INT1D_X8R8G8B8_32);
 				final NyARRaster ra=o_raster[h];
 				readBlock(st,ra.getWidth(),ra.getHeight(),(int[])ra.getBuffer());
 			}
@@ -75,7 +75,7 @@ class NyARCodeFileReader
 	{
 		int width=o_code.getWidth();
 		int height=o_code.getHeight();
-		NyARRaster tmp_raster=new NyARRaster(width,height,INyARRaster.BUFFERFORMAT_INT1D_X8R8G8B8_32);
+		NyARRaster tmp_raster=new NyARRaster(width,height, NyARBufferType.INT1D_X8R8G8B8_32);
 		//4個の要素をラスタにセットする。
 		try {
 			StreamTokenizer st = new StreamTokenizer(new InputStreamReader(i_stream));

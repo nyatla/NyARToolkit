@@ -10,8 +10,8 @@ public class NyARRasterFilter_ConstantThreshold implements INyARRasterFilter_Gs2
 	public int _threshold;
 	public NyARRasterFilter_ConstantThreshold(int i_initial_threshold,int i_in_raster_type,int i_out_raster_type) throws NyARException
 	{
-		assert(i_in_raster_type==INyARRaster.BUFFERFORMAT_INT1D_GRAY_8);
-		assert(i_out_raster_type==INyARRaster.BUFFERFORMAT_INT1D_BIN_8);
+		assert(i_in_raster_type==NyARBufferType.INT1D_GRAY_8);
+		assert(i_out_raster_type==NyARBufferType.INT1D_BIN_8);
 		//初期化
 		this._threshold=i_initial_threshold;
 		
@@ -33,8 +33,8 @@ public class NyARRasterFilter_ConstantThreshold implements INyARRasterFilter_Gs2
 	}
 	public void doFilter(NyARGrayscaleRaster i_input, NyARBinRaster i_output) throws NyARException
 	{
-		assert(i_input.getBufferType()==INyARRaster.BUFFERFORMAT_INT1D_GRAY_8);
-		assert(i_output.getBufferType()==INyARRaster.BUFFERFORMAT_INT1D_BIN_8);
+		assert(i_input.getBufferType()==NyARBufferType.INT1D_GRAY_8);
+		assert(i_output.getBufferType()==NyARBufferType.INT1D_BIN_8);
 		int[] out_buf = (int[]) i_output.getBuffer();
 		int[] in_buf = (int[]) i_input.getBuffer();
 		NyARIntSize s=i_input.getSize();

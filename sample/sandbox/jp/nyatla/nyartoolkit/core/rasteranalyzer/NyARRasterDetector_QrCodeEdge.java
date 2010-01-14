@@ -86,7 +86,7 @@ public class NyARRasterDetector_QrCodeEdge
 	}	
 	public void analyzeRaster(INyARRaster i_input) throws NyARException
 	{
-		assert (i_input.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_BIN_8));
+		assert (i_input.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
 
 		// 結果をクリア
 		this._result.clear();

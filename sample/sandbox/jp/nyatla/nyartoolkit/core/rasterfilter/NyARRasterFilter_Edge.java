@@ -42,8 +42,8 @@ public class NyARRasterFilter_Edge implements INyARRasterFilter
 {
 	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException
 	{
-		assert (i_input.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
-		assert (i_output.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
+		assert (i_input.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
+		assert (i_output.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
 
 		int[] out_buf = (int[]) i_output.getBuffer();

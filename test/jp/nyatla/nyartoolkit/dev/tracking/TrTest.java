@@ -13,7 +13,7 @@ import jp.nyatla.nyartoolkit.core.pickup.INyARColorPatt;
 import jp.nyatla.nyartoolkit.core.pickup.NyARColorPatt_Perspective_O2;
 import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
-import jp.nyatla.nyartoolkit.core.squaredetect.INyARSquareContourDetector;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector_Rle;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareStack;
 import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;

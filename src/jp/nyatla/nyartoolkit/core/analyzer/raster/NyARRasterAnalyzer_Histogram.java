@@ -29,23 +29,23 @@ public class NyARRasterAnalyzer_Histogram
 	protected boolean initInstance(int i_raster_format,int i_vertical_interval)
 	{
 		switch (i_raster_format) {
-		case INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8_24:
-		case INyARRaster.BUFFERFORMAT_BYTE1D_R8G8B8_24:
+		case  NyARBufferType.BYTE1D_B8G8R8_24:
+		case  NyARBufferType.BYTE1D_R8G8B8_24:
 			this._histImpl = new NyARRasterThresholdAnalyzer_Histogram_BYTE1D_RGB_24();
 			break;
-		case INyARRaster.BUFFERFORMAT_INT1D_GRAY_8:
+		case  NyARBufferType.INT1D_GRAY_8:
 			this._histImpl = new NyARRasterThresholdAnalyzer_Histogram_INT1D_GRAY_8();
 			break;
-		case INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8X8_32:
+		case  NyARBufferType.BYTE1D_B8G8R8X8_32:
 			this._histImpl = new NyARRasterThresholdAnalyzer_Histogram_BYTE1D_B8G8R8X8_32();
 			break;
-		case INyARRaster.BUFFERFORMAT_BYTE1D_X8R8G8B8_32:
+		case  NyARBufferType.BYTE1D_X8R8G8B8_32:
 			this._histImpl = new NyARRasterThresholdAnalyzer_Histogram_BYTE1D_X8R8G8B8_32();
 			break;
-		case INyARRaster.BUFFERFORMAT_WORD1D_R5G6B5_16LE:
+		case  NyARBufferType.WORD1D_R5G6B5_16LE:
 			this._histImpl = new NyARRasterThresholdAnalyzer_Histogram_WORD1D_R5G6B5_16LE();
 			break;
-		case INyARRaster.BUFFERFORMAT_INT1D_X8R8G8B8_32:
+		case  NyARBufferType.INT1D_X8R8G8B8_32:
 			this._histImpl = new NyARRasterThresholdAnalyzer_Histogram_INT1D_X8R8G8B8_32();
 			break;
 		default:
@@ -75,8 +75,8 @@ public class NyARRasterAnalyzer_Histogram
 		
 		final NyARIntSize size=i_input.getSize();
 		//最大画像サイズの制限
-		assert size.w*size.h<0x40000000;
-		assert o_histogram.length==256;//現在は固定
+		assert(size.w*size.h<0x40000000);
+		assert(o_histogram.length==256);//現在は固定
 
 		int[] h=o_histogram.data;
 		//ヒストグラム初期化
@@ -96,7 +96,7 @@ public class NyARRasterAnalyzer_Histogram
 	{
 		public int createHistogram(INyARRaster i_reader,NyARIntSize i_size, int[] o_histogram,int i_skip)
 		{
-			assert (i_reader.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_GRAY_8));
+			assert (i_reader.isEqualBufferType( NyARBufferType.INT1D_GRAY_8));
 			final int[] input=(int[]) i_reader.getBuffer();
 			for (int y = i_size.h-1; y >=0 ; y-=i_skip){
 				int pt=y*i_size.w;
@@ -112,7 +112,7 @@ public class NyARRasterAnalyzer_Histogram
 	{
 		public int createHistogram(INyARRaster i_reader,NyARIntSize i_size, int[] o_histogram,int i_skip)
 		{
-			assert (i_reader.isEqualBufferType(INyARRaster.BUFFERFORMAT_INT1D_X8R8G8B8_32));
+			assert (i_reader.isEqualBufferType( NyARBufferType.INT1D_X8R8G8B8_32));
 			final int[] input=(int[]) i_reader.getBuffer();
 			for (int y = i_size.h-1; y >=0 ; y-=i_skip){
 				int pt=y*i_size.w;
@@ -132,8 +132,8 @@ public class NyARRasterAnalyzer_Histogram
 		public int createHistogram(INyARRaster i_reader,NyARIntSize i_size, int[] o_histogram,int i_skip)
 		{
 			assert (
-					i_reader.isEqualBufferType(INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8_24)||
-					i_reader.isEqualBufferType(INyARRaster.BUFFERFORMAT_BYTE1D_R8G8B8_24));
+					i_reader.isEqualBufferType(NyARBufferType.BYTE1D_B8G8R8_24)||
+					i_reader.isEqualBufferType(NyARBufferType.BYTE1D_R8G8B8_24));
 			final byte[] input=(byte[]) i_reader.getBuffer();
 			final int pix_count=i_size.w;
 			final int pix_mod_part=pix_count-(pix_count%8);
@@ -174,7 +174,7 @@ public class NyARRasterAnalyzer_Histogram
 	{
 		public int createHistogram(INyARRaster i_reader,NyARIntSize i_size, int[] o_histogram,int i_skip)
 		{
-	        assert(i_reader.isEqualBufferType(INyARRaster.BUFFERFORMAT_BYTE1D_B8G8R8X8_32));
+	        assert(i_reader.isEqualBufferType(NyARBufferType.BYTE1D_B8G8R8X8_32));
 	        byte[] input = (byte[])i_reader.getBuffer();
 	        int pix_count = i_size.w;
 	        int pix_mod_part = pix_count - (pix_count % 8);
@@ -218,7 +218,7 @@ public class NyARRasterAnalyzer_Histogram
 	{
 		public int createHistogram(INyARRaster i_reader,NyARIntSize i_size, int[] o_histogram,int i_skip)
 		{
-	        assert(i_reader.isEqualBufferType(INyARRaster.BUFFERFORMAT_BYTE1D_X8R8G8B8_32));
+	        assert(i_reader.isEqualBufferType(NyARBufferType.BYTE1D_X8R8G8B8_32));
 	        byte[] input = (byte[])i_reader.getBuffer();
 	        int pix_count = i_size.w;
 	        int pix_mod_part = pix_count - (pix_count % 8);
@@ -262,7 +262,7 @@ public class NyARRasterAnalyzer_Histogram
 	{
 		public int createHistogram(INyARRaster i_reader,NyARIntSize i_size, int[] o_histogram,int i_skip)
 		{
-	        assert(i_reader.isEqualBufferType(INyARRaster.BUFFERFORMAT_WORD1D_R5G6B5_16LE));
+	        assert(i_reader.isEqualBufferType(NyARBufferType.WORD1D_R5G6B5_16LE));
 	        short[] input = (short[])i_reader.getBuffer();
 	        int pix_count = i_size.w;
 	        int pix_mod_part = pix_count - (pix_count % 8);
