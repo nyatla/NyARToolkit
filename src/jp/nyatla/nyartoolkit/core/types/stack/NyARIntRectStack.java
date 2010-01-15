@@ -34,7 +34,7 @@ package jp.nyatla.nyartoolkit.core.types.stack;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 
-public class NyARIntRectStack extends NyObjectStack<NyARIntRect>
+public class NyARIntRectStack extends NyARObjectStack<NyARIntRect>
 {
 	public NyARIntRectStack(int i_length) throws NyARException
 	{

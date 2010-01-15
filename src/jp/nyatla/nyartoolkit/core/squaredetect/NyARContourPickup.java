@@ -38,7 +38,7 @@ import jp.nyatla.nyartoolkit.core.labeling.artoolkit.*;
  * 輪郭線を取得するクラスです。
  *
  */
-public class ContourPickup
+public class NyARContourPickup
 {
 	//巡回参照できるように、テーブルを二重化
 	//                                           0  1  2  3  4  5  6  7   0  1  2  3  4  5  6

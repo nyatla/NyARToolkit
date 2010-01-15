@@ -70,12 +70,12 @@ public abstract class SingleARMarkerProcesser
 		private NyARMatchPattDeviationColorData _deviation_data;
 		private NyARMatchPatt_Color_WITHOUT_PCA[] _match_patt;
 		private final NyARMatchPattResult __detectMarkerLite_mr=new NyARMatchPattResult();
-		private Coord2Linear _coordline;
+		private NyARCoord2Linear _coordline;
 		
 		public DetectSquareCB(NyARParam i_param)
 		{
 			this._match_patt=null;
-			this._coordline=new Coord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
+			this._coordline=new NyARCoord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
 			return;
 		}
 		public void setNyARCodeTable(NyARCode[] i_ref_code,int i_code_resolution)

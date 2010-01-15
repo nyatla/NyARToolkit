@@ -34,7 +34,7 @@ package jp.nyatla.nyartoolkit.core.types.stack;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
 
-public class NyARIntPointStack extends NyObjectStack<NyARIntPoint2d>
+public class NyARIntPointStack extends NyARObjectStack<NyARIntPoint2d>
 {
 	public NyARIntPointStack(int i_length) throws NyARException
 	{

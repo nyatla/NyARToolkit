@@ -39,12 +39,12 @@ import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
-import jp.nyatla.nyartoolkit.core.squaredetect.Coord2Linear;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARCoord2Linear;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector_Rle;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core.types.stack.NyObjectStack;
+import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
 class NyARDetectMarkerResult
 {
@@ -55,7 +55,7 @@ class NyARDetectMarkerResult
 }
 
 
-class NyARDetectMarkerResultStack extends NyObjectStack<NyARDetectMarkerResult>
+class NyARDetectMarkerResultStack extends NyARObjectStack<NyARDetectMarkerResult>
 {
 	public NyARDetectMarkerResultStack(int i_length) throws NyARException
 	{
@@ -89,7 +89,7 @@ public class NyARDetectMarker
 		private NyARMatchPattDeviationColorData _deviation_data;
 		private NyARMatchPatt_Color_WITHOUT_PCA[] _match_patt;
 		private final NyARMatchPattResult __detectMarkerLite_mr=new NyARMatchPattResult();
-		private Coord2Linear _coordline;
+		private NyARCoord2Linear _coordline;
 		
 		public DetectSquareCB(INyARColorPatt i_inst_patt,NyARCode[] i_ref_code,int i_num_of_code,NyARParam i_param) throws NyARException
 		{
@@ -97,7 +97,7 @@ public class NyARDetectMarker
 			final int ch = i_ref_code[0].getHeight();
 
 			this._inst_patt=i_inst_patt;
-			this._coordline=new Coord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
+			this._coordline=new NyARCoord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
 			this._deviation_data=new NyARMatchPattDeviationColorData(cw,ch);
 
 			//NyARMatchPatt_Color_WITHOUT_PCA[]の作成

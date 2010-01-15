@@ -26,9 +26,9 @@ package jp.nyatla.nyartoolkit.core.labeling.rlelabeling;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.types.stack.NyObjectStack;
+import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
-class RleInfoStack extends NyObjectStack<RleInfoStack.RleInfo>
+class RleInfoStack extends NyARObjectStack<RleInfoStack.RleInfo>
 {
 	public class RleInfo
 	{
@@ -202,7 +202,7 @@ public class NyARLabeling_Rle
 	 * @return
 	 * @throws NyARException
 	 */
-	public int labeling(NyARBinRaster i_bin_raster, int i_top, int i_bottom,RleLabelFragmentInfoStack o_stack) throws NyARException
+	public int labeling(NyARBinRaster i_bin_raster, int i_top, int i_bottom,NyARRleLabelFragmentInfoStack o_stack) throws NyARException
 	{
 		assert(i_bin_raster.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
 		return this.imple_labeling(i_bin_raster,0,i_top,i_bottom,o_stack);
@@ -218,12 +218,12 @@ public class NyARLabeling_Rle
 	 * @return
 	 * @throws NyARException
 	 */
-	public int labeling(NyARGrayscaleRaster i_gs_raster,int i_th, int i_top, int i_bottom,RleLabelFragmentInfoStack o_stack) throws NyARException
+	public int labeling(NyARGrayscaleRaster i_gs_raster,int i_th, int i_top, int i_bottom,NyARRleLabelFragmentInfoStack o_stack) throws NyARException
 	{
 		assert(i_gs_raster.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
 		return this.imple_labeling(i_gs_raster,i_th,i_top,i_bottom,o_stack);
 	}
-	private int imple_labeling(INyARRaster i_raster,int i_th,int i_top, int i_bottom,RleLabelFragmentInfoStack o_stack) throws NyARException
+	private int imple_labeling(INyARRaster i_raster,int i_th,int i_top, int i_bottom,NyARRleLabelFragmentInfoStack o_stack) throws NyARException
 	{
 		// リセット処理
 		final RleInfoStack rlestack=this._rlestack;
@@ -377,7 +377,7 @@ public class NyARLabeling_Rle
 		}
 		//対象のラベルだけ転写
 		o_stack.init(label_count);
-		RleLabelFragmentInfoStack.RleLabelFragmentInfo[] o_dest_array=o_stack.getArray();
+		NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo[] o_dest_array=o_stack.getArray();
 		final int max=this._max_area;
 		final int min=this._min_area;
 		int active_labels=0;
@@ -388,7 +388,7 @@ public class NyARLabeling_Rle
 			}
 			//
 			final RleInfoStack.RleInfo src_info=f_array[i];
-			final RleLabelFragmentInfoStack.RleLabelFragmentInfo dest_info=o_dest_array[active_labels];
+			final NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo dest_info=o_dest_array[active_labels];
 			dest_info.area=area;
 			dest_info.clip_b=src_info.clip_b;
 			dest_info.clip_r=src_info.clip_r;

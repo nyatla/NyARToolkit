@@ -31,7 +31,7 @@
 package jp.nyatla.nyartoolkit.core.squaredetect;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.labeling.LabelOverlapChecker;
+import jp.nyatla.nyartoolkit.core.labeling.NyARLabelOverlapChecker;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.*;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
@@ -48,10 +48,10 @@ public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 
 	private final NyARLabeling_Rle _labeling;
 
-	private final LabelOverlapChecker<RleLabelFragmentInfoStack.RleLabelFragmentInfo> _overlap_checker = new LabelOverlapChecker<RleLabelFragmentInfoStack.RleLabelFragmentInfo>(32,RleLabelFragmentInfoStack.RleLabelFragmentInfo.class);
-	private final ContourPickup _cpickup=new ContourPickup();
-	private final RleLabelFragmentInfoStack _stack;
-	private final Coord2SquareVertexIndexes _coord2vertex=new Coord2SquareVertexIndexes();
+	private final NyARLabelOverlapChecker<NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo> _overlap_checker = new NyARLabelOverlapChecker<NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo>(32,NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo.class);
+	private final NyARContourPickup _cpickup=new NyARContourPickup();
+	private final NyARRleLabelFragmentInfoStack _stack;
+	private final NyARCoord2SquareVertexIndexes _coord2vertex=new NyARCoord2SquareVertexIndexes();
 	
 	private final int _max_coord;
 	private final int[] _xcoord;
@@ -68,7 +68,7 @@ public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 		//ラベリングのサイズを指定したいときはsetAreaRangeを使ってね。
 		this._labeling = new NyARLabeling_Rle(this._width,this._height);
 		this._labeling.setAreaRange(AR_AREA_MAX, AR_AREA_MIN);
-		this._stack=new RleLabelFragmentInfoStack(i_size.w*i_size.h*2048/(320*240)+32);//検出可能な最大ラベル数
+		this._stack=new NyARRleLabelFragmentInfoStack(i_size.w*i_size.h*2048/(320*240)+32);//検出可能な最大ラベル数
 		
 
 		// 輪郭の最大長は画面に映りうる最大の長方形サイズ。
@@ -85,8 +85,8 @@ public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 	
 	public void detectMarkerCB(NyARBinRaster i_raster, DetectMarkerCallback i_callback) throws NyARException
 	{
-		final RleLabelFragmentInfoStack flagment=this._stack;
-		final LabelOverlapChecker<RleLabelFragmentInfoStack.RleLabelFragmentInfo> overlap = this._overlap_checker;
+		final NyARRleLabelFragmentInfoStack flagment=this._stack;
+		final NyARLabelOverlapChecker<NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo> overlap = this._overlap_checker;
 
 		// ラベル数が0ならここまで
 		final int label_num=this._labeling.labeling(i_raster, 0, i_raster.getHeight(), flagment);
@@ -96,7 +96,7 @@ public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 		//ラベルをソートしておく
 		flagment.sortByArea();
 		//ラベルリストを取得
-		RleLabelFragmentInfoStack.RleLabelFragmentInfo[] labels=flagment.getArray();
+		NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo[] labels=flagment.getArray();
 
 		final int xsize = this._width;
 		final int ysize = this._height;
@@ -110,7 +110,7 @@ public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 		overlap.setMaxLabels(label_num);
 
 		for (int i=0; i < label_num; i++) {
-			final RleLabelFragmentInfoStack.RleLabelFragmentInfo label_pt=labels[i];
+			final NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo label_pt=labels[i];
 			int label_area = label_pt.area;
 		
 			// クリップ領域が画面の枠に接していれば除外
@@ -150,7 +150,7 @@ public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 	 * デバック用API
 	 * @return
 	 */
-	public RleLabelFragmentInfoStack _getFragmentStack()
+	public NyARRleLabelFragmentInfoStack _getFragmentStack()
 	{
 		return this._stack;
 	}

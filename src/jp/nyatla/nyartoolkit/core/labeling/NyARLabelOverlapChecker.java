@@ -37,7 +37,7 @@ import java.lang.reflect.Array;
  * ラベル同士の重なり（内包関係）を調べるクラスです。 
  * ラベルリストに内包するラベルを蓄積し、それにターゲットのラベルが内包されているか を確認します。
  */
-public class LabelOverlapChecker<T extends NyARLabelInfo>
+public class NyARLabelOverlapChecker<T extends NyARLabelInfo>
 {
 	private T[] _labels;
 	private int _length;
@@ -45,7 +45,7 @@ public class LabelOverlapChecker<T extends NyARLabelInfo>
 	/*
 	*/
 	@SuppressWarnings("unchecked")
-	public LabelOverlapChecker(int i_max_label,Class<T> i_element_type)
+	public NyARLabelOverlapChecker(int i_max_label,Class<T> i_element_type)
 	{
 		this._element_type=i_element_type;
 		this._labels = (T[])Array.newInstance(i_element_type, i_max_label);

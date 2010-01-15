@@ -30,7 +30,7 @@ import jp.nyatla.nyartoolkit.core.labeling.NyARLabelInfo;
 import jp.nyatla.nyartoolkit.core.labeling.NyARLabelInfoStack;
 
 
-public class RleLabelFragmentInfoStack  extends NyARLabelInfoStack<RleLabelFragmentInfoStack.RleLabelFragmentInfo>
+public class NyARRleLabelFragmentInfoStack  extends NyARLabelInfoStack<NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo>
 {
 	public class RleLabelFragmentInfo extends NyARLabelInfo
 	{
@@ -38,14 +38,14 @@ public class RleLabelFragmentInfoStack  extends NyARLabelInfoStack<RleLabelFragm
 		//int area; // フラグメントラベルの領域数
 		public int entry_x; // フラグメントラベルの位置
 	}	
-	public RleLabelFragmentInfoStack(int i_length) throws NyARException
+	public NyARRleLabelFragmentInfoStack(int i_length) throws NyARException
 	{
-		super(i_length, RleLabelFragmentInfoStack.RleLabelFragmentInfo.class);
+		super(i_length, NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo.class);
 		return;
 	}
 
-	protected RleLabelFragmentInfoStack.RleLabelFragmentInfo createElement()
+	protected NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo createElement()
 	{
-		return new RleLabelFragmentInfoStack.RleLabelFragmentInfo();
+		return new NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo();
 	}
 }

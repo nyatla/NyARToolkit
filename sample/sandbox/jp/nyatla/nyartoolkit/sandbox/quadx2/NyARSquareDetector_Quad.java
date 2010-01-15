@@ -34,11 +34,11 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.*;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.squaredetect.ContourPickup;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARContourPickup;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareStack;
-import jp.nyatla.nyartoolkit.core.squaredetect.Coord2Linear;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARCoord2Linear;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 
@@ -61,9 +61,9 @@ public class NyARSquareDetector_Quad extends NyARSquareContourDetector
 
     private NyARLabelingImage _limage;
 
-	private final LabelOverlapChecker<NyARLabelingLabel> _overlap_checker = new LabelOverlapChecker<NyARLabelingLabel>(32,NyARLabelingLabel.class);
-	private final Coord2Linear _sqconvertor;
-	private final ContourPickup _cpickup=new ContourPickup();
+	private final NyARLabelOverlapChecker<NyARLabelingLabel> _overlap_checker = new NyARLabelOverlapChecker<NyARLabelingLabel>(32,NyARLabelingLabel.class);
+	private final NyARCoord2Linear _sqconvertor;
+	private final NyARContourPickup _cpickup=new NyARContourPickup();
     /**
      * 最大i_squre_max個のマーカーを検出するクラスを作成する。
      * 
@@ -75,7 +75,7 @@ public class NyARSquareDetector_Quad extends NyARSquareContourDetector
         this._height = i_size.h / 2;
         this._labeling = new NyARLabeling_ARToolKit();
         this._limage = new NyARLabelingImage(this._width, this._height);
-        this._sqconvertor=new Coord2Linear(i_size,i_dist_factor_ref);        
+        this._sqconvertor=new NyARCoord2Linear(i_size,i_dist_factor_ref);        
 
         // 輪郭の最大長は画面に映りうる最大の長方形サイズ。
         int number_of_coord = (this._width + this._height) * 2;
@@ -146,7 +146,7 @@ public class NyARSquareDetector_Quad extends NyARSquareContourDetector
         int[] xcoord = this._xcoord;
         int[] ycoord = this._ycoord;
         int coord_max = this._max_coord;
-		final LabelOverlapChecker<NyARLabelingLabel> overlap = this._overlap_checker;
+		final NyARLabelOverlapChecker<NyARLabelingLabel> overlap = this._overlap_checker;
 
         int label_area;
         NyARLabelingLabel label_pt;
@@ -190,7 +190,7 @@ public class NyARSquareDetector_Quad extends NyARSquareContourDetector
 				continue;
 			}
 			//輪郭分析用に正規化する。
-			final int vertex1 = Coord2Linear.normalizeCoord(xcoord, ycoord, coord_num);
+			final int vertex1 = NyARCoord2Linear.normalizeCoord(xcoord, ycoord, coord_num);
 
 			//ここから先が輪郭分析
 			NyARSquare square_ptr = o_square_stack.prePush();

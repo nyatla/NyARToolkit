@@ -2,9 +2,9 @@ package jp.nyatla.nyartoolkit.dev.tracking;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core.types.stack.NyObjectStack;
+import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
-public class IntRectStack extends NyObjectStack<NyARIntRect>
+public class IntRectStack extends NyARObjectStack<NyARIntRect>
 {
 	protected NyARIntRect createElement()
 	{

@@ -2,7 +2,7 @@ package jp.nyatla.nyartoolkit.dev.tracking;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARCode;
-import jp.nyatla.nyartoolkit.core.squaredetect.Coord2Linear;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARCoord2Linear;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -43,7 +43,7 @@ public class MarkerTracking_3dTrans
 		private NyARMatchPattDeviationColorData _deviation_data;
 		private NyARMatchPatt_Color_WITHOUT_PCA _match_patt;
 		private final NyARMatchPattResult __detectMarkerLite_mr=new NyARMatchPattResult();
-		private Coord2Linear _coordline;
+		private NyARCoord2Linear _coordline;
 		
 		private NyARPerspectiveProjectionMatrix _prjmat;
 		private INyARCameraDistortionFactor _dist;
@@ -61,7 +61,7 @@ public class MarkerTracking_3dTrans
 			//
 			this._inst_patt=i_inst_patt;
 			this._deviation_data=new NyARMatchPattDeviationColorData(i_ref_code.getWidth(),i_ref_code.getHeight());
-			this._coordline=new Coord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
+			this._coordline=new NyARCoord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
 			this._match_patt=new NyARMatchPatt_Color_WITHOUT_PCA(i_ref_code);
 			return;
 		}

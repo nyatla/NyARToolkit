@@ -32,13 +32,13 @@ package jp.nyatla.nyartoolkit.core.labeling;
 
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.types.stack.NyObjectStack;
+import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
 /**
  * NyLabelの予約型動的配列
  * 
  */
-public abstract class NyARLabelInfoStack<T extends NyARLabelInfo> extends NyObjectStack<T>
+public abstract class NyARLabelInfoStack<T extends NyARLabelInfo> extends NyARObjectStack<T>
 {
 	public NyARLabelInfoStack(int i_length,Class<T> i_element_type) throws NyARException
 	{

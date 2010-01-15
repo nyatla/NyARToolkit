@@ -34,12 +34,12 @@ package jp.nyatla.nyartoolkit.core.squaredetect;
  * 座標店集合（輪郭線）から、四角系の頂点候補点を計算します。
  *
  */
-public class Coord2SquareVertexIndexes
+public class NyARCoord2SquareVertexIndexes
 {
 	private static final double VERTEX_FACTOR = 1.0;// 線検出のファクタ	
 	private final NyARVertexCounter __getSquareVertex_wv1 = new NyARVertexCounter();
 	private final NyARVertexCounter __getSquareVertex_wv2 = new NyARVertexCounter();
-	public Coord2SquareVertexIndexes()
+	public NyARCoord2SquareVertexIndexes()
 	{
 		return;
 	}

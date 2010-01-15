@@ -38,7 +38,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.RleLabelFragmentInfoStack;
+import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfoStack;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilter_ARToolkitThreshold;
@@ -133,9 +133,9 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 			}catch(Exception e){
 				e.printStackTrace();
 			}
-			RleLabelFragmentInfoStack ls=this._detect._getFragmentStack();
+			NyARRleLabelFragmentInfoStack ls=this._detect._getFragmentStack();
 			for(int i=0;i<ls.getLength();i++){
-				RleLabelFragmentInfoStack.RleLabelFragmentInfo label=ls.getItem(i);
+				NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo label=ls.getItem(i);
 //				if(label.area==0){break;}
 				Graphics g2=img.getGraphics();
 				g2.setColor(Color.RED);

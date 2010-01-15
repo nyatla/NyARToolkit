@@ -54,7 +54,7 @@ public abstract class SingleNyIdMarkerProcesser
 		//所有インスタンス
 		private INyIdMarkerData _current_data;
 		private final NyIdMarkerPickup _id_pickup = new NyIdMarkerPickup();
-		private Coord2Linear _coordline;
+		private NyARCoord2Linear _coordline;
 		private INyIdMarkerDataEncoder _encoder;
 
 		
@@ -63,7 +63,7 @@ public abstract class SingleNyIdMarkerProcesser
 		
 		public DetectSquareCB(NyARParam i_param,INyIdMarkerDataEncoder i_encoder)
 		{
-			this._coordline=new Coord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
+			this._coordline=new NyARCoord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
 			this._data_temp=i_encoder.createDataInstance();
 			this._current_data=i_encoder.createDataInstance();
 			this._encoder=i_encoder;

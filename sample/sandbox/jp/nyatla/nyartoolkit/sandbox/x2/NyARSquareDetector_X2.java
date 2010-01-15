@@ -50,10 +50,10 @@ public class NyARSquareDetector_X2 extends NyARSquareContourDetector
 	private final int _width;
 	private final int _height;
 
-	private final LabelOverlapChecker<RleLabelFragmentInfoStack.RleLabelFragmentInfo> _overlap_checker = new LabelOverlapChecker<RleLabelFragmentInfoStack.RleLabelFragmentInfo>(32,RleLabelFragmentInfoStack.RleLabelFragmentInfo.class);
+	private final NyARLabelOverlapChecker<NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo> _overlap_checker = new NyARLabelOverlapChecker<NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo>(32,NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo.class);
 	private final SquareContourDetector_X2 _sqconvertor;
-	private final ContourPickup _cpickup=new ContourPickup();
-	private final RleLabelFragmentInfoStack _stack;
+	private final NyARContourPickup _cpickup=new NyARContourPickup();
+	private final NyARRleLabelFragmentInfoStack _stack;
 
 	
 	
@@ -69,7 +69,7 @@ public class NyARSquareDetector_X2 extends NyARSquareContourDetector
 		this._height = i_size.h;
 		this._labeling = new NyARLabeling_Rle(this._width,this._height);
 		this._sqconvertor=new SquareContourDetector_X2(i_size,i_dist_factor_ref);
-		this._stack=new RleLabelFragmentInfoStack(i_size.w*i_size.h*2048/(320*240)+32);//検出可能な最大ラベル数
+		this._stack=new NyARRleLabelFragmentInfoStack(i_size.w*i_size.h*2048/(320*240)+32);//検出可能な最大ラベル数
 		
 
 		// 輪郭の最大長は画面に映りうる最大の長方形サイズ。
@@ -97,8 +97,8 @@ public class NyARSquareDetector_X2 extends NyARSquareContourDetector
 	 */
 	public final void detectMarker(NyARBinRaster i_raster, NyARSquareStack o_square_stack) throws NyARException
 	{
-		final RleLabelFragmentInfoStack flagment=this._stack;
-		final LabelOverlapChecker<RleLabelFragmentInfoStack.RleLabelFragmentInfo> overlap = this._overlap_checker;
+		final NyARRleLabelFragmentInfoStack flagment=this._stack;
+		final NyARLabelOverlapChecker<NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo> overlap = this._overlap_checker;
 
 		// 初期化
 
@@ -112,7 +112,7 @@ public class NyARSquareDetector_X2 extends NyARSquareContourDetector
 		}
 		//ラベルをソートしておく
 		flagment.sortByArea();
-		RleLabelFragmentInfoStack.RleLabelFragmentInfo[] labels=flagment.getArray();
+		NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo[] labels=flagment.getArray();
 
 
 		final int xsize = this._width;
@@ -125,7 +125,7 @@ public class NyARSquareDetector_X2 extends NyARSquareContourDetector
 		overlap.setMaxLabels(label_num);
 
 		for (int i=0; i < label_num; i++) {
-			final RleLabelFragmentInfoStack.RleLabelFragmentInfo label_pt=labels[i];
+			final NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo label_pt=labels[i];
 			final int label_area = label_pt.area;
 
 			// クリップ領域が画面の枠に接していれば除外

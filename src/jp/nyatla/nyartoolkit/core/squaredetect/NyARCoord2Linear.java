@@ -48,7 +48,7 @@ import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix22;
  * 
  *
  */
-public class Coord2Linear
+public class NyARCoord2Linear
 {
 	private final double[] _xpos;
 	private final double[] _ypos;	
@@ -57,7 +57,7 @@ public class Coord2Linear
 	private final double[] __getSquareLine_mean=new double[2];
 	private final double[] __getSquareLine_ev=new double[2];
 	private final NyARObserv2IdealMap _dist_factor;
-	public Coord2Linear(NyARIntSize i_size,NyARCameraDistortionFactor i_distfactor_ref)
+	public NyARCoord2Linear(NyARIntSize i_size,NyARCameraDistortionFactor i_distfactor_ref)
 	{
 		//歪み計算テーブルを作ると、8*width/height*2の領域を消費します。
 		//領域を取りたくない場合は、i_dist_factor_refの値をそのまま使ってください。

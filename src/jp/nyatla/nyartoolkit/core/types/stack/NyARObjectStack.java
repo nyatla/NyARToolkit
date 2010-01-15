@@ -33,7 +33,7 @@ import jp.nyatla.nyartoolkit.NyARException;
  * スタック型の可変長配列。
  * 配列には実体を格納します。
  */
-public abstract class NyObjectStack<T>
+public abstract class NyARObjectStack<T>
 {
 	protected final T[] _items;
 	protected int _length;
@@ -46,7 +46,7 @@ public abstract class NyObjectStack<T>
 	 * JavaのGenedicsの制限突破
 	 */
 	@SuppressWarnings("unchecked")
-	protected NyObjectStack(int i_length,Class<T> i_element_type) throws NyARException
+	protected NyARObjectStack(int i_length,Class<T> i_element_type) throws NyARException
 	{
 		//領域確保
 		this._items = (T[])Array.newInstance(i_element_type, i_length);

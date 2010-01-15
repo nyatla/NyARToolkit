@@ -31,10 +31,10 @@
 package jp.nyatla.nyartoolkit.dev;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.labeling.LabelOverlapChecker;
+import jp.nyatla.nyartoolkit.core.labeling.NyARLabelOverlapChecker;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.*;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
-import jp.nyatla.nyartoolkit.core.squaredetect.Coord2SquareVertexIndexes;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARCoord2SquareVertexIndexes;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
@@ -61,10 +61,10 @@ public class NyARSquareDetector_Vector
 
 	private final NyARLabeling_Rle _labeling;
 
-	private final LabelOverlapChecker<RleLabelFragmentInfoStack.RleLabelFragmentInfo> _overlap_checker = new LabelOverlapChecker<RleLabelFragmentInfoStack.RleLabelFragmentInfo>(32,RleLabelFragmentInfoStack.RleLabelFragmentInfo.class);
+	private final NyARLabelOverlapChecker<NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo> _overlap_checker = new NyARLabelOverlapChecker<NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo>(32,NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo.class);
 	private final SquareContourDetector_Vector _sqconvertor;
-	private final ContourPickup _cpickup=new ContourPickup();
-	private final RleLabelFragmentInfoStack _stack;
+	private final NyARContourPickup _cpickup=new NyARContourPickup();
+	private final NyARRleLabelFragmentInfoStack _stack;
 	
 	private final int _max_coord;
 	/**
@@ -80,7 +80,7 @@ public class NyARSquareDetector_Vector
 		this._labeling = new NyARLabeling_Rle(this._width,this._height);
 		this._labeling.setAreaRange(AR_AREA_MAX, AR_AREA_MIN);
 		this._sqconvertor=new SquareContourDetector_Vector(i_size,i_dist_factor_ref);
-		this._stack=new RleLabelFragmentInfoStack(i_size.w*i_size.h*2048/(320*240)+32);//検出可能な最大ラベル数
+		this._stack=new NyARRleLabelFragmentInfoStack(i_size.w*i_size.h*2048/(320*240)+32);//検出可能な最大ラベル数
 		
 
 		// 輪郭の最大長は画面に映りうる最大の長方形サイズ。
@@ -105,8 +105,8 @@ public class NyARSquareDetector_Vector
 	 */
 	public final void detectMarker(NyARGrayscaleRaster i_gs,int i_th,NyARSquareStack o_square_stack) throws NyARException
 	{
-		final RleLabelFragmentInfoStack flagment=this._stack;
-		final LabelOverlapChecker<RleLabelFragmentInfoStack.RleLabelFragmentInfo> overlap = this._overlap_checker;
+		final NyARRleLabelFragmentInfoStack flagment=this._stack;
+		final NyARLabelOverlapChecker<NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo> overlap = this._overlap_checker;
 
 		// マーカーホルダをリセット
 		o_square_stack.clear();
@@ -119,7 +119,7 @@ public class NyARSquareDetector_Vector
 		//ラベルをソートしておく
 		flagment.sortByArea();
 		//ラベルリストを取得
-		RleLabelFragmentInfoStack.RleLabelFragmentInfo[] labels=flagment.getArray();
+		NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo[] labels=flagment.getArray();
 
 		final int xsize = this._width;
 		final int ysize = this._height;
@@ -132,7 +132,7 @@ public class NyARSquareDetector_Vector
 		overlap.setMaxLabels(label_num);
 
 		for (int i=0; i < label_num; i++) {
-			final RleLabelFragmentInfoStack.RleLabelFragmentInfo label_pt=labels[i];
+			final NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo label_pt=labels[i];
 			final int label_area = label_pt.area;
 		
 			// クリップ領域が画面の枠に接していれば除外
@@ -170,7 +170,7 @@ public class NyARSquareDetector_Vector
 	 * デバック用API
 	 * @return
 	 */
-	public RleLabelFragmentInfoStack _getFragmentStack()
+	public NyARRleLabelFragmentInfoStack _getFragmentStack()
 	{
 		return this._stack;
 	}
@@ -183,7 +183,7 @@ public class NyARSquareDetector_Vector
 	{
 		private final NyARObserv2IdealMap2 _distmap;
 		private final int[] __detectMarker_mkvertex = new int[4];
-		private final Coord2SquareVertexIndexes _coord2vertex=new Coord2SquareVertexIndexes();
+		private final NyARCoord2SquareVertexIndexes _coord2vertex=new NyARCoord2SquareVertexIndexes();
 		public SquareContourDetector_Vector(NyARIntSize i_size,NyARCameraDistortionFactor i_distfactor_ref)
 		{
 			this._distmap=new NyARObserv2IdealMap2(i_distfactor_ref,i_size);

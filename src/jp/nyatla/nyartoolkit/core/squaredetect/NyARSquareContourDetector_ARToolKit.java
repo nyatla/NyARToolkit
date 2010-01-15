@@ -31,7 +31,7 @@
 package jp.nyatla.nyartoolkit.core.squaredetect;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.labeling.LabelOverlapChecker;
+import jp.nyatla.nyartoolkit.core.labeling.NyARLabelOverlapChecker;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingImage;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabel;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabelStack;
@@ -53,9 +53,9 @@ public class NyARSquareContourDetector_ARToolKit extends NyARSquareContourDetect
 
 	private final NyARLabelingImage _limage;
 
-	private final LabelOverlapChecker<NyARLabelingLabel> _overlap_checker = new LabelOverlapChecker<NyARLabelingLabel>(32,NyARLabelingLabel.class);
-	private final ContourPickup _cpickup=new ContourPickup();
-	private final Coord2SquareVertexIndexes _coord2vertex=new Coord2SquareVertexIndexes();
+	private final NyARLabelOverlapChecker<NyARLabelingLabel> _overlap_checker = new NyARLabelOverlapChecker<NyARLabelingLabel>(32,NyARLabelingLabel.class);
+	private final NyARContourPickup _cpickup=new NyARContourPickup();
+	private final NyARCoord2SquareVertexIndexes _coord2vertex=new NyARCoord2SquareVertexIndexes();
 	
 	private final int _max_coord;
 	private final int[] _xcoord;
@@ -124,7 +124,7 @@ public class NyARSquareContourDetector_ARToolKit extends NyARSquareContourDetect
 		final int coord_max = this._max_coord;
 		final int[] mkvertex =this.__detectMarker_mkvertex;
 		
-		final LabelOverlapChecker<NyARLabelingLabel> overlap = this._overlap_checker;
+		final NyARLabelOverlapChecker<NyARLabelingLabel> overlap = this._overlap_checker;
 
 		//重なりチェッカの最大数を設定
 		overlap.setMaxLabels(label_num);

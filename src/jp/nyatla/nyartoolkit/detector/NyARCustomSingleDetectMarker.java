@@ -69,13 +69,13 @@ public class NyARCustomSingleDetectMarker
 		private NyARMatchPattDeviationColorData _deviation_data;
 		private NyARMatchPatt_Color_WITHOUT_PCA _match_patt;
 		private final NyARMatchPattResult __detectMarkerLite_mr=new NyARMatchPattResult();
-		private Coord2Linear _coordline;
+		private NyARCoord2Linear _coordline;
 		
 		public DetectSquareCB(INyARColorPatt i_inst_patt,NyARCode i_ref_code,NyARParam i_param)
 		{
 			this._inst_patt=i_inst_patt;
 			this._deviation_data=new NyARMatchPattDeviationColorData(i_ref_code.getWidth(),i_ref_code.getHeight());
-			this._coordline=new Coord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
+			this._coordline=new NyARCoord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
 			this._match_patt=new NyARMatchPatt_Color_WITHOUT_PCA(i_ref_code);
 			return;
 		}

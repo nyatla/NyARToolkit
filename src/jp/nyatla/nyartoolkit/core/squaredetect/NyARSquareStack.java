@@ -32,9 +32,9 @@ package jp.nyatla.nyartoolkit.core.squaredetect;
 
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.types.stack.NyObjectStack;
+import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
-public class NyARSquareStack extends NyObjectStack<NyARSquare>
+public class NyARSquareStack extends NyARObjectStack<NyARSquare>
 {
 	public NyARSquareStack(int i_length) throws NyARException
 	{
