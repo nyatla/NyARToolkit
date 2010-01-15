@@ -33,6 +33,7 @@ package jp.nyatla.nyartoolkit.core.match;
 
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
+import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 
 /**
  * INyARMatchPattのRGBColor差分データを格納するクラスです。

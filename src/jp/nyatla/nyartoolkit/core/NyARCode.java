@@ -38,6 +38,7 @@ import java.io.StreamTokenizer;
 import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.match.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 
 class NyARCodeFileReader
 {

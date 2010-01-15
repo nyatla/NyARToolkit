@@ -2,7 +2,7 @@ package jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 public class NyARRasterFilter_ConstantThreshold implements INyARRasterFilter_Gs2Bin

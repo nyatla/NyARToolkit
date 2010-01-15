@@ -36,6 +36,7 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 /**
  * 
  * このクラスは、Java3Dと互換性のあるNyARToolkitのラスタイメージを保持します。

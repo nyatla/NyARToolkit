@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.core.raster;
+package jp.nyatla.nyartoolkit.core.types;
 
 public class NyARBufferType
 {
