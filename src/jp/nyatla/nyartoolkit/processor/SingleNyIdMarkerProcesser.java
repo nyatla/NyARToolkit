@@ -41,7 +41,7 @@ public abstract class SingleNyIdMarkerProcesser
 	/**
 	 * detectMarkerのコールバック関数
 	 */
-	private class DetectSquareCB implements NyARSquareContourDetector.DetectMarkerCallback
+	private class DetectSquareCB implements NyARSquareContourDetector.IDetectMarkerCallback
 	{
 		//公開プロパティ
 		public final NyARSquare square=new NyARSquare();

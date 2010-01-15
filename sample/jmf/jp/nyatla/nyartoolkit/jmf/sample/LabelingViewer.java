@@ -96,7 +96,7 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 	/**
 	 * detectMarkerのコールバック関数
 	 */
-	private class DetectSquareCB implements NyARSquareContourDetector.DetectMarkerCallback
+	private class DetectSquareCB implements NyARSquareContourDetector.IDetectMarkerCallback
 	{
 		public DetectSquareCB()
 		{

@@ -83,7 +83,7 @@ public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 
 	private final int[] __detectMarker_mkvertex = new int[4];
 	
-	public void detectMarkerCB(NyARBinRaster i_raster, DetectMarkerCallback i_callback) throws NyARException
+	public void detectMarkerCB(NyARBinRaster i_raster, IDetectMarkerCallback i_callback) throws NyARException
 	{
 		final NyARRleLabelFragmentInfoStack flagment=this._stack;
 		final NyARLabelOverlapChecker<NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo> overlap = this._overlap_checker;

@@ -93,7 +93,7 @@ public class NyARSquareContourDetector_ARToolKit extends NyARSquareContourDetect
 	 * 抽出した正方形候補を格納するリスト
 	 * @throws NyARException
 	 */
-	public final void detectMarkerCB(NyARBinRaster i_raster, DetectMarkerCallback i_callback) throws NyARException
+	public final void detectMarkerCB(NyARBinRaster i_raster, IDetectMarkerCallback i_callback) throws NyARException
 	{
 		final NyARLabelingImage limage = this._limage;
 

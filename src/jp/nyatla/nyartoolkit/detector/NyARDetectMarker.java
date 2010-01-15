@@ -78,7 +78,7 @@ public class NyARDetectMarker
 	/**
 	 * detectMarkerのコールバック関数
 	 */
-	private class DetectSquareCB implements NyARSquareContourDetector.DetectMarkerCallback
+	private class DetectSquareCB implements NyARSquareContourDetector.IDetectMarkerCallback
 	{
 		//公開プロパティ
 		public NyARDetectMarkerResultStack result_stack=new NyARDetectMarkerResultStack(NyARDetectMarker.AR_SQUARE_MAX);

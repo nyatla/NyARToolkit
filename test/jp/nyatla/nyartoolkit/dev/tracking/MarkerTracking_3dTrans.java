@@ -27,7 +27,7 @@ public class MarkerTracking_3dTrans
 	/**
 	 * detectMarkerのコールバック関数
 	 */
-	private class DetectSquareCB implements NyARSquareContourDetector.DetectMarkerCallback
+	private class DetectSquareCB implements NyARSquareContourDetector.IDetectMarkerCallback
 	{
 		//公開プロパティ
 		public NyARSquare square=new NyARSquare();

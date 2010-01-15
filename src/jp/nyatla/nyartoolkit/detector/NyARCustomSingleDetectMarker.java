@@ -56,7 +56,7 @@ public class NyARCustomSingleDetectMarker
 	/**
 	 * detectMarkerのコールバック関数
 	 */
-	private class DetectSquareCB implements NyARSquareContourDetector.DetectMarkerCallback
+	private class DetectSquareCB implements NyARSquareContourDetector.IDetectMarkerCallback
 	{
 		//公開プロパティ
 		public double confidence;
