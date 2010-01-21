@@ -60,8 +60,8 @@ public abstract class SingleARMarkerProcesser
 		public final NyARSquare square=new NyARSquare();
 		public double confidence=0.0;
 		public int code_index=-1;		
-		public double cf_threshold_new = 0.30;
-		public double cf_threshold_exist = 0.15;
+		public double cf_threshold_new = 0.50;
+		public double cf_threshold_exist = 0.30;
 		
 		//参照
 		private INyARRgbRaster _ref_raster;
@@ -297,6 +297,16 @@ public abstract class SingleARMarkerProcesser
 		
 		
 		return;
+	}
+	/**
+	 * 
+	 * @param i_new_detect_cf
+	 * @param i_exist_detect_cf
+	 */
+	public void setConfidenceThreshold(int i_new_cf,double i_exist_cf)
+	{
+		this._detectmarker_cb.cf_threshold_exist=i_exist_cf;
+		this._detectmarker_cb.cf_threshold_new=i_new_cf;
 	}
 
 	private NyARTransMatResult __NyARSquare_result = new NyARTransMatResult();
