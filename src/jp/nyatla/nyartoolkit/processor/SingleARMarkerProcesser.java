@@ -303,7 +303,7 @@ public abstract class SingleARMarkerProcesser
 	 * @param i_new_detect_cf
 	 * @param i_exist_detect_cf
 	 */
-	public void setConfidenceThreshold(int i_new_cf,double i_exist_cf)
+	public void setConfidenceThreshold(double i_new_cf,double i_exist_cf)
 	{
 		this._detectmarker_cb.cf_threshold_exist=i_exist_cf;
 		this._detectmarker_cb.cf_threshold_new=i_new_cf;
