@@ -89,12 +89,14 @@ public abstract class SingleARMarkerProcesser
 			}
 		}
 		private NyARIntPoint2d[] __tmp_vertex=NyARIntPoint2d.createArray(4);
+		private int _target_id;
 		/**
 		 * Initialize call back handler.
 		 */
-		public void init(INyARRgbRaster i_raster)
+		public void init(INyARRgbRaster i_raster,int i_target_id)
 		{
 			this._ref_raster=i_raster;
+			this._target_id=i_target_id;
 			this.code_index=-1;
 			this.confidence=Double.MIN_NORMAL;
 		}
@@ -143,7 +145,7 @@ public abstract class SingleARMarkerProcesser
 			}
 			
 			//認識処理
-			if (this.code_index == -1) { // マーカ未認識
+			if (this._target_id == -1) { // マーカ未認識
 				//現在は未認識
 				if (c1 < this.cf_threshold_new) {
 					return;
@@ -157,7 +159,7 @@ public abstract class SingleARMarkerProcesser
 			}else{
 				//現在はマーカ認識中				
 				// 現在のマーカを認識したか？
-				if (lcode_index != this.code_index) {
+				if (lcode_index != this._target_id) {
 					// 認識中のマーカではないので無視
 					return;
 				}
@@ -169,6 +171,7 @@ public abstract class SingleARMarkerProcesser
 				if (this.confidence>c1) {
 					return;
 				}
+				this.code_index=this._target_id;
 			}
 			//新しく認識、または継続認識中に更新があったときだけ、Square情報を更新する。
 			//ココから先はこの条件でしか実行されない。
@@ -283,7 +286,7 @@ public abstract class SingleARMarkerProcesser
 		this._tobin_filter.doFilter(i_raster, this._bin_raster);
 
 		// スクエアコードを探す
-		this._detectmarker_cb.init(i_raster);
+		this._detectmarker_cb.init(i_raster,this._current_arcode_index);
 		this._square_detect.detectMarkerCB(this._bin_raster,this._detectmarker_cb);
 		
 		// 認識状態を更新

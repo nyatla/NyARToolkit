@@ -114,6 +114,7 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 	}
 	
 	private final String CARCODE_FILE1 = "../../Data/patt.hiro";
+	private final String CARCODE_FILE2 = "../../Data/patt.kanji";
 	
 	
 	private Animator _animator;
@@ -132,7 +133,7 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 	
 	private Object _sync_object=new Object();
 	private MarkerProcessor _processor;
-	private NyARCode[] _code_table=new NyARCode[1];
+	private NyARCode[] _code_table=new NyARCode[2];
 
 	public SingleARMarker(NyARParam i_cparam) throws NyARException
 	{
@@ -149,6 +150,8 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 
 		this._code_table[0]=new NyARCode(16,16);
 		this._code_table[0].loadARPattFromFile(CARCODE_FILE1);
+		this._code_table[1]=new NyARCode(16,16);
+		this._code_table[1].loadARPattFromFile(CARCODE_FILE2);
 		
 		//OpenGLフレームの準備（OpenGLリソースの初期化、カメラの撮影開始は、initコールバック関数内で実行）
 		Frame frame = new Frame("Java simpleLite with NyARToolkit");
