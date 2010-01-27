@@ -77,38 +77,39 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 	 *
 	 */
 	class MarkerProcessor extends SingleARMarkerProcesser
-	{	
-		private Object _sync_object=new Object();
-		public NyARTransMatResult transmat=null;
+	{
+		private NyARGLUtil _glnya;
+		public double[] gltransmat=new double[16];
+		
 		public int current_code=-1;
 
-		public MarkerProcessor(NyARParam i_cparam,int i_raster_format) throws NyARException
+		public MarkerProcessor(NyARParam i_cparam,int i_raster_format,NyARGLUtil i_glutil) throws NyARException
 		{
 			//アプリケーションフレームワークの初期化
 			super();
 			initInstance(i_cparam,i_raster_format);
+			this._glnya=i_glutil;
 			return;
 		}
 		protected void onEnterHandler(int i_code)
 		{
-			synchronized(this._sync_object){
-				current_code=i_code;
-			}
+			current_code=i_code;
 		}
 		protected void onLeaveHandler()
 		{
-			synchronized(this._sync_object){
-				current_code=-1;
-				this.transmat=null;
-			}
+			current_code=-1;
 			return;			
 		}
-
+		/**
+		 * i_square,resultの有効期間は、この関数の終了までです。
+		 */
 		protected void onUpdateHandler(NyARSquare i_square, NyARTransMatResult result)
 		{
-			synchronized(this._sync_object){
-				this.transmat=result;
-			}			
+			try{
+				this._glnya.toCameraViewRH(result, this.gltransmat);
+			}catch(Exception e){
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -148,9 +149,6 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 
 		this._code_table[0]=new NyARCode(16,16);
 		this._code_table[0].loadARPattFromFile(CARCODE_FILE1);
-		//プロセッサの準備
-		this._processor=new MarkerProcessor(i_cparam,this._cap_image.getBufferType());
-		this._processor.setARCodeTable(_code_table,16,80.0);
 		
 		//OpenGLフレームの準備（OpenGLリソースの初期化、カメラの撮影開始は、initコールバック関数内で実行）
 		Frame frame = new Frame("Java simpleLite with NyARToolkit");
@@ -183,6 +181,10 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 		//NyARToolkitの準備
 		try {
 			this._glnya = new NyARGLUtil(this._gl);
+			//プロセッサの準備
+			this._processor=new MarkerProcessor(this._ar_param,this._cap_image.getBufferType(),this._glnya);
+			this._processor.setARCodeTable(_code_table,16,80.0);
+
 			//カメラパラメータの計算
 			this._glnya.toCameraFrustumRH(this._ar_param,this._camera_projection);
 			//キャプチャ開始
@@ -208,32 +210,30 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 		_gl.glMatrixMode(GL.GL_MODELVIEW);
 		_gl.glLoadIdentity();
 	}
-	private double[] __display_wk=new double[16];
 	
 	
 	public void display(GLAutoDrawable drawable)
 	{
-		NyARTransMatResult transmat_result = this._processor.transmat;
 		if (!_cap_image.hasBuffer()) {
 			return;
 		}
 		// 背景を書く
 		this._gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
-		this._glnya.drawBackGround(this._cap_image, 1.0);			
-		if(this._processor.current_code<0 || transmat_result==null){
-			
-		}else{
-			try{
-				synchronized(this._sync_object){
+		this._glnya.drawBackGround(this._cap_image, 1.0);
+		//OnEnter,OnUpdateの間に、transmatに初回行列がストアされる実行されることを防ぎます。
+		synchronized(this._sync_object)
+		{
+			if(this._processor.current_code<0){
+				
+			}else{
+				try{
 					// Projection transformation.
 					this._gl.glMatrixMode(GL.GL_PROJECTION);
 					this._gl.glLoadMatrixd(_camera_projection, 0);
 					this._gl.glMatrixMode(GL.GL_MODELVIEW);
 					// Viewing transformation.
 					this._gl.glLoadIdentity();
-					// 変換行列をOpenGL形式に変換
-					this._glnya.toCameraViewRH(transmat_result, __display_wk);
-					this._gl.glLoadMatrixd(__display_wk, 0);
+					this._gl.glLoadMatrixd(this._processor.gltransmat, 0);
 					// All other lighting and geometry goes here.
 					this._gl.glPushMatrix();
 					this._gl.glDisable(GL.GL_LIGHTING);
@@ -248,12 +248,12 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 					this._gl.glRotatef(90,1.0f,0f,0f);
 					this._panel.draw("MarkerId:"+this._processor.current_code,0.01f);
 					this._gl.glPopMatrix();
+					Thread.sleep(1);// タスク実行権限を一旦渡す
+				}catch(Exception e){
+					e.printStackTrace();
 				}
-				Thread.sleep(1);// タスク実行権限を一旦渡す
-			}catch(Exception e){
-				e.printStackTrace();
 			}
-		}		
+		}
 		return;
 
 	}

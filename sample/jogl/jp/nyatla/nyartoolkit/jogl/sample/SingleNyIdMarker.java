@@ -72,15 +72,16 @@ class TextPanel
  */
 class MarkerProcessor extends SingleNyIdMarkerProcesser
 {	
-	private Object _sync_object=new Object();
-	public NyARTransMatResult transmat=null;
+	private NyARGLUtil _glnya;	
+	public double[] gltransmat=new double[16];
 	public int current_id=-1;
 
-	public MarkerProcessor(NyARParam i_cparam,int i_width,int i_raster_format) throws NyARException
+	public MarkerProcessor(NyARParam i_cparam,int i_width,int i_raster_format,NyARGLUtil i_glutil) throws NyARException
 	{
 		//アプリケーションフレームワークの初期化
 		super();
 		initInstance(i_cparam,new NyIdMarkerDataEncoder_RawBit(),100,i_raster_format);
+		this._glnya=i_glutil;
 		return;
 	}
 	/**
@@ -88,19 +89,16 @@ class MarkerProcessor extends SingleNyIdMarkerProcesser
 	 */
 	protected void onEnterHandler(INyIdMarkerData i_code)
 	{
-		synchronized(this._sync_object){
-			NyIdMarkerData_RawBit code=(NyIdMarkerData_RawBit)i_code;
-			if(code.length>4){
-				//4バイト以上の時はint変換しない。
-				this.current_id=-1;//undefined_id
-			}else{
-				this.current_id=0;
-				//最大4バイト繋げて１個のint値に変換
-				for(int i=0;i<code.length;i++){
-					this.current_id=(this.current_id<<8)|code.packet[i];
-				}
+		NyIdMarkerData_RawBit code=(NyIdMarkerData_RawBit)i_code;
+		if(code.length>4){
+			//4バイト以上の時はint変換しない。
+			this.current_id=-1;//undefined_id
+		}else{
+			this.current_id=0;
+			//最大4バイト繋げて１個のint値に変換
+			for(int i=0;i<code.length;i++){
+				this.current_id=(this.current_id<<8)|code.packet[i];
 			}
-			this.transmat=null;
 		}
 	}
 	/**
@@ -108,20 +106,20 @@ class MarkerProcessor extends SingleNyIdMarkerProcesser
 	 */
 	protected void onLeaveHandler()
 	{
-		synchronized(this._sync_object){
-			this.current_id=-1;
-			this.transmat=null;
-		}
+		this.current_id=-1;
 		return;
 	}
 	/**
 	 * アプリケーションフレームワークのハンドラ（マーカ更新）
+	 * i_squareとresultの有効期間は個のコールバック関数が終了するまでです。
 	 */
 	protected void onUpdateHandler(NyARSquare i_square, NyARTransMatResult result)
 	{
-		synchronized(this._sync_object){
-			this.transmat=result;
-		}
+		try{
+			this._glnya.toCameraViewRH(result, this.gltransmat);
+		}catch(Exception e){
+			e.printStackTrace();
+		}		
 	}
 }
 
@@ -157,9 +155,6 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 		}
 		this._capture.setOnCapture(this);
 		this._cap_image = new GLNyARRaster_RGB(i_cparam,this._capture.getCaptureFormat());	
-
-		//プロセッサの準備
-		this._processor=new MarkerProcessor(i_cparam,100,this._cap_image.getBufferType());
 		
 		//OpenGLフレームの準備（OpenGLリソースの初期化、カメラの撮影開始は、initコールバック関数内で実行）
 		Frame frame = new Frame("Java simpleLite with NyARToolkit");
@@ -194,6 +189,9 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 			this._glnya = new NyARGLUtil(this._gl);
 			//カメラパラメータの計算
 			this._glnya.toCameraFrustumRH(this._ar_param,this._camera_projection);
+			//プロセッサの準備
+			this._processor=new MarkerProcessor(this._ar_param,100,this._cap_image.getBufferType(),this._glnya);
+			
 			//キャプチャ開始
 			this._capture.start();
 		} catch (Exception e) {
@@ -217,23 +215,22 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 		_gl.glMatrixMode(GL.GL_MODELVIEW);
 		_gl.glLoadIdentity();
 	}
-	private double[] __display_wk=new double[16];
 	
 	
 	public void display(GLAutoDrawable drawable)
 	{
-		NyARTransMatResult transmat_result = this._processor.transmat;
 		if (!_cap_image.hasBuffer()) {
 			return;
 		}
 		// 背景を書く
 		this._gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
 		this._glnya.drawBackGround(this._cap_image, 1.0);			
-		if(this._processor.current_id<0 || transmat_result==null){
-			
-		}else{
-			try{
-				synchronized(this._sync_object){
+		synchronized(this._sync_object)
+		{
+			if(this._processor.current_id<0){
+				
+			}else{
+				try{
 					// Projection transformation.
 					this._gl.glMatrixMode(GL.GL_PROJECTION);
 					this._gl.glLoadMatrixd(_camera_projection, 0);
@@ -241,12 +238,11 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 					// Viewing transformation.
 					this._gl.glLoadIdentity();
 					// 変換行列をOpenGL形式に変換
-					this._glnya.toCameraViewRH(transmat_result, __display_wk);
-					this._gl.glLoadMatrixd(__display_wk, 0);
+					this._gl.glLoadMatrixd(this._processor.gltransmat, 0);
 					// All other lighting and geometry goes here.
 					this._gl.glPushMatrix();
 					this._gl.glDisable(GL.GL_LIGHTING);
-
+	
 					
 					//マーカのXZ平面をマーカの左上、表示開始位置を10cm上空へ。
 					//くるーんくるん
@@ -257,10 +253,10 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 					this._gl.glRotatef(90,1.0f,0f,0f);
 					this._panel.draw("MarkerId:"+this._processor.current_id,0.01f);
 					this._gl.glPopMatrix();
+					Thread.sleep(1);// タスク実行権限を一旦渡す
+				}catch(Exception e){
+					e.printStackTrace();
 				}
-				Thread.sleep(1);// タスク実行権限を一旦渡す
-			}catch(Exception e){
-				e.printStackTrace();
 			}
 		}		
 		return;
