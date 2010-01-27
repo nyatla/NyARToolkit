@@ -345,7 +345,7 @@ public abstract class SingleARMarkerProcesser
 			} else if (i_code_index == this._current_arcode_index) {// 同じARCodeの再認識
 				// イベント生成
 				// 変換行列を作成
-				this._transmat.transMat(i_square, this._offset, result);
+				this._transmat.transMatContinue(i_square, this._offset, result);
 				// OnUpdate
 				this.onUpdateHandler(i_square, result);
 				this._lost_delay_count = 0;

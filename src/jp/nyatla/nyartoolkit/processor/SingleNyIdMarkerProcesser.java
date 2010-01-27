@@ -279,7 +279,7 @@ public abstract class SingleNyIdMarkerProcesser
 				}
 			} else if(this._data_current.isEqual(i_marker_data)) {
 				//同じidの再認識
-				this._transmat.transMat(i_square, this._offset, result);
+				this._transmat.transMatContinue(i_square, this._offset, result);
 				// OnUpdate
 				this.onUpdateHandler(i_square, result);
 				this._lost_delay_count = 0;
