@@ -1,7 +1,7 @@
 ARToolKit Java class library NyARToolkit.
 Copyright (C)2008-2010 Ryo Iizuka
 
-version 2.5.0
+version 2.5.1
 
 http://nyatla.jp/nyartoolkit/
 airmail(at)ebony.plala.or.jp
