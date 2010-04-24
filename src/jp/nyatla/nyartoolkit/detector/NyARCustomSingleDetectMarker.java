@@ -250,7 +250,16 @@ public class NyARCustomSingleDetectMarker
 	{
 		this._is_continue = i_is_continue;
 	}
-	
+	/**
+	 * プローブ関数
+	 * @return
+	 */
+	public Object[] _getProbe()
+	{
+		Object[] r=new Object[1];
+		r[0]=this._detect_cb._inst_patt;
+		return r;
+	}	
 	
 	
 	
