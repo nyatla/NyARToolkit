@@ -146,20 +146,29 @@ public class MarkerTracking_3dTrans
 				this.table_operator.updateMarker(item,sq);
 			}
 		}
+		/**
+		 * 基準頂点i_baseと新規矩形情報i_sqを比較して、i_sqの適切なdirection値を計算する。
+		 * (運動量で計算したら？)
+		 * @param i_base_vertex
+		 * @param i_base_center
+		 * @param i_sq
+		 * @param i_sqcenter
+		 * @return
+		 */
 		private int getNearVertexIndex(NyARDoublePoint2d i_base_vertex,NyARDoublePoint2d i_base_center,NyARIntPoint2d[] i_sq,NyARDoublePoint2d i_sqcenter)
 		{
 			double bx,by;
 			//観察座標の中央位置からのベクトル
-			bx=i_base_vertex.x-i_sqcenter.x;
-			by=i_base_vertex.y-i_sqcenter.y;
+			bx=i_base_vertex.x;
+			by=i_base_vertex.y;
 
 			//一番近い頂点を探す.
-			double d=NyARMath.sqNorm(bx,by,i_sq[3].x-i_sqcenter.x,i_sq[3].y-i_sqcenter.y);
+			double d=NyARMath.sqNorm(bx,by,i_sq[3].x,i_sq[3].y);
 			int ret=3;
 			for(int i=2;i>=0;i--)
 			{
 				//予測座標の中央位置からのベクトルの長さを計算
-				double d2=NyARMath.sqNorm(bx,by,i_sq[i].x-i_sqcenter.x,i_sq[i].y-i_sqcenter.y);
+				double d2=NyARMath.sqNorm(bx,by,i_sq[i].x,i_sq[i].y);
 				if(d2<d){
 					d=d2;
 					ret=i;

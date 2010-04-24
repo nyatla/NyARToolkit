@@ -51,7 +51,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 
 	private Animator _animator;
 
-	private GLNyARRaster_RGB _cap_image;
+	private JmfNyARRaster_RGB _cap_image;
 
 	private JmfCaptureDevice _capture;
 
@@ -125,8 +125,8 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 			throw new NyARException();
 		}
 		this._capture.setOnCapture(this);
-		// GL対応のRGBラスタオブジェクト
-		this._cap_image = new GLNyARRaster_RGB(this._ar_param, this._capture.getCaptureFormat());
+		//JMFラスタオブジェクト
+		this._cap_image = new JmfNyARRaster_RGB(this._ar_param, this._capture.getCaptureFormat());
 		
 		// NyARToolkitの準備
 		this._nya = new NyARSingleDetectMarker(this._ar_param, i_ar_code, 80.0,this._cap_image.getBufferType());
@@ -196,9 +196,9 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 		}
 		// 背景を書く
 		this._gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
-		this._glnya.drawBackGround(this._cap_image, 1.0);			
 		try{
 			synchronized(this._sync_object){
+				this._glnya.drawBackGround(this._cap_image, 1.0);			
 				// マーカーがあれば、立方体を描画
 				if (this._is_marker_exist){
 					// マーカーの一致度を調査するならば、ここでnya.getConfidence()で一致度を調べて下さい。

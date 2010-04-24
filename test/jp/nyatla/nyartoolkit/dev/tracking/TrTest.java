@@ -20,8 +20,7 @@ import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDevice;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDeviceList;
-import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
-import jp.nyatla.nyartoolkit.jogl.utils.GLNyARRaster_RGB;
+import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.utils.j2se.NyARRasterImageIO;
 import jp.nyatla.nyartoolkit.core.types.*;
 
@@ -37,7 +36,7 @@ class Tracking extends MarkerTracking_3dTrans
 		super();
 		initInstance(
 				new NyARColorPatt_Perspective_O2(i_code.getWidth(), i_code.getHeight(),4,25),
-				new NyARSquareContourDetector_Rle(i_param.getDistortionFactor(),i_param.getScreenSize()),
+				new NyARSquareContourDetector_Rle(i_param.getScreenSize()),
 				new NyARTransMat(i_param),
 				new NyARRasterFilter_ARToolkitThreshold(120,i_input_raster_type),
 				i_param,
@@ -58,7 +57,7 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 
 	private JmfCaptureDevice _capture;
 
-	private GLNyARRaster_RGB _capraster;
+	private JmfNyARRaster_RGB _capraster;
 
 	private int W = 320;
 
@@ -85,7 +84,7 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 
 		NyARCode code = new NyARCode(16, 16);
 		code.loadARPattFromFile(CARCODE_FILE);
-		this._capraster = new GLNyARRaster_RGB(ar_param, this._capture.getCaptureFormat());
+		this._capraster = new JmfNyARRaster_RGB(ar_param, this._capture.getCaptureFormat());
 		this._capture.setOnCapture(this);
 
 		addMouseMotionListener(this);
@@ -109,7 +108,7 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 
 	
 
-	public void draw(GLNyARRaster_RGB i_raster)
+	public void draw(JmfNyARRaster_RGB i_raster)
 	{
 		try {
 			Insets ins = this.getInsets();

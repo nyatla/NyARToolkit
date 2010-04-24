@@ -34,9 +34,8 @@ import com.sun.media.codec.video.colorspace.*;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
-import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.*;
-
+import jp.nyatla.nyartoolkit.core.param.*;
 
 
 
@@ -52,6 +51,10 @@ public class JmfNyARRaster_RGB implements INyARRgbRaster
 	private JmfRGB24RasterHolder _holder;
 	protected NyARIntSize _size;
 
+	public JmfNyARRaster_RGB(NyARParam i_param,VideoFormat i_fmt) throws NyARException
+	{
+		initMember(i_param.getScreenSize().w,i_param.getScreenSize().h,i_fmt);
+	}	
 	/**
 	 * i_fmtに一致する画素フォーマットのRasterを作成します。
 	 * このコンストラクタで作成したクラスは、hasBuffer()がfalseを返すことがあります。

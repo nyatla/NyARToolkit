@@ -35,7 +35,8 @@ import javax.media.opengl.GL;
 import javax.media.opengl.glu.GLU;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.NyARMat;
+import jp.nyatla.nyartoolkit.core.*;
+import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -53,13 +54,30 @@ public class NyARGLUtil
 		this._gl = i_gl;
 		this._glu = new GLU();
 	}
-
+	/**
+	 * ラスタのGLタイプを取得する。
+	 * @param i_buffer_type
+	 * @return
+	 * @throws NyARException
+	 */
+	final static private int getGlPixelFormat(int i_buffer_type) throws NyARException
+	{
+		switch(i_buffer_type){
+		case NyARBufferType.BYTE1D_B8G8R8_24:
+			return GL.GL_BGR;
+		case NyARBufferType.BYTE1D_R8G8B8_24:
+			return GL.GL_RGB;
+		default:
+			throw new NyARException();
+		}
+	}
+	
 	/**
 	 * GLNyARRaster_RGBをバックグラウンドに書き出す。
 	 * @param image
 	 * @param zoom
 	 */
-	public void drawBackGround(GLNyARRaster_RGB i_raster, double i_zoom)
+	public void drawBackGround(INyARRgbRaster i_raster, double i_zoom) throws NyARException
 	{
 		IntBuffer texEnvModeSave = IntBuffer.allocate(1);
 		boolean lightingSave;
@@ -111,7 +129,7 @@ public class NyARGLUtil
 	 * @param image
 	 * @param zoom
 	 */
-	private void arglDispImageStateful(GLNyARRaster_RGB i_raster, double zoom)
+	private void arglDispImageStateful(INyARRgbRaster i_raster, double zoom) throws NyARException
 	{
 		javax.media.opengl.GL gl_ = this._gl;
 		final NyARIntSize rsize = i_raster.getSize();
@@ -123,8 +141,8 @@ public class NyARGLUtil
 		gl_.glPixelZoom(zoomf * ((float) (params.get(2)) / (float) rsize.w), -zoomf * ((float) (params.get(3)) / (float) rsize.h));
 		gl_.glWindowPos2f(0.0f, (float) rsize.h);
 		gl_.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
-		ByteBuffer buf = ByteBuffer.wrap(i_raster.getGLRgbArray());
-		gl_.glDrawPixels(rsize.w,rsize.h, i_raster.getGLPixelFlag(), GL.GL_UNSIGNED_BYTE, buf);
+		ByteBuffer buf = ByteBuffer.wrap((byte[])i_raster.getBuffer());
+		gl_.glDrawPixels(rsize.w,rsize.h,getGlPixelFormat(i_raster.getBufferType()), GL.GL_UNSIGNED_BYTE, buf);
 	}
 	
 	private double view_scale_factor = 0.025;

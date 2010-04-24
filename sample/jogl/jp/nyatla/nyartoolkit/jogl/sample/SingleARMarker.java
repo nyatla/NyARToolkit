@@ -118,7 +118,7 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 	
 	
 	private Animator _animator;
-	private GLNyARRaster_RGB _cap_image;
+	private JmfNyARRaster_RGB _cap_image;
 	private JmfCaptureDevice _capture;
 
 	private GL _gl;
@@ -146,7 +146,7 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 			throw new NyARException();
 		}
 		this._capture.setOnCapture(this);
-		this._cap_image = new GLNyARRaster_RGB(i_cparam,this._capture.getCaptureFormat());	
+		this._cap_image = new JmfNyARRaster_RGB(i_cparam,this._capture.getCaptureFormat());	
 
 		this._code_table[0]=new NyARCode(16,16);
 		this._code_table[0].loadARPattFromFile(CARCODE_FILE1);
@@ -222,14 +222,14 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 		}
 		// 背景を書く
 		this._gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
-		this._glnya.drawBackGround(this._cap_image, 1.0);
 		//OnEnter,OnUpdateの間に、transmatに初回行列がストアされる実行されることを防ぎます。
-		synchronized(this._sync_object)
-		{
-			if(this._processor.current_code<0){
-				
-			}else{
-				try{
+		try{
+			this._glnya.drawBackGround(this._cap_image, 1.0);
+			synchronized(this._sync_object)
+			{
+				if(this._processor.current_code<0){
+					
+				}else{
 					// Projection transformation.
 					this._gl.glMatrixMode(GL.GL_PROJECTION);
 					this._gl.glLoadMatrixd(_camera_projection, 0);
@@ -252,10 +252,10 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 					this._panel.draw("MarkerId:"+this._processor.current_code,0.01f);
 					this._gl.glPopMatrix();
 					Thread.sleep(1);// タスク実行権限を一旦渡す
-				}catch(Exception e){
-					e.printStackTrace();
 				}
 			}
+		}catch(Exception e){
+			e.printStackTrace();
 		}
 		return;
 

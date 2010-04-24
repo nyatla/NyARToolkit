@@ -80,7 +80,7 @@ class MarkerProcessor extends SingleNyIdMarkerProcesser
 	{
 		//アプリケーションフレームワークの初期化
 		super();
-		initInstance(i_cparam,new NyIdMarkerDataEncoder_RawBit(),100,i_raster_format);
+		initInstance(i_cparam,new NyIdMarkerDataEncoder_RawBit(),100.0,i_raster_format);
 		this._glnya=i_glutil;
 		return;
 	}
@@ -127,7 +127,7 @@ class MarkerProcessor extends SingleNyIdMarkerProcesser
 public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 {
 	private Animator _animator;
-	private GLNyARRaster_RGB _cap_image;
+	private JmfNyARRaster_RGB _cap_image;
 	private JmfCaptureDevice _capture;
 
 	private GL _gl;
@@ -154,7 +154,7 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 			throw new NyARException();
 		}
 		this._capture.setOnCapture(this);
-		this._cap_image = new GLNyARRaster_RGB(i_cparam,this._capture.getCaptureFormat());	
+		this._cap_image = new JmfNyARRaster_RGB(i_cparam,this._capture.getCaptureFormat());	
 		
 		//OpenGLフレームの準備（OpenGLリソースの初期化、カメラの撮影開始は、initコールバック関数内で実行）
 		Frame frame = new Frame("Java simpleLite with NyARToolkit");
@@ -224,13 +224,13 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 		}
 		// 背景を書く
 		this._gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
-		this._glnya.drawBackGround(this._cap_image, 1.0);			
-		synchronized(this._sync_object)
-		{
-			if(this._processor.current_id<0){
-				
-			}else{
-				try{
+		try{
+			this._glnya.drawBackGround(this._cap_image, 1.0);			
+			synchronized(this._sync_object)
+			{
+				if(this._processor.current_id<0){
+					
+				}else{
 					// Projection transformation.
 					this._gl.glMatrixMode(GL.GL_PROJECTION);
 					this._gl.glLoadMatrixd(_camera_projection, 0);
@@ -254,11 +254,11 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 					this._panel.draw("MarkerId:"+this._processor.current_id,0.01f);
 					this._gl.glPopMatrix();
 					Thread.sleep(1);// タスク実行権限を一旦渡す
-				}catch(Exception e){
-					e.printStackTrace();
 				}
-			}
-		}		
+			}		
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 		return;
 
 	}

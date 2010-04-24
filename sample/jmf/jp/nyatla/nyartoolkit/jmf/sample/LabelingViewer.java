@@ -85,7 +85,7 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 		ar_param.loadARParamFromFile(PARAM_FILE);
 		ar_param.changeScreenSize(320, 240);
 		this._raster = new JmfNyARRaster_RGB(320, 240,this._capture.getCaptureFormat());
-		this._detect=new NyARSquareContourDetector_Rle(ar_param.getDistortionFactor(),ar_param.getScreenSize());
+		this._detect=new NyARSquareContourDetector_Rle(ar_param.getScreenSize());
 		this._filter	= new NyARRasterFilter_ARToolkitThreshold(110, _raster.getBufferType());
 		//キャプチャイメージ用のラスタを準備
 		return;

@@ -57,7 +57,7 @@ public class JavaSimpleLite2 implements GLEventListener, JmfCaptureListener
 
 	private Animator _animator;
 
-	private GLNyARRaster_RGB _cap_image;
+	private JmfNyARRaster_RGB _cap_image;
 
 	private JmfCaptureDevice _capture;
 
@@ -158,8 +158,8 @@ public class JavaSimpleLite2 implements GLEventListener, JmfCaptureListener
 			ar_codes[0].loadARPattFromFile(CARCODE_FILE1);
 			ar_codes[1] = new NyARCode(16, 16);
 			ar_codes[1].loadARPattFromFile(CARCODE_FILE2);
-			//GL対応のRGBラスタオブジェクト
-			this._cap_image = new GLNyARRaster_RGB(this._ar_param,_capture.getCaptureFormat());
+			//JMFラスタオブジェクト
+			this._cap_image = new JmfNyARRaster_RGB(this._ar_param,_capture.getCaptureFormat());
 
 			this._nya = new NyARDetectMarker(this._ar_param, ar_codes, width, 2,this._cap_image.getBufferType());
 			this._nya.setContinueMode(false);//ここをtrueにすると、transMatContinueモード（History計算）になります。

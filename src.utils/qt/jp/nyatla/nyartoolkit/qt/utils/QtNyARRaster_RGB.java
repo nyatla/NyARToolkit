@@ -26,7 +26,6 @@ package jp.nyatla.nyartoolkit.qt.utils;
 
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -95,13 +94,5 @@ public class QtNyARRaster_RGB implements INyARRgbRaster
 	{
 		this._buffer=(byte[])i_ref_buf;
 		this._reader.switchBuffer(i_ref_buf);
-	}
-	/**
-	 *	@deprecated hasBuffer()関数を使ってください。
-	 * 
-	 */
-	final public boolean hasData()
-	{
-		return this.hasBuffer();
 	}
 }
