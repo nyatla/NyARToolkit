@@ -117,7 +117,9 @@ public class NyARPerspectiveParamGenerator_O1 extends NyARPerspectiveParamGenera
 
 			det_1 = (ltx * (b11 + b14) + rbx * (b12 + b13));
 			if (det_1 == 0) {
-				return false;
+				det_1=0.0001;
+				//System.out.println("Could not get inverse matrix(1).");					
+				//return false;
 			}
 			det_1 = 1 / det_1;
 
@@ -194,7 +196,9 @@ public class NyARPerspectiveParamGenerator_O1 extends NyARPerspectiveParamGenera
 
 			det_1 = (ltx * (b11 + b14) + rbx * (b12 + b13));
 			if (det_1 == 0) {
-				return false;
+				det_1=0.0001;
+				//System.out.println("Could not get inverse matrix(2).");				
+				//return false;
 			}
 			det_1 = 1 / det_1;
 
@@ -210,7 +214,9 @@ public class NyARPerspectiveParamGenerator_O1 extends NyARPerspectiveParamGenera
 
 		det_1 = kx5 * (-ky7) - (-ky5) * kx7;
 		if (det_1 == 0) {
-			return false;
+			det_1=0.0001;
+			//System.out.println("Could not get inverse matrix(3).");
+			//return false;
 		}
 		det_1 = 1 / det_1;
 
