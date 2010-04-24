@@ -55,7 +55,7 @@ public class NyARRaster extends NyARRaster_BasicClass
 	 */
 	public NyARRaster(int i_width, int i_height,int i_buffer_type,boolean i_is_alloc) throws NyARException
 	{
-		super(new NyARIntSize(i_width,i_height),i_buffer_type);
+		super(i_width,i_height,i_buffer_type);
 		if(!initInstance(this._size,i_buffer_type,i_is_alloc)){
 			throw new NyARException();
 		}
@@ -64,7 +64,7 @@ public class NyARRaster extends NyARRaster_BasicClass
 
 	public NyARRaster(int i_width, int i_height,int i_buffer_type) throws NyARException
 	{
-		super(new NyARIntSize(i_width,i_height),i_buffer_type);
+		super(i_width,i_height,i_buffer_type);
 		if(!initInstance(this._size,i_buffer_type,true)){
 			throw new NyARException();
 		}

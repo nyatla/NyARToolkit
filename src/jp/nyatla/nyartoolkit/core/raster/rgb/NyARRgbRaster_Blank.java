@@ -78,7 +78,7 @@ public class NyARRgbRaster_Blank extends NyARRgbRaster_BasicClass
 	
 	public NyARRgbRaster_Blank(int i_width, int i_height)
 	{
-		super(new NyARIntSize(i_width,i_height),NyARBufferType.NULL_ALLZERO);
+		super(i_width,i_height,NyARBufferType.NULL_ALLZERO);
 		this._reader = new PixelReader();
 		return;
 	}

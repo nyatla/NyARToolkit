@@ -41,10 +41,9 @@ public abstract class NyARRgbRaster_BasicClass implements INyARRgbRaster
 {
 	final protected NyARIntSize _size;
 	private int _buffer_type;
-	
-	protected NyARRgbRaster_BasicClass(final NyARIntSize i_size,int i_buffer_type)
+	protected NyARRgbRaster_BasicClass(int i_width,int i_height,int i_buffer_type)
 	{
-		this._size= i_size;
+		this._size= new NyARIntSize(i_width,i_height);
 		this._buffer_type=i_buffer_type;
 	}
 	final public int getWidth()

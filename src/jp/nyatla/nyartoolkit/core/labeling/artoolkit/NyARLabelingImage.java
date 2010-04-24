@@ -47,7 +47,7 @@ public class NyARLabelingImage extends NyARRaster_BasicClass
 	protected boolean _is_index_table_enable;
 	public NyARLabelingImage(int i_width, int i_height) throws NyARException
 	{
-		super(new NyARIntSize(i_width,i_height),NyARBufferType.INT1D);
+		super(i_width,i_height,NyARBufferType.INT1D);
 		this._ref_buf =new int[i_height*i_width];
 		this._label_list = new NyARLabelingLabelStack(MAX_LABELS);
 		this._index_table=new int[MAX_LABELS];

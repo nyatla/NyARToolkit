@@ -74,7 +74,11 @@ public class NyARRgbPixelReader_BYTE1D_R8G8B8_24 implements INyARRgbPixelReader
 	}
 	public void setPixel(int i_x, int i_y, int[] i_rgb) throws NyARException
 	{
-		NyARException.notImplement();		
+		final byte[] ref_buf = this._ref_buf;
+		final int idx=(i_y*this._size.w+i_x)*3;
+		ref_buf[idx + 0] = (byte)i_rgb[0];// R
+		ref_buf[idx + 1] = (byte)i_rgb[1];// G
+		ref_buf[idx + 2] = (byte)i_rgb[2];// B
 	}
 	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intrgb) throws NyARException
 	{

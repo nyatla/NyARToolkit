@@ -36,7 +36,7 @@ public class NyARPerspectiveParamGenerator_O1 extends NyARPerspectiveParamGenera
 	{
 		super(i_local_x,i_local_y,i_width,i_height);
 		return;
-	}
+	}/*
 	final public boolean getParam(final NyARIntPoint2d[] i_vertex,double[] o_param)throws NyARException
 	{
 		double G,H;
@@ -87,5 +87,5 @@ public class NyARPerspectiveParamGenerator_O1 extends NyARPerspectiveParamGenera
 		o_param[1]=w1;
 		o_param[0]=w2;
 		return true;
-	}
+	}*/
 }

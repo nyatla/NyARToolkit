@@ -24,7 +24,7 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 	 */
 	public NyARRgbRaster(int i_width, int i_height,int i_raster_type,boolean i_is_alloc) throws NyARException
 	{
-		super(new NyARIntSize(i_width,i_height),i_raster_type);
+		super(i_width,i_height,i_raster_type);
 		if(!initInstance(this._size,i_raster_type,i_is_alloc)){
 			throw new NyARException();
 		}
@@ -39,7 +39,7 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 	 */
 	public NyARRgbRaster(int i_width, int i_height,int i_raster_type) throws NyARException
 	{
-		super(new NyARIntSize(i_width,i_height),i_raster_type);
+		super(i_width,i_height,i_raster_type);
 		if(!initInstance(this._size,i_raster_type,true)){
 			throw new NyARException();
 		}

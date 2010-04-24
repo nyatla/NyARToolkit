@@ -33,10 +33,8 @@ package jp.nyatla.nyartoolkit.core.squaredetect;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.NyARLabelOverlapChecker;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.*;
-import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.types.*;
-import java.util.*;
 
 
 public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
@@ -61,7 +59,7 @@ public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 	 * 
 	 * @param i_param
 	 */
-	public NyARSquareContourDetector_Rle(NyARCameraDistortionFactor i_dist_factor_ref,NyARIntSize i_size) throws NyARException
+	public NyARSquareContourDetector_Rle(NyARIntSize i_size) throws NyARException
 	{
 		this._width = i_size.w;
 		this._height = i_size.h;
