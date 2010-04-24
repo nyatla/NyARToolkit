@@ -676,10 +676,10 @@ public class NyARColorPatt_Perspective_O2 extends NyARColorPatt_Perspective
 	public boolean pickFromRaster(INyARRgbRaster image,NyARIntPoint2d[] i_vertexs)throws NyARException
  	{
 		//遠近法のパラメータを計算
- 		final double[] cpara = this.__pickFromRaster_cpara;
-		if (!this._perspective_gen.getParam(i_vertexs, cpara)) {
+ 		final double[] cpara = this.__pickFromRaster_cpara;		
+ 		if (!this._perspective_gen.getParam(i_vertexs, cpara)) {
 			return false;
-		} 		
+		}
  		this._pickup.pickFromRaster(cpara, image,this._patdata);
  		return true;
  	}

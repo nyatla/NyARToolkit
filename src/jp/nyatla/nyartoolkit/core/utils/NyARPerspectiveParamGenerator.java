@@ -107,7 +107,6 @@ public class NyARPerspectiveParamGenerator
 		D=(mat_y.m00*y1+mat_y.m01*y2+mat_y.m02*y3+mat_y.m03*y4)-F*(mat_y.m00+mat_y.m01+mat_y.m02+mat_y.m03);
 		E=(mat_y.m10*y1+mat_y.m11*y2+mat_y.m12*y3+mat_y.m13*y4)-F*(mat_y.m10+mat_y.m11+mat_y.m12+mat_y.m13);
 
-
 		o_param[0]=A;
 		o_param[1]=B;
 		o_param[2]=C;
