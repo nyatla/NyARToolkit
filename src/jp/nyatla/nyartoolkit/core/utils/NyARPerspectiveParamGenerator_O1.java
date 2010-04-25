@@ -34,7 +34,7 @@ public class NyARPerspectiveParamGenerator_O1 extends NyARPerspectiveParamGenera
 {
 	public NyARPerspectiveParamGenerator_O1(int i_local_x, int i_local_y, int i_width, int i_height)
 	{
-		super(1, 1, i_width, i_height);
+		super(i_local_x,i_local_y, i_width, i_height);
 		return;
 	}
 
