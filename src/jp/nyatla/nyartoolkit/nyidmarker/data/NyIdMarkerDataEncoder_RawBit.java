@@ -38,7 +38,7 @@ public class NyIdMarkerDataEncoder_RawBit implements INyIdMarkerDataEncoder
 			return false;
 		}
 		//パケット数計算
-		final int resolution_len=(i_data.model+1);
+		final int resolution_len=(i_data.model+i_data.model-1);      //データドットの数
 		final int packet_length=(resolution_len*resolution_len)/8+1;
 		int sum=0;
 		for(int i=0;i<packet_length;i++){
