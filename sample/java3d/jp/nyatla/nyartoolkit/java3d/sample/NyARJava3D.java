@@ -47,6 +47,8 @@ import com.sun.j3d.utils.geometry.ColorCube;
  */
 public class NyARJava3D extends JFrame implements NyARSingleMarkerBehaviorListener
 {
+	private static final long serialVersionUID = -8472866262481865377L;
+
 	private final String CARCODE_FILE = "../../Data/patt.hiro";
 
 	private final String PARAM_FILE = "../../Data/camera_para.dat";

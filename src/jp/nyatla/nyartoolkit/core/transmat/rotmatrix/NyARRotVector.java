@@ -7,26 +7,25 @@
  *   HITLab, University of Washington, Seattle
  * http://www.hitl.washington.edu/artoolkit/
  *
- * The NyARToolkit is Java version ARToolkit class library.
- * Copyright (C)2008 R.Iizuka
+ * The NyARToolkit is Java edition ARToolKit class library.
+ * Copyright (C)2008-2009 Ryo Iizuka
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this framework; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  * For further information please contact.
  *	http://nyatla.jp/nyatoolkit/
- *	<airmail(at)ebony.plala.or.jp>
+ *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
 package jp.nyatla.nyartoolkit.core.transmat.rotmatrix;
@@ -83,9 +82,9 @@ public class NyARRotVector
 	{
 		//1行目
 		final NyARPerspectiveProjectionMatrix cmat= this._projection_mat_ref;
-		final double w1 = i_linear1.run * i_linear2.rise - i_linear2.run * i_linear1.rise;
-		final double w2 = i_linear1.rise * i_linear2.intercept - i_linear2.rise * i_linear1.intercept;
-		final double w3 = i_linear1.intercept * i_linear2.run - i_linear2.intercept * i_linear1.run;
+		final double w1 = i_linear1.dy * i_linear2.dx - i_linear2.dy * i_linear1.dx;
+		final double w2 = i_linear1.dx * i_linear2.c - i_linear2.dx * i_linear1.c;
+		final double w3 = i_linear1.c * i_linear2.dy - i_linear2.c * i_linear1.dy;
 
 		final double m0 = w1 * (cmat.m01 * cmat.m12 - cmat.m02 * cmat.m11) + w2 * cmat.m11 - w3 * cmat.m01;//w1 * (cpara[0 * 4 + 1] * cpara[1 * 4 + 2] - cpara[0 * 4 + 2] * cpara[1 * 4 + 1]) + w2 * cpara[1 * 4 + 1] - w3 * cpara[0 * 4 + 1];
 		final double m1 = -w1 * cmat.m00 * cmat.m12 + w3 * cmat.m00;//-w1 * cpara[0 * 4 + 0] * cpara[1 * 4 + 2] + w3 * cpara[0 * 4 + 0];

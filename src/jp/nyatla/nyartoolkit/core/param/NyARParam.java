@@ -7,26 +7,25 @@
  *   HITLab, University of Washington, Seattle
  * http://www.hitl.washington.edu/artoolkit/
  *
- * The NyARToolkit is Java version ARToolkit class library.
- * Copyright (C)2008 R.Iizuka
+ * The NyARToolkit is Java edition ARToolKit class library.
+ * Copyright (C)2008-2009 Ryo Iizuka
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this framework; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  * For further information please contact.
  *	http://nyatla.jp/nyatoolkit/
- *	<airmail(at)ebony.plala.or.jp>
+ *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
 package jp.nyatla.nyartoolkit.core.param;
@@ -62,6 +61,19 @@ public class NyARParam
 	{
 		return this._dist;
 	}
+	/**
+	 * 
+	 * @param i_factor
+	 * NyARCameraDistortionFactorにセットする配列を指定する。要素数は4であること。
+	 * @param i_projection
+	 * NyARPerspectiveProjectionMatrixセットする配列を指定する。要素数は12であること。
+	 */
+	public void setValue(double[] i_factor,double[] i_projection)
+	{
+		this._dist.setValue(i_factor);
+		this._projection_matrix.setValue(i_projection);
+		return;
+	}
 
 	/**
 	 * ARToolKit標準ファイルから1個目の設定をロードする。
@@ -93,13 +105,6 @@ public class NyARParam
 		//スケールを変更
 		this._dist.changeScale(scale);
 		this._projection_matrix.changeScale(scale);
-		//for (int i = 0; i < 4; i++) {
-		//	array34[0 * 4 + i] = array34[0 * 4 + i] * scale;// newparam->mat[0][i]=source->mat[0][i]* scale;
-		//	array34[1 * 4 + i] = array34[1 * 4 + i] * scale;// newparam->mat[1][i]=source->mat[1][i]* scale;
-		//	array34[2 * 4 + i] = array34[2 * 4 + i];// newparam->mat[2][i] = source->mat[2][i];
-		//}
-
-
 		this._screen_size.w = i_xsize;// newparam->xsize = xsize;
 		this._screen_size.h = i_ysize;// newparam->ysize = ysize;
 		return;

@@ -7,34 +7,33 @@
  *   HITLab, University of Washington, Seattle
  * http://www.hitl.washington.edu/artoolkit/
  *
- * The NyARToolkit is Java version ARToolkit class library.
- * Copyright (C)2008 R.Iizuka
+ * The NyARToolkit is Java edition ARToolKit class library.
+ * Copyright (C)2008-2009 Ryo Iizuka
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this framework; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  * For further information please contact.
  *	http://nyatla.jp/nyatoolkit/
- *	<airmail(at)ebony.plala.or.jp>
+ *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
 package jp.nyatla.nyartoolkit.core.raster.rgb;
 
-import jp.nyatla.nyartoolkit.core.rasterreader.INyARBufferReader;
+import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.INyARRgbPixelReader;
-import jp.nyatla.nyartoolkit.core.rasterreader.NyARBufferReader;
-import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+import jp.nyatla.nyartoolkit.core.types.*;
 
 /*
  * 真っ黒の矩形を定義する。
@@ -60,24 +59,43 @@ public class NyARRgbRaster_Blank extends NyARRgbRaster_BasicClass
 				o_rgb[i * 3 + 2] = 0;// B
 			}
 		}
+		public void setPixel(int i_x, int i_y, int[] i_rgb) throws NyARException
+		{
+			NyARException.notImplement();		
+		}
+		public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intrgb) throws NyARException
+		{
+			NyARException.notImplement();		
+		}
+		public void switchBuffer(Object i_ref_buffer) throws NyARException
+		{
+			NyARException.notImplement();		
+		}		
+		
 	}
 
 	private INyARRgbPixelReader _reader;
-	private INyARBufferReader _buffer_reader;
 	
 	public NyARRgbRaster_Blank(int i_width, int i_height)
 	{
-		super(new NyARIntSize(i_width,i_height));
+		super(i_width,i_height,NyARBufferType.NULL_ALLZERO);
 		this._reader = new PixelReader();
-		this._buffer_reader=new NyARBufferReader(null,INyARBufferReader.BUFFERFORMAT_NULL_ALLZERO);
 		return;
 	}
-	public INyARRgbPixelReader getRgbPixelReader()
+	public INyARRgbPixelReader getRgbPixelReader() throws NyARException
 	{
 		return this._reader;
 	}
-	public INyARBufferReader getBufferReader()
+	public Object getBuffer()
 	{
-		return this._buffer_reader;
+		return null;
+	}
+	public boolean hasBuffer()
+	{
+		return false;
+	}
+	public void wrapBuffer(Object i_ref_buf) throws NyARException
+	{
+		NyARException.notImplement();
 	}
 }

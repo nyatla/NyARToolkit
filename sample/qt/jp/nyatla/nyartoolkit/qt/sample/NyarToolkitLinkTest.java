@@ -31,9 +31,14 @@ package jp.nyatla.nyartoolkit.qt.sample;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.qt.utils.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
+import java.awt.image.WritableRaster;
+
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
+import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
 /**
  * VFM+ARToolkitテストプログラム
@@ -41,6 +46,8 @@ import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
  */
 public class NyarToolkitLinkTest extends Frame implements QtCaptureListener
 {
+	private static final long serialVersionUID = 6154831884117789648L;
+
 	private final String CARCODE_FILE = "../../Data/patt.hiro";
 
 	private final String PARAM_FILE = "../../Data/camera_para.dat";
@@ -66,20 +73,29 @@ public class NyarToolkitLinkTest extends Frame implements QtCaptureListener
 		NyARCode ar_code = new NyARCode(16, 16);
 		ar_param.loadARParamFromFile(PARAM_FILE);
 		ar_param.changeScreenSize(320, 240);
-		nya = new NyARSingleDetectMarker(ar_param, ar_code, 80.0);
+		raster = new QtNyARRaster_RGB(320, 240);
+		nya = new NyARSingleDetectMarker(ar_param, ar_code, 80.0,raster.getBufferType());
 		ar_code.loadARPattFromFile(CARCODE_FILE);
 		//キャプチャイメージ用のラスタを準備
-		raster = new QtNyARRaster_RGB(320, 240);
 	}
 
 	public void onUpdateBuffer(byte[] pixels)
 	{
 		try {
 			//キャプチャしたバッファをラスタにセット
-			raster.setBuffer(pixels);
+			raster.wrapBuffer(pixels);
 
-			//キャプチャしたイメージを表示用に加工
-			Image img = raster.createImage();
+			Image img;
+			{
+				//キャプチャしたイメージを表示用に加工
+				NyARIntSize s=raster.getSize();
+				WritableRaster wr = WritableRaster.createInterleavedRaster(DataBuffer.TYPE_BYTE, s.w,s.h, s.w * 3, 3, new int[] { 0, 1, 2 }, null);
+				BufferedImage  bi = new BufferedImage(s.w, s.h, BufferedImage.TYPE_3BYTE_BGR);
+	
+				wr.setDataElements(0, 0, s.w, s.h,raster.getBuffer());
+				bi.setData(wr);
+				img=bi;
+			}
 
 			Graphics g = getGraphics();
 
@@ -90,25 +106,26 @@ public class NyarToolkitLinkTest extends Frame implements QtCaptureListener
 				nya.getTransmationMatrix(this.trans_mat_result);
 			}
 			//情報を画面に書く       
-			g.drawImage(img, 32, 32, this);
+			Graphics image_g=img.getGraphics();
+			image_g.setColor(Color.red);
 			if (is_marker_exist) {
-				g.drawString("マーカー検出:" + nya.getConfidence(), 32, 50);
-				g.drawString("[m00]" + this.trans_mat_result.m00, 32, 50 + 16 * 1);
-				g.drawString("[m01]" + this.trans_mat_result.m01, 32, 50 + 16 * 2);
-				g.drawString("[m02]" + this.trans_mat_result.m02, 32, 50 + 16 * 3);
-				g.drawString("[m03]" + this.trans_mat_result.m03, 32, 50 + 16 * 4);
-				g.drawString("[m10]" + this.trans_mat_result.m10, 32, 50 + 16 * 5);
-				g.drawString("[m11]" + this.trans_mat_result.m11, 32, 50 + 16 * 6);
-				g.drawString("[m12]" + this.trans_mat_result.m12, 32, 50 + 16 * 7);
-				g.drawString("[m13]" + this.trans_mat_result.m13, 32, 50 + 16 * 8);
-				g.drawString("[m20]" + this.trans_mat_result.m20, 32, 50 + 16 * 9);
-				g.drawString("[m21]" + this.trans_mat_result.m21, 32, 50 + 16 * 10);
-				g.drawString("[m22]" + this.trans_mat_result.m22, 32, 50 + 16 * 11);
-				g.drawString("[m23]" + this.trans_mat_result.m23, 32, 50 + 16 * 12);
-
+				image_g.drawString("マーカー検出:" + nya.getConfidence(), 4, 20);
+				image_g.drawString("[m00]" + this.trans_mat_result.m00, 4, 20 + 16 * 1);
+				image_g.drawString("[m01]" + this.trans_mat_result.m01, 4, 20 + 16 * 2);
+				image_g.drawString("[m02]" + this.trans_mat_result.m02, 4, 20 + 16 * 3);
+				image_g.drawString("[m03]" + this.trans_mat_result.m03, 4, 20 + 16 * 4);
+				image_g.drawString("[m10]" + this.trans_mat_result.m10, 4, 20 + 16 * 5);
+				image_g.drawString("[m11]" + this.trans_mat_result.m11, 4, 20 + 16 * 6);
+				image_g.drawString("[m12]" + this.trans_mat_result.m12, 4, 20 + 16 * 7);
+				image_g.drawString("[m13]" + this.trans_mat_result.m13, 4, 20 + 16 * 8);
+				image_g.drawString("[m20]" + this.trans_mat_result.m20, 4, 20 + 16 * 9);
+				image_g.drawString("[m21]" + this.trans_mat_result.m21, 4, 20 + 16 * 10);
+				image_g.drawString("[m22]" + this.trans_mat_result.m22, 4, 20 + 16 * 11);
+				image_g.drawString("[m23]" + this.trans_mat_result.m23, 4, 20 + 16 * 12);
 			} else {
-				g.drawString("マーカー未検出:", 32, 100);
+				image_g.drawString("マーカー未検出:", 32, 100);
 			}
+			g.drawImage(img, 32, 32, this);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

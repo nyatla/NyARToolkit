@@ -1,54 +1,57 @@
-﻿ARToolKit Java class library NyARToolkit.
-Copyright (C)2008 R.Iizuka
+ARToolKit Java class library NyARToolkit.
+Copyright (C)2008-2010 Ryo Iizuka
 
-version 2.0.0
+version 2.5.2
 
 http://nyatla.jp/nyartoolkit/
 airmail(at)ebony.plala.or.jp
+wm(at)nyatla.jp
 --------------------------------------------------
 
 
 
 
-・NyARToolkit/2.0
+[[NyARToolkit/2.5]]
 
 NyARToolkitは、Pure Javaで実装したARToolKitクラスライブラリです。
-
-ARToolKit 2.72.1をベースに構築されています。
-
-NyARToolkit/1.xと比較し、構造的な最適化がされ、可読性が向上しています。
+ARToolKit 2.72.1をベースに作られています。
 
 
-
-J2SEでのみ動作を確認しました。
-J2MEやMIDP2.0にはそのうち対応します。
-
-
-ARToolkitは加藤博一先生とHuman Interface Technology Labにより
-開発されたAugmented Reality (AR) ライブラリです。
-詳しくはこちらをご覧下さい。
-http://www.hitl.washington.edu/artoolkit/
+※ARToolkitは加藤博一先生とHuman Interface Technology Labにより
+　開発されたAugmented Reality (AR) ライブラリです。
+　詳しくは、下記URLをご覧ください。
+　http://www.hitl.washington.edu/artoolkit/
 
 
-・NyARToolkitの特徴
+[[NyARToolkitの特徴]]
 
-　-ARToolKitと同等な処理シーケンスを、クラスベースで再構築してあります。
+ -ARToolKitと同等な機能を、クラスベースAPIで提供します。
+ -計算器チューニングにより、ARToolKitと比較して、処理性能が
+  向上しています。より高い性能を持つNyARToolkit最適化モード
+  と、ARToolKitと互換性のある互換モードを搭載しています。
 
-  -構造的な最適化がされており、ARToolKitと比較して可読性に優れています。
+  --NyARToolkit最適化モード
+    いくつかのアルゴリズムをARToolKitのものと差換え、高速化・精度の向上を図ります。
+    ARToolKit比で、約2倍の性能があります。（JIT有効時）
+    ただし、計算結果はARToolKitのそれと若干ズレがでます。
 
-　-座標変換の演算性能が1.5倍ほど高速です。（JIT有効時）複数マーカー取り扱い時は、
-　 オリジナルよりも良い成績が得られます。
+  --ARToolKit互換モード
+    ARToolKitのアルゴリズムを最適化し、高速化を図ります。
+    ARToolKitとほぼ同等の処理性能です。（JIT有効時）
 
-　-取り扱える画像サイズに制限がありません。
-
-　-取り扱えるマーカー個数の最大値が可変です。
-
+ -取り扱える画像サイズに制限がなく、静止画も扱えます。
+ -取り扱えるマーカー個数の最大値が可変です。
+ -Idマーカシステム(NyId)が利用できます。
 
 
 
+[[構成]]
+
+NyARToolkitは、環境に依存しない計算部分の"NyARToolkit"
+と、カメラ/3Dレンダラに接続するための、インタフェイス
+クラスモジュールで作られています。
 
 
-・構成
 
 +-----------------------------------------------+
 |                   Application                 |
@@ -61,23 +64,25 @@ http://www.hitl.washington.edu/artoolkit/
 ------------------------------------+-----------+
 
 
-映像キャプチャにはJMF、又はQuickTimeを使用することが出来ます。
+-カメラインタフェイス
+ カメラインタフェイスは、イメージソースからリアルタイムに画像を
+ 取り込む為のモジュールです。
+ JMF(NyARJMF)、又はQuickTime(CaptureQT)が用意されています。
 
-3D描画にはJOGL又はJava3Dを使用することが出来ます。
+-3Dレンダラインタフェイス
+ 3Dレンダラインタフェイスは、3Dレンダリングシステムに、画像や、
+ 計算値を設定するためのモジュールです。
+ JOGL(NyARJolg)又はJava3D(NyARJ3d)を使用することが出来ます。
 
-NyARJMF/CaptureQT/NyARJog/NyARJ3dは、下位のキャプチャモジュール
-や3Dライブラリを使いやすくするためのラッパークラス群です。
-
-これらとNyARToolkitは疎結合になっており、インタフェイスをあわせる
-ことで、自作モジュール等との差し替えが出来ます。
+-NyARToolkitコア
+ NyARToolkitの中心的なモジュールです。数学処理、画像処理、管理機能
+ などが、機能毎にクラス化されています。
 
 
+[[サンプルの動かし方]]
 
-
-・サンプルなど
-
-１．動作させる前に、JMFとJOGLかJava3Dをインストールしてください。
-　　QuickTimeを使う場合には、QuickTime for Javaも必要です。
+1.動作させる前に、JMFとJOGLかJava3Dをインストールしてください。
+  QuickTimeを使う場合には、QuickTime for Javaも必要です。
 
 
 動作確認したバージョンと入手先はこちらです。
@@ -96,76 +101,88 @@ http://www.apple.com/quicktime/qtjava/
 
 
 
-２．eclipseで空のワークスペースを作成し、sample,src,src.utils
-　　ディレクトリをインポートしてください。
+2.eclipseで空のワークスペースを作成し、sample,src,src.utils
+  ディレクトリをインポートしてください。
+  各ディレクトリの説明については、
 
-srcにはNyARToolkit本体、src.utilsにはキャプチャや3Dライブラリとの
-インタフェイスクラス群、sampleにはこれらを組み合わせた動作する
-サンプルプログラムがあります。
-
-
-
-
-・プロジェクトの説明
-
-ライブラリ
-
-NyARToolkit
-　NyARToolkitライブラリの本体です。依存する外部モジュールはありません。
-
-NyARToolkit.utils.jmf
-　JMFからの画像をNyARToolkitに取り込むクラス群があります。
-　外部ライブラリは、JMFに依存します。
-
-NyARToolkit.utils.qt
-　QuickTimeからの画像をNyARToolkitに取り込むクラス群があります。
-　外部ライブラリは、JMF、QuickTime for Javaに依存します。
-
-NyARToolkit.utils.jogl
-　OpenGLとNyARToolkitのインタフェイスクラス群があります。
-　外部ライブラリは、JMF,JOGLに依存します。
-
-NyARToolkit.utils.java3d
-　Java3DとNyARToolkitのインタフェイスクラス群があります。
-　外部ライブラリは、JMF,Java3Dに依存します。
+-ディレクトリの説明
+  --srcディレクトリには、NyARToolkitコアモジュールを配置してあります。
+  --src.utilsディレクトリには、カメラキャプチャクラスや、3Dライブラリ
+    用のラッパークラス等の、インタフェイスモジュールが配置してあります。
+    があります。
+  --sampleディレクトリには、NyARToolkitを使用したサンプルプログラムがあります。
 
 
-サンプル
+[[プロジェクトの説明]]
+
+[[[ライブラリ]]]
+
+-NyARToolkit
+ NyARToolkitライブラリの本体です。依存する外部モジュールはありません。
+
+-NyARToolkit.utils.jmf
+ JMF用のインタフェイスモジュールです。
+ JMFからの画像をNyARToolkitに取り込むクラス群があります。
+ 外部ライブラリは、JMFに依存します。
+
+-NyARToolkit.utils.qt
+ QuickTime用のインタフェイスモジュールです。
+ QuickTimeからの画像をNyARToolkitに取り込むクラス群があります。
+  外部ライブラリは、JMF、QuickTime for Javaに依存します。
+
+-NyARToolkit.utils.jogl
+ OpenGL用のインタフェイスモジュールです。
+ OpenGLとNyARToolkitのインタフェイスクラス群があります。
+ 外部ライブラリは、JMF,JOGLに依存します。
+
+-NyARToolkit.utils.java3d
+ Java3D用のインタフェイスモジュールです。
+ Java3DとNyARToolkitのインタフェイスクラス群があります。
+ 外部ライブラリは、JMF,Java3Dに依存します。
+
+
+[[[サンプル]]]
 
 NyARToolkit.sample.jogl
-　JOGL/JMFを使ったサンプルプログラムがあります。
+ JOGL/JMFを使ったサンプルプログラムがあります。
 
   -jp.nyatla.nyartoolkit.jogl.sample.JavaSimpleLite
-   単一のマーカーを認識するARToolkitのsimpleLite相当のサンプルです。
+   単一のARToolKit用マーカーを認識するARToolkitのsimpleLite相当のサンプルです。
   -jp.nyatla.nyartoolkit.jogl.sample.JavaSimpleLite2
-   複数のマーカーを認識するサンプルです。～100個程度のマーカーを同時に
-   認識します。
+   複数のARToolKit用マーカーを認識するサンプルです。1～100個程度のマーカーを
+   同時に認識します。
+  -jp.nyatla.nyartoolkit.jogl.sample.SingleNyIdMarker
+   単一のNyIdマーカを認識するためのサンプルです。アプリケーションフレームワーク
+   SingleNyIdMarkerProcesserのリファレンス実装です。
 
 
 NyARToolkit.sample.java3d
-　JOGL/JMFを使ったサンプルプログラムです。
-　
+ JAVA3D/JMFを使ったサンプルプログラムです。
+
   -jp.nyatla.nyartoolkit.java3d.sample
-  simpleLiteをJava3Dで動かすサンプルがあります。
+   simpleLiteをJava3Dで動かすサンプルがあります。
 
 NyARToolkit.sample.jmf
   JMFを使ったサンプルプログラムです。
 
   -jp.nyatla..nyartoolkit.jmf.sample
-　JMFでキャプチャした画像をNyARToolkitで処理するサンプルプログラムです。
-　
+   JMFでキャプチャした画像をNyARToolkitで処理するサンプルプログラムです。
+
 
 NyARToolkit.sample.qt
-　Quicktime for Javaを使ったサンプルプログラムです。
+ Quicktime for Javaを使ったサンプルプログラムです。
 
-　-jp.nyatla.nyartoolkit.qt.sample
-　QuickTimeでキャプチャした画像をNyARToolkitで処理するサンプルプログラムです。
-　
-
+  -jp.nyatla.nyartoolkit.qt.sample
+   QuickTimeでキャプチャした画像をNyARToolkitで処理するサンプルプログラムです。
 
 
+NyARToolkit.sandbox
+ 正式サポートされていない開発中の実験クラス群です。動作しないものもあります。
 
-・足りない機能等
+
+
+
+[[足りない機能等]]
 
 カメラキャリブレーション、マーカーのセーブ機能等が相変わらずありません。
 今後実装していきます。
@@ -173,10 +190,20 @@ NyARToolkit.sample.qt
 
 
 
-・ライセンス
-GPLv2以降です。詳しくはLICENCE.txtをみてください。
-ソースコード毎のライセンスは、各ソースファイルを参照してください。
+[[ライセンス]]
 
+NyARToolkitは、商用ライセンスとGPLv3以降のデュアルライセンスを採用しています。
+(Version/2.4.0より、GPLv3になりました。)
+
+ -GPLv3
+ GPLv3については、LICENCE.txtをお読みください。
+
+ -商用ライセンス
+ 商用ライセンスについては、ARToolWorks社に管理を委託しております。
+ http://www.artoolworks.com/Home.html
+
+ -日本国内での販売については、下記にお問い合わせ下さい。
+ http://www.msoft.co.jp/pressrelease/press090928-1.html
 
 
 

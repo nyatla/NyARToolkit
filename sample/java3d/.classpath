@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry path="" kind="src"/>
-	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" kind="con"/>
-	<classpathentry path="C:/Program Files/JMF2.1.1e/lib/jmf.jar" kind="lib"/>
-	<classpathentry path="C:/Program Files/Java/Java3D/1.5.1/lib/ext/j3dcore.jar" kind="lib"/>
-	<classpathentry path="C:/Program Files/Java/Java3D/1.5.1/lib/ext/j3dutils.jar" kind="lib"/>
-	<classpathentry path="C:/Program Files/Java/Java3D/1.5.1/lib/ext/vecmath.jar" kind="lib"/>
-	<classpathentry path="/NyARToolKit" combineaccessrules="false" kind="src"/>
-	<classpathentry path="/NyARToolkit.utils.jmf" combineaccessrules="false" kind="src"/>
-	<classpathentry path="/NyARToolkit.utils.java3d" combineaccessrules="false" kind="src"/>
-	<classpathentry path="" kind="output"/>
+	<classpathentry kind="src" path=""/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolKit"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolkit.utils.jmf"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolkit.utils.java3d"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/JMF2.1.1e/lib/jmf.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/Java/Java3D/1.5.1/lib/ext/j3dcore.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/Java/Java3D/1.5.1/lib/ext/j3dutils.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/Java/Java3D/1.5.1/lib/ext/vecmath.jar"/>
+	<classpathentry kind="output" path=""/>
 </classpath>

@@ -112,6 +112,10 @@ public class QtCameraCapture implements ActionListener
 
 	}
 
+	/**
+	 * @param input
+	 * @throws QTException
+	 */
 	public void prepSetInput(Object input) throws QTException
 	{
 		QTSession.open();
@@ -122,6 +126,7 @@ public class QtCameraCapture implements ActionListener
 		} else {
 			grabber = new SequenceGrabber();
 			grabber.setGWorld(graphics, null);
+			//Please check WinVDIG if you got couldntGetRequiredComponent exception on Windows.
 			channel = new SGVideoChannel(grabber);
 			channel.setBounds(bounds);
 

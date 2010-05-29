@@ -7,32 +7,32 @@
  *   HITLab, University of Washington, Seattle
  * http://www.hitl.washington.edu/artoolkit/
  *
- * The NyARToolkit is Java version ARToolkit class library.
- * Copyright (C)2008 R.Iizuka
+ * The NyARToolkit is Java edition ARToolKit class library.
+ * Copyright (C)2008-2009 Ryo Iizuka
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this framework; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  * For further information please contact.
  *	http://nyatla.jp/nyatoolkit/
- *	<airmail(at)ebony.plala.or.jp>
+ *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
 package jp.nyatla.nyartoolkit.core.param;
 
 import jp.nyatla.nyartoolkit.core.*;
-import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix34;
+import jp.nyatla.nyartoolkit.core.types.matrix.*;
+import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
  * 透視変換行列を格納します。
@@ -174,8 +174,25 @@ final public class NyARPerspectiveProjectionMatrix extends NyARDoubleMatrix34
 		//}
 		return;
 	}
-
-	
+	/**
+	 * 現在の行列で３次元座標を射影変換します。
+	 * @param i_3dvertex
+	 * @param o_2d
+	 */
+	public void projectionConvert(NyARDoublePoint3d i_3dvertex,NyARDoublePoint2d o_2d)
+	{
+		double w=i_3dvertex.z*this.m22;
+		o_2d.x=(i_3dvertex.x*this.m00+i_3dvertex.y*this.m01+i_3dvertex.z*this.m02)/w;
+		o_2d.y=(i_3dvertex.y*this.m11+i_3dvertex.z*this.m12)/w;
+		return;
+	}
+	public void projectionConvert(double i_x,double i_y,double i_z,NyARDoublePoint2d o_2d)
+	{
+		double w=i_z*this.m22;
+		o_2d.x=(i_x*this.m00+i_y*this.m01+i_z*this.m02)/w;
+		o_2d.y=(i_y*this.m11+i_z*this.m12)/w;
+		return;
+	}	
 	
 	
 }

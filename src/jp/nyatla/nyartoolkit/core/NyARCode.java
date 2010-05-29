@@ -7,26 +7,25 @@
  *   HITLab, University of Washington, Seattle
  * http://www.hitl.washington.edu/artoolkit/
  *
- * The NyARToolkit is Java version ARToolkit class library.
- * Copyright (C)2008 R.Iizuka
+ * The NyARToolkit is Java edition ARToolKit class library.
+ * Copyright (C)2008-2009 Ryo Iizuka
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this framework; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  * For further information please contact.
  *	http://nyatla.jp/nyatoolkit/
- *	<airmail(at)ebony.plala.or.jp>
+ *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
 package jp.nyatla.nyartoolkit.core;
@@ -36,9 +35,96 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.*;
+import jp.nyatla.nyartoolkit.core.match.*;
+import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 
+class NyARCodeFileReader
+{
 
+	/**
+	 * ARコードファイルからデータを読み込んでo_raster[4]に格納します。
+	 * @param i_stream
+	 * @param o_raster
+	 * @throws NyARException
+	 */
+	public static void loadFromARToolKitFormFile(InputStream i_stream,NyARRaster[] o_raster) throws NyARException
+	{
+		assert o_raster.length==4;
+		//4個の要素をラスタにセットする。
+		try {
+			StreamTokenizer st = new StreamTokenizer(new InputStreamReader(i_stream));
+			//GBRAで一度読みだす。
+			for (int h = 0; h < 4; h++) {
+				assert o_raster[h].isEqualBufferType(NyARBufferType.INT1D_X8R8G8B8_32);
+				final NyARRaster ra=o_raster[h];
+				readBlock(st,ra.getWidth(),ra.getHeight(),(int[])ra.getBuffer());
+			}
+		} catch (Exception e) {
+			throw new NyARException(e);
+		}
+		return;
+	}
+	/**
+	 * ARコードファイルからデータを読み込んでo_codeに格納します。
+	 * @param i_stream
+	 * @param o_code
+	 * @throws NyARException
+	 */
+	public static void loadFromARToolKitFormFile(InputStream i_stream,NyARCode o_code) throws NyARException
+	{
+		int width=o_code.getWidth();
+		int height=o_code.getHeight();
+		NyARRaster tmp_raster=new NyARRaster(width,height, NyARBufferType.INT1D_X8R8G8B8_32);
+		//4個の要素をラスタにセットする。
+		try {
+			StreamTokenizer st = new StreamTokenizer(new InputStreamReader(i_stream));
+			int[] buf=(int[])tmp_raster.getBuffer();
+			//GBRAで一度読みだす。
+			for (int h = 0; h < 4; h++){
+				readBlock(st,width,height,buf);
+				//ARCodeにセット(カラー)
+				o_code.getColorData(h).setRaster(tmp_raster);
+				o_code.getBlackWhiteData(h).setRaster(tmp_raster);
+			}
+		} catch (Exception e) {
+			throw new NyARException(e);
+		}
+		tmp_raster=null;//ポイ
+		return;
+	}
+	/**
+	 * 1ブロック分のXRGBデータをi_stからo_bufへ読みだします。
+	 * @param i_st
+	 * @param o_buf
+	 */
+	private static void readBlock(StreamTokenizer i_st,int i_width,int i_height,int[] o_buf) throws NyARException
+	{
+		try {
+			final int pixels=i_width*i_height;
+			for (int i3 = 0; i3 < 3; i3++) {
+				for (int i2 = 0; i2 < pixels; i2++){
+					// 数値のみ読み出す
+					switch (i_st.nextToken()){
+					case StreamTokenizer.TT_NUMBER:
+						break;
+					default:
+						throw new NyARException();
+					}
+					o_buf[i2]=(o_buf[i2]<<8)|((0x000000ff&(int)i_st.nval));
+				}
+			}
+			//GBR→RGB
+			for(int i3=0;i3<pixels;i3++){
+				o_buf[i3]=((o_buf[i3]<<16)&0xff0000)|(o_buf[i3]&0x00ff00)|((o_buf[i3]>>16)&0x0000ff);
+			}
+		} catch (Exception e) {
+			throw new NyARException(e);
+		}		
+		return;
+	}
+}
 
 /**
  * ARToolKitのマーカーコードを1個保持します。
@@ -46,153 +132,62 @@ import jp.nyatla.nyartoolkit.NyARException;
  */
 public class NyARCode
 {
-	private int[][][][] pat;// static int
-							// pat[AR_PATT_NUM_MAX][4][AR_PATT_SIZE_Y*AR_PATT_SIZE_X*3];
-
-	private double[] patpow = new double[4];// static double patpow[AR_PATT_NUM_MAX][4];
-
-	private short[][][] patBW;// static int patBW[AR_PATT_NUM_MAX][4][AR_PATT_SIZE_Y*AR_PATT_SIZE_X*3];
-
-	private double[] patpowBW = new double[4];// static double patpowBW[AR_PATT_NUM_MAX][4];
-
-	private int width, height;
-
-	public int[][][][] getPat()
+	private NyARMatchPattDeviationColorData[] _color_pat=new NyARMatchPattDeviationColorData[4];
+	private NyARMatchPattDeviationBlackWhiteData[] _bw_pat=new NyARMatchPattDeviationBlackWhiteData[4];
+	private int _width;
+	private int _height;
+	
+	public NyARMatchPattDeviationColorData getColorData(int i_index)
 	{
-		return pat;
+		return this._color_pat[i_index];
 	}
-
-	public double[] getPatPow()
+	public NyARMatchPattDeviationBlackWhiteData getBlackWhiteData(int i_index)
 	{
-		return patpow;
-	}
-
-	public short[][][] getPatBW()
-	{
-		return patBW;
-	}
-
-	public double[] getPatPowBW()
-	{
-		return patpowBW;
-	}
-
+		return this._bw_pat[i_index];
+	}	
 	public int getWidth()
 	{
-		return width;
+		return _width;
 	}
 
 	public int getHeight()
 	{
-		return height;
+		return _height;
 	}
-
-	public NyARCode(int i_width, int i_height)
+	public NyARCode(int i_width, int i_height) throws NyARException
 	{
-		width = i_width;
-		height = i_height;
-		pat = new int[4][height][width][3];// static int pat[AR_PATT_NUM_MAX][4][AR_PATT_SIZE_Y*AR_PATT_SIZE_X*3];
-		patBW = new short[4][height][width];// static int patBW[AR_PATT_NUM_MAX][4][AR_PATT_SIZE_Y*AR_PATT_SIZE_X*3];
+		this._width = i_width;
+		this._height = i_height;
+		//空のラスタを4個作成
+		for(int i=0;i<4;i++){
+			this._color_pat[i]=new NyARMatchPattDeviationColorData(i_width,i_height);
+			this._bw_pat[i]=new NyARMatchPattDeviationBlackWhiteData(i_width,i_height);
+		}
+		return;
 	}
-
-	/**
-	 * int arLoadPatt( const char *filename ); ARToolKitのパターンファイルをロードする。
-	 * ファイル形式はBGR形式で記録されたパターンファイルであること。
-	 * 
-	 * @param filename
-	 * @return
-	 * @throws Exception
-	 */
 	public void loadARPattFromFile(String filename) throws NyARException
 	{
 		try {
 			loadARPatt(new FileInputStream(filename));
-
 		} catch (Exception e) {
 			throw new NyARException(e);
 		}
+		return;
+	}
+	public void setRaster(NyARRaster[] i_raster) throws NyARException
+	{
+		assert i_raster.length!=4;
+		//ラスタにパターンをロードする。
+		for(int i=0;i<4;i++){
+			this._color_pat[i].setRaster(i_raster[i]);				
+		}
+		return;
 	}
 
-	/**
-	 * 
-	 * @param i_stream
-	 * @throws NyARException
-	 */
 	public void loadARPatt(InputStream i_stream) throws NyARException
 	{
-		try {
-			StreamTokenizer st = new StreamTokenizer(new InputStreamReader(
-					i_stream));
-			// パターンデータはGBRAで並んでる。
-			for (int h = 0; h < 4; h++) {
-				int l = 0;
-				for (int i3 = 0; i3 < 3; i3++) {
-					for (int i2 = 0; i2 < height; i2++) {
-						for (int i1 = 0; i1 < width; i1++) {
-							// 数値のみ読み出す
-							switch (st.nextToken()) {// if( fscanf(fp, "%d",&j) != 1 ) {
-							case StreamTokenizer.TT_NUMBER:
-								break;
-							default:
-								throw new NyARException();
-							}
-							short j = (short) (255 - st.nval);// j = 255-j;
-							// 標準ファイルのパターンはBGRでならんでるからRGBに並べなおす
-							switch (i3) {
-							case 0:
-								pat[h][i2][i1][2] = j;
-								break;// pat[patno][h][(i2*Config.AR_PATT_SIZE_X+i1)*3+2]= j;break;
-							case 1:
-								pat[h][i2][i1][1] = j;
-								break;// pat[patno][h][(i2*Config.AR_PATT_SIZE_X+i1)*3+1]= j;break;
-							case 2:
-								pat[h][i2][i1][0] = j;
-								break;// pat[patno][h][(i2*Config.AR_PATT_SIZE_X+i1)*3+0]= j;break;
-							}
-							// pat[patno][h][(i2*Config.AR_PATT_SIZE_X+i1)*3+i3]= j;
-							if (i3 == 0) {
-								patBW[h][i2][i1] = j;// patBW[patno][h][i2*Config.AR_PATT_SIZE_X+i1] = j;
-							} else {
-								patBW[h][i2][i1] += j;// patBW[patno][h][i2*Config.AR_PATT_SIZE_X+i1] += j;
-							}
-							if (i3 == 2) {
-								patBW[h][i2][i1] /= 3;// patBW[patno][h][i2*Config.AR_PATT_SIZE_X+i1]/= 3;
-							}
-							l += j;
-						}
-					}
-				}
-
-				l /= (height * width * 3);
-
-				int m = 0;
-				for (int i = 0; i < height; i++) {// for( i = 0; i < AR_PATT_SIZE_Y*AR_PATT_SIZE_X*3;i++ ) {
-					for (int i2 = 0; i2 < width; i2++) {
-						for (int i3 = 0; i3 < 3; i3++) {
-							pat[h][i][i2][i3] -= l;
-							m += (pat[h][i][i2][i3] * pat[h][i][i2][i3]);
-						}
-					}
-				}
-				patpow[h] = Math.sqrt((double) m);
-				if (patpow[h] == 0.0) {
-					patpow[h] = 0.0000001;
-				}
-
-				m = 0;
-				for (int i = 0; i < height; i++) {
-					for (int i2 = 0; i2 < width; i2++) {
-						patBW[h][i][i2] -= l;
-						m += (patBW[h][i][i2] * patBW[h][i][i2]);
-					}
-				}
-				patpowBW[h] = Math.sqrt((double) m);
-				if (patpowBW[h] == 0.0) {
-					patpowBW[h] = 0.0000001;
-				}
-			}
-		} catch (Exception e) {
-			throw new NyARException(e);
-		}
+		//ラスタにパターンをロードする。
+		NyARCodeFileReader.loadFromARToolKitFormFile(i_stream,this);
+		return;
 	}
 }

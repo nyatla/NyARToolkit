@@ -33,8 +33,7 @@ import javax.media.j3d.*;
 import javax.vecmath.*;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.jmf.utils.JmfCameraCapture;
-import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
+import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
@@ -48,32 +47,35 @@ import jp.nyatla.nyartoolkit.core.types.*;
  */
 public class NyARSingleMarkerBehaviorHolder implements JmfCaptureListener
 {
-	private NyARParam cparam;
+	private NyARParam _cparam;
 
-	private JmfCameraCapture capture;
+	private JmfCaptureDevice _capture;
 
-	private J3dNyARRaster_RGB nya_raster;//最大3スレッドで共有されるので、排他制御かけること。
+	private J3dNyARRaster_RGB _nya_raster;//最大3スレッドで共有されるので、排他制御かけること。
 
-	private NyARSingleDetectMarker nya;
+	private NyARSingleDetectMarker _nya;
 
 	//Behaviorホルダ
-	private NyARBehavior nya_behavior;
+	private NyARBehavior _nya_behavior;
 
 	public NyARSingleMarkerBehaviorHolder(NyARParam i_cparam, float i_rate, NyARCode i_ar_code, double i_marker_width) throws NyARException
 	{
-		nya_behavior = null;
+		this._nya_behavior = null;
 		final NyARIntSize scr_size = i_cparam.getScreenSize();
-		cparam = i_cparam;
-		capture = new JmfCameraCapture(scr_size.w, scr_size.h, i_rate, JmfCameraCapture.PIXEL_FORMAT_RGB);
-		capture.setCaptureListener(this);
-		nya_raster = new J3dNyARRaster_RGB(cparam);
-		nya = new NyARSingleDetectMarker(cparam, i_ar_code, i_marker_width);
-		nya_behavior = new NyARBehavior(nya, nya_raster, i_rate);
+		this._cparam = i_cparam;
+		//キャプチャの準備
+		JmfCaptureDeviceList devlist=new JmfCaptureDeviceList();
+		this._capture=devlist.getDevice(0);
+		this._capture.setCaptureFormat(scr_size.w, scr_size.h,15f);
+		this._capture.setOnCapture(this);		
+		this._nya_raster = new J3dNyARRaster_RGB(this._cparam,this._capture.getCaptureFormat());
+		this._nya = new NyARSingleDetectMarker(this._cparam, i_ar_code, i_marker_width,this._nya_raster.getBufferType());
+		this._nya_behavior = new NyARBehavior(this._nya, this._nya_raster, i_rate);
 	}
 
 	public Behavior getBehavior()
 	{
-		return nya_behavior;
+		return this._nya_behavior;
 	}
 
 	/**
@@ -85,7 +87,7 @@ public class NyARSingleMarkerBehaviorHolder implements JmfCaptureListener
 	public void setBackGround(Background i_back_ground)
 	{
 		//コール先で排他制御
-		nya_behavior.setRelatedBackGround(i_back_ground);
+		this._nya_behavior.setRelatedBackGround(i_back_ground);
 	}
 
 	/**
@@ -95,7 +97,7 @@ public class NyARSingleMarkerBehaviorHolder implements JmfCaptureListener
 	public void setTransformGroup(TransformGroup i_trgroup)
 	{
 		//コール先で排他制御
-		nya_behavior.setRelatedTransformGroup(i_trgroup);
+		this._nya_behavior.setRelatedTransformGroup(i_trgroup);
 	}
 
 	/**
@@ -105,7 +107,7 @@ public class NyARSingleMarkerBehaviorHolder implements JmfCaptureListener
 	public void setUpdateListener(NyARSingleMarkerBehaviorListener i_listener)
 	{
 		//コール先で排他制御
-		nya_behavior.setUpdateListener(i_listener);
+		this._nya_behavior.setUpdateListener(i_listener);
 	}
 
 	/**
@@ -114,8 +116,8 @@ public class NyARSingleMarkerBehaviorHolder implements JmfCaptureListener
 	public void onUpdateBuffer(Buffer i_buffer)
 	{
 		try {
-			synchronized (nya_raster) {
-				nya_raster.setBuffer(i_buffer);
+			synchronized (this._nya_raster) {
+				this._nya_raster.setBuffer(i_buffer);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -125,12 +127,12 @@ public class NyARSingleMarkerBehaviorHolder implements JmfCaptureListener
 	public void start() throws NyARException
 	{
 		//開始
-		capture.start();
+		this._capture.start();
 	}
 
 	public void stop()
 	{
-		capture.stop();
+		this._capture.stop();
 	}
 }
 
@@ -206,13 +208,18 @@ class NyARBehavior extends Behavior
 					raster.renewImageComponent2D();/*DirectXモードのときの対策*/
 					back_ground.setImage(raster.getImageComponent2D());
 				}
-				if (raster.hasData()) {
+				if (raster.hasBuffer()) {
 					is_marker_exist = related_nya.detectMarkerLite(raster, 100);
 					if (is_marker_exist)
 					{
 						final NyARTransMatResult src = this.trans_mat_result;
 						related_nya.getTransmationMatrix(src);
-						Matrix4d matrix = new Matrix4d(src.m00, -src.m10, -src.m20, 0, -src.m01, src.m11, src.m21, 0, -src.m02, src.m12, src.m22, 0, -src.m03, src.m13, src.m23, 1);
+//						Matrix4d matrix = new Matrix4d(src.m00, -src.m10, -src.m20, 0, -src.m01, src.m11, src.m21, 0, -src.m02, src.m12, src.m22, 0, -src.m03, src.m13, src.m23, 1);
+						Matrix4d matrix = new Matrix4d(
+								-src.m00, -src.m10, src.m20, 0,
+								-src.m01, -src.m11, src.m21, 0,
+								-src.m02, -src.m12, src.m22, 0,
+							   -src.m03,-src.m13, src.m23, 1);
 						matrix.transpose();
 						t3d = new Transform3D(matrix);
 						if (trgroup != null) {

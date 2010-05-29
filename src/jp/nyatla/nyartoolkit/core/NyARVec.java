@@ -7,26 +7,25 @@
  *   HITLab, University of Washington, Seattle
  * http://www.hitl.washington.edu/artoolkit/
  *
- * The NyARToolkit is Java version ARToolkit class library.
- * Copyright (C)2008 R.Iizuka
+ * The NyARToolkit is Java edition ARToolKit class library.
+ * Copyright (C)2008-2009 Ryo Iizuka
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this framework; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  * For further information please contact.
  *	http://nyatla.jp/nyatoolkit/
- *	<airmail(at)ebony.plala.or.jp>
+ *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
 package jp.nyatla.nyartoolkit.core;
@@ -156,121 +155,6 @@ public class NyARVec
 		return -s;
 	}
 
-	// /**
-	// * arVecTridiagonalize関数の代替品
-	// * a,d,e間で演算をしてる。何をどうしているかはさっぱりさっぱり
-	// * @param a
-	// * @param d
-	// * @param e
-	// * @param i_e_start
-	// * 演算開始列(よくわからないけどarVecTridiagonalizeの呼び出し元でなんかしてる)
-	// * @return
-	// * @throws NyARException
-	// */
-	// public static void vecTridiagonalize(NyARMat a, NyARVec d, NyARVec e,int
-	// i_e_start) throws NyARException
-	// {
-	// NyARVec vec,vec2;
-	// double[][] a_array=a.getArray();
-	// double s, t, p, q;
-	// int dim;
-	//
-	// if(a.getClm()!=a.getRow()){
-	// throw new NyARException();
-	// }
-	// if(a.getClm() != d.clm){
-	// throw new NyARException();
-	// }
-	// if(a.getClm() != e.clm){
-	// throw new NyARException();
-	// }
-	// dim = a.getClm();
-	//
-	// for(int k = 0; k < dim-2; k++ ){
-	// vec=a.getRowVec(k);
-	// // double[] vec_array=vec.getArray();
-	// NyARException.trap("未チェックパス");
-	// d.v[k]=vec.v[k];//d.set(k,v.get(k)); //d->v[k] = v[k];
-	//
-	// //wv1.clm = dim-k-1;
-	// //wv1.v = &(v[k+1]);
-	// NyARException.trap("未チェックパス");
-	// e.v[k+i_e_start]=vec.vecHousehold(k+1);//e->v[k] = arVecHousehold(&wv1);
-	// if(e.v[k+i_e_start]== 0.0 ){
-	// continue;
-	// }
-	//
-	// for(int i = k+1; i < dim; i++ ){
-	// s = 0.0;
-	// for(int j = k+1; j < i; j++ ) {
-	// NyARException.trap("未チェックのパス");
-	// s += a_array[j][i] * vec.v[j];//s += a.get(j*dim+i) * v.get(j);//s +=
-	// a->m[j*dim+i] * v[j];
-	// }
-	// for(int j = i; j < dim; j++ ) {
-	// NyARException.trap("未チェックのパス");
-	// s += a_array[i][j] * vec.v[j];//s += a.get(i*dim+j) * v.get(j);//s +=
-	// a->m[i*dim+j] * v[j];
-	// }
-	// NyARException.trap("未チェックのパス");
-	// d.v[i]=s;//d->v[i] = s;
-	// }
-	//
-	//
-	// //wv1.clm = wv2.clm = dim-k-1;
-	// //wv1.v = &(v[k+1]);
-	// //wv2.v = &(d->v[k+1]);
-	// vec=a.getRowVec(k);
-	// // vec_array=vec.getArray();
-	// NyARException.trap("未チェックパス");
-	// t = vec.vecInnerproduct(d,k+1)/ 2;
-	// for(int i = dim-1; i > k; i-- ) {
-	// NyARException.trap("未チェックパス");
-	// p = vec.v[i];//p = v.get(i);//p = v[i];
-	// d.v[i]-=t*p;q=d.v[i];//q = d->v[i] -= t*p；
-	// for(int j = i; j < dim; j++ ){
-	// NyARException.trap("未チェックパス");
-	// a_array[i][j]-=p*(d.v[j] + q*vec.v[j]);//a->m[i*dim+j] -= p*(d->v[j]) +
-	// q*v[j];
-	// }
-	// }
-	// }
-	//
-	// if( dim >= 2) {
-	// d.v[dim-2]=a_array[dim-2][dim-2];//d->v[dim-2] =
-	// a->m[(dim-2)*dim+(dim-2)];
-	// e.v[dim-2+i_e_start]=a_array[dim-2][dim-1];//e->v[dim-2] =
-	// a->m[(dim-2)*dim+(dim-1)];
-	// }
-	//
-	// if( dim >= 1 ){
-	// d.v[dim-1]=a_array[dim-1][dim-1];//d->v[dim-1] =
-	// a->m[(dim-1)*dim+(dim-1)];
-	// }
-	//
-	// for(int k = dim-1; k >= 0; k--) {
-	// vec=a.getRowVec(k);//v = a.getPointer(k*dim);//v = &(a->m[k*dim]);
-	// if( k < dim-2 ) {
-	// for(int i = k+1; i < dim; i++ ){
-	// //wv1.clm = wv2.clm = dim-k-1;
-	// //wv1.v = &(v[k+1]);
-	// //wv2.v = &(a->m[i*dim+k+1]);
-	// vec2=a.getRowVec(i);
-	//
-	// t = vec.vecInnerproduct(vec2,k+1);
-	// for(int j = k+1; j < dim; j++ ){
-	// NyARException.trap("未チェックパス");
-	// a_array[i][j]-=t*vec.v[j];//a.subValue(i*dim+j,t*v.get(j));//a->m[i*dim+j]
-	// -= t * v[j];
-	// }
-	// }
-	// }
-	// for(int i = 0; i < dim; i++ ){
-	// vec.v[i]=0.0;//v.set(i,0.0);//v[i] = 0.0;
-	// }
-	// vec.v[k]=1;//v.set(k,1);//v[k] = 1;
-	// }
-	// }
 	/**
 	 * 現在ラップしている配列を取り外して、新しい配列をラップします。
 	 * 

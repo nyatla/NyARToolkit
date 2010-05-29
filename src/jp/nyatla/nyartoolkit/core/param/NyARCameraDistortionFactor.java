@@ -7,32 +7,30 @@
  *   HITLab, University of Washington, Seattle
  * http://www.hitl.washington.edu/artoolkit/
  *
- * The NyARToolkit is Java version ARToolkit class library.
- * Copyright (C)2008 R.Iizuka
+ * The NyARToolkit is Java edition ARToolKit class library.
+ * Copyright (C)2008-2009 Ryo Iizuka
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this framework; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  * For further information please contact.
  *	http://nyatla.jp/nyatoolkit/
- *	<airmail(at)ebony.plala.or.jp>
+ *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
 package jp.nyatla.nyartoolkit.core.param;
 
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
-import jp.nyatla.utils.DoubleValue;
 
 /**
  * カメラの歪み成分を格納するクラスと、補正関数群
@@ -44,13 +42,21 @@ import jp.nyatla.utils.DoubleValue;
  * p=(1-fd^2)
  * xd=px+x0,yd=py+y0
  */
-final public class NyARCameraDistortionFactor
+public class NyARCameraDistortionFactor implements INyARCameraDistortionFactor
 {
 	private static final int PD_LOOP = 3;
 	private double _f0;//x0
 	private double _f1;//y0
 	private double _f2;//100000000.0*ｆ
 	private double _f3;//s
+	public void copyFrom(NyARCameraDistortionFactor i_ref)
+	{
+		this._f0=i_ref._f0;
+		this._f1=i_ref._f1;
+		this._f2=i_ref._f2;
+		this._f3=i_ref._f3;
+		return;
+	}
 	/**
 	 * 配列の値をファクタ値としてセットする。
 	 * @param i_factor
@@ -131,20 +137,20 @@ final public class NyARCameraDistortionFactor
 	/**
 	 * int arParamObserv2Ideal( const double dist_factor[4], const double ox,const double oy,double *ix, double *iy );
 	 * 
-	 * @param ox
-	 * @param oy
+	 * @param ix
+	 * @param iy
 	 * @param ix
 	 * @param iy
 	 * @return
 	 */
-	public void observ2Ideal(double ox, double oy, DoubleValue ix, DoubleValue iy)
+	public void observ2Ideal(double ix, double iy, NyARDoublePoint2d o_point)
 	{
 		double z02, z0, p, q, z, px, py, opttmp_1;
 		final double d0 = this._f0;
 		final double d1 = this._f1;
 
-		px = ox - d0;
-		py = oy - d1;
+		px = ix - d0;
+		py = iy - d1;
 		p = this._f2 / 100000000.0;
 		z02 = px * px + py * py;
 		q = z0 = Math.sqrt(z02);// Optimize//q = z0 = Math.sqrt(px*px+ py*py);
@@ -167,14 +173,13 @@ final public class NyARCameraDistortionFactor
 			z02 = px * px + py * py;
 			z0 = Math.sqrt(z02);// Optimize//z0 = Math.sqrt(px*px+ py*py);
 		}
-		ix.value = px / this._f3 + d0;
-		iy.value = py / this._f3 + d1;
+		o_point.x = px / this._f3 + d0;
+		o_point.y = py / this._f3 + d1;
 		return;
 	}
 
 	/**
 	 * 指定範囲のobserv2Idealをまとめて実行して、結果をo_idealに格納します。
-	 * 
 	 * @param i_x_coord
 	 * @param i_y_coord
 	 * @param i_start
@@ -184,7 +189,7 @@ final public class NyARCameraDistortionFactor
 	 * @param o_ideal
 	 *            出力バッファ[i_num][2]であること。
 	 */
-	public void observ2IdealBatch(int[] i_x_coord, int[] i_y_coord,int i_start, int i_num, double[][] o_ideal)
+	public void observ2IdealBatch(int[] i_x_coord, int[] i_y_coord,int i_start, int i_num, double[] o_x_coord,double[] o_y_coord)
 	{
 		double z02, z0, q, z, px, py, opttmp_1;
 		final double d0 = this._f0;
@@ -217,8 +222,8 @@ final public class NyARCameraDistortionFactor
 				z02 = px * px + py * py;
 				z0 = Math.sqrt(z02);// Optimize//z0 = Math.sqrt(px*px+ py*py);
 			}
-			o_ideal[j][0] = px / d3 + d0;
-			o_ideal[j][1] = py / d3 + d1;
+			o_x_coord[j] = px / d3 + d0;
+			o_y_coord[j] = py / d3 + d1;
 		}
 		return;
 	}	

@@ -26,64 +26,56 @@
  */
 package jp.nyatla.nyartoolkit.jogl.sample;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.awt.*;
-
 import javax.media.Buffer;
-
-import javax.media.opengl.GL;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLEventListener;
-import javax.media.opengl.GLCanvas;
-
-import com.sun.opengl.util.Animator;
-
-import jp.nyatla.nyartoolkit.core.NyARCode;
-
-import jp.nyatla.nyartoolkit.jmf.utils.JmfCameraCapture;
-import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
+import javax.media.opengl.*;
+import com.sun.opengl.util.*;
+import jp.nyatla.nyartoolkit.*;
+import jp.nyatla.nyartoolkit.core.*;
+import jp.nyatla.nyartoolkit.core.param.*;
+import jp.nyatla.nyartoolkit.core.transmat.*;
+import jp.nyatla.nyartoolkit.detector.*;
+import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
+
 /**
- * simpleLiteと同じようなテストプログラム
- * 出来る限りARToolKitのサンプルと似せて作ってあります。
- * 最も一致する"Hiro"マーカーを一つ選択して、その上に立方体を表示します。
+ * simpleLiteと同じようなテストプログラム 出来る限りARToolKitのサンプルと似せて作ってあります。 最も一致する"Hiro"マーカーを一つ選択して、その上に立方体を表示します。
  * 
  */
 public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 {
-	private final String CARCODE_FILE = "../../Data/patt.hiro";
+	private final static int SCREEN_X = 640;
 
-	private final String PARAM_FILE = "../../Data/camera_para.dat";
-
-	private final static int SCREEN_X = 320;
-
-	private final static int SCREEN_Y = 240;
+	private final static int SCREEN_Y = 480;
 
 	private Animator _animator;
 
-	private GLNyARRaster_RGB _cap_image;
+	private JmfNyARRaster_RGB _cap_image;
 
-	private JmfCameraCapture _capture;
+	private JmfCaptureDevice _capture;
 
 	private GL _gl;
 
 	private NyARGLUtil _glnya;
 
-	//NyARToolkit関係
-	private GLNyARSingleDetectMarker _nya;
+	// NyARToolkit関係
+	private NyARSingleDetectMarker _nya;
 
-	private GLNyARParam _ar_param;
+	private NyARParam _ar_param;
+
+	private Object _sync_object=new Object();
+	private double[] _camera_projection = new double[16];
 
 	/**
 	 * 立方体を書く
-	 *
+	 * 
 	 */
 	void drawCube()
 	{
 		// Colour cube data.
 		int polyList = 0;
-		float fSize = 0.5f;//マーカーサイズに対して0.5倍なので、4cmの立方体
+		float fSize = 0.5f;// マーカーサイズに対して0.5倍なので、4cmの立方体
 		int f, i;
 		float[][] cube_vertices = new float[][] { { 1.0f, 1.0f, 1.0f }, { 1.0f, -1.0f, 1.0f }, { -1.0f, -1.0f, 1.0f }, { -1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, -1.0f }, { 1.0f, -1.0f, -1.0f }, { -1.0f, -1.0f, -1.0f }, { -1.0f, 1.0f, -1.0f } };
 		float[][] cube_vertex_colors = new float[][] { { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 1.0f }, { 1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } };
@@ -119,10 +111,27 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 
 	}
 
-	public JavaSimpleLite()
+	public JavaSimpleLite(NyARParam i_param, NyARCode i_ar_code) throws NyARException
 	{
+		this._ar_param = i_param;
+
 		Frame frame = new Frame("Java simpleLite with NyARToolkit");
 
+		
+		// キャプチャの準備
+		JmfCaptureDeviceList devlist = new JmfCaptureDeviceList();
+		this._capture = devlist.getDevice(0);
+		if (!this._capture.setCaptureFormat(SCREEN_X, SCREEN_Y, 30.0f)) {
+			throw new NyARException();
+		}
+		this._capture.setOnCapture(this);
+		//JMFラスタオブジェクト
+		this._cap_image = new JmfNyARRaster_RGB(this._ar_param, this._capture.getCaptureFormat());
+		
+		// NyARToolkitの準備
+		this._nya = new NyARSingleDetectMarker(this._ar_param, i_ar_code, 80.0,this._cap_image.getBufferType());
+		this._nya.setContinueMode(false);// ここをtrueにすると、transMatContinueモード（History計算）になります。
+		
 		// 3Dを描画するコンポーネント
 		GLCanvas canvas = new GLCanvas();
 		frame.add(canvas);
@@ -142,34 +151,23 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 
 	public void init(GLAutoDrawable drawable)
 	{
-		_gl = drawable.getGL();
-		_gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		//NyARToolkitの準備
+		this._gl = drawable.getGL();
+		this._gl.glEnable(GL.GL_DEPTH_TEST);
+		this._gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		// NyARToolkitの準備
 		try {
-			//キャプチャの準備
-			_capture = new JmfCameraCapture(SCREEN_X, SCREEN_Y, 15f, JmfCameraCapture.PIXEL_FORMAT_RGB);
-			_capture.setCaptureListener(this);
-			//NyARToolkitの準備
-			_ar_param = new GLNyARParam();
-			NyARCode ar_code = new NyARCode(16, 16);
-			_ar_param.loadARParamFromFile(PARAM_FILE);
-			_ar_param.changeScreenSize(SCREEN_X, SCREEN_Y);
-			_nya = new GLNyARSingleDetectMarker(_ar_param, ar_code, 80.0);
-			_nya.setContinueMode(false);//ここをtrueにすると、transMatContinueモード（History計算）になります。
-			ar_code.loadARPattFromFile(CARCODE_FILE);
-			//NyARToolkit用の支援クラス
+			// NyARToolkit用の支援クラス
 			_glnya = new NyARGLUtil(_gl);
-			//GL対応のRGBラスタオブジェクト
-			_cap_image = new GLNyARRaster_RGB(_ar_param);
-			//キャプチャ開始
+			// キャプチャ開始
 			_capture.start();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		_animator = new Animator(drawable);
-
-		_animator.start();
-
+		// カメラパラメータの計算
+		this._glnya.toCameraFrustumRH(this._ar_param,this._camera_projection);
+		this._animator = new Animator(drawable);
+		this._animator.start();
+		return;
 	}
 
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height)
@@ -177,54 +175,62 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 		_gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 		_gl.glViewport(0, 0, width, height);
 
-		//視体積の設定
+		// 視体積の設定
 		_gl.glMatrixMode(GL.GL_PROJECTION);
 		_gl.glLoadIdentity();
-		//見る位置
+		// 見る位置
 		_gl.glMatrixMode(GL.GL_MODELVIEW);
 		_gl.glLoadIdentity();
 	}
 
+	private boolean _is_marker_exist=false;
+	private NyARTransMatResult __display_transmat_result = new NyARTransMatResult();
+
+	private double[] __display_wk = new double[16];
+
 	public void display(GLAutoDrawable drawable)
 	{
-
-		try {
-			if (!_cap_image.hasData()) {
-				return;
+		NyARTransMatResult transmat_result = __display_transmat_result;
+		if (!_cap_image.hasBuffer()) {
+			return;
+		}
+		// 背景を書く
+		this._gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
+		try{
+			synchronized(this._sync_object){
+				this._glnya.drawBackGround(this._cap_image, 1.0);			
+				// マーカーがあれば、立方体を描画
+				if (this._is_marker_exist){
+					// マーカーの一致度を調査するならば、ここでnya.getConfidence()で一致度を調べて下さい。
+					// Projection transformation.
+					_gl.glMatrixMode(GL.GL_PROJECTION);
+					_gl.glLoadMatrixd(_camera_projection, 0);
+					_gl.glMatrixMode(GL.GL_MODELVIEW);
+					// Viewing transformation.
+					_gl.glLoadIdentity();
+					// 変換行列を取得
+					_nya.getTransmationMatrix(transmat_result);
+					// 変換行列をOpenGL形式に変換
+					_glnya.toCameraViewRH(transmat_result, __display_wk);
+					_gl.glLoadMatrixd(__display_wk, 0);
+		
+					// All other lighting and geometry goes here.
+					drawCube();
+				}
 			}
-			_gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.          
-			//画像チェックしてマーカー探して、背景を書く
-			boolean is_marker_exist;
-			synchronized (_cap_image) {
-				is_marker_exist = _nya.detectMarkerLite(_cap_image, 110);
-				//背景を書く
-				_glnya.drawBackGround(_cap_image, 1.0);
-			}
-			//あったら立方体を書く
-			if (is_marker_exist) {
-				//マーカーの一致度を調査するならば、ここでnya.getConfidence()で一致度を調べて下さい。
-				// Projection transformation.
-				_gl.glMatrixMode(GL.GL_PROJECTION);
-				_gl.glLoadMatrixd(_ar_param.getCameraFrustumRH(), 0);
-				_gl.glMatrixMode(GL.GL_MODELVIEW);
-				// Viewing transformation.
-				_gl.glLoadIdentity();
-				_gl.glLoadMatrixd(_nya.getCameraViewRH(), 0);
-
-				// All other lighting and geometry goes here.
-				drawCube();
-			}
-			Thread.sleep(1);//タスク実行権限を一旦渡す
-		} catch (Exception e) {
+			Thread.sleep(1);// タスク実行権限を一旦渡す
+		}catch(Exception e){
 			e.printStackTrace();
 		}
 
 	}
+
 	public void onUpdateBuffer(Buffer i_buffer)
 	{
 		try {
-			synchronized (_cap_image) {
-				_cap_image.setBuffer(i_buffer, true);
+			synchronized (this._sync_object) {
+				this._cap_image.setBuffer(i_buffer);
+				this._is_marker_exist =this._nya.detectMarkerLite(this._cap_image, 110);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -235,8 +241,24 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 	{
 	}
 
+	private final static String CARCODE_FILE = "../../Data/patt.hiro";
+
+	private final static String PARAM_FILE = "../../Data/camera_para.dat";
+
 	public static void main(String[] args)
 	{
-		new JavaSimpleLite();
+		try {
+			NyARParam param = new NyARParam();
+			param.loadARParamFromFile(PARAM_FILE);
+			param.changeScreenSize(SCREEN_X, SCREEN_Y);
+
+			NyARCode code = new NyARCode(16, 16);
+			code.loadARPattFromFile(CARCODE_FILE);
+
+			new JavaSimpleLite(param, code);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return;
 	}
 }

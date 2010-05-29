@@ -1,32 +1,25 @@
 /* 
- * PROJECT: NyARToolkit
+ * PROJECT: NyARToolkit(Extension)
  * --------------------------------------------------------------------------------
- * This work is based on the original ARToolKit developed by
- *   Hirokazu Kato
- *   Mark Billinghurst
- *   HITLab, University of Washington, Seattle
- * http://www.hitl.washington.edu/artoolkit/
+ * The NyARToolkit is Java edition ARToolKit class library.
+ * Copyright (C)2008-2009 Ryo Iizuka
  *
- * The NyARToolkit is Java version ARToolkit class library.
- * Copyright (C)2008 R.Iizuka
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this framework; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  * For further information please contact.
  *	http://nyatla.jp/nyatoolkit/
- *	<airmail(at)ebony.plala.or.jp>
+ *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
 package jp.nyatla.nyartoolkit.core.types.matrix;
@@ -61,6 +54,22 @@ public class NyARDoubleMatrix34 implements INyARDoubleMatrix
 		this.m23=i_value[11];
 		return;
 	}
+	public void setValue(NyARDoubleMatrix34 i_value)
+	{
+		this.m00=i_value.m00;
+		this.m01=i_value.m01;
+		this.m02=i_value.m02;
+		this.m03=i_value.m03;
+		this.m10=i_value.m10;
+		this.m11=i_value.m11;
+		this.m12=i_value.m12;
+		this.m13=i_value.m13;
+		this.m20=i_value.m20;
+		this.m21=i_value.m21;
+		this.m22=i_value.m22;
+		this.m23=i_value.m23;
+		return;
+	}
 	public void getValue(double[] o_value)
 	{
 		o_value[0]=this.m00;
@@ -76,5 +85,5 @@ public class NyARDoubleMatrix34 implements INyARDoubleMatrix
 		o_value[10]=this.m22;
 		o_value[11]=this.m23;
 		return;
-	}	
+	}
 }
