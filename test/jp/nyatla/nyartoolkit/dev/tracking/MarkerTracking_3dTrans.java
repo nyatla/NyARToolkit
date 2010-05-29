@@ -45,8 +45,6 @@ public class MarkerTracking_3dTrans
 		private final NyARMatchPattResult __detectMarkerLite_mr=new NyARMatchPattResult();
 		private NyARCoord2Linear _coordline;
 		
-		private NyARPerspectiveProjectionMatrix _prjmat;
-		private INyARCameraDistortionFactor _dist;
 		public DetectSquareCB(INyARColorPatt i_inst_patt,NyARCode i_ref_code,NyARParam i_param,double i_marker_width) throws NyARException
 		{
 			this.table_operator=new MarkerTableOperator(i_param);
@@ -54,9 +52,6 @@ public class MarkerTracking_3dTrans
 			this._nextframe=new NextFrameMarkerStack(10);
 			this._marker_width=i_marker_width;
 
-			
-			this._prjmat=i_param.getPerspectiveProjectionMatrix();
-			this._dist=i_param.getDistortionFactor();
 			
 			//
 			this._inst_patt=i_inst_patt;
@@ -89,8 +84,9 @@ public class MarkerTracking_3dTrans
 			new_center.x=(vertex[0].x+vertex[1].x+vertex[2].x+vertex[3].x)/4;
 			new_center.y=(vertex[0].y+vertex[1].y+vertex[2].y+vertex[3].y)/4;
 			//近所のマーカを探す。[Optimize:重複計算あり]
-			NextFrameMarkerStack.Item near_item=this.getNearItem(new_center);//[Optimize]見つけた矩形はリストから削除すべきだよね。
-			if(near_item==null){
+			NextFrameMarkerStack.Item near_item=this._nextframe.getNearItem(new_center);//[Optimize]見つけた矩形はリストから削除すべきだよね。
+			if(near_item==null)
+			{
 				//このマーカは未登録
 				NyARMatchPattResult mr=this.__detectMarkerLite_mr;
 				
@@ -126,7 +122,7 @@ public class MarkerTracking_3dTrans
 
 			}else{
 				//このマーカは登録済。
-				MarkerPositionTable.Item item=this.table.selectItem(near_item.oid);
+				MarkerPositionTable.Item item=near_item.ref_item;
 				//予想基準頂点に一番近い観測頂点インデクスを得る。
 				int dir=getNearVertexIndex(near_item.vertex0,near_item.center,vertex,new_center);
 
@@ -176,87 +172,18 @@ public class MarkerTracking_3dTrans
 			}
 			return ret;
 		}
-		NyARDoubleMatrix33 _rot_temp=new NyARDoubleMatrix33();
-		private NyARDoublePoint3d _pos3d_tmp=new NyARDoublePoint3d();
-		private NyARDoublePoint3d _area_temp=new NyARDoublePoint3d();
-		private NyARDoublePoint2d _pos2d_tmp=new NyARDoublePoint2d();
-		
-		public final void init(INyARRgbRaster i_raster)
-		{			
-			this._ref_raster=i_raster;
-			//マーカの予測位置を計算しておく
-			NextFrameMarkerStack stack=this._nextframe;
-			NyARDoublePoint2d pos2d=this._pos2d_tmp;
-			NyARDoublePoint3d pos3d=this._pos3d_tmp;
-			
-			NyARPerspectiveProjectionMatrix prjmat=this._prjmat;
-			INyARCameraDistortionFactor dist=this._dist;
-			MarkerPositionTable.Item[] items=this.table.selectAllItems();
 
-			NyARDoubleMatrix33 rot=this._rot_temp;
-			
-			NyARDoublePoint3d area=this._area_temp;
-			area.x=area.y=this._marker_width;
-			stack.clear();
-			for(int i=items.length-1;i>=0;i--)
-			{
-				if(items[i].is_empty){
-					continue;
-				}
-				final NyARDoublePoint3d trans=items[i].trans;
-				//pos2dに中心座標を計算
-				NextFrameMarkerStack.Item item=stack.prePush();
-				item.oid=i;
-				prjmat.projectionConvert(trans,item.center);//[Optimaize!]
-				dist.ideal2Observ(item.center, item.center);
-				//方位決定のためにvertex0の計算[optimize! ここの計算関数すれば早くなる。]
-				final NyARDoublePoint3d offset=items[i].offset.vertex[0];
-				rot.setZXYAngle(items[i].angle);
-				rot.transformVertex(offset,pos3d);
-				prjmat.projectionConvert(trans.x+pos3d.x,trans.y+pos3d.y,trans.z+pos3d.z,item.vertex0);//[Optimaize!]
-				dist.ideal2Observ(item.vertex0, item.vertex0);
-				//探索範囲の計算
-				area.z=trans.z;
-				prjmat.projectionConvert(area,pos2d);//[Optimaize!]
-				dist.ideal2Observ(pos2d,pos2d);
-				item.dist=NyARMath.sqNorm(pos2d.x,pos2d.y,this._prjmat.m02,this._prjmat.m12)/2;
-			}
+		public final void init(INyARRgbRaster i_raster)
+		{
+			//現在位置のテーブルから、探索予定の一覧を作成。
+			this._ref_raster=i_raster;
+			this.table_operator.estimateMarkerPosition(this.table,this._nextframe);
 			return;
 		}
 		
 		
 		
-		/**
-		 * 2次元空間の指定点の一番近くにあるアイテムを探します。
-		 * @param i_table
-		 * @param i_pos
-		 * 探索点
-		 * @param i_limit_max
-		 * 探索範囲の最大値
-		 * @return
-		 */
-		public NextFrameMarkerStack.Item getNearItem(NyARDoublePoint2d i_pos)
-		{
-			NextFrameMarkerStack.Item[] items=this._nextframe.getArray();
-			
-			double d=Double.MAX_VALUE;
-			//エリア
-			int index=-1;
-			for(int i=this._nextframe.getLength()-1;i>=0;i--)
-			{
-				NyARDoublePoint2d center=items[i].center;
-				double nd=NyARMath.sqNorm(i_pos, center);
-				//有効範囲内？
-				if(nd>items[i].dist){
-					continue;
-				}
-				if(d>nd){
-					d=nd;
-					index=i;
-				}
-			}
-			return index==-1?null:items[index];
-		}		
+		
 	}
 	private NyARSquareContourDetector _square_detect;
 	protected INyARTransMat _transmat;
