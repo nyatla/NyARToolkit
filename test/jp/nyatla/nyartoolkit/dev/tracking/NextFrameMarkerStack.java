@@ -10,8 +10,8 @@ public class NextFrameMarkerStack extends NyARObjectStack<NextFrameMarkerStack.I
 	public class Item
 	{
 		public MarkerPositionTable.Item ref_item;
-		public NyARDoublePoint2d center=new NyARDoublePoint2d();
-		public NyARDoublePoint2d vertex0=new NyARDoublePoint2d();
+		public NyARDoublePoint2d   center=new NyARDoublePoint2d();
+		public NyARIntPoint2d[] vertex=NyARIntPoint2d.createArray(4);
 		/**
 		 * 探索距離の２乗値
 		 */

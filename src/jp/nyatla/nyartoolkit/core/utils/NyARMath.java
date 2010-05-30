@@ -23,6 +23,13 @@ public class NyARMath
 		y=i_p2y-i_p1y;
 		return x*x+y*y;
 	}
+	public static final int sqNorm(NyARIntPoint2d i_p1,NyARIntPoint2d i_p2)
+	{
+		int x,y;
+		x=i_p2.x-i_p1.x;
+		y=i_p2.y-i_p1.y;
+		return x*x+y*y;
+	}
 	/**
 	 * p2-p1ベクトルのsquare normを計算する。
 	 * @param i_p1

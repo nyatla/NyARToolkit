@@ -123,8 +123,8 @@ public class MarkerTracking_3dTrans
 			}else{
 				//このマーカは登録済。
 				MarkerPositionTable.Item item=near_item.ref_item;
-				//予想基準頂点に一番近い観測頂点インデクスを得る。
-				int dir=getNearVertexIndex(near_item.vertex0,near_item.center,vertex,new_center);
+				//頂点順位のマッチングをとる。
+				int dir=getNearVertexIndex(near_item.vertex,vertex,4);
 
 				//一致率の高い矩形があれば、方位を考慮して頂点情報を作成
 				NyARSquare sq=this.square;
@@ -143,36 +143,33 @@ public class MarkerTracking_3dTrans
 			}
 		}
 		/**
-		 * 基準頂点i_baseと新規矩形情報i_sqを比較して、i_sqの適切なdirection値を計算する。
-		 * (運動量で計算したら？)
+		 * 輪郭の頂点集合i_base_vertexとi_next_vertexを比較して、i_next_vertexから、輪郭線の開始点を検出する。
+		 * 検出アルゴリズムは、頂点の移動距離の最小値を得る方法
 		 * @param i_base_vertex
-		 * @param i_base_center
-		 * @param i_sq
-		 * @param i_sqcenter
+		 * 基準となる輪郭点集合
+		 * @param i_next_vertex
+		 * 比較する輪郭点集合
 		 * @return
+		 * i_base_vertex[0]に一致するi_next_vertex中の輪郭点インデクスを返す。
 		 */
-		private int getNearVertexIndex(NyARDoublePoint2d i_base_vertex,NyARDoublePoint2d i_base_center,NyARIntPoint2d[] i_sq,NyARDoublePoint2d i_sqcenter)
-		{
-			double bx,by;
-			//観察座標の中央位置からのベクトル
-			bx=i_base_vertex.x;
-			by=i_base_vertex.y;
 
-			//一番近い頂点を探す.
-			double d=NyARMath.sqNorm(bx,by,i_sq[3].x,i_sq[3].y);
-			int ret=3;
-			for(int i=2;i>=0;i--)
-			{
-				//予測座標の中央位置からのベクトルの長さを計算
-				double d2=NyARMath.sqNorm(bx,by,i_sq[i].x,i_sq[i].y);
-				if(d2<d){
-					d=d2;
-					ret=i;
+		private int getNearVertexIndex(NyARIntPoint2d[] i_base_vertex,NyARIntPoint2d[] i_next_vertex,int i_length)
+		{
+			int min_dist=Integer.MAX_VALUE;
+			int idx=-1;
+			for(int i=0;i<i_length;i++){
+				int dist=0;
+				for(int i2=0;i2<i_length;i2++){
+					dist+=NyARMath.sqNorm(i_base_vertex[i2],i_next_vertex[(i2+i)%4]);
+				}
+				if(min_dist>dist){
+					min_dist=dist;
+					idx=i;
 				}
 			}
-			return ret;
+			return idx;
 		}
-
+		
 		public final void init(INyARRgbRaster i_raster)
 		{
 			//現在位置のテーブルから、探索予定の一覧を作成。

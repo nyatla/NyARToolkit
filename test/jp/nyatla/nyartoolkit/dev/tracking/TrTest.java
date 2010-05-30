@@ -150,7 +150,9 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 						}
 						g2.setColor(Color.CYAN);
 						for(int i=0;i<fs.getLength();i++){
-							g2.drawRect((int)(fs.getItem(i).vertex0.x-1),(int)(fs.getItem(i).vertex0.y-1),2,2);
+							for(int i2=0;i2<1;i2++){
+								g2.drawRect((int)(fs.getItem(i).vertex[i2].x-1),(int)(fs.getItem(i).vertex[i2].y-1),2,2);
+							}
 						}
 						g.drawImage(sink, ins.left, ins.top, this);
 					}

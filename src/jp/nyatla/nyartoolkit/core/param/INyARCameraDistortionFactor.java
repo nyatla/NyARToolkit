@@ -31,22 +31,24 @@
 package jp.nyatla.nyartoolkit.core.param;
 
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
+import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 
 public interface INyARCameraDistortionFactor
 {
 	/**
-	 * int arParamIdeal2Observ( const double dist_factor[4], const double ix,const double iy,double *ox, double *oy ) 関数の代替関数
-	 * 
+	 * i_inにカメラ歪みを加えます。
 	 * @param i_in
 	 * @param o_out
 	 */
 	public void ideal2Observ(final NyARDoublePoint2d i_in, NyARDoublePoint2d o_out);
+	public void ideal2Observ(final NyARDoublePoint2d i_in, NyARIntPoint2d o_out);
 	/**
 	 * ideal2Observをまとめて実行します。
 	 * @param i_in
 	 * @param o_out
 	 */
 	public void ideal2ObservBatch(final NyARDoublePoint2d[] i_in, NyARDoublePoint2d[] o_out, int i_size);
+	public void ideal2ObservBatch(final NyARDoublePoint2d[] i_in, NyARIntPoint2d[] o_out, int i_size);
 	/**
 	 * int arParamObserv2Ideal( const double dist_factor[4], const double ox,const double oy,double *ix, double *iy );
 	 * 

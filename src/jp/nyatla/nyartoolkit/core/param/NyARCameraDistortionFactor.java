@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.param;
 
-import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
+import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
  * カメラの歪み成分を格納するクラスと、補正関数群
@@ -86,12 +86,10 @@ public class NyARCameraDistortionFactor implements INyARCameraDistortionFactor
 		//this.f3=this.f3;// newparam->dist_factor[3] =source->dist_factor[3];
 		return;
 	}
-	/**
-	 * int arParamIdeal2Observ( const double dist_factor[4], const double ix,const double iy,double *ox, double *oy ) 関数の代替関数
-	 * 
-	 * @param i_in
-	 * @param o_out
-	 */
+	/*********
+	 * override
+	 *********/
+	
 	public void ideal2Observ(final NyARDoublePoint2d i_in, NyARDoublePoint2d o_out)
 	{
 		final double x = (i_in.x - this._f0) * this._f3;
@@ -106,7 +104,22 @@ public class NyARCameraDistortionFactor implements INyARCameraDistortionFactor
 		}
 		return;
 	}
+	public void ideal2Observ(final NyARDoublePoint2d i_in, NyARIntPoint2d o_out)
+	{
+		final double x = (i_in.x - this._f0) * this._f3;
+		final double y = (i_in.y - this._f1) * this._f3;
+		if (x == 0.0 && y == 0.0) {
+			o_out.x = (int)(this._f0);
+			o_out.y = (int)(this._f1);
+		} else {
+			final double d = 1.0 - this._f2 / 100000000.0 * (x * x + y * y);
+			o_out.x = (int)(x * d + this._f0);
+			o_out.y = (int)(y * d + this._f1);
+		}
+		return;
+	}
 
+	
 	/**
 	 * ideal2Observをまとめて実行します。
 	 * @param i_in
@@ -133,7 +146,27 @@ public class NyARCameraDistortionFactor implements INyARCameraDistortionFactor
 		}
 		return;
 	}
-
+	public void ideal2ObservBatch(final NyARDoublePoint2d[] i_in, NyARIntPoint2d[] o_out, int i_size)
+	{
+		double x, y;
+		final double d0 = this._f0;
+		final double d1 = this._f1;
+		final double d3 = this._f3;
+		final double d2_w = this._f2 / 100000000.0;
+		for (int i = 0; i < i_size; i++) {
+			x = (i_in[i].x - d0) * d3;
+			y = (i_in[i].y - d1) * d3;
+			if (x == 0.0 && y == 0.0) {
+				o_out[i].x = (int)d0;
+				o_out[i].y = (int)d1;
+			} else {
+				final double d = 1.0 - d2_w * (x * x + y * y);
+				o_out[i].x = (int)(x * d + d0);
+				o_out[i].y = (int)(y * d + d1);
+			}
+		}
+		return;
+	}
 	/**
 	 * int arParamObserv2Ideal( const double dist_factor[4], const double ox,const double oy,double *ix, double *iy );
 	 * 

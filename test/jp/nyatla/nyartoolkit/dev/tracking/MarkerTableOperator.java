@@ -133,60 +133,6 @@ public class MarkerTableOperator
 		}
 		return index==-1?null:items[index];
 	}
-//	private NyARDoublePoint3d _area_temp=new NyARDoublePoint3d();
-	/**
-	 * 2次元空間の指定点の一番近くにあるアイテムを探します。
-	 * @param i_table
-	 * @param i_pos
-	 * 探索点
-	 * @param i_limit_max
-	 * 探索範囲の最大値
-	 * @return
-	 *//*
-	public MarkerPositionTable.Item selectNearItem2d(MarkerPositionTable i_table,NyARDoublePoint2d i_pos,double i_limit_max,int i_limit_min_life)
-	{
-		MarkerPositionTable.Item[] items=i_table.selectAllItems();
-		
-		double d=Double.MAX_VALUE;
-		NyARPerspectiveProjectionMatrix prjmat=this._prjmat;
-		NyARDoublePoint2d pos2d=this._pos2d_tmp;
-		//エリア
-		NyARDoublePoint3d area=this._area_temp;
-		area.x=area.y=i_limit_max;
-		int index=-1;
-		for(int i=items.length-1;i>=0;i--)
-		{
-			if(items[i].is_empty || items[i].life<i_limit_min_life){
-				continue;
-			}
-			NyARDoublePoint3d trans=items[i].trans;
-			//pos2dに中心座標を計算
-			prjmat.projectionConvert(trans,pos2d);
-			//２点間の距離^2を計算
-			double x,y;
-			x=pos2d.x-i_pos.x;
-			y=pos2d.y-i_pos.y;
-			double nd=(x*x)+(y*y);
-			
-			//有効距離を計算
-			area.z=trans.z;
-			prjmat.projectionConvert(area,pos2d);
-			x=pos2d.x-this._prjmat.m02;
-			y=pos2d.y-this._prjmat.m12;
-			double limit_d=x*x+y*y;
-			
-			//有効範囲内？
-			if(nd>limit_d){
-				continue;
-			}
-			if(d>nd){
-				d=nd;
-				index=i;
-			}
-		}
-		return index==-1?null:items[index];
-	}*/
-	
 	/**
 	 * テーブルの全行を1ティック進めます。
 	 * @param i_table
@@ -232,23 +178,27 @@ public class MarkerTableOperator
 		o_stack.clear();
 		for(int i=items.length-1;i>=0;i--)
 		{
-			if(items[i].is_empty){
+			MarkerPositionTable.Item current_pos=items[i];
+			if(current_pos.is_empty){
 				continue;
 			}
 			
-			final NyARDoublePoint3d trans=items[i].trans;
+			final NyARDoublePoint3d trans=current_pos.trans;
 			
 			//探索キーポイント(中心座標)のスクリーン座標を計算
 			NextFrameMarkerStack.Item item=o_stack.prePush();
 			prjmat.projectionConvert(trans,item.center);//[Optimaize!]
 			dist.ideal2Observ(item.center, item.center);
-
-			//方位決定のためにvertex0の計算[optimize! ここの計算関数すれば早くなる。]
-			final NyARDoublePoint3d offset=items[i].offset.vertex[0];
-			rot.setZXYAngle(items[i].angle);
-			rot.transformVertex(offset,pos3d);
-			prjmat.projectionConvert(trans.x+pos3d.x,trans.y+pos3d.y,trans.z+pos3d.z,item.vertex0);//[Optimaize!]
-			dist.ideal2Observ(item.vertex0, item.vertex0);
+			
+			//4頂点の予測位置を計算しておく。
+			for(int i2=0;i2<4;i2++){
+				//方位決定のためにvertex0の計算[optimize! ここの計算関数すれば早くなる。]
+				final NyARDoublePoint3d offset=current_pos.offset.vertex[i2];
+				rot.setZXYAngle(current_pos.angle);
+				rot.transformVertex(offset,pos3d);
+				prjmat.projectionConvert(trans.x+pos3d.x,trans.y+pos3d.y,trans.z+pos3d.z,pos2d);//[Optimaize!]
+				dist.ideal2Observ(pos2d, item.vertex[i2]);
+			}
 
 			//探索範囲の計算(マーカをそのままz軸上で平行移動して、中心点からの頂点距離/2を探索距離の最大値とする。)
 			area.z=trans.z;
@@ -256,7 +206,7 @@ public class MarkerTableOperator
 			dist.ideal2Observ(pos2d,pos2d);
 			item.sq_norm=NyARMath.sqNorm(pos2d.x,pos2d.y,this._ref_prjmat.m02,this._ref_prjmat.m12)/2;
 			//
-			item.ref_item=items[i];
+			item.ref_item=current_pos;
 		}
 		return;
 	}	
