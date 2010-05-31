@@ -142,6 +142,7 @@ public class NyARCustomSingleDetectMarker
 	protected INyARRasterFilter_Rgb2Bin _tobin_filter;
 	private DetectSquareCB _detect_cb;
 	private NyARRectOffset _offset; 
+	private double _last_error;
 
 
 	protected NyARCustomSingleDetectMarker()
@@ -216,9 +217,9 @@ public class NyARCustomSingleDetectMarker
 	{
 		// 一番一致したマーカーの位置とかその辺を計算
 		if (this._is_continue) {
-			this._transmat.transMatContinue(this._detect_cb.square,this._offset, o_result);
+			this._last_error=this._transmat.transMatContinue(this._detect_cb.square,this._offset,o_result,this._last_error, o_result);
 		} else {
-			this._transmat.transMat(this._detect_cb.square,this._offset, o_result);
+			this._last_error=this._transmat.transMat(this._detect_cb.square,this._offset, o_result);
 		}
 		return;
 	}

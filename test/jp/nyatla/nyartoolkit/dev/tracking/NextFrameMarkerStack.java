@@ -16,6 +16,7 @@ public class NextFrameMarkerStack extends NyARObjectStack<NextFrameMarkerStack.I
 		 * 探索距離の２乗値
 		 */
 		public double sq_norm;
+		public int min_dist;
 		
 		
 	}
@@ -55,6 +56,8 @@ public class NextFrameMarkerStack extends NyARObjectStack<NextFrameMarkerStack.I
 			if(nd>items[i].sq_norm){
 				continue;
 			}
+			//現在の最小エラーレートよりも小さい？
+			if(nd>items[i].min_dist)
 			if(d>nd){
 				d=nd;
 				index=i;

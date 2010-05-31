@@ -31,6 +31,7 @@
 package jp.nyatla.nyartoolkit.core.transmat;
 
 
+import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.NyARRotMatrix;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 
@@ -38,13 +39,14 @@ import jp.nyatla.nyartoolkit.core.types.matrix.*;
  * NyARTransMat戻り値専用のNyARMat
  * 
  */
-public class NyARTransMatResult extends NyARDoubleMatrix34
+public class NyARTransMatResult extends NyARDoubleMatrix44
 {
-	/**
-	 * エラーレート。この値はINyARTransMatの派生クラスが使います。
-	 */
-	public double error;	
 	public boolean has_value = false;
+	public NyARTransMatResult()
+	{
+		this.m30=this.m31=this.m32=0;
+		this.m33=1.0;
+	}
 	/**
 	 * この関数は、0-PIの間で値を返します。
 	 * @param o_out
@@ -66,6 +68,13 @@ public class NyARTransMatResult extends NyARDoubleMatrix34
 			o_out.y = Math.atan2(-this.m20, this.m22);
 		}
 	}
+	/**
+	 * 3行目は無視します。
+	 * @param i_x
+	 * @param i_y
+	 * @param i_z
+	 * @param o_out
+	 */
 	public final void transformVertex(double i_x,double i_y,double i_z,NyARDoublePoint3d o_out)
 	{
 		o_out.x=this.m00*i_x+this.m01*i_y+this.m02*i_z+this.m03;
@@ -77,4 +86,26 @@ public class NyARTransMatResult extends NyARDoubleMatrix34
 	{
 		transformVertex(i_in.x,i_in.y,i_in.z,o_out);
 	}
+	public void setValue(NyARDoubleMatrix33 i_rot, NyARDoublePoint3d i_trans)
+	{
+		this.m00=i_rot.m00;
+		this.m01=i_rot.m01;
+		this.m02=i_rot.m02;
+		this.m03=i_trans.x;
+
+		this.m10 =i_rot.m10;
+		this.m11 =i_rot.m11;
+		this.m12 =i_rot.m12;
+		this.m13 =i_trans.y;
+
+		this.m20 = i_rot.m20;
+		this.m21 = i_rot.m21;
+		this.m22 = i_rot.m22;
+		this.m23 = i_trans.z;
+
+		this.m30=this.m31=this.m32=0;
+		this.m33=1.0;		
+		this.has_value = true;
+		return;
+	}	
 }

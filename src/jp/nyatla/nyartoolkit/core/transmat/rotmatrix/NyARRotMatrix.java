@@ -115,6 +115,10 @@ public class NyARRotMatrix extends NyARDoubleMatrix33
 		this.m22 = w22/w;
 		return;
 	}
+	public final void initRotByAngle(NyARDoublePoint3d i_angle)
+	{
+		this.setZXYAngle(i_angle);
+	}	
 	/**
 	 * i_in_pointを変換行列で座標変換する。
 	 * @param i_in_point

@@ -40,6 +40,6 @@ import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
  */
 public interface INyARTransMat
 {
-	public void transMat(NyARSquare i_square,NyARRectOffset i_offset, NyARTransMatResult o_result) throws NyARException;
-	public void transMatContinue(NyARSquare i_square,NyARRectOffset i_offset, NyARTransMatResult io_result_conv) throws NyARException;
+	public double transMat(NyARSquare i_square,NyARRectOffset i_offset, NyARTransMatResult o_result) throws NyARException;
+	public double transMatContinue(NyARSquare i_square,NyARRectOffset i_offset,NyARTransMatResult i_prev_result,double i_prev_error_rate,NyARTransMatResult o_result) throws NyARException;
 }

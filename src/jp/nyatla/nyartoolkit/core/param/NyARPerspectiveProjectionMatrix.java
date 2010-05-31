@@ -40,8 +40,13 @@ import jp.nyatla.nyartoolkit.core.types.*;
  * 7ページを見るといいよ。
  *
  */
-final public class NyARPerspectiveProjectionMatrix extends NyARDoubleMatrix34
+final public class NyARPerspectiveProjectionMatrix extends NyARDoubleMatrix44
 {
+	public NyARPerspectiveProjectionMatrix()
+	{
+		this.m30=this.m31=this.m32=0;
+		this.m33=1;
+	}
 	/*
 	 * static double dot( double a1, double a2, double a3,double b1, double b2,double b3 )
 	 */

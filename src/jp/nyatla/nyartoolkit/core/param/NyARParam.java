@@ -123,7 +123,7 @@ public class NyARParam
 		try {
 			byte[] buf = new byte[SIZE_OF_PARAM_SET];
 			i_stream.read(buf);
-			double[] tmp=new double[12];
+			double[] tmp=new double[16];
 
 			// バッファを加工
 			ByteBuffer bb = ByteBuffer.wrap(buf);
@@ -134,6 +134,9 @@ public class NyARParam
 			for(int i=0;i<12;i++){
 				tmp[i]=bb.getDouble();
 			}
+			//パディング
+			tmp[12]=tmp[13]=tmp[14]=0;
+			tmp[15]=1;
 			//Projectionオブジェクトにセット
 			this._projection_matrix.setValue(tmp);
 			//double値を4個読み込む

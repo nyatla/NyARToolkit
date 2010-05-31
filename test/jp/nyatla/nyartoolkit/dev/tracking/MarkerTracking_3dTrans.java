@@ -6,15 +6,12 @@ import jp.nyatla.nyartoolkit.core.squaredetect.NyARCoord2Linear;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.core.match.NyARMatchPattDeviationColorData;
 import jp.nyatla.nyartoolkit.core.match.NyARMatchPattResult;
 import jp.nyatla.nyartoolkit.core.match.NyARMatchPatt_Color_WITHOUT_PCA;
-import jp.nyatla.nyartoolkit.core.param.INyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
-import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
 import jp.nyatla.nyartoolkit.core.pickup.INyARColorPatt;
 import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
@@ -84,7 +81,8 @@ public class MarkerTracking_3dTrans
 			new_center.x=(vertex[0].x+vertex[1].x+vertex[2].x+vertex[3].x)/4;
 			new_center.y=(vertex[0].y+vertex[1].y+vertex[2].y+vertex[3].y)/4;
 			//近所のマーカを探す。[Optimize:重複計算あり]
-			NextFrameMarkerStack.Item near_item=this._nextframe.getNearItem(new_center);//[Optimize]見つけた矩形はリストから削除すべきだよね。
+			Double d=new Double(0);
+			NextFrameMarkerStack.Item near_item=this._nextframe.getNearItem(new_center,d);//[Optimize]見つけた矩形はリストから削除すべきだよね。
 			if(near_item==null)
 			{
 				//このマーカは未登録

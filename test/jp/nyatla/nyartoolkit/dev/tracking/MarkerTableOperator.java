@@ -16,7 +16,7 @@ import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 public class MarkerTableOperator
 {
 	NyARTransMatResult _tmp_trans_result;
-	INyARTransMat _transmat;
+	NyARTransMat _transmat;
 	private int _sirial;
 	private NyARPerspectiveProjectionMatrix _ref_prjmat;
 	private INyARCameraDistortionFactor _ref_dist;
@@ -31,6 +31,7 @@ public class MarkerTableOperator
 		this._sirial=0;
 		return;
 	}
+
 	/**
 	 *	o_itemのアイテムを更新します。
 	 * @param i_pkindex
@@ -38,35 +39,37 @@ public class MarkerTableOperator
 	 */
 	public void updateMarker(MarkerPositionTable.Item io_item,NyARSquare i_square) throws NyARException
 	{
-		NyARTransMatResult trans_result=this._tmp_trans_result;
-		this._transmat.transMat(i_square,io_item.offset, trans_result);
-		trans_result.getZXYAngle(io_item.angle);
-		double x,y,z;
-		x=trans_result.m03;
-		y=trans_result.m13;
-		z=trans_result.m23;
-		//速度を計算
-/*		double vx,vy,vz;
-		vx=x-io_item.trans.x;
-		vy=y-io_item.trans.y;
-		vz=z-io_item.trans.z;
-		//現在の加速度を計算して保存
-		io_item.acceleration.x=vx-io_item.velocity.x;
-		io_item.acceleration.y=vy-io_item.velocity.y;
-		io_item.acceleration.z=vz-io_item.velocity.z;
-		//現在の速度を計算して保存
-		io_item.velocity.x=vx;
-		io_item.velocity.y=vy;
-		io_item.velocity.z=vz;		*/
-		//現在の位置を計算して保存
-		io_item.trans.x=x;
-		io_item.trans.y=y;
-		io_item.trans.z=z;
+		NyARDoublePoint3d trans=io_item.trans;
+		NyARDoublePoint3d angle=io_item.angle;
+		
+		double tx,ty,tz,ax,ay,az;
+		//前フレームの値を保管する。
+		tx=trans.x;
+		ty=trans.y;
+		tz=trans.z;
+		ax=angle.x;
+		ay=angle.y;
+		az=angle.z;
+		
+		//現在の位置と角度を取得
+		this._transmat.transMat(i_square, io_item.offset,angle,trans);
+		
+		//新しい位置を計算 P(t)=P(t-1)+(V(t-1)+V(t))/2
+//		trans.x=tx+((trans.x-tx)+io_item.trans_v.x)/2;
+//		trans.y=ty+((trans.y-ty)+io_item.trans_v.y)/2;
+//		trans.z=tz+((trans.z-tz)+io_item.trans_v.z)/2;
+/*		angle.x=tx+((angle.x-ax)+io_item.angle_v.x)/2;
+		angle.y=tx+((angle.y-ay)+io_item.angle_v.y)/2;
+		angle.z=tx+((angle.z-az)+io_item.angle_v.z)/2;
+*/		//新しい速度を計算
+//		io_item.trans_v.x=trans.x-tx;
+//		io_item.trans_v.y=trans.y-ty;
+//		io_item.trans_v.z=trans.z-tz;
+/*		io_item.angle_v.x=angle.x-ax;
+		io_item.angle_v.y=angle.x-ay;
+		io_item.angle_v.z=angle.x-az;
+		*/
 		io_item.life=0;
-//		System.out.println("---");
-//		System.out.println(io_item.acceleration.x+","+io_item.acceleration.y+","+io_item.acceleration.z);
-//		System.out.println(io_item.velocity.x+","+io_item.velocity.y+","+io_item.velocity.z);
-//		System.out.println(io_item.trans.x+","+io_item.trans.y+","+io_item.trans.z);
 		return;
 	}
 	/**
@@ -83,15 +86,11 @@ public class MarkerTableOperator
 		if(item==null){
 			return false;
 		}
-		NyARTransMatResult trans_result=this._tmp_trans_result;
-		item.offset.setSquare(i_width);
-		this._transmat.transMat(i_square,item.offset, trans_result);
-		trans_result.getZXYAngle(item.angle);
+
+		//現在の位置と角度を取得
+		this._transmat.transMat(i_square,item.offset,item.angle,item.trans);
 		item.is_empty=false;
 		//現在の行列を保存
-		item.trans.x=trans_result.m03;
-		item.trans.y=trans_result.m13;
-		item.trans.z=trans_result.m23;
 		item.offset.setSquare(i_width);
 		item.life=0;
 		item.sirial=this._sirial;
@@ -189,6 +188,7 @@ public class MarkerTableOperator
 			NextFrameMarkerStack.Item item=o_stack.prePush();
 			prjmat.projectionConvert(trans,item.center);//[Optimaize!]
 			dist.ideal2Observ(item.center, item.center);
+			item.min_dist=Integer.MAX_VALUE;
 			
 			//4頂点の予測位置を計算しておく。
 			for(int i2=0;i2<4;i2++){
@@ -196,7 +196,11 @@ public class MarkerTableOperator
 				final NyARDoublePoint3d offset=current_pos.offset.vertex[i2];
 				rot.setZXYAngle(current_pos.angle);
 				rot.transformVertex(offset,pos3d);
-				prjmat.projectionConvert(trans.x+pos3d.x,trans.y+pos3d.y,trans.z+pos3d.z,pos2d);//[Optimaize!]
+				//平行移動量+速度
+				pos3d.x+=trans.x;//+current_pos.trans_v.x;
+				pos3d.y+=trans.y;//+current_pos.trans_v.y;
+				pos3d.z+=trans.z;//+current_pos.trans_v.z;
+				prjmat.projectionConvert(pos3d,pos2d);//[Optimaize!]
 				dist.ideal2Observ(pos2d, item.vertex[i2]);
 			}
 
@@ -209,6 +213,6 @@ public class MarkerTableOperator
 			item.ref_item=current_pos;
 		}
 		return;
-	}	
+	}
 	
 }
