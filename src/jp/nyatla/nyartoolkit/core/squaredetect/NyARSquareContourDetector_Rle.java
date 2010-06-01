@@ -52,8 +52,7 @@ public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 	private final NyARCoord2SquareVertexIndexes _coord2vertex=new NyARCoord2SquareVertexIndexes();
 	
 	private final int _max_coord;
-	private final int[] _xcoord;
-	private final int[] _ycoord;
+	private final NyARIntPoint2d[] _coord;
 	/**
 	 * 最大i_squre_max個のマーカーを検出するクラスを作成する。
 	 * 
@@ -74,8 +73,7 @@ public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 
 		// 輪郭バッファ
 		this._max_coord = number_of_coord;
-		this._xcoord = new int[number_of_coord];
-		this._ycoord = new int[number_of_coord];
+		this._coord = NyARIntPoint2d.createArray(number_of_coord);
 		return;
 	}
 
@@ -98,8 +96,7 @@ public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 
 		final int xsize = this._width;
 		final int ysize = this._height;
-		int[] xcoord = this._xcoord;
-		int[] ycoord = this._ycoord;
+		NyARIntPoint2d[] coord = this._coord;
 		final int coord_max = this._max_coord;
 		final int[] mkvertex =this.__detectMarker_mkvertex;
 
@@ -125,18 +122,18 @@ public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 			}
 			
 			//輪郭を取得
-			int coord_num = _cpickup.getContour(i_raster,label_pt.entry_x,label_pt.clip_t, coord_max, xcoord, ycoord);
+			int coord_num = _cpickup.getContour(i_raster,label_pt.entry_x,label_pt.clip_t, coord_max,coord);
 			if (coord_num == coord_max) {
 				// 輪郭が大きすぎる。
 				continue;
 			}
 			//輪郭線をチェックして、矩形かどうかを判定。矩形ならばmkvertexに取得
-			if (!this._coord2vertex.getVertexIndexes(xcoord, ycoord,coord_num,label_area, mkvertex)) {
+			if (!this._coord2vertex.getVertexIndexes(coord,coord_num,label_area, mkvertex)) {
 				// 頂点の取得が出来なかった
 				continue;
 			}
 			//矩形を発見したことをコールバック関数で通知
-			i_callback.onSquareDetect(this,xcoord,ycoord,coord_num,mkvertex);
+			i_callback.onSquareDetect(this,coord,coord_num,mkvertex);
 
 			// 検出済の矩形の属したラベルを重なりチェックに追加する。
 			overlap.push(label_pt);

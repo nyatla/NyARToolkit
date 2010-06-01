@@ -88,7 +88,7 @@ public class RawFileTest
 
 		// マーカーを検出
 		Date d2 = new Date();
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < 10000; i++) {
 			// 変換行列を取得
 			ar.detectMarkerLite(ra, 100);
 			ar.getTransmationMatrix(result_mat);

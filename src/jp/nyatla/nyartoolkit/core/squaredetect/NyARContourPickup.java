@@ -32,7 +32,7 @@ package jp.nyatla.nyartoolkit.core.squaredetect;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
+import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.*;
 
 /**
@@ -45,10 +45,10 @@ public class NyARContourPickup
 	//                                           0  1  2  3  4  5  6  7   0  1  2  3  4  5  6
 	protected final static int[] _getContour_xdir = { 0, 1, 1, 1, 0,-1,-1,-1 , 0, 1, 1, 1, 0,-1,-1};
 	protected final static int[] _getContour_ydir = {-1,-1, 0, 1, 1, 1, 0,-1 ,-1,-1, 0, 1, 1, 1, 0};
-	public int getContour(NyARBinRaster i_raster,int i_entry_x,int i_entry_y,int i_array_size,int[] o_coord_x,int[] o_coord_y) throws NyARException
+	public int getContour(NyARBinRaster i_raster,int i_entry_x,int i_entry_y,int i_array_size,NyARIntPoint2d[] o_coord) throws NyARException
 	{
 		assert(i_raster.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
-		return impl_getContour(i_raster,0,i_entry_x,i_entry_y,i_array_size,o_coord_x,o_coord_y);
+		return impl_getContour(i_raster,0,i_entry_x,i_entry_y,i_array_size,o_coord);
 	}
 	/**
 	 * 
@@ -64,10 +64,10 @@ public class NyARContourPickup
 	 * @return
 	 * @throws NyARException
 	 */
-	public int getContour(NyARGrayscaleRaster i_raster,int i_th,int i_entry_x,int i_entry_y,int i_array_size,int[] o_coord_x,int[] o_coord_y) throws NyARException
+	public int getContour(NyARGrayscaleRaster i_raster,int i_th,int i_entry_x,int i_entry_y,int i_array_size,NyARIntPoint2d[] o_coord) throws NyARException
 	{
 		assert(i_raster.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
-		return impl_getContour(i_raster,i_th,i_entry_x,i_entry_y,i_array_size,o_coord_x,o_coord_y);
+		return impl_getContour(i_raster,i_th,i_entry_x,i_entry_y,i_array_size,o_coord);
 	}
 
 	/**
@@ -84,7 +84,7 @@ public class NyARContourPickup
 	 * 輪郭線の長さを返します。
 	 * @throws NyARException
 	 */
-	private int impl_getContour(INyARRaster i_raster,int i_th,int i_entry_x,int i_entry_y,int i_array_size,int[] o_coord_x,int[] o_coord_y) throws NyARException
+	private int impl_getContour(INyARRaster i_raster,int i_th,int i_entry_x,int i_entry_y,int i_array_size,NyARIntPoint2d[] o_coord) throws NyARException
 	{
 		final int[] xdir = _getContour_xdir;// static int xdir[8] = { 0, 1, 1, 1, 0,-1,-1,-1};
 		final int[] ydir = _getContour_ydir;// static int ydir[8] = {-1,-1, 0, 1, 1, 1, 0,-1};
@@ -96,8 +96,8 @@ public class NyARContourPickup
 
 
 		int coord_num = 1;
-		o_coord_x[0] = i_entry_x;
-		o_coord_y[0] = i_entry_y;
+		o_coord[0].x = i_entry_x;
+		o_coord[0].y = i_entry_y;
 		int dir = 5;
 
 		int c = i_entry_x;
@@ -176,8 +176,8 @@ public class NyARContourPickup
 			// xcoordとycoordをc,rにも保存
 			c = c + xdir[dir];
 			r = r + ydir[dir];
-			o_coord_x[coord_num] = c;
-			o_coord_y[coord_num] = r;
+			o_coord[coord_num].x = c;
+			o_coord[coord_num].y = r;
 			// 終了条件判定
 			if (c == i_entry_x && r == i_entry_y){
 				coord_num++;
@@ -191,7 +191,7 @@ public class NyARContourPickup
 		}
 		return coord_num;
 	}
-	public int getContour(NyARLabelingImage i_raster,int i_entry_x,int i_entry_y,int i_array_size,int[] o_coord_x,int[] o_coord_y) throws NyARException
+	public int getContour(NyARLabelingImage i_raster,int i_entry_x,int i_entry_y,int i_array_size,NyARIntPoint2d[] o_coord) throws NyARException
 	{	
 		final int[] xdir = _getContour_xdir;// static int xdir[8] = { 0, 1, 1, 1, 0,-1,-1,-1};
 		final int[] ydir = _getContour_ydir;// static int ydir[8] = {-1,-1, 0, 1, 1, 1, 0,-1};
@@ -204,12 +204,12 @@ public class NyARContourPickup
 		int sy=i_entry_y;
 
 		int coord_num = 1;
-		o_coord_x[0] = sx;
-		o_coord_y[0] = sy;
+		o_coord[0].x = sx;
+		o_coord[0].y = sy;
 		int dir = 5;
 
-		int c = o_coord_x[0];
-		int r = o_coord_y[0];
+		int c = o_coord[0].x;
+		int r = o_coord[0].y;
 		for (;;) {
 			dir = (dir + 5) % 8;//dirの正規化
 			//ここは頑張ればもっと最適化できると思うよ。
@@ -276,8 +276,8 @@ public class NyARContourPickup
 			// xcoordとycoordをc,rにも保存
 			c = c + xdir[dir];
 			r = r + ydir[dir];
-			o_coord_x[coord_num] = c;
-			o_coord_y[coord_num] = r;
+			o_coord[coord_num].x = c;
+			o_coord[coord_num].y = r;
 			// 終了条件判定
 			if (c == sx && r == sy){
 				coord_num++;

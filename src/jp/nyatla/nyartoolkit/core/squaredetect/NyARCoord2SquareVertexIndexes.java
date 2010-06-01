@@ -30,6 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.squaredetect;
 
+import jp.nyatla.nyartoolkit.core.types.*;
 /**
  * 座標店集合（輪郭線）から、四角系の頂点候補点を計算します。
  *
@@ -52,21 +53,21 @@ public class NyARCoord2SquareVertexIndexes
 	 * @param o_vertex
 	 * @return
 	 */
-	public boolean getVertexIndexes(int[] i_x_coord, int[] i_y_coord, int i_coord_num, int i_area, int[] o_vertex)
+	public boolean getVertexIndexes(NyARIntPoint2d[] i_coord, int i_coord_num, int i_area, int[] o_vertex)
 	{
 		final NyARVertexCounter wv1 = this.__getSquareVertex_wv1;
 		final NyARVertexCounter wv2 = this.__getSquareVertex_wv2;
-		int vertex1_index=getFarPoint(i_x_coord,i_y_coord,i_coord_num,0);
+		int vertex1_index=getFarPoint(i_coord,i_coord_num,0);
 		int prev_vertex_index=(vertex1_index+i_coord_num)%i_coord_num;
-		int v1=getFarPoint(i_x_coord,i_y_coord,i_coord_num,vertex1_index);
+		int v1=getFarPoint(i_coord,i_coord_num,vertex1_index);
 		final double thresh = (i_area / 0.75) * 0.01 * VERTEX_FACTOR;
 
 		o_vertex[0] = vertex1_index;
 
-		if (!wv1.getVertex(i_x_coord, i_y_coord,i_coord_num, vertex1_index, v1, thresh)) {
+		if (!wv1.getVertex(i_coord,i_coord_num, vertex1_index, v1, thresh)) {
 			return false;
 		}
-		if (!wv2.getVertex(i_x_coord, i_y_coord,i_coord_num, v1,prev_vertex_index, thresh)) {
+		if (!wv2.getVertex(i_coord,i_coord_num, v1,prev_vertex_index, thresh)) {
 			return false;
 		}
 
@@ -82,10 +83,10 @@ public class NyARCoord2SquareVertexIndexes
 			}else{
 				v2 = ((v1+i_coord_num-vertex1_index)/2+vertex1_index)%i_coord_num;
 			}
-			if (!wv1.getVertex(i_x_coord, i_y_coord,i_coord_num, vertex1_index, v2, thresh)) {
+			if (!wv1.getVertex(i_coord,i_coord_num, vertex1_index, v2, thresh)) {
 				return false;
 			}
-			if (!wv2.getVertex(i_x_coord, i_y_coord,i_coord_num, v2, v1, thresh)) {
+			if (!wv2.getVertex(i_coord,i_coord_num, v2, v1, thresh)) {
 				return false;
 			}
 			if (wv1.number_of_vertex == 1 && wv2.number_of_vertex == 1) {
@@ -103,10 +104,10 @@ public class NyARCoord2SquareVertexIndexes
 				v2 = ((v1+i_coord_num+prev_vertex_index)/2)%i_coord_num;
 				
 			}
-			if (!wv1.getVertex(i_x_coord, i_y_coord,i_coord_num, v1, v2, thresh)) {
+			if (!wv1.getVertex(i_coord,i_coord_num, v1, v2, thresh)) {
 				return false;
 			}
-			if (!wv2.getVertex(i_x_coord, i_y_coord,i_coord_num, v2, prev_vertex_index, thresh)) {
+			if (!wv2.getVertex(i_coord,i_coord_num, v2, prev_vertex_index, thresh)) {
 				return false;
 			}
 			if (wv1.number_of_vertex == 1 && wv2.number_of_vertex == 1) {
@@ -129,17 +130,17 @@ public class NyARCoord2SquareVertexIndexes
 	 * @param i_coord_num
 	 * @return
 	 */
-	private static int getFarPoint(int[] i_coord_x, int[] i_coord_y,int i_coord_num,int i_point)
+	private static int getFarPoint(NyARIntPoint2d[] i_coord,int i_coord_num,int i_point)
 	{
 		//
-		final int sx = i_coord_x[i_point];
-		final int sy = i_coord_y[i_point];
+		final int sx = i_coord[i_point].x;
+		final int sy = i_coord[i_point].y;
 		int d = 0;
 		int w, x, y;
 		int ret = 0;
 		for (int i = i_point+1; i < i_coord_num; i++) {
-			x = i_coord_x[i] - sx;
-			y = i_coord_y[i] - sy;
+			x = i_coord[i].x - sx;
+			y = i_coord[i].y - sy;
 			w = x * x + y * y;
 			if (w > d) {
 				d = w;
@@ -147,8 +148,8 @@ public class NyARCoord2SquareVertexIndexes
 			}
 		}
 		for (int i = 0; i < i_point; i++) {
-			x = i_coord_x[i] - sx;
-			y = i_coord_y[i] - sy;
+			x = i_coord[i].x - sx;
+			y = i_coord[i].y - sy;
 			w = x * x + y * y;
 			if (w > d) {
 				d = w;
@@ -174,16 +175,14 @@ final class NyARVertexCounter
 
 	private double thresh;
 
-	private int[] x_coord;
+	private NyARIntPoint2d[] _coord;
 
-	private int[] y_coord;
 
-	public boolean getVertex(int[] i_x_coord, int[] i_y_coord,int i_coord_len,int st, int ed, double i_thresh)
+	public boolean getVertex(NyARIntPoint2d[] i_coord,int i_coord_len,int st, int ed, double i_thresh)
 	{
 		this.number_of_vertex = 0;
 		this.thresh = i_thresh;
-		this.x_coord = i_x_coord;
-		this.y_coord = i_y_coord;
+		this._coord = i_coord;
 		return get_vertex(st, ed,i_coord_len);
 	}
 
@@ -202,16 +201,15 @@ final class NyARVertexCounter
 		//メモ:座標値は65536を超えなければint32で扱って大丈夫なので変更。
 		//dmaxは4乗なのでやるとしてもint64じゃないとマズイ
 		int v1 = 0;
-		final int[] lx_coord = this.x_coord;
-		final int[] ly_coord = this.y_coord;
-		final int a = ly_coord[ed] - ly_coord[st];
-		final int b = lx_coord[st] - lx_coord[ed];
-		final int c = lx_coord[ed] * ly_coord[st] - ly_coord[ed] * lx_coord[st];
+		final NyARIntPoint2d[] coord = this._coord;
+		final int a = coord[ed].y - coord[st].y;
+		final int b = coord[st].x - coord[ed].x;
+		final int c = coord[ed].x * coord[st].y - coord[ed].y * coord[st].x;
 		double dmax = 0;
 		if(st<ed){
 			//stとedが1区間
 			for (int i = st + 1; i < ed; i++) {
-				final double d = a * lx_coord[i] + b * ly_coord[i] + c;
+				final double d = a * coord[i].x + b * coord[i].y + c;
 				if (d * d > dmax) {
 					dmax = d * d;
 					v1 = i;
@@ -220,14 +218,14 @@ final class NyARVertexCounter
 		}else{
 			//stとedが2区間
 			for (int i = st + 1; i < i_coord_len; i++) {
-				final double d = a * lx_coord[i] + b * ly_coord[i] + c;
+				final double d = a * coord[i].x + b * coord[i].y + c;
 				if (d * d > dmax) {
 					dmax = d * d;
 					v1 = i;
 				}
 			}
 			for (int i = 0; i < ed; i++) {
-				final double d = a * lx_coord[i] + b * ly_coord[i] + c;
+				final double d = a * coord[i].x + b * coord[i].y + c;
 				if (d * d > dmax) {
 					dmax = d * d;
 					v1 = i;

@@ -83,7 +83,7 @@ public class NyARCoord2Linear
 	 * @return
 	 * @throws NyARException
 	 */
-	public boolean coord2Line(int i_st,int i_ed,int[] i_xcoord, int[] i_ycoord,int i_cood_num, NyARLinear o_line) throws NyARException
+	public boolean coord2Line(int i_st,int i_ed,NyARIntPoint2d[] i_coord,int i_cood_num, NyARLinear o_line) throws NyARException
 	{
 		//頂点を取得
 		int n,st,ed;
@@ -107,12 +107,12 @@ public class NyARCoord2Linear
 		if(st<=ed){
 			//探索区間は1区間
 			n = ed - st + 1;
-			this._dist_factor.observ2IdealBatch(i_xcoord, i_ycoord, st, n,this._xpos,this._ypos,0);
+			this._dist_factor.observ2IdealBatch(i_coord, st, n,this._xpos,this._ypos,0);
 		}else{
 			//探索区間は2区間
 			n=ed+1+i_cood_num-st;
-			this._dist_factor.observ2IdealBatch(i_xcoord, i_ycoord, st,i_cood_num-st,this._xpos,this._ypos,0);
-			this._dist_factor.observ2IdealBatch(i_xcoord, i_ycoord, 0,ed+1,this._xpos,this._ypos,i_cood_num-st);
+			this._dist_factor.observ2IdealBatch(i_coord, st,i_cood_num-st,this._xpos,this._ypos,0);
+			this._dist_factor.observ2IdealBatch(i_coord, 0,ed+1,this._xpos,this._ypos,i_cood_num-st);
 		}
 		//要素数の確認
 		if (n < 2) {

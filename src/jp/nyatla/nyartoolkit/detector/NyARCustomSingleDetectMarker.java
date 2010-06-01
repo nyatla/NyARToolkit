@@ -79,24 +79,21 @@ public class NyARCustomSingleDetectMarker
 			this._match_patt=new NyARMatchPatt_Color_WITHOUT_PCA(i_ref_code);
 			return;
 		}
-		private NyARIntPoint2d[] __tmp_vertex=NyARIntPoint2d.createArray(4);
+		private NyARIntPoint2d[] __ref_vertex=new NyARIntPoint2d[4];
+
 		/**
 		 * 矩形が見付かるたびに呼び出されます。
 		 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
 		 */
-		public void onSquareDetect(NyARSquareContourDetector i_sender,int[] i_coordx,int[] i_coordy,int i_coor_num,int[] i_vertex_index) throws NyARException
+		public void onSquareDetect(NyARSquareContourDetector i_sender,NyARIntPoint2d[] i_coord,int i_coor_num,int[] i_vertex_index) throws NyARException
 		{
 			NyARMatchPattResult mr=this.__detectMarkerLite_mr;
 			//輪郭座標から頂点リストに変換
-			NyARIntPoint2d[] vertex=this.__tmp_vertex;
-			vertex[0].x=i_coordx[i_vertex_index[0]];
-			vertex[0].y=i_coordy[i_vertex_index[0]];
-			vertex[1].x=i_coordx[i_vertex_index[1]];
-			vertex[1].y=i_coordy[i_vertex_index[1]];
-			vertex[2].x=i_coordx[i_vertex_index[2]];
-			vertex[2].y=i_coordy[i_vertex_index[2]];
-			vertex[3].x=i_coordx[i_vertex_index[3]];
-			vertex[3].y=i_coordy[i_vertex_index[3]];
+			NyARIntPoint2d[] vertex=this.__ref_vertex;	//C言語ならポインタ扱いで実装
+			vertex[0]=i_coord[i_vertex_index[0]];
+			vertex[1]=i_coord[i_vertex_index[1]];
+			vertex[2]=i_coord[i_vertex_index[2]];
+			vertex[3]=i_coord[i_vertex_index[3]];
 		
 			//画像を取得
 			if (!this._inst_patt.pickFromRaster(this._ref_raster,vertex)){
@@ -117,7 +114,7 @@ public class NyARCustomSingleDetectMarker
 			//directionを考慮して、squareを更新する。
 			for(int i=0;i<4;i++){
 				int idx=(i+4 - mr.direction) % 4;
-				this._coordline.coord2Line(i_vertex_index[idx],i_vertex_index[(idx+1)%4],i_coordx,i_coordy,i_coor_num,sq.line[i]);
+				this._coordline.coord2Line(i_vertex_index[idx],i_vertex_index[(idx+1)%4],i_coord,i_coor_num,sq.line[i]);
 			}
 			for (int i = 0; i < 4; i++) {
 				//直線同士の交点計算
