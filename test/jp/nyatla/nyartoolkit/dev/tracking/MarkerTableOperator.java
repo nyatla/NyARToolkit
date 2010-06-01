@@ -161,7 +161,7 @@ public class MarkerTableOperator
 	 * @param i_table
 	 * @param o_stack
 	 */
-	public void estimateMarkerPosition(MarkerPositionTable i_table,NextFrameMarkerStack o_stack)
+	public void estimateMarkerPosition(MarkerPositionTable i_table,EstimatePositionStack o_stack)
 	{			
 		//現在位置のテーブルから、o_stackに探索個所の一覧を作成	
 		NyARDoublePoint2d pos2d=this._pos2d_tmp;
@@ -185,10 +185,9 @@ public class MarkerTableOperator
 			final NyARDoublePoint3d trans=current_pos.trans;
 			
 			//探索キーポイント(中心座標)のスクリーン座標を計算
-			NextFrameMarkerStack.Item item=o_stack.prePush();
+			EstimatePositionStack.Item item=o_stack.prePush();
 			prjmat.projectionConvert(trans,item.center);//[Optimaize!]
 			dist.ideal2Observ(item.center, item.center);
-			item.min_dist=Integer.MAX_VALUE;
 			
 			//4頂点の予測位置を計算しておく。
 			for(int i2=0;i2<4;i2++){

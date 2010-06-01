@@ -6,6 +6,7 @@ import jp.nyatla.nyartoolkit.core.squaredetect.NyARCoord2Linear;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.core.match.NyARMatchPattDeviationColorData;
@@ -16,6 +17,101 @@ import jp.nyatla.nyartoolkit.core.pickup.INyARColorPatt;
 import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.INyARRasterFilter_Rgb2Bin;
+import jp.nyatla.nyartoolkit.dev.tracking.MarkerPositionTable.Item;
+
+class MarkerPositionStack extends NyARObjectStack<MarkerPositionStack.Item>
+{
+	public class Item
+	{
+		public MarkerPositionTable.Item ref_item;
+		//マーカ中心
+		public NyARDoublePoint2d   center=new NyARDoublePoint2d();
+		//4頂点(スクリーン座標系)
+		public NyARIntPoint2d[] vertex=NyARIntPoint2d.createArray(4);
+		//4頂点の直線式
+		public NyARLinear[] line=NyARLinear.createArray(4);
+	}
+	protected MarkerPositionStack.Item createElement()
+	{
+		return new MarkerPositionStack.Item();
+	}
+	
+	public MarkerPositionStack(int i_length) throws NyARException
+	{
+		super(i_length,MarkerPositionStack.Item.class);
+		return;
+	}
+}
+
+
+class MarkerOutlineStack extends NyARObjectStack<MarkerOutlineStack.Item>
+{
+	class Item
+	{
+		//マーカ中心
+		public NyARIntPoint2d   center=new NyARIntPoint2d();
+		//4頂点(スクリーン座標系)
+		public NyARIntPoint2d[] vertex=NyARIntPoint2d.createArray(4);
+		public boolean is_empty;
+	}
+	protected Item createElement()
+	{
+		return new Item();
+	}
+	
+	public MarkerOutlineStack(int i_length) throws NyARException
+	{
+		super(i_length,Item.class);
+		return;
+	}
+}
+
+class MarkerOutlineTable extends NyARDataTable<MarkerOutlineTable.Item>
+{
+	class Item
+	{
+		public boolean is_empty;
+		//マーカ中心
+		public NyARIntPoint2d   center=new NyARIntPoint2d();
+		//4頂点(スクリーン座標系)
+		public NyARIntPoint2d[] vertex=NyARIntPoint2d.createArray(4);
+		public int sirial;
+	}
+
+	protected MarkerOutlineItem createElement()
+	{
+		return new MarkerOutlineItem();
+	}
+	
+	public MarkerOutlineTable(int i_length) throws NyARException
+	{
+		return;
+	}
+	/**
+	 * スタックの情報でテーブルの内容を更新する。
+	 * @param i_src
+	 */
+	public void updateTable(MarkerOutlineStack i_src)
+	{
+		int number_of_stack=i_src.getLength();
+		for(int i=this._items.length-1;i>=0;i--)
+		{
+			Item item=this._items[i];
+			if(item.is_empty){
+				continue;
+			}
+			for(int i2=number_of_stack-1;i2>=0;i2--)
+			{
+				
+			
+			}
+		}
+	}
+}
+
+
+
+
 
 
 
@@ -28,9 +124,8 @@ public class MarkerTracking_3dTrans
 	{
 		//公開プロパティ
 		public NyARSquare square=new NyARSquare();
-		public final MarkerPositionTable table;
-		public final MarkerTableOperator table_operator;
-		public NextFrameMarkerStack _nextframe;
+		public EstimatePositionStack _estimate_position;
+		private MarkerPositionStack _found_stack;
 		private double _marker_width;
 		
 		//参照インスタンス
@@ -41,14 +136,20 @@ public class MarkerTracking_3dTrans
 		private NyARMatchPatt_Color_WITHOUT_PCA _match_patt;
 		private final NyARMatchPattResult __detectMarkerLite_mr=new NyARMatchPattResult();
 		private NyARCoord2Linear _coordline;
-		
-		public DetectSquareCB(INyARColorPatt i_inst_patt,NyARCode i_ref_code,NyARParam i_param,double i_marker_width) throws NyARException
-		{
-			this.table_operator=new MarkerTableOperator(i_param);
-			this.table=new MarkerPositionTable(10);
-			this._nextframe=new NextFrameMarkerStack(10);
-			this._marker_width=i_marker_width;
+		private MarkerPositionTable table;
+		private MarkerTableOperator table_operator;
 
+		public DetectSquareCB(
+			INyARColorPatt i_inst_patt,
+			NyARCode i_ref_code,
+			NyARParam i_param,
+			double i_marker_width) throws NyARException
+		{
+			this._estimate_position=new EstimatePositionStack(10);
+			this._marker_width=i_marker_width;
+			//
+			this.table_operator=new MarkerTableOperator(i_param);
+			this.table=new MarkerPositionTable(10);			
 			
 			//
 			this._inst_patt=i_inst_patt;
@@ -65,8 +166,9 @@ public class MarkerTracking_3dTrans
 		 */
 		public void onSquareDetect(NyARSquareContourDetector i_sender,int[] i_coordx,int[] i_coordy,int i_coor_num,int[] i_vertex_index) throws NyARException
 		{
-			//輪郭座標から頂点リストに変換
-			NyARIntPoint2d[] vertex=this.__tmp_vertex;
+			MarkerOutlineStack outline_stack=null;
+			//輪郭座標から頂点リストに変換(アウトラインスタックを共用)
+			NyARIntPoint2d[] vertex=outline_stack.prePush().vertex;
 			vertex[0].x=i_coordx[i_vertex_index[0]];
 			vertex[0].y=i_coordy[i_vertex_index[0]];
 			vertex[1].x=i_coordx[i_vertex_index[1]];
@@ -80,11 +182,20 @@ public class MarkerTracking_3dTrans
 			NyARDoublePoint2d new_center=this.__tmp_point;
 			new_center.x=(vertex[0].x+vertex[1].x+vertex[2].x+vertex[3].x)/4;
 			new_center.y=(vertex[0].y+vertex[1].y+vertex[2].y+vertex[3].y)/4;
+			//トラッキングテーブルに存在する可能性のあるマーカをストック
+			//スタックへ移動したら、アウトラインスタックからは解放。
+			
+
+			
+			
+			
+			
 			//近所のマーカを探す。[Optimize:重複計算あり]
-			Double d=new Double(0);
-			NextFrameMarkerStack.Item near_item=this._nextframe.getNearItem(new_center,d);//[Optimize]見つけた矩形はリストから削除すべきだよね。
+			EstimatePositionStack.Item near_item=this._estimate_position.getNearItem(new_center);
 			if(near_item==null)
 			{
+				//認識要求を出す。
+				
 				//このマーカは未登録
 				NyARMatchPattResult mr=this.__detectMarkerLite_mr;
 				
@@ -119,25 +230,15 @@ public class MarkerTracking_3dTrans
 				this.table_operator.insertMarker(this.table,sq,this._marker_width);							
 
 			}else{
-				//このマーカは登録済。
-				MarkerPositionTable.Item item=near_item.ref_item;
-				//頂点順位のマッチングをとる。
-				int dir=getNearVertexIndex(near_item.vertex,vertex,4);
+			//このマーカは登録済。
 
-				//一致率の高い矩形があれば、方位を考慮して頂点情報を作成
-				NyARSquare sq=this.square;
-				//directionを考慮して、squareを更新する。
+				//継続認識候補のリストに加える				
+				MarkerPositionStack.Item item=this._found_stack.prePush();				
 				for(int i=0;i<4;i++){
-					int idx=(i+dir) % 4;
-					this._coordline.coord2Line(i_vertex_index[idx],i_vertex_index[(idx+1)%4],i_coordx,i_coordy,i_coor_num,sq.line[i]);
+					item.vertex[i].x=vertex[i].x;
+					item.vertex[i].y=vertex[i].y;
+					this._coordline.coord2Line(i_vertex_index[i],i_vertex_index[(i+1)%4],i_coordx,i_coordy,i_coor_num,item.line[i]);
 				}
-				for (int i = 0; i < 4; i++) {
-					//直線同士の交点計算
-					if(!NyARLinear.crossPos(sq.line[i],sq.line[(i + 3) % 4],sq.sqvertex[i])){
-						throw new NyARException();//ここのエラー復帰するならダブルバッファにすればOK
-					}
-				}
-				this.table_operator.updateMarker(item,sq);
 			}
 		}
 		/**
@@ -167,13 +268,42 @@ public class MarkerTracking_3dTrans
 			}
 			return idx;
 		}
+		/**
+		 * コールバックハンドラの初期化
+		 * @param i_raster
+		 */
 		
 		public final void init(INyARRgbRaster i_raster)
 		{
 			//現在位置のテーブルから、探索予定の一覧を作成。
 			this._ref_raster=i_raster;
-			this.table_operator.estimateMarkerPosition(this.table,this._nextframe);
+			//継続認識候補のマーカリストをクリア
+			this._found_stack.clear();
+			this.table_operator.estimateMarkerPosition(this.table,this._estimate_position);
 			return;
+		}
+		/**
+		 * コールバックハンドラの終期化
+		 */
+		public final void finish()
+		{
+			//アウトラインスタックからアウトラインテーブルへ一致検索しながら移動
+			
+			
+			
+			int number_of_found=this._found_stack.getLength();
+			MarkerPositionStack.Item[] found_item=this._found_stack.getArray();
+			EstimatePositionStack.Item[] est_item=this._estimate_position.getArray();
+
+			//this._existstack.getLength()-1
+			//予想マーカ位置に最適な認識済矩形をマップする。
+			for(int i=this._estimate_position.getLength()-1;i>=0;i--){
+				for(int i2=number_of_found-1;i2>=0;i2--){
+					current.getLength()					
+				}
+			}
+			
+		//	}*/
 		}
 		
 		
@@ -216,6 +346,8 @@ public class MarkerTracking_3dTrans
 		this._detect_cb=new DetectSquareCB(i_patt_inst,i_ref_code,i_ref_param,i_marker_width);
 		this._next_marker=new IntRectStack(10);
 		this._estimator=new TransMat2MarkerRect(i_ref_param);
+
+
 		return;
 	}
 	/**
@@ -254,7 +386,7 @@ public class MarkerTracking_3dTrans
 		Object[] ret=new Object[10];
 		ret[0]=this._detect_cb.table;
 		ret[1]=this._next_marker;
-		ret[2]=this._detect_cb._nextframe;
+		ret[2]=this._detect_cb._estimate_position;
 		return ret;
 	}
 }

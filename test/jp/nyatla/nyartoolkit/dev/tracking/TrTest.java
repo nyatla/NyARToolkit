@@ -116,7 +116,7 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 			this._tr.detectMarkerLite(i_raster);
 			Object[] probe=this._tr._probe();
 			MarkerPositionTable mpt=(MarkerPositionTable)probe[0];
-			NextFrameMarkerStack fs=(NextFrameMarkerStack)probe[2];
+			EstimatePositionStack fs=(EstimatePositionStack)probe[2];
 			
 			{// ピックアップ画像の表示
 				// 矩形抽出

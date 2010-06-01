@@ -5,7 +5,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 
-public class NextFrameMarkerStack extends NyARObjectStack<NextFrameMarkerStack.Item>
+public class EstimatePositionStack extends NyARObjectStack<EstimatePositionStack.Item>
 {
 	public class Item
 	{
@@ -16,20 +16,19 @@ public class NextFrameMarkerStack extends NyARObjectStack<NextFrameMarkerStack.I
 		 * 探索距離の２乗値
 		 */
 		public double sq_norm;
-		public int min_dist;
 		
 		
 	}
-	protected NextFrameMarkerStack.Item createElement()
+	protected EstimatePositionStack.Item createElement()
 	{
-		return new NextFrameMarkerStack.Item();
+		return new EstimatePositionStack.Item();
 	}
 
 	
 	
-	public NextFrameMarkerStack(int i_length) throws NyARException
+	public EstimatePositionStack(int i_length) throws NyARException
 	{
-		super(i_length,NextFrameMarkerStack.Item.class);
+		super(i_length,EstimatePositionStack.Item.class);
 		return;
 	}
 	/**
@@ -41,9 +40,9 @@ public class NextFrameMarkerStack extends NyARObjectStack<NextFrameMarkerStack.I
 	 * 探索範囲の最大値
 	 * @return
 	 */
-	public NextFrameMarkerStack.Item getNearItem(NyARDoublePoint2d i_pos)
+	public EstimatePositionStack.Item getNearItem(NyARDoublePoint2d i_pos)
 	{
-		NextFrameMarkerStack.Item[] items=this._items;
+		EstimatePositionStack.Item[] items=this._items;
 		
 		double d=Double.MAX_VALUE;
 		//エリア
@@ -56,8 +55,6 @@ public class NextFrameMarkerStack extends NyARObjectStack<NextFrameMarkerStack.I
 			if(nd>items[i].sq_norm){
 				continue;
 			}
-			//現在の最小エラーレートよりも小さい？
-			if(nd>items[i].min_dist)
 			if(d>nd){
 				d=nd;
 				index=i;
