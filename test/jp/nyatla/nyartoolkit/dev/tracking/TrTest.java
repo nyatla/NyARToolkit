@@ -17,12 +17,76 @@ import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector_Rle;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareStack;
 import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
+import jp.nyatla.nyartoolkit.core.transmat.NyARRectOffset;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat;
-import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDevice;
-import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDeviceList;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.utils.j2se.NyARRasterImageIO;
 import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.dev.tracking.MarkerPositionTable.Item;
+import jp.nyatla.nyartoolkit.dev.tracking.outline.*;
+
+
+
+public class MarkerPositionTable extends NyARDataTable<MarkerPositionTable.Item>
+{
+	public static class Item
+	{
+		public boolean is_empty=true;
+		public NyARDoublePoint3d angle=new NyARDoublePoint3d();
+		public NyARDoublePoint3d trans=new NyARDoublePoint3d();
+		public NyARDoublePoint3d angle_v=new NyARDoublePoint3d();
+		public NyARDoublePoint3d trans_v=new NyARDoublePoint3d();
+		public NyARRectOffset offset=new NyARRectOffset();
+		public int life=0;
+		public int sirial;
+		public Item()
+		{
+			this.trans_v.x=this.trans_v.y=this.trans_v.z=0;		
+			this.angle_v.x=this.angle_v.y=this.angle_v.z=0;		
+		}
+
+	}
+	public MarkerPositionTable(int i_size)
+	{
+		this.initTable(i_size,Item.class);
+		this.clear();
+		return;
+	}
+	/**
+	 * 空のアイテムを1個選択します。
+	 * @return
+	 */
+	public Item selectEmptyItem()
+	{
+		for(int i=this._items.length-1;i>=0;i--)
+		{
+			if(this._items[i].is_empty){
+				return this._items[i];
+			}
+		}
+		return null;
+	}
+	protected Item createElement()
+	{
+		return new Item();
+	}
+	
+	public void clear()
+	{
+		for(int i=this._items.length-1;i>=0;i--)
+		{
+			if(!this._items[i].is_empty){
+				this._items[i].is_empty=true;
+				this._items[i].trans_v.x=this._items[i].trans_v.y=this._items[i].trans_v.z=0;
+				this._items[i].angle_v.x=this._items[i].angle_v.y=this._items[i].trans_v.z=0;
+			}else{
+				//nothing.
+			}
+		}
+	}
+	
+}
+
 
 /**
  * @todo
@@ -105,7 +169,17 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 
 
 	private final String data_file = "../Data/320x240ABGR.raw";
-
+	private void drawPolygon(Graphics g,NyARIntPoint2d[] i_vertex,int i_len)
+	{
+		int[] x=new int[i_len];
+		int[] y=new int[i_len];
+		for(int i=0;i<i_len;i++)
+		{
+			x[i]=i_vertex[i].x;
+			y[i]=i_vertex[i].y;
+		}
+		g.drawPolygon(x,y,i_len);
+	}
 	
 
 	public void draw(JmfNyARRaster_RGB i_raster)
@@ -115,7 +189,7 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 			Graphics g = getGraphics();
 			this._tr.detectMarkerLite(i_raster);
 			Object[] probe=this._tr._probe();
-			MarkerPositionTable mpt=(MarkerPositionTable)probe[0];
+			NyAROutlineTracker mpt=(NyAROutlineTracker)probe[0];
 			EstimatePositionStack fs=(EstimatePositionStack)probe[2];
 			
 			{// ピックアップ画像の表示
@@ -138,22 +212,17 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 						NyARRasterImageIO.copy(i_raster, sink);
 						Graphics g2=sink.getGraphics();
 						g2.setColor(Color.RED);
-						MarkerPositionTable.Item[] item=mpt.selectAllItems();
-						for(int i=0;i<item.length;i++){
-							if(item[i].is_empty){
-								continue;
-							}
-							NyARIntRect re=new NyARIntRect();
-							this._trm.convert(item[i], re);
-							g2.drawRect(re.x,re.y,re.w,re.h);
-							g2.drawString(Integer.toString(item[i].sirial),re.x,re.y);
-						}
+						NyAROutlineTrackItem[] item=mpt.getOutlines();
+						for(int i=0;i<mpt.getNumberOfOutline();i++){
+							drawPolygon(g2,item[i].vertex,4);
+							g2.drawString(Integer.toString(item[i].serial),item[i].vertex[0].x,item[i].vertex[0].y);
+						}/*
 						g2.setColor(Color.CYAN);
 						for(int i=0;i<fs.getLength();i++){
 							for(int i2=0;i2<1;i2++){
 								g2.drawRect((int)(fs.getItem(i).vertex[i2].x-1),(int)(fs.getItem(i).vertex[i2].y-1),2,2);
 							}
-						}
+						}*/
 						g.drawImage(sink, ins.left, ins.top, this);
 					}
 				}
