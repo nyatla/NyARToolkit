@@ -30,6 +30,8 @@
  */
 package jp.nyatla.nyartoolkit.core.types;
 
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
+
 /**
  * 0=dx*x+dy*y+cのパラメータを格納します。
  * x,yの増加方向は、x=L→R,y=B→Tです。 
@@ -71,6 +73,32 @@ public class NyARLinear
 		}
 		o_point.x = (l_line_2.dx * l_line_i.c - l_line_i.dx * l_line_2.c) / w1;
 		o_point.y = (l_line_i.dy * l_line_2.c - l_line_2.dy * l_line_i.c) / w1;
+		return true;
+	}
+	public final static boolean calculateLine(NyARDoublePoint2d i_point1,NyARDoublePoint2d i_point2,NyARLinear o_line)
+	{
+		double dx=i_point2.x-i_point1.x;
+		double dy=i_point2.y-i_point1.y;
+		double sq=Math.sqrt(dx*dx+dy*dy);
+		if(sq==0){
+			return false;
+		}
+		o_line.dx=dx/sq;
+		o_line.dy=dy/sq;
+		o_line.c=-(i_point1.x*o_line.dx+i_point1.y*o_line.dy);
+		return true;
+	}
+	public final static boolean calculateLine(NyARIntPoint2d i_point1,NyARIntPoint2d i_point2,NyARLinear o_line)
+	{
+		double dx=(double)(i_point2.x-i_point1.x);
+		double dy=(double)(i_point2.y-i_point1.y);
+		double sq=Math.sqrt(dx*dx+dy*dy);
+		if(sq==0){
+			return false;
+		}
+		o_line.dx=dx/sq;
+		o_line.dy=dy/sq;
+		o_line.c=-(i_point1.x*o_line.dx+i_point1.y*o_line.dy);
 		return true;
 	}	
 }

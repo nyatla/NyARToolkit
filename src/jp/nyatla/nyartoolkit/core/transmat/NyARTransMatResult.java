@@ -31,7 +31,7 @@
 package jp.nyatla.nyartoolkit.core.transmat;
 
 
-import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.NyARRotMatrix;
+
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 

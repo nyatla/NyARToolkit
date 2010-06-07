@@ -3,7 +3,7 @@ package jp.nyatla.nyartoolkit.dev.tracking.square;
 import jp.nyatla.nyartoolkit.core.transmat.NyARRectOffset;
 import jp.nyatla.nyartoolkit.core.types.*;
 
-public class NyARSquareEstimateItem
+public class NyARDetailEstimateItem
 {
 
 

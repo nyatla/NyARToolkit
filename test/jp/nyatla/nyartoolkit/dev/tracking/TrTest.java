@@ -22,70 +22,10 @@ import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.utils.j2se.NyARRasterImageIO;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.dev.tracking.MarkerPositionTable.Item;
+
 import jp.nyatla.nyartoolkit.dev.tracking.outline.*;
 
 
-
-public class MarkerPositionTable extends NyARDataTable<MarkerPositionTable.Item>
-{
-	public static class Item
-	{
-		public boolean is_empty=true;
-		public NyARDoublePoint3d angle=new NyARDoublePoint3d();
-		public NyARDoublePoint3d trans=new NyARDoublePoint3d();
-		public NyARDoublePoint3d angle_v=new NyARDoublePoint3d();
-		public NyARDoublePoint3d trans_v=new NyARDoublePoint3d();
-		public NyARRectOffset offset=new NyARRectOffset();
-		public int life=0;
-		public int sirial;
-		public Item()
-		{
-			this.trans_v.x=this.trans_v.y=this.trans_v.z=0;		
-			this.angle_v.x=this.angle_v.y=this.angle_v.z=0;		
-		}
-
-	}
-	public MarkerPositionTable(int i_size)
-	{
-		this.initTable(i_size,Item.class);
-		this.clear();
-		return;
-	}
-	/**
-	 * 空のアイテムを1個選択します。
-	 * @return
-	 */
-	public Item selectEmptyItem()
-	{
-		for(int i=this._items.length-1;i>=0;i--)
-		{
-			if(this._items[i].is_empty){
-				return this._items[i];
-			}
-		}
-		return null;
-	}
-	protected Item createElement()
-	{
-		return new Item();
-	}
-	
-	public void clear()
-	{
-		for(int i=this._items.length-1;i>=0;i--)
-		{
-			if(!this._items[i].is_empty){
-				this._items[i].is_empty=true;
-				this._items[i].trans_v.x=this._items[i].trans_v.y=this._items[i].trans_v.z=0;
-				this._items[i].angle_v.x=this._items[i].angle_v.y=this._items[i].trans_v.z=0;
-			}else{
-				//nothing.
-			}
-		}
-	}
-	
-}
 
 
 /**
@@ -128,7 +68,6 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 	private int H = 240;
 
 	private Tracking _tr;
-	TransMat2MarkerRect _trm;
 
 	public TrTest() throws NyARException
 	{
@@ -153,7 +92,7 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 
 		addMouseMotionListener(this);
 		this._tr=new Tracking(ar_param,code,80,this._capraster.getBufferType());
-		this._trm=new TransMat2MarkerRect(ar_param);
+
 		return;
 	}
 	int mouse_x;
@@ -190,8 +129,7 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 			this._tr.detectMarkerLite(i_raster);
 			Object[] probe=this._tr._probe();
 			NyAROutlineTracker mpt=(NyAROutlineTracker)probe[0];
-			EstimatePositionStack fs=(EstimatePositionStack)probe[2];
-			
+				
 			{// ピックアップ画像の表示
 				// 矩形抽出
 //				INyARRasterFilter_RgbToBin to_binfilter = NyARRasterFilterBuilder_ARToolkitThreshold.createFilter(110, i_raster.getBufferReader().getBufferType());

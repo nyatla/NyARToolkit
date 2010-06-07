@@ -75,9 +75,10 @@ public class NyARRotMatrix extends NyARDoubleMatrix33
 		return;
 	}	
 	/**
-	 * 
 	 * @param i_linear
 	 * @param i_sqvertex
+	 * @note
+	 * 	Cで実装するときは、配列のポインタ版関数と2重化すること
 	 * @throws NyARException
 	 */
 	public void initRotBySquare(final NyARLinear[] i_linear,final NyARDoublePoint2d[] i_sqvertex) throws NyARException

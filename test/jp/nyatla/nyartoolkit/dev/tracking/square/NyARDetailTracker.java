@@ -8,11 +8,12 @@ import jp.nyatla.nyartoolkit.core.types.matrix.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
+import jp.nyatla.nyartoolkit.core.param.*;
 
 import jp.nyatla.nyartoolkit.dev.tracking.outline.NyAROutlineTrackItem;
 import jp.nyatla.nyartoolkit.dev.tracking.outline.VertexBinder;
 
-public class NyARSquareTracker
+public class NyARDetailTracker
 {
 	/*	インラインクラス
 	 */
@@ -24,7 +25,7 @@ public class NyARSquareTracker
 			super(i_max_col,i_max_row);
 		}
 		
-		public void bindPoints(NyARSquareTrackSrcTable.Item[] i_vertex_r,int i_row_len,NyARSquareEstimateItem[] i_vertex_c,int i_col_len,int o_track_item[])
+		public void bindPoints(NyARDetailTrackSrcTable.Item[] i_vertex_r,int i_row_len,NyARDetailTrackItem[] i_vertex_c,int i_col_len,int o_track_item[])
 		{
 			VertexBinder.DistItem[] map=this._map;
 			//distortionMapを作成。ついでに最小値のインデクスも取得
@@ -35,7 +36,7 @@ public class NyARSquareTracker
 				for(int c=0;c<i_col_len;c++){
 					map[idx].col=c;
 					map[idx].row=r;
-					int d=NyARMath.sqNorm(i_vertex_r[r].center,i_vertex_c[c].center);
+					int d=NyARMath.sqNorm(i_vertex_r[r].center,i_vertex_c[c].estimate.center);
 					map[idx].dist=d;
 					if(min_dist>d){
 						min_index=idx;
@@ -48,67 +49,16 @@ public class NyARSquareTracker
 			return;
 		}		
 	}
-	/**
-	 * 未来位置の計算用
-	 *
-	 */
-//	class EstimateSquareStack extends NyARObjectStack<EstimateSquareStack.Item>
-//	{
-//		public class Item
-//		{
-//			public NyARDoublePoint3d angle=new NyARDoublePoint3d();
-//			public NyARDoublePoint3d trans=new NyARDoublePoint3d();
-//			
-//			public NyARIntPoint2d   center=new NyARIntPoint2d();
-//			public NyARIntPoint2d[] vertex=NyARIntPoint2d.createArray(4);
-//			/**
-//			 * 探索距離の２乗値
-//			 */
-//			public double sq_dist_max;
-//
-//			public NyARSquareTrackItem item=new NyARSquareTrackItem();
-//		}
-//		protected EstimateSquareStack.Item createElement()
-//		{
-//			return new EstimateSquareStack.Item();
-//		}
-//		public EstimateSquareStack(int i_length) throws NyARException
-//		{
-//			super(i_length,EstimateSquareStack.Item.class);
-//			return;
-//		}
-//		public int getNearestItem(NyARIntPoint2d i_pos)
-//		{
-//			double d=Double.MAX_VALUE;
-//			//エリア
-//			int index=-1;
-//			for(int i=this._length-1;i>=0;i--)
-//			{
-//				NyARIntPoint2d center=this._items[i].center;
-//				double nd=NyARMath.sqNorm(i_pos, center);
-//				//有効範囲内？
-//				if(nd>this._items[i].sq_dist_max){
-//					continue;
-//				}
-//				if(d>nd){
-//					d=nd;
-//					index=i;
-//				}
-//			}
-//			return index;
-//		}	
-//	}	
-	
-	
-	class NyARSquareTrackStack extends NyARObjectStack<NyARSquareTrackItem>
+
+	class NyARSquareTrackStack extends NyARObjectStack<NyARDetailTrackItem>
 	{
-		protected NyARSquareTrackItem createElement()
+		protected NyARDetailTrackItem createElement()
 		{
-			return new NyARSquareTrackItem();
+			return new NyARDetailTrackItem();
 		}
 		public NyARSquareTrackStack(int i_max_tracking) throws NyARException
 		{
-			super(i_max_tracking,NyARSquareTrackItem.class);
+			super(i_max_tracking,NyARDetailTrackItem.class);
 			return;
 		}
 		public int getNearestItem(NyARIntPoint2d i_pos)
@@ -140,11 +90,10 @@ public class NyARSquareTracker
 	
 	
 	private int[] _track_index;
-//	private EstimateSquareStack _estimate_stack;
 	private SquareBinder _binder;
 	private NyARSquareTrackStack _tracker_items;
 
-	public NyARSquareTracker(int i_max_tracking,int i_max_temp) throws NyARException
+	public NyARDetailTracker(int i_max_tracking,int i_max_temp) throws NyARException
 	{
 		this._binder=new SquareBinder(i_max_temp,i_max_tracking);
 		this._track_index=new int[i_max_tracking];
@@ -174,7 +123,7 @@ public class NyARSquareTracker
 	 */
 	public boolean addTrackTarget(NyAROutlineTrackItem i_item,double i_width,int i_direction) throws NyARException
 	{
-		NyARSquareTrackItem item=this._tracker_items.prePush();
+		NyARDetailTrackItem item=this._tracker_items.prePush();
 		if(item==null){
 			//あいてない。終了のお知らせ
 			return false;
@@ -195,9 +144,7 @@ public class NyARSquareTracker
 		//3次元位置を計算
 		item.estimate.offset.setSquare(i_width);
 		this._transmat.transMat(vtx_ptr,temp_linear,item.estimate.offset,item.angle,item.trans);
-		//現在の行列を保存
-		item.trans_v.x=item.trans_v.y=item.trans_v.z=0;
-		item.angle_v.x=item.angle_v.y=item.angle_v.z=0;
+
 		//値の引き継ぎ
 		item.sirial=i_item.serial;
 		item.tag=i_item.tag;
@@ -211,53 +158,65 @@ public class NyARSquareTracker
 	{
 		return this._tracker_items.getLength();
 	}
-	public NyARSquareTrackItem[] getSquares()
+	public NyARDetailTrackItem[] getSquares()
 	{
 		return this._tracker_items.getArray();
 	}
 
 
 	private NyARSquare __sq=new NyARSquare();
+	private NyARDoublePoint3d __pos3d;
+	private NyARDoublePoint2d __pos2d;
+	private NyARPerspectiveProjectionMatrix _ref_prjmat;
+	private NyARCameraDistortionFactor _ref_distfactor;
 	private NyARDoublePoint3d __angle=new NyARDoublePoint3d();
 	private NyARDoublePoint3d __trans=new NyARDoublePoint3d();
 	private NyARDoubleMatrix33 __rot=new NyARDoubleMatrix33();
+
 	/**
 	 * データソースからトラッキング処理を実行します。
 	 * @param i_datasource
 	 * @param i_is_remove_target
 	 */
-	public void trackTarget(NyARSquareTrackSrcTable i_datasource) throws NyARException
+	public void trackTarget(NyARDetailTrackSrcTable i_datasource) throws NyARException
 	{
-		NyARSquareTrackSrcTable.Item[] temp_items=i_datasource.getArray();
+		NyARDetailTrackSrcTable.Item[] temp_items=i_datasource.getArray();
 		SquareBinder binder=this._binder;
-		int track_item_len= this._estimate_stack.getLength();
+		int track_item_len= this._tracker_items.getLength();
+		NyARDetailTrackItem[] track_items=this._tracker_items.getArray();
 		
 		//ワーク
-		NyARSquare sq=this.__sq;
 		NyARDoublePoint3d angle=this.__angle;
 		NyARDoublePoint3d trans=this.__trans;
+		NyARSquare sq=this.__sq;
+		NyARDoubleMatrix33 rot=this.__rot;
+		NyARDoublePoint3d pos3d=this.__pos3d;
+		NyARDoublePoint2d pos2d=this.__pos2d;
+		NyARPerspectiveProjectionMatrix prjmat=this._ref_prjmat;
+		NyARCameraDistortionFactor distfactor=this._ref_distfactor;
 		
 		//予測位置とのマッピング		
-		binder.bindPoints(temp_items,i_datasource.getLength(),this._estimate_stack.getArray(),track_item_len,  this._track_index);
+		binder.bindPoints(temp_items,i_datasource.getLength(),track_items,track_item_len,  this._track_index);
 
 		for(int i=track_item_len-1;i>=0;i--)
 		{
 			//予想位置と一番近かったものを得る
-			EstimateSquareStack.Item est_item=this._estimate_stack.getItem(i);
+			NyARDetailTrackItem item=track_items[i];
+			NyARDetailEstimateItem est_item=this._tracker_items.getItem(i).estimate;
 			if(this._track_index[i]<0){
 				//見つからなかった。
-				est_item.ref_item.life++;
-				if(est_item.ref_item.life>10){
+				item.life++;
+				if(item.life>10){
 					//削除(順序無視の削除)
 					this._tracker_items.removeIgnoreOrder(i);
 				}
 				continue;
 			}
 
-			NyARSquareTrackSrcTable.Item temp_item_ptr=temp_items[this._track_index[i]];
+			NyARDetailTrackSrcTable.Item temp_item_ptr=temp_items[this._track_index[i]];
 			
 			//移動量が最小になる組み合わせを計算
-			int dir=getNearVertexIndex(est_item.vertex,temp_item_ptr.vertex2d,4);
+			int dir=getNearVertexIndex(est_item.vertex,temp_item_ptr.ref_outline.vertex,4);
 			for(int i2=0;i2<4;i2++){
 				int idx=(i+dir) % 4;
 				sq.line[i].dx=temp_item_ptr.line[idx].dx;
@@ -271,53 +230,60 @@ public class NyARSquareTracker
 				}
 			}
 			//新しい現在値を算出
-			this._transmat.transMat(sq,est_item.ref_item.offset,angle,trans);
+			this._transmat.transMat(sq,est_item.offset,angle,trans);
 			
 			//現在のパラメタを計算
-			angle.x=(est_item.ref_item.angle.x+angle.x)/2;
-			angle.y=(est_item.ref_item.angle.y+angle.y)/2;
-			angle.z=(est_item.ref_item.angle.z+angle.z)/2;
-			trans.x=(est_item.ref_item.trans.x+trans.x)/2;
-			trans.y=(est_item.ref_item.trans.y+trans.y)/2;
-			trans.z=(est_item.ref_item.trans.z+trans.z)/2;
+			item.angle.x=(item.angle.x+angle.x)/2;
+			item.angle.y=(item.angle.y+angle.y)/2;
+			item.angle.z=(item.angle.z+angle.z)/2;
+			item.trans.x=(item.trans.x+trans.x)/2;
+			item.trans.y=(item.trans.y+trans.y)/2;
+			item.trans.z=(item.trans.z+trans.z)/2;
+/*
+			//現在の速度を計算
+			item.angle_v.x=angle.x-item.angle.x;
+			item.angle_v.y=angle.y-item.angle.y;
+			item.angle_v.z=angle.z-item.angle.z;
+			item.trans_v.x=angle.x-item.trans.x;
+			item.trans_v.y=angle.y-item.trans.y;
+			item.trans_v.z=angle.z-item.trans.z;
+			
+			//未来の位置を計算(線形予測)
+			angle.x+=item.angle_v.x;
+			angle.y+=item.angle_v.y;
+			angle.z+=item.angle_v.z;
+			trans.x+=item.trans_v.x;
+			trans.y+=item.trans_v.y;
+			trans.z+=item.trans_v.z;
+*/			
+			
+			//未来位置を計算
 
-			NyARDoubleMatrix33 rot=this.__rot;
-			rot.setZXYAngle(angle);
-			
-			
-			final NyARDoublePoint3d offset=current_pos.offset.vertex[i2];
-			rot.transformVertex(offset,pos3d);
-			//平行移動量+速度
-			pos3d.x+=trans.x;//+current_pos.trans_v.x;
-			pos3d.y+=trans.y;//+current_pos.trans_v.y;
-			pos3d.z+=trans.z;//+current_pos.trans_v.z;
-			prjmat.projectionConvert(pos3d,pos2d);//[Optimaize!]
-			dist.ideal2Observ(pos2d, item.vertex[i2]);
-		}			
-			
-			//現在のパラメタをストア
-			est_item.ref_item.angle.x=angle.x;
-			est_item.ref_item.angle.y=angle.y;
-			est_item.ref_item.angle.z=angle.z;
-			est_item.ref_item.trans.x=trans.x;
-			est_item.ref_item.trans.y=trans.y;
-			est_item.ref_item.trans.z=trans.z;
-
-			//未来の位置を予測
-			est_item.center.x=1;
-			est_item.center.y=1;
-			//distは…？
-			est_item.sq_dist_max=(NyARMath.sqNorm(sq.sqvertex[0],sq.sqvertex[2])+NyARMath.sqNorm(sq.sqvertex[1],sq.sqvertex[3]))/2;
+			rot.setZXYAngle(item.angle);
+			double cx,cy;
+			cx=cy=0;
+			for(int i2=0;i2<4;i2++)
+			{
+				rot.transformVertex(est_item.offset.vertex[i2],pos3d);
+				prjmat.projectionConvert(pos3d.x+trans.x,pos3d.y+trans.y,pos3d.z+trans.z,pos2d);//[Optimaize!]
+				distfactor.ideal2Observ(pos2d, est_item.vertex[i2]);
+				cx=est_item.vertex[i2].x;
+				cy=est_item.vertex[i2].y;
+			}
+			est_item.center.x=(int)cx/4;
+			est_item.center.y=(int)cy/4;
+			est_item.sq_dist_max=(int)(NyARMath.sqNorm(est_item.vertex[0],est_item.vertex[2])+NyARMath.sqNorm(est_item.vertex[1],est_item.vertex[3]))/2;
 		}
-	}	
-	private static int getNearVertexIndex(NyARIntPoint2d[] i_base_vertex,NyARIntPoint2d[] i_next_vertex,int i_length)
+	}
+
+	private static int getNearVertexIndex(NyARDoublePoint2d[] i_base_vertex,NyARIntPoint2d[] i_next_vertex,int i_length)
 	{
 		int min_dist=Integer.MAX_VALUE;
 		int idx=-1;
 		for(int i=0;i<i_length;i++){
 			int dist=0;
 			for(int i2=0;i2<i_length;i2++){
-				dist+=NyARMath.sqNorm(i_base_vertex[i2],i_next_vertex[(i2+i)%4]);
+				dist+=NyARMath.sqNorm(i_base_vertex[i2].x,i_base_vertex[i2].y,i_next_vertex[(i2+i)%4].x,i_next_vertex[(i2+i)%4].y);
 			}
 			if(min_dist>dist){
 				min_dist=dist;

@@ -69,7 +69,7 @@ public class NyAROutlineTracker
 				}
 			}
 			return index;
-		}		
+		}	
 	}
 	
 	private int[] _track_index;
@@ -144,7 +144,16 @@ public class NyAROutlineTracker
 	{
 		return this._tracker_items.getArray();
 	}
-
+	public NyAROutlineTrackItem getOutlineBySerial(int i_serial)
+	{
+		NyAROutlineTrackItem[] item=this.getOutlines();
+		for(int i=this.getNumberOfOutline()-1;i>=0;i--){
+			if(item[i].serial==i_serial){
+				return item[i];
+			}
+		}
+		return null;
+	}
 
 	
 	/**

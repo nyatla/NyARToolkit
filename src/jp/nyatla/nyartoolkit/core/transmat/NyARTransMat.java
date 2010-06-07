@@ -129,18 +129,26 @@ public class NyARTransMat implements INyARTransMat
 		//計算結果の最適化(平行移動量と回転行列の最適化)
 		return this.optimize(this._rotmatrix, trans, this._transsolver,i_offset.vertex, vertex_2d,err_threshold,o_result_conv);
 	}
+	
+	
 	public double transMat(final NyARSquare i_square,NyARRectOffset i_offset,NyARDoublePoint3d o_angle,NyARDoublePoint3d o_trans) throws NyARException
+	{
+		return transMat(i_square.sqvertex,i_square.line,i_offset,o_angle,o_trans);
+	}
+	
+	
+	public double transMat(final NyARDoublePoint2d i_sqvertex[],final NyARLinear[] i_linear,NyARRectOffset i_offset,NyARDoublePoint3d o_angle,NyARDoublePoint3d o_trans) throws NyARException
 	{		
-		double err_threshold=makeErrThreshold(i_square.sqvertex);
+		double err_threshold=makeErrThreshold(i_sqvertex);
 		
 		//平行移動量計算機に、2D座標系をセット
 		NyARDoublePoint2d[] vertex_2d=this.__transMat_vertex_2d;
 		NyARDoublePoint3d[] vertex_3d=this.__transMat_vertex_3d;
-		this._ref_dist_factor.ideal2ObservBatch(i_square.sqvertex, vertex_2d,4);		
+		this._ref_dist_factor.ideal2ObservBatch(i_sqvertex, vertex_2d,4);		
 		this._transsolver.set2dVertex(vertex_2d,4);
 		
 		//回転行列を計算
-		this._rotmatrix.initRotBySquare(i_square.line,i_square.sqvertex);
+		this._rotmatrix.initRotBySquare(i_linear,i_sqvertex);
 		
 		//回転後の3D座標系から、平行移動量を計算
 		this._rotmatrix.getPoint3dBatch(i_offset.vertex,vertex_3d,4);
@@ -148,7 +156,7 @@ public class NyARTransMat implements INyARTransMat
 		
 		//計算結果の最適化(平行移動量と回転行列の最適化)
 		return this.optimize(this._rotmatrix, o_trans, this._transsolver,i_offset.vertex, vertex_2d,err_threshold,o_angle);
-	}
+	}	
 	/*
 	 * (non-Javadoc)
 	 * @see jp.nyatla.nyartoolkit.core.transmat.INyARTransMat#transMatContinue(jp.nyatla.nyartoolkit.core.NyARSquare, int, double, jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult)
