@@ -23,6 +23,7 @@ import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.utils.j2se.NyARRasterImageIO;
 import jp.nyatla.nyartoolkit.core.types.*;
 
+import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailTrackItem;
 import jp.nyatla.nyartoolkit.dev.tracking.outline.*;
 
 
@@ -33,23 +34,8 @@ import jp.nyatla.nyartoolkit.dev.tracking.outline.*;
  * 矩形の追跡は動いてるから、位置予測機能と組み合わせて試すこと。
  *
  */
-class Tracking extends MarkerTracking_3dTrans
-{
-	Tracking(NyARParam i_param,NyARCode i_code,double i_marker_width,int i_input_raster_type) throws NyARException
-	{
-		super();
-		initInstance(
-				new NyARColorPatt_Perspective_O2(i_code.getWidth(), i_code.getHeight(),4,25),
-				new NyARSquareContourDetector_Rle(i_param.getScreenSize()),
-				new NyARTransMat(i_param),
-				new NyARRasterFilter_ARToolkitThreshold(120,i_input_raster_type),
-				i_param,
-				i_code,
-				i_marker_width);
-	}
-}
 
-public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListener
+public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListener,INyARMarkerTrackerListener
 {
 
 
@@ -67,7 +53,7 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 
 	private int H = 240;
 
-	private Tracking _tr;
+	private NyARMarkerTracker _tr;
 
 	public TrTest() throws NyARException
 	{
@@ -91,7 +77,7 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 		this._capture.setOnCapture(this);
 
 		addMouseMotionListener(this);
-		this._tr=new Tracking(ar_param,code,80,this._capraster.getBufferType());
+		this._tr=new NyARMarkerTracker(ar_param,this._capraster.getBufferType());
 
 		return;
 	}
@@ -119,56 +105,70 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 		}
 		g.drawPolygon(x,y,i_len);
 	}
+	private void drawPolygon(Graphics g,NyARDoublePoint2d[] i_vertex,int i_len)
+	{
+		int[] x=new int[i_len];
+		int[] y=new int[i_len];
+		for(int i=0;i<i_len;i++)
+		{
+			x[i]=(int)i_vertex[i].x;
+			y[i]=(int)i_vertex[i].y;
+		}
+		g.drawPolygon(x,y,i_len);
+	}	/****************************************/
+	class TagValue
+	{
+		public int counter;
+	}
 	
+	public void OnEnterTracking(NyARMarkerTracker i_sender,NyARTrackItem i_target)
+	{
+		System.out.println("enter sirial="+i_target.serial);
+		i_target.tag=new TagValue();
+	}
+	public void OnOutlineUpdate(NyARMarkerTracker i_sender,NyAROutlineTrackItem i_target)
+	{
+		TagValue t=(TagValue)i_target.tag;
+
+		g2.setColor(Color.RED);
+		drawPolygon(g2,i_target.vertex,4);
+		g2.drawString(Integer.toString(i_target.serial)+":["+t.counter+"%]",i_target.vertex[0].x,i_target.vertex[0].y);
+		if(t.counter>30){
+			i_target.setUpgradeInfo(80,1);
+		}
+		t.counter++;
+		
+	}
+	public void OnDetailUpdate(NyARMarkerTracker i_sender,NyARDetailTrackItem i_target)
+	{
+		g2.setColor(Color.BLUE);
+		drawPolygon(g2,i_target.estimate.ideal_vertex,4);
+		g2.drawString(Integer.toString(i_target.serial),(int)i_target.estimate.ideal_vertex[0].x,(int)i_target.estimate.ideal_vertex[0].y);
+	}
+	public void OnLeaveTracking(NyARMarkerTracker i_sender,NyARTrackItem i_target)
+	{
+		System.out.println("leave sirial="+i_target.serial);
+	}
+	/****************************************/
+	
+	
+	private Graphics g2;
 
 	public void draw(JmfNyARRaster_RGB i_raster)
 	{
 		try {
 			Insets ins = this.getInsets();
 			Graphics g = getGraphics();
-			this._tr.detectMarkerLite(i_raster);
 			Object[] probe=this._tr._probe();
 			NyAROutlineTracker mpt=(NyAROutlineTracker)probe[0];
 				
-			{// ピックアップ画像の表示
-				// 矩形抽出
-//				INyARRasterFilter_RgbToBin to_binfilter = NyARRasterFilterBuilder_ARToolkitThreshold.createFilter(110, i_raster.getBufferReader().getBufferType());
-//				to_binfilter.doFilter(i_raster, this._bin_raster);
-//				if (this.detect.detectMarkerLite(i_raster, 100)) {
-//
-//					NyARTransMatResult res = new NyARTransMatResult();
-//					this.detect.getTransmationMatrix(res);
-//				}
-				{// 撮影画像
 					
-//					INyARRasterFilter_RgbToBin filter=new NyARRasterFilter_ARToolkitThreshold(110,i_raster.getBufferReader().getBufferType());
-//					NyARSquareStack stack=new NyARSquareStack(10);
-					
-					BufferedImage sink = new BufferedImage(i_raster.getWidth(), i_raster.getHeight(), ColorSpace.TYPE_RGB);
-
-					{//元画像
-						NyARRasterImageIO.copy(i_raster, sink);
-						Graphics g2=sink.getGraphics();
-						g2.setColor(Color.RED);
-						NyAROutlineTrackItem[] item=mpt.getOutlines();
-						for(int i=0;i<mpt.getNumberOfOutline();i++){
-							drawPolygon(g2,item[i].vertex,4);
-							g2.drawString(Integer.toString(item[i].serial),item[i].vertex[0].x,item[i].vertex[0].y);
-						}/*
-						g2.setColor(Color.CYAN);
-						for(int i=0;i<fs.getLength();i++){
-							for(int i2=0;i2<1;i2++){
-								g2.drawRect((int)(fs.getItem(i).vertex[i2].x-1),(int)(fs.getItem(i).vertex[i2].y-1),2,2);
-							}
-						}*/
-						g.drawImage(sink, ins.left, ins.top, this);
-					}
-				}
-
-				{// 信号取得テスト
-
-				}
-			}
+			BufferedImage sink = new BufferedImage(i_raster.getWidth(), i_raster.getHeight(), ColorSpace.TYPE_RGB);
+			this.g2=sink.getGraphics();
+			NyARRasterImageIO.copy(i_raster, sink);
+			this._tr.tracking(i_raster,this);
+			
+			g.drawImage(sink, ins.left, ins.top, this);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
