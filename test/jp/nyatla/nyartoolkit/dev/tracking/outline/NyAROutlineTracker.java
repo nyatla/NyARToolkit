@@ -4,6 +4,10 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
+import jp.nyatla.nyartoolkit.dev.tracking.*;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.*;
+
+
 
 
 public class NyAROutlineTracker
@@ -38,12 +42,24 @@ public class NyAROutlineTracker
 			makeIndex(map,i_row_len*i_col_len,i_col_len,min_index,o_track_item);
 			return;
 		}		
+	}
+	class NyAROutlineTrackInternalItem extends NyAROutlineTrackItem
+	{
+		public boolean can_upgrade;
+		public int direction;
+		public double width;	
+		public void setUpgradeInfo(double i_width,int i_direction)
+		{
+			this.can_upgrade=true;
+			this.direction=i_direction;
+			this.width=i_width;
+		}
 	}	
 	class NyAROutlineTrackStack extends NyARObjectStack<NyAROutlineTrackItem>
 	{
 		protected NyAROutlineTrackItem createElement()
 		{
-			return new NyAROutlineTrackItem();
+			return new NyAROutlineTrackInternalItem();
 		}
 		public NyAROutlineTrackStack(int i_max_tracking) throws NyARException
 		{
@@ -74,8 +90,10 @@ public class NyAROutlineTracker
 	
 	private int[] _track_index;
 	private OutlineBinder _binder;
-	public NyAROutlineTracker(int i_max_tracking,int i_max_temp) throws NyARException
+	private NyARMarkerTracker _parent;
+	public NyAROutlineTracker(NyARMarkerTracker i_parent,int i_max_tracking,int i_max_temp) throws NyARException
 	{
+		this._parent=i_parent;
 		this._binder=new OutlineBinder(i_max_temp,i_max_tracking);
 		this._track_index=new int[i_max_tracking];
 		this._tracker_items=new NyAROutlineTrackStack(i_max_tracking);
@@ -101,39 +119,46 @@ public class NyAROutlineTracker
 	 * @param i_vertex
 	 * @return
 	 */
-	public boolean addTrackTarget(NyAROutlineTrackSrcTable.Item i_item)
+	public boolean addTrackTarget(NyAROutlineTrackSrcRefTable i_datasource,INyARMarkerTrackerListener i_listener)
 	{
-		NyAROutlineTrackItem item=this._tracker_items.prePush();
-		if(item==null){
-			//あいてない。終了のお知らせ
-			return false;
+		NyAROutlineTrackSrcTable.Item[] items=i_datasource.getArray();
+		for(int i=i_datasource.getLength()-1;i>=0;i--)
+		{
+			NyAROutlineTrackInternalItem item=(NyAROutlineTrackInternalItem)this._tracker_items.prePush();
+			if(item==null){
+				//あいてない。終了のお知らせ
+				return false;
+			}
+			NyARIntPoint2d[] vertex=items[i].vertex;
+			//トラッキング対象の矩形とするかの判定。
+			int sd1=NyARMath.sqNorm(vertex[0],vertex[2]);
+			int sd2=NyARMath.sqNorm(vertex[1],vertex[3]);
+			//1:3 - 3:1くらいまでの矩形を対象とする。
+			int sq_propotion=sd1*10/sd2;
+			if(sq_propotion<1 || sq_propotion>90){
+				return false;
+			}
+			//トラッキング対象の生成
+			//
+			
+			//追加処理
+			for(int i2=0;i2<4;i2++){
+				item.vertex[i2].x=vertex[i2].x;
+				item.vertex[i2].y=vertex[i2].y;
+			}
+			//中央位置
+			item.center.x=items[i].center.x;
+			item.center.y=items[i].center.y;
+			item.life =0;
+			
+			//探索距離の計算
+			item.sq_dist_max=(sd1+sd2)/2;
+			//シリアル番号の設定			
+			item.serial=(this._sirial_counter++);
+			//アップグレード不能に
+			item.can_upgrade=false;
+			i_listener.OnEnterTracking(this._parent,item);
 		}
-		NyARIntPoint2d[] vertex=i_item.vertex;
-		//トラッキング対象の矩形とするかの判定。
-		int sd1=NyARMath.sqNorm(vertex[0],vertex[2]);
-		int sd2=NyARMath.sqNorm(vertex[1],vertex[3]);
-		//1:3 - 3:1くらいまでの矩形を対象とする。
-		int sq_propotion=sd1*10/sd2;
-		if(sq_propotion<1 || sq_propotion>90){
-			return false;
-		}
-		//トラッキング対象の生成
-		//
-		
-		//追加処理
-		for(int i2=0;i2<4;i2++){
-			item.vertex[i2].x=vertex[i2].x;
-			item.vertex[i2].y=vertex[i2].y;
-		}
-		//中央位置
-		item.center.x=i_item.center.x;
-		item.center.y=i_item.center.y;
-		item.life =0;
-		
-		//探索距離の計算
-		item.sq_dist_max=(sd1+sd2)/2;
-		//シリアル番号の設定			
-		item.serial=(this._sirial_counter++);
 		return true;
 	}
 	public int getNumberOfOutline()
@@ -144,24 +169,13 @@ public class NyAROutlineTracker
 	{
 		return this._tracker_items.getArray();
 	}
-	public NyAROutlineTrackItem getOutlineBySerial(int i_serial)
-	{
-		NyAROutlineTrackItem[] item=this.getOutlines();
-		for(int i=this.getNumberOfOutline()-1;i>=0;i--){
-			if(item[i].serial==i_serial){
-				return item[i];
-			}
-		}
-		return null;
-	}
-
 	
 	/**
 	 * データソースからトラッキング処理を実行します。
 	 * @param i_datasource
 	 * @param i_is_remove_target
 	 */
-	public void trackTarget(NyAROutlineTrackSrcRefTable i_datasource)
+	public void trackTarget(NyAROutlineTrackSrcRefTable i_datasource,INyARMarkerTrackerListener i_listener)
 	{
 		NyAROutlineTrackSrcTable.Item[] temp_items=i_datasource.getArray();
 		OutlineBinder binder=this._binder;
@@ -178,6 +192,7 @@ public class NyAROutlineTracker
 				//見つからなかった。
 				item.life++;
 				if(item.life>10){
+					i_listener.OnLeaveTracking(this._parent,item);
 					//削除(順序無視の削除)
 					this._tracker_items.removeIgnoreOrder(i);
 				}
@@ -197,12 +212,34 @@ public class NyAROutlineTracker
 				item.vertex[i2].x=temp_item_ptr.vertex[(i2+vertex)%4].x;
 				item.vertex[i2].y=temp_item_ptr.vertex[(i2+vertex)%4].y;
 			}
-			//distの計算
-			item.sq_dist_max=(NyARMath.sqNorm(item.vertex[0],item.vertex[2])+NyARMath.sqNorm(item.vertex[1],item.vertex[3]))/2;
+			//対角線の平均を元に矩形の大体1/4 2*n/((sqrt(2)*4)*2)=n/5を計算
+			item.sq_dist_max=(NyARMath.sqNorm(item.vertex[0],item.vertex[2])+NyARMath.sqNorm(item.vertex[1],item.vertex[3]))/10;
 			item.life=0;
-			//[位置更新のイベントの上位通知のタイミングはここ]			
+			//[位置更新のイベントの上位通知のタイミングはここ]
+			i_listener.OnOutlineUpdate(this._parent,item);
+
 		}
-	}	
+	}
+	/**
+	 * アップグレードを試行する。
+	 * @param o_detail_tracker
+	 * @throws NyARException
+	 */
+	public void charangeUpgrade(NyARDetailTracker o_detail_tracker) throws NyARException
+	{
+		NyAROutlineTrackItem[] items=this._tracker_items.getArray();
+		for(int i=this._tracker_items.getLength()-1;i>=0;i--)
+		{
+			NyAROutlineTrackInternalItem item=(NyAROutlineTrackInternalItem)items[i];
+			if(item.can_upgrade){
+				if(!o_detail_tracker.addTrackTarget(item,item.width,item.direction)){
+					break;
+				}
+				this._tracker_items.removeIgnoreOrder(i);
+			}
+		}
+	}
+	
 	private static int getNearVertexIndex(NyARIntPoint2d[] i_base_vertex,NyARIntPoint2d[] i_next_vertex,int i_length)
 	{
 		int min_dist=Integer.MAX_VALUE;
