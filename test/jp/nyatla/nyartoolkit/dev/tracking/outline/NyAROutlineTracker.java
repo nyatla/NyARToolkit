@@ -157,7 +157,7 @@ public class NyAROutlineTracker
 			item.serial=(this._sirial_counter++);
 			//アップグレード不能に
 			item.can_upgrade=false;
-			i_listener.OnEnterTracking(this._parent,item);
+			i_listener.onEnterTracking(this._parent,item);
 		}
 		return true;
 	}
@@ -192,7 +192,7 @@ public class NyAROutlineTracker
 				//見つからなかった。
 				item.life++;
 				if(item.life>10){
-					i_listener.OnLeaveTracking(this._parent,item);
+					i_listener.onLeaveTracking(this._parent,item);
 					//削除(順序無視の削除)
 					this._tracker_items.removeIgnoreOrder(i);
 				}
@@ -216,7 +216,7 @@ public class NyAROutlineTracker
 			item.sq_dist_max=(NyARMath.sqNorm(item.vertex[0],item.vertex[2])+NyARMath.sqNorm(item.vertex[1],item.vertex[3]))/10;
 			item.life=0;
 			//[位置更新のイベントの上位通知のタイミングはここ]
-			i_listener.OnOutlineUpdate(this._parent,item);
+			i_listener.onOutlineUpdate(this._parent,item);
 
 		}
 	}

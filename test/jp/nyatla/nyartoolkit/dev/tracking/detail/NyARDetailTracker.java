@@ -199,12 +199,12 @@ public class NyARDetailTracker
 				item.life++;
 				if(item.life>10){
 					//削除イベントを発行					
-					i_listener.OnLeaveTracking(this._parent,item);
+					i_listener.onLeaveTracking(this._parent,item);
 					//削除(順序無視の削除)
 					this._tracker_items.removeIgnoreOrder(i);
 				}else{
 					//過去の値でイベント呼ぶ
-					i_listener.OnDetailUpdate(this._parent,item);
+					i_listener.onDetailUpdate(this._parent,item);
 				}
 				continue;
 			}
@@ -261,7 +261,7 @@ public class NyARDetailTracker
 			//対角線の平均を元に矩形の大体半分 2*n/((sqrt(2)*2)*2)=n/5を計算
 			est_item.ideal_sq_dist_max=(int)(NyARMath.sqNorm(est_item.ideal_vertex[0],est_item.ideal_vertex[2])+NyARMath.sqNorm(est_item.ideal_vertex[1],est_item.ideal_vertex[3]))/5;
 			//更新
-			i_listener.OnDetailUpdate(this._parent,item);
+			i_listener.onDetailUpdate(this._parent,item);
 		}
 	}
 

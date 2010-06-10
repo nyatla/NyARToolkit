@@ -100,6 +100,7 @@ public class NyARMarkerTracker
 	}
 	public boolean _exelusive_lock=false;
 
+	private INyARRgbRaster current_raster;
 	/**
 	 * i_imageにマーカー検出処理を実行し、結果を記録します。
 	 * 

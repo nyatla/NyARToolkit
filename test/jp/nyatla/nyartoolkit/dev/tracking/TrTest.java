@@ -121,15 +121,32 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 		public int counter;
 	}
 	
-	public void OnEnterTracking(NyARMarkerTracker i_sender,NyARTrackItem i_target)
+	public void onEnterTracking(NyARMarkerTracker i_sender,NyARTrackItem i_target)
 	{
 		System.out.println("enter sirial="+i_target.serial);
 		i_target.tag=new TagValue();
 	}
-	public void OnOutlineUpdate(NyARMarkerTracker i_sender,NyAROutlineTrackItem i_target)
+	public void drawY(int x1,int y1,int x2,int y2)
 	{
-		TagValue t=(TagValue)i_target.tag;
+		int dx=(x2-x1);
+		int dy=(y2-y1);
+		int x,y;
+		for(int i=1;i<16;i++){
+			x=x1+(dx*i)/16;
+			y=y1+(dy*i)/16;
+			if(dx*dx>dy*dy){
+				g2.drawLine(x, y-7, x, y+7);
+			}else{
+				g2.drawLine(x-7, y, x+7,y);
+			}
+		}
+	}
+	public void onOutlineUpdate(NyARMarkerTracker i_sender,NyAROutlineTrackItem i_target)
+	{
 
+		TagValue t=(TagValue)i_target.tag;
+		drawY(i_target.vertex[0].x,i_target.vertex[0].y,i_target.vertex[1].x,i_target.vertex[1].y);
+/*
 		g2.setColor(Color.RED);
 		drawPolygon(g2,i_target.vertex,4);
 		g2.drawString(Integer.toString(i_target.serial)+":["+t.counter+"%]",i_target.vertex[0].x,i_target.vertex[0].y);
@@ -137,15 +154,15 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 			i_target.setUpgradeInfo(80,1);
 		}
 		t.counter++;
-		
+*/		
 	}
-	public void OnDetailUpdate(NyARMarkerTracker i_sender,NyARDetailTrackItem i_target)
+	public void onDetailUpdate(NyARMarkerTracker i_sender,NyARDetailTrackItem i_target)
 	{
 		g2.setColor(Color.BLUE);
 		drawPolygon(g2,i_target.estimate.ideal_vertex,4);
 		g2.drawString(Integer.toString(i_target.serial),(int)i_target.estimate.ideal_vertex[0].x,(int)i_target.estimate.ideal_vertex[0].y);
 	}
-	public void OnLeaveTracking(NyARMarkerTracker i_sender,NyARTrackItem i_target)
+	public void onLeaveTracking(NyARMarkerTracker i_sender,NyARTrackItem i_target)
 	{
 		System.out.println("leave sirial="+i_target.serial);
 	}
