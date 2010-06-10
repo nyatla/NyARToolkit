@@ -30,7 +30,7 @@ public class NyAROutlineTracker
 				for(int c=0;c<i_col_len;c++){
 					map[idx].col=c;
 					map[idx].row=r;
-					int d=NyARMath.sqNorm(i_vertex_r[r].center,i_vertex_c[c].center);
+					int d=(int)NyARMath.sqNorm(i_vertex_r[r].ideal_center,i_vertex_c[c].center);
 					map[idx].dist=d;
 					if(min_dist>d){
 						min_index=idx;
@@ -147,8 +147,8 @@ public class NyAROutlineTracker
 				item.vertex[i2].y=vertex[i2].y;
 			}
 			//中央位置
-			item.center.x=items[i].center.x;
-			item.center.y=items[i].center.y;
+			item.center.x=items[i].ideal_center.x;
+			item.center.y=items[i].ideal_center.y;
 			item.life =0;
 			
 			//探索距離の計算
@@ -201,8 +201,8 @@ public class NyAROutlineTracker
 			NyAROutlineTrackSrcTable.Item temp_item_ptr=temp_items[this._track_index[i]];
 
 			//探した一時情報でテーブルを更新
-			item.center.x=temp_item_ptr.center.x;
-			item.center.y=temp_item_ptr.center.y;
+			item.center.x=temp_item_ptr.ideal_center.x;
+			item.center.y=temp_item_ptr.ideal_center.y;
 
 			//移動量が最小になる組み合わせを計算
 			int vertex=getNearVertexIndex(item.vertex,temp_item_ptr.vertex,4);

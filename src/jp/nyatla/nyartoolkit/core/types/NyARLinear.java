@@ -30,17 +30,16 @@
  */
 package jp.nyatla.nyartoolkit.core.types;
 
-import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 
 /**
  * 0=dx*x+dy*y+cのパラメータを格納します。
- * x,yの増加方向は、x=L→R,y=B→Tです。 
+ * x,yの増加方向は、x=L→R,y=B→Tです。 y軸が反転しているので注意してください。
  *
  */
 public class NyARLinear
 {
-	public double dx;//dx軸の増加量
 	public double dy;//dy軸の増加量
+	public double dx;//dx軸の増加量
 	public double c;//切片
 	public static NyARLinear[] createArray(int i_number)
 	{
@@ -53,52 +52,44 @@ public class NyARLinear
 	}	
 	public final void copyFrom(NyARLinear i_source)
 	{
-		this.dx=i_source.dx;
 		this.dy=i_source.dy;
+		this.dx=i_source.dx;
 		this.c=i_source.c;
 		return;
 	}
 	/**
 	 * 2直線の交点を計算します。
-	 * @param l_line_i
 	 * @param l_line_2
+	 * @param l_line_1
 	 * @param o_point
 	 * @return
 	 */
-	public final static boolean crossPos(NyARLinear l_line_i,NyARLinear l_line_2,NyARDoublePoint2d o_point)
+	public final static boolean crossPos(NyARLinear l_line_1,NyARLinear l_line_2,NyARDoublePoint2d o_point)
 	{
-		final double w1 = l_line_2.dy * l_line_i.dx - l_line_i.dy * l_line_2.dx;
+		final double w1 = l_line_1.dx * l_line_2.dy - l_line_2.dx * l_line_1.dy;
 		if (w1 == 0.0) {
 			return false;
 		}
-		o_point.x = (l_line_2.dx * l_line_i.c - l_line_i.dx * l_line_2.c) / w1;
-		o_point.y = (l_line_i.dy * l_line_2.c - l_line_2.dy * l_line_i.c) / w1;
+		o_point.x = (l_line_1.dy * l_line_2.c - l_line_2.dy * l_line_1.c) / w1;
+		o_point.y = (l_line_2.dx * l_line_1.c - l_line_1.dx * l_line_2.c) / w1;
 		return true;
 	}
 	public final static boolean calculateLine(NyARDoublePoint2d i_point1,NyARDoublePoint2d i_point2,NyARLinear o_line)
 	{
-		double dx=i_point2.x-i_point1.x;
-		double dy=i_point2.y-i_point1.y;
+		double x1=i_point1.x;
+		double y1=i_point1.y;
+		double x2=i_point2.x;
+		double y2=i_point2.y;
+		double dx=y2-y1;
+		double dy=x1-x2;
 		double sq=Math.sqrt(dx*dx+dy*dy);
 		if(sq==0){
 			return false;
 		}
-		o_line.dx=dx/sq;
-		o_line.dy=dy/sq;
-		o_line.c=-(i_point1.x*o_line.dx+i_point1.y*o_line.dy);
+		sq=1/sq;
+		o_line.dx=dx*sq;
+		o_line.dy=dy*sq;
+		o_line.c=(x1*(y1-y2)+y1*(x2-x1))*sq;
 		return true;
 	}
-	public final static boolean calculateLine(NyARIntPoint2d i_point1,NyARIntPoint2d i_point2,NyARLinear o_line)
-	{
-		double dx=(double)(i_point2.x-i_point1.x);
-		double dy=(double)(i_point2.y-i_point1.y);
-		double sq=Math.sqrt(dx*dx+dy*dy);
-		if(sq==0){
-			return false;
-		}
-		o_line.dx=dx/sq;
-		o_line.dy=dy/sq;
-		o_line.c=-(i_point1.x*o_line.dx+i_point1.y*o_line.dy);
-		return true;
-	}	
 }

@@ -35,7 +35,7 @@ public class NyARDetailTracker
 				for(int c=0;c<i_col_len;c++){
 					map[idx].col=c;
 					map[idx].row=r;
-					int d=NyARMath.sqNorm(i_vertex_r[r].ideal_center,i_vertex_c[c].estimate.ideal_center);
+					int d=NyARMath.sqNorm(i_vertex_r[r].ideal_center,i_vertex_c[c].estimate.center);
 					map[idx].dist=d;
 					if(min_dist>d){
 						min_index=idx;
@@ -67,7 +67,7 @@ public class NyARDetailTracker
 			int index=-1;
 			for(int i=this._length-1;i>=0;i--)
 			{
-				NyARIntPoint2d center=this._items[i].estimate.ideal_center;
+				NyARIntPoint2d center=this._items[i].estimate.center;
 				double nd=NyARMath.sqNorm(i_pos, center);
 				//有効範囲内？
 				if(nd>this._items[i].estimate.ideal_sq_dist_max){
@@ -85,6 +85,8 @@ public class NyARDetailTracker
 	private SquareBinder _binder;
 	private NyARSquareTrackStack _tracker_items;
 	private NyARMarkerTracker _parent;
+	private NyARCameraDistortionFactor _ref_distfactor;
+	private NyARIntSize _ref_scr_size;
 
 	public NyARDetailTracker(NyARMarkerTracker i_parent,NyARParam i_ref_param,int i_max_tracking,int i_max_temp) throws NyARException
 	{
@@ -94,6 +96,8 @@ public class NyARDetailTracker
 		this._tracker_items=new NyARSquareTrackStack(i_max_tracking);
 		this._transmat=new NyARTransMat(i_ref_param);
 		this._ref_prjmat=i_ref_param.getPerspectiveProjectionMatrix();
+		this._ref_distfactor=i_ref_param.getDistortionFactor();
+		this._ref_scr_size=i_ref_param.getScreenSize();
 	}
 	
 
@@ -141,8 +145,8 @@ public class NyARDetailTracker
 		item.serial=i_item.serial;
 		item.tag=i_item.tag;
 		item.life=0;
-		item.estimate.ideal_center.x=i_item.center.x;
-		item.estimate.ideal_center.y=i_item.center.y;
+		item.estimate.center.x=i_item.center.x;
+		item.estimate.center.y=i_item.center.y;
 		item.estimate.ideal_sq_dist_max=i_item.sq_dist_max;
 		item.trans_v.x=item.trans_v.y=item.trans_v.z=0;
 
@@ -253,11 +257,18 @@ public class NyARDetailTracker
 			{
 				rot.transformVertex(est_item.offset.vertex[i2],pos3d);
 				prjmat.projectionConvert(pos3d.x+trans.x,pos3d.y+trans.y,pos3d.z+trans.z,est_item.ideal_vertex[i2]);//[Optimaize!]
-				cx+=est_item.ideal_vertex[i2].x;
-				cy+=est_item.ideal_vertex[i2].y;
+				cx+=(int)est_item.ideal_vertex[i2].x;
+				cy+=(int)est_item.ideal_vertex[i2].y;
 			}
-			est_item.ideal_center.x=(int)cx/4;
-			est_item.ideal_center.y=(int)cy/4;
+			//中央値を計算して、理想位置から画面位置に変換（マイナスの時は無かったことにする。）
+			cx/=4;
+			cy/=4;
+			if(this._ref_scr_size.isInsideRact((int)cx,(int)cy)){
+				this._ref_distfactor.ideal2Observ(cx, cy, est_item.center);
+			}else{
+				est_item.center.x=(int)cx;
+				est_item.center.y=(int)cy;				
+			}
 			//対角線の平均を元に矩形の大体半分 2*n/((sqrt(2)*2)*2)=n/5を計算
 			est_item.ideal_sq_dist_max=(int)(NyARMath.sqNorm(est_item.ideal_vertex[0],est_item.ideal_vertex[2])+NyARMath.sqNorm(est_item.ideal_vertex[1],est_item.ideal_vertex[3]))/5;
 			//更新

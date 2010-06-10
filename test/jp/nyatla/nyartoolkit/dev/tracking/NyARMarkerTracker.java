@@ -47,14 +47,14 @@ public class NyARMarkerTracker
 				return;
 			}
 			//矩形トラッキング対象なら、アウトライントラッキングはしない。
-			if(inst._detail_tracker.isTrackTarget(item.center))
+			if(inst._detail_tracker.isTrackTarget(item.ideal_center))
 			{
 				inst._detail_table.push(item,i_coord,i_coorx_num,i_vertex_index);
 				return;
 			}
 			
 			//トラッキング対象でなければ、追加
-			if(!inst._outline_tracker.isTrackTarget(item.center))
+			if(!inst._outline_tracker.isTrackTarget(item.ideal_center))
 			{
 				inst._new_outline_table.push(item);
 				return;
@@ -100,7 +100,6 @@ public class NyARMarkerTracker
 	}
 	public boolean _exelusive_lock=false;
 
-	private INyARRgbRaster current_raster;
 	/**
 	 * i_imageにマーカー検出処理を実行し、結果を記録します。
 	 * 

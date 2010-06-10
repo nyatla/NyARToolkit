@@ -97,8 +97,8 @@ public class SquareContourDetector_X2
 			// 頂点インデクスから頂点座標を得て保存
 			l_imvertex[i].x = i_xcoord[i_mkvertex[i]];
 			l_imvertex[i].y = i_ycoord[i_mkvertex[i]];
-			l_line[i].dy=(double)l_line_i.run/65536.0;
-			l_line[i].dx=(double)l_line_i.rise/65536.0;
+			l_line[i].dx=(double)l_line_i.run/65536.0;
+			l_line[i].dy=(double)l_line_i.rise/65536.0;
 			l_line[i].c=(double)l_line_i.intercept/65536.0;
 		}
 		return true;

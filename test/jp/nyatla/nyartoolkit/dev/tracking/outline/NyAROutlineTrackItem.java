@@ -1,6 +1,6 @@
 package jp.nyatla.nyartoolkit.dev.tracking.outline;
 
-import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
+import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.dev.tracking.NyARTrackItem;
 
 public abstract class NyAROutlineTrackItem extends NyARTrackItem

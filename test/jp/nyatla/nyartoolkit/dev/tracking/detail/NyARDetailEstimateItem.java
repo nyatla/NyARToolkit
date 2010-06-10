@@ -9,9 +9,9 @@ public class NyARDetailEstimateItem
 
 	public NyARRectOffset offset=new NyARRectOffset();	
 	/**
-	 * 理想位置での中心座標
+	 * 画面位置での中心座標
 	 */
-	public NyARIntPoint2d   ideal_center=new NyARIntPoint2d();
+	public NyARIntPoint2d   center=new NyARIntPoint2d();
 	/**
 	 * 理想位置
 	 */

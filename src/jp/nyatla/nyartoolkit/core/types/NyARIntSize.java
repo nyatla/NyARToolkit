@@ -84,7 +84,10 @@ public class NyARIntSize
 			return true;
 		}
 		return false;
-
+	}
+	public boolean isInsideRact(int i_x,int i_y)
+	{
+		return (0<=i_x && i_x<this.w && 0<=i_y && i_y<this.h);
 	}
 
 }

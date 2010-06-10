@@ -106,8 +106,13 @@ public class NyARCameraDistortionFactor implements INyARCameraDistortionFactor
 	}
 	public void ideal2Observ(final NyARDoublePoint2d i_in, NyARIntPoint2d o_out)
 	{
-		final double x = (i_in.x - this._f0) * this._f3;
-		final double y = (i_in.y - this._f1) * this._f3;
+		this.ideal2Observ(i_in.x,i_in.y,o_out);
+		return;
+	}
+	public void ideal2Observ(double i_x,double i_y, NyARIntPoint2d o_out)
+	{
+		final double x = (i_x - this._f0) * this._f3;
+		final double y = (i_y - this._f1) * this._f3;
 		if (x == 0.0 && y == 0.0) {
 			o_out.x = (int)(this._f0);
 			o_out.y = (int)(this._f1);
@@ -118,7 +123,6 @@ public class NyARCameraDistortionFactor implements INyARCameraDistortionFactor
 		}
 		return;
 	}
-
 	
 	/**
 	 * ideal2Observをまとめて実行します。

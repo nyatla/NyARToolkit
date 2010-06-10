@@ -34,7 +34,7 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
-import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
  * RGBラスタをGrayScaleに変換するフィルタを作成します。
@@ -83,50 +83,60 @@ public class NyARRasterFilter_Rgb2Gs_AveAdd implements INyARRasterFilter_Rgb2Gs
 	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output) throws NyARException
 	{
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
-		this._do_filter_impl.doFilter(i_input,i_output,i_input.getSize());
+		NyARIntSize s=i_input.getSize();
+		this._do_filter_impl.doFilter(i_input,(int[])i_output.getBuffer(),0,0,s.w,s.h);
 		return;
 	}
-	
+	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output,NyARIntRect i_area) throws NyARException
+	{
+		
+	}
 	/*
 	 * ここから各種ラスタ向けのフィルタ実装
 	 *
 	 */
 	interface IdoThFilterImpl
 	{
-		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size);
+		public void doFilter(INyARRaster i_input,int[] o_output, int l,int t,int w,int h);
 	}
 	class doThFilterImpl_BYTE1D_B8G8R8_24 implements IdoThFilterImpl
 	{
-		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size)
+		public void doFilter(INyARRaster i_input, int[] o_output,int l,int t,int w,int h)
 		{
-			assert(i_output.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
-			int[] out_buf = (int[]) i_output.getBuffer();
-			byte[] in_buf = (byte[]) i_input.getBuffer();
+			assert(i_input.isEqualBufferType(NyARBufferType.BYTE1D_B8G8R8_24)||i_input.isEqualBufferType(NyARBufferType.BYTE1D_R8G8B8_24));
 			
-			int bp = 0;
-			for (int y = 0; y < i_size.h; y++) {
-				for (int x = 0; x < i_size.w; x++) {
-					out_buf[y*i_size.w+x] = ((in_buf[bp] & 0xff) + (in_buf[bp + 1] & 0xff) + (in_buf[bp + 2] & 0xff)) / 3;
+			NyARIntSize size=i_input.getSize();
+			byte[] in_buf = (byte[]) i_input.getBuffer();
+			int bp = l*3;
+			final int b=t+h;
+			final int row_padding=(size.w-w)*3;
+			for (int y = t; y < b; y++) {
+				for (int x = 0; x < w; x++) {
+					o_output[y*size.w+x] = ((in_buf[bp] & 0xff) + (in_buf[bp + 1] & 0xff) + (in_buf[bp + 2] & 0xff)) / 3;
 					bp += 3;
 				}
+				bp+=row_padding;
 			}
 			return;
 		}		
 	}
 	class doThFilterImpl_BYTE1D_B8G8R8X8_32 implements IdoThFilterImpl
 	{
-		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size)
+		public void doFilter(INyARRaster i_input, int[] o_output,int l,int t,int w,int h)
 		{
-			assert(i_output.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
-			int[] out_buf = (int[]) i_output.getBuffer();
+			assert(i_input.isEqualBufferType(NyARBufferType.BYTE1D_B8G8R8X8_32));
+			NyARIntSize size=i_input.getSize();
 			byte[] in_buf = (byte[]) i_input.getBuffer();
 
-			int bp = 0;
-			for (int y = 0; y < i_size.h; y++) {
-				for (int x = 0; x < i_size.w; x++) {
-					out_buf[y*i_size.w+x] = ((in_buf[bp] & 0xff) + (in_buf[bp + 1] & 0xff) + (in_buf[bp + 2] & 0xff)) / 3;
+			int bp = l*4;
+			final int b=t+h;
+			final int row_padding=(size.w-w)*4;
+			for (int y = t; y < b; y++) {
+				for (int x = 0; x < w; x++) {
+					o_output[y*size.w+x] = ((in_buf[bp] & 0xff) + (in_buf[bp + 1] & 0xff) + (in_buf[bp + 2] & 0xff)) / 3;
 					bp += 4;
 				}
+				bp+=row_padding;
 			}
 		}
 	}

@@ -63,6 +63,13 @@ public class NyARObserv2IdealMap
 		}
 		return;
 	}
+	public void observ2Ideal(int ix, int iy, NyARIntPoint2d o_point)
+	{
+		int idx=ix+iy*this._stride;
+		o_point.x=(int)this._mapx[idx];
+		o_point.y=(int)this._mapy[idx];
+		return;
+	}	
 	public void observ2Ideal(int ix, int iy, NyARDoublePoint2d o_point)
 	{
 		int idx=ix+iy*this._stride;

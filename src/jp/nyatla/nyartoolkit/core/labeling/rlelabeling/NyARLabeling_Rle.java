@@ -26,7 +26,7 @@ package jp.nyatla.nyartoolkit.core.labeling.rlelabeling;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
+import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
 class RleInfoStack extends NyARObjectStack<RleInfoStack.RleInfo>
@@ -193,38 +193,36 @@ public class NyARLabeling_Rle
 		return;
 	}
 	//所望のラスタからBIN-RLEに変換しながらの低速系も準備しようかな
-	
+
 	/**
 	 * 単一閾値を使ってGSラスタをBINラスタに変換しながらラベリングします。
 	 * @param i_gs_raster
-	 * @param i_top
-	 * @param i_bottom
 	 * @param o_stack
 	 * @return
 	 * @throws NyARException
 	 */
-	public int labeling(NyARBinRaster i_bin_raster, int i_top, int i_bottom,NyARRleLabelFragmentInfoStack o_stack) throws NyARException
+	public int labeling(NyARBinRaster i_bin_raster, NyARRleLabelFragmentInfoStack o_stack) throws NyARException
 	{
 		assert(i_bin_raster.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
-		return this.imple_labeling(i_bin_raster,0,i_top,i_bottom,o_stack);
+		NyARIntSize size=i_bin_raster.getSize();
+		return this.imple_labeling(i_bin_raster,0,0,size.h,0,size.w,o_stack);
 	}
 	/**
 	 * BINラスタをラベリングします。
 	 * @param i_gs_raster
 	 * @param i_th
 	 * 画像を２値化するための閾値。暗点<=th<明点となります。
-	 * @param i_top
-	 * @param i_bottom
 	 * @param o_stack
 	 * @return
 	 * @throws NyARException
 	 */
-	public int labeling(NyARGrayscaleRaster i_gs_raster,int i_th, int i_top, int i_bottom,NyARRleLabelFragmentInfoStack o_stack) throws NyARException
+	public int labeling(NyARGrayscaleRaster i_gs_raster,int i_th,NyARRleLabelFragmentInfoStack o_stack) throws NyARException
 	{
 		assert(i_gs_raster.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
-		return this.imple_labeling(i_gs_raster,i_th,i_top,i_bottom,o_stack);
+		NyARIntSize size=i_gs_raster.getSize();
+		return this.imple_labeling(i_gs_raster,i_th,0,size.h,0,size.w,o_stack);
 	}
-	private int imple_labeling(INyARRaster i_raster,int i_th,int i_top, int i_bottom,NyARRleLabelFragmentInfoStack o_stack) throws NyARException
+	private int imple_labeling(INyARRaster i_raster,int i_th,int i_top, int i_bottom,int i_left,int i_right,NyARRleLabelFragmentInfoStack o_stack) throws NyARException
 	{
 		// リセット処理
 		final RleInfoStack rlestack=this._rlestack;
@@ -235,14 +233,16 @@ public class NyARLabeling_Rle
 		RleElement[] rle_current = this._rle2;
 		int len_prev = 0;
 		int len_current = 0;
-		final int width = i_raster.getWidth();
+		final int width = i_right-i_left;
+		final int row_stride=i_raster.getWidth();
 		int[] in_buf = (int[]) i_raster.getBuffer();
 
 		int id_max = 0;
 		int label_count=0;
+		int rle_top_index=i_left;
 		// 初段登録
 
-		len_prev = toRel(in_buf, i_top, width, rle_prev,i_th);
+		len_prev = toRel(in_buf, rle_top_index, width, rle_prev,i_th);
 		for (int i = 0; i < len_prev; i++) {
 			// フラグメントID=フラグメント初期値、POS=Y値、RELインデクス=行
 			addFragment(rle_prev[i], id_max, i_top,rlestack);
@@ -254,7 +254,8 @@ public class NyARLabeling_Rle
 		// 次段結合
 		for (int y = i_top + 1; y < i_bottom; y++) {
 			// カレント行の読込
-			len_current = toRel(in_buf, y * width, width, rle_current,i_th);
+			rle_top_index+=row_stride;
+			len_current = toRel(in_buf,rle_top_index, width, rle_current,i_th);
 			int index_prev = 0;
 
 			SCAN_CUR: for (int i = 0; i < len_current; i++) {
