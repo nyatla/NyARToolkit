@@ -27,8 +27,10 @@ package jp.nyatla.nyartoolkit.core.analyzer.raster.threshold;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.types.*;
 
 public interface INyARRasterThresholdAnalyzer
 {
 	public int analyzeRaster(INyARRaster i_input) throws NyARException;
+	public int analyzeRaster(INyARRaster i_input,NyARIntRect i_area) throws NyARException;
 }

@@ -30,23 +30,13 @@
  */
 package jp.nyatla.nyartoolkit.core.types;
 /**
- * @deprecated このクラスは名称変更のため、削除されます。
- * @see NyARIntPoint2d
+ * 左上と右下座標により、矩形を定義する。
+ *
  */
-public class NyARIntPoint extends NyARIntPoint2d
+public class NyARIntLtrbRect
 {
-	/**
-	 * 配列ファクトリ
-	 * @param i_number
-	 * @return
-	 */
-	public static NyARIntPoint[] createArray(int i_number)
-	{
-		NyARIntPoint[] ret=new NyARIntPoint[i_number];
-		for(int i=0;i<i_number;i++)
-		{
-			ret[i]=new NyARIntPoint();
-		}
-		return ret;
-	}
+	public int l;
+	public int t;
+	public int r;
+	public int b;
 }

@@ -74,7 +74,13 @@ public class NyARLinear
 		o_point.y = (l_line_2.dx * l_line_1.c - l_line_1.dx * l_line_2.c) / w1;
 		return true;
 	}
-	public final static boolean calculateLine(NyARDoublePoint2d i_point1,NyARDoublePoint2d i_point2,NyARLinear o_line)
+	/**
+	 * ２点を結ぶ直線の式を得る。この式は正規化されている。
+	 * @param i_point1
+	 * @param i_point2
+	 * @return
+	 */
+	public final boolean calculateLine(NyARDoublePoint2d i_point1,NyARDoublePoint2d i_point2)
 	{
 		double x1=i_point1.x;
 		double y1=i_point1.y;
@@ -87,9 +93,9 @@ public class NyARLinear
 			return false;
 		}
 		sq=1/sq;
-		o_line.dx=dx*sq;
-		o_line.dy=dy*sq;
-		o_line.c=(x1*(y1-y2)+y1*(x2-x1))*sq;
+		this.dx=dx*sq;
+		this.dy=dy*sq;
+		this.c=(x1*(y1-y2)+y1*(x2-x1))*sq;
 		return true;
 	}
 }

@@ -194,6 +194,13 @@ public class NyARLabeling_Rle
 	}
 	//所望のラスタからBIN-RLEに変換しながらの低速系も準備しようかな
 
+
+	public int labeling(NyARBinRaster i_bin_raster, NyARRleLabelFragmentInfoStack o_stack) throws NyARException
+	{
+		assert(i_bin_raster.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
+		NyARIntSize size=i_bin_raster.getSize();
+		return this.imple_labeling(i_bin_raster,0,0,size.h,0,size.w,o_stack);
+	}
 	/**
 	 * 単一閾値を使ってGSラスタをBINラスタに変換しながらラベリングします。
 	 * @param i_gs_raster
@@ -201,11 +208,11 @@ public class NyARLabeling_Rle
 	 * @return
 	 * @throws NyARException
 	 */
-	public int labeling(NyARBinRaster i_bin_raster, NyARRleLabelFragmentInfoStack o_stack) throws NyARException
+	public int labeling(NyARGrayscaleRaster i_gs_raster,int i_th,NyARRleLabelFragmentInfoStack o_stack) throws NyARException
 	{
-		assert(i_bin_raster.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
-		NyARIntSize size=i_bin_raster.getSize();
-		return this.imple_labeling(i_bin_raster,0,0,size.h,0,size.w,o_stack);
+		assert(i_gs_raster.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
+		NyARIntSize size=i_gs_raster.getSize();
+		return this.imple_labeling(i_gs_raster,i_th,0,size.h,0,size.w,o_stack);
 	}
 	/**
 	 * BINラスタをラベリングします。
@@ -216,11 +223,11 @@ public class NyARLabeling_Rle
 	 * @return
 	 * @throws NyARException
 	 */
-	public int labeling(NyARGrayscaleRaster i_gs_raster,int i_th,NyARRleLabelFragmentInfoStack o_stack) throws NyARException
+	public int labeling(NyARGrayscaleRaster i_gs_raster,NyARIntRect i_area,int i_th,NyARRleLabelFragmentInfoStack o_stack) throws NyARException
 	{
 		assert(i_gs_raster.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
 		NyARIntSize size=i_gs_raster.getSize();
-		return this.imple_labeling(i_gs_raster,i_th,0,size.h,0,size.w,o_stack);
+		return this.imple_labeling(i_gs_raster,i_th,i_area.x,i_area.x+size.w,i_area.y,i_area.y+size.h,o_stack);
 	}
 	private int imple_labeling(INyARRaster i_raster,int i_th,int i_top, int i_bottom,int i_left,int i_right,NyARRleLabelFragmentInfoStack o_stack) throws NyARException
 	{

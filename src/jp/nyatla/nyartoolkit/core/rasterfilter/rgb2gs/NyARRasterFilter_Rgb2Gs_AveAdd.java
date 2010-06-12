@@ -87,8 +87,11 @@ public class NyARRasterFilter_Rgb2Gs_AveAdd implements INyARRasterFilter_Rgb2Gs
 		this._do_filter_impl.doFilter(i_input,(int[])i_output.getBuffer(),0,0,s.w,s.h);
 		return;
 	}
-	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output,NyARIntRect i_area) throws NyARException
+	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output,int l,int t,int w,int h) throws NyARException
 	{
+		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
+		NyARIntSize s=i_input.getSize();
+		this._do_filter_impl.doFilter(i_input,(int[])i_output.getBuffer(),l,t,w,h);
 		
 	}
 	/*
@@ -107,12 +110,12 @@ public class NyARRasterFilter_Rgb2Gs_AveAdd implements INyARRasterFilter_Rgb2Gs
 			
 			NyARIntSize size=i_input.getSize();
 			byte[] in_buf = (byte[]) i_input.getBuffer();
-			int bp = l*3;
+			int bp = (l+t*size.w)*3;
 			final int b=t+h;
 			final int row_padding=(size.w-w)*3;
 			for (int y = t; y < b; y++) {
 				for (int x = 0; x < w; x++) {
-					o_output[y*size.w+x] = ((in_buf[bp] & 0xff) + (in_buf[bp + 1] & 0xff) + (in_buf[bp + 2] & 0xff)) / 3;
+					o_output[y*size.w+x+l] = ((in_buf[bp] & 0xff) + (in_buf[bp + 1] & 0xff) + (in_buf[bp + 2] & 0xff)) / 3;
 					bp += 3;
 				}
 				bp+=row_padding;
@@ -128,12 +131,12 @@ public class NyARRasterFilter_Rgb2Gs_AveAdd implements INyARRasterFilter_Rgb2Gs
 			NyARIntSize size=i_input.getSize();
 			byte[] in_buf = (byte[]) i_input.getBuffer();
 
-			int bp = l*4;
+			int bp = (l+t*size.w)*4;
 			final int b=t+h;
 			final int row_padding=(size.w-w)*4;
 			for (int y = t; y < b; y++) {
 				for (int x = 0; x < w; x++) {
-					o_output[y*size.w+x] = ((in_buf[bp] & 0xff) + (in_buf[bp + 1] & 0xff) + (in_buf[bp + 2] & 0xff)) / 3;
+					o_output[y*size.w+x+l] = ((in_buf[bp] & 0xff) + (in_buf[bp + 1] & 0xff) + (in_buf[bp + 2] & 0xff)) / 3;
 					bp += 4;
 				}
 				bp+=row_padding;

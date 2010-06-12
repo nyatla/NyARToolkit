@@ -36,16 +36,20 @@ import jp.nyatla.nyartoolkit.core.types.*;
 
 public abstract class NyARSquareContourDetector
 {
-	public interface IDetectMarkerCallback
-	{
-		public void onSquareDetect(NyARSquareContourDetector i_sender,NyARIntPoint2d[] i_coord,int i_coor_num,int[] i_vertex_index)  throws NyARException;
-	}
 	/**
 	 *
 	 * @param i_raster
 	 * @param o_square_stack
 	 * @throws NyARException
 	 */
-	public abstract void detectMarkerCB(NyARBinRaster i_raster, IDetectMarkerCallback i_callback) throws NyARException;
+	public abstract void detectMarker(NyARBinRaster i_raster) throws NyARException;
+	/**
+	 * detectMarkerは、ラスターから矩形を見つけるたびに、この関数を呼び出すように実装します。
+	 * @param i_coord
+	 * @param i_coor_num
+	 * @param i_vertex_index
+	 * @throws NyARException
+	 */
+	protected abstract void onSquareDetect(NyARIntPoint2d[] i_coord,int i_coor_num,int[] i_vertex_index)  throws NyARException;
 }
 

@@ -39,6 +39,7 @@ import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilter_ARToolkitThreshold;
 import jp.nyatla.nyartoolkit.core.squaredetect.*;
 import jp.nyatla.nyartoolkit.core.pickup.*;
+import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 /**
  * 画像からARCodeに最も一致するマーカーを1個検出し、その変換行列を計算するクラスです。
@@ -50,6 +51,49 @@ public class NyARSingleDetectMarker extends NyARCustomSingleDetectMarker
 	public final static int PF_NYARTOOLKIT=2;
 	public final static int PF_NYARTOOLKIT_ARTOOLKIT_FITTING=100;
 	public final static int PF_TEST2=201;
+	
+	/**
+	 * Rleラ矩形Detectorのブリッジ
+	 *
+	 */
+	class RleDetector extends NyARSquareContourDetector_Rle
+	{
+		NyARCustomSingleDetectMarker _parent;
+		RleDetector(NyARCustomSingleDetectMarker i_parent,NyARIntSize i_size) throws NyARException
+		{
+			super(i_size);
+			this._parent=i_parent;
+		}
+		public void onSquareDetect(NyARIntPoint2d[] i_coord,int i_coor_num,int[] i_vertex_index) throws NyARException
+		{
+			this._parent.updateSquareInfo(i_coord, i_coor_num, i_vertex_index);
+		}	
+	}
+	/**
+	 * ARTK矩形Detectorのブリッジ
+	 *
+	 */
+	class ARTKDetector extends NyARSquareContourDetector_ARToolKit
+	{
+		NyARCustomSingleDetectMarker _parent;
+		ARTKDetector(NyARCustomSingleDetectMarker i_parent,NyARIntSize i_size) throws NyARException
+		{
+			super(i_size);
+			this._parent=i_parent;
+		}
+		public void onSquareDetect(NyARIntPoint2d[] i_coord,int i_coor_num,int[] i_vertex_index) throws NyARException
+		{
+			this._parent.updateSquareInfo(i_coord, i_coor_num, i_vertex_index);
+		}	
+	}	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	/**
 	 * 検出するARCodeとカメラパラメータから、1個のARCodeを検出するNyARSingleDetectMarkerインスタンスを作ります。
@@ -100,17 +144,17 @@ public class NyARSingleDetectMarker extends NyARCustomSingleDetectMarker
 		switch(i_profile_id){
 		case PF_ARTOOLKIT_COMPATIBLE:
 			patt_inst=new NyARColorPatt_O3(i_ref_code.getWidth(), i_ref_code.getHeight());
-			sqdetect_inst=new NyARSquareContourDetector_ARToolKit(i_ref_param.getScreenSize());
+			sqdetect_inst=new ARTKDetector(this,i_ref_param.getScreenSize());
 			transmat_inst=new NyARTransMat_ARToolKit(i_ref_param);
 			break;
 		case PF_NYARTOOLKIT_ARTOOLKIT_FITTING:
 			patt_inst=new NyARColorPatt_Perspective_O2(i_ref_code.getWidth(), i_ref_code.getHeight(),4,25);
-			sqdetect_inst=new NyARSquareContourDetector_Rle(i_ref_param.getScreenSize());
+			sqdetect_inst=new RleDetector(this,i_ref_param.getScreenSize());
 			transmat_inst=new NyARTransMat_ARToolKit(i_ref_param);
 			break;
 		case PF_NYARTOOLKIT://default
 			patt_inst=new NyARColorPatt_Perspective_O2(i_ref_code.getWidth(), i_ref_code.getHeight(),4,25);
-			sqdetect_inst=new NyARSquareContourDetector_Rle(i_ref_param.getScreenSize());
+			sqdetect_inst=new RleDetector(this,i_ref_param.getScreenSize());
 			transmat_inst=new NyARTransMat(i_ref_param);
 			break;
 		default:

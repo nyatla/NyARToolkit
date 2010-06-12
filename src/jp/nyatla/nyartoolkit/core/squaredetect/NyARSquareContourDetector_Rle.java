@@ -34,10 +34,11 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.NyARLabelOverlapChecker;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.*;
 import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
+import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 
-public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
+public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 {
 	private static final int AR_AREA_MAX = 100000;// #define AR_AREA_MAX 100000
 	private static final int AR_AREA_MIN = 70;// #define AR_AREA_MIN 70
@@ -78,8 +79,70 @@ public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 	}
 
 	private final int[] __detectMarker_mkvertex = new int[4];
+	public void detectMarker(NyARGrayscaleRaster i_raster,NyARIntRect i_area,int i_th) throws NyARException
+	{
+		final NyARRleLabelFragmentInfoStack flagment=this._stack;
+		final NyARLabelOverlapChecker<NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo> overlap = this._overlap_checker;
+
+		// ラベル数が0ならここまで
+		final int label_num=this._labeling.labeling(i_raster, i_area, i_th, flagment);
+		if (label_num < 1) {
+			return;
+		}
+		//ラベルをソートしておく
+		flagment.sortByArea();
+		//ラベルリストを取得
+		NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo[] labels=flagment.getArray();
+
+		final int xsize = this._width;
+		final int ysize = this._height;
+		NyARIntPoint2d[] coord = this._coord;
+		final int coord_max = this._max_coord;
+		final int[] mkvertex =this.__detectMarker_mkvertex;
+
+
+		//重なりチェッカの最大数を設定
+		overlap.setMaxLabels(label_num);
+
+		for (int i=0; i < label_num; i++) {
+			final NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo label_pt=labels[i];
+			int label_area = label_pt.area;
+		
+			// クリップ領域が画面の枠に接していれば除外
+			if (label_pt.clip_l == 0 || label_pt.clip_r == xsize-1){
+				continue;
+			}
+			if (label_pt.clip_t == 0 || label_pt.clip_b == ysize-1){
+				continue;
+			}
+			// 既に検出された矩形との重なりを確認
+			if (!overlap.check(label_pt)) {
+				// 重なっているようだ。
+				continue;
+			}
+			
+			//輪郭を取得
+			int coord_num = _cpickup.getContour(i_raster,i_area, i_th,label_pt.entry_x,label_pt.clip_t, coord);
+			if (coord_num == coord_max) {
+				// 輪郭が大きすぎる。
+				continue;
+			}
+			//輪郭線をチェックして、矩形かどうかを判定。矩形ならばmkvertexに取得
+			if (!this._coord2vertex.getVertexIndexes(coord,coord_num,label_area, mkvertex)) {
+				// 頂点の取得が出来なかった
+				continue;
+			}
+			//矩形を発見したことをコールバック関数で通知
+			this.onSquareDetect(coord,coord_num,mkvertex);
+
+			// 検出済の矩形の属したラベルを重なりチェックに追加する。
+			overlap.push(label_pt);
+		
+		}
+		return;
+	}
 	
-	public void detectMarkerCB(NyARBinRaster i_raster, IDetectMarkerCallback i_callback) throws NyARException
+	public void detectMarker(NyARBinRaster i_raster) throws NyARException
 	{
 		final NyARRleLabelFragmentInfoStack flagment=this._stack;
 		final NyARLabelOverlapChecker<NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo> overlap = this._overlap_checker;
@@ -122,7 +185,7 @@ public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 			}
 			
 			//輪郭を取得
-			int coord_num = _cpickup.getContour(i_raster,label_pt.entry_x,label_pt.clip_t, coord_max,coord);
+			int coord_num = _cpickup.getContour(i_raster,label_pt.entry_x,label_pt.clip_t,coord);
 			if (coord_num == coord_max) {
 				// 輪郭が大きすぎる。
 				continue;
@@ -133,7 +196,7 @@ public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 				continue;
 			}
 			//矩形を発見したことをコールバック関数で通知
-			i_callback.onSquareDetect(this,coord,coord_num,mkvertex);
+			this.onSquareDetect(coord,coord_num,mkvertex);
 
 			// 検出済の矩形の属したラベルを重なりチェックに追加する。
 			overlap.push(label_pt);

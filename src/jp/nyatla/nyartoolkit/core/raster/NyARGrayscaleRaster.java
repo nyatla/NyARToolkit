@@ -103,4 +103,13 @@ public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 		assert(!this._is_attached_buffer);//バッファがアタッチされていたら機能しない。
 		this._buf=i_ref_buf;
 	}	
+	public void fill(int i_value)
+	{
+		assert(this._buffer_type==NyARBufferType.INT1D_GRAY_8);
+		int[] buf=(int[])this._buf;
+		for(int i=this._size.h*this._size.w-1;i>=0;i--)
+		{
+			buf[i]=i_value;
+		}
+	}
 }

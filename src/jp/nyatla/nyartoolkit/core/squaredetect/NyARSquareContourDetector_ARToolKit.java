@@ -42,7 +42,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 
 
-public class NyARSquareContourDetector_ARToolKit extends NyARSquareContourDetector
+public abstract class NyARSquareContourDetector_ARToolKit extends NyARSquareContourDetector
 {
 	private static final int AR_AREA_MAX = 100000;// #define AR_AREA_MAX 100000
 	private static final int AR_AREA_MIN = 70;// #define AR_AREA_MIN 70
@@ -54,7 +54,7 @@ public class NyARSquareContourDetector_ARToolKit extends NyARSquareContourDetect
 	private final NyARLabelingImage _limage;
 
 	private final NyARLabelOverlapChecker<NyARLabelingLabel> _overlap_checker = new NyARLabelOverlapChecker<NyARLabelingLabel>(32,NyARLabelingLabel.class);
-	private final NyARContourPickup _cpickup=new NyARContourPickup();
+	private final NyARContourPickup_ARToolKit _cpickup=new NyARContourPickup_ARToolKit();
 	private final NyARCoord2SquareVertexIndexes _coord2vertex=new NyARCoord2SquareVertexIndexes();
 	
 	private final int _max_coord;
@@ -87,11 +87,9 @@ public class NyARSquareContourDetector_ARToolKit extends NyARSquareContourDetect
 	 * directionの確定は行いません。
 	 * @param i_raster
 	 * 解析する２値ラスタイメージを指定します。
-	 * @param o_square_stack
-	 * 抽出した正方形候補を格納するリスト
 	 * @throws NyARException
 	 */
-	public final void detectMarkerCB(NyARBinRaster i_raster, IDetectMarkerCallback i_callback) throws NyARException
+	public final void detectMarker(NyARBinRaster i_raster) throws NyARException
 	{
 		final NyARLabelingImage limage = this._limage;
 
@@ -156,7 +154,7 @@ public class NyARSquareContourDetector_ARToolKit extends NyARSquareContourDetect
 				continue;
 			}
 			//矩形を発見したことをコールバック関数で通知
-			i_callback.onSquareDetect(this,coord,coord_num,mkvertex);
+			this.onSquareDetect(coord,coord_num,mkvertex);
 
 			// 検出済の矩形の属したラベルを重なりチェックに追加する。
 			overlap.push(label_pt);
