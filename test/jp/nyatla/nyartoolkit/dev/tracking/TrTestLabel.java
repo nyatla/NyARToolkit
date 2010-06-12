@@ -6,6 +6,9 @@ import java.awt.event.*;
 import java.awt.image.*;
 import java.io.*;
 import javax.media.Buffer;
+
+import com.ibm.media.codec.audio.gsm.GsmDecoder;
+
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARCode;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
@@ -24,8 +27,10 @@ import jp.nyatla.nyartoolkit.utils.j2se.NyARRasterImageIO;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 import jp.nyatla.nyartoolkit.dev.tracking.detail.*;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.labeling.NyARDetailLabelingTrackSrcTable;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.labeling.NyARDetailLabelingTracker;
 import jp.nyatla.nyartoolkit.dev.tracking.outline.*;
-
+import jp.nyatla.nyartoolkit.core.raster.*;
 
 
 
@@ -35,7 +40,7 @@ import jp.nyatla.nyartoolkit.dev.tracking.outline.*;
  *
  */
 
-public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListener,INyARMarkerTrackerListener
+public class TrTestLabel extends Frame implements JmfCaptureListener,MouseMotionListener,INyARMarkerTrackerListener
 {
 
 
@@ -53,9 +58,9 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 
 	private int H = 240;
 
-	private NyARMarkerTracker _tr;
+	private NyARMarkerLabelingTracker _tr;
 
-	public TrTest() throws NyARException
+	public TrTestLabel() throws NyARException
 	{
 		setTitle("JmfCaptureTest");
 		Insets ins = this.getInsets();
@@ -77,7 +82,7 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 		this._capture.setOnCapture(this);
 
 		addMouseMotionListener(this);
-		this._tr=new NyARMarkerTracker(ar_param,this._capraster.getBufferType());
+		this._tr=new NyARMarkerLabelingTracker(ar_param,this._capraster.getBufferType());
 
 		return;
 	}
@@ -94,18 +99,18 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 
 
 	private final String data_file = "../Data/320x240ABGR.raw";
-	private void drawPolygon(Graphics g,NyARIntPoint2d[] i_vertex,int i_len)
+	private void drawPolygon(Graphics g,NyARDoublePoint2d[] i_vertex,int i_len)
 	{
 		int[] x=new int[i_len];
 		int[] y=new int[i_len];
 		for(int i=0;i<i_len;i++)
 		{
-			x[i]=i_vertex[i].x;
-			y[i]=i_vertex[i].y;
+			x[i]=(int)i_vertex[i].x;
+			y[i]=(int)i_vertex[i].y;
 		}
 		g.drawPolygon(x,y,i_len);
 	}
-	private void drawPolygon(Graphics g,NyARDoublePoint2d[] i_vertex,int i_len)
+	private void drawPolygon(Graphics g,NyARIntPoint2d[] i_vertex,int i_len)
 	{
 		int[] x=new int[i_len];
 		int[] y=new int[i_len];
@@ -132,10 +137,12 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 		TagValue t=(TagValue)i_target.tag;
 		g2.setColor(Color.RED);
 		g2.drawString(Integer.toString(i_target.serial)+":["+t.counter+"%]",i_target.vertex[0].x,i_target.vertex[0].y);
-		if(t.counter>3){
+		drawPolygon(g2,i_target.vertex,4);
+
+		if(t.counter>100){
 			i_target.setUpgradeInfo(80,1);
 		}
-		t.counter++;
+		t.counter+=2;
 	
 	}
 	public void onDetailUpdate(NyARMarkerTracker i_sender,NyARDetailTrackItem i_target)
@@ -159,13 +166,21 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 			Insets ins = this.getInsets();
 			Graphics g = getGraphics();
 			Object[] probe=this._tr._probe();
+			NyARDetailLabelingTracker mpt=(NyARDetailLabelingTracker)probe[1];
 				
 			BufferedImage sink = new BufferedImage(i_raster.getWidth(), i_raster.getHeight(), ColorSpace.TYPE_RGB);
 			this.g2=sink.getGraphics();
+			mpt.g=g2;
 			NyARRasterImageIO.copy(i_raster, sink);
-			this._tr.tracking(i_raster,this);
 			
+			NyARGrayscaleRaster gs=(NyARGrayscaleRaster)(((NyARDetailLabelingTrackSrcTable)probe[2])._probe()[0]);
+			gs.fill(0);
+			this._tr.tracking(i_raster,this);
 			g.drawImage(sink, ins.left, ins.top, this);
+			NyARRasterImageIO.copy(gs, sink);
+			g.drawImage(sink, ins.left, ins.top+240, this);
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -216,7 +231,7 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 	{
 
 		try {
-			TrTest mainwin = new TrTest();
+			TrTestLabel mainwin = new TrTestLabel();
 			mainwin.setVisible(true);
 			mainwin.startCapture();
 			// mainwin.startImage();

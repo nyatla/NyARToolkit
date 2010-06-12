@@ -1,5 +1,7 @@
 package jp.nyatla.nyartoolkit.dev.tracking.detail;
 
+import java.awt.Graphics;
+
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
@@ -12,69 +14,17 @@ import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.dev.tracking.outline.*;
 import jp.nyatla.nyartoolkit.dev.tracking.*;
 
-public class NyARDetailTracker
+public class NyARDetailTracker_Line extends NyARDetailTracker
 {
+	public Graphics g;
 	/*	インラインクラス
 	 */
 
-	protected class SquareBinder extends VertexBinder
-	{
-		public SquareBinder(int i_max_col,int i_max_row)
-		{
-			super(i_max_col,i_max_row);
-		}
-		
-		public void bindPoints(NyARDetailTrackSrcTable.Item[] i_vertex_r,int i_row_len,NyARDetailTrackItem[] i_vertex_c,int i_col_len,int o_track_item[])
-		{
-			VertexBinder.DistItem[] map=this._map;
-			//distortionMapを作成。ついでに最小値のインデクスも取得
-			int min_index=0;
-			int min_dist =Integer.MAX_VALUE;
-			int idx=0;
-			for(int r=0;r<i_row_len;r++){
-				for(int c=0;c<i_col_len;c++){
-					map[idx].col=c;
-					map[idx].row=r;
-					int d=NyARMath.sqNorm(i_vertex_r[r].ideal_center,i_vertex_c[c].estimate.center);
-					map[idx].dist=d;
-					if(min_dist>d){
-						min_index=idx;
-						min_dist=d;
-					}
-					idx++;
-				}
-			}
-			makeIndex(map,i_row_len*i_col_len,i_col_len,min_index,o_track_item);
-			return;
-		}		
-	}
 
-	
-	protected int[] _track_index;
-	protected SquareBinder _binder;
-	protected NyARDetailTrackStack _tracker_items;
-	protected NyARMarkerTracker _parent;
-	protected NyARCameraDistortionFactor _ref_distfactor;
-	protected NyARIntSize _ref_scr_size;
-
-	public NyARDetailTracker(NyARMarkerTracker i_parent,NyARParam i_ref_param,int i_max_tracking,int i_max_temp) throws NyARException
+	public NyARDetailTracker_Line(NyARMarkerTracker i_parent,NyARParam i_ref_param,int i_max_tracking,int i_max_temp) throws NyARException
 	{
-		this._parent=i_parent;
-		this._binder=new SquareBinder(i_max_temp,i_max_tracking);
-		this._track_index=new int[i_max_tracking];
-		this._tracker_items=new NyARDetailTrackStack(i_max_tracking);
-		this._transmat=new NyARTransMat(i_ref_param);
-		this._ref_prjmat=i_ref_param.getPerspectiveProjectionMatrix();
-		this._ref_distfactor=i_ref_param.getDistortionFactor();
-		this._ref_scr_size=i_ref_param.getScreenSize();
+		super(i_parent,i_ref_param,i_max_tracking,i_max_temp);
 	}
-	
-
-	public boolean isTrackTarget(NyARIntPoint2d i_center)
-	{
-		return this._tracker_items.getNearestItem(i_center)!=-1;
-	}
-	protected NyARTransMat _transmat;	
 	private NyARLinear[] __temp_linear=NyARLinear.createArray(4);
 	/**
 	 * トラッキング対象を追加する。
@@ -131,7 +81,6 @@ public class NyARDetailTracker
 	}
 
 	private NyARDoublePoint3d __pos3d=new NyARDoublePoint3d();
-	protected NyARPerspectiveProjectionMatrix _ref_prjmat;
 	private NyARDoublePoint3d __trans=new NyARDoublePoint3d();
 	private NyARDoublePoint3d __angle=new NyARDoublePoint3d();
 	private NyARDoubleMatrix33 __rot=new NyARDoubleMatrix33();
@@ -149,13 +98,13 @@ public class NyARDetailTracker
 		SquareBinder binder=this._binder;
 		int track_item_len= this._tracker_items.getLength();
 		NyARDetailTrackItem[] track_items=this._tracker_items.getArray();
+		NyARPerspectiveProjectionMatrix prjmat=this._ref_prjmat;
 		
 		//ワーク
 		NyARDoublePoint3d trans=this.__trans;
 		NyARDoublePoint3d angle=this.__angle;
 		NyARDoubleMatrix33 rot=this.__rot;
 		NyARDoublePoint3d pos3d=this.__pos3d;
-		NyARPerspectiveProjectionMatrix prjmat=this._ref_prjmat;
 		NyARDoublePoint2d[] ideal_vertex=this.__ideal_vertex_ptr;
 		NyARLinear[] ideal_line=this.__ideal_line_ptr;
 		
@@ -216,6 +165,9 @@ public class NyARDetailTracker
 			item.angle.y=(-0.39<vy && vy<0.39)?(angle.y+item.angle.y)*0.5:angle.y;			
 			vz=(angle.z-item.angle.z);
 			item.angle.z=(-0.39<vz && vz<0.39)?(angle.z+item.angle.z)*0.5:angle.z;
+			
+//予想位置に対する線分をかいてみよう！
+			drawY(est_item.ideal_vertex[0].x,est_item.ideal_vertex[0].y,est_item.ideal_vertex[1].x,est_item.ideal_vertex[1].y);
 
 			
 			//理想系での未来位置を計算(angle,transは観測値からの予想値)
@@ -244,7 +196,21 @@ public class NyARDetailTracker
 			i_listener.onDetailUpdate(this._parent,item);
 		}
 	}
-
+	public void drawY(double x1,double y1,double x2,double y2)
+	{
+		int dx=(int)(x2-x1);
+		int dy=(int)(y2-y1);
+		int x,y;
+		for(int i=1;i<32;i++){
+			x=(int)x1+(dx*i)/32;
+			y=(int)y1+(dy*i)/32;
+			if(dx*dx>dy*dy){
+				g.drawLine(x, y-15, x, y+15);
+			}else{
+				g.drawLine(x-15, y, x+15,y);
+			}
+		}
+	}
 	private static int getNearVertexIndex(NyARDoublePoint2d[] i_base_vertex,NyARDoublePoint2d[] i_next_vertex,int i_length)
 	{
 		int min_dist=Integer.MAX_VALUE;

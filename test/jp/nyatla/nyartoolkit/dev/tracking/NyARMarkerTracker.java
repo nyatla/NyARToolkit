@@ -8,8 +8,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.INyARRasterFilter_Rgb2Bin;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilter_ARToolkitThreshold;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.*;
 import jp.nyatla.nyartoolkit.dev.tracking.outline.*;
 
@@ -21,7 +20,7 @@ import jp.nyatla.nyartoolkit.dev.tracking.outline.*;
 
 public class NyARMarkerTracker
 {
-	private class SquareDetector extends NyARSquareContourDetector_Rle
+	protected class SquareDetector extends NyARSquareContourDetector_Rle
 	{
 		public NyARMarkerTracker tag;
 		public SquareDetector(NyARIntSize i_size) throws NyARException
@@ -33,7 +32,7 @@ public class NyARMarkerTracker
 	/**
 	 * detectMarkerのコールバック関数
 	 */
-	private class DetectSquareCB implements NyARSquareContourDetector.IDetectMarkerCallback
+	protected class DetectSquareCB implements NyARSquareContourDetector.IDetectMarkerCallback
 	{
 		/**
 		 * 矩形が見付かるたびに呼び出されます。
@@ -66,20 +65,20 @@ public class NyARMarkerTracker
 
 
 
-	private NyAROutlineTrackSrcTable _outline_table;
-	private NyAROutlineTrackSrcRefTable _track_outline_table;
-	private NyAROutlineTrackSrcRefTable _new_outline_table;
-	private NyAROutlineTracker _outline_tracker;
-	private NyARDetailTracker _detail_tracker;
-	private NyARDetailTrackSrcTable _detail_table;
+	protected NyAROutlineTrackSrcTable _outline_table;
+	protected NyAROutlineTrackSrcRefTable _track_outline_table;
+	protected NyAROutlineTrackSrcRefTable _new_outline_table;
+	protected NyAROutlineTracker _outline_tracker;
+	protected NyARDetailTracker _detail_tracker;
+	protected NyARDetailTrackSrcTable _detail_table;
 	
 	
 	
-	private SquareDetector _square_detect;
+	protected SquareDetector _square_detect;
 	//画処理用
-	private NyARBinRaster _bin_raster;
+	protected NyARBinRaster _bin_raster;
 	protected INyARRasterFilter_Rgb2Bin _tobin_filter;
-	private DetectSquareCB _detect_cb;
+	protected DetectSquareCB _detect_cb;
 
 	protected NyARMarkerTracker(NyARParam	i_ref_param,int i_input_raster_type)throws NyARException
 	{
@@ -98,7 +97,6 @@ public class NyARMarkerTracker
 		this._detail_tracker=new NyARDetailTracker(this,i_ref_param,10,10);		
 		return;
 	}
-	public boolean _exelusive_lock=false;
 
 	/**
 	 * i_imageにマーカー検出処理を実行し、結果を記録します。
@@ -151,7 +149,7 @@ public class NyARMarkerTracker
 	{
 		Object[] ret=new Object[10];
 		ret[0]=this._outline_tracker;
-//		ret[2]=this._detect_cb._estimate_position;
+		ret[1]=this._detail_tracker;
 		return ret;
 	}
 }
