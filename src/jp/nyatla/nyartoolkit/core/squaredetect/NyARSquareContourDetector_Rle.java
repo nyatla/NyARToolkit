@@ -208,9 +208,11 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 	 * デバック用API
 	 * @return
 	 */
-	public NyARRleLabelFragmentInfoStack _getFragmentStack()
+	public Object[] _probe()
 	{
-		return this._stack;
+		Object[] ret=new Object[10];
+		ret[0]=this._stack;
+		return ret;
 	}
 
 }

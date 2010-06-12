@@ -101,10 +101,10 @@ public class NyARDetailTracker
 
 		//lineを計算()
 		NyARLinear[] temp_linear=this.__temp_linear;
-		NyARLinear.calculateLine(vtx_ptr[0],vtx_ptr[1], temp_linear[0]);
-		NyARLinear.calculateLine(vtx_ptr[1],vtx_ptr[2], temp_linear[1]);
-		NyARLinear.calculateLine(vtx_ptr[2],vtx_ptr[3], temp_linear[2]);
-		NyARLinear.calculateLine(vtx_ptr[3],vtx_ptr[0], temp_linear[3]);
+		temp_linear[0].calculateLine(vtx_ptr[0],vtx_ptr[1]);
+		temp_linear[1].calculateLine(vtx_ptr[1],vtx_ptr[2]);
+		temp_linear[2].calculateLine(vtx_ptr[2],vtx_ptr[3]);
+		temp_linear[3].calculateLine(vtx_ptr[3],vtx_ptr[0]);
 		//3次元位置を計算
 		this._transmat.transMat(vtx_ptr,temp_linear,item.estimate.offset,item.angle,item.trans);
 
@@ -143,7 +143,7 @@ public class NyARDetailTracker
 	 * @param i_datasource
 	 * @param i_is_remove_target
 	 */
-	public void trackTarget(NyARDetailTrackSrcTable i_datasource,INyARMarkerTrackerListener i_listener) throws NyARException
+	public void trackTarget(NyARDetailTrackSrcTable i_datasource) throws NyARException
 	{
 		NyARDetailTrackSrcTable.Item[] temp_items=i_datasource.getArray();
 		SquareBinder binder=this._binder;
@@ -172,12 +172,12 @@ public class NyARDetailTracker
 				item.life++;
 				if(item.life>10){
 					//削除イベントを発行					
-					i_listener.onLeaveTracking(this._parent,item);
+					this._parent.onLeaveTracking(item);
 					//削除(順序無視の削除)
 					this._tracker_items.removeIgnoreOrder(i);
 				}else{
 					//過去の値でイベント呼ぶ
-					i_listener.onDetailUpdate(this._parent,item);
+					this._parent.onDetailUpdate(item);
 				}
 				continue;
 			}
@@ -241,7 +241,7 @@ public class NyARDetailTracker
 			//対角線の平均を元に矩形の大体半分 2*n/((sqrt(2)*2)*2)=n/5を計算
 			est_item.ideal_sq_dist_max=(int)(NyARMath.sqNorm(est_item.ideal_vertex[0],est_item.ideal_vertex[2])+NyARMath.sqNorm(est_item.ideal_vertex[1],est_item.ideal_vertex[3]))/5;
 			//更新
-			i_listener.onDetailUpdate(this._parent,item);
+			this._parent.onDetailUpdate(item);
 		}
 	}
 

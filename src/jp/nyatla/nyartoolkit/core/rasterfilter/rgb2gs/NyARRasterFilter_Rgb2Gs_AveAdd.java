@@ -143,9 +143,10 @@ public class NyARRasterFilter_Rgb2Gs_AveAdd implements INyARRasterFilter_Rgb2Gs
 			}
 		}
 	}
-	
-	
-	
+	public void main(int argc,String argv[])
+	{
+		
+	}
 }
 
 

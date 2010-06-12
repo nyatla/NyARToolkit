@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.dev.tracking.detail;
+package jp.nyatla.nyartoolkit.dev;
 
 import java.awt.Graphics;
 
@@ -11,6 +11,12 @@ import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.core.param.*;
 
+import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailEstimateItem;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailTrackItem;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailTrackSrcTable;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailTracker;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailTrackSrcTable.Item;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailTracker.SquareBinder;
 import jp.nyatla.nyartoolkit.dev.tracking.outline.*;
 import jp.nyatla.nyartoolkit.dev.tracking.*;
 
@@ -21,7 +27,7 @@ public class NyARDetailTracker_Line extends NyARDetailTracker
 	 */
 
 
-	public NyARDetailTracker_Line(NyARMarkerTracker i_parent,NyARParam i_ref_param,int i_max_tracking,int i_max_temp) throws NyARException
+	public NyARDetailTracker_Line(NyARMarkerFixedThresholdTracker i_parent,NyARParam i_ref_param,int i_max_tracking,int i_max_temp) throws NyARException
 	{
 		super(i_parent,i_ref_param,i_max_tracking,i_max_temp);
 	}

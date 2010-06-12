@@ -37,14 +37,15 @@ import jp.nyatla.nyartoolkit.core.types.*;
 public abstract class NyARSquareContourDetector
 {
 	/**
-	 *
 	 * @param i_raster
 	 * @param o_square_stack
 	 * @throws NyARException
 	 */
 	public abstract void detectMarker(NyARBinRaster i_raster) throws NyARException;
 	/**
-	 * detectMarkerは、ラスターから矩形を見つけるたびに、この関数を呼び出すように実装します。
+	 * 通知ハンドラです。
+	 * この関数は、detectMarker関数のコールバック関数として機能します。
+	 * 継承先のクラスで、矩形の発見時の処理をここに記述してください。
 	 * @param i_coord
 	 * @param i_coor_num
 	 * @param i_vertex_index

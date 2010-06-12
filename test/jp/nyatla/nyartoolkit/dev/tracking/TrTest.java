@@ -35,9 +35,44 @@ import jp.nyatla.nyartoolkit.dev.tracking.outline.*;
  *
  */
 
-public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListener,INyARMarkerTrackerListener
+public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListener
 {
-
+	class TagValue
+	{
+		public int counter;
+	}
+	class Tracker extends NyARMarkerFixedThresholdTracker
+	{
+		public Tracker(NyARParam i_ref_param,int i_input_raster_type)throws NyARException
+		{
+			super(i_ref_param,i_input_raster_type);
+		}
+		public void onEnterTracking(NyARTrackItem i_target)
+		{
+			System.out.println("enter sirial="+i_target.serial);
+			i_target.tag=new TagValue();
+		}
+		public void onOutlineUpdate(NyAROutlineTrackItem i_target)
+		{
+			TagValue t=(TagValue)i_target.tag;
+			g2.setColor(Color.RED);
+			g2.drawString(Integer.toString(i_target.serial)+":["+t.counter+"%]",i_target.vertex[0].x,i_target.vertex[0].y);
+			if(t.counter>3){
+				i_target.setUpgradeInfo(80,1);
+			}
+			t.counter++;
+		}
+		public void onDetailUpdate(NyARDetailTrackItem i_target)
+		{
+			g2.setColor(Color.BLUE);
+			drawPolygon(g2,i_target.estimate.ideal_vertex,4);
+			g2.drawString(Integer.toString(i_target.serial),(int)i_target.estimate.ideal_vertex[0].x,(int)i_target.estimate.ideal_vertex[0].y);
+		}
+		public void onLeaveTracking(NyARTrackItem i_target)
+		{
+			System.out.println("leave sirial="+i_target.serial);
+		}		
+	}
 
 	private final String PARAM_FILE = "../Data/camera_para.dat";
 
@@ -53,7 +88,7 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 
 	private int H = 240;
 
-	private NyARMarkerTracker _tr;
+	private NyARMarkerFixedThresholdTracker _tr;
 
 	public TrTest() throws NyARException
 	{
@@ -77,7 +112,7 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 		this._capture.setOnCapture(this);
 
 		addMouseMotionListener(this);
-		this._tr=new NyARMarkerTracker(ar_param,this._capraster.getBufferType());
+		this._tr=new Tracker(ar_param,this._capraster.getBufferType());
 
 		return;
 	}
@@ -115,40 +150,7 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 			y[i]=(int)i_vertex[i].y;
 		}
 		g.drawPolygon(x,y,i_len);
-	}	/****************************************/
-	class TagValue
-	{
-		public int counter;
 	}
-	
-	public void onEnterTracking(NyARMarkerTracker i_sender,NyARTrackItem i_target)
-	{
-		System.out.println("enter sirial="+i_target.serial);
-		i_target.tag=new TagValue();
-	}
-	public void onOutlineUpdate(NyARMarkerTracker i_sender,NyAROutlineTrackItem i_target)
-	{
-
-		TagValue t=(TagValue)i_target.tag;
-		g2.setColor(Color.RED);
-		g2.drawString(Integer.toString(i_target.serial)+":["+t.counter+"%]",i_target.vertex[0].x,i_target.vertex[0].y);
-		if(t.counter>3){
-			i_target.setUpgradeInfo(80,1);
-		}
-		t.counter++;
-	
-	}
-	public void onDetailUpdate(NyARMarkerTracker i_sender,NyARDetailTrackItem i_target)
-	{
-		g2.setColor(Color.BLUE);
-		drawPolygon(g2,i_target.estimate.ideal_vertex,4);
-		g2.drawString(Integer.toString(i_target.serial),(int)i_target.estimate.ideal_vertex[0].x,(int)i_target.estimate.ideal_vertex[0].y);
-	}
-	public void onLeaveTracking(NyARMarkerTracker i_sender,NyARTrackItem i_target)
-	{
-		System.out.println("leave sirial="+i_target.serial);
-	}
-	/****************************************/
 	
 	
 	private Graphics g2;
@@ -163,7 +165,7 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 			BufferedImage sink = new BufferedImage(i_raster.getWidth(), i_raster.getHeight(), ColorSpace.TYPE_RGB);
 			this.g2=sink.getGraphics();
 			NyARRasterImageIO.copy(i_raster, sink);
-			this._tr.tracking(i_raster,this);
+			this._tr.tracking(i_raster);
 			
 			g.drawImage(sink, ins.left, ins.top, this);
 		} catch (Exception e) {

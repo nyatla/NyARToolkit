@@ -119,7 +119,7 @@ public class NyAROutlineTracker
 	 * @param i_vertex
 	 * @return
 	 */
-	public boolean addTrackTarget(NyAROutlineTrackSrcRefTable i_datasource,INyARMarkerTrackerListener i_listener)
+	public boolean addTrackTarget(NyAROutlineTrackSrcRefTable i_datasource)
 	{
 		NyAROutlineTrackSrcTable.Item[] items=i_datasource.getArray();
 		for(int i=i_datasource.getLength()-1;i>=0;i--)
@@ -157,7 +157,7 @@ public class NyAROutlineTracker
 			item.serial=(this._sirial_counter++);
 			//アップグレード不能に
 			item.can_upgrade=false;
-			i_listener.onEnterTracking(this._parent,item);
+			this._parent.onEnterTracking(item);
 		}
 		return true;
 	}
@@ -175,7 +175,7 @@ public class NyAROutlineTracker
 	 * @param i_datasource
 	 * @param i_is_remove_target
 	 */
-	public void trackTarget(NyAROutlineTrackSrcRefTable i_datasource,INyARMarkerTrackerListener i_listener)
+	public void trackTarget(NyAROutlineTrackSrcRefTable i_datasource)
 	{
 		NyAROutlineTrackSrcTable.Item[] temp_items=i_datasource.getArray();
 		OutlineBinder binder=this._binder;
@@ -192,7 +192,7 @@ public class NyAROutlineTracker
 				//見つからなかった。
 				item.life++;
 				if(item.life>10){
-					i_listener.onLeaveTracking(this._parent,item);
+					this._parent.onLeaveTracking(item);
 					//削除(順序無視の削除)
 					this._tracker_items.removeIgnoreOrder(i);
 				}
@@ -216,7 +216,7 @@ public class NyAROutlineTracker
 			item.sq_dist_max=(NyARMath.sqNorm(item.vertex[0],item.vertex[2])+NyARMath.sqNorm(item.vertex[1],item.vertex[3]))/10;
 			item.life=0;
 			//[位置更新のイベントの上位通知のタイミングはここ]
-			i_listener.onOutlineUpdate(this._parent,item);
+			this._parent.onOutlineUpdate(item);
 
 		}
 	}

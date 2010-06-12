@@ -60,6 +60,14 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 				this._buf=i_is_alloc?new byte[i_size.w*i_size.h*3]:null;
 				this._reader=new NyARRgbPixelReader_BYTE1D_R8G8B8_24((byte[])this._buf,i_size);
 				break;
+			case NyARBufferType.BYTE1D_X8R8G8B8_32:
+				this._buf=i_is_alloc?new byte[i_size.w*i_size.h*4]:null;
+				this._reader=new NyARRgbPixelReader_BYTE1D_X8R8G8B8_32((byte[])this._buf,i_size);
+				break;
+			case NyARBufferType.WORD1D_R5G6B5_16LE:
+				this._buf=i_is_alloc?new short[i_size.w*i_size.h]:null;
+				this._reader=new NyARRgbPixelReader_WORD1D_R5G6B5_16LE((short[])this._buf,i_size);
+				break;
 			default:
 				return false;
 		}

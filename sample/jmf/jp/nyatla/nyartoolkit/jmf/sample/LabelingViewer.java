@@ -40,10 +40,12 @@ import java.awt.event.WindowEvent;
 
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfoStack;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
-import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
+import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilter_ARToolkitThreshold;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_AveAdd;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector_Rle;
+import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
  * VFM+ARToolkitテストプログラム
@@ -51,6 +53,17 @@ import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector_Rle;
  */
 public class LabelingViewer extends Frame implements JmfCaptureListener
 {
+	class SquareDetector extends NyARSquareContourDetector_Rle
+	{
+		public SquareDetector(NyARIntSize i_size) throws NyARException
+		{
+			super(i_size);
+		}
+		protected void onSquareDetect(NyARIntPoint2d[] i_coord,int i_coor_num,int[] i_vertex_index) throws NyARException
+		{
+			
+		}
+	}
 	private static final long serialVersionUID = 6471434231970804953L;
 
 	private final String PARAM_FILE = "../../Data/camera_para.dat";
@@ -85,43 +98,28 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 		ar_param.loadARParamFromFile(PARAM_FILE);
 		ar_param.changeScreenSize(320, 240);
 		this._raster = new JmfNyARRaster_RGB(320, 240,this._capture.getCaptureFormat());
-		this._detect=new NyARSquareContourDetector_Rle(ar_param.getScreenSize());
-		this._filter	= new NyARRasterFilter_ARToolkitThreshold(110, _raster.getBufferType());
+		this._detect=new SquareDetector(ar_param.getScreenSize());
+		this._filter	= new NyARRasterFilter_Rgb2Gs_AveAdd(_raster.getBufferType());
 		//キャプチャイメージ用のラスタを準備
 		return;
 	}
 	private NyARSquareContourDetector_Rle _detect;
-	private NyARBinRaster _bi=new NyARBinRaster(320,240);
-	private NyARRasterFilter_ARToolkitThreshold _filter;
-	/**
-	 * detectMarkerのコールバック関数
-	 */
-	private class DetectSquareCB implements NyARSquareContourDetector.IDetectMarkerCallback
-	{
-		public DetectSquareCB()
-		{
-			return;
-		}
-		/**
-		 * 矩形が見付かるたびに呼び出されます。
-		 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
-		 */
-		public void onSquareDetect(NyARSquareContourDetector i_sender,int[] i_coordx,int[] i_coordy,int i_coor_num,int[] i_vertex_index) throws NyARException
-		{			
-		}
-	}
+	private NyARGrayscaleRaster _bi=new NyARGrayscaleRaster(320,240);
+	private NyARRasterFilter_Rgb2Gs_AveAdd _filter;
+
+
 	
 	public void onUpdateBuffer(Buffer i_buffer)
 	{
 		try {
-			NyARBinRaster bin = this._bi;
+			NyARGrayscaleRaster gs = this._bi;
 			//キャプチャしたバッファをラスタにセット
 			this._raster.setBuffer(i_buffer);
 
 			//キャプチャしたイメージを表示用に加工
 			BufferToImage b2i = new BufferToImage((VideoFormat) i_buffer.getFormat());
 			Image img = b2i.createImage(i_buffer);
-			this._filter.doFilter(this._raster,bin);
+			this._filter.doFilter(this._raster,gs);
 
 			Graphics g = getGraphics();
 			
@@ -129,11 +127,13 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 			param.loadARParamFromFile(PARAM_FILE);
 			param.changeScreenSize(320,240);
 			try{
-				this._detect.detectMarkerCB(bin,new DetectSquareCB());
+				NyARIntRect rect=new NyARIntRect();
+				rect.x=100;rect.y=100;rect.w=220;rect.h=140;
+				this._detect.detectMarker(gs,rect,110);
 			}catch(Exception e){
 				e.printStackTrace();
 			}
-			NyARRleLabelFragmentInfoStack ls=this._detect._getFragmentStack();
+			NyARRleLabelFragmentInfoStack ls=(NyARRleLabelFragmentInfoStack)this._detect._probe()[0];
 			for(int i=0;i<ls.getLength();i++){
 				NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo label=ls.getItem(i);
 //				if(label.area==0){break;}

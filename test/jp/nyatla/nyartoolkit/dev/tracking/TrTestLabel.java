@@ -26,6 +26,7 @@ import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.utils.j2se.NyARRasterImageIO;
 import jp.nyatla.nyartoolkit.core.types.*;
 
+import jp.nyatla.nyartoolkit.dev.tracking.TrTest.TagValue;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.*;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.labeling.NyARDetailLabelingTrackSrcTable;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.labeling.NyARDetailLabelingTracker;
@@ -40,8 +41,44 @@ import jp.nyatla.nyartoolkit.core.raster.*;
  *
  */
 
-public class TrTestLabel extends Frame implements JmfCaptureListener,MouseMotionListener,INyARMarkerTrackerListener
+public class TrTestLabel extends Frame implements JmfCaptureListener,MouseMotionListener
 {
+	class TagValue
+	{
+		public int counter;
+	}
+	class Tracker extends NyARMarkerLabelingTracker
+	{
+		public Tracker(NyARParam i_ref_param,int i_input_raster_type)throws NyARException
+		{
+			super(i_ref_param,i_input_raster_type);
+		}
+		public void onEnterTracking(NyARTrackItem i_target)
+		{
+			System.out.println("enter sirial="+i_target.serial);
+			i_target.tag=new TagValue();
+		}
+		public void onOutlineUpdate(NyAROutlineTrackItem i_target)
+		{
+			TagValue t=(TagValue)i_target.tag;
+			g2.setColor(Color.RED);
+			g2.drawString(Integer.toString(i_target.serial)+":["+t.counter+"%]",i_target.vertex[0].x,i_target.vertex[0].y);
+			if(t.counter>3){
+				i_target.setUpgradeInfo(80,1);
+			}
+			t.counter++;
+		}
+		public void onDetailUpdate(NyARDetailTrackItem i_target)
+		{
+			g2.setColor(Color.BLUE);
+			drawPolygon(g2,i_target.estimate.ideal_vertex,4);
+			g2.drawString(Integer.toString(i_target.serial),(int)i_target.estimate.ideal_vertex[0].x,(int)i_target.estimate.ideal_vertex[0].y);
+		}
+		public void onLeaveTracking(NyARTrackItem i_target)
+		{
+			System.out.println("leave sirial="+i_target.serial);
+		}		
+	}
 
 
 	private final String PARAM_FILE = "../Data/camera_para.dat";
@@ -82,7 +119,7 @@ public class TrTestLabel extends Frame implements JmfCaptureListener,MouseMotion
 		this._capture.setOnCapture(this);
 
 		addMouseMotionListener(this);
-		this._tr=new NyARMarkerLabelingTracker(ar_param,this._capraster.getBufferType());
+		this._tr=new Tracker(ar_param,this._capraster.getBufferType());
 
 		return;
 	}
@@ -120,42 +157,8 @@ public class TrTestLabel extends Frame implements JmfCaptureListener,MouseMotion
 			y[i]=(int)i_vertex[i].y;
 		}
 		g.drawPolygon(x,y,i_len);
-	}	/****************************************/
-	class TagValue
-	{
-		public int counter;
 	}
-	
-	public void onEnterTracking(NyARMarkerTracker i_sender,NyARTrackItem i_target)
-	{
-		System.out.println("enter sirial="+i_target.serial);
-		i_target.tag=new TagValue();
-	}
-	public void onOutlineUpdate(NyARMarkerTracker i_sender,NyAROutlineTrackItem i_target)
-	{
 
-		TagValue t=(TagValue)i_target.tag;
-		g2.setColor(Color.RED);
-		g2.drawString(Integer.toString(i_target.serial)+":["+t.counter+"%]",i_target.vertex[0].x,i_target.vertex[0].y);
-		drawPolygon(g2,i_target.vertex,4);
-
-		if(t.counter>100){
-			i_target.setUpgradeInfo(80,1);
-		}
-		t.counter+=2;
-	
-	}
-	public void onDetailUpdate(NyARMarkerTracker i_sender,NyARDetailTrackItem i_target)
-	{
-		g2.setColor(Color.BLUE);
-		drawPolygon(g2,i_target.estimate.ideal_vertex,4);
-		g2.drawString(Integer.toString(i_target.serial),(int)i_target.estimate.ideal_vertex[0].x,(int)i_target.estimate.ideal_vertex[0].y);
-	}
-	public void onLeaveTracking(NyARMarkerTracker i_sender,NyARTrackItem i_target)
-	{
-		System.out.println("leave sirial="+i_target.serial);
-	}
-	/****************************************/
 	
 	
 	private Graphics g2;
@@ -175,7 +178,7 @@ public class TrTestLabel extends Frame implements JmfCaptureListener,MouseMotion
 			
 			NyARGrayscaleRaster gs=(NyARGrayscaleRaster)(((NyARDetailLabelingTrackSrcTable)probe[2])._probe()[0]);
 			gs.fill(0);
-			this._tr.tracking(i_raster,this);
+			this._tr.tracking(i_raster);
 			g.drawImage(sink, ins.left, ins.top, this);
 			NyARRasterImageIO.copy(gs, sink);
 			g.drawImage(sink, ins.left, ins.top+240, this);

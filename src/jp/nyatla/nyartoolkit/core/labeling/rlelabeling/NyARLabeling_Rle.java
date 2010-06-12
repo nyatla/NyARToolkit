@@ -199,7 +199,7 @@ public class NyARLabeling_Rle
 	{
 		assert(i_bin_raster.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
 		NyARIntSize size=i_bin_raster.getSize();
-		return this.imple_labeling(i_bin_raster,0,0,size.h,0,size.w,o_stack);
+		return this.imple_labeling(i_bin_raster,0,0,0,size.w,size.h,o_stack);
 	}
 	/**
 	 * 単一閾値を使ってGSラスタをBINラスタに変換しながらラベリングします。
@@ -212,7 +212,7 @@ public class NyARLabeling_Rle
 	{
 		assert(i_gs_raster.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
 		NyARIntSize size=i_gs_raster.getSize();
-		return this.imple_labeling(i_gs_raster,i_th,0,size.h,0,size.w,o_stack);
+		return this.imple_labeling(i_gs_raster,i_th,0,0,size.w,size.h,o_stack);
 	}
 	/**
 	 * BINラスタをラベリングします。
@@ -226,10 +226,9 @@ public class NyARLabeling_Rle
 	public int labeling(NyARGrayscaleRaster i_gs_raster,NyARIntRect i_area,int i_th,NyARRleLabelFragmentInfoStack o_stack) throws NyARException
 	{
 		assert(i_gs_raster.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
-		NyARIntSize size=i_gs_raster.getSize();
-		return this.imple_labeling(i_gs_raster,i_th,i_area.x,i_area.x+size.w,i_area.y,i_area.y+size.h,o_stack);
+		return this.imple_labeling(i_gs_raster,i_th,i_area.x,i_area.y,i_area.w,i_area.h,o_stack);
 	}
-	private int imple_labeling(INyARRaster i_raster,int i_th,int i_top, int i_bottom,int i_left,int i_right,NyARRleLabelFragmentInfoStack o_stack) throws NyARException
+	private int imple_labeling(INyARRaster i_raster,int i_th,int i_left,int i_top,int i_width, int i_height,NyARRleLabelFragmentInfoStack o_stack) throws NyARException
 	{
 		// リセット処理
 		final RleInfoStack rlestack=this._rlestack;
@@ -240,16 +239,16 @@ public class NyARLabeling_Rle
 		RleElement[] rle_current = this._rle2;
 		int len_prev = 0;
 		int len_current = 0;
-		final int width = i_right-i_left;
+		final int bottom=i_top+i_height;
 		final int row_stride=i_raster.getWidth();
 		int[] in_buf = (int[]) i_raster.getBuffer();
 
 		int id_max = 0;
 		int label_count=0;
-		int rle_top_index=i_left;
+		int rle_top_index=i_left+row_stride*i_top;
 		// 初段登録
 
-		len_prev = toRel(in_buf, rle_top_index, width, rle_prev,i_th);
+		len_prev = toRel(in_buf, rle_top_index, i_width, rle_prev,i_th);
 		for (int i = 0; i < len_prev; i++) {
 			// フラグメントID=フラグメント初期値、POS=Y値、RELインデクス=行
 			addFragment(rle_prev[i], id_max, i_top,rlestack);
@@ -259,10 +258,10 @@ public class NyARLabeling_Rle
 		}
 		RleInfoStack.RleInfo[] f_array = rlestack.getArray();
 		// 次段結合
-		for (int y = i_top + 1; y < i_bottom; y++) {
+		for (int y = i_top + 1; y < bottom; y++) {
 			// カレント行の読込
 			rle_top_index+=row_stride;
-			len_current = toRel(in_buf,rle_top_index, width, rle_current,i_th);
+			len_current = toRel(in_buf,rle_top_index, i_width, rle_current,i_th);
 			int index_prev = 0;
 
 			SCAN_CUR: for (int i = 0; i < len_current; i++) {
@@ -400,10 +399,10 @@ public class NyARLabeling_Rle
 			final NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo dest_info=o_dest_array[active_labels];
 			dest_info.area=area;
 			dest_info.clip_b=src_info.clip_b;
-			dest_info.clip_r=src_info.clip_r;
+			dest_info.clip_r=src_info.clip_r+i_left;
 			dest_info.clip_t=src_info.clip_t;
-			dest_info.clip_l=src_info.clip_l;
-			dest_info.entry_x=src_info.entry_x;
+			dest_info.clip_l=src_info.clip_l+i_left;
+			dest_info.entry_x=src_info.entry_x+i_left;
 			dest_info.pos_x=src_info.pos_x/src_info.area;
 			dest_info.pos_y=src_info.pos_y/src_info.area;
 			active_labels++;
