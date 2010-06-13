@@ -3,9 +3,15 @@ package jp.nyatla.nyartoolkit.dev.tracking.detail.labeling;
 import java.awt.Graphics;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat;
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
+import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
+import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
+import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+import jp.nyatla.nyartoolkit.core.types.NyARLinear;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
-import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.core.param.*;
 
@@ -15,6 +21,88 @@ import jp.nyatla.nyartoolkit.dev.tracking.*;
 
 public class NyARDetailLabelingTracker
 {
+	class NyARDetailLabelingTrackStack extends NyARObjectStack<NyARDetailLabelingTrackItem>
+	{
+		protected NyARDetailLabelingTrackItem createElement()
+		{
+			return new NyARDetailLabelingTrackItem();
+		}
+		public NyARDetailLabelingTrackStack(int i_max_tracking) throws NyARException
+		{
+			super(i_max_tracking,NyARDetailLabelingTrackItem.class);
+			return;
+		}
+		public int getNearestItem(NyARIntPoint2d i_pos)
+		{
+			double d=Double.MAX_VALUE;
+			//エリア
+			int index=-1;
+			for(int i=this._length-1;i>=0;i--)
+			{
+				NyARIntPoint2d center=this._items[i].estimate.center;
+				double nd=NyARMath.sqNorm(i_pos, center);
+				//有効範囲内？
+				if(nd>this._items[i].estimate.ideal_sq_dist_max){
+					continue;
+				}
+				if(d>nd){
+					d=nd;
+					index=i;
+				}
+			}
+			return index;
+		}			
+	}	
+	protected class SquareBinder extends VertexBinder
+	{
+		public SquareBinder(int i_max_col,int i_max_row)
+		{
+			super(i_max_col,i_max_row);
+		}
+		
+		public void bindPoints(NyARDetailLabelingTrackSrcTable.Item[] i_vertex_r,int i_row_len,NyARDetailTrackItem[] i_vertex_c,int i_col_len,int o_track_item[])
+		{
+			VertexBinder.DistItem[] map=this._map;
+			//distortionMapを作成。ついでに最小値のインデクスも取得
+			int min_index=0;
+			int min_dist =Integer.MAX_VALUE;
+			int idx=0;
+			for(int r=0;r<i_row_len;r++){
+				for(int c=0;c<i_col_len;c++){
+					map[idx].col=c;
+					map[idx].row=r;
+					int d=NyARMath.sqNorm(i_vertex_r[r].ideal_center,i_vertex_c[c].estimate.center);
+					map[idx].dist=d;
+					if(min_dist>d){
+						min_index=idx;
+						min_dist=d;
+					}
+					idx++;
+				}
+			}
+			makeIndex(map,i_row_len*i_col_len,i_col_len,min_index,o_track_item);
+			return;
+		}		
+	}
+
+	
+	protected int[] _track_index;
+	protected SquareBinder _binder;
+	protected NyARDetailLabelingTrackStack _tracker_items;
+	protected NyARMarkerTracker _parent;
+	protected NyARCameraDistortionFactor _ref_distfactor;
+	protected NyARIntSize _ref_scr_size;
+	private NyARDoublePoint3d __pos3d=new NyARDoublePoint3d();
+	protected NyARPerspectiveProjectionMatrix _ref_prjmat;
+	private NyARDoublePoint3d __trans=new NyARDoublePoint3d();
+	private NyARDoublePoint3d __angle=new NyARDoublePoint3d();
+	private NyARDoubleMatrix33 __rot=new NyARDoubleMatrix33();
+	private NyARDoublePoint2d[] __ideal_vertex_ptr=new NyARDoublePoint2d[4];
+	private NyARLinear[] __ideal_line_ptr=new NyARLinear[4];
+	protected NyARTransMat _transmat;	
+	
+	
+	
 	public Graphics g;
 	/*	インラインクラス
 	 */
@@ -22,7 +110,14 @@ public class NyARDetailLabelingTracker
 
 	public NyARDetailLabelingTracker(NyARMarkerTracker i_parent,NyARParam i_ref_param,int i_max_tracking,int i_max_temp) throws NyARException
 	{
-		super(i_parent,i_ref_param,i_max_tracking,i_max_temp);
+		this._parent=i_parent;
+		this._binder=new SquareBinder(i_max_temp,i_max_tracking);
+		this._track_index=new int[i_max_tracking];
+		this._tracker_items=new NyARDetailLabelingTrackStack(i_max_tracking);
+		this._transmat=new NyARTransMat(i_ref_param);
+		this._ref_prjmat=i_ref_param.getPerspectiveProjectionMatrix();
+		this._ref_distfactor=i_ref_param.getDistortionFactor();
+		this._ref_scr_size=i_ref_param.getScreenSize();
 	}
 	private NyARLinear[] __temp_linear=NyARLinear.createArray(4);
 	/**
@@ -32,7 +127,7 @@ public class NyARDetailLabelingTracker
 	 */
 	public boolean addTrackTarget(NyAROutlineTrackItem i_item,double i_width,int i_direction) throws NyARException
 	{
-		NyARDetailTrackItem item=this._tracker_items.prePush();
+		NyARDetailLabelingTrackItem item=this._tracker_items.prePush();
 		if(item==null){
 			//あいてない。終了のお知らせ
 			return false;
@@ -67,6 +162,8 @@ public class NyARDetailLabelingTracker
 		item.estimate.center.y=i_item.center.y;
 		item.estimate.ideal_sq_dist_max=i_item.sq_dist_max;
 		item.trans_v.x=item.trans_v.y=item.trans_v.z=0;
+		//頂点群の散らばる範囲の面積を計算
+		item.rect_area.wrapVertex(i_item.vertex,4);
 
 		return true;
 	}
@@ -74,17 +171,12 @@ public class NyARDetailLabelingTracker
 	{
 		return this._tracker_items.getLength();
 	}
-	public NyARDetailTrackItem[] getSquares()
+	public NyARDetailLabelingTrackItem[] getSquares()
 	{
 		return this._tracker_items.getArray();
 	}
 
-	private NyARDoublePoint3d __pos3d=new NyARDoublePoint3d();
-	private NyARDoublePoint3d __trans=new NyARDoublePoint3d();
-	private NyARDoublePoint3d __angle=new NyARDoublePoint3d();
-	private NyARDoubleMatrix33 __rot=new NyARDoubleMatrix33();
-	private NyARDoublePoint2d[] __ideal_vertex_ptr=new NyARDoublePoint2d[4];
-	private NyARLinear[] __ideal_line_ptr=new NyARLinear[4];
+
 
 	/**
 	 * データソースからトラッキング処理を実行します。
@@ -115,7 +207,7 @@ public class NyARDetailLabelingTracker
 		{
 			//予想位置と一番近かったものを得る
 			NyARDetailTrackItem item=track_items[i];
-			NyARDetailLabelingEstimateItem est_item=this._tracker_items.getItem(i).estimate;
+			NyARDetailEstimateItem est_item=this._tracker_items.getItem(i).estimate;
 			if(this._track_index[i]<0){
 				//見つからなかった。
 				item.life++;
@@ -131,7 +223,7 @@ public class NyARDetailLabelingTracker
 				continue;
 			}
 
-			NyARDetailFixedThresholTrackSrcTable.Item temp_item_ptr=temp_items[this._track_index[i]];
+			NyARDetailLabelingTrackSrcTable.Item temp_item_ptr=temp_items[this._track_index[i]];
 			//移動量が最小になる組み合わせを計算
 			int dir=getNearVertexIndex(est_item.ideal_vertex,temp_item_ptr.ideal_vertex,4);
 			for(int i2=0;i2<4;i2++){
@@ -187,13 +279,18 @@ public class NyARDetailLabelingTracker
 				est_item.center.x=(int)cx;
 				est_item.center.y=(int)cy;				
 			}
+
+			
 			//対角線の平均を元に矩形の大体半分 2*n/((sqrt(2)*2)*2)=n/5を計算
 			est_item.ideal_sq_dist_max=(int)(NyARMath.sqNorm(est_item.ideal_vertex[0],est_item.ideal_vertex[2])+NyARMath.sqNorm(est_item.ideal_vertex[1],est_item.ideal_vertex[3]))/5;
 			//更新
 			this._parent.onDetailUpdate(item);
 		}
 	}
-
+	public boolean isTrackTarget(NyARIntPoint2d i_center)
+	{
+		return this._tracker_items.getNearestItem(i_center)!=-1;
+	}
 	private static int getNearVertexIndex(NyARDoublePoint2d[] i_base_vertex,NyARDoublePoint2d[] i_next_vertex,int i_length)
 	{
 		int min_dist=Integer.MAX_VALUE;

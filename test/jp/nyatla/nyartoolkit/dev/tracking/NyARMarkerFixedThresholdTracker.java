@@ -9,6 +9,8 @@ import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.*;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.fixedthreshold.NyARDetailFixedThresholTrackSrcTable;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.fixedthreshold.NyARFixedThresholdDetailTracker;
 import jp.nyatla.nyartoolkit.dev.tracking.outline.*;
 
 
@@ -21,7 +23,6 @@ public abstract class NyARMarkerFixedThresholdTracker extends NyARMarkerTracker
 {
 	protected class SquareDetector extends NyARSquareContourDetector_Rle
 	{
-		public NyARMarkerFixedThresholdTracker tag;
 		public SquareDetector(NyARIntSize i_size) throws NyARException
 		{
 			super(i_size);
@@ -30,9 +31,9 @@ public abstract class NyARMarkerFixedThresholdTracker extends NyARMarkerTracker
 		 * 矩形が見付かるたびに呼び出されます。
 		 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
 		 */
-		public void onSquareDetect(NyARIntPoint2d[] i_coord,int i_coorx_num,int[] i_vertex_index) throws NyARException
+		public void onSquareDetect(NyARIntPoint2d[] i_coord,int i_coorx_num,int[] i_vertex_index,Object i_param) throws NyARException
 		{
-			NyARMarkerFixedThresholdTracker inst=this.tag;
+			NyARMarkerFixedThresholdTracker inst=(NyARMarkerFixedThresholdTracker)i_param;
 			NyAROutlineTrackSrcTable.Item item=inst._outline_table.push(i_coord[i_vertex_index[0]], i_coord[i_vertex_index[1]], i_coord[i_vertex_index[2]], i_coord[i_vertex_index[3]]);
 			if(item==null){
 				return;
@@ -73,7 +74,6 @@ public abstract class NyARMarkerFixedThresholdTracker extends NyARMarkerTracker
 	{
 		final NyARIntSize scr_size=i_ref_param.getScreenSize();		
 		this._square_detect = new SquareDetector(scr_size);
-		this._square_detect.tag=this;
 		this._tobin_filter=new NyARRasterFilter_ARToolkitThreshold(120,i_input_raster_type);
 		this._bin_raster=new NyARBinRaster(scr_size.w,scr_size.h);
 		//
@@ -108,7 +108,7 @@ public abstract class NyARMarkerFixedThresholdTracker extends NyARMarkerTracker
 		//コールバックハンドラの準備
 		
 		//矩形を探す(戻り値はコールバック関数で受け取る。)
-		this._square_detect.detectMarker(this._bin_raster);
+		this._square_detect.detectMarker(this._bin_raster,this);
 
 		
 		//アウトライントラッキングを実行

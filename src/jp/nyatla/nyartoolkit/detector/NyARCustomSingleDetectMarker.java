@@ -189,7 +189,7 @@ public class NyARCustomSingleDetectMarker
 		this._ref_raster=i_raster;
 
 		//矩形を探す(戻り値はコールバック関数で受け取る。)
-		this._square_detect.detectMarker(this._bin_raster);
+		this._square_detect.detectMarker(this._bin_raster,null);
 		if(this._confidence==0){
 			return false;
 		}

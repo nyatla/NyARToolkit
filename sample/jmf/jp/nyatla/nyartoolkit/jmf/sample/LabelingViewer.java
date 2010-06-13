@@ -41,9 +41,7 @@ import java.awt.event.WindowEvent;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfoStack;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilter_ARToolkitThreshold;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_AveAdd;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector_Rle;
 import jp.nyatla.nyartoolkit.core.types.*;
 
@@ -59,7 +57,7 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 		{
 			super(i_size);
 		}
-		protected void onSquareDetect(NyARIntPoint2d[] i_coord,int i_coor_num,int[] i_vertex_index) throws NyARException
+		protected void onSquareDetect(NyARIntPoint2d[] i_coord,int i_coor_num,int[] i_vertex_index,Object i_param) throws NyARException
 		{
 			
 		}
@@ -129,7 +127,7 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 			try{
 				NyARIntRect rect=new NyARIntRect();
 				rect.x=100;rect.y=100;rect.w=220;rect.h=140;
-				this._detect.detectMarker(gs,rect,110);
+				this._detect.detectMarker(gs,rect,110,null);
 			}catch(Exception e){
 				e.printStackTrace();
 			}

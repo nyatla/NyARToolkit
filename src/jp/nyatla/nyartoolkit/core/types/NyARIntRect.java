@@ -81,16 +81,35 @@ public class NyARIntRect
 	 */
 	public void clip(int i_left,int i_top,int i_right,int i_bottom)
 	{
-		int r=this.x+this.w;
-		int b=this.y+this.h;
-		if(this.x<i_left){
-			this.x=i_left;
+		int x=this.x;
+		int y=this.y;
+		int r=x+this.w;
+		int b=y+this.h;
+		if(x<i_left){
+			x=i_left;
+		}else if(x>i_right){
+			x=i_right;	
 		}
-		if(this.y<i_top){
-			this.y=i_top;
+		if(y<i_top){
+			y=i_top;
+		}else if(y>i_bottom){
+			y=i_bottom;			
 		}
-		this.w=(r>i_right)?i_right-this.x:r-this.x;
-		this.h=(b>i_bottom)?i_bottom-this.y:b-this.y;
+		int l;
+		l=(r>i_right)?i_right-x:r-x;
+		if(l<0){
+			this.w=0;
+		}else{
+			this.w=l;
+		}
+		l=(b>i_bottom)?i_bottom-y:b-y;
+		if(l<0){
+			this.h=0;
+		}else{
+			this.h=l;
+		}
+		this.x=x;
+		this.y=y;
 		return;
 	}
 	

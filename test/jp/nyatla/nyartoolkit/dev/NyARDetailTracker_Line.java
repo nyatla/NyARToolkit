@@ -13,10 +13,10 @@ import jp.nyatla.nyartoolkit.core.param.*;
 
 import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailEstimateItem;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailTrackItem;
-import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailFixedThresholTrackSrcTable;
-import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARFixedThresholdDetailTracker;
-import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailFixedThresholTrackSrcTable.Item;
-import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARFixedThresholdDetailTracker.SquareBinder;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.fixedthreshold.NyARDetailFixedThresholTrackSrcTable;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.fixedthreshold.NyARFixedThresholdDetailTracker;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.fixedthreshold.NyARDetailFixedThresholTrackSrcTable.Item;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.fixedthreshold.NyARFixedThresholdDetailTracker.SquareBinder;
 import jp.nyatla.nyartoolkit.dev.tracking.outline.*;
 import jp.nyatla.nyartoolkit.dev.tracking.*;
 

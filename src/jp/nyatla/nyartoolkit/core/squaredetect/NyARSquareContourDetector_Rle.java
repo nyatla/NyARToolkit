@@ -79,7 +79,7 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 	}
 
 	private final int[] __detectMarker_mkvertex = new int[4];
-	public void detectMarker(NyARGrayscaleRaster i_raster,NyARIntRect i_area,int i_th) throws NyARException
+	public void detectMarker(NyARGrayscaleRaster i_raster,NyARIntRect i_area,int i_th,Object i_param) throws NyARException
 	{
 		final NyARRleLabelFragmentInfoStack flagment=this._stack;
 		final NyARLabelOverlapChecker<NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo> overlap = this._overlap_checker;
@@ -133,7 +133,7 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 				continue;
 			}
 			//矩形を発見したことをコールバック関数で通知
-			this.onSquareDetect(coord,coord_num,mkvertex);
+			this.onSquareDetect(coord,coord_num,mkvertex,i_param);
 
 			// 検出済の矩形の属したラベルを重なりチェックに追加する。
 			overlap.push(label_pt);
@@ -142,7 +142,7 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 		return;
 	}
 	
-	public void detectMarker(NyARBinRaster i_raster) throws NyARException
+	public void detectMarker(NyARBinRaster i_raster,Object i_param) throws NyARException
 	{
 		final NyARRleLabelFragmentInfoStack flagment=this._stack;
 		final NyARLabelOverlapChecker<NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo> overlap = this._overlap_checker;
@@ -196,7 +196,7 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 				continue;
 			}
 			//矩形を発見したことをコールバック関数で通知
-			this.onSquareDetect(coord,coord_num,mkvertex);
+			this.onSquareDetect(coord,coord_num,mkvertex,i_param);
 
 			// 検出済の矩形の属したラベルを重なりチェックに追加する。
 			overlap.push(label_pt);

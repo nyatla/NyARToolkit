@@ -41,7 +41,7 @@ public abstract class NyARSquareContourDetector
 	 * @param o_square_stack
 	 * @throws NyARException
 	 */
-	public abstract void detectMarker(NyARBinRaster i_raster) throws NyARException;
+	public abstract void detectMarker(NyARBinRaster i_raster,Object i_param) throws NyARException;
 	/**
 	 * 通知ハンドラです。
 	 * この関数は、detectMarker関数のコールバック関数として機能します。
@@ -51,6 +51,6 @@ public abstract class NyARSquareContourDetector
 	 * @param i_vertex_index
 	 * @throws NyARException
 	 */
-	protected abstract void onSquareDetect(NyARIntPoint2d[] i_coord,int i_coor_num,int[] i_vertex_index)  throws NyARException;
+	protected abstract void onSquareDetect(NyARIntPoint2d[] i_coord,int i_coor_num,int[] i_vertex_index,Object i_param)  throws NyARException;
 }
 

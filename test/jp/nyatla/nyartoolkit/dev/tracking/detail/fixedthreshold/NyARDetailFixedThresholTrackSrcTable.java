@@ -1,9 +1,11 @@
-package jp.nyatla.nyartoolkit.dev.tracking.detail;
+package jp.nyatla.nyartoolkit.dev.tracking.detail.fixedthreshold;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARCoord2Linear;
 import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailTrackSrcTable;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailTrackSrcTable.Item;
 import jp.nyatla.nyartoolkit.dev.tracking.outline.*;
 
 

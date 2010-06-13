@@ -89,5 +89,51 @@ public class NyARIntSize
 	{
 		return (0<=i_x && i_x<this.w && 0<=i_y && i_y<this.h);
 	}
-
+	/**
+	 * 頂点セットの広がりを計算する
+	 * @param i_vertex
+	 * @param i_num_of_vertex
+	 */
+	public void wrapVertex(NyARDoublePoint2d i_vertex[],int i_num_of_vertex)
+	{
+		//エリアを求める。
+		int xmax,xmin,ymax,ymin;
+		xmin=xmax=(int)i_vertex[i_num_of_vertex-1].x;
+		ymin=ymax=(int)i_vertex[i_num_of_vertex-1].y;
+		for(int i=i_num_of_vertex-2;i>=0;i--){
+			if(i_vertex[i].x<xmin){
+				xmin=(int)i_vertex[i].x;
+			}else if(i_vertex[i].x>xmax){
+				xmax=(int)i_vertex[i].x;
+			}
+			if(i_vertex[i].y<ymin){
+				ymin=(int)i_vertex[i].y;
+			}else if(i_vertex[i].y>ymax){
+				ymax=(int)i_vertex[i].y;
+			}
+		}
+		this.h=ymax-ymin;
+		this.w=xmax-xmin;
+	}
+	public void wrapVertex(NyARIntPoint2d i_vertex[],int i_num_of_vertex)
+	{
+		//エリアを求める。
+		int xmax,xmin,ymax,ymin;
+		xmin=xmax=(int)i_vertex[i_num_of_vertex-1].x;
+		ymin=ymax=(int)i_vertex[i_num_of_vertex-1].y;
+		for(int i=i_num_of_vertex-2;i>=0;i--){
+			if(i_vertex[i].x<xmin){
+				xmin=(int)i_vertex[i].x;
+			}else if(i_vertex[i].x>xmax){
+				xmax=(int)i_vertex[i].x;
+			}
+			if(i_vertex[i].y<ymin){
+				ymin=(int)i_vertex[i].y;
+			}else if(i_vertex[i].y>ymax){
+				ymax=(int)i_vertex[i].y;
+			}
+		}
+		this.h=ymax-ymin;
+		this.w=xmax-xmin;
+	}
 }

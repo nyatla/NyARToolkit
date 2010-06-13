@@ -10,8 +10,8 @@ import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilter_ARToolki
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector_Rle;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
-import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailFixedThresholTrackSrcTable;
-import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARFixedThresholdDetailTracker;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.fixedthreshold.NyARDetailFixedThresholTrackSrcTable;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.fixedthreshold.NyARFixedThresholdDetailTracker;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.labeling.NyARDetailLabelingTrackSrcTable;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.labeling.NyARDetailLabelingTracker;
 import jp.nyatla.nyartoolkit.dev.tracking.outline.*;
@@ -35,9 +35,9 @@ public abstract class NyARMarkerLabelingTracker extends NyARMarkerTracker
 		 * 矩形が見付かるたびに呼び出されます。
 		 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
 		 */
-		public void onSquareDetect(NyARIntPoint2d[] i_coord,int i_coorx_num,int[] i_vertex_index) throws NyARException
+		public void onSquareDetect(NyARIntPoint2d[] i_coord,int i_coorx_num,int[] i_vertex_index,Object i_param) throws NyARException
 		{
-			NyARMarkerLabelingTracker inst=this.tag;
+			NyARMarkerLabelingTracker inst=(NyARMarkerLabelingTracker)i_param;
 			NyAROutlineTrackSrcTable.Item item=inst._outline_table.push(i_coord[i_vertex_index[0]], i_coord[i_vertex_index[1]], i_coord[i_vertex_index[2]], i_coord[i_vertex_index[3]]);
 			if(item==null){
 				return;
@@ -119,7 +119,7 @@ public abstract class NyARMarkerLabelingTracker extends NyARMarkerTracker
 		//コールバックハンドラの準備
 		
 		//矩形を探す(戻り値はコールバック関数で受け取る。)
-		this._square_detect.detectMarker(this._bin_raster);
+		this._square_detect.detectMarker(this._bin_raster,this);
 
 		
 		//アウトライントラッキングを実行

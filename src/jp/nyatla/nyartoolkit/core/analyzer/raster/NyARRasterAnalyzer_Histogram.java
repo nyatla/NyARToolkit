@@ -59,6 +59,7 @@ public class NyARRasterAnalyzer_Histogram
 	
 	public void setVerticalInterval(int i_step)
 	{
+		assert(this._vertical_skip>0);
 		this._vertical_skip=i_step;
 		return;
 	}
@@ -100,7 +101,7 @@ public class NyARRasterAnalyzer_Histogram
 		for (int i = o_histogram.length-1; i >=0; i--){
 			h[i] = 0;
 		}
-		o_histogram.total_of_data=size.w*size.h/this._vertical_skip;
+		o_histogram.total_of_data=i_area.w*i_area.h/this._vertical_skip;
 		this._histImpl.createHistogram(i_input,i_area.x,i_area.y,i_area.w,i_area.h,o_histogram.data,this._vertical_skip);
 		return;
 	}
@@ -334,11 +335,11 @@ public class NyARRasterAnalyzer_Histogram
 				}
 			}
 			NyARIntRect rect=new NyARIntRect();
-			rect.x=2;rect.y=2;rect.h=10;rect.w=8;
+			rect.x=2;rect.y=2;rect.h=10;rect.w=10;
 			NyARRasterAnalyzer_Histogram ha=new NyARRasterAnalyzer_Histogram(raster.getBufferType(),1);
 			NyARHistogram h=new NyARHistogram(256);
-//			ha.analyzeRaster(raster,rect, h);
-			ha.analyzeRaster(raster, h);
+			ha.analyzeRaster(raster,rect, h);
+//			ha.analyzeRaster(raster, h);
 			return;
 			
 		}catch(Exception e){

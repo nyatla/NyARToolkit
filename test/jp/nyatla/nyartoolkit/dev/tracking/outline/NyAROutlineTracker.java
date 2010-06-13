@@ -6,6 +6,8 @@ import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.dev.tracking.*;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.*;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.fixedthreshold.NyARFixedThresholdDetailTracker;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.labeling.NyARDetailLabelingTracker;
 
 
 
@@ -226,6 +228,20 @@ public class NyAROutlineTracker
 	 * @throws NyARException
 	 */
 	public void charangeUpgrade(NyARFixedThresholdDetailTracker o_detail_tracker) throws NyARException
+	{
+		NyAROutlineTrackItem[] items=this._tracker_items.getArray();
+		for(int i=this._tracker_items.getLength()-1;i>=0;i--)
+		{
+			NyAROutlineTrackInternalItem item=(NyAROutlineTrackInternalItem)items[i];
+			if(item.can_upgrade){
+				if(!o_detail_tracker.addTrackTarget(item,item.width,item.direction)){
+					break;
+				}
+				this._tracker_items.removeIgnoreOrder(i);
+			}
+		}
+	}
+	public void charangeUpgrade(NyARDetailLabelingTracker o_detail_tracker) throws NyARException
 	{
 		NyAROutlineTrackItem[] items=this._tracker_items.getArray();
 		for(int i=this._tracker_items.getLength()-1;i>=0;i--)
