@@ -3,12 +3,9 @@ package jp.nyatla.nyartoolkit.dev.tracking.detail.labeling;
 import java.awt.Graphics;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
-import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.core.param.*;
 
@@ -16,7 +13,7 @@ import jp.nyatla.nyartoolkit.dev.tracking.detail.*;
 import jp.nyatla.nyartoolkit.dev.tracking.outline.*;
 import jp.nyatla.nyartoolkit.dev.tracking.*;
 
-public class NyARDetailLabelingTracker extends NyARDetailTracker
+public class NyARDetailLabelingTracker
 {
 	public Graphics g;
 	/*	インラインクラス
@@ -94,9 +91,9 @@ public class NyARDetailLabelingTracker extends NyARDetailTracker
 	 * @param i_datasource
 	 * @param i_is_remove_target
 	 */
-	public void trackTarget(NyARDetailTrackSrcTable i_datasource) throws NyARException
+	public void trackTarget(NyARDetailLabelingTrackSrcTable i_datasource) throws NyARException
 	{
-		NyARDetailTrackSrcTable.Item[] temp_items=i_datasource.getArray();
+		NyARDetailLabelingTrackSrcTable.Item[] temp_items=i_datasource.getArray();
 		SquareBinder binder=this._binder;
 		int track_item_len= this._tracker_items.getLength();
 		NyARDetailTrackItem[] track_items=this._tracker_items.getArray();
@@ -118,7 +115,7 @@ public class NyARDetailLabelingTracker extends NyARDetailTracker
 		{
 			//予想位置と一番近かったものを得る
 			NyARDetailTrackItem item=track_items[i];
-			NyARDetailEstimateItem est_item=this._tracker_items.getItem(i).estimate;
+			NyARDetailLabelingEstimateItem est_item=this._tracker_items.getItem(i).estimate;
 			if(this._track_index[i]<0){
 				//見つからなかった。
 				item.life++;
@@ -134,7 +131,7 @@ public class NyARDetailLabelingTracker extends NyARDetailTracker
 				continue;
 			}
 
-			NyARDetailTrackSrcTable.Item temp_item_ptr=temp_items[this._track_index[i]];
+			NyARDetailFixedThresholTrackSrcTable.Item temp_item_ptr=temp_items[this._track_index[i]];
 			//移動量が最小になる組み合わせを計算
 			int dir=getNearVertexIndex(est_item.ideal_vertex,temp_item_ptr.ideal_vertex,4);
 			for(int i2=0;i2<4;i2++){
@@ -169,9 +166,6 @@ public class NyARDetailLabelingTracker extends NyARDetailTracker
 			vz=(angle.z-item.angle.z);
 			item.angle.z=(-0.39<vz && vz<0.39)?(angle.z+item.angle.z)*0.5:angle.z;
 			
-//予想位置に対する線分をかいてみよう！
-//			drawY(est_item.ideal_vertex[0].x,est_item.ideal_vertex[0].y,est_item.ideal_vertex[1].x,est_item.ideal_vertex[1].y);
-
 			
 			//理想系での未来位置を計算(angle,transは観測値からの予想値)
 			rot.setZXYAngle(item.angle);

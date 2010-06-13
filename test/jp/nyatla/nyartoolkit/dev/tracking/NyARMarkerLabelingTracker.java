@@ -10,8 +10,8 @@ import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilter_ARToolki
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector_Rle;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
-import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailTrackSrcTable;
-import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailTracker;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailFixedThresholTrackSrcTable;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARFixedThresholdDetailTracker;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.labeling.NyARDetailLabelingTrackSrcTable;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.labeling.NyARDetailLabelingTracker;
 import jp.nyatla.nyartoolkit.dev.tracking.outline.*;
@@ -66,8 +66,8 @@ public abstract class NyARMarkerLabelingTracker extends NyARMarkerTracker
 	protected NyAROutlineTrackSrcRefTable _track_outline_table;
 	protected NyAROutlineTrackSrcRefTable _new_outline_table;
 	protected NyAROutlineTracker _outline_tracker;
-	protected NyARDetailTracker _detail_tracker;
-	protected NyARDetailTrackSrcTable _detail_table;
+	protected NyARDetailLabelingTracker _detail_tracker;
+	protected NyARDetailFixedThresholTrackSrcTable _detail_table;
 	
 	
 	
@@ -88,7 +88,7 @@ public abstract class NyARMarkerLabelingTracker extends NyARMarkerTracker
 		this._track_outline_table=new NyAROutlineTrackSrcRefTable(10);
 		this._new_outline_table=new NyAROutlineTrackSrcRefTable(10);
 		this._outline_tracker=new NyAROutlineTracker(this,10,10);
-		this._detail_table=new NyARDetailTrackSrcTable(10,scr_size,i_ref_param.getDistortionFactor());
+		this._detail_table=new NyARDetailFixedThresholTrackSrcTable(10,scr_size,i_ref_param.getDistortionFactor());
 
 		this._detail_tracker=new NyARDetailLabelingTracker(this,i_ref_param,10,10);
 		this._labaling_data_source=new NyARDetailLabelingTrackSrcTable(10,i_ref_param.getScreenSize(),i_ref_param.getDistortionFactor(),i_input_raster_type);
@@ -131,7 +131,7 @@ public abstract class NyARMarkerLabelingTracker extends NyARMarkerTracker
 		}
 		
 		//ディティールトラッキングを実行
-		this._detail_tracker.trackTarget(this._detail_table);
+		this._detail_tracker.trackTarget(this._labaling_data_source);
 		
 
 		//アウトライントラッキングからのアップグレードを試行

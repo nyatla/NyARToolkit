@@ -5,25 +5,16 @@ import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARCoord2Linear;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector_Rle;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core.types.stack.*;
-import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailTrackItem;
-import jp.nyatla.nyartoolkit.dev.tracking.outline.*;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.analyzer.histogram.NyARHistogramAnalyzer_SlidePTile;
 import jp.nyatla.nyartoolkit.core.analyzer.raster.NyARRasterAnalyzer_Histogram;
 
-public class NyARDetailLabelingTrackSrcTable extends NyARObjectStack<NyARDetailLabelingTrackSrcTable.Item>
-{	
-	public class Item
-	{
-		public NyAROutlineTrackSrcTable.Item ref_outline;
-		public NyARIntPoint2d ideal_center=new NyARIntPoint2d();
-		public NyARLinear[] ideal_line=NyARLinear.createArray(4);	
-		public NyARDoublePoint2d[] ideal_vertex=NyARDoublePoint2d.createArray(4);	
-	}
 
+public class NyARDetailLabelingTrackSrcTable extends NyARDetailTrackSrcTable
+{	
 	private class SquareDetector extends NyARSquareContourDetector_Rle
 	{
 		public NyARDetailLabelingTrackSrcTable _parent;
@@ -42,6 +33,7 @@ public class NyARDetailLabelingTrackSrcTable extends NyARObjectStack<NyARDetailL
 			NyARIntPoint2d[] vertex=this.__ref_vertex;
 			NyARDetailLabelingTrackSrcTable.Item item=this._parent.prePush();
 			if(item==null){
+				System.out.println("Drop stack full");
 				return;
 			}
 			//大きさが大体同じか確認するよ。1/2～2倍・・・かなぁ
@@ -82,7 +74,7 @@ public class NyARDetailLabelingTrackSrcTable extends NyARObjectStack<NyARDetailL
 	private NyARCoord2Linear _coordline;
 	public NyARDetailLabelingTrackSrcTable(int i_length,NyARIntSize i_screen_size,NyARCameraDistortionFactor i_distfactor_ref,int i_raster_type) throws NyARException
 	{
-		super(i_length,NyARDetailLabelingTrackSrcTable.Item.class);
+		super(i_length,i_screen_size,i_distfactor_ref);
 
 		this._sqdetect=new SquareDetector(i_screen_size,this);
 		//上位と排他的にシェアしてね。
@@ -123,10 +115,6 @@ public class NyARDetailLabelingTrackSrcTable extends NyARObjectStack<NyARDetailL
 		
 		
 		return true;
-	}
-	protected NyARDetailLabelingTrackSrcTable.Item createElement()
-	{
-		return new NyARDetailLabelingTrackSrcTable.Item();
 	}
 	public Object[] _probe()
 	{

@@ -225,7 +225,7 @@ public class NyAROutlineTracker
 	 * @param o_detail_tracker
 	 * @throws NyARException
 	 */
-	public void charangeUpgrade(NyARDetailTracker o_detail_tracker) throws NyARException
+	public void charangeUpgrade(NyARFixedThresholdDetailTracker o_detail_tracker) throws NyARException
 	{
 		NyAROutlineTrackItem[] items=this._tracker_items.getArray();
 		for(int i=this._tracker_items.getLength()-1;i>=0;i--)

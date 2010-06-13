@@ -59,7 +59,7 @@ public abstract class NyARMarkerFixedThresholdTracker extends NyARMarkerTracker
 	protected NyAROutlineTrackSrcRefTable _track_outline_table;
 	protected NyAROutlineTrackSrcRefTable _new_outline_table;
 	protected NyAROutlineTracker _outline_tracker;
-	protected NyARDetailTracker _detail_tracker;
+	protected NyARFixedThresholdDetailTracker _detail_tracker;
 	protected NyARDetailFixedThresholTrackSrcTable _detail_table;
 	
 	
@@ -69,7 +69,7 @@ public abstract class NyARMarkerFixedThresholdTracker extends NyARMarkerTracker
 	protected NyARBinRaster _bin_raster;
 	protected INyARRasterFilter_Rgb2Bin _tobin_filter;
 
-	protected NyARMarkerFixedThresholdTracker(NyARParam	i_ref_param,int i_input_raster_type)throws NyARException
+	protected NyARMarkerFixedThresholdTracker(NyARParam i_ref_param,int i_input_raster_type)throws NyARException
 	{
 		final NyARIntSize scr_size=i_ref_param.getScreenSize();		
 		this._square_detect = new SquareDetector(scr_size);
@@ -82,7 +82,7 @@ public abstract class NyARMarkerFixedThresholdTracker extends NyARMarkerTracker
 		this._new_outline_table=new NyAROutlineTrackSrcRefTable(10);
 		this._outline_tracker=new NyAROutlineTracker(this,10,10);
 		this._detail_table=new NyARDetailFixedThresholTrackSrcTable(10,scr_size,i_ref_param.getDistortionFactor());
-		this._detail_tracker=new NyARDetailTracker(this,i_ref_param,10,10);		
+		this._detail_tracker=new NyARFixedThresholdDetailTracker(this,i_ref_param,10,10);		
 		return;
 	}
 
