@@ -1,6 +1,7 @@
 package jp.nyatla.nyartoolkit.dev.tracking.detail.labeling;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARLabeling_Rle;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARCoord2Linear;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector_Rle;
@@ -34,9 +35,13 @@ public class NyARDetailLabelingTrackSrcTable extends NyARDetailTrackSrcTable
 		{
 			NyARDetailLabelingTrackItem target=(NyARDetailLabelingTrackItem)i_param;
 			NyARIntPoint2d[] vertex=this.__ref_vertex;
+			
+			
+			
 			NyARDetailLabelingTrackSrcTable.Item item=this._parent.prePush();
 			if(item==null){
 				System.out.println("Drop stack full");
+				this._parent.pop();
 				return;
 			}
 			
@@ -50,11 +55,13 @@ public class NyARDetailLabelingTrackSrcTable extends NyARDetailTrackSrcTable
 			this._wk_rect.wrapVertex(vertex,4);
 			int ratio;
 			ratio=target.rect_area.w*10/this._wk_rect.w;
-			if(ratio<9 || 11<ratio){
+			if(ratio<7 || 13<ratio){
+				this._parent.pop();
 				return;
 			}
 			ratio=target.rect_area.h*10/this._wk_rect.h;
-			if(ratio<9 || 11<ratio){
+			if(ratio<7 || 13<ratio){
+				this._parent.pop();
 				return;
 			}			
 			
@@ -99,7 +106,11 @@ public class NyARDetailLabelingTrackSrcTable extends NyARDetailTrackSrcTable
 		this._histogram=new NyARHistogram(256);
 		this._threshold_detector=new NyARHistogramAnalyzer_DiscriminantThreshold();
 	}
-		
+	private NyARLabeling_Rle _labeling;
+	public void initDetectionBatch()
+	{
+		this._labeling.labeling(i_gs_raster, i_area, i_th, o_stack);
+	}
 	public boolean update(NyARDetailLabelingTrackItem i_item,INyARRgbRaster i_src) throws NyARException
 	{
 		
@@ -122,13 +133,13 @@ public class NyARDetailLabelingTrackSrcTable extends NyARDetailTrackSrcTable
 		//領域指定のGS化
 		ave.doFilter(i_src, gs,rect.x,rect.y,rect.w,rect.h);
 		//領域指定のヒストグラム抽出
-		int skip=rect.w*rect.h/2048;
+		int skip=rect.w*rect.h/4096;
 		this._histogram_analyzer.setVerticalInterval(skip<1?1:skip);
 		this._histogram_analyzer.analyzeRaster(gs,rect,this._histogram);
 		int th=this._threshold_detector.getThreshold(this._histogram);
 		//領域指定の矩形検出
 		this._sqdetect.detectMarker(gs,rect,th,i_item);
-		System.out.println(this._histogram.total_of_data+"]");
+//		System.out.println(this._histogram.total_of_data+"]");
 		
 		
 		return true;

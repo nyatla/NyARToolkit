@@ -136,7 +136,7 @@ public class NyAROutlineTracker
 			int sd1=NyARMath.sqNorm(vertex[0],vertex[2]);
 			int sd2=NyARMath.sqNorm(vertex[1],vertex[3]);
 			//1:3 - 3:1くらいまでの矩形を対象とする。
-			int sq_propotion=sd1*10/sd2;
+			int sq_propotion=sd1*10/(sd2+1);//+1はzero保証
 			if(sq_propotion<1 || sq_propotion>90){
 				return false;
 			}

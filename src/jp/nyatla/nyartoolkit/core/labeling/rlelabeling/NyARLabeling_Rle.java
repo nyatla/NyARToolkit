@@ -192,9 +192,15 @@ public class NyARLabeling_Rle
 
 		return;
 	}
-	//所望のラスタからBIN-RLEに変換しながらの低速系も準備しようかな
-
-
+	/**
+	 * BINラスタをラベリングします。
+	 * @param i_bin_raster
+	 * @param o_stack
+	 * 結果を蓄積するスタックオブジェクトを指定します。
+	 * 関数は、このオブジェクトに結果を追記します。
+	 * @return
+	 * @throws NyARException
+	 */
 	public int labeling(NyARBinRaster i_bin_raster, NyARRleLabelFragmentInfoStack o_stack) throws NyARException
 	{
 		assert(i_bin_raster.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
@@ -202,9 +208,13 @@ public class NyARLabeling_Rle
 		return this.imple_labeling(i_bin_raster,0,0,0,size.w,size.h,o_stack);
 	}
 	/**
-	 * 単一閾値を使ってGSラスタをBINラスタに変換しながらラベリングします。
+	 * GSラスタの２値ラべリングを実行します。
 	 * @param i_gs_raster
+	 * @param i_th
+	 * 二値化の敷居値を指定します。
 	 * @param o_stack
+	 * 結果を蓄積するスタックオブジェクトを指定します。
+	 * 関数は、このオブジェクトに結果を追記します。
 	 * @return
 	 * @throws NyARException
 	 */
@@ -215,11 +225,13 @@ public class NyARLabeling_Rle
 		return this.imple_labeling(i_gs_raster,i_th,0,0,size.w,size.h,o_stack);
 	}
 	/**
-	 * BINラスタをラベリングします。
+	 * 範囲付きでGSラスタの２値ラべリングを実行します。
 	 * @param i_gs_raster
+	 * @param i_area
 	 * @param i_th
-	 * 画像を２値化するための閾値。暗点<=th<明点となります。
 	 * @param o_stack
+	 * 結果を蓄積するスタックオブジェクトを指定します。
+	 * 関数は、このオブジェクトに結果を追記します。
 	 * @return
 	 * @throws NyARException
 	 */
@@ -383,8 +395,9 @@ public class NyARLabeling_Rle
 			len_prev = len_current;
 			rle_current = tmp;
 		}
-		//対象のラベルだけ転写
-		o_stack.init(label_count);
+		//対象のラベルだけを追記
+		int stack_top_index=o_stack.getLength();
+		o_stack.init(stack_top_index+label_count);
 		NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo[] o_dest_array=o_stack.getArray();
 		final int max=this._max_area;
 		final int min=this._min_area;
@@ -396,7 +409,7 @@ public class NyARLabeling_Rle
 			}
 			//
 			final RleInfoStack.RleInfo src_info=f_array[i];
-			final NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo dest_info=o_dest_array[active_labels];
+			final NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo dest_info=o_dest_array[stack_top_index+active_labels];
 			dest_info.area=area;
 			dest_info.clip_b=src_info.clip_b;
 			dest_info.clip_r=src_info.clip_r+i_left;

@@ -106,7 +106,7 @@ public class NyARRasterAnalyzer_Histogram
 		return;
 	}
 	
-	interface ICreateHistogramImpl
+	protected interface ICreateHistogramImpl
 	{
 		public void createHistogram(INyARRaster i_raster,int i_l,int i_t,int i_w,int i_h, int[] o_histogram,int i_skip);
 	}

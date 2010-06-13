@@ -210,6 +210,7 @@ public class NyARDetailLabelingTracker
 			NyARDetailEstimateItem est_item=this._tracker_items.getItem(i).estimate;
 			if(this._track_index[i]<0){
 				//見つからなかった。
+//位置予定だけ追加？
 				item.life++;
 				if(item.life>10){
 					//削除イベントを発行					
@@ -250,14 +251,16 @@ public class NyARDetailLabelingTracker
 			trans.y=item.trans.y+vy;
 			trans.z=item.trans.z+vz;
 			
-			//現在の角位置の計算。敷居値未満の時は加重平均。敷居値以上の場合はそのまま使う。
+			
+			//現在の角位置の計算。敷居値未満の時は加重平均。敷居値以上の場合はそのまま使う。（2PI/16に追従限界を仕掛ける）
 			vx=(angle.x-item.angle.x);
 			item.angle.x=(-0.39<vx && vx<0.39)?(angle.x+item.angle.x)*0.5:angle.x;
 			vy=(angle.y-item.angle.y);
 			item.angle.y=(-0.39<vy && vy<0.39)?(angle.y+item.angle.y)*0.5:angle.y;			
 			vz=(angle.z-item.angle.z);
 			item.angle.z=(-0.39<vz && vz<0.39)?(angle.z+item.angle.z)*0.5:angle.z;
-			
+
+System.out.println(vx+":"+vy+":"+vz);			
 			
 			//理想系での未来位置を計算(angle,transは観測値からの予想値)
 			rot.setZXYAngle(item.angle);

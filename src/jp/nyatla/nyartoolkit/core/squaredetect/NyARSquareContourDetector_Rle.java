@@ -84,6 +84,7 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 		final NyARRleLabelFragmentInfoStack flagment=this._stack;
 		final NyARLabelOverlapChecker<NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo> overlap = this._overlap_checker;
 
+		flagment.clear();//ラベルスタックのリセット
 		// ラベル数が0ならここまで
 		final int label_num=this._labeling.labeling(i_raster, i_area, i_th, flagment);
 		if (label_num < 1) {
@@ -148,6 +149,7 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 		final NyARLabelOverlapChecker<NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo> overlap = this._overlap_checker;
 
 		// ラベル数が0ならここまで
+		flagment.clear();
 		final int label_num=this._labeling.labeling(i_raster, flagment);
 		if (label_num < 1) {
 			return;
