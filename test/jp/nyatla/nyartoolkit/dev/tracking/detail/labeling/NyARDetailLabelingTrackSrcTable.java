@@ -33,7 +33,6 @@ public class NyARDetailLabelingTrackSrcTable extends NyARObjectStack<NyARDetailL
 			this._parent=i_parent;
 		}
 		private NyARIntPoint2d[] __ref_vertex=new NyARIntPoint2d[4];
-		private NyARLinear[] _linear=NyARLinear.createArray(4);
 		/**
 		 * 矩形が見付かるたびに呼び出されます。
 		 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。

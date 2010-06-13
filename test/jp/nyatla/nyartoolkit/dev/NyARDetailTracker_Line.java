@@ -13,9 +13,9 @@ import jp.nyatla.nyartoolkit.core.param.*;
 
 import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailEstimateItem;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailTrackItem;
-import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailTrackSrcTable;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailFixedThresholTrackSrcTable;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailTracker;
-import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailTrackSrcTable.Item;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailFixedThresholTrackSrcTable.Item;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailTracker.SquareBinder;
 import jp.nyatla.nyartoolkit.dev.tracking.outline.*;
 import jp.nyatla.nyartoolkit.dev.tracking.*;
@@ -98,9 +98,9 @@ public class NyARDetailTracker_Line extends NyARDetailTracker
 	 * @param i_datasource
 	 * @param i_is_remove_target
 	 */
-	public void trackTarget(NyARDetailTrackSrcTable i_datasource,INyARMarkerTrackerListener i_listener) throws NyARException
+	public void trackTarget(NyARDetailFixedThresholTrackSrcTable i_datasource,INyARMarkerTrackerListener i_listener) throws NyARException
 	{
-		NyARDetailTrackSrcTable.Item[] temp_items=i_datasource.getArray();
+		NyARDetailFixedThresholTrackSrcTable.Item[] temp_items=i_datasource.getArray();
 		SquareBinder binder=this._binder;
 		int track_item_len= this._tracker_items.getLength();
 		NyARDetailTrackItem[] track_items=this._tracker_items.getArray();
@@ -137,7 +137,7 @@ public class NyARDetailTracker_Line extends NyARDetailTracker
 				continue;
 			}
 
-			NyARDetailTrackSrcTable.Item temp_item_ptr=temp_items[this._track_index[i]];
+			NyARDetailFixedThresholTrackSrcTable.Item temp_item_ptr=temp_items[this._track_index[i]];
 			//移動量が最小になる組み合わせを計算
 			int dir=getNearVertexIndex(est_item.ideal_vertex,temp_item_ptr.ideal_vertex,4);
 			for(int i2=0;i2<4;i2++){

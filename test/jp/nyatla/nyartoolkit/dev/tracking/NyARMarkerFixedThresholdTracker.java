@@ -60,7 +60,7 @@ public abstract class NyARMarkerFixedThresholdTracker extends NyARMarkerTracker
 	protected NyAROutlineTrackSrcRefTable _new_outline_table;
 	protected NyAROutlineTracker _outline_tracker;
 	protected NyARDetailTracker _detail_tracker;
-	protected NyARDetailTrackSrcTable _detail_table;
+	protected NyARDetailFixedThresholTrackSrcTable _detail_table;
 	
 	
 	
@@ -81,7 +81,7 @@ public abstract class NyARMarkerFixedThresholdTracker extends NyARMarkerTracker
 		this._track_outline_table=new NyAROutlineTrackSrcRefTable(10);
 		this._new_outline_table=new NyAROutlineTrackSrcRefTable(10);
 		this._outline_tracker=new NyAROutlineTracker(this,10,10);
-		this._detail_table=new NyARDetailTrackSrcTable(10,scr_size,i_ref_param.getDistortionFactor());
+		this._detail_table=new NyARDetailFixedThresholTrackSrcTable(10,scr_size,i_ref_param.getDistortionFactor());
 		this._detail_tracker=new NyARDetailTracker(this,i_ref_param,10,10);		
 		return;
 	}

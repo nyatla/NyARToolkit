@@ -11,7 +11,7 @@ import jp.nyatla.nyartoolkit.core.types.stack.*;
 import jp.nyatla.nyartoolkit.dev.tracking.outline.*;
 
 
-public class NyARDetailTrackSrcTable extends NyARObjectStack<NyARDetailTrackSrcTable.Item>
+public class NyARDetailFixedThresholTrackSrcTable extends NyARObjectStack<NyARDetailFixedThresholTrackSrcTable.Item>
 {	
 	public class Item
 	{
@@ -21,14 +21,14 @@ public class NyARDetailTrackSrcTable extends NyARObjectStack<NyARDetailTrackSrcT
 		public NyARDoublePoint2d[] ideal_vertex=NyARDoublePoint2d.createArray(4);	
 	}
 	private NyARCoord2Linear _coordline;
-	public NyARDetailTrackSrcTable(int i_length,NyARIntSize i_screen_size,NyARCameraDistortionFactor i_distfactor_ref) throws NyARException
+	public NyARDetailFixedThresholTrackSrcTable(int i_length,NyARIntSize i_screen_size,NyARCameraDistortionFactor i_distfactor_ref) throws NyARException
 	{
-		super(i_length,NyARDetailTrackSrcTable.Item.class);
+		super(i_length,NyARDetailFixedThresholTrackSrcTable.Item.class);
 		this._coordline=new NyARCoord2Linear(i_screen_size,i_distfactor_ref);
 	}
 	public boolean push(NyAROutlineTrackSrcTable.Item i_ref_outline,NyARIntPoint2d[] i_coord,int i_coord_num,int[] i_vertex_index) throws NyARException
 	{
-		NyARDetailTrackSrcTable.Item item=this.prePush();
+		NyARDetailFixedThresholTrackSrcTable.Item item=this.prePush();
 		if(item==null){
 			return false;
 		}
@@ -52,9 +52,9 @@ public class NyARDetailTrackSrcTable extends NyARObjectStack<NyARDetailTrackSrcT
 		item.ideal_center.y=(int)(cy/4);
 		return true;
 	}
-	protected NyARDetailTrackSrcTable.Item createElement()
+	protected NyARDetailFixedThresholTrackSrcTable.Item createElement()
 	{
-		return new NyARDetailTrackSrcTable.Item();
+		return new NyARDetailFixedThresholTrackSrcTable.Item();
 	}
 
 }
