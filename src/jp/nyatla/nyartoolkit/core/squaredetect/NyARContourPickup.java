@@ -50,6 +50,11 @@ public class NyARContourPickup
 		NyARIntSize s=i_raster.getSize();
 		return impl_getContour(i_raster,0,0,s.w-1,s.h-1,0,i_entry_x,i_entry_y,o_coord);
 	}
+	public int getContour(NyARBinRaster i_raster,NyARIntRect i_area,int i_entry_x,int i_entry_y,NyARIntPoint2d[] o_coord) throws NyARException
+	{
+		assert(i_raster.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
+		return impl_getContour(i_raster,i_area.x,i_area.y,i_area.x+i_area.w-1,i_area.h+i_area.y-1,0,i_entry_x,i_entry_y,o_coord);
+	}
 	/**
 	 * 
 	 * @param i_raster

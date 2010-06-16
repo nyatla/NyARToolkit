@@ -71,7 +71,7 @@ public class NyARDetailLabelingTracker
 				for(int c=0;c<i_col_len;c++){
 					map[idx].col=c;
 					map[idx].row=r;
-					int d=NyARMath.sqNorm(i_vertex_r[r].ideal_center,i_vertex_c[c].estimate.center);
+					int d=NyARMath.sqNorm(i_vertex_r[r].center,i_vertex_c[c].estimate.center);
 					map[idx].dist=d;
 					if(min_dist>d){
 						min_index=idx;
@@ -154,16 +154,23 @@ public class NyARDetailLabelingTracker
 
 		
 		
+		//頂点群の散らばる範囲の面積を計算
+		item.rect_area.setAreaRect(i_item.vertex,4);
 		//値の引き継ぎ
 		item.serial=i_item.serial;
 		item.tag=i_item.tag;
 		item.life=0;
 		item.estimate.center.x=i_item.center.x;
 		item.estimate.center.y=i_item.center.y;
+		//探索予定地
+		item.estimate.search_area.w=item.rect_area.w+16;
+		item.estimate.search_area.h=item.rect_area.h+16;
+		item.estimate.search_area.x=item.rect_area.x-8;
+		item.estimate.search_area.y=item.rect_area.y-8;
+		item.estimate.search_area.clip(0,0,319,239);
 		item.estimate.ideal_sq_dist_max=i_item.sq_dist_max;
 		item.trans_v.x=item.trans_v.y=item.trans_v.z=0;
-		//頂点群の散らばる範囲の面積を計算
-		item.rect_area.wrapVertex(i_item.vertex,4);
+
 
 		return true;
 	}
@@ -212,7 +219,7 @@ public class NyARDetailLabelingTracker
 				//見つからなかった。
 //位置予定だけ追加？
 				item.life++;
-				if(item.life>10){
+				if(item.life>100){
 					//削除イベントを発行					
 					this._parent.onLeaveTracking(item);
 					//削除(順序無視の削除)
@@ -233,6 +240,7 @@ public class NyARDetailLabelingTracker
 				ideal_line[i2]=temp_item_ptr.ideal_line[idx];
 			}
 			//新しい現在値を算出
+			//this._transmat.transMatContinue(i_square, i_offset, i_prev_result, i_prev_error_rate, o_result)
 			this._transmat.transMat(ideal_vertex,ideal_line,est_item.offset,angle,trans);
 			
 			//
@@ -244,35 +252,52 @@ public class NyARDetailLabelingTracker
 			vx=item.trans_v.x=trans.x-item.trans.x;
 			vy=item.trans_v.y=trans.y-item.trans.y;
 			vz=item.trans_v.z=trans.z-item.trans.z;
-			item.trans.x=(trans.x+item.trans.x)*0.5;
-			item.trans.y=(trans.y+item.trans.y)*0.5;
-			item.trans.z=(trans.z+item.trans.z)*0.5;
-			trans.x=item.trans.x+vx;
-			trans.y=item.trans.y+vy;
-			trans.z=item.trans.z+vz;
+			item.trans.x=(trans.x*3+item.trans.x)*0.25;
+			item.trans.y=(trans.y*3+item.trans.y)*0.25;
+			item.trans.z=(trans.z*3+item.trans.z)*0.25;
 			
+			
+//速度リミッターつけよう。リミット速度は、マーカサイズ以上？
+			
+			//平行移動量の未来予測
+			trans.x+=vx;
+			trans.y+=vy;
+			trans.z+=vz;
+
 			
 			//現在の角位置の計算。敷居値未満の時は加重平均。敷居値以上の場合はそのまま使う。（2PI/16に追従限界を仕掛ける）
 			vx=(angle.x-item.angle.x);
-			item.angle.x=(-0.39<vx && vx<0.39)?(angle.x+item.angle.x)*0.5:angle.x;
+			vx=Math.abs(vx)<0.39?vx:0;
+			item.angle.x=(item.angle.x+angle.x*7)/8;
 			vy=(angle.y-item.angle.y);
-			item.angle.y=(-0.39<vy && vy<0.39)?(angle.y+item.angle.y)*0.5:angle.y;			
+			vy=Math.abs(vy)<0.39?vy:0;
+			item.angle.y=(item.angle.y+angle.y*7)/8;
 			vz=(angle.z-item.angle.z);
-			item.angle.z=(-0.39<vz && vz<0.39)?(angle.z+item.angle.z)*0.5:angle.z;
+			vz=Math.abs(vz)<0.39?vz:0;
+			item.angle.z=(item.angle.z+angle.z*7)/8;
 
+			//回転量の未来予測
+			angle.x+=vx;
+			angle.y+=vy;
+			angle.z+=vz;
+			
+			
+			
 System.out.println(vx+":"+vy+":"+vz);			
 			
-			//理想系での未来位置を計算(angle,transは観測値からの予想値)
-			rot.setZXYAngle(item.angle);
+			//理想系での頂点の未来位置を計算
+			rot.setZXYAngle(angle);
 			double cx,cy;
 			cx=cy=0;
 			for(int i2=0;i2<4;i2++)
 			{
 				rot.transformVertex(est_item.offset.vertex[i2],pos3d);
-				prjmat.projectionConvert(pos3d.x+trans.x,pos3d.y+trans.y,pos3d.z+trans.z,est_item.ideal_vertex[i2]);//[Optimaize!]
+				prjmat.projectionConvert(pos3d.x+item.trans.x,pos3d.y+item.trans.y,pos3d.z+item.trans.z,est_item.ideal_vertex[i2]);//[Optimaize!]
 				cx+=(int)est_item.ideal_vertex[i2].x;
 				cy+=(int)est_item.ideal_vertex[i2].y;
 			}
+			//対角線の平均を元に矩形の大体半分 2*n/((sqrt(2)*2)*2)=n/5を計算
+			est_item.ideal_sq_dist_max=(int)(NyARMath.sqNorm(est_item.ideal_vertex[0],est_item.ideal_vertex[2])+NyARMath.sqNorm(est_item.ideal_vertex[1],est_item.ideal_vertex[3]))/5;
 			//中央値を計算して、理想位置から画面位置に変換（マイナスの時は無かったことにする。）
 			cx/=4;
 			cy/=4;
@@ -282,10 +307,17 @@ System.out.println(vx+":"+vy+":"+vz);
 				est_item.center.x=(int)cx;
 				est_item.center.y=(int)cy;				
 			}
-
 			
-			//対角線の平均を元に矩形の大体半分 2*n/((sqrt(2)*2)*2)=n/5を計算
-			est_item.ideal_sq_dist_max=(int)(NyARMath.sqNorm(est_item.ideal_vertex[0],est_item.ideal_vertex[2])+NyARMath.sqNorm(est_item.ideal_vertex[1],est_item.ideal_vertex[3]))/5;
+			//検出範囲を計算(速度により検出エリアを1.5～2倍で可変にする)
+			NyARDoublePoint2d[] vertex=NyARDoublePoint2d.createArray(4);
+			for(int i2=0;i2<4;i2++){
+				NyARDoublePoint3d v=est_item.offset.vertex[i2];
+				prjmat.projectionConvert(v.x*3/2+trans.x,v.y*3/2+trans.y,v.z+trans.z,vertex[i2]);
+				this._ref_distfactor.ideal2Observ(vertex[i2], vertex[i2]);
+			}
+			est_item.search_area.setAreaRect(vertex,4);
+			est_item.search_area.clip(0,0,319,239);
+			
 			//更新
 			this._parent.onDetailUpdate(item);
 		}

@@ -197,18 +197,18 @@ public class NyARRasterAnalyzer_Histogram
 			for (int y = i_t+i_h-1; y >=i_t ; y-=i_skip){
 				int x;
 				for (x = pix_count-1; x >=pix_mod_part; x--){
-					o_histogram[((input[pt+ 0]& 0xff)+(input[pt+ 1]& 0xff)+(input[pt+ 2]& 0xff))/3]++;
+					o_histogram[((input[pt+0]& 0xff)+(input[pt+1]& 0xff)+(input[pt+2]& 0xff))/3]++;
 					pt+=3;
 				}
 				for (;x>=0;x-=8){
-					o_histogram[((input[pt+ 0]& 0xff)+(input[pt+ 1]& 0xff)+(input[pt+ 2]& 0xff))/3]++;
-					o_histogram[((input[pt+ 3]& 0xff)+(input[pt+ 4]& 0xff)+(input[pt+ 5]& 0xff))/3]++;
-					o_histogram[((input[pt+ 6]& 0xff)+(input[pt+ 7]& 0xff)+(input[pt+ 8]& 0xff))/3]++;
-					o_histogram[((input[pt+ 9]& 0xff)+(input[pt+10]& 0xff)+(input[pt+11]& 0xff))/3]++;
-					o_histogram[((input[pt+12]& 0xff)+(input[pt+13]& 0xff)+(input[pt+14]& 0xff))/3]++;
-					o_histogram[((input[pt+15]& 0xff)+(input[pt+16]& 0xff)+(input[pt+17]& 0xff))/3]++;
-					o_histogram[((input[pt+18]& 0xff)+(input[pt+19]& 0xff)+(input[pt+20]& 0xff))/3]++;
-					o_histogram[((input[pt+21]& 0xff)+(input[pt+22]& 0xff)+(input[pt+23]& 0xff))/3]++;
+					o_histogram[((input[pt+0]& 0xff)+(input[pt+1]& 0xff)+(input[pt+2]& 0xff))/3]++;
+					o_histogram[((input[pt+0]& 0xff)+(input[pt+1]& 0xff)+(input[pt+2]& 0xff))/3]++;
+					o_histogram[((input[pt+0]& 0xff)+(input[pt+1]& 0xff)+(input[pt+2]& 0xff))/3]++;
+					o_histogram[((input[pt+0]& 0xff)+(input[pt+1]& 0xff)+(input[pt+2]& 0xff))/3]++;
+					o_histogram[((input[pt+0]& 0xff)+(input[pt+1]& 0xff)+(input[pt+2]& 0xff))/3]++;
+					o_histogram[((input[pt+0]& 0xff)+(input[pt+1]& 0xff)+(input[pt+2]& 0xff))/3]++;
+					o_histogram[((input[pt+0]& 0xff)+(input[pt+1]& 0xff)+(input[pt+2]& 0xff))/3]++;
+					o_histogram[((input[pt+0]& 0xff)+(input[pt+1]& 0xff)+(input[pt+2]& 0xff))/3]++;
 					pt+=3*8;
 				}
 				//スキップ
@@ -233,19 +233,26 @@ public class NyARRasterAnalyzer_Histogram
 			for (int y = i_t+i_h-1; y >=i_t ; y-=i_skip){
 				int x;
 				for (x = pix_count-1; x >=pix_mod_part; x--){
-					o_histogram[((input[pt+ 0]& 0xff)+(input[pt+ 1]& 0xff)+(input[pt+ 2]& 0xff))/3]++;
+					o_histogram[((input[pt+0]& 0xff)+(input[pt+1]& 0xff)+(input[pt+2]& 0xff))/3]++;
 					pt+=4;
 				}
 				for (;x>=0;x-=8){
-					o_histogram[((input[pt+ 0]& 0xff)+(input[pt+ 1]& 0xff)+(input[pt+ 2]& 0xff))/3]++;
-					o_histogram[((input[pt+ 4]& 0xff)+(input[pt+ 5]& 0xff)+(input[pt+ 6]& 0xff))/3]++;
-					o_histogram[((input[pt+ 8]& 0xff)+(input[pt+ 9]& 0xff)+(input[pt+10]& 0xff))/3]++;
-					o_histogram[((input[pt+12]& 0xff)+(input[pt+13]& 0xff)+(input[pt+14]& 0xff))/3]++;
-					o_histogram[((input[pt+16]& 0xff)+(input[pt+17]& 0xff)+(input[pt+18]& 0xff))/3]++;
-					o_histogram[((input[pt+20]& 0xff)+(input[pt+21]& 0xff)+(input[pt+22]& 0xff))/3]++;
-					o_histogram[((input[pt+24]& 0xff)+(input[pt+25]& 0xff)+(input[pt+26]& 0xff))/3]++;
-					o_histogram[((input[pt+28]& 0xff)+(input[pt+29]& 0xff)+(input[pt+30]& 0xff))/3]++;
-					pt+=4*8;
+					o_histogram[((input[pt+0]& 0xff)+(input[pt+1]& 0xff)+(input[pt+2]& 0xff))/3]++;
+					pt+=4;
+					o_histogram[((input[pt+0]& 0xff)+(input[pt+1]& 0xff)+(input[pt+2]& 0xff))/3]++;
+					pt+=4;
+					o_histogram[((input[pt+0]& 0xff)+(input[pt+1]& 0xff)+(input[pt+2]& 0xff))/3]++;
+					pt+=4;
+					o_histogram[((input[pt+0]& 0xff)+(input[pt+1]& 0xff)+(input[pt+2]& 0xff))/3]++;
+					pt+=4;
+					o_histogram[((input[pt+0]& 0xff)+(input[pt+1]& 0xff)+(input[pt+2]& 0xff))/3]++;
+					pt+=4;
+					o_histogram[((input[pt+0]& 0xff)+(input[pt+1]& 0xff)+(input[pt+2]& 0xff))/3]++;
+					pt+=4;
+					o_histogram[((input[pt+0]& 0xff)+(input[pt+1]& 0xff)+(input[pt+2]& 0xff))/3]++;
+					pt+=4;
+					o_histogram[((input[pt+0]& 0xff)+(input[pt+1]& 0xff)+(input[pt+2]& 0xff))/3]++;
+					pt+=4;
 				}
 				//スキップ
 				pt+=skip;
@@ -269,19 +276,26 @@ public class NyARRasterAnalyzer_Histogram
 			for (int y = i_t+i_h-1; y >=i_t ; y-=i_skip){
 				int x;
 				for (x = pix_count-1; x >=pix_mod_part; x--){
-					o_histogram[((input[pt+ 1]& 0xff)+(input[pt+ 2]& 0xff)+(input[pt+ 3]& 0xff))/3]++;
+					o_histogram[((input[pt+1]& 0xff)+(input[pt+2]& 0xff)+(input[pt+ 3]& 0xff))/3]++;
 					pt+=4;
 				}
 				for (;x>=0;x-=8){
-					o_histogram[((input[pt+ 1]& 0xff)+(input[pt+ 2]& 0xff)+(input[pt+ 3]& 0xff))/3]++;
-					o_histogram[((input[pt+ 5]& 0xff)+(input[pt+ 6]& 0xff)+(input[pt+ 7]& 0xff))/3]++;
-					o_histogram[((input[pt+ 9]& 0xff)+(input[pt+10]& 0xff)+(input[pt+11]& 0xff))/3]++;
-					o_histogram[((input[pt+13]& 0xff)+(input[pt+14]& 0xff)+(input[pt+15]& 0xff))/3]++;
-					o_histogram[((input[pt+17]& 0xff)+(input[pt+18]& 0xff)+(input[pt+19]& 0xff))/3]++;
-					o_histogram[((input[pt+21]& 0xff)+(input[pt+22]& 0xff)+(input[pt+23]& 0xff))/3]++;
-					o_histogram[((input[pt+25]& 0xff)+(input[pt+26]& 0xff)+(input[pt+27]& 0xff))/3]++;
-					o_histogram[((input[pt+29]& 0xff)+(input[pt+30]& 0xff)+(input[pt+31]& 0xff))/3]++;
-					pt+=4*8;
+					o_histogram[((input[pt+1]& 0xff)+(input[pt+2]& 0xff)+(input[pt+3]& 0xff))/3]++;
+					pt+=4;
+					o_histogram[((input[pt+1]& 0xff)+(input[pt+2]& 0xff)+(input[pt+3]& 0xff))/3]++;
+					pt+=4;
+					o_histogram[((input[pt+1]& 0xff)+(input[pt+2]& 0xff)+(input[pt+3]& 0xff))/3]++;
+					pt+=4;
+					o_histogram[((input[pt+1]& 0xff)+(input[pt+2]& 0xff)+(input[pt+3]& 0xff))/3]++;
+					pt+=4;
+					o_histogram[((input[pt+1]& 0xff)+(input[pt+2]& 0xff)+(input[pt+3]& 0xff))/3]++;
+					pt+=4;
+					o_histogram[((input[pt+1]& 0xff)+(input[pt+2]& 0xff)+(input[pt+3]& 0xff))/3]++;
+					pt+=4;
+					o_histogram[((input[pt+1]& 0xff)+(input[pt+2]& 0xff)+(input[pt+3]& 0xff))/3]++;
+					pt+=4;
+					o_histogram[((input[pt+1]& 0xff)+(input[pt+2]& 0xff)+(input[pt+3]& 0xff))/3]++;
+					pt+=4;
 				}
 				//スキップ
 				pt+=skip;

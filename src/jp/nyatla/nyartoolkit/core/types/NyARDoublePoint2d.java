@@ -97,12 +97,4 @@ public class NyARDoublePoint2d
 		this.y=(double)i_src.y;
 		return;
 	}
-	/**
-	 * 格納値をベクトルとして、距離を返します。
-	 * @return
-	 */
-	public final double dist()
-	{
-		return Math.sqrt(this.x*this.x+this.y+this.y);
-	}
 }

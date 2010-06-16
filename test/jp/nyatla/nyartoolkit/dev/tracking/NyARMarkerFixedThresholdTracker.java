@@ -9,7 +9,7 @@ import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.*;
-import jp.nyatla.nyartoolkit.dev.tracking.detail.fixedthreshold.NyARDetailFixedThresholTrackSrcTable;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.fixedthreshold.NyARFixedThresholdDetailTrackSrcTable;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.fixedthreshold.NyARFixedThresholdDetailTracker;
 import jp.nyatla.nyartoolkit.dev.tracking.outline.*;
 
@@ -61,7 +61,7 @@ public abstract class NyARMarkerFixedThresholdTracker extends NyARMarkerTracker
 	protected NyAROutlineTrackSrcRefTable _new_outline_table;
 	protected NyAROutlineTracker _outline_tracker;
 	protected NyARFixedThresholdDetailTracker _detail_tracker;
-	protected NyARDetailFixedThresholTrackSrcTable _detail_table;
+	protected NyARFixedThresholdDetailTrackSrcTable _detail_table;
 	
 	
 	
@@ -81,7 +81,7 @@ public abstract class NyARMarkerFixedThresholdTracker extends NyARMarkerTracker
 		this._track_outline_table=new NyAROutlineTrackSrcRefTable(10);
 		this._new_outline_table=new NyAROutlineTrackSrcRefTable(10);
 		this._outline_tracker=new NyAROutlineTracker(this,10,10);
-		this._detail_table=new NyARDetailFixedThresholTrackSrcTable(10,scr_size,i_ref_param.getDistortionFactor());
+		this._detail_table=new NyARFixedThresholdDetailTrackSrcTable(10,scr_size,i_ref_param.getDistortionFactor());
 		this._detail_tracker=new NyARFixedThresholdDetailTracker(this,i_ref_param,10,10);		
 		return;
 	}

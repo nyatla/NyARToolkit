@@ -58,4 +58,20 @@ public class NyARIntPoint2d
 		}
 		return;
 	}
+	/**
+	 * 中心位置を計算して設定する。
+	 * @param i_point
+	 * @param i_number_of_vertex
+	 */
+	public void setCenterPos(NyARIntPoint2d[] i_point,int i_number_of_vertex)
+	{
+		int cx,cy;
+		cx=cy=0;
+		for(int i=i_number_of_vertex-1;i>=0;i--){
+			cx+=i_point[i].x;
+			cy+=i_point[i].y;
+		}
+		this.x=cx/i_number_of_vertex;
+		this.y=cy/i_number_of_vertex;
+	}
 }

@@ -90,7 +90,7 @@ public class NyARSingleQrDetector
 	private NyARBinRaster _bin_raster;
 	private NyARGrayscaleRaster _gs_raster;
 	//画処理フィルター
-	private INyARRasterFilter_Rgb2Gs _rgb2gs_filter=new NyARRasterFilter_Rgb2Gs_AveAdd();
+	private INyARRasterFilter_Rgb2Gs _rgb2gs_filter=new NyARRasterFilter_Rgb2Gs_RgbAve();
 	private INyARRasterFilter_Gs2Bin _gstobin_filter=new NyARRasterFilter_QrAreaAverage();
 
 	/**

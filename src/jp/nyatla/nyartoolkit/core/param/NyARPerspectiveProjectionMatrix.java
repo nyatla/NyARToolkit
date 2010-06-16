@@ -198,6 +198,18 @@ final public class NyARPerspectiveProjectionMatrix extends NyARDoubleMatrix44
 		o_2d.y=(i_y*this.m11+i_z*this.m12)/w;
 		return;
 	}	
-	
-	
+	public void projectionConvert(NyARDoublePoint3d i_3dvertex,NyARIntPoint2d o_2d)
+	{
+		double w=i_3dvertex.z*this.m22;
+		o_2d.x=(int)((i_3dvertex.x*this.m00+i_3dvertex.y*this.m01+i_3dvertex.z*this.m02)/w);
+		o_2d.y=(int)((i_3dvertex.y*this.m11+i_3dvertex.z*this.m12)/w);
+		return;
+	}	
+	public void projectionConvert(double i_x,double i_y,double i_z,NyARIntPoint2d o_2d)
+	{
+		double w=i_z*this.m22;
+		o_2d.x=(int)((i_x*this.m00+i_y*this.m01+i_z*this.m02)/w);
+		o_2d.y=(int)((i_y*this.m11+i_z*this.m12)/w);
+		return;
+	}		
 }

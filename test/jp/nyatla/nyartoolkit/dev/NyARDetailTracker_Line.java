@@ -13,9 +13,9 @@ import jp.nyatla.nyartoolkit.core.param.*;
 
 import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailEstimateItem;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailTrackItem;
-import jp.nyatla.nyartoolkit.dev.tracking.detail.fixedthreshold.NyARDetailFixedThresholTrackSrcTable;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.fixedthreshold.NyARFixedThresholdDetailTrackSrcTable;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.fixedthreshold.NyARFixedThresholdDetailTracker;
-import jp.nyatla.nyartoolkit.dev.tracking.detail.fixedthreshold.NyARDetailFixedThresholTrackSrcTable.Item;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.fixedthreshold.NyARFixedThresholdDetailTrackSrcTable.Item;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.fixedthreshold.NyARFixedThresholdDetailTracker.SquareBinder;
 import jp.nyatla.nyartoolkit.dev.tracking.outline.*;
 import jp.nyatla.nyartoolkit.dev.tracking.*;
@@ -98,7 +98,7 @@ public class NyARDetailTracker_Line extends NyARFixedThresholdDetailTracker
 	 * @param i_datasource
 	 * @param i_is_remove_target
 	 */
-	public void trackTarget(NyARDetailFixedThresholTrackSrcTable i_datasource,INyARMarkerTrackerListener i_listener) throws NyARException
+	public void trackTarget(NyARFixedThresholdDetailTrackSrcTable i_datasource,INyARMarkerTrackerListener i_listener) throws NyARException
 	{
 		NyARDetailFixedThresholTrackSrcTable.Item[] temp_items=i_datasource.getArray();
 		SquareBinder binder=this._binder;

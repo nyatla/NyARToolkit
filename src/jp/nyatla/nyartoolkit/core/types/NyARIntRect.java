@@ -49,7 +49,7 @@ public class NyARIntRect
 	 * @param i_num_of_vertex
 	 * @param o_rect
 	 */
-	public void wrapVertex(NyARDoublePoint2d i_vertex[],int i_num_of_vertex)
+	public void setAreaRect(NyARDoublePoint2d i_vertex[],int i_num_of_vertex)
 	{
 		//エリアを求める。
 		int xmax,xmin,ymax,ymin;
@@ -67,11 +67,34 @@ public class NyARIntRect
 				ymax=(int)i_vertex[i].y;
 			}
 		}
-		this.h=ymax-ymin;
+		this.h=ymax-ymin+1;
 		this.x=xmin;
-		this.w=xmax-xmin;
+		this.w=xmax-xmin+1;
 		this.y=ymin;
 	}
+	public void setAreaRect(NyARIntPoint2d i_vertex[],int i_num_of_vertex)
+	{
+		//エリアを求める。
+		int xmax,xmin,ymax,ymin;
+		xmin=xmax=(int)i_vertex[i_num_of_vertex-1].x;
+		ymin=ymax=(int)i_vertex[i_num_of_vertex-1].y;
+		for(int i=i_num_of_vertex-2;i>=0;i--){
+			if(i_vertex[i].x<xmin){
+				xmin=(int)i_vertex[i].x;
+			}else if(i_vertex[i].x>xmax){
+				xmax=(int)i_vertex[i].x;
+			}
+			if(i_vertex[i].y<ymin){
+				ymin=(int)i_vertex[i].y;
+			}else if(i_vertex[i].y>ymax){
+				ymax=(int)i_vertex[i].y;
+			}
+		}
+		this.h=ymax-ymin+1;
+		this.x=xmin;
+		this.w=xmax-xmin+1;
+		this.y=ymin;
+	}	
 	/**
 	 * 矩形を指定した領域内にクリップする。
 	 * @param top
@@ -83,8 +106,8 @@ public class NyARIntRect
 	{
 		int x=this.x;
 		int y=this.y;
-		int r=x+this.w;
-		int b=y+this.h;
+		int r=x+this.w-1;
+		int b=y+this.h-1;
 		if(x<i_left){
 			x=i_left;
 		}else if(x>i_right){
@@ -100,13 +123,13 @@ public class NyARIntRect
 		if(l<0){
 			this.w=0;
 		}else{
-			this.w=l;
+			this.w=l+1;
 		}
 		l=(b>i_bottom)?i_bottom-y:b-y;
 		if(l<0){
 			this.h=0;
 		}else{
-			this.h=l;
+			this.h=l+1;
 		}
 		this.x=x;
 		this.y=y;

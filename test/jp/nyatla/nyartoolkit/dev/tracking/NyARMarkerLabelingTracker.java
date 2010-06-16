@@ -10,7 +10,7 @@ import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilter_ARToolki
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector_Rle;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
-import jp.nyatla.nyartoolkit.dev.tracking.detail.fixedthreshold.NyARDetailFixedThresholTrackSrcTable;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.fixedthreshold.NyARFixedThresholdDetailTrackSrcTable;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.fixedthreshold.NyARFixedThresholdDetailTracker;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.labeling.NyARDetailLabelingTrackSrcTable;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.labeling.NyARDetailLabelingTracker;
@@ -67,7 +67,7 @@ public abstract class NyARMarkerLabelingTracker extends NyARMarkerTracker
 	protected NyAROutlineTrackSrcRefTable _new_outline_table;
 	protected NyAROutlineTracker _outline_tracker;
 	protected NyARDetailLabelingTracker _detail_tracker;
-	protected NyARDetailFixedThresholTrackSrcTable _detail_table;
+	protected NyARFixedThresholdDetailTrackSrcTable _detail_table;
 	
 	
 	
@@ -88,7 +88,7 @@ public abstract class NyARMarkerLabelingTracker extends NyARMarkerTracker
 		this._track_outline_table=new NyAROutlineTrackSrcRefTable(10);
 		this._new_outline_table=new NyAROutlineTrackSrcRefTable(10);
 		this._outline_tracker=new NyAROutlineTracker(this,10,10);
-		this._detail_table=new NyARDetailFixedThresholTrackSrcTable(10,scr_size,i_ref_param.getDistortionFactor());
+		this._detail_table=new NyARFixedThresholdDetailTrackSrcTable(10,scr_size,i_ref_param.getDistortionFactor());
 
 		this._detail_tracker=new NyARDetailLabelingTracker(this,i_ref_param,10,10);
 		this._labaling_data_source=new NyARDetailLabelingTrackSrcTable(10,i_ref_param.getScreenSize(),i_ref_param.getDistortionFactor(),i_input_raster_type);
@@ -126,9 +126,7 @@ public abstract class NyARMarkerLabelingTracker extends NyARMarkerTracker
 		this._outline_tracker.trackTarget(this._track_outline_table);
 
 		//データソース内容を更新
-		for(int i=this._detail_tracker.getNumberOfSquare()-1;i>=0;i--){
-			this._labaling_data_source.update(this._detail_tracker.getSquares()[i], i_raster);
-		}
+		this._labaling_data_source.update(this._detail_tracker.getSquares(),this._detail_tracker.getNumberOfSquare(), i_raster);
 		
 		//ディティールトラッキングを実行
 		this._detail_tracker.trackTarget(this._labaling_data_source);

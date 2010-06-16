@@ -81,6 +81,8 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 	private final int[] __detectMarker_mkvertex = new int[4];
 	public void detectMarker(NyARGrayscaleRaster i_raster,NyARIntRect i_area,int i_th,Object i_param) throws NyARException
 	{
+		assert(i_area.w*i_area.h>0);
+		
 		final NyARRleLabelFragmentInfoStack flagment=this._stack;
 		final NyARLabelOverlapChecker<NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo> overlap = this._overlap_checker;
 

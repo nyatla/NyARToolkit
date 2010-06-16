@@ -1,6 +1,13 @@
 package jp.nyatla.nyartoolkit.core.utils;
 
 import jp.nyatla.nyartoolkit.core.types.*;
+/**
+ * typeの
+ * 
+ * 
+ * @author nyatla
+ *
+ */
 public class NyARMath
 {
 	/**
@@ -8,7 +15,7 @@ public class NyARMath
 	 * @param i_p1
 	 * @param i_p2
 	 * @return
-	 */
+	 */	
 	public static final double sqNorm(NyARDoublePoint2d i_p1,NyARDoublePoint2d i_p2)
 	{
 		double x,y;
@@ -55,5 +62,20 @@ public class NyARMath
 		double res = Math.pow(Math.abs(i_in), 1.0 / 3.0);
 		return (i_in >= 0) ? res : -res;
 	}
-
+	/**
+	 * 格納値をベクトルとして、距離を返します。
+	 * @return
+	 */
+	public static final double dist(NyARDoublePoint2d i_vec)
+	{
+		return Math.sqrt(i_vec.x*i_vec.x+i_vec.y+i_vec.y);
+	}
+	/**
+	 * 格納値をベクトルとして、距離を返します。
+	 * @return
+	 */
+	public static final double dist(NyARDoublePoint3d i_vec)
+	{
+		return Math.sqrt(i_vec.x*i_vec.x+i_vec.y*i_vec.y+i_vec.z*i_vec.z);
+	}	
 }

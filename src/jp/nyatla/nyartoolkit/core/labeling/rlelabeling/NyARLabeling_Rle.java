@@ -207,6 +207,11 @@ public class NyARLabeling_Rle
 		NyARIntSize size=i_bin_raster.getSize();
 		return this.imple_labeling(i_bin_raster,0,0,0,size.w,size.h,o_stack);
 	}
+	public int labeling(NyARBinRaster i_bin_raster,NyARIntRect i_area, NyARRleLabelFragmentInfoStack o_stack) throws NyARException
+	{
+		assert(i_bin_raster.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
+		return this.imple_labeling(i_bin_raster,0,i_area.x,i_area.y,i_area.w,i_area.h,o_stack);
+	}
 	/**
 	 * GSラスタの２値ラべリングを実行します。
 	 * @param i_gs_raster

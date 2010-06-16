@@ -12,8 +12,7 @@ import jp.nyatla.nyartoolkit.core.param.*;
 
 import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailEstimateItem;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailTrackItem;
-import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailTrackSrcTable;
-import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailTrackSrcTable.Item;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.fixedthreshold.NyARDetailFixedThresholdTrackSrcTable.Item;
 import jp.nyatla.nyartoolkit.dev.tracking.outline.*;
 import jp.nyatla.nyartoolkit.dev.tracking.*;
 
@@ -61,7 +60,7 @@ public class NyARFixedThresholdDetailTracker
 			super(i_max_col,i_max_row);
 		}
 		
-		public void bindPoints(NyARDetailFixedThresholTrackSrcTable.Item[] i_vertex_r,int i_row_len,NyARDetailTrackItem[] i_vertex_c,int i_col_len,int o_track_item[])
+		public void bindPoints(NyARFixedThresholdDetailTrackSrcTable.Item[] i_vertex_r,int i_row_len,NyARDetailTrackItem[] i_vertex_c,int i_col_len,int o_track_item[])
 		{
 			VertexBinder.DistItem[] map=this._map;
 			//distortionMapを作成。ついでに最小値のインデクスも取得
@@ -180,9 +179,9 @@ public class NyARFixedThresholdDetailTracker
 	 * @param i_datasource
 	 * @param i_is_remove_target
 	 */
-	public void trackTarget(NyARDetailFixedThresholTrackSrcTable i_datasource) throws NyARException
+	public void trackTarget(NyARFixedThresholdDetailTrackSrcTable i_datasource) throws NyARException
 	{
-		NyARDetailFixedThresholTrackSrcTable.Item[] temp_items=i_datasource.getArray();
+		NyARFixedThresholdDetailTrackSrcTable.Item[] temp_items=i_datasource.getArray();
 		SquareBinder binder=this._binder;
 		int track_item_len= this._tracker_items.getLength();
 		NyARDetailTrackItem[] track_items=this._tracker_items.getArray();
@@ -219,7 +218,7 @@ public class NyARFixedThresholdDetailTracker
 				continue;
 			}
 
-			NyARDetailFixedThresholTrackSrcTable.Item temp_item_ptr=temp_items[this._track_index[i]];
+			NyARFixedThresholdDetailTrackSrcTable.Item temp_item_ptr=temp_items[this._track_index[i]];
 			//移動量が最小になる組み合わせを計算
 			int dir=getNearVertexIndex(est_item.ideal_vertex,temp_item_ptr.ideal_vertex,4);
 			for(int i2=0;i2<4;i2++){
@@ -239,9 +238,9 @@ public class NyARFixedThresholdDetailTracker
 			vx=item.trans_v.x=trans.x-item.trans.x;
 			vy=item.trans_v.y=trans.y-item.trans.y;
 			vz=item.trans_v.z=trans.z-item.trans.z;
-			item.trans.x=(trans.x+item.trans.x)*0.5;
-			item.trans.y=(trans.y+item.trans.y)*0.5;
-			item.trans.z=(trans.z+item.trans.z)*0.5;
+			item.trans.x=(trans.x+item.trans.x)/2;
+			item.trans.y=(trans.y+item.trans.y)/2;
+			item.trans.z=(trans.z+item.trans.z)/2;
 			trans.x=item.trans.x+vx;
 			trans.y=item.trans.y+vy;
 			trans.z=item.trans.z+vz;

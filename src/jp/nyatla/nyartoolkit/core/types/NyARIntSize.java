@@ -94,7 +94,7 @@ public class NyARIntSize
 	 * @param i_vertex
 	 * @param i_num_of_vertex
 	 */
-	public void wrapVertex(NyARDoublePoint2d i_vertex[],int i_num_of_vertex)
+	public void setAreaRect(NyARDoublePoint2d i_vertex[],int i_num_of_vertex)
 	{
 		//エリアを求める。
 		int xmax,xmin,ymax,ymin;
@@ -112,10 +112,10 @@ public class NyARIntSize
 				ymax=(int)i_vertex[i].y;
 			}
 		}
-		this.h=ymax-ymin;
-		this.w=xmax-xmin;
+		this.h=ymax-ymin+1;
+		this.w=xmax-xmin+1;
 	}
-	public void wrapVertex(NyARIntPoint2d i_vertex[],int i_num_of_vertex)
+	public void setAreaRect(NyARIntPoint2d i_vertex[],int i_num_of_vertex)
 	{
 		//エリアを求める。
 		int xmax,xmin,ymax,ymin;
@@ -133,7 +133,7 @@ public class NyARIntSize
 				ymax=(int)i_vertex[i].y;
 			}
 		}
-		this.h=ymax-ymin;
-		this.w=xmax-xmin;
+		this.h=ymax-ymin+1;
+		this.w=xmax-xmin+1;
 	}
 }

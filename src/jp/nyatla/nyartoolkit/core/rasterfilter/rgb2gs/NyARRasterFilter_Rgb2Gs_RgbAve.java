@@ -41,17 +41,17 @@ import jp.nyatla.nyartoolkit.core.types.*;
  * このフィルタは、RGB値の平均値を、(R+G+B)/3で算出します。
  *
  */
-public class NyARRasterFilter_Rgb2Gs_AveAdd implements INyARRasterFilter_Rgb2Gs
+public class NyARRasterFilter_Rgb2Gs_RgbAve implements INyARRasterFilter_Rgb2Gs
 {
 	IdoThFilterImpl _do_filter_impl;
-	public NyARRasterFilter_Rgb2Gs_AveAdd(int i_in_raster_type,int i_out_raster_type) throws NyARException
+	public NyARRasterFilter_Rgb2Gs_RgbAve(int i_in_raster_type,int i_out_raster_type) throws NyARException
 	{
 		if(!initInstance(i_in_raster_type,i_out_raster_type))
 		{
 			throw new NyARException();
 		}
 	}
-	public NyARRasterFilter_Rgb2Gs_AveAdd(int i_in_raster_type) throws NyARException
+	public NyARRasterFilter_Rgb2Gs_RgbAve(int i_in_raster_type) throws NyARException
 	{
 		if(!initInstance(i_in_raster_type,NyARBufferType.INT1D_GRAY_8))
 		{
@@ -87,11 +87,10 @@ public class NyARRasterFilter_Rgb2Gs_AveAdd implements INyARRasterFilter_Rgb2Gs
 		this._do_filter_impl.doFilter(i_input,(int[])i_output.getBuffer(),0,0,s.w,s.h);
 		return;
 	}
-	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output,int l,int t,int w,int h) throws NyARException
+	public void doFilter(INyARRgbRaster i_input,NyARIntRect i_rect, NyARGrayscaleRaster i_output) throws NyARException
 	{
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
-		NyARIntSize s=i_input.getSize();
-		this._do_filter_impl.doFilter(i_input,(int[])i_output.getBuffer(),l,t,w,h);
+		this._do_filter_impl.doFilter(i_input,(int[])i_output.getBuffer(),i_rect.x,i_rect.y,i_rect.w,i_rect.h);
 		
 	}
 	/*

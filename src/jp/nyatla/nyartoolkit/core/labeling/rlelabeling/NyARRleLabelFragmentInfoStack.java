@@ -35,8 +35,7 @@ public class NyARRleLabelFragmentInfoStack  extends NyARLabelInfoStack<NyARRleLa
 	public class RleLabelFragmentInfo extends NyARLabelInfo
 	{
 		//継承メンバ
-		//int area; // フラグメントラベルの領域数
-		public int entry_x; // フラグメントラベルの位置
+		public int entry_x;  // フラグメントラベルの位置
 	}	
 	public NyARRleLabelFragmentInfoStack(int i_length) throws NyARException
 	{
