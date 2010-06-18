@@ -2,14 +2,25 @@ package jp.nyatla.nyartoolkit.dev.tracking.detail.labeling;
 
 import jp.nyatla.nyartoolkit.core.transmat.NyARRectOffset;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.dev.tracking.detail.*;
 
-public class NyARDetailLabelingEstimateItem extends NyARDetailEstimateItem
+
+public class NyARDetailLabelingEstimateItem
 {
+	/**
+	 * 探索範囲
+	 */
+	public NyARIntRect     search_area=new NyARIntRect();
+	/**
+	 * 頂点の予測位置位置
+	 */
+	public NyARDoublePoint2d[] prev_ideal_vertex=NyARDoublePoint2d.createArray(4);
+	public int sq_dist_max;	
 	//予想すべき矩形の位置
 	public NyARIntRect rect=new NyARIntRect();
 
-	public NyARRectOffset offset=new NyARRectOffset();	
+	public NyARRectOffset offset=new NyARRectOffset();
+	public double width;
+	
 	/**
 	 * 画面位置での中心座標
 	 */

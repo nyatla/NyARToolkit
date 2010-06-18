@@ -65,8 +65,8 @@ public class TrTest extends Frame implements JmfCaptureListener,MouseMotionListe
 		public void onDetailUpdate(NyARDetailTrackItem i_target)
 		{
 			g2.setColor(Color.BLUE);
-			drawPolygon(g2,i_target.estimate.ideal_vertex,4);
-			g2.drawString(Integer.toString(i_target.serial),(int)i_target.estimate.ideal_vertex[0].x,(int)i_target.estimate.ideal_vertex[0].y);
+			drawPolygon(g2,i_target.estimate.prev_ideal_vertex,4);
+			g2.drawString(Integer.toString(i_target.serial),(int)i_target.estimate.prev_ideal_vertex[0].x,(int)i_target.estimate.prev_ideal_vertex[0].y);
 		}
 		public void onLeaveTracking(NyARTrackItem i_target)
 		{

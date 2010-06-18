@@ -10,7 +10,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.core.param.*;
 
-import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailEstimateItem;
+
 import jp.nyatla.nyartoolkit.dev.tracking.detail.NyARDetailTrackItem;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.fixedthreshold.NyARDetailFixedThresholdTrackSrcTable.Item;
 import jp.nyatla.nyartoolkit.dev.tracking.outline.*;
@@ -18,15 +18,15 @@ import jp.nyatla.nyartoolkit.dev.tracking.*;
 
 public class NyARFixedThresholdDetailTracker
 {
-	class NyARDetailTrackStack extends NyARObjectStack<NyARDetailTrackItem>
+	class NyARDetailTrackStack extends NyARObjectStack<NyARFixedThresholdDetailTrackItem>
 	{
-		protected NyARDetailTrackItem createElement()
+		protected NyARFixedThresholdDetailTrackItem createElement()
 		{
-			return new NyARDetailTrackItem();
+			return new NyARFixedThresholdDetailTrackItem();
 		}
 		public NyARDetailTrackStack(int i_max_tracking) throws NyARException
 		{
-			super(i_max_tracking,NyARDetailTrackItem.class);
+			super(i_max_tracking,NyARFixedThresholdDetailTrackItem.class);
 			return;
 		}
 		public int getNearestItem(NyARIntPoint2d i_pos)
@@ -39,7 +39,7 @@ public class NyARFixedThresholdDetailTracker
 				NyARIntPoint2d center=this._items[i].estimate.center;
 				double nd=NyARMath.sqNorm(i_pos, center);
 				//有効範囲内？
-				if(nd>this._items[i].estimate.ideal_sq_dist_max){
+				if(nd>this._items[i].estimate.sq_dist_max){
 					continue;
 				}
 				if(d>nd){
@@ -60,7 +60,7 @@ public class NyARFixedThresholdDetailTracker
 			super(i_max_col,i_max_row);
 		}
 		
-		public void bindPoints(NyARFixedThresholdDetailTrackSrcTable.Item[] i_vertex_r,int i_row_len,NyARDetailTrackItem[] i_vertex_c,int i_col_len,int o_track_item[])
+		public void bindPoints(NyARFixedThresholdDetailTrackSrcTable.Item[] i_vertex_r,int i_row_len,NyARFixedThresholdDetailTrackItem[] i_vertex_c,int i_col_len,int o_track_item[])
 		{
 			VertexBinder.DistItem[] map=this._map;
 			//distortionMapを作成。ついでに最小値のインデクスも取得
@@ -119,7 +119,7 @@ public class NyARFixedThresholdDetailTracker
 	 */
 	public boolean addTrackTarget(NyAROutlineTrackItem i_item,double i_width,int i_direction) throws NyARException
 	{
-		NyARDetailTrackItem item=this._tracker_items.prePush();
+		NyARFixedThresholdDetailTrackItem item=this._tracker_items.prePush();
 		if(item==null){
 			//あいてない。終了のお知らせ
 			return false;
@@ -128,7 +128,7 @@ public class NyARFixedThresholdDetailTracker
 
 		/*【注意！】この関数は、カメラ歪み解除の実装をサボってる。*/
 		
-		NyARDoublePoint2d[] vtx_ptr=item.estimate.ideal_vertex;
+		NyARDoublePoint2d[] vtx_ptr=item.estimate.prev_ideal_vertex;
 		for(int i=0;i<4;i++){
 			int idx=(i+4 - i_direction) % 4;
 			vtx_ptr[i].x=i_item.vertex[idx].x;
@@ -152,7 +152,7 @@ public class NyARFixedThresholdDetailTracker
 		item.life=0;
 		item.estimate.center.x=i_item.center.x;
 		item.estimate.center.y=i_item.center.y;
-		item.estimate.ideal_sq_dist_max=i_item.sq_dist_max;
+		item.estimate.sq_dist_max=i_item.sq_dist_max;
 		item.trans_v.x=item.trans_v.y=item.trans_v.z=0;
 
 		return true;
@@ -184,7 +184,7 @@ public class NyARFixedThresholdDetailTracker
 		NyARFixedThresholdDetailTrackSrcTable.Item[] temp_items=i_datasource.getArray();
 		SquareBinder binder=this._binder;
 		int track_item_len= this._tracker_items.getLength();
-		NyARDetailTrackItem[] track_items=this._tracker_items.getArray();
+		NyARFixedThresholdDetailTrackItem[] track_items=this._tracker_items.getArray();
 		
 		//ワーク
 		NyARDoublePoint3d trans=this.__trans;
@@ -201,8 +201,8 @@ public class NyARFixedThresholdDetailTracker
 		for(int i=track_item_len-1;i>=0;i--)
 		{
 			//予想位置と一番近かったものを得る
-			NyARDetailTrackItem item=track_items[i];
-			NyARDetailEstimateItem est_item=this._tracker_items.getItem(i).estimate;
+			NyARFixedThresholdDetailTrackItem item=track_items[i];
+			NyARFixedThresholdDetailEstimateItem est_item=this._tracker_items.getItem(i).estimate;
 			if(this._track_index[i]<0){
 				//見つからなかった。
 				item.life++;
@@ -220,7 +220,7 @@ public class NyARFixedThresholdDetailTracker
 
 			NyARFixedThresholdDetailTrackSrcTable.Item temp_item_ptr=temp_items[this._track_index[i]];
 			//移動量が最小になる組み合わせを計算
-			int dir=getNearVertexIndex(est_item.ideal_vertex,temp_item_ptr.ideal_vertex,4);
+			int dir=getNearVertexIndex(est_item.prev_ideal_vertex,temp_item_ptr.ideal_vertex,4);
 			for(int i2=0;i2<4;i2++){
 				int idx=(i2+dir) % 4;
 				ideal_vertex[i2]=temp_item_ptr.ideal_vertex[idx];
@@ -261,9 +261,9 @@ public class NyARFixedThresholdDetailTracker
 			for(int i2=0;i2<4;i2++)
 			{
 				rot.transformVertex(est_item.offset.vertex[i2],pos3d);
-				prjmat.projectionConvert(pos3d.x+trans.x,pos3d.y+trans.y,pos3d.z+trans.z,est_item.ideal_vertex[i2]);//[Optimaize!]
-				cx+=(int)est_item.ideal_vertex[i2].x;
-				cy+=(int)est_item.ideal_vertex[i2].y;
+				prjmat.projectionConvert(pos3d.x+trans.x,pos3d.y+trans.y,pos3d.z+trans.z,est_item.prev_ideal_vertex[i2]);//[Optimaize!]
+				cx+=(int)est_item.prev_ideal_vertex[i2].x;
+				cy+=(int)est_item.prev_ideal_vertex[i2].y;
 			}
 			//中央値を計算して、理想位置から画面位置に変換（マイナスの時は無かったことにする。）
 			cx/=4;
@@ -275,7 +275,7 @@ public class NyARFixedThresholdDetailTracker
 				est_item.center.y=(int)cy;				
 			}
 			//対角線の平均を元に矩形の大体半分 2*n/((sqrt(2)*2)*2)=n/5を計算
-			est_item.ideal_sq_dist_max=(int)(NyARMath.sqNorm(est_item.ideal_vertex[0],est_item.ideal_vertex[2])+NyARMath.sqNorm(est_item.ideal_vertex[1],est_item.ideal_vertex[3]))/5;
+			est_item.sq_dist_max=(int)(NyARMath.sqNorm(est_item.prev_ideal_vertex[0],est_item.prev_ideal_vertex[2])+NyARMath.sqNorm(est_item.prev_ideal_vertex[1],est_item.prev_ideal_vertex[3]))/5;
 			//更新
 			this._parent.onDetailUpdate(item);
 		}

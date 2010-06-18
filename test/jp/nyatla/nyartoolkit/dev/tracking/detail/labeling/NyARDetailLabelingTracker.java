@@ -7,15 +7,12 @@ import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
-import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
-import jp.nyatla.nyartoolkit.core.types.matrix.*;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.core.param.*;
 
-import jp.nyatla.nyartoolkit.dev.tracking.detail.*;
 import jp.nyatla.nyartoolkit.dev.tracking.outline.*;
 import jp.nyatla.nyartoolkit.dev.tracking.*;
 
@@ -42,13 +39,17 @@ public class NyARDetailLabelingTracker
 				NyARIntPoint2d center=this._items[i].estimate.center;
 				double nd=NyARMath.sqNorm(i_pos, center);
 				//有効範囲内？
-				if(nd>this._items[i].estimate.ideal_sq_dist_max){
+				if(nd>this._items[i].estimate.sq_dist_max){
 					continue;
 				}
 				if(d>nd){
 					d=nd;
 					index=i;
 				}
+			}
+			if(index==-1){
+				System.out.print("");
+				
 			}
 			return index;
 		}			
@@ -60,7 +61,7 @@ public class NyARDetailLabelingTracker
 			super(i_max_col,i_max_row);
 		}
 		
-		public void bindPoints(NyARDetailLabelingTrackSrcTable.Item[] i_vertex_r,int i_row_len,NyARDetailTrackItem[] i_vertex_c,int i_col_len,int o_track_item[])
+		public void bindPoints(NyARDetailLabelingTrackSrcTable.Item[] i_vertex_r,int i_row_len,NyARDetailLabelingTrackItem[] i_vertex_c,int i_col_len,int o_track_item[])
 		{
 			VertexBinder.DistItem[] map=this._map;
 			//distortionMapを作成。ついでに最小値のインデクスも取得
@@ -92,14 +93,12 @@ public class NyARDetailLabelingTracker
 	protected NyARMarkerTracker _parent;
 	protected NyARCameraDistortionFactor _ref_distfactor;
 	protected NyARIntSize _ref_scr_size;
-	private NyARDoublePoint3d __pos3d=new NyARDoublePoint3d();
 	protected NyARPerspectiveProjectionMatrix _ref_prjmat;
 	private NyARDoublePoint3d __trans=new NyARDoublePoint3d();
 	private NyARDoublePoint3d __angle=new NyARDoublePoint3d();
-	private NyARDoubleMatrix33 __rot=new NyARDoubleMatrix33();
 	private NyARDoublePoint2d[] __ideal_vertex_ptr=new NyARDoublePoint2d[4];
 	private NyARLinear[] __ideal_line_ptr=new NyARLinear[4];
-	protected NyARTransMat _transmat;	
+	protected NyARTransMat _transmat;
 	
 	
 	
@@ -133,10 +132,12 @@ public class NyARDetailLabelingTracker
 			return false;
 		}
 		item.estimate.offset.setSquare(i_width);
+		item.estimate.width=i_width;
+		
 
 		/*【注意！】この関数は、カメラ歪み解除の実装をサボってる。*/
 		
-		NyARDoublePoint2d[] vtx_ptr=item.estimate.ideal_vertex;
+		NyARDoublePoint2d[] vtx_ptr=item.estimate.prev_ideal_vertex;
 		for(int i=0;i<4;i++){
 			int idx=(i+4 - i_direction) % 4;
 			vtx_ptr[i].x=i_item.vertex[idx].x;
@@ -162,13 +163,13 @@ public class NyARDetailLabelingTracker
 		item.life=0;
 		item.estimate.center.x=i_item.center.x;
 		item.estimate.center.y=i_item.center.y;
-		//探索予定地
+		//探索予定地を適当に計算
 		item.estimate.search_area.w=item.rect_area.w+16;
 		item.estimate.search_area.h=item.rect_area.h+16;
 		item.estimate.search_area.x=item.rect_area.x-8;
 		item.estimate.search_area.y=item.rect_area.y-8;
 		item.estimate.search_area.clip(0,0,319,239);
-		item.estimate.ideal_sq_dist_max=i_item.sq_dist_max;
+		item.estimate.sq_dist_max=i_item.sq_dist_max;
 		item.trans_v.x=item.trans_v.y=item.trans_v.z=0;
 
 
@@ -195,133 +196,188 @@ public class NyARDetailLabelingTracker
 		NyARDetailLabelingTrackSrcTable.Item[] temp_items=i_datasource.getArray();
 		SquareBinder binder=this._binder;
 		int track_item_len= this._tracker_items.getLength();
-		NyARDetailTrackItem[] track_items=this._tracker_items.getArray();
-		NyARPerspectiveProjectionMatrix prjmat=this._ref_prjmat;
-		
-		//ワーク
-		NyARDoublePoint3d trans=this.__trans;
-		NyARDoublePoint3d angle=this.__angle;
-		NyARDoubleMatrix33 rot=this.__rot;
-		NyARDoublePoint3d pos3d=this.__pos3d;
-		NyARDoublePoint2d[] ideal_vertex=this.__ideal_vertex_ptr;
-		NyARLinear[] ideal_line=this.__ideal_line_ptr;
+		NyARDetailLabelingTrackItem[] track_items=this._tracker_items.getArray();
 		
 		//予測位置とのマッピング		
 		binder.bindPoints(temp_items,i_datasource.getLength(),track_items,track_item_len,  this._track_index);
+		
+
 
 
 		for(int i=track_item_len-1;i>=0;i--)
 		{
 			//予想位置と一番近かったものを得る
-			NyARDetailTrackItem item=track_items[i];
-			NyARDetailEstimateItem est_item=this._tracker_items.getItem(i).estimate;
+			NyARDetailLabelingTrackItem item=track_items[i];
 			if(this._track_index[i]<0){
-				//見つからなかった。
-//位置予定だけ追加？
+				//位置予測を試行
 				item.life++;
-				if(item.life>100){
-					//削除イベントを発行					
+				//寿命に達したか、予測に失敗した場合は追跡終了
+				if((item.life>10) || !estimateTargetPos(item)){
+					//削除イベントを発行
 					this._parent.onLeaveTracking(item);
 					//削除(順序無視の削除)
 					this._tracker_items.removeIgnoreOrder(i);
-				}else{
-					//過去の値でイベント呼ぶ
-					this._parent.onDetailUpdate(item);
+					continue;
 				}
-				continue;
-			}
-
-			NyARDetailLabelingTrackSrcTable.Item temp_item_ptr=temp_items[this._track_index[i]];
-			//移動量が最小になる組み合わせを計算
-			int dir=getNearVertexIndex(est_item.ideal_vertex,temp_item_ptr.ideal_vertex,4);
-			for(int i2=0;i2<4;i2++){
-				int idx=(i2+dir) % 4;
-				ideal_vertex[i2]=temp_item_ptr.ideal_vertex[idx];
-				ideal_line[i2]=temp_item_ptr.ideal_line[idx];
-			}
-			//新しい現在値を算出
-			//this._transmat.transMatContinue(i_square, i_offset, i_prev_result, i_prev_error_rate, o_result)
-			this._transmat.transMat(ideal_vertex,ideal_line,est_item.offset,angle,trans);
-			
-			//
-
-			//現在のパラメタを計算して、未来のパラメタを予測
-			double vx,vy,vz;
-			
-			//現在位置、速度の計算
-			vx=item.trans_v.x=trans.x-item.trans.x;
-			vy=item.trans_v.y=trans.y-item.trans.y;
-			vz=item.trans_v.z=trans.z-item.trans.z;
-			item.trans.x=(trans.x*3+item.trans.x)*0.25;
-			item.trans.y=(trans.y*3+item.trans.y)*0.25;
-			item.trans.z=(trans.z*3+item.trans.z)*0.25;
-			
-			
-//速度リミッターつけよう。リミット速度は、マーカサイズ以上？
-			
-			//平行移動量の未来予測
-			trans.x+=vx;
-			trans.y+=vy;
-			trans.z+=vz;
-
-			
-			//現在の角位置の計算。敷居値未満の時は加重平均。敷居値以上の場合はそのまま使う。（2PI/16に追従限界を仕掛ける）
-			vx=(angle.x-item.angle.x);
-			vx=Math.abs(vx)<0.39?vx:0;
-			item.angle.x=(item.angle.x+angle.x*7)/8;
-			vy=(angle.y-item.angle.y);
-			vy=Math.abs(vy)<0.39?vy:0;
-			item.angle.y=(item.angle.y+angle.y*7)/8;
-			vz=(angle.z-item.angle.z);
-			vz=Math.abs(vz)<0.39?vz:0;
-			item.angle.z=(item.angle.z+angle.z*7)/8;
-
-			//回転量の未来予測
-			angle.x+=vx;
-			angle.y+=vy;
-			angle.z+=vz;
-			
-			
-			
-System.out.println(vx+":"+vy+":"+vz);			
-			
-			//理想系での頂点の未来位置を計算
-			rot.setZXYAngle(angle);
-			double cx,cy;
-			cx=cy=0;
-			for(int i2=0;i2<4;i2++)
-			{
-				rot.transformVertex(est_item.offset.vertex[i2],pos3d);
-				prjmat.projectionConvert(pos3d.x+item.trans.x,pos3d.y+item.trans.y,pos3d.z+item.trans.z,est_item.ideal_vertex[i2]);//[Optimaize!]
-				cx+=(int)est_item.ideal_vertex[i2].x;
-				cy+=(int)est_item.ideal_vertex[i2].y;
-			}
-			//対角線の平均を元に矩形の大体半分 2*n/((sqrt(2)*2)*2)=n/5を計算
-			est_item.ideal_sq_dist_max=(int)(NyARMath.sqNorm(est_item.ideal_vertex[0],est_item.ideal_vertex[2])+NyARMath.sqNorm(est_item.ideal_vertex[1],est_item.ideal_vertex[3]))/5;
-			//中央値を計算して、理想位置から画面位置に変換（マイナスの時は無かったことにする。）
-			cx/=4;
-			cy/=4;
-			if(this._ref_scr_size.isInsideRact((int)cx,(int)cy)){
-				this._ref_distfactor.ideal2Observ(cx, cy, est_item.center);
+				this._parent.onDetailUpdate(item);				
+				
 			}else{
-				est_item.center.x=(int)cx;
-				est_item.center.y=(int)cy;				
+				item.life=0;
+				if(updateByDataSource(temp_items[this._track_index[i]],item)){
+					this._parent.onDetailUpdate(item);
+					continue;
+				}
+				item.life++;
+				this._parent.onDetailUpdate(item);				
 			}
-			
-			//検出範囲を計算(速度により検出エリアを1.5～2倍で可変にする)
-			NyARDoublePoint2d[] vertex=NyARDoublePoint2d.createArray(4);
-			for(int i2=0;i2<4;i2++){
-				NyARDoublePoint3d v=est_item.offset.vertex[i2];
-				prjmat.projectionConvert(v.x*3/2+trans.x,v.y*3/2+trans.y,v.z+trans.z,vertex[i2]);
-				this._ref_distfactor.ideal2Observ(vertex[i2], vertex[i2]);
-			}
-			est_item.search_area.setAreaRect(vertex,4);
-			est_item.search_area.clip(0,0,319,239);
-			
-			//更新
-			this._parent.onDetailUpdate(item);
 		}
 	}
+	/**
+	 * 線形予測（検出範囲だけ予測させればよくね？）
+	 * @param item
+	 * @throws NyARException
+	 */
+//	線形予測（検出範囲だけ予測させればよくね？）
+	private boolean estimateTargetPos(NyARDetailLabelingTrackItem item) throws NyARException
+	{
+		NyARPerspectiveProjectionMatrix prjmat=this._ref_prjmat;
+		NyARDetailLabelingEstimateItem est_item=item.estimate;
+		//移動量が最小になる組み合わせを計算
+				
+		//平行移動量の未来予測
+		double vx,vy,vz;
+		vx=item.trans.x+item.trans_v.x;
+		vy=item.trans.y+item.trans_v.y;
+		vz=item.trans.z+item.trans_v.z;
+//		item.trans.x+=item.trans_v.x;
+//		item.trans.y+=item.trans_v.y;
+//		item.trans.z+=item.trans_v.z;
+		//回転量予測はしない。
+		
+		
+		//次回のトラッキング用頂点位置を計算する。
+//newのこってる
+NyARDoublePoint2d[] vertex=NyARDoublePoint2d.createArray(4);	
+		final double area_coefficient=1.6+NyARMath.dist(item.trans_v)/item.estimate.width;
+		
+//矩形前提なら2頂点で十分じゃない？
+		for(int i2=0;i2<4;i2++){
+			NyARDoublePoint3d v=est_item.offset.vertex[i2];
+			prjmat.projectionConvert(v.x*area_coefficient+vx,v.y*area_coefficient+vy,v.z+vz,vertex[i2]);
+			this._ref_distfactor.ideal2Observ(vertex[i2], vertex[i2]);
+		}
+		est_item.search_area.setAreaRect(vertex,4);
+		est_item.search_area.clip(0,0,319,239);
+		//予測位置の最小値制限
+		if(est_item.search_area.w*est_item.search_area.h<256){
+			//大きさが16x16を切るようなら検出対象外とする。
+			return false;
+		}
+		return true;	
+	}	
+	
+	
+	/**
+	 * データソースを使ったアップデート
+	 */
+	private boolean updateByDataSource(NyARDetailLabelingTrackSrcTable.Item temp_item_ptr,NyARDetailLabelingTrackItem item) throws NyARException
+	{
+		NyARPerspectiveProjectionMatrix prjmat=this._ref_prjmat;
+		
+		NyARDoublePoint3d trans=this.__trans;
+		NyARDoublePoint3d angle=this.__angle;
+		NyARDoublePoint2d[] ideal_vertex=this.__ideal_vertex_ptr;
+		NyARLinear[] ideal_line=this.__ideal_line_ptr;
+		
+		NyARDetailLabelingEstimateItem est_item=item.estimate;
+		//移動量が最小になる組み合わせを計算
+		int dir=getNearVertexIndex(est_item.prev_ideal_vertex,temp_item_ptr.ideal_vertex,4);
+		for(int i2=0;i2<4;i2++){
+			int idx=(i2+dir) % 4;
+			ideal_vertex[i2]=temp_item_ptr.ideal_vertex[idx];
+			ideal_line[i2]=temp_item_ptr.ideal_line[idx];
+		}
+		//新しい現在値を算出
+		this._transmat.transMat(ideal_vertex,ideal_line,est_item.offset,angle,trans);
+		
+		//現在のパラメタを計算して、未来のパラメタを予測
+		double vx,vy,vz;
+		
+		//現在位置、速度の計算
+		vx=item.trans_v.x=trans.x-item.trans.x;
+		vy=item.trans_v.y=trans.y-item.trans.y;
+		vz=item.trans_v.z=trans.z-item.trans.z;
+		//速度リミッター
+		double vn=NyARMath.dist(item.trans_v);
+		if(vn>item.estimate.width*2){
+			//マーカのサイズの２倍以上の平行移動は許可しない。
+			return false;
+		}
+		
+		item.trans.x=(trans.x*3+item.trans.x)*0.25;
+		item.trans.y=(trans.y*3+item.trans.y)*0.25;
+		item.trans.z=(trans.z*3+item.trans.z)*0.25;
+		
+
+		
+		
+		//平行移動量の未来予測
+		trans.x+=vx;
+		trans.y+=vy;
+		trans.z+=vz;
+
+		
+		//現在の角位置の計算。敷居値未満の時は加重平均。敷居値以上の場合はそのまま使う。（2PI/16を追従限界にする。）
+		vx=(angle.x-item.angle.x);
+		vx=Math.abs(vx)<0.39?vx:0;
+		item.angle.x=(item.angle.x+angle.x*7)/8;
+		vy=(angle.y-item.angle.y);
+		vy=Math.abs(vy)<0.39?vy:0;
+		item.angle.y=(item.angle.y+angle.y*7)/8;
+		vz=(angle.z-item.angle.z);
+		vz=Math.abs(vz)<0.39?vz:0;
+		item.angle.z=(item.angle.z+angle.z*7)/8;
+
+		//回転量の未来予測
+		angle.x+=vx;
+		angle.y+=vy;
+		angle.z+=vz;
+		
+		
+		//今回のエリアを記録
+		item.rect_area.setAreaRect(ideal_vertex, 4);
+	
+		
+		//次回のトラッキング用データを保存する。
+		for(int i2=0;i2<4;i2++)
+		{
+			est_item.prev_ideal_vertex[i2].x=ideal_vertex[i2].x;
+			est_item.prev_ideal_vertex[i2].y=ideal_vertex[i2].y;
+		}
+		est_item.center.x=(int)temp_item_ptr.center.x;
+		est_item.center.y=(int)temp_item_ptr.center.y;				
+		
+
+		final double area_coefficient=1.6+vn/item.estimate.width;
+		System.out.println(area_coefficient);
+
+		//検出範囲を計算(速度により検出エリアを1.5～2倍で可変にする)
+//newのこってる
+		NyARDoublePoint2d[] vertex=NyARDoublePoint2d.createArray(4);
+		for(int i2=0;i2<4;i2++){
+			NyARDoublePoint3d v=est_item.offset.vertex[i2];
+			prjmat.projectionConvert(v.x*area_coefficient+trans.x,v.y*area_coefficient+trans.y,v.z+trans.z,vertex[i2]);
+			this._ref_distfactor.ideal2Observ(vertex[i2], vertex[i2]);
+		}
+		est_item.search_area.setAreaRect(vertex,4);
+		int w=est_item.search_area.w/2;
+		est_item.sq_dist_max=(w*w);
+		est_item.search_area.clip(0,0,319,239);
+		return true;
+	}
+	
+
+	
 	public boolean isTrackTarget(NyARIntPoint2d i_center)
 	{
 		return this._tracker_items.getNearestItem(i_center)!=-1;

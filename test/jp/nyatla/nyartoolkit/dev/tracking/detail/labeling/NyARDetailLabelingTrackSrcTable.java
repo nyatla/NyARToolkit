@@ -104,6 +104,9 @@ public class NyARDetailLabelingTrackSrcTable extends NyARObjectStack<NyARDetailL
 				cx+=v_ptr.x;
 				cy+=v_ptr.y;
 			}
+			item.center.x=(int)cx/4;
+			item.center.y=(int)cy/4;
+//this._ref_distfactor.ideal2Observ(vertex[i2], vertex[i2]);			
 			return;
 		}		
 	}	
@@ -145,7 +148,6 @@ public class NyARDetailLabelingTrackSrcTable extends NyARObjectStack<NyARDetailL
 		for(int i=0;i<i_number_of_item;i++)
 		{
 			NyARIntRect rect=i_items[i].estimate.search_area;
-			//境界値制限
 			//領域指定のGS化
 			ave.doFilter(i_src, rect,gs);
 			//領域指定のヒストグラム抽出
@@ -153,12 +155,11 @@ public class NyARDetailLabelingTrackSrcTable extends NyARObjectStack<NyARDetailL
 			this._histogram_analyzer.setVerticalInterval(skip<1?1:skip);
 			this._histogram_analyzer.analyzeRaster(gs,rect,this._histogram);
 			int th=this._threshold_detector.getThreshold(this._histogram);
-			//領域指定の矩形検出
+			//領域指定の矩形検出(最低領域サイズより小さかったらやんない)
 			if(rect.w*rect.h<64){
 				continue;
 			}
 			this._sqdetect.detectMarker(gs,rect,th,i_items[i]);
-	//		System.out.println(this._histogram.total_of_data+"]");
 		}
 		
 		

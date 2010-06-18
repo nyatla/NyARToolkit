@@ -28,6 +28,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
 
 import jp.nyatla.nyartoolkit.dev.tracking.TrTest.TagValue;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.*;
+import jp.nyatla.nyartoolkit.dev.tracking.detail.labeling.NyARDetailLabelingTrackItem;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.labeling.NyARDetailLabelingTrackSrcTable;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.labeling.NyARDetailLabelingTracker;
 import jp.nyatla.nyartoolkit.dev.tracking.outline.*;
@@ -70,9 +71,10 @@ public class TrTestLabel extends Frame implements JmfCaptureListener,MouseMotion
 		}
 		public void onDetailUpdate(NyARDetailTrackItem i_target)
 		{
+			NyARDetailLabelingTrackItem target=(NyARDetailLabelingTrackItem)i_target;
 			g2.setColor(Color.BLUE);
-			drawPolygon(g2,i_target.estimate.ideal_vertex,4);
-			g2.drawString(Integer.toString(i_target.serial),(int)i_target.estimate.ideal_vertex[0].x,(int)i_target.estimate.ideal_vertex[0].y);
+			drawPolygon(g2,target.estimate.prev_ideal_vertex,4);
+			g2.drawString(Integer.toString(i_target.serial),(int)target.estimate.prev_ideal_vertex[0].x,(int)target.estimate.prev_ideal_vertex[0].y);
 		}
 		public void onLeaveTracking(NyARTrackItem i_target)
 		{

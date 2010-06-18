@@ -26,25 +26,49 @@ package jp.nyatla.nyartoolkit.core.labeling.rlelabeling;
 
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.labeling.NyARLabelInfo;
-import jp.nyatla.nyartoolkit.core.labeling.NyARLabelInfoStack;
+import jp.nyatla.nyartoolkit.core.types.stack.NyARPointerStack;
 
 
-public class NyARRleLabelFragmentInfoStack  extends NyARLabelInfoStack<NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo>
+public class NyARRleLabelFragmentInfoPtrStack  extends NyARPointerStack<NyARRleLabelFragmentInfo>
 {
-	public class RleLabelFragmentInfo extends NyARLabelInfo
+	public NyARRleLabelFragmentInfoPtrStack(int i_length) throws NyARException
 	{
-		//継承メンバ
-		public int entry_x;  // フラグメントラベルの位置
-	}	
-	public NyARRleLabelFragmentInfoStack(int i_length) throws NyARException
-	{
-		super(i_length, NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo.class);
+		super(i_length, NyARRleLabelFragmentInfo.class);
 		return;
 	}
 
-	protected NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo createElement()
+	protected NyARRleLabelFragmentInfo createElement()
 	{
-		return new NyARRleLabelFragmentInfoStack.RleLabelFragmentInfo();
+		return new NyARRleLabelFragmentInfo();
 	}
+	/**
+	 * エリアの大きい順にラベルをソートします。
+	 */
+	final public void sortByArea()
+	{
+		int len=this._length;
+		if(len<1){
+			return;
+		}
+		int h = len *13/10;
+		NyARRleLabelFragmentInfo[] item=this._items;
+		for(;;){
+		    int swaps = 0;
+		    for (int i = 0; i + h < len; i++) {
+		        if (item[i + h].area > item[i].area) {
+		            final NyARRleLabelFragmentInfo temp = item[i + h];
+		            item[i + h] = item[i];
+		            item[i] = temp;
+		            swaps++;
+		        }
+		    }
+		    if (h == 1) {
+		        if (swaps == 0){
+		        	break;
+		        }
+		    }else{
+		        h=h*10/13;
+		    }
+		}		
+	}	
 }

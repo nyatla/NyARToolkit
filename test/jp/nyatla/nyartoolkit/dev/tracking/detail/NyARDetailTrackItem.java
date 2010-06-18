@@ -12,6 +12,4 @@ public class NyARDetailTrackItem extends NyARTrackItem
 	public NyARDoublePoint3d trans_v=new NyARDoublePoint3d();
 	
 	public int life;
-	public final NyARDetailEstimateItem estimate=new NyARDetailEstimateItem();
-
 }

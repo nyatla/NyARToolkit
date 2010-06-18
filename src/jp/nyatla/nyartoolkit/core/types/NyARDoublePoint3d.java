@@ -56,4 +56,12 @@ public class NyARDoublePoint3d
 		this.z=i_in.z;
 		return;
 	}
+	/**
+	 * 格納値をベクトルとして、距離を返します。
+	 * @return
+	 */
+	public static final double dist(NyARDoublePoint3d i_vec)
+	{
+		return Math.sqrt(i_vec.x*i_vec.x+i_vec.y*i_vec.y+i_vec.z*i_vec.z);
+	}	
 }

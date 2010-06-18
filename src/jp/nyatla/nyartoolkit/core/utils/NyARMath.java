@@ -10,6 +10,13 @@ import jp.nyatla.nyartoolkit.core.types.*;
  */
 public class NyARMath
 {
+	public static final double sqNorm(double i_p1x,double i_p1y,double i_p2x,double i_p2y)
+	{
+		double x,y;
+		x=i_p2x-i_p1x;
+		y=i_p2y-i_p1y;
+		return x*x+y*y;
+	}
 	/**
 	 * p2-p1ベクトルのsquare normを計算する。
 	 * @param i_p1
@@ -21,13 +28,6 @@ public class NyARMath
 		double x,y;
 		x=i_p2.x-i_p1.x;
 		y=i_p2.y-i_p1.y;
-		return x*x+y*y;
-	}
-	public static final double sqNorm(double i_p1x,double i_p1y,double i_p2x,double i_p2y)
-	{
-		double x,y;
-		x=i_p2x-i_p1x;
-		y=i_p2y-i_p1y;
 		return x*x+y*y;
 	}
 	public static final int sqNorm(NyARIntPoint2d i_p1,NyARIntPoint2d i_p2)
@@ -51,21 +51,12 @@ public class NyARMath
 		z=i_p2.z-i_p1.z;
 		return x*x+y*y+z*z;
 	}
-	/**
-	 * 3乗根を求められないシステムで、３乗根を求めます。
-	 * http://aoki2.si.gunma-u.ac.jp/JavaScript/src/3jisiki.html
-	 * @param i_in
-	 * @return
-	 */
-	public static double cubeRoot(double i_in)
+	
+	
+	public static final double dist(double i_x1,double i_y1,double i_x2,double i_y2)
 	{
-		double res = Math.pow(Math.abs(i_in), 1.0 / 3.0);
-		return (i_in >= 0) ? res : -res;
+		return Math.sqrt(i_x1*i_y1+i_x2+i_y2);
 	}
-	/**
-	 * 格納値をベクトルとして、距離を返します。
-	 * @return
-	 */
 	public static final double dist(NyARDoublePoint2d i_vec)
 	{
 		return Math.sqrt(i_vec.x*i_vec.x+i_vec.y+i_vec.y);
@@ -78,4 +69,34 @@ public class NyARMath
 	{
 		return Math.sqrt(i_vec.x*i_vec.x+i_vec.y*i_vec.y+i_vec.z*i_vec.z);
 	}	
+	
+	
+	
+	/**
+	 * 3乗根を求められないシステムで、３乗根を求めます。
+	 * http://aoki2.si.gunma-u.ac.jp/JavaScript/src/3jisiki.html
+	 * @param i_in
+	 * @return
+	 */
+	public static double cubeRoot(double i_in)
+	{
+		double res = Math.pow(Math.abs(i_in), 1.0 / 3.0);
+		return (i_in >= 0) ? res : -res;
+	}
+//	/**
+//	 * 格納値をベクトルとして、距離を返します。
+//	 * @return
+//	 */
+//	public static final double dist(NyARDoublePoint2d i_vec)
+//	{
+//		return Math.sqrt(i_vec.x*i_vec.x+i_vec.y+i_vec.y);
+//	}
+//	/**
+//	 * 格納値をベクトルとして、距離を返します。
+//	 * @return
+//	 */
+//	public static final double dist(NyARDoublePoint3d i_vec)
+//	{
+//		return Math.sqrt(i_vec.x*i_vec.x+i_vec.y*i_vec.y+i_vec.z*i_vec.z);
+//	}
 }

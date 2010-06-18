@@ -113,23 +113,21 @@ public abstract class NyARMarkerLabelingTracker extends NyARMarkerTracker
 			throw new NyARException();
 		}
 
-		//ラスタを２値イメージに変換する.
-		this._tobin_filter.doFilter(i_raster,this._bin_raster);
-
-		//コールバックハンドラの準備
-		
-		//矩形を探す(戻り値はコールバック関数で受け取る。)
-		this._square_detect.detectMarker(this._bin_raster,this);
+		//データソース内容を更新
+		this._labaling_data_source.update(this._detail_tracker.getSquares(),this._detail_tracker.getNumberOfSquare(), i_raster);
+		//ディティールトラッキングを実行
+		this._detail_tracker.trackTarget(this._labaling_data_source);
 
 		
 		//アウトライントラッキングを実行
+
+		//ラスタを２値イメージに変換する.
+		this._tobin_filter.doFilter(i_raster,this._bin_raster);
+		//矩形を探す(戻り値はコールバック関数で受け取る。)
+		this._square_detect.detectMarker(this._bin_raster,this);
 		this._outline_tracker.trackTarget(this._track_outline_table);
 
-		//データソース内容を更新
-		this._labaling_data_source.update(this._detail_tracker.getSquares(),this._detail_tracker.getNumberOfSquare(), i_raster);
 		
-		//ディティールトラッキングを実行
-		this._detail_tracker.trackTarget(this._labaling_data_source);
 		
 
 		//アウトライントラッキングからのアップグレードを試行
