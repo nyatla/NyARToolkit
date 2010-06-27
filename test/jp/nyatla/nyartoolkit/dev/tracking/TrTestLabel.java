@@ -25,7 +25,9 @@ import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.utils.j2se.NyARRasterImageIO;
 import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.QsHsRectMap;
 import jp.nyatla.nyartoolkit.dev.tracking.TrTest.TagValue;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.*;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.labeling.NyARDetailLabelingTrackItem;
@@ -231,7 +233,7 @@ public class TrTestLabel extends Frame implements JmfCaptureListener,MouseMotion
 		}
 
 	}
-
+/*
 	public static void main(String[] args)
 	{
 
@@ -244,5 +246,19 @@ public class TrTestLabel extends Frame implements JmfCaptureListener,MouseMotion
 			e.printStackTrace();
 		}
 	}
+*/
+	public static void main(String[] args)
+	{
 
+		try {
+			QsHsRectMap mainwin = new QsHsRectMap();
+			mainwin.createHalfStep(320,240,2);
+			System.out.println();
+			
+
+			// mainwin.startImage();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}	
 }

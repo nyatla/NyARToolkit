@@ -1,6 +1,7 @@
 package jp.nyatla.nyartoolkit.dev.tracking.detail.labeling;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfo;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARCoord2Linear;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector_Rle;
@@ -35,19 +36,31 @@ public class NyARDetailLabelingTrackSrcTable extends NyARObjectStack<NyARDetailL
 	private class SquareDetector extends NyARSquareContourDetector_Rle
 	{
 		public NyARDetailLabelingTrackSrcTable _parent;
+		private NyARDetailLabelingTrackItem _handler_param;
 		public SquareDetector(NyARIntSize i_size,NyARDetailLabelingTrackSrcTable i_parent) throws NyARException
 		{
 			super(i_size);
 			this._parent=i_parent;
 		}
 		private NyARIntPoint2d[] __ref_vertex=new NyARIntPoint2d[4];
+		public void detectMarker(NyARGrayscaleRaster i_raster,NyARIntRect i_area,int i_th,NyARDetailLabelingTrackItem i_param) throws NyARException
+		{
+			this._handler_param=i_param;
+			super.detectMarker(i_raster,i_area,i_th);
+		}
+		public void detectMarker(NyARBinRaster i_bin_raster,NyARDetailLabelingTrackItem i_param) throws NyARException
+		{
+			this._handler_param=i_param;
+			super.detectMarker(i_bin_raster);
+		}
+		
 		/**
 		 * 矩形が見付かるたびに呼び出されます。
 		 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
 		 */
-		public void onSquareDetect(NyARIntPoint2d[] i_coord,int i_coorx_num,int[] i_vertex_index,Object i_param) throws NyARException
+		protected void onSquareDetect(NyARIntPoint2d[] i_coord,int i_coorx_num,int[] i_vertex_index) throws NyARException
 		{
-			NyARDetailLabelingTrackItem target=(NyARDetailLabelingTrackItem)i_param;
+			NyARDetailLabelingTrackItem target=(NyARDetailLabelingTrackItem)this._handler_param;
 			NyARIntPoint2d[] vertex=this.__ref_vertex;
 			
 			

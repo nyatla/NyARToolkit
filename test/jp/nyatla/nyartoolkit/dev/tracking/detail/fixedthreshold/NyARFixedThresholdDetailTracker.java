@@ -268,7 +268,7 @@ public class NyARFixedThresholdDetailTracker
 			//中央値を計算して、理想位置から画面位置に変換（マイナスの時は無かったことにする。）
 			cx/=4;
 			cy/=4;
-			if(this._ref_scr_size.isInsideRact((int)cx,(int)cy)){
+			if(this._ref_scr_size.isInner((int)cx,(int)cy)){
 				this._ref_distfactor.ideal2Observ(cx, cy, est_item.center);
 			}else{
 				est_item.center.x=(int)cx;
