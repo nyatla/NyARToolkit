@@ -27,7 +27,7 @@ import jp.nyatla.nyartoolkit.utils.j2se.NyARRasterImageIO;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.QsHsRectMap;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.QsHsHierachyRectMap;
 import jp.nyatla.nyartoolkit.dev.tracking.TrTest.TagValue;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.*;
 import jp.nyatla.nyartoolkit.dev.tracking.detail.labeling.NyARDetailLabelingTrackItem;
@@ -251,7 +251,7 @@ public class TrTestLabel extends Frame implements JmfCaptureListener,MouseMotion
 	{
 
 		try {
-			QsHsRectMap mainwin = new QsHsRectMap();
+			QsHsHierachyRectMap mainwin = new QsHsHierachyRectMap();
 			mainwin.createHalfStep(320,240,2);
 			System.out.println();
 			
