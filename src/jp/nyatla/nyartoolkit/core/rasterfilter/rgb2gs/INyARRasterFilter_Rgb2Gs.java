@@ -40,5 +40,11 @@ import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
  */
 public interface INyARRasterFilter_Rgb2Gs
 {
+	/**
+	 * 同一サイズのラスタi_inputとi_outputの間で、フィルタ処理を実行します。
+	 * @param i_input
+	 * @param i_output
+	 * @throws NyARException
+	 */
 	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output) throws NyARException;
 }

@@ -33,7 +33,6 @@ package jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
-import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
@@ -79,7 +78,6 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve implements INyARRasterFilter_Rgb2Gs
 		}
 		return true;
 	}
-	
 	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output) throws NyARException
 	{
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
@@ -87,11 +85,31 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve implements INyARRasterFilter_Rgb2Gs
 		this._do_filter_impl.doFilter(i_input,(int[])i_output.getBuffer(),0,0,s.w,s.h);
 		return;
 	}
+	/**
+	 * 同一サイズのラスタi_inputとi_outputの間で、一部の領域だけにラスタ処理を実行します。
+	 * @param i_input
+	 * @param i_rect
+	 * @param i_output
+	 * @throws NyARException
+	 */
 	public void doFilter(INyARRgbRaster i_input,NyARIntRect i_rect, NyARGrayscaleRaster i_output) throws NyARException
 	{
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
 		this._do_filter_impl.doFilter(i_input,(int[])i_output.getBuffer(),i_rect.x,i_rect.y,i_rect.w,i_rect.h);
 		
+	}
+	/**
+	 * 異サイズのラスタi_inputとi_outputの間で、一部の領域をi_outputへ転送します。
+	 * 関数は、i_outputのサイズをi_skip倍した領域を、i_inputのi_left,i_topの位置から切り出し、フィルタ処理をしてi_outputへ格納します。
+	 * @param i_input
+	 * @param i_left
+	 * @param i_top
+	 * @param i_skip
+	 * @param i_output
+	 */
+	public void doCutFilter(INyARRgbRaster i_input,int i_left,int i_top,int i_skip,NyARGrayscaleRaster i_output) throws NyARException
+	{
+		this._do_filter_impl.doCutFilter(i_input,i_left,i_top,i_skip,i_output);		
 	}
 	/*
 	 * ここから各種ラスタ向けのフィルタ実装
@@ -99,10 +117,77 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve implements INyARRasterFilter_Rgb2Gs
 	 */
 	interface IdoThFilterImpl
 	{
-		public void doFilter(INyARRaster i_input,int[] o_output, int l,int t,int w,int h);
+		/**
+		 * 同一サイズのラスタ間での転送
+		 * @param i_input
+		 * @param o_output
+		 * @param l
+		 * @param t
+		 * @param w
+		 * @param h
+		 */
+		public void doFilter(INyARRaster i_input,int[] o_output, int l,int t,int w,int h) throws NyARException;
+		/**
+		 * 異サイズラスタ間での転送
+		 * @param i_input
+		 * @param l
+		 * @param t
+		 * @param i_st
+		 * @param o_output
+		 */
+		public void doCutFilter(INyARRaster i_input, int l,int t,int i_st,NyARGrayscaleRaster o_output) throws NyARException;
 	}
 	class doThFilterImpl_BYTE1D_B8G8R8_24 implements IdoThFilterImpl
 	{
+		public void doCutFilter(INyARRaster i_input, int l,int t,int i_st,NyARGrayscaleRaster o_output) throws NyARException
+		{
+			assert(
+					i_input.isEqualBufferType(NyARBufferType.BYTE1D_B8G8R8_24)||
+					i_input.isEqualBufferType(NyARBufferType.BYTE1D_R8G8B8_24));
+			assert(i_input.getSize().isInnerSize(l+o_output.getWidth()*i_st,t+o_output.getHeight()*i_st));
+			
+			final byte[] input=(byte[])i_input.getBuffer();
+			final int[] output=(int[])o_output.getBuffer();
+			int pt_src,pt_dst;
+			NyARIntSize dest_size=o_output.getSize();			
+			NyARIntSize src_size=i_input.getSize();
+			int skip_src_y=(src_size.w-dest_size.w*i_st)*3+src_size.w*(i_st-1)*3;
+			int skip_src_x=3*i_st;
+			final int pix_count=dest_size.w;
+			final int pix_mod_part=pix_count-(pix_count%8);			
+			//左上から1行づつ走査していく
+			pt_dst=0;
+			pt_src=(t*src_size.w+l)*3;
+			for (int y = dest_size.h-1; y >=0; y-=1){
+				int x;
+				for (x = pix_count-1; x >=pix_mod_part; x--){
+					output[pt_dst++]=((input[pt_src+0]& 0xff)+(input[pt_src+1]& 0xff)+(input[pt_src+2]& 0xff))/3;
+					pt_src+=skip_src_x;
+				}
+				for (;x>=0;x-=8){
+					output[pt_dst++]=((input[pt_src+0]& 0xff)+(input[pt_src+1]& 0xff)+(input[pt_src+2]& 0xff))/3;
+					pt_src+=skip_src_x;
+					output[pt_dst++]=((input[pt_src+0]& 0xff)+(input[pt_src+1]& 0xff)+(input[pt_src+2]& 0xff))/3;
+					pt_src+=skip_src_x;
+					output[pt_dst++]=((input[pt_src+0]& 0xff)+(input[pt_src+1]& 0xff)+(input[pt_src+2]& 0xff))/3;
+					pt_src+=skip_src_x;
+					output[pt_dst++]=((input[pt_src+0]& 0xff)+(input[pt_src+1]& 0xff)+(input[pt_src+2]& 0xff))/3;
+					pt_src+=skip_src_x;
+					output[pt_dst++]=((input[pt_src+0]& 0xff)+(input[pt_src+1]& 0xff)+(input[pt_src+2]& 0xff))/3;
+					pt_src+=skip_src_x;
+					output[pt_dst++]=((input[pt_src+0]& 0xff)+(input[pt_src+1]& 0xff)+(input[pt_src+2]& 0xff))/3;
+					pt_src+=skip_src_x;
+					output[pt_dst++]=((input[pt_src+0]& 0xff)+(input[pt_src+1]& 0xff)+(input[pt_src+2]& 0xff))/3;
+					pt_src+=skip_src_x;
+					output[pt_dst++]=((input[pt_src+0]& 0xff)+(input[pt_src+1]& 0xff)+(input[pt_src+2]& 0xff))/3;
+					pt_src+=skip_src_x;
+				}
+				//スキップ
+				pt_src+=skip_src_y;
+			}
+			return;	
+
+		}
 		public void doFilter(INyARRaster i_input, int[] o_output,int l,int t,int w,int h)
 		{
 			assert(i_input.isEqualBufferType(NyARBufferType.BYTE1D_B8G8R8_24)||i_input.isEqualBufferType(NyARBufferType.BYTE1D_R8G8B8_24));
@@ -124,7 +209,11 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve implements INyARRasterFilter_Rgb2Gs
 	}
 	class doThFilterImpl_BYTE1D_B8G8R8X8_32 implements IdoThFilterImpl
 	{
-		public void doFilter(INyARRaster i_input, int[] o_output,int l,int t,int w,int h)
+		public void doCutFilter(INyARRaster i_input, int l,int t,int i_st,NyARGrayscaleRaster o_output) throws NyARException
+		{
+			NyARException.notImplement();
+		}
+		public void doFilter(INyARRaster i_input, int[] o_output,int l,int t,int w,int h) throws NyARException
 		{
 			assert(i_input.isEqualBufferType(NyARBufferType.BYTE1D_B8G8R8X8_32));
 			NyARIntSize size=i_input.getSize();
@@ -142,10 +231,7 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve implements INyARRasterFilter_Rgb2Gs
 			}
 		}
 	}
-	public void main(int argc,String argv[])
-	{
-		
-	}
+
 }
 
 

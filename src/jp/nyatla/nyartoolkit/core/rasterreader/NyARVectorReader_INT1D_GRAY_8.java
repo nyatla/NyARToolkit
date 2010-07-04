@@ -78,7 +78,7 @@ public 	class NyARVectorReader_INT1D_GRAY_8
 		int d=buf[idx_m1+1];
 		int h=buf[idx_p1-1];
 		int f=buf[idx_p1+1];
-		o_v.x=buf[idx_0+1]-buf[idx_0-1]+(d-b+f-h)/2;
-		o_v.y=buf[idx_p1]-buf[idx_m1]+(f-d+h-b)/2;
+		o_v.x=buf[idx_0+1]-buf[idx_0-1]+(d-b+f-h)>>1;
+		o_v.y=buf[idx_p1]-buf[idx_m1]+(f-d+h-b)>>1;
 	}	
 }

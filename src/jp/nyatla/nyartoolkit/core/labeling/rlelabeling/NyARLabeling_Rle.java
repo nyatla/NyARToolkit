@@ -78,9 +78,14 @@ public abstract class NyARLabeling_Rle
 	private RleElement[] _rle2;
 	private int _max_area;
 	private int _min_area;
+	/**
+	 * 処理対象のラスタサイズ
+	 */
+	protected NyARIntSize _raster_size=new NyARIntSize();
 
 	public NyARLabeling_Rle(int i_width,int i_height) throws NyARException
 	{
+		this._raster_size.setValue(i_width,i_height);
 		this._rlestack=new RleInfoStack(i_width*i_height*2048/(320*240)+32);
 		this._rle1 = RleElement.createArray(i_width/2+1);
 		this._rle2 = RleElement.createArray(i_width/2+1);
@@ -239,6 +244,9 @@ public abstract class NyARLabeling_Rle
 	}
 	private void imple_labeling(INyARRaster i_raster,int i_th,int i_left,int i_top,int i_width, int i_height) throws NyARException
 	{
+		//ラスタのサイズを確認
+		assert(i_raster.getSize().isEqualSize(this._raster_size));
+		
 		RleElement[] rle_prev = this._rle1;
 		RleElement[] rle_current = this._rle2;
 		// リセット処理
@@ -249,7 +257,7 @@ public abstract class NyARLabeling_Rle
 		int len_prev = 0;
 		int len_current = 0;
 		final int bottom=i_top+i_height;
-		final int row_stride=i_raster.getWidth();
+		final int row_stride=this._raster_size.w;
 		int[] in_buf = (int[]) i_raster.getBuffer();
 
 		int id_max = 0;

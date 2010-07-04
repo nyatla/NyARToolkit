@@ -30,7 +30,6 @@
  */
 package jp.nyatla.nyartoolkit.core.labeling;
 
-import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabel;
 
 /**
  * 

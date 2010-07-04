@@ -89,7 +89,7 @@ public abstract class NyARSquareContourDetector_ARToolKit extends NyARSquareCont
 	 * 解析する２値ラスタイメージを指定します。
 	 * @throws NyARException
 	 */
-	public final void detectMarker(NyARBinRaster i_raster,Object i_param) throws NyARException
+	public final void detectMarker(NyARBinRaster i_raster) throws NyARException
 	{
 		final NyARLabelingImage limage = this._limage;
 
@@ -154,7 +154,7 @@ public abstract class NyARSquareContourDetector_ARToolKit extends NyARSquareCont
 				continue;
 			}
 			//矩形を発見したことをコールバック関数で通知
-			this.onSquareDetect(coord,coord_num,mkvertex,i_param);
+			this.onSquareDetect(coord,coord_num,mkvertex);
 
 			// 検出済の矩形の属したラベルを重なりチェックに追加する。
 			overlap.push(label_pt);

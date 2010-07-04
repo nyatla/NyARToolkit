@@ -54,6 +54,12 @@ public class NyARIntSize
 		this.h=i_height;
 		return;
 	}
+	public void setValue(int i_w,int i_h)
+	{
+		this.w=i_w;
+		this.h=i_h;
+		return;
+	}
 	/**
 	 * サイズが同一であるかを確認する。
 	 * 
@@ -85,12 +91,38 @@ public class NyARIntSize
 		}
 		return false;
 	}
-	public boolean isInsideRact(int i_x,int i_y)
+	/**
+	 * サイズがサイズ値の範囲であるか判定します。
+	 * @param i_x
+	 * @param i_y
+	 * @return
+	 */
+	public boolean isInnerSize(int i_x,int i_y)
 	{
-		return (0<=i_x && i_x<this.w && 0<=i_y && i_y<this.h);
+		return (i_x<=this.w && i_y<=this.h);
 	}
 	/**
-	 * 頂点セットの広がりを計算する
+	 * サイズ値が、このサイズの範囲内であるか判定します。
+	 * @param i_size
+	 * @return
+	 */
+	public boolean isInnerSize(NyARIntSize i_size)
+	{
+		return (i_size.w<=this.w && i_size.h<=this.h);
+	}
+	/**
+	 * 点が、サイズの内部にあるか判定します。
+	 * @param i_x
+	 * @param i_y
+	 * @return
+	 */
+	public boolean isInnerPoint(int i_x,int i_y)
+	{
+		return (i_x<this.w && i_y<this.h);
+	}
+	/**
+	 * 頂点セットの広がりを計算して格納する。
+	 * この関数は、頂点セットを全て包括するサイズを計算します。
 	 * @param i_vertex
 	 * @param i_num_of_vertex
 	 */

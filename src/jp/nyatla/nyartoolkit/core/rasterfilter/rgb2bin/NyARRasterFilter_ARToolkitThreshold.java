@@ -111,7 +111,7 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 			//左上から1行づつ走査していく
 			int pt_dst=(i_t*s.w+i_l);
 			int pt_src=pt_dst*3;
-			for (int y = i_t+i_h-1; y >=i_t ; y-=1){
+			for (int y = i_h-1; y >=0 ; y-=1){
 				int x;
 				for (x = pix_count-1; x >=pix_mod_part; x--){
 					output[pt_dst++]=((input[pt_src+0]& 0xff)+(input[pt_src+1]& 0xff)+(input[pt_src+2]& 0xff))<=th?0:1;
@@ -159,7 +159,7 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 			//左上から1行づつ走査していく
 			int pt_dst=(i_t*s.w+i_l);
 			int pt_src=pt_dst;
-			for (int y = i_t+i_h-1; y >=i_t ; y-=1){
+			for (int y = i_h-1; y >=0 ; y-=1){
 				int x,v;
 				for (x = pix_count-1; x >=pix_mod_part; x--){
 					v=input[pt_src++];output[pt_dst++]=((v& 0xff)+(v& 0xff)+(v& 0xff))<=th?0:1;
@@ -201,7 +201,7 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 			//左上から1行づつ走査していく
 			int pt_dst=(i_t*s.w+i_l);
 			int pt_src=pt_dst*4;
-			for (int y = i_t+i_h-1; y >=i_t ; y-=1){
+			for (int y = i_h-1; y >=0 ; y-=1){
 				int x;
 				for (x = pix_count-1; x >=pix_mod_part; x--){
 					output[pt_dst++]=((input[pt_src+ 0]& 0xff)+(input[pt_src+ 1]& 0xff)+(input[pt_src+ 2]& 0xff))<=th?0:1;
@@ -249,7 +249,7 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 			//左上から1行づつ走査していく
 			int pt_dst=(i_t*s.w+i_l);
 			int pt_src=pt_dst*4;
-			for (int y = i_t+i_h-1; y >=i_t ; y-=1){
+			for (int y = i_h-1; y >=0 ; y-=1){
 				int x;
 				for (x = pix_count-1; x >=pix_mod_part; x--){
 					output[pt_dst++]=((input[pt_src+1]& 0xff)+(input[pt_src+2]& 0xff)+(input[pt_src+3]& 0xff))<=th?0:1;
@@ -297,7 +297,7 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 			//左上から1行づつ走査していく
 			int pt_dst=(i_t*s.w+i_l);
 			int pt_src=pt_dst;
-			for (int y = i_t+i_h-1; y >=i_t ; y-=1){
+			for (int y = i_h-1; y >=0 ; y-=1){
 				int x,v;
 				for (x = pix_count-1; x >=pix_mod_part; x--){
 					v =(int)input[pt_src++]; output[pt_dst++]=(((v & 0xf800) >> 8) + ((v & 0x07e0) >> 3) + ((v & 0x001f) << 3))<=th?0:1;

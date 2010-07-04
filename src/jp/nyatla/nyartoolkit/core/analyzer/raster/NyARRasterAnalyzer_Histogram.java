@@ -123,7 +123,7 @@ public class NyARRasterAnalyzer_Histogram
 			final int pix_mod_part=pix_count-(pix_count%8);			
 			//左上から1行づつ走査していく
 			int pt=(i_t*s.w+i_l);
-			for (int y = i_t+i_h-1; y >=i_t ; y-=i_skip){
+			for (int y = i_h-1; y >=0 ; y-=i_skip){
 				int x;
 				for (x = pix_count-1; x >=pix_mod_part; x--){
 					o_histogram[input[pt++]]++;
@@ -157,7 +157,7 @@ public class NyARRasterAnalyzer_Histogram
 			final int pix_mod_part=pix_count-(pix_count%8);			
 			//左上から1行づつ走査していく
 			int pt=(i_t*s.w+i_l);
-			for (int y = i_t+i_h-1; y >=i_t ; y-=i_skip){
+			for (int y = i_h-1; y >=0 ; y-=i_skip){
 				int x,v;
 				for (x = pix_count-1; x >=pix_mod_part; x--){
 					v=input[pt++];o_histogram[((v& 0xff)+(v& 0xff)+(v& 0xff))/3]++;
@@ -194,7 +194,7 @@ public class NyARRasterAnalyzer_Histogram
 			final int pix_mod_part=pix_count-(pix_count%8);			
 			//左上から1行づつ走査していく
 			int pt=(i_t*s.w+i_l)*3;
-			for (int y = i_t+i_h-1; y >=i_t ; y-=i_skip){
+			for (int y = i_h-1; y >=0 ; y-=i_skip){
 				int x;
 				for (x = pix_count-1; x >=pix_mod_part; x--){
 					o_histogram[((input[pt+0]& 0xff)+(input[pt+1]& 0xff)+(input[pt+2]& 0xff))/3]++;
@@ -230,7 +230,7 @@ public class NyARRasterAnalyzer_Histogram
 			final int pix_mod_part=pix_count-(pix_count%8);			
 			//左上から1行づつ走査していく
 			int pt=(i_t*s.w+i_l)*4;
-			for (int y = i_t+i_h-1; y >=i_t ; y-=i_skip){
+			for (int y = i_h-1; y >=0 ; y-=i_skip){
 				int x;
 				for (x = pix_count-1; x >=pix_mod_part; x--){
 					o_histogram[((input[pt+0]& 0xff)+(input[pt+1]& 0xff)+(input[pt+2]& 0xff))/3]++;
@@ -273,7 +273,7 @@ public class NyARRasterAnalyzer_Histogram
 			final int pix_mod_part=pix_count-(pix_count%8);			
 			//左上から1行づつ走査していく
 			int pt=(i_t*s.w+i_l)*4;
-			for (int y = i_t+i_h-1; y >=i_t ; y-=i_skip){
+			for (int y = i_h-1; y >=0 ; y-=i_skip){
 				int x;
 				for (x = pix_count-1; x >=pix_mod_part; x--){
 					o_histogram[((input[pt+1]& 0xff)+(input[pt+2]& 0xff)+(input[pt+ 3]& 0xff))/3]++;
@@ -316,7 +316,7 @@ public class NyARRasterAnalyzer_Histogram
 			final int pix_mod_part=pix_count-(pix_count%8);			
 			//左上から1行づつ走査していく
 			int pt=(i_t*s.w+i_l);
-			for (int y = i_t+i_h-1; y >=i_t ; y-=i_skip){
+			for (int y = i_h-1; y >=0 ; y-=i_skip){
 				int x,v;
 				for (x = pix_count-1; x >=pix_mod_part; x--){
 					v =(int)input[pt++]; o_histogram[(((v & 0xf800) >> 8) + ((v & 0x07e0) >> 3) + ((v & 0x001f) << 3))/3]++;
