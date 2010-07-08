@@ -9,9 +9,13 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
  */
 public class HierarchyRect extends NyARIntRect
 {
-	int id;
 	/**
-	 * 縮小率(dotのスキップすうと同値です。)
+	 * 矩形ID
+	 */
+	int id;
+
+	/**
+	 * 縮小率(dotのスキップ数と同値です。)
 	 */
 	int dot_skip;
 	/**

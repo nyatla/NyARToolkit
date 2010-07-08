@@ -103,7 +103,6 @@ class ParcialSquareDetector
 	class Labeling extends NyARLabeling_Rle
 	{
 		public NextStack next_stack;		
-		private LabelStack _outlabel_stack;
 		HierarchyRect _target_image;
 		private NyARIntSize _half_size=new NyARIntSize();
 		private NyARGrayscaleRaster _gs;
@@ -117,10 +116,6 @@ this.setAreaRange(999999999,0);
 			this._half_size.w=i_width/3;
 			this._half_size.h=i_height/3;
 			this._parent=i_parent;
-			
-			int stack_size=i_width*i_height*2048/(320*240)+32;
-
-			this._outlabel_stack=new LabelStack(stack_size);//検出可能な最大ラベル数
 			this.next_stack=new NextStack(9);           //最大9個
 			this._gs=new NyARGrayscaleRaster(i_width,i_height);
 			if(i_depth>1){
@@ -129,12 +124,10 @@ this.setAreaRange(999999999,0);
 			return;
 		}
 		
-		public void labeling(NyARGrayscaleRaster i_raster,HierarchyRect i_imagemap,int i_th,LabelStack o_out_stack) throws NyARException
+		public void labeling(NyARGrayscaleRaster i_raster,HierarchyRect i_imagemap,int i_th) throws NyARException
 		{
 			this._target_image=i_imagemap;
-			this._outlabel_stack=o_out_stack;
 			//配列初期化
-			this._outlabel_stack.clear();
 			this.next_stack.clear();
 
 			//GS化
@@ -147,7 +140,7 @@ this.setAreaRange(999999999,0);
 			}
 			HierarchyRect[] infos=this.next_stack.getArray();
 			for(int i=this.next_stack.getLength()-1;i>=0;i--){
-				this._labeling_tree.labeling(i_raster,infos[i],i_th,o_out_stack);
+				this._labeling_tree.labeling(i_raster,infos[i],i_th);
 			}
 		}		
 		protected void onLabelFound(NyARRleLabelFragmentInfo i_label)
@@ -156,10 +149,12 @@ this.setAreaRange(999999999,0);
 			HierarchyRect imagemap=this._target_image;
 			int w=i_label.clip_r-i_label.clip_l+1;
 			int h=i_label.clip_b-i_label.clip_t+1;
+			
 			// クリップ領域が画面の枠(4面)に接していれば除外
-			if (w>=this._raster_size.w || h>=this._raster_size.h){
+			if (i_label.clip_l==0 || i_label.clip_t==0 || i_label.clip_r-1==this._parent._image_map.window_size.w || i_label.clip_b-1==this._parent._image_map.window_size.h){
 				return;
 			}
+			System.out.println(i_label.clip_l+":"+i_label.clip_t+":"+i_label.clip_r+":"+i_label.clip_b);
 			// 1/4より小さければ、下位の検出に回す
 			if(this._half_size.isInnerSize(w,h)){
 				int skip=imagemap.dot_skip;
@@ -182,6 +177,7 @@ this.setAreaRange(999999999,0);
 				HierarchyRect next_map=imagemap.getInnerChild(tl,tt,tw,th);
 				if(next_map!=null){
 					this.next_stack.push(next_map);
+					return;
 				}
 			}
 			//矩形を検出した。情報その他を関数に通知
@@ -197,10 +193,7 @@ this.setAreaRange(999999999,0);
 			item.dot_skip=skip;
 			item.entry_x=i_label.clip_l*skip+i_label.entry_x*skip;
 */		}
-		protected void onLabelFound(HierarchyRect i_imgmap,NyARGrayscaleRaster i_raster,NyARRleLabelFragmentInfo info)
-		{
-			//depth補正とかやろうか。
-		}
+
 		
 	}
 	private Labeling _labeling;
@@ -217,7 +210,7 @@ this.setAreaRange(999999999,0);
 		NyARGrayscaleRaster gs=new NyARGrayscaleRaster(i_raster.getWidth(),i_raster.getHeight());
 
 		this._filter.doFilter(i_raster, gs);
-		this._labeling.labeling(gs,this._image_map.top_image,i_th,this.ls);
+		this._labeling.labeling(gs,this._image_map.top_image,i_th);
 	}
 	public LabelStack ls=new LabelStack(1000);
 	protected void onLabelFound(HierarchyRect i_imgmap,NyARGrayscaleRaster i_raster,NyARRleLabelFragmentInfo info)
@@ -234,7 +227,28 @@ this.setAreaRange(999999999,0);
 
 public class TreeLabelingTestLabel extends Frame implements MouseMotionListener
 {
+	class MyDetector extends ParcialSquareDetector
+	{
+		public Graphics g;
+		public MyDetector(int i_width,int i_height,int i_depth,int i_raster_type) throws NyARException
+		{
+			super(i_width,i_height,i_depth,i_raster_type);
+		}
+		protected void onLabelFound(HierarchyRect i_imgmap,NyARGrayscaleRaster i_raster,NyARRleLabelFragmentInfo info)
+		{
+			//検出矩形を定義する。
+			//l*skip-skip,t*skip-skip,r+skip,b+skip
+			g.setColor(Color.red);
 
+			int skip=i_imgmap.dot_skip;
+			g.drawRect(
+					info.clip_l*skip+i_imgmap.x,
+					info.clip_t*skip+i_imgmap.y,
+					(info.clip_r-info.clip_l)*skip,
+					(info.clip_b-info.clip_t)*skip);
+		}
+	
+	}
 	private final String PARAM_FILE = "../Data/camera_para.dat";
 
 	private final static String CARCODE_FILE = "../Data/patt.hiro";
@@ -246,7 +260,7 @@ public class TreeLabelingTestLabel extends Frame implements MouseMotionListener
 
 	private int H = 240;
 
-	private ParcialSquareDetector _tr;
+	private MyDetector _tr;
 
 	public TreeLabelingTestLabel() throws NyARException
 	{
@@ -255,14 +269,10 @@ public class TreeLabelingTestLabel extends Frame implements MouseMotionListener
 		this.setSize(1024 + ins.left + ins.right, 768 + ins.top + ins.bottom);
 		JmfCaptureDeviceList dl = new JmfCaptureDeviceList();
 		NyARParam ar_param = new NyARParam();
-		ar_param.loadARParamFromFile(PARAM_FILE);
-		ar_param.changeScreenSize(W, H);
 
-		NyARCode code = new NyARCode(10, 10);
-		code.loadARPattFromFile(CARCODE_FILE);
 
 		addMouseMotionListener(this);
-		this._tr=new ParcialSquareDetector(W,H,3,NyARBufferType.BYTE1D_R8G8B8_24);
+		this._tr=new MyDetector(W,H,3,NyARBufferType.BYTE1D_R8G8B8_24);
 
 		return;
 	}
@@ -311,29 +321,24 @@ public class TreeLabelingTestLabel extends Frame implements MouseMotionListener
 		try {
 			Insets ins = this.getInsets();
 			Graphics g = getGraphics();
-			this._tr.detectOutline(i_raster,110);
 			
 			
 				
 			BufferedImage sink = new BufferedImage(i_raster.getWidth(), i_raster.getHeight(), ColorSpace.TYPE_RGB);
-			BufferedImage sink160x120 = new BufferedImage(160,120, ColorSpace.TYPE_RGB);
-			BufferedImage sink80x60 = new BufferedImage(80,60, ColorSpace.TYPE_RGB);
-			this.g2=sink.getGraphics();
+			this._tr.g=sink.getGraphics();
 			NyARRasterImageIO.copy(i_raster, sink);
-			g2.setColor(Color.red);
+			this._tr.detectOutline(i_raster,110);
+
+//			this.g2=sink.getGraphics();
+/*			g2.setColor(Color.red);
 			for(int i=this._tr.ls.getLength()-1;i>=0;i--){
 				ParcialSquareDetector.LabelInfo rect=this._tr.ls.getItem(i);
 				g2.drawRect(rect.l,rect.t,rect.w,rect.h);
 				System.out.println(rect.l+","+rect.t+","+rect.w+","+rect.h+":"+rect.dot_skip);
 				
-			}
+			}*/
 			g.drawImage(sink, ins.left, ins.top, this);
-			NyARGrayscaleRaster gs=new NyARGrayscaleRaster(80,60);
-			NyARRasterFilter_Rgb2Gs_RgbAve filter=new NyARRasterFilter_Rgb2Gs_RgbAve(i_raster.getBufferType());
-			filter.doCutFilter(i_raster, 80,60,3,gs);
 						
-			NyARRasterImageIO.copy(gs, sink80x60);
-			g.drawImage(sink80x60, ins.left, ins.top+240, this);
 			
 			
 		} catch (Exception e) {

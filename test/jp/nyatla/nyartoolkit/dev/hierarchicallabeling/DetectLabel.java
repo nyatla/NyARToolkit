@@ -52,77 +52,7 @@ class PixelVecFixedFloat24
 	int x;
 	int y;
 }
-/*
-class PS2 extends ParcialSquareDetector
-{
-	private void getAreaVector(NyARIntRect i_area,NyARDoublePoint2d i_pos,NyARDoublePoint2d i_vec)
-	{
-		NyARIntPoint2d p=new NyARIntPoint2d();
-		NyARVectorReader_INT1D_GRAY_8 reader=new NyARVectorReader_INT1D_GRAY_8(null);
-		//x=(Σ|Vx|*Xn)/n,y=(Σ|Vy|*Yn)/n
-		//x=(ΣVx)^2/(ΣVx+ΣVy)^2,y=(ΣVy)^2/(ΣVx+ΣVy)^2
-		int sum_x,sum_y,sum_px,sum_py=0;
-		sum_x=sum_y=sum_px=sum_py=0;
-		for(int i=i_area.h-1;i>=0;i--){
-			for(int i2=i_area.w-1;i2>=0;i2--){
-				reader.getPixelVector8(i2, i,p);
-				sum_px+=p.x;
-				sum_py+=p.y;
-				sum_x+=p.x*(i2+i_area.x);
-				sum_y+=p.y*(i+i_area.y);
-			}
-		}
-		//加重平均
-		sum_x/=sum_px;
-		sum_y/=sum_py;
-	}
-	private final NyARLabelOverlapChecker<NyARRleLabelFragmentInfo> _overlap_checker = new NyARLabelOverlapChecker<NyARRleLabelFragmentInfo>(32,NyARRleLabelFragmentInfo.class);
-	private final NyARContourPickup _cpickup=new NyARContourPickup();
 
-	private final NyARCoord2SquareVertexIndexes _coord2vertex=new NyARCoord2SquareVertexIndexes();
-	
-	private final int _max_coord;
-	private final NyARIntPoint2d[] _coord;	
-	protected void onLabelFound(HierarchyRect i_imgmap,NyARGrayscaleRaster i_raster,NyARRleLabelFragmentInfo info)
-	{
-		NyARIntPoint2d[] coord = this._coord;
-		final int coord_max = this._max_coord;
-
-		//ラベルが通知されてくる
-		NyARIntRect rect=new NyARIntRect();
-		rect.setLtrb(info.clip_l,info.clip_t,info.clip_r,info.clip_b);
-		
-		//まずは輪郭線を検出
-		int coord_num = _cpickup.getContour(i_raster,rect,110,info.entry_x,info.clip_t, coord);
-		if (coord_num == coord_max) {
-			// 輪郭が大きすぎる。
-			continue;
-		}
-		//ベクトル配列を生成
-		for(int i=0;i<)
-		
-		//解像度に応じて、Coordベクトルを計算
-		
-		
-		int label_area = label_pt.area;
-		//輪郭線をチェックして、矩形かどうかを判定。矩形ならばmkvertexに取得
-		if (!this._coord2vertex.getVertexIndexes(coord,coord_num,label_area, mkvertex)) {
-			// 頂点の取得が出来なかった
-			continue;
-		}
-*/		
-		/*
-		 coodの解像度に合せて、輪郭のベクトルを計算
-		 */
-		/*
-		 輪郭ベクトルのクラスタリング
-		 */
-		/*
-		 矩形化
-		 */
-/*	}	
-}
-*/
 /**
  * @todo
  * 矩形の追跡は動いてるから、位置予測機能と組み合わせて試すこと。
@@ -169,6 +99,7 @@ public class DetectLabel extends Frame implements MouseMotionListener
     public void paint(Graphics g)
     {
 		try {
+			
 			Insets ins = this.getInsets();
 			INyARRgbRaster ra =new NyARRgbRaster_RGB(320,240);
 			NyARRasterImageIO.copy(this._src_image,ra);
@@ -186,20 +117,30 @@ public class DetectLabel extends Frame implements MouseMotionListener
 			NyARIntRect tmprect=new NyARIntRect();
 			tmprect.x=mx;
 			tmprect.y=my;
-			tmprect.w=8;
-			tmprect.h=8;
+			tmprect.w=3;
+			tmprect.h=3;
 			NyARDoublePoint2d pos=new NyARDoublePoint2d();
 			NyARDoublePoint2d vec=new NyARDoublePoint2d();
+			NyARVectorReader_INT1D_GRAY_8 reader=new NyARVectorReader_INT1D_GRAY_8(gs);			
+for(int i=0;i<80*55;i++){
+			tmprect.x=4*(i%80)+1;
+			tmprect.y=4*(i/80)+1;
 			if(mx>0 && my>0){
-				this.getAreaVector(gs,tmprect,pos,vec);
+				reader.getAreaVector8(tmprect,pos,vec);
 			}
 			//分析結果を描画
 			double sin=vec.y/Math.sqrt(vec.x*vec.x+vec.y*vec.y);
 			double cos=vec.x/Math.sqrt(vec.x*vec.x+vec.y*vec.y);
 			Graphics g2=sink.getGraphics();
+			int v=(int)Math.sqrt(vec.x*vec.x+vec.y*vec.y)/10;
+			
 			g2.setColor(Color.BLUE);
-			g2.drawLine((int)pos.x,(int)pos.y,(int)(pos.x+30*cos),(int)(pos.y+30*sin));
-			sink.setRGB((int)pos.x,(int)pos.y,0xff0000);
+//			g2.drawLine((int)pos.x,(int)pos.y,(int)(pos.x+30*cos),(int)(pos.y+30*sin));
+			if(v>0){
+				g2.drawLine((int)pos.x,(int)pos.y,(int)(pos.x+v*cos),(int)(pos.y+v*sin));
+			}
+}			
+//			sink.setRGB((int)pos.x,(int)pos.y,0xff0000);
 			System.out.println((int)pos.x+","+(int)pos.y);
 			g.drawImage(sink, ins.left, ins.top, this);
 
@@ -209,34 +150,6 @@ public class DetectLabel extends Frame implements MouseMotionListener
 			e.printStackTrace();
 		}
     }
-	private void getAreaVector(NyARGrayscaleRaster i_gs,NyARIntRect i_area,NyARDoublePoint2d i_pos,NyARDoublePoint2d i_vec)
-	{
-		NyARIntPoint2d p=new NyARIntPoint2d();
-		NyARVectorReader_INT1D_GRAY_8 reader=new NyARVectorReader_INT1D_GRAY_8(i_gs);
-		//x=(Σ|Vx|*Xn)/n,y=(Σ|Vy|*Yn)/n
-		//x=(ΣVx)^2/(ΣVx+ΣVy)^2,y=(ΣVy)^2/(ΣVx+ΣVy)^2
-		int sum_x,sum_y,sum_wx,sum_wy,sum_vx,sum_vy;
-		sum_x=sum_y=sum_wx=sum_wy=sum_vx=sum_vy=0;
-		for(int i=i_area.h-1;i>=0;i--){
-			for(int i2=i_area.w-1;i2>=0;i2--){
-				reader.getPixelVector8(i2+i_area.x, i+i_area.y,p);
-				//加重はvectorの絶対値
-				int wx=p.x*p.x;
-				int wy=p.y*p.y;
-				sum_wx+=wx;
-				sum_wy+=wy;
-				sum_vx+=wx*p.x;
-				sum_vy+=wy*p.y;
-				sum_x+=wx*(i2+i_area.x);
-				sum_y+=wy*(i+i_area.y);
-			}
-		}
-		//加重平均
-		i_pos.x=(double)sum_x/sum_wx;
-		i_pos.y=(double)sum_y/sum_wy;
-		i_vec.x=(double)sum_vx/sum_wx;
-		i_vec.y=(double)sum_vy/sum_wy;
-	}    
 /*
 	public void startImage() throws NyARException, Exception
 	{
