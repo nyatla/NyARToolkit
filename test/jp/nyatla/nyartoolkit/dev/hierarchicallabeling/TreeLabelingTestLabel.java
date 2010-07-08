@@ -116,7 +116,7 @@ this.setAreaRange(999999999,0);
 			this._half_size.w=i_width/3;
 			this._half_size.h=i_height/3;
 			this._parent=i_parent;
-			this.next_stack=new NextStack(9);           //最大9個
+			this.next_stack=new NextStack(9);           //子の最大9個
 			this._gs=new NyARGrayscaleRaster(i_width,i_height);
 			if(i_depth>1){
 				this._labeling_tree=new Labeling(i_parent,i_width,i_height,i_raster_type,i_depth-1);

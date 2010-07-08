@@ -89,7 +89,8 @@ public abstract class NyARLabeling_Rle
 		this._rlestack=new RleInfoStack(i_width*i_height*2048/(320*240)+32);
 		this._rle1 = RleElement.createArray(i_width/2+1);
 		this._rle2 = RleElement.createArray(i_width/2+1);
-		setAreaRange(AR_AREA_MAX,AR_AREA_MIN);
+		this._max_area=AR_AREA_MAX;
+		this._min_area=AR_AREA_MIN;
 
 		return;
 	}
@@ -100,6 +101,7 @@ public abstract class NyARLabeling_Rle
 	 */
 	public void setAreaRange(int i_max,int i_min)
 	{
+		assert(i_min>0 && i_max>i_min);
 		this._max_area=i_max;
 		this._min_area=i_min;
 		return;
