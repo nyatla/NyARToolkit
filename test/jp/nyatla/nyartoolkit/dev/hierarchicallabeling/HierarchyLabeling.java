@@ -3,12 +3,52 @@ package jp.nyatla.nyartoolkit.dev.hierarchicallabeling;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARLabeling_Rle;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfo;
-import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
-import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve;
+import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.rasterfilter.*;
+import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARPointerStack;
 
+
+/**
+ * このフィルタは、GS画像から、Roberts画像を作成します。
+ * 作成する画像サイズはH/Wともに-2だけ小さくなり、最終列と行は不定になります。
+ * Roberts画像の要素は、(256^2)*2のスケールがあります。
+ */
+class NyARRasterFilter_Roberts implements INyARRasterFilter
+{
+	public NyARRasterFilter_Roberts() throws NyARException
+	{
+	}
+	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException
+	{
+		assert (i_input.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
+		assert (i_output.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
+		
+		int[] in_ptr =(int[])i_input.getBuffer();
+		int[] out_ptr=(int[])i_output.getBuffer();
+		NyARIntSize s=i_input.getSize();
+		int width=s.w;
+		int height=s.h;
+		for(int y=0;y<height-1;y++){
+			int idx=y*width;
+			int p00=in_ptr[idx];
+			int p10=in_ptr[width+idx];
+			int p01,p11;
+			for(int x=0;x<width-1;x++){
+				p01=in_ptr[idx+1];
+				p11=in_ptr[idx+width+1];
+				int fx=p11-p00;
+				int fy=p10-p01;
+				out_ptr[idx]=255-(int)Math.sqrt((fx*fx+fy*fy));
+				p00=p01;
+				p10=p11;
+				idx++;
+			}
+		}
+		return;
+	}
+}
 /**
  * ピラミッド画像を使ったラべリングをするクラスです。
  *
@@ -50,11 +90,13 @@ public abstract class HierarchyLabeling
 
 	class LabelingUnit extends NyARLabeling_Rle
 	{
+		protected int _th;
 		private int _depth;
 		public NextStack next_stack;
 		HierarchyRect _target_image;
 		private NyARIntSize _half_size=new NyARIntSize();
 		protected NyARGrayscaleRaster _gs;
+		
 		private LabelingUnit _labeling_tree;
 		protected HierarchyLabeling _parent;
 
@@ -111,6 +153,7 @@ public abstract class HierarchyLabeling
 		}
 		public void labeling(NyARGrayscaleRaster i_raster,HierarchyRect i_imagemap,int i_th) throws NyARException
 		{
+			this._th=i_th;
 			//next_stackを全部クリア
 			LabelingUnit la=this;
 			while(la.next_stack!=null){
@@ -175,7 +218,7 @@ public abstract class HierarchyLabeling
 				}
 			}
 			//矩形を検出した。情報その他を関数に通知
-			this._parent.onLabelFound(imagemap,this._gs,i_label);
+			this._parent.onLabelFound(imagemap,this._gs,this._th,i_label);
 		}
 	}
 	/**
@@ -198,7 +241,7 @@ public abstract class HierarchyLabeling
 				return;
 			}
 			//矩形を検出した。情報その他を関数に通知
-			this._parent.onLabelFound(imagemap,this._gs,i_label);
+			this._parent.onLabelFound(imagemap,this._gs,this._th,i_label);
 		}		
 	}
 	
@@ -207,12 +250,16 @@ public abstract class HierarchyLabeling
 	public HierarchyLabeling(int i_width,int i_height,int i_depth,int i_raster_type) throws NyARException
 	{
 		this._image_map=new QsHsHierachyRectMap(i_width,i_height,i_depth);
-		this._labeling=new LabelingUnit(this,this._image_map.window_size.w,this._image_map.window_size.h,i_raster_type,i_depth);
-		this._labeling.setAreaRange(100*100, 10*10);
+		if(i_depth>1){
+			this._labeling=new LabelingUnit(this,this._image_map.window_size.w,this._image_map.window_size.h,i_raster_type,i_depth);
+		}else{
+			this._labeling=new FinalLabelingUnit(this,this._image_map.window_size.w,this._image_map.window_size.h,i_raster_type,i_depth);
+		}
+		this._labeling.setAreaRange(320*240,10*10);
 	}
 	public void detectOutline(NyARGrayscaleRaster i_raster,int i_th) throws NyARException
 	{
 		this._labeling.labeling(i_raster,this._image_map.top_image,i_th);
 	}
-	protected abstract void onLabelFound(HierarchyRect i_imgmap,NyARGrayscaleRaster i_parcial_raster,NyARRleLabelFragmentInfo info) throws NyARException;
+	protected abstract void onLabelFound(HierarchyRect i_imgmap,NyARGrayscaleRaster i_parcial_raster,int i_th,NyARRleLabelFragmentInfo info) throws NyARException;
 }

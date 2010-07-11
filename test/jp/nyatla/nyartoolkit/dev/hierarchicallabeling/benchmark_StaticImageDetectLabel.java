@@ -67,14 +67,14 @@ public class benchmark_StaticImageDetectLabel extends Frame implements MouseMoti
 			super(i_width,i_height);
 		}
 		protected void onLabelFound(NyARRleLabelFragmentInfo i_label)
-		{
+		{/*
 			g.setColor(Color.red);
 			g.drawRect(
 					i_label.clip_l,
 					i_label.clip_t,
 					(i_label.clip_r-i_label.clip_l),
-					(i_label.clip_b-i_label.clip_t));			
-		}
+					(i_label.clip_b-i_label.clip_t));
+*/		}
 	}
 	class MyDetector extends HierarchyLabeling
 	{
@@ -154,8 +154,8 @@ public class benchmark_StaticImageDetectLabel extends Frame implements MouseMoti
 			psd.g=sink.getGraphics();
 			System.out.println("start---------");
 			Date d2 = new Date();
-			for (int i = 0; i < 1000; i++) {
-				psd.detectOutline(gs,50);
+			for (int i = 0; i < 10000; i++) {
+				psd.detectOutline(gs,100);
 			}
 			Date d = new Date();
 			System.out.println("H"+(d.getTime() - d2.getTime()));
