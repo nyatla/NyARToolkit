@@ -13,11 +13,11 @@ public class QsHsHierachyRectMap
 	/**
 	 * 解像度のインデクス(1/2^n,1/(n-1)^2,....1)の順で並んでる。
 	 */
-	public int[] _depth_index;
+	public int[] depth_index;
 	/**
 	 * 解像度毎の先頭インデクス
 	 */
-	public int[] _resolution;
+	public int[] resolution;
 	/**
 	 * 解像度の深度(コンストラクタで指定した者と同じ)
 	 */
@@ -73,10 +73,10 @@ public class QsHsHierachyRectMap
 			i_rect.ref_children=null;
 			return;
 		}
-		int a1=this._depth_index[i_a1];
-		int a2=this._depth_index[i_a1+1];
-		int d1=this._resolution[i_a1];
-		int d2=this._resolution[i_a1+1];
+		int a1=this.depth_index[i_a1];
+		int a2=this.depth_index[i_a1+1];
+		int d1=this.resolution[i_a1];
+		int d2=this.resolution[i_a1+1];
 		int this_index=i_index-a1;
 		i_rect.ref_children=new HierarchyRect[9];
 		for(int y=0;y<3;y++){
@@ -99,8 +99,8 @@ public class QsHsHierachyRectMap
 	private void initInstance(int i_target_w,int i_target_h,int i_depth)
 	{
 		this.resulution_depth=i_depth;
-		this._depth_index=new int[i_depth];
-		this._resolution=new int[i_depth];
+		this.depth_index=new int[i_depth];
+		this.resolution=new int[i_depth];
 
 		//resolutionインデクスと矩形要素の合計値を計算
 		//1+9+49+・・・
@@ -109,8 +109,8 @@ public class QsHsHierachyRectMap
 		int c=1;
 		int div_pow=i_depth-1;
 		for(int i=0;i<=div_pow;i++){
-			this._resolution[i]=ls;
-			this._depth_index[i]=number_of_data;
+			this.resolution[i]=ls;
+			this.depth_index[i]=number_of_data;
 			number_of_data+=ls*ls;
 			c*=2;
 			ls+=c;

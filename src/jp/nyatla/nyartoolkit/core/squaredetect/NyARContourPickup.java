@@ -98,6 +98,7 @@ public class NyARContourPickup
 	 */
 	private int impl_getContour(INyARRaster i_raster,int i_l,int i_t,int i_r,int i_b,int i_th,int i_entry_x,int i_entry_y,NyARIntPoint2d[] o_coord) throws NyARException
 	{
+		assert(i_t<=i_entry_x);
 		final int[] xdir = _getContour_xdir;// static int xdir[8] = { 0, 1, 1, 1, 0,-1,-1,-1};
 		final int[] ydir = _getContour_ydir;// static int ydir[8] = {-1,-1, 0, 1, 1, 1, 0,-1};
 

@@ -43,9 +43,9 @@ public 	class NyARVectorReader_INT1D_GRAY_8
 	}
 	/**
 	 * 4近傍の画素ベクトルを取得します。
-	 * 0,1,0
-	 * 1,x,1
-	 * 0,1,0
+	 * 0 ,-1, 0
+	 * -1, x,+1 
+	 * 0 ,+1, 0
 	 * @param i_raster
 	 * @param x
 	 * @param y
@@ -56,14 +56,14 @@ public 	class NyARVectorReader_INT1D_GRAY_8
 		int[] buf=this._ref_buf;
 		int w=this._ref_size.w;
 		int idx=w*y+x;
-		o_v.x=buf[idx+1]-buf[idx-1];
-		o_v.y=buf[idx+w]-buf[idx-w];
+		o_v.x=(buf[idx+1]-buf[idx-1])>>1;
+		o_v.y=(buf[idx+w]-buf[idx-w])>>1;
 	}
 	/**
 	 * 8近傍画素ベクトル
-	 * 1,2,1
-	 * 2,x,2
-	 * 1,2,1
+	 * -1,-2,-1    -1, 0,+1
+	 *  0, y, 0  + -2, x,+2
+	 * +1,+2,+1    -1, 0,+1
 	 * @param i_raster
 	 * @param x
 	 * @param y
@@ -80,8 +80,22 @@ public 	class NyARVectorReader_INT1D_GRAY_8
 		int d=buf[idx_m1+1];
 		int h=buf[idx_p1-1];
 		int f=buf[idx_p1+1];
-		o_v.x=buf[idx_0+1]-buf[idx_0-1]+((d-b+f-h)>>1);
-		o_v.y=buf[idx_p1]-buf[idx_m1]+((f-d+h-b)>>1);
+		o_v.x=((buf[idx_0+1]-buf[idx_0-1])>>1)+((d-b+f-h)>>2);
+		o_v.y=((buf[idx_p1]-buf[idx_m1])>>1)+((f-d+h-b)>>2);
+	}
+	public static class NyARDoublePosVec2d extends NyARDoublePoint2d
+	{
+		public double dx;
+		public double dy;
+	}
+	public static NyARDoublePosVec2d[] createArray(int i_number)
+	{
+		NyARDoublePosVec2d[] ret=new NyARDoublePosVec2d[i_number];
+		for(int i=0;i<i_number;i++)
+		{
+			ret[i]=new NyARDoublePosVec2d();
+		}
+		return ret;
 	}
 	/**
 	 * 領域を指定した8近傍ベクトル
@@ -90,7 +104,7 @@ public 	class NyARVectorReader_INT1D_GRAY_8
 	 * @param i_pos
 	 * @param i_vec
 	 */
-	public void getAreaVector8(NyARIntRect i_area,NyARDoublePoint2d i_pos,NyARDoublePoint2d i_vec)
+	public void getAreaVector8(NyARIntRect i_area,NyARDoublePosVec2d o_posvec)
 	{
 		int[] buf=this._ref_buf;
 		int stride=this._ref_size.w;
@@ -109,8 +123,8 @@ public 	class NyARVectorReader_INT1D_GRAY_8
 				int d=buf[idx_m1+1];
 				int h=buf[idx_p1-1];
 				int f=buf[idx_p1+1];
-				vx=buf[idx_0+1]-buf[idx_0-1]+((d-b+f-h)>>1);
-				vy=buf[idx_p1]-buf[idx_m1]+((f-d+h-b)>>1);			
+				vx=((buf[idx_0+1]-buf[idx_0-1])>>1)+((d-b+f-h)>>2);
+				vy=((buf[idx_p1]-buf[idx_m1])>>1)+((f-d+h-b)>>2);	
 
 				//加重はvectorの絶対値
 				int wx=vx*vx;
@@ -125,18 +139,18 @@ public 	class NyARVectorReader_INT1D_GRAY_8
 		}
 		//加重平均(posが0の場合の位置は中心)
 		if(sum_x==0){
-			i_pos.x=i_area.x+(i_area.w>>1);
-			i_vec.x=0;
+			o_posvec.x=i_area.x+(i_area.w>>1);
+			o_posvec.dx=0;
 		}else{
-			i_pos.x=(double)sum_x/sum_wx;			
-			i_vec.x=(double)sum_vx/sum_wx;
+			o_posvec.x=(double)sum_x/sum_wx;			
+			o_posvec.dx=(double)sum_vx/sum_wx;
 		}
 		if(sum_y==0){
-			i_pos.y=i_area.y+(i_area.h>>1);
-			i_vec.y=0;
+			o_posvec.y=i_area.y+(i_area.h>>1);
+			o_posvec.dy=0;
 		}else{
-			i_pos.y=(double)sum_y/sum_wy;			
-			i_vec.y=(double)sum_vy/sum_wy;
+			o_posvec.y=(double)sum_y/sum_wy;			
+			o_posvec.dy=(double)sum_vy/sum_wy;
 		}
 		return;
 	}	

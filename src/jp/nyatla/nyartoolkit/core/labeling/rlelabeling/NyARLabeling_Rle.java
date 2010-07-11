@@ -427,7 +427,7 @@ public abstract class NyARLabeling_Rle
 	 * コールバック関数から参照を使用する場合は、互換性を確認するために、念のため、assertで_af_label_array_safe_referenceフラグをチェックしてください。
 	 * @param i_label
 	 */
-	protected abstract void onLabelFound(NyARRleLabelFragmentInfo i_ref_label);
+	protected abstract void onLabelFound(NyARRleLabelFragmentInfo i_ref_label) throws NyARException;
 	
 	/**
 	 * クラスの仕様確認フラグです。ラベル配列の参照アクセスが可能かを返します。
