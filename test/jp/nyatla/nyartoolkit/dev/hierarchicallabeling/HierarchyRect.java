@@ -12,16 +12,16 @@ public class HierarchyRect extends NyARIntRect
 	/**
 	 * 矩形ID
 	 */
-	int id;
+	public int id;
 
 	/**
 	 * 縮小率(dotのスキップ数と同値です。)
 	 */
-	int dot_skip;
+	public int dot_skip;
 	/**
 	 * 子イメージの参照配列。非NULLで有効
 	 */
-	HierarchyRect[] ref_children;
+	public HierarchyRect[] ref_children;
 	/**
 	 * 指定した矩形を含む子アイテムを返す。
 	 * @param i_x

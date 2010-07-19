@@ -11,45 +11,6 @@ import jp.nyatla.nyartoolkit.core.types.stack.NyARPointerStack;
 
 
 /**
- * このフィルタは、GS画像から、Roberts画像を作成します。
- * 作成する画像サイズはH/Wともに-2だけ小さくなり、最終列と行は不定になります。
- * Roberts画像の要素は、(256^2)*2のスケールがあります。
- */
-class NyARRasterFilter_Roberts implements INyARRasterFilter
-{
-	public NyARRasterFilter_Roberts() throws NyARException
-	{
-	}
-	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException
-	{
-		assert (i_input.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
-		assert (i_output.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
-		
-		int[] in_ptr =(int[])i_input.getBuffer();
-		int[] out_ptr=(int[])i_output.getBuffer();
-		NyARIntSize s=i_input.getSize();
-		int width=s.w;
-		int height=s.h;
-		for(int y=0;y<height-1;y++){
-			int idx=y*width;
-			int p00=in_ptr[idx];
-			int p10=in_ptr[width+idx];
-			int p01,p11;
-			for(int x=0;x<width-1;x++){
-				p01=in_ptr[idx+1];
-				p11=in_ptr[idx+width+1];
-				int fx=p11-p00;
-				int fy=p10-p01;
-				out_ptr[idx]=255-(int)Math.sqrt((fx*fx+fy*fy));
-				p00=p01;
-				p10=p11;
-				idx++;
-			}
-		}
-		return;
-	}
-}
-/**
  * ピラミッド画像を使ったラべリングをするクラスです。
  *
  */
