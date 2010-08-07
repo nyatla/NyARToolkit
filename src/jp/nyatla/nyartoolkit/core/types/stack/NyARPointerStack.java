@@ -5,31 +5,40 @@ import java.lang.reflect.Array;
 import jp.nyatla.nyartoolkit.NyARException;
 
 /**
- * 実体をもたないスタック
+ * 実体をもたない可変長配列です。
+ * このクラスは実体化できません。継承して使います。
  *
  * @param <T>
  */
 public class NyARPointerStack<T>
 {
-	protected final T[] _items;
+	protected T[] _items;
 	protected int _length;
 
 	/**
-	 * 最大ARRAY_MAX個の動的割り当てバッファを準備する。
-	 * 
-	 * @param i_array
+	 * このクラスは実体化できません。
+	 * @throws NyARException
+	 */
+	protected NyARPointerStack() throws NyARException
+	{
+	}
+
+	/**
+	 * スタックのメンバ変数を初期化します。この関数は、このクラスを継承したクラスを公開するときに、コンストラクタから呼び出します。
+	 * @param i_length
 	 * @param i_element_type
-	 * JavaのGenedicsの制限突破
+	 * @throws NyARException
 	 */
 	@SuppressWarnings("unchecked")
-	protected NyARPointerStack(int i_length,Class<T> i_element_type) throws NyARException
+	protected void initInstance(int i_length,Class<T> i_element_type) throws NyARException
 	{
 		//領域確保
 		this._items = (T[])Array.newInstance(i_element_type, i_length);
 		//使用中個数をリセット
 		this._length = 0;
-		return;
+		return;		
 	}
+
 	/**
 	 * スタックに参照を積みます。
 	 * @return

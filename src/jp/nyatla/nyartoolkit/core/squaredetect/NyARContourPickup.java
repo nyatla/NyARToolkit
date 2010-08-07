@@ -153,14 +153,7 @@ public class NyARContourPickup
 					if (i_buf[(r + ydir[dir])*width+(c + xdir[dir])] <= i_th) {
 						break;
 					}
-/*
-					try{
-						BufferedImage b=new BufferedImage(width,height,ColorSpace.TYPE_RGB);
-						NyARRasterImageIO.copy(i_raster, b);
-					ImageIO.write(b,"png",new File("bug.png"));
-					}catch(Exception e){
-						
-					}*/
+
 					//8方向全て調べたけどラベルが無いよ？
 					throw new NyARException();			
 				}

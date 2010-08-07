@@ -78,7 +78,7 @@ public class NyARRasterFilter_Roberts implements INyARRasterFilter
 					p11=in_ptr[idx+width+1];
 					int fx=p11-p00;
 					int fy=p10-p01;
-					out_ptr[idx]=(int)Math.sqrt(fx*fx+fy*fy)>>1;
+					out_ptr[idx]=(int)Math.sqrt(fx*fx+fy*fy);
 					p00=p01;
 					p10=p11;
 					idx++;

@@ -38,7 +38,7 @@ public class NyARSquareStack extends NyARObjectStack<NyARSquare>
 {
 	public NyARSquareStack(int i_length) throws NyARException
 	{
-		super(i_length,NyARSquare.class);
+		super.initInstance(i_length,NyARSquare.class);
 
 	}
 	protected NyARSquare createElement()

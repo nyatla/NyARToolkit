@@ -28,29 +28,48 @@ import jp.nyatla.nyartoolkit.NyARException;
 
 
 /**
- * スタック型の可変長配列。
- * 配列には実体を格納します。
+ * 実体を持つ可変長配列です。
  */
-public abstract class NyARObjectStack<T> extends NyARPointerStack<T>
+public class NyARObjectStack<T> extends NyARPointerStack<T>
 {
 
-	/**
-	 * 最大ARRAY_MAX個の動的割り当てバッファを準備する。
-	 * 
-	 * @param i_array
-	 * @param i_element_type
-	 * JavaのGenedicsの制限突破
-	 */
-	protected NyARObjectStack(int i_length,Class<T> i_element_type) throws NyARException
+	protected NyARObjectStack() throws NyARException
+	{
+		return;
+	}
+	protected void initInstance(int i_length,Class<T> i_element_type) throws NyARException
 	{
 		//領域確保
-		super(i_length,i_element_type);
+		super.initInstance(i_length,i_element_type);
 		for (int i =0; i < i_length; i++){
 			this._items[i] =createElement();
 		}
 		return;
 	}
-	protected abstract T createElement();
+	/**
+	 * パラメータが必要なインスタンスを作るためのinitInstance
+	 * @param i_length
+	 * @param i_element_type
+	 * @param i_param
+	 * @throws NyARException
+	 */
+	protected void initInstance(int i_length,Class<T> i_element_type,Object i_param) throws NyARException
+	{
+		//領域確保
+		super.initInstance(i_length,i_element_type);
+		for (int i =0; i < i_length; i++){
+			this._items[i] =createElement(i_param);
+		}
+		return;
+	}	
+	protected T createElement() throws NyARException
+	{
+		throw new NyARException();
+	}
+	protected T createElement(Object i_param) throws NyARException
+	{
+		throw new NyARException();
+	}
 	
 	/**
 	 * 新しい領域を予約します。

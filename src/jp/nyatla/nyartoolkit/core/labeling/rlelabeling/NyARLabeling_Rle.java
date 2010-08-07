@@ -33,7 +33,8 @@ class RleInfoStack extends NyARObjectStack<NyARRleLabelFragmentInfo>
 {	
 	public RleInfoStack(int i_length) throws NyARException
 	{
-		super(i_length, NyARRleLabelFragmentInfo.class);
+		super();
+		super.initInstance(i_length, NyARRleLabelFragmentInfo.class);
 		return;
 	}
 

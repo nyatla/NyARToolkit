@@ -38,7 +38,7 @@ public class NyARIntPointStack extends NyARObjectStack<NyARIntPoint2d>
 {
 	public NyARIntPointStack(int i_length) throws NyARException
 	{
-		super(i_length,NyARIntPoint2d.class);
+		super.initInstance(i_length,NyARIntPoint2d.class);
 		return;
 	}
 	protected NyARIntPoint2d createElement()
