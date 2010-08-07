@@ -4,8 +4,6 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARLabeling_Rle;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfo;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.*;
-import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARPointerStack;
 
@@ -20,7 +18,7 @@ public abstract class HierarchyLabeling
 	{
 		public NextStack(int i_length) throws NyARException
 		{
-			super(i_length,HierarchyRect.class);
+			super.initInstance(i_length, HierarchyRect.class);
 		}
 		protected HierarchyRect createElement()
 		{
@@ -114,7 +112,6 @@ public abstract class HierarchyLabeling
 		}
 		public void labeling(NyARGrayscaleRaster i_raster,HierarchyRect i_imagemap,int i_th) throws NyARException
 		{
-			this._th=i_th;
 			//next_stackを全部クリア
 			LabelingUnit la=this;
 			while(la.next_stack!=null){
@@ -137,6 +134,7 @@ public abstract class HierarchyLabeling
 		
 		public void labeling_impl(NyARGrayscaleRaster i_raster,HierarchyRect i_imagemap,int i_th) throws NyARException
 		{
+			this._th=i_th;
 			this._target_image=i_imagemap;
 
 			//GS化
