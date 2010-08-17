@@ -1,8 +1,11 @@
 package jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.contour;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
+import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AppearTargetSrc;
@@ -13,12 +16,13 @@ import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ignoretarget.Igno
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.newtarget.NewTargetList.NewTargetItem;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.rasterreader.NyARVectorReader_INT1D_GRAY_8;
+import jp.nyatla.nyartoolkit.core.rasterreader.NyARVectorReader_INT1D_GRAY_8.NyARDoublePosVec2d;
 class VectorPos
 {
-	int x;
-	int y;
-	int dx;
-	int dy;
+	double x;
+	double y;
+	double dx;
+	double dy;
 	public static VectorPos[] createArray(int i_length)
 	{
 		VectorPos[] r=new VectorPos[i_length];
@@ -28,6 +32,79 @@ class VectorPos
 		return r;
 	}
 }
+class PixelVectorReader
+{
+	private int[] _ref_buf;
+	private NyARIntSize _ref_size;
+	public PixelVectorReader(INyARRaster i_ref_raster)
+	{
+		assert(i_ref_raster.getBufferType()==NyARBufferType.INT1D_GRAY_8);
+		this._ref_buf=(int[])(i_ref_raster.getBuffer());
+		this._ref_size=i_ref_raster.getSize();
+	}
+	/**
+	 * 領域を指定した8近傍ベクトル
+	 * @param i_gs
+	 * @param i_area
+	 * @param i_pos
+	 * @param i_vec
+	 */
+	public void getAreaVector8(NyARIntRect i_area,VectorPos o_posvec)
+	{
+		int[] buf=this._ref_buf;
+		int stride=this._ref_size.w;
+		//x=(Σ|Vx|*Xn)/n,y=(Σ|Vy|*Yn)/n
+		//x=(ΣVx)^2/(ΣVx+ΣVy)^2,y=(ΣVy)^2/(ΣVx+ΣVy)^2
+		int sum_x,sum_y,sum_wx,sum_wy,sum_vx,sum_vy;
+		sum_x=sum_y=sum_wx=sum_wy=sum_vx=sum_vy=0;
+		int vx,vy;
+//クリッピングできるよね
+		for(int i=i_area.h-1;i>=0;i--){
+			for(int i2=i_area.w-1;i2>=0;i2--){
+				//1ビット分のベクトルを計算
+				int idx_0 =stride*(i+i_area.y)+(i2+i_area.x);
+				int idx_p1=idx_0+stride;
+				int idx_m1=idx_0-stride;
+				int b=buf[idx_m1-1];
+				int d=buf[idx_m1+1];
+				int h=buf[idx_p1-1];
+				int f=buf[idx_p1+1];
+				vx=((buf[idx_0+1]-buf[idx_0-1])>>1)+((d-b+f-h)>>2);
+				vy=((buf[idx_p1]-buf[idx_m1])>>1)+((f-d+h-b)>>2);	
+
+				//加重はvectorの絶対値
+				int wx=vx*vx;
+				int wy=vy*vy;
+				sum_wx+=wx;
+				sum_wy+=wy;
+				sum_vx+=wx*vx;
+				sum_vy+=wy*vy;
+				sum_x+=wx*(i2+i_area.x);
+				sum_y+=wy*(i+i_area.y);
+			}
+		}
+		//加重平均(posが0の場合の位置は中心)
+		if(sum_x==0){
+			o_posvec.x=i_area.x+(i_area.w>>1);
+			o_posvec.dx=0;
+		}else{
+			o_posvec.x=(double)sum_x/sum_wx;			
+			o_posvec.dx=(double)sum_vx/sum_wx;
+		}
+		if(sum_y==0){
+			o_posvec.y=i_area.y+(i_area.h>>1);
+			o_posvec.dy=0;
+		}else{
+			o_posvec.y=(double)sum_y/sum_wy;			
+			o_posvec.dy=(double)sum_vy/sum_wy;
+		}
+		return;
+	}	
+	
+	
+}
+
+
 /**
  * 輪郭ソースから、輪郭を得るんだけど・・・・・。輪郭の特徴って何だ？
  * 
@@ -36,11 +113,16 @@ class VectorPos
  */
 public class ContourTargetList extends NyARObjectStack<ContourTargetList.ContourTargetItem>
 {
+	//ベクタの類似度敷居値
+	private static double VEC_THRESHOLD=0.99;
+
+
 	public static class ContourTargetItem extends TrackTarget
 	{
 		public NyARIntRect area=new NyARIntRect();
 		public NyARIntPoint2d area_center=new NyARIntPoint2d();
 		public int area_sq_diagonal;
+		public VectorPos[] vecpos=new VectorPos[30];
 		//
 		public NyARIntPoint2d coord_center=new NyARIntPoint2d();
 		public boolean isMatchContoure(ContourTargetSrc.ContourTargetSrcItem i_item)
@@ -54,7 +136,6 @@ public class ContourTargetList extends NyARObjectStack<ContourTargetList.Contour
 			}
 			return true;
 		}
-		
 	}
 	public ContourTargetList(int i_size) throws NyARException
 	{
@@ -84,7 +165,7 @@ public class ContourTargetList extends NyARObjectStack<ContourTargetList.Contour
 		return item;
 	}
 
-	public void updateTarget(INyARRaster i_raster,int i_index,long i_tick,ContourTargetSrc.ContourTargetSrcItem i_src)
+	public void updateTarget(PixelVectorReader i_vec_reader,int i_index,long i_tick,ContourTargetSrc.ContourTargetSrcItem i_src)
 	{
 		ContourTargetItem item=this._items[i_index];
 		item.age++;
@@ -102,12 +183,12 @@ public class ContourTargetList extends NyARObjectStack<ContourTargetList.Contour
 		int n;
 		VectorPos[] vp=VectorPos.createArray(10);
 		NyARIntRect tmprect=new NyARIntRect();
+		//輪郭→ベクトルの変換
 		
 
 		//輪郭線を出す
 //		n=this._cpickup.getContour(i_raster,i_th,info.entry_x,info.clip_t,this._coord);
 		//元画像からベクトルを拾う。
-		NyARVectorReader_INT1D_GRAY_8 reader=new NyARVectorReader_INT1D_GRAY_8(i_raster);
 		int skip=i_src.skip;
 		tmprect.w=skip*2;
 		tmprect.h=skip*2;
@@ -118,7 +199,7 @@ public class ContourTargetList extends NyARObjectStack<ContourTargetList.Contour
 		//0個目のベクトル
 		tmprect.x=i_src.image_lt.x+(i_src.coord[0].x-1)*skip;
 		tmprect.y=i_src.image_lt.y+(i_src.coord[0].y-1)*skip;
-		reader.getAreaVector8(tmprect,pva[0]);
+		i_vec_reader.getAreaVector8(tmprect,pva[0]);
 		//ベクトルデータを作成
 		for(int i=1;i<n;i++){
 //ベクトル定義矩形を作る。
@@ -142,14 +223,7 @@ public class ContourTargetList extends NyARObjectStack<ContourTargetList.Contour
 				pva[number_of_data-1].dy=(pva[number_of_data-1].dy+pva[number_of_data].dy);
 			}
 		}
-		//ベクトルの描画
-		for(int i=0;i<number_of_data;i++){
-			double sin=pva[i].dy/Math.sqrt(pva[i].dx*pva[i].dx+pva[i].dy*pva[i].dy);
-			double cos=pva[i].dx/Math.sqrt(pva[i].dx*pva[i].dx+pva[i].dy*pva[i].dy);
-			double l=Math.sqrt(pva[i].dx*pva[i].dx+pva[i].dy*pva[i].dy)/16;
-			g.setColor(Color.BLUE);
-			g.drawLine((int)pva[i].x,(int)pva[i].y,(int)(pva[i].x+l*cos),(int)(pva[i].y+l*sin));				
-		}		
+		
 		
 		
 		return;
