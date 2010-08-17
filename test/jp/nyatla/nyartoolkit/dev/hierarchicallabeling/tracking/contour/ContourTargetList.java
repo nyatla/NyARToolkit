@@ -164,7 +164,16 @@ public class ContourTargetList extends NyARObjectStack<ContourTargetList.Contour
 		item.area_sq_diagonal=i_item.area_sq_diagonal;
 		return item;
 	}
-
+	private double getVecCos(VectorPos i_v1,VectorPos i_v2)
+	{
+		double x1=i_v1.dx;
+		double y1=i_v1.dy;
+		double x2=i_v2.dx;
+		double y2=i_v2.dy;
+		double d=(x1*x2+y1*y2)/Math.sqrt((x1*x1+y1*y1)*(x2*x2+y2*y2));
+		return d;
+		
+	}
 	public void updateTarget(PixelVectorReader i_vec_reader,int i_index,long i_tick,ContourTargetSrc.ContourTargetSrcItem i_src)
 	{
 		ContourTargetItem item=this._items[i_index];
@@ -181,7 +190,6 @@ public class ContourTargetList extends NyARObjectStack<ContourTargetList.Contour
 		
 		//
 		int n;
-		VectorPos[] vp=VectorPos.createArray(10);
 		NyARIntRect tmprect=new NyARIntRect();
 		//輪郭→ベクトルの変換
 		
@@ -199,7 +207,11 @@ public class ContourTargetList extends NyARObjectStack<ContourTargetList.Contour
 		//0個目のベクトル
 		tmprect.x=i_src.image_lt.x+(i_src.coord[0].x-1)*skip;
 		tmprect.y=i_src.image_lt.y+(i_src.coord[0].y-1)*skip;
-		i_vec_reader.getAreaVector8(tmprect,pva[0]);
+		i_vec_reader.getAreaVector8(tmprect,item.vecpos[0]);
+
+		VectorPos prev_vec_ptr    = null;
+		VectorPos current_vec_ptr = item.vecpos[0];
+		
 		//ベクトルデータを作成
 		for(int i=1;i<n;i++){
 //ベクトル定義矩形を作る。
@@ -208,11 +220,12 @@ public class ContourTargetList extends NyARObjectStack<ContourTargetList.Contour
 //矩形の位置をずらさないとね
 //クリップ位置の補正
 			//ベクトル取得
-			reader.getAreaVector8(tmprect,pva[number_of_data]);
-			g.fillRect((int)pva[number_of_data].x,(int)pva[number_of_data].y,1,1);
+			VectorPos prev_vec_ptr=item.vecpos[number_of_data];
+			VectorPos current_vec_ptr=item.vecpos[number_of_data];
+			i_vec_reader.getAreaVector8(tmprect,vec_ptr);
 			
 			//類似度判定
-			if(getVecCos(pva[number_of_data-1],pva[number_of_data])<0.99){
+			if(getVecCos(item.vecpos[number_of_data-1],vec_ptr)<0.99){
 				//相関なし
 				number_of_data++;
 			}else{
