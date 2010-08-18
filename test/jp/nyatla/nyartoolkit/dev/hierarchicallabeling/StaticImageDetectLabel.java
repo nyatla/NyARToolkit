@@ -23,10 +23,9 @@ import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_RGB;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.*;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ContourTargetSrc.ContourTargetSrcItem;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.contour.ContourTargetList;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.contour.ContourTargetSrc;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.contour.ContourTargetList.ContourTargetItem;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.contour.ContourTargetSrc.ContourTargetSrcItem;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ignoretarget.IgnoreTargetList;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ignoretarget.IgnoreTargetSrc;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ignoretarget.IgnoreTracking;
@@ -52,16 +51,25 @@ class MyDetector extends HierarchyLabeling
 	{
 		super(i_width,i_height,i_depth,i_raster_type);
 		this._coord=NyARIntPoint2d.createArray((i_width+i_height)*2);
-		this._appeartargetsrc=new AppearTargetSrc(10);
 		this._newtargetsrc=new NewTargetSrc(10);
 		this._newtarget=new NewTargetList(10);
 		this._ignoretargetsrc=new IgnoreTargetSrc(10);
 		this._ignoretarget=new IgnoreTargetList(10);
 		this._contouretarget= new ContourTargetList(10);
-		this._contouretargetsrc=new ContourTargetSrc(10,i_width+i_height*2);
+		for(int i=0;i<2;i++){
+			this._area_holders[i]=new AreaTargetSrcHolder(100);
+			this._contoure_holders[i]=new ContourTargetSrcHolder(10,i_width+i_height*2);
+		}
+		this._current_holder_page=0;
 	}
 	public void detectOutline(NyARGrayscaleRaster i_raster,int i_th) throws NyARException
 	{
+		//Holderのページを設定
+		this._current_holder_page=(this._current_holder_page+1)%2;
+		this._current_areaholder=this._area_holders[this._current_holder_page];
+		this._current_contoureholder=this._contoure_holders[this._current_holder_page];
+		
+
 		this._base_gs=i_raster;
 		//Srcを編集
 		super.detectOutline(i_raster,i_th);
@@ -70,19 +78,18 @@ class MyDetector extends HierarchyLabeling
 		
 	}
 	NyARGrayscaleRaster _base_gs;
-	private double getVecCos(NyARVectorReader_INT1D_GRAY_8.NyARDoublePosVec2d i_v1,NyARVectorReader_INT1D_GRAY_8.NyARDoublePosVec2d i_v2)
-	{
-		double x1=i_v1.dx;
-		double y1=i_v1.dy;
-		double x2=i_v2.dx;
-		double y2=i_v2.dy;
-		double d=(x1*x2+y1*y2)/Math.sqrt((x1*x1+y1*y1)*(x2*x2+y2*y2));
-		return d;
-		
-	}
-	
-	AppearTargetSrc _appeartargetsrc;
 
+	/**
+	 * 2ページ分のソースデータホルダ
+	 */
+	private AreaTargetSrcHolder[] _area_holders=new AreaTargetSrcHolder[2];
+	private ContourTargetSrcHolder[] _contoure_holders=new ContourTargetSrcHolder[2];
+	private AreaTargetSrcHolder _current_areaholder;
+	private ContourTargetSrcHolder _current_contoureholder;
+	private int _current_holder_page;
+
+	
+	
 	NewTargetSrc _newtargetsrc;
 	NewTargetList _newtarget;
 	
@@ -90,7 +97,6 @@ class MyDetector extends HierarchyLabeling
 	IgnoreTargetList _ignoretarget;
 	
 	ContourTargetList _contouretarget;
-	ContourTargetSrc _contouretargetsrc;
 	
 	
 	
@@ -216,7 +222,6 @@ class MyDetector extends HierarchyLabeling
 //				(info.clip_b-info.clip_t)*skip);
 		
 	}
-	public Insets ins;
 
 	
 }

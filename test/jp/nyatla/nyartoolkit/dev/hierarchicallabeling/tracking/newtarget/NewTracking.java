@@ -24,7 +24,7 @@ public class NewTracking
 					map[idx].row=r;
 					//中央座標の距離？
 					
-					int d=TrackingUtils.rectSqNorm(i_vertex_r[r].area,i_vertex_c[c].area);
+					int d=TrackingUtils.rectSqNorm(i_vertex_r[r]._ref_area.area,i_vertex_c[c]._ref_area_src.area);
 					map[idx].dist=d;
 					if(min_dist>d){
 						min_index=idx;

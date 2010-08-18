@@ -2,7 +2,7 @@ package jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ignoretarget;
 
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.TrackingUtils;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.NyARDistMap;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ignoretarget.IgnoreTargetList.IgnoreTarget;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ignoretarget.IgnoreTargetList.IgnoreTargetItem;
 
 public class IgnoreTracking
 {
@@ -13,7 +13,7 @@ public class IgnoreTracking
 			super(i_max_col,i_max_row);
 		}
 
-		public void setPointDists(IgnoreTargetList.IgnoreTarget[] i_vertex_r,int i_row_len,IgnoreTargetSrc.NyARIgnoreSrcItem[] i_vertex_c,int i_col_len)
+		public void setPointDists(IgnoreTargetList.IgnoreTargetItem[] i_vertex_r,int i_row_len,IgnoreTargetSrc.NyARIgnoreSrcItem[] i_vertex_c,int i_col_len)
 		{
 			NyARDistMap.DistItem[] map=this._map;
 			//distortionMapを作成。ついでに最小値のインデクスも取得
@@ -26,7 +26,7 @@ public class IgnoreTracking
 					map[idx].row=r;
 					//中央座標の距離？
 					
-					int d=TrackingUtils.rectSqNorm(i_vertex_r[r].area,i_vertex_c[c].area);
+					int d=TrackingUtils.rectSqNorm(i_vertex_r[r]._ref_area_src.area,i_vertex_c[c]._ref_area_src.area);
 					map[idx].dist=d;
 					if(min_dist>d){
 						min_index=idx;
@@ -65,7 +65,7 @@ public class IgnoreTracking
 		//割り当ててみる。
 		for(int i=row_len-1;i>=0;i--){
 			int idx=this._rowindex[i];
-			IgnoreTarget item=i_target.getItem(i);
+			IgnoreTargetItem item=i_target.getItem(i);
 			if(idx<0){
 				//指定tickよりも更新が古ければ、消す。
 				if(item.last_update<tick_range){

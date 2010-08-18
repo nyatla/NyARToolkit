@@ -8,24 +8,24 @@ import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.HierarchyRect;
 
 /**
- * 新しくトラックするべきアイテムを集約するクラス
- *
+ * 範囲情報のみを保管します。
+ * このクラスの要素は、他の要素から参照する可能性があります。
  */
-public class AppearTargetSrc extends NyARObjectStack<AppearTargetSrc.AppearSrcItem>
+public class AreaTargetSrcHolder extends NyARObjectStack<AreaTargetSrcHolder.AppearSrcItem>
 {
 	public static class AppearSrcItem
 	{
 		public NyARIntRect    area  =new NyARIntRect();
 		public NyARIntPoint2d area_center=new NyARIntPoint2d();
 		/**
-		 * エリア対角距離の2乗
+		 * エリア矩形の対角距離の2乗値
 		 */
 		public int area_sq_diagonal;
 	}
 	
-	public AppearTargetSrc.AppearSrcItem pushSrcTarget(HierarchyRect i_imgmap,NyARRleLabelFragmentInfo info)
+	public AreaTargetSrcHolder.AppearSrcItem pushSrcTarget(HierarchyRect i_imgmap,NyARRleLabelFragmentInfo info)
 	{
-		AppearTargetSrc.AppearSrcItem item=this.prePush();
+		AreaTargetSrcHolder.AppearSrcItem item=this.prePush();
 		if(item==null){
 			return null;
 		}
@@ -37,14 +37,14 @@ public class AppearTargetSrc extends NyARObjectStack<AppearTargetSrc.AppearSrcIt
 		item.area_center.x=item.area.x+item.area.w/2;
 		item.area_center.y=item.area.y+item.area.h/2;
 		item.area_sq_diagonal=item.area.w*item.area.w+item.area.h*item.area.h;
-		return item;		
+		return item;
 	}
-	protected AppearTargetSrc.AppearSrcItem createElement()
+	protected AreaTargetSrcHolder.AppearSrcItem createElement()
 	{
-		return new AppearTargetSrc.AppearSrcItem();
+		return new AreaTargetSrcHolder.AppearSrcItem();
 	}
-	public AppearTargetSrc(int i_size) throws NyARException
+	public AreaTargetSrcHolder(int i_size) throws NyARException
 	{
-		super.initInstance(i_size,AppearTargetSrc.AppearSrcItem.class);
+		super.initInstance(i_size,AreaTargetSrcHolder.AppearSrcItem.class);
 	}
 }
