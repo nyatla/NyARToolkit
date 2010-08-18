@@ -23,13 +23,11 @@ import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_RGB;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.*;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ContourTargetSrc.ContourTargetSrcItem;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.contour.ContourTargetList;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.contour.ContourTargetList.ContourTargetItem;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ignoretarget.IgnoreTargetList;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ignoretarget.IgnoreTargetSrc;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ignoretarget.IgnoreTracking;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ignoretarget.IgnoreTargetList.IgnoreTarget;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.newtarget.NewTargetList;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.newtarget.NewTargetSrc;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.newtarget.NewTracking;
@@ -56,6 +54,7 @@ class MyDetector extends HierarchyLabeling
 		this._ignoretargetsrc=new IgnoreTargetSrc(10);
 		this._ignoretarget=new IgnoreTargetList(10);
 		this._contouretarget= new ContourTargetList(10);
+		//データソースの準備
 		for(int i=0;i<2;i++){
 			this._area_holders[i]=new AreaTargetSrcHolder(100);
 			this._contoure_holders[i]=new ContourTargetSrcHolder(10,i_width+i_height*2);
@@ -103,123 +102,37 @@ class MyDetector extends HierarchyLabeling
 	
 	protected void onLabelFound(HierarchyRect i_imgmap,NyARGrayscaleRaster i_raster,int i_th,NyARRleLabelFragmentInfo info) throws NyARException
 	{
-		//一旦新規リストのソースに登録
-		AppearTargetSrc.AppearSrcItem item=this._appeartargetsrc.pushSrcTarget(i_imgmap, info);
+		//領域ソースホルダに追加
+		AreaTargetSrcHolder.AppearSrcItem item=this._current_areaholder.pushSrcTarget(i_imgmap, info);
 		if(item==null){
 			return;
 		}
 		int match_index;
-		//dispatch infomation
+
 		
-		//Level3 Tracker(認識済・矩形レベルで追尾中)で処理？
-		//Level2 Tracker(認識待・矩形レベルで追尾中)で処理？
-		//Level2　Tracker(輪郭特定予約・範囲レベルで追尾中)で処理で追尾中
+		//もし対象なら、輪郭ソースホルダに追加
 		match_index=this._contouretarget.getMatchTargetIndex(item);
 		if(match_index>=0){
-			ContourTargetSrcItem contoure_item=this._contouretargetsrc.pushTarget(item, i_imgmap, i_raster, i_th, info);
-			//対象の輪郭？
-			if(this._contouretarget.getMatchTargetIndex(contoure_item)!=-1){
-				//輪郭ソースに補足したので、出現ソースを解除
-				this._appeartargetsrc.pop();
-				return;
-			}else{
-				this._contouretargetsrc.pop();
-			}
-		}
-		
-
-		//Level1 Tracker(Newレベル)で処理中ならここまで
-		match_index=this._newtarget.getMatchTargetIndex(item);
-
-		//範囲リストに既に存在するなら、範囲srcに入力して、新規srcから外す。
-		if(match_index>=0){
-			this._newtargetsrc.pushSrcTarget(item);
-			this._appeartargetsrc.pop();
+			//輪郭ホルダに追加
+			ContourTargetSrcHolder.ContourTargetSrcItem contour_item=this._current_contoureholder.pushTarget(item, i_imgmap, i_raster, i_th, info);
+			//対象になる輪郭ソースに追加	
 			return;
 		}
 		
+		//Level1 Tracker(Newレベル)で処理中ならここまで
+		match_index=this._newtarget.getMatchTargetIndex(item);
+		if(match_index>=0){
+			this._newtargetsrc.pushSrcTarget(item);
+			return;
+		}
 		//Level0 Tracker(無視リスト)で処理中なら除外
 		match_index=this._ignoretarget.getMatchTargetIndex(item);
-
-		//無視リストに既に存在するなら、無視srcに入力して、新規srcから外す。
 		if(match_index>=0){
 			this._ignoretargetsrc.pushSrcTarget(item);
-			this._appeartargetsrc.pop();
 			return;
 		}
 		
 		//昇格処理
-		/*
-		
-
-		//輪郭線を出す
-		int n=this._cpickup.getContour(i_raster,i_th,info.entry_x,info.clip_t,this._coord);
-		//元画像からベクトルを拾う。
-		NyARVectorReader_INT1D_GRAY_8 reader=new NyARVectorReader_INT1D_GRAY_8(this._base_gs);
-		NyARIntRect tmprect=new NyARIntRect();
-		tmprect.w=skip*2;
-		tmprect.h=skip*2;
-
-		//ベクトル配列を作る
-		NyARVectorReader_INT1D_GRAY_8.NyARDoublePosVec2d pv=new NyARVectorReader_INT1D_GRAY_8.NyARDoublePosVec2d();
-		NyARVectorReader_INT1D_GRAY_8.NyARDoublePosVec2d[] pva= NyARVectorReader_INT1D_GRAY_8.createArray(n);*/
-/*
-		int number_of_data=1;
-		//0個目のベクトル
-		tmprect.x=i_imgmap.x+(this._coord[0].x-1)*skip;
-		tmprect.y=i_imgmap.y+(this._coord[0].y-1)*skip;
-		reader.getAreaVector8(tmprect,pva[0]);
-		//ベクトルデータを作成
-		for(int i=1;i<n;i++){
-//ベクトル定義矩形を作る。
-			tmprect.x=i_imgmap.x+(this._coord[i].x-1)*skip;
-			tmprect.y=i_imgmap.y+(this._coord[i].y-1)*skip;
-//矩形の位置をずらさないとね
-//クリップ位置の補正
-			//ベクトル取得
-			reader.getAreaVector8(tmprect,pva[number_of_data]);
-			g.fillRect((int)pva[number_of_data].x,(int)pva[number_of_data].y,1,1);
-			
-			//類似度判定
-			if(getVecCos(pva[number_of_data-1],pva[number_of_data])<0.99){
-				//相関なし
-				number_of_data++;
-			}else{
-				//相関あり
-				pva[number_of_data-1].x=(pva[number_of_data-1].x+pva[number_of_data].x)/2;
-				pva[number_of_data-1].y=(pva[number_of_data-1].y+pva[number_of_data].y)/2;
-				pva[number_of_data-1].dx=(pva[number_of_data-1].dx+pva[number_of_data].dx);
-				pva[number_of_data-1].dy=(pva[number_of_data-1].dy+pva[number_of_data].dy);
-			}
-		}
-		//ベクトルの描画
-		for(int i=0;i<number_of_data;i++){
-			double sin=pva[i].dy/Math.sqrt(pva[i].dx*pva[i].dx+pva[i].dy*pva[i].dy);
-			double cos=pva[i].dx/Math.sqrt(pva[i].dx*pva[i].dx+pva[i].dy*pva[i].dy);
-			double l=Math.sqrt(pva[i].dx*pva[i].dx+pva[i].dy*pva[i].dy)/16;
-			g.setColor(Color.BLUE);
-			g.drawLine((int)pva[i].x,(int)pva[i].y,(int)(pva[i].x+l*cos),(int)(pva[i].y+l*sin));				
-		}*/
-		
-		
-		//検出矩形を定義する。
-		//l*skip-skip,t*skip-skip,r+skip,b+skip
-		g.setColor(Color.green);
-
-//		int skip=i_imgmap.dot_skip;
-		//System.out.println(i_imgmap.dot_skip+":"+i_imgmap.id+","+(info.clip_l*skip+i_imgmap.x)+","+(info.clip_t*skip+i_imgmap.y));			
-//		BufferedImage sink = new BufferedImage(i_raster.getWidth(), i_raster.getHeight(), ColorSpace.TYPE_RGB);
-//		NyARRasterImageIO.copy(i_raster, sink);
-/*			g.drawImage(
-				sink,
-				i_imgmap.x,i_imgmap.y,
-				sink.getWidth()*skip,sink.getHeight()*skip,
-				null);
-*///			g.drawRect(
-//				info.clip_l*skip+i_imgmap.x,
-//				info.clip_t*skip+i_imgmap.y,
-//				(info.clip_r-info.clip_l)*skip,
-//				(info.clip_b-info.clip_t)*skip);
 		
 	}
 
