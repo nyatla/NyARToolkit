@@ -67,7 +67,12 @@ class MyDetector extends HierarchyLabeling
 		this._current_holder_page=(this._current_holder_page+1)%2;
 		this._current_areaholder=this._area_holders[this._current_holder_page];
 		this._current_contoureholder=this._contoure_holders[this._current_holder_page];
-		
+		//リストの初期化
+		this._current_areaholder.clear();
+		this._current_contoureholder.clear();
+		this._ignoretargetsrc.clear();
+		this._newtargetsrc.clear();
+		this._contouretarget.clear();
 
 		this._base_gs=i_raster;
 		//Srcを編集
@@ -81,11 +86,12 @@ class MyDetector extends HierarchyLabeling
 	/**
 	 * 2ページ分のソースデータホルダ
 	 */
-	private AreaTargetSrcHolder[] _area_holders=new AreaTargetSrcHolder[2];
-	private ContourTargetSrcHolder[] _contoure_holders=new ContourTargetSrcHolder[2];
-	private AreaTargetSrcHolder _current_areaholder;
-	private ContourTargetSrcHolder _current_contoureholder;
-	private int _current_holder_page;
+	public AreaTargetSrcHolder[] _area_holders=new AreaTargetSrcHolder[2];
+	public ContourTargetSrcHolder[] _contoure_holders=new ContourTargetSrcHolder[2];
+	
+	public AreaTargetSrcHolder _current_areaholder;
+	public ContourTargetSrcHolder _current_contoureholder;
+	public int _current_holder_page;
 
 	
 	
@@ -110,7 +116,7 @@ class MyDetector extends HierarchyLabeling
 		int match_index;
 
 		
-		//もし対象なら、輪郭ソースホルダに追加
+		//ログ付き輪郭トラッキング対象か確認する。
 		match_index=this._contouretarget.getMatchTargetIndex(item);
 		if(match_index>=0){
 			//輪郭ホルダに追加
@@ -118,21 +124,19 @@ class MyDetector extends HierarchyLabeling
 			//対象になる輪郭ソースに追加	
 			return;
 		}
-		
-		//Level1 Tracker(Newレベル)で処理中ならここまで
+		//ログ付き認識待ち対象
 		match_index=this._newtarget.getMatchTargetIndex(item);
 		if(match_index>=0){
 			this._newtargetsrc.pushSrcTarget(item);
 			return;
 		}
-		//Level0 Tracker(無視リスト)で処理中なら除外
+		//ログ付き無視対象であるか確認する。
 		match_index=this._ignoretarget.getMatchTargetIndex(item);
 		if(match_index>=0){
 			this._ignoretargetsrc.pushSrcTarget(item);
 			return;
 		}
-		
-		//昇格処理
+		//残りはすべて、ログなし対象
 		
 	}
 
@@ -238,30 +242,22 @@ public class StaticImageDetectLabel extends Frame implements MouseMotionListener
 			BufferedImage sink = new BufferedImage(ra.getWidth(), ra.getHeight(), ColorSpace.TYPE_RGB);
 			NyARRasterImageIO.copy(gs, sink);
 			
-			psd._appeartargetsrc.clear();
-			psd._newtargetsrc.clear();
-			psd._ignoretargetsrc.clear();
-
-			//一次検出
-			psd.g=sink.getGraphics();
-			psd.ins=this.getInsets();
-			System.out.println("start---------");
-			Date d2 = new Date();
-//			for (int i = 0; i < 10000; i++) {
-				psd.detectOutline(gs,30);
-//			}
-			Date d = new Date();
-			System.out.println("H"+(d.getTime() - d2.getTime()));
-			//トラック処理
-			{
-				this._newtracking.updateTrackTargetBySrc(tick,psd._newtargetsrc,psd._newtarget);
-				this._ignoretrack.updateTrackTargetBySrc(tick,psd._ignoretargetsrc,psd._ignoretarget);
-			}
+//			psd._appeartargetsrc.clear();
+//			psd._newtargetsrc.clear();
+//			psd._ignoretargetsrc.clear();
+			//検出とデータソースの確定
+			psd.detectOutline(gs,30);
+			//トラッキング
+			this._newtracking.updateTrackTargetBySrc(tick,psd._newtargetsrc,psd._newtarget);
+			this._ignoretrack.updateTrackTargetBySrc(tick,psd._ignoretargetsrc,psd._ignoretarget);
+			
 			//アップデート処理
+			
+			
 			//newtarget->ignore,coord
 			for(int i=psd._newtargetsrc.getLength()-1;i>=0;i--)
 			{
-				//newtargetで、ageが100超えてもなにもされないならignoreに移動
+				//newtarget->ignoreの昇格処理(ageが100超えてもなにもされないならignore)
 				if(psd._newtarget.getItem(i).age>100){
 					IgnoreTarget ig=psd._ignoretarget.pushTarget(psd._newtarget.getItem(i));
 					if(ig==null){
@@ -271,48 +267,27 @@ public class StaticImageDetectLabel extends Frame implements MouseMotionListener
 					psd._newtarget.removeIgnoreOrder(i);
 					continue;
 				}
-				//newtarget->coordの昇格処理 ageが50超えてたら
-				if(psd._newtarget.getItem(i).age>50){
-					ContourTargetItem ct=psd._contouretarget.pushTarget(psd._newtarget.getItem(i));
-					if(ct==null){
-						//失敗リストがいっぱいなら何もしない
-						continue;
-					}
-					psd._newtarget.removeIgnoreOrder(i);
+				//newtarget->coordの昇格処理(coordに空きがあれば昇格)
+				ContourTargetItem ct=psd._contouretarget.pushTarget(psd._newtarget.getItem(i));
+				if(ct==null){
+					//失敗リストがいっぱいなら何もしない
 					continue;
-				}				
+				}
 			}
 			//coord->ignore,rect
 			for(int i=psd._contouretarget.getLength()-1;i>=0;i--)
 			{
-				//newtargetで、ageが100超えてもなにもされないならignoreに移動
-				if(psd._contouretarget.getItem(i).age>100){
-					IgnoreTarget ig=psd._ignoretarget.pushTarget(psd._contouretarget.getItem(i));
-					if(ig==null){
-						//失敗リストがいっぱいなら何もしない
-						continue;
-					}
-					psd._contouretarget.removeIgnoreOrder(i);
-					continue;
-				}
-				//coord->rect
+				//coordのrect判定が失敗したらignoreへ
+				//coordのrect判定が成功したらrectへ
 			}
-			
-
-			//appeartarget->newtarget
-			for(int i=psd._appeartargetsrc.getLength()-1;i>=0;i--)
+			//rect->Marker
+			for(int i=psd._contouretarget.getLength()-1;i>=0;i--)
 			{
-				//無条件にnewtargetへ追記
-				NewTargetItem newtarget=psd._newtarget.pushTarget(tick,psd._appeartargetsrc.getItem(i));
-				if(newtarget==null){
-					//認識待ちがいっぱいなら何もしない。
-					break;
-				}
+//rectのmarker判定が成功したらmarkerへ
+//rectのmarker判定が失敗したらignoreへ
 			}
-			//coord->square
-			//square->marker
 			
-			//結果表示
+			//ログなしからログありへの昇格
 			
 			
 	/*		
