@@ -28,7 +28,8 @@ import jp.nyatla.nyartoolkit.NyARException;
 
 
 /**
- * 実体を持つ可変長配列です。
+ * 可変長なオブジェクト配列です。
+ * 型Tのオブジェクト配列を所有し、アクセス方法を提供します。
  */
 public class NyARObjectStack<T> extends NyARPointerStack<T>
 {
@@ -37,6 +38,14 @@ public class NyARObjectStack<T> extends NyARPointerStack<T>
 	{
 		return;
 	}
+	/**
+	 * パラメータが不要なインスタンスを作るためのinitInstance
+	 * コンストラクタから呼び出します。この関数を使うときには、 createElement()をオーバライドしてください。
+	 * @param i_length
+	 * @param i_element_type
+	 * @param i_param
+	 * @throws NyARException
+	 */
 	protected void initInstance(int i_length,Class<T> i_element_type) throws NyARException
 	{
 		//領域確保
@@ -48,6 +57,7 @@ public class NyARObjectStack<T> extends NyARPointerStack<T>
 	}
 	/**
 	 * パラメータが必要なインスタンスを作るためのinitInstance
+	 * コンストラクタから呼び出します。この関数を使うときには、 createElement(Object i_param)をオーバライドしてください。
 	 * @param i_length
 	 * @param i_element_type
 	 * @param i_param

@@ -1,3 +1,6 @@
+/*	
+ * 
+ */
 package jp.nyatla.nyartoolkit.dev.hierarchicallabeling;
 
 import java.awt.*;
@@ -64,7 +67,7 @@ class ParcialSquareDetector
 	{
 		public NextStack(int i_length) throws NyARException
 		{
-			super(i_length,HierarchyRect.class);
+			super.initInstance(i_length,HierarchyRect.class);
 		}
 		protected HierarchyRect createElement()
 		{
@@ -93,7 +96,7 @@ class ParcialSquareDetector
 	{
 		public LabelStack(int i_length) throws NyARException
 		{
-			super(i_length,LabelInfo.class);
+			super.initInstance(i_length,LabelInfo.class);
 		}
 		protected LabelInfo createElement()
 		{
@@ -112,7 +115,7 @@ class ParcialSquareDetector
 		public Labeling(ParcialSquareDetector i_parent,int i_width,int i_height,int i_raster_type,int i_depth) throws NyARException
 		{
 			super(i_width,i_height);
-this.setAreaRange(999999999,0);
+this.setAreaRange(999999999,1);
 			this._half_size.w=i_width/3;
 			this._half_size.h=i_height/3;
 			this._parent=i_parent;
@@ -182,17 +185,7 @@ this.setAreaRange(999999999,0);
 			}
 			//矩形を検出した。情報その他を関数に通知
 			this._parent.onLabelFound(imagemap,this._gs,i_label);
-/*
-			//1/4より大きいので、検索スタックにpush
-			int skip=imagemap.dot_skip;
-			LabelInfo item=this._outlabel_stack.prePush();
-			item.l=i_label.clip_l*skip+imagemap.x;
-			item.t=i_label.clip_t*skip+imagemap.y;
-			item.w=w*skip;
-			item.h=h*skip;
-			item.dot_skip=skip;
-			item.entry_x=i_label.clip_l*skip+i_label.entry_x*skip;
-*/		}
+		}
 
 		
 	}
@@ -328,15 +321,6 @@ public class TreeLabelingTestLabel extends Frame implements MouseMotionListener
 			this._tr.g=sink.getGraphics();
 			NyARRasterImageIO.copy(i_raster, sink);
 			this._tr.detectOutline(i_raster,110);
-
-//			this.g2=sink.getGraphics();
-/*			g2.setColor(Color.red);
-			for(int i=this._tr.ls.getLength()-1;i>=0;i--){
-				ParcialSquareDetector.LabelInfo rect=this._tr.ls.getItem(i);
-				g2.drawRect(rect.l,rect.t,rect.w,rect.h);
-				System.out.println(rect.l+","+rect.t+","+rect.w+","+rect.h+":"+rect.dot_skip);
-				
-			}*/
 			g.drawImage(sink, ins.left, ins.top, this);
 						
 			

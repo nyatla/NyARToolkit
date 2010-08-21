@@ -1,6 +1,7 @@
 package jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.newtarget;
 
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.TrackingUtils;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcHolder;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.NyARDistMap;
 
 public class NewTracking
@@ -24,7 +25,7 @@ public class NewTracking
 					map[idx].row=r;
 					//中央座標の距離？
 					
-					int d=TrackingUtils.rectSqNorm(i_vertex_r[r]._ref_area.area,i_vertex_c[c]._ref_area_src.area);
+					int d=TrackingUtils.rectSqNorm(i_vertex_r[r].ref_area.area,i_vertex_c[c].ref_area_src.area);
 					map[idx].dist=d;
 					if(min_dist>d){
 						min_index=idx;
@@ -67,7 +68,8 @@ public class NewTracking
 			if(idx<0){
 				//指定tickよりも更新が古ければ、消す。
 				if(i_target.getItem(i).last_update<tick_range){
-					i_target.removeIgnoreOrder(i);
+					//ターゲットを削除する。
+					i_target.deleteTarget(i);
 				}
 				continue;
 			}

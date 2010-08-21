@@ -133,7 +133,7 @@ public class NyARPointerStack<T>
 	/**
 	 * 見かけ上の要素数をリセットします。
 	 */
-	public final void clear()
+	public void clear()
 	{
 		this._length = 0;
 	}

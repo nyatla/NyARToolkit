@@ -6,31 +6,44 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcHolder;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ContourTargetSrcHolder;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.TrackTarget;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ignoretarget.IgnoreTargetSrc.NyARIgnoreSrcItem;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.newtarget.NewTargetList.*;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.contour.ContourTargetList.*;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.contour.ContoureTargetList;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.contour.ContoureTargetList.*;
 
 public class IgnoreTargetList extends NyARObjectStack<IgnoreTargetList.IgnoreTargetItem>
 {
 	public static class IgnoreTargetItem extends TrackTarget
 	{
-		public AreaTargetSrcHolder.AppearSrcItem _ref_area_src;
+		public AreaTargetSrcHolder.AreaSrcItem ref_area;
 	}
-	public IgnoreTargetItem pushTarget(NewTargetItem i_item)
+	private AreaTargetSrcHolder _area_pool;
+	
+	/**
+	 * NewTargetItemのアイテムをアップグレードします。アップグレードすると、参照オブジェクトをこのターゲットに取り付け、NewTargetItemから
+	 * 取り外します。
+	 * @param i_item
+	 * @return
+	 */
+	public IgnoreTargetItem upgradeTarget(NewTargetItem i_item)
 	{
 		IgnoreTargetItem item=this.prePush();
 		if(item==null){
 			return null;
 		}
+		//TrackTarget部分
 		item.age=0;
 		item.last_update=i_item.last_update;
 		item.serial=i_item.serial;
 		item.tag=i_item.tag;
-		item._ref_area_src=i_item._ref_area;
+		
+		//NewTargetItemの参照を委譲
+		item.ref_area=i_item.ref_area;
+		i_item.ref_area=null;
 		return item;
 	}
-	public IgnoreTargetItem pushTarget(ContourTargetItem i_item)
+	public IgnoreTargetItem upgradeTarget(ContoureTargetList.ContoureTargetItem i_item)
 	{
 		IgnoreTargetItem item=this.prePush();
 		if(item==null){
@@ -40,35 +53,60 @@ public class IgnoreTargetList extends NyARObjectStack<IgnoreTargetList.IgnoreTar
 		item.last_update=i_item.last_update;
 		item.serial=i_item.serial;
 		item.tag=i_item.tag;
-		item._ref_area_src=i_item._ref_area;
+
+		//Areaのみ委譲
+		item.ref_area=i_item.ref_area;
+		i_item.ref_area=null;
 		return item;
 	}
 
-	
-	public void updateTarget(int i_index,long i_tick,NyARIgnoreSrcItem i_item)
+	/**
+	 * IgnoreTargetSrcのアイテムで指定した要素を更新します。
+	 * @param i_index
+	 * @param i_tick
+	 * @param i_item
+	 */
+	public void updateTarget(int i_index,long i_tick,IgnoreTargetSrc.NyARIgnoreSrcItem i_item)
 	{
 		IgnoreTargetItem item=this._items[i_index];
 		item.age++;
 		item.last_update=i_tick;
-		item._ref_area_src=i_item._ref_area_src;
+		//オブジェクトの差し替え
+		this._area_pool.deleteObject(item.ref_area);
+		item.ref_area=i_item.ref_area_src;
+		i_item.ref_area_src=null;
 		return;
 	}
+	/**
+	 * ターゲットを削除します。同時に、ターゲットの参照している外部リソースも開放します。
+	 * @param i_index
+	 */
+	public void deleteTarget(int i_index)
+	{
+		if(this._items[i_index].ref_area!=null){
+			this._area_pool.deleteObject(this._items[i_index].ref_area);
+		}
+		super.removeIgnoreOrder(i_index);
+	}	
+	
+	
 	protected IgnoreTargetItem createElement()
 	{
 		return new IgnoreTargetItem();
 	}
-	public IgnoreTargetList(int i_size) throws NyARException
+	public IgnoreTargetList(int i_size,AreaTargetSrcHolder i_area_pool) throws NyARException
 	{
 		super.initInstance(i_size,IgnoreTargetItem.class);
+		this._area_pool=i_area_pool;
 	}
 	/**
 	 * AppearTargetSrc.AppearSrcItemと合致する可能性のあるアイテムのインデクスを返す。
 	 * @param i_item
 	 * @return
 	 */
-	public int getMatchTargetIndex(AreaTargetSrcHolder.AppearSrcItem i_item)
+	public int getMatchTargetIndex(AreaTargetSrcHolder.AreaSrcItem i_item)
 	{
-		AreaTargetSrcHolder.AppearSrcItem iitem;
+		AreaTargetSrcHolder.AreaSrcItem iitem;
 		//許容距離誤差の2乗を計算(10%)
 		//(Math.sqrt((i_item.area.w*i_item.area.w+i_item.area.h*i_item.area.h))/10)^2
 		int dist_rate2=(i_item.area_sq_diagonal)/100;
@@ -76,7 +114,7 @@ public class IgnoreTargetList extends NyARObjectStack<IgnoreTargetList.IgnoreTar
 		//距離は領域の10%以内の誤差、大きさは10%以内の誤差であること。
 		for(int i=this._length-1;i>=0;i--)
 		{
-			iitem=this._items[i]._ref_area_src;
+			iitem=this._items[i].ref_area;
 			//大きさチェック
 			double ratio;
 			ratio=((double)iitem.area.w)/i_item.area.w;

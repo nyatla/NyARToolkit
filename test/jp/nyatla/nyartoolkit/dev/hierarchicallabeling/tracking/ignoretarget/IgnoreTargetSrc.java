@@ -1,28 +1,25 @@
 package jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ignoretarget;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
-import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcHolder;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcHolder.AppearSrcItem;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.newtarget.NewTargetSrc;
 
 public class IgnoreTargetSrc extends NyARObjectStack<IgnoreTargetSrc.NyARIgnoreSrcItem>
 {
 	public static class NyARIgnoreSrcItem
 	{
-		public AreaTargetSrcHolder.AppearSrcItem _ref_area_src;
+		public AreaTargetSrcHolder.AreaSrcItem ref_area_src;
 		public int match_index;
 
 	}
-	public IgnoreTargetSrc.NyARIgnoreSrcItem pushSrcTarget(AreaTargetSrcHolder.AppearSrcItem i_item)
+	private AreaTargetSrcHolder _ref_area_pool;
+	public IgnoreTargetSrc.NyARIgnoreSrcItem pushSrcTarget(AreaTargetSrcHolder.AreaSrcItem i_item)
 	{
 		IgnoreTargetSrc.NyARIgnoreSrcItem item=this.prePush();
 		if(item==null){
 			return null;
 		}
-		item._ref_area_src=i_item;
+		item.ref_area_src=i_item;
 		item.match_index=-1;
 		return item;
 	}
@@ -30,9 +27,19 @@ public class IgnoreTargetSrc extends NyARObjectStack<IgnoreTargetSrc.NyARIgnoreS
 	{
 		return new NyARIgnoreSrcItem();
 	}
-	public IgnoreTargetSrc(int i_size) throws NyARException
+	public IgnoreTargetSrc(int i_size,AreaTargetSrcHolder i_area_pool) throws NyARException
 	{
+		this._ref_area_pool=i_area_pool;
 		super.initInstance(i_size,NyARIgnoreSrcItem.class);
 	}
-
+	public void clear()
+	{
+		//所有するオブジェクトを開放してからクリア処理
+		for(int i=this._length-1;i>=0;i--){
+			if(this._items[i].ref_area_src!=null){
+				this._ref_area_pool.deleteObject(this._items[i].ref_area_src);
+			}
+		}
+		super.clear();
+	}
 }

@@ -9,27 +9,11 @@ import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
-import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.HierarchyRect;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.contour.ContourTargetList.ContourTargetItem;
 
 
 
-class VectorPos
-{
-	double x;
-	double y;
-	double dx;
-	double dy;
-	public static VectorPos[] createArray(int i_length)
-	{
-		VectorPos[] r=new VectorPos[i_length];
-		for(int i=0;i<i_length;i++){
-			r[i]=new VectorPos();
-		}
-		return r;
-	}
-}
+
 class PixelVectorReader
 {
 	private int[] _ref_buf;
@@ -96,6 +80,11 @@ class PixelVectorReader
 			o_posvec.y=(double)sum_y/sum_wy;			
 			o_posvec.dy=(double)sum_vy/sum_wy;
 		}
+		double dist=o_posvec.dx*o_posvec.dx+o_posvec.dy*o_posvec.dy;
+		if(dist>0){
+			o_posvec.dx/=dist;
+			o_posvec.dy/=dist;
+		}
 		return;
 	}	
 }
@@ -105,16 +94,30 @@ class PixelVectorReader
  * 輪郭情報を保管します。
  * このクラスの要素は、他の要素から参照する可能性があります。
  */
-public class ContourTargetSrcHolder extends NyARObjectStack<ContourTargetSrcHolder.ContourTargetSrcItem>
+public class ContourTargetSrcHolder extends NyARObjectPool<ContourTargetSrcHolder.ContourTargetSrcItem>
 {	
 	public static class ContourTargetSrcItem
 	{
-		public AreaTargetSrcHolder.AppearSrcItem _ref_area_src;
+		public AreaTargetSrcHolder.AreaSrcItem _ref_area_src;
 		public NyARIntPoint2d coord_center=new NyARIntPoint2d();
 		public VectorPos[] vecpos=new VectorPos[30];
+		public int vecpos_length;
 		/*部分矩形の左上インデクス*/
 		public NyARIntPoint2d image_lt=new NyARIntPoint2d();
+		/**
+		 * ベクトル配列を点集合に変換して返します。
+		 * @param o_vertex
+		 */
+		public void getVertex(NyARIntPoint2d o_vertex)
+		{
+			//ベクトルに直行する2つのベクトルを90度傾けての交点を計算
+			for(int i=0;i<vecpos_length-1;i++){
+				
+			}
+		}
 	}
+	private final NyARContourPickup _cpickup=new NyARContourPickup();
+
 	/**
 	 * @param i_size
 	 * スタックの最大サイズ
@@ -125,23 +128,19 @@ public class ContourTargetSrcHolder extends NyARObjectStack<ContourTargetSrcHold
 	public ContourTargetSrcHolder(int i_size,int i_cood_max) throws NyARException
 	{
 		this._coord=NyARIntPoint2d.createArray(i_cood_max);
-		super.initInstance(i_size,ContourTargetSrcItem.class,new Integer(i_cood_max));
+		super.initInstance(i_size,ContourTargetSrcItem.class);
 	}
-
-	private final NyARContourPickup _cpickup=new NyARContourPickup();
-	
 	protected ContourTargetSrcItem createElement(Object i_param)
 	{
 		return new ContourTargetSrcItem();
 	}
 	private NyARIntPoint2d[] _coord;
 	private PixelVectorReader _vec_reader;
-	
-	
-	public ContourTargetSrcItem pushTarget(AreaTargetSrcHolder.AppearSrcItem i_item,HierarchyRect i_hrect,NyARGrayscaleRaster i_raster,int i_th,NyARRleLabelFragmentInfo info) throws NyARException
+		
+	public ContourTargetSrcItem newSrcTarget(AreaTargetSrcHolder.AreaSrcItem i_item,HierarchyRect i_hrect,NyARGrayscaleRaster i_raster,int i_th,NyARRleLabelFragmentInfo info) throws NyARException
 	{
 		NyARIntPoint2d[] coord=this._coord;
-		ContourTargetSrcItem item=this.prePush();
+		ContourTargetSrcItem item=this.newObject();
 		if(item==null){
 			return null;
 		}
@@ -154,7 +153,7 @@ public class ContourTargetSrcHolder extends NyARObjectStack<ContourTargetSrcHold
 		int coord_len=this._cpickup.getContour(i_raster,i_th,info.entry_x,info.clip_t,coord);
 		if(coord_len==coord.length){
 			//輪郭線MAXならなにもできないね。
-			this.pop();
+			this.deleteObject(item);
 			return null;
 		}
 		NyARIntRect tmprect=new NyARIntRect();
@@ -218,7 +217,6 @@ public class ContourTargetSrcHolder extends NyARObjectStack<ContourTargetSrcHold
 		//輪郭中心位置の保存
 		item.coord_center.x=ccx/coord_len;
 		item.coord_center.y=ccy/coord_len;
-		
 		return item;
 	}	
 	private double getVecCos(VectorPos i_v1,VectorPos i_v2)

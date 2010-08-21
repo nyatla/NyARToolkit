@@ -26,7 +26,7 @@ public class IgnoreTracking
 					map[idx].row=r;
 					//中央座標の距離？
 					
-					int d=TrackingUtils.rectSqNorm(i_vertex_r[r]._ref_area_src.area,i_vertex_c[c]._ref_area_src.area);
+					int d=TrackingUtils.rectSqNorm(i_vertex_r[r].ref_area.area,i_vertex_c[c].ref_area_src.area);
 					map[idx].dist=d;
 					if(min_dist>d){
 						min_index=idx;
@@ -69,12 +69,12 @@ public class IgnoreTracking
 			if(idx<0){
 				//指定tickよりも更新が古ければ、消す。
 				if(item.last_update<tick_range){
-					i_target.removeIgnoreOrder(i);
+					i_target.deleteTarget(i);
 				}
 				continue;
 			}else if(item.age>MAX_AGE){
 				//ある程度古くなったら消す。
-				i_target.removeIgnoreOrder(i);
+				i_target.deleteTarget(i);
 				continue;
 			}
 			i_target.updateTarget(i, i_tick,i_src.getItem(idx));

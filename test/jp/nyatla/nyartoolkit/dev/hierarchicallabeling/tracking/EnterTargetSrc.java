@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.newtarget;
+package jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
@@ -6,32 +6,30 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcHolder;
 
-public class NewTargetSrc extends NyARObjectStack<NewTargetSrc.NewSrcItem>
+public class EnterTargetSrc extends NyARObjectStack<EnterTargetSrc.EnterSrcItem>
 {
-	public static class NewSrcItem
+	public static class EnterSrcItem
 	{
 		public AreaTargetSrcHolder.AreaSrcItem ref_area_src;
-		public int match_index;
 	}
 	private AreaTargetSrcHolder _ref_area_pool;
-	public NewTargetSrc.NewSrcItem pushSrcTarget(AreaTargetSrcHolder.AreaSrcItem i_item)
+	public EnterTargetSrc.EnterSrcItem pushSrcTarget(AreaTargetSrcHolder.AreaSrcItem i_item)
 	{
-		NewTargetSrc.NewSrcItem item=this.prePush();
+		EnterTargetSrc.EnterSrcItem item=this.prePush();
 		if(item==null){
 			return null;
 		}
 		item.ref_area_src=i_item;
-		item.match_index=-1;
 		return item;
 	}
-	protected NewSrcItem createElement()
+	protected EnterSrcItem createElement()
 	{
-		return new NewSrcItem();
+		return new EnterSrcItem();
 	}
-	public NewTargetSrc(int i_size,AreaTargetSrcHolder i_area_pool) throws NyARException
+	public EnterTargetSrc(int i_size,AreaTargetSrcHolder i_ref_area_pool) throws NyARException
 	{
-		this._ref_area_pool=i_area_pool;
-		super.initInstance(i_size, NewTargetSrc.NewSrcItem.class);
+		this._ref_area_pool=i_ref_area_pool;
+		super.initInstance(i_size, EnterTargetSrc.EnterSrcItem.class);
 	}
 	public void clear()
 	{

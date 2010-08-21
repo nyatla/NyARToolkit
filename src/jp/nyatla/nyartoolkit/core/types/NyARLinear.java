@@ -98,4 +98,28 @@ public class NyARLinear
 		this.c=(x1*(y1-y2)+y1*(x2-x1))*sq;
 		return true;
 	}
+	/**
+	 * 傾きと通過点を入力して、その直線式をセットする。
+	 * @param i_dx
+	 * @param i_dy
+	 * @param i_x
+	 * @param i_y
+	 */
+	public final void setParam(double i_dx,double i_dy,double i_x,double i_y)
+	{
+		this.dx=i_dx;
+		this.dy=i_dy;
+		this.c=-(i_dx*i_x+i_dy*i_y);
+		return;
+	}
+	/**
+	 * 直行する直線を求めます。
+	 */
+	public final void orthogonalLine()
+	{
+		double dx=this.dx;
+		this.dx=this.dy;
+		this.dy=dx;
+	}
+
 }

@@ -4,7 +4,8 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
- * 階層構造のRECTを保持します。
+ * ピラミッド画像のための、階層構造のRECTを保持するクラスです。
+ * 
  *
  */
 public class QsHsHierachyRectMap
@@ -53,7 +54,7 @@ public class QsHsHierachyRectMap
 	}
 
 	/**
-	 * i_rectに階層構造を設定します。
+	 * i_rectに階層構造を設定します。この関数は、initInstanceの一部で働きます。
 	 * @param i_rect
 	 * @param i_index
 	 * 求めるRECTのindex
