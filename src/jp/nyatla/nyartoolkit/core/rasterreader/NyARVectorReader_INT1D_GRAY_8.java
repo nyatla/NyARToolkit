@@ -30,6 +30,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+import jp.nyatla.nyartoolkit.core.types.NyARPointVector2d;
 
 public 	class NyARVectorReader_INT1D_GRAY_8
 {
@@ -43,9 +44,9 @@ public 	class NyARVectorReader_INT1D_GRAY_8
 	}
 	/**
 	 * 4近傍の画素ベクトルを取得します。
-	 * 0 ,-1, 0
-	 * -1, x,+1 
-	 * 0 ,+1, 0
+	 * 0 ,-1, 0    0, 0, 0
+	 * 0 , x, 0　+ -1, y,+1  
+	 * 0 ,+1, 0    0, 0, 0
 	 * @param i_raster
 	 * @param x
 	 * @param y
@@ -83,20 +84,6 @@ public 	class NyARVectorReader_INT1D_GRAY_8
 		o_v.x=((buf[idx_0+1]-buf[idx_0-1])>>1)+((d-b+f-h)>>2);
 		o_v.y=((buf[idx_p1]-buf[idx_m1])>>1)+((f-d+h-b)>>2);
 	}
-	public static class NyARDoublePosVec2d extends NyARDoublePoint2d
-	{
-		public double dx;
-		public double dy;
-	}
-	public static NyARDoublePosVec2d[] createArray(int i_number)
-	{
-		NyARDoublePosVec2d[] ret=new NyARDoublePosVec2d[i_number];
-		for(int i=0;i<i_number;i++)
-		{
-			ret[i]=new NyARDoublePosVec2d();
-		}
-		return ret;
-	}
 	/**
 	 * 領域を指定した8近傍ベクトル
 	 * @param i_gs
@@ -104,7 +91,7 @@ public 	class NyARVectorReader_INT1D_GRAY_8
 	 * @param i_pos
 	 * @param i_vec
 	 */
-	public void getAreaVector8(NyARIntRect i_area,NyARDoublePosVec2d o_posvec)
+	public void getAreaVector8(NyARIntRect i_area,NyARPointVector2d o_posvec)
 	{
 		int[] buf=this._ref_buf;
 		int stride=this._ref_size.w;
@@ -113,6 +100,7 @@ public 	class NyARVectorReader_INT1D_GRAY_8
 		int sum_x,sum_y,sum_wx,sum_wy,sum_vx,sum_vy;
 		sum_x=sum_y=sum_wx=sum_wy=sum_vx=sum_vy=0;
 		int vx,vy;
+//クリッピングできるよね
 		for(int i=i_area.h-1;i>=0;i--){
 			for(int i2=i_area.w-1;i2>=0;i2--){
 				//1ビット分のベクトルを計算
@@ -151,6 +139,11 @@ public 	class NyARVectorReader_INT1D_GRAY_8
 		}else{
 			o_posvec.y=(double)sum_y/sum_wy;			
 			o_posvec.dy=(double)sum_vy/sum_wy;
+		}
+		double dist=o_posvec.dx*o_posvec.dx+o_posvec.dy*o_posvec.dy;
+		if(dist>0){
+			o_posvec.dx/=dist;
+			o_posvec.dy/=dist;
 		}
 		return;
 	}	

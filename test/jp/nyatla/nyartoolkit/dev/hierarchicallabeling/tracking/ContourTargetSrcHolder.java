@@ -10,6 +10,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.HierarchyRect;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.NyARGrayscaleRasterEx;
 
 
 
@@ -31,7 +32,7 @@ class PixelVectorReader
 	 * @param i_pos
 	 * @param i_vec
 	 */
-	public void getAreaVector8(NyARIntRect i_area,VectorPos o_posvec)
+	public void getAreaVector8(NyARIntRect i_area,NyARPointVector2d o_posvec)
 	{
 		int[] buf=this._ref_buf;
 		int stride=this._ref_size.w;
@@ -100,7 +101,7 @@ public class ContourTargetSrcHolder extends NyARObjectPool<ContourTargetSrcHolde
 	{
 		public AreaTargetSrcHolder.AreaSrcItem _ref_area_src;
 		public NyARIntPoint2d coord_center=new NyARIntPoint2d();
-		public VectorPos[] vecpos=new VectorPos[30];
+		public NyARPointVector2d[] vecpos=new NyARPointVector2d[30];
 		public int vecpos_length;
 		/*部分矩形の左上インデクス*/
 		public NyARIntPoint2d image_lt=new NyARIntPoint2d();
@@ -130,7 +131,7 @@ public class ContourTargetSrcHolder extends NyARObjectPool<ContourTargetSrcHolde
 		this._coord=NyARIntPoint2d.createArray(i_cood_max);
 		super.initInstance(i_size,ContourTargetSrcItem.class);
 	}
-	protected ContourTargetSrcItem createElement(Object i_param)
+	protected ContourTargetSrcItem createElement()
 	{
 		return new ContourTargetSrcItem();
 	}
@@ -144,7 +145,7 @@ public class ContourTargetSrcHolder extends NyARObjectPool<ContourTargetSrcHolde
 		if(item==null){
 			return null;
 		}
-		PixelVectorReader vec_reader=this._vec_reader;
+		NyARGrayscaleRasterEx.PixelVectorReader vec_reader=((NyARGrayscaleRasterEx)i_raster).getVectorReader();
 		item._ref_area_src=i_item;
 		item.image_lt.x=i_hrect.x;
 		item.image_lt.y=i_hrect.y;
@@ -173,8 +174,8 @@ public class ContourTargetSrcHolder extends NyARObjectPool<ContourTargetSrcHolde
 
 		int ccx=0;
 		int ccy=0;
-		VectorPos prev_vec_ptr    = null;
-		VectorPos current_vec_ptr = item.vecpos[0];
+		NyARPointVector2d prev_vec_ptr    = null;
+		NyARPointVector2d current_vec_ptr = item.vecpos[0];
 
 		//ベクトル化1:vecposに線分と直行するベクトルを格納。隣接成分と似ている場合は、連結する。
 		for(int i=1;i<coord_len;i++){
@@ -219,7 +220,7 @@ public class ContourTargetSrcHolder extends NyARObjectPool<ContourTargetSrcHolde
 		item.coord_center.y=ccy/coord_len;
 		return item;
 	}	
-	private double getVecCos(VectorPos i_v1,VectorPos i_v2)
+	private double getVecCos(NyARPointVector2d i_v1,NyARPointVector2d i_v2)
 	{
 		double x1=i_v1.dx;
 		double y1=i_v1.dy;

@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARLabeling_Rle;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfo;
+import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve;
 import jp.nyatla.nyartoolkit.core.rasterreader.NyARVectorReader_INT1D_GRAY_8;
@@ -38,6 +39,7 @@ import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.newtarget.NewTarg
 
 
 
+
 class MyDetector extends HierarchyLabeling
 {
 	public Graphics g;
@@ -45,19 +47,21 @@ class MyDetector extends HierarchyLabeling
 	public MyDetector(int i_width,int i_height,int i_depth,int i_raster_type) throws NyARException
 	{
 		super(i_width,i_height,i_depth,i_raster_type);
+		//データソースの準備
+		this._area_holder=new AreaTargetSrcHolder(100);
+		this._contoure_holder=new ContourTargetSrcHolder(100,i_width+i_height*2);
+
 		//ソースターゲット
 		this._newtargetsrc=new NewTargetSrc(10, this._area_holder);
 		this._ignoretargetsrc=new IgnoreTargetSrc(10, this._area_holder);
 		this._entersrc=new EnterTargetSrc(10, this._area_holder);
+		this._contouretargetsrc=new ContoureTargetSrc(10,this._area_holder, this._contoure_holder);
 		//トラッキングターゲット
 		this._newtarget=new NewTargetList(10, this._area_holder);
 		this._ignoretarget=new IgnoreTargetList(10, this._area_holder);
 		this._contouretarget= new ContoureTargetList(10, this._area_holder, this._contoure_holder);
 		
 		
-		//データソースの準備
-		this._area_holder=new AreaTargetSrcHolder(100);
-		this._contoure_holder=new ContourTargetSrcHolder(100,i_width+i_height*2);
 		
 	}
 	public void detectOutline(NyARGrayscaleRaster i_raster,int i_th) throws NyARException
@@ -78,16 +82,14 @@ class MyDetector extends HierarchyLabeling
 	
 
 	
-	public EnterTargetSrc _entersrc;
-	
-	NewTargetSrc _newtargetsrc;
+	public EnterTargetSrc _entersrc;	
+	public NewTargetSrc _newtargetsrc;
+	public IgnoreTargetSrc _ignoretargetsrc;
+	public ContoureTargetSrc _contouretargetsrc;
+
 	NewTargetList _newtarget;
-	
-	IgnoreTargetSrc _ignoretargetsrc;
 	IgnoreTargetList _ignoretarget;
-	
 	ContoureTargetList _contouretarget;
-	ContoureTargetSrc _contouretargetsrc;
 	
 	
 	
@@ -379,7 +381,7 @@ public class StaticImageDetectLabel extends Frame implements MouseMotionListener
 			g.drawImage(sink, ins.left, ins.top, this);   
 		}
     }
-    public void getCrossPos(VectorPos vec1,VectorPos vec2,NyARDoublePoint2d o_pos)
+    public void getCrossPos(NyARPointVector2d vec1,NyARPointVector2d vec2,NyARDoublePoint2d o_pos)
     {
     	NyARLinear line1=new NyARLinear();
     	NyARLinear line2=new NyARLinear();

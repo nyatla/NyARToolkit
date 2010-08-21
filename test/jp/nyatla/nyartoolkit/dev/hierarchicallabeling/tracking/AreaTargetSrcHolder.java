@@ -1,12 +1,9 @@
 package jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking;
 
-import java.lang.reflect.Array;
-
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfo;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
-import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.HierarchyRect;
 
 
@@ -24,7 +21,7 @@ public class AreaTargetSrcHolder extends NyARObjectPool<AreaTargetSrcHolder.Area
 	}
 	protected AreaTargetSrcHolder.AreaSrcItem createElement() throws NyARException
 	{
-		throw new NyARException();
+		return new AreaSrcItem();
 	}
 	public AreaTargetSrcHolder(int i_length) throws NyARException
 	{

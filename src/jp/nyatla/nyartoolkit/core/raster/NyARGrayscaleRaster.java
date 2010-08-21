@@ -31,30 +31,36 @@
 package jp.nyatla.nyartoolkit.core.raster;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.rasterreader.NyARVectorReader_INT1D_GRAY_8;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
  * 1枚のグレースケール画像を定義するクラスです。
  */
-public class NyARGrayscaleRaster extends NyARRaster_BasicClass {
-
+public class NyARGrayscaleRaster extends NyARRaster_BasicClass
+{
+	private NyARVectorReader_INT1D_GRAY_8 _vr;
 	protected Object _buf;
 	/**
 	 * バッファオブジェクトがアタッチされていればtrue
 	 */
 	protected boolean _is_attached_buffer;
 
-	public NyARGrayscaleRaster(int i_width, int i_height) throws NyARException {
+	public NyARGrayscaleRaster(int i_width, int i_height) throws NyARException
+	{
 		super(i_width, i_height, NyARBufferType.INT1D_GRAY_8);
-		if (!initInstance(this._size, NyARBufferType.INT1D_GRAY_8, true)) {
+		if (!initInstance(this._size, NyARBufferType.INT1D_GRAY_8, true))
+		{
 			throw new NyARException();
 		}
 	}
 
 	public NyARGrayscaleRaster(int i_width, int i_height, boolean i_is_alloc)
-			throws NyARException {
+			throws NyARException
+	{
 		super(i_width, i_height, NyARBufferType.INT1D_GRAY_8);
-		if (!initInstance(this._size, NyARBufferType.INT1D_GRAY_8, i_is_alloc)) {
+		if (!initInstance(this._size, NyARBufferType.INT1D_GRAY_8, i_is_alloc))
+		{
 			throw new NyARException();
 		}
 	}
@@ -76,7 +82,8 @@ public class NyARGrayscaleRaster extends NyARRaster_BasicClass {
 	}
 
 	protected boolean initInstance(NyARIntSize i_size, int i_buf_type,
-			boolean i_is_alloc) {
+			boolean i_is_alloc)
+	{
 		switch (i_buf_type) {
 		case NyARBufferType.INT1D_GRAY_8:
 			this._buf = i_is_alloc ? new int[i_size.w * i_size.h] : null;
@@ -85,10 +92,15 @@ public class NyARGrayscaleRaster extends NyARRaster_BasicClass {
 			return false;
 		}
 		this._is_attached_buffer = i_is_alloc;
+		this._vr=new NyARVectorReader_INT1D_GRAY_8(this);
 		return true;
 	}
-
-	public Object getBuffer() {
+	public NyARVectorReader_INT1D_GRAY_8 getVectorReader()
+	{
+		return this._vr;
+	}
+	public Object getBuffer()
+	{
 		return this._buf;
 	}
 
@@ -102,11 +114,16 @@ public class NyARGrayscaleRaster extends NyARRaster_BasicClass {
 		return this._buf != null;
 	}
 
-	public void wrapBuffer(Object i_ref_buf) {
+	public void wrapBuffer(Object i_ref_buf)
+	{
 		assert (!this._is_attached_buffer);// バッファがアタッチされていたら機能しない。
 		this._buf = i_ref_buf;
 	}
 
+	/**
+	 * 指定した数値でラスタを埋めます。
+	 * @param i_value
+	 */
 	public void fill(int i_value) {
 		assert (this._buffer_type == NyARBufferType.INT1D_GRAY_8);
 		int[] buf = (int[]) this._buf;
@@ -116,7 +133,7 @@ public class NyARGrayscaleRaster extends NyARRaster_BasicClass {
 	}
 
 	/**
-	 * ラスタの異解像度間コピーをします。
+	 * ラスタの異解像度間コピーをします。(このAPIは暫定実装です。)
 	 * @param i_input
 	 * 入力画像
 	 * @param i_top

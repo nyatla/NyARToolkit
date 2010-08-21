@@ -47,7 +47,6 @@ public class NyARObjectPool<T>
 	 */
 	protected NyARObjectPool() throws NyARException
 	{
-		NyARException.notImplement();
 	}
 	/**
 	 * オブジェクトを初期化します。この関数は、このクラスを継承したクラスを公開するときに、コンストラクタから呼び出します。
