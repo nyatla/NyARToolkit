@@ -297,10 +297,10 @@ public class NyARSquareDetector_Vector
 				double l=Math.sqrt((double)(vecsum.x*vecsum.x+vecsum.y*vecsum.y));
 				final NyARLinear l_line_i = l_line[i];
 				//直交するベクトルを計算
-				l_line_i.dx =  vecsum.x/l;
-				l_line_i.dy =  -vecsum.y/l;
+				l_line_i.a =  vecsum.x/l;
+				l_line_i.b =  -vecsum.y/l;
 				//cを計算
-				l_line_i.c  = -(l_line_i.dx * (idealcenter.x) + l_line_i.dy * (idealcenter.y));
+				l_line_i.c  = -(l_line_i.a * (idealcenter.x) + l_line_i.b * (idealcenter.y));
 				
 				// 頂点インデクスから頂点座標を得て保存
 				l_imvertex[i].x = i_xcoord[ver1];

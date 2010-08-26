@@ -214,7 +214,7 @@ public abstract class HierarchyLabeling
 		}else{
 			this._labeling=new FinalLabelingUnit(this,this._image_map.window_size.w,this._image_map.window_size.h,i_raster_type,i_depth);
 		}
-		this._labeling.setAreaRange(320*240,10*10);
+		this._labeling.setAreaRange(320*240,64);
 	}
 	public void detectOutline(NyARGrayscaleRaster i_raster,int i_th) throws NyARException
 	{

@@ -32,14 +32,14 @@ package jp.nyatla.nyartoolkit.core.types;
 
 
 /**
- * 0=dx*x+dy*y+cのパラメータを格納します。
+ * 0=a*x+b*y+cのパラメータを格納します。
  * x,yの増加方向は、x=L→R,y=B→Tです。 y軸が反転しているので注意してください。
  *
  */
 public class NyARLinear
 {
-	public double dy;//dy軸の増加量
-	public double dx;//dx軸の増加量
+	public double b;//係数b
+	public double a;//係数a
 	public double c;//切片
 	public static NyARLinear[] createArray(int i_number)
 	{
@@ -52,8 +52,8 @@ public class NyARLinear
 	}	
 	public final void copyFrom(NyARLinear i_source)
 	{
-		this.dy=i_source.dy;
-		this.dx=i_source.dx;
+		this.b=i_source.b;
+		this.a=i_source.a;
 		this.c=i_source.c;
 		return;
 	}
@@ -66,12 +66,12 @@ public class NyARLinear
 	 */
 	public final static boolean crossPos(NyARLinear l_line_1,NyARLinear l_line_2,NyARDoublePoint2d o_point)
 	{
-		final double w1 = l_line_1.dx * l_line_2.dy - l_line_2.dx * l_line_1.dy;
+		final double w1 = l_line_1.a * l_line_2.b - l_line_2.a * l_line_1.b;
 		if (w1 == 0.0) {
 			return false;
 		}
-		o_point.x = (l_line_1.dy * l_line_2.c - l_line_2.dy * l_line_1.c) / w1;
-		o_point.y = (l_line_2.dx * l_line_1.c - l_line_1.dx * l_line_2.c) / w1;
+		o_point.x = (l_line_1.b * l_line_2.c - l_line_2.b * l_line_1.c) / w1;
+		o_point.y = (l_line_2.a * l_line_1.c - l_line_1.a * l_line_2.c) / w1;
 		return true;
 	}
 	/**
@@ -93,8 +93,8 @@ public class NyARLinear
 			return false;
 		}
 		sq=1/sq;
-		this.dx=dx*sq;
-		this.dy=dy*sq;
+		this.a=dx*sq;
+		this.b=dy*sq;
 		this.c=(x1*(y1-y2)+y1*(x2-x1))*sq;
 		return true;
 	}
@@ -105,11 +105,11 @@ public class NyARLinear
 	 * @param i_x
 	 * @param i_y
 	 */
-	public final void setParam(double i_dx,double i_dy,double i_x,double i_y)
+	public final void setVector(double i_dx,double i_dy,double i_x,double i_y)
 	{
-		this.dx=i_dx;
-		this.dy=i_dy;
-		this.c=-(i_dx*i_x+i_dy*i_y);
+		this.a=-i_dy;
+		this.b= i_dx;
+		this.c=i_y-(i_dy*i_x/i_dx);
 		return;
 	}
 	/**
@@ -117,9 +117,9 @@ public class NyARLinear
 	 */
 	public final void orthogonalLine()
 	{
-		double dx=this.dx;
-		this.dx=this.dy;
-		this.dy=dx;
+		double dx=this.a;
+		this.a=this.b;
+		this.b=dx;
 	}
 
 }

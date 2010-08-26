@@ -2,7 +2,7 @@ package jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.newtarget;
 
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.TrackingUtils;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcHolder;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.NyARDistMap;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARDistMap;
 
 public class NewTracking
 {

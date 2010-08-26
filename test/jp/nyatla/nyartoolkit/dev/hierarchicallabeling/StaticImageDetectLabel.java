@@ -28,6 +28,7 @@ import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.*;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcHolder.AreaSrcItem;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.contour.ContoureTargetList;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.contour.ContoureTargetSrc;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.contour.ContoureTracking;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.contour.ContoureTargetList.ContoureTargetItem;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ignoretarget.IgnoreTargetList;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ignoretarget.IgnoreTargetSrc;
@@ -69,13 +70,13 @@ class MyDetector extends HierarchyLabeling
 		//Holderのページを設定
 
 
-		this._base_gs=i_raster;
+		this._base_gs    =i_raster;
+
 		//Srcを編集
 		super.detectOutline(i_raster,i_th);
 		
 	}
-	NyARGrayscaleRaster _base_gs;
-
+	private NyARGrayscaleRaster _base_gs;
 
 	public AreaTargetSrcHolder _area_holder;
 	public ContourTargetSrcHolder _contoure_holder;
@@ -102,13 +103,12 @@ class MyDetector extends HierarchyLabeling
 			return;
 		}
 		int match_index;
-
 		
 		//ログ付き輪郭トラッキング対象か確認する。
 		match_index=this._contouretarget.getMatchTargetIndex(item);
 		if(match_index>=0){
 			//輪郭ホルダに追加
-			ContourTargetSrcHolder.ContourTargetSrcItem contour_item=this._contoure_holder.newSrcTarget(item, i_imgmap, i_raster, i_th, info);
+			ContourTargetSrcHolder.ContourTargetSrcItem contour_item=this._contoure_holder.newSrcTarget(item, i_imgmap,i_raster,this._base_gs, i_th, info);
 			//対象になる輪郭ソースに追加	
 			if(match_index>=0){
 				this._contouretargetsrc.pushSrcTarget(contour_item);
@@ -191,6 +191,7 @@ public class StaticImageDetectLabel extends Frame implements MouseMotionListener
 		//トラッカー
 		this._newtracking=new NewTracking(10);
 		this._ignoretrack=new IgnoreTracking(10);
+		this._contourecrack=new ContoureTracking(10);
 
 
 		return;
@@ -217,6 +218,7 @@ public class StaticImageDetectLabel extends Frame implements MouseMotionListener
 	
 	private NewTracking _newtracking;
 	private IgnoreTracking _ignoretrack;
+	private ContoureTracking _contourecrack;
 
 	
 
@@ -247,7 +249,7 @@ public class StaticImageDetectLabel extends Frame implements MouseMotionListener
 			
 			this._newtracking.updateTrackTargetBySrc(tick,psd._newtargetsrc,psd._newtarget);
 			this._ignoretrack.updateTrackTargetBySrc(tick,psd._ignoretargetsrc,psd._ignoretarget);
-			
+			this._contourecrack.updateTrackTargetBySrc(tick, psd._contouretargetsrc,psd._contouretarget);
 			//ターゲット処理
 			handler(g,sink);
 			
@@ -332,17 +334,7 @@ public class StaticImageDetectLabel extends Frame implements MouseMotionListener
 		tmprect.w=8;
 		tmprect.h=8;
 		NyARDoublePoint2d pos=new NyARDoublePoint2d();
-		NyARDoublePoint2d vec=new NyARDoublePoint2d();
-/*			if(mx>0 && my>0){
-			reader.getAreaVector8(tmprect,pos,vec);
-		}
-		//分析結果を描画
-		double sin=vec.y/Math.sqrt(vec.x*vec.x+vec.y*vec.y);
-		double cos=vec.x/Math.sqrt(vec.x*vec.x+vec.y*vec.y);
-		Graphics g2=sink.getGraphics();
-		g2.setColor(Color.BLUE);
-		g2.drawLine((int)pos.x,(int)pos.y,(int)(pos.x+30*cos),(int)(pos.y+30*sin));
-*/
+
 		//
 		{
 			Graphics g2=sink.getGraphics();
@@ -367,13 +359,16 @@ public class StaticImageDetectLabel extends Frame implements MouseMotionListener
 			for(int i=0;i<this._psd._contouretarget.getLength();i++){
 				//coordTargetを頂点集合に変換
 				ContoureTargetList.ContoureTargetItem e=this._psd._contouretarget.getItem(i);
+				if(e.ref_contoure==null){
+					break;
+				}
 				NyARDoublePoint2d[] ppos=NyARDoublePoint2d.createArray(e.ref_contoure.vecpos_length);
-				int[] yp=new int[e.ref_contoure.vecpos_length];
 				for(int i2=0;i2<e.ref_contoure.vecpos_length;i2++){
+					ppos[i2].x=e.ref_contoure.vecpos[i2].x;
+					ppos[i2].y=e.ref_contoure.vecpos[i2].y;
 					getCrossPos(e.ref_contoure.vecpos[i2],e.ref_contoure.vecpos[(i2+1)%e.ref_contoure.vecpos_length],ppos[i2]);
 				}
-				GraphicsTools.drawPolygon(g2,ppos,this._psd._contouretarget.getLength());
-				g2.drawRect(e.ref_area.area.x, e.ref_area.area.y, e.ref_area.area.w, e.ref_area.area.h);
+				GraphicsTools.drawPolygon(g2,ppos,e.ref_contoure.vecpos_length);
 			}
 			sink.setRGB((int)pos.x,(int)pos.y,0xff0000);
 			
@@ -385,11 +380,12 @@ public class StaticImageDetectLabel extends Frame implements MouseMotionListener
     {
     	NyARLinear line1=new NyARLinear();
     	NyARLinear line2=new NyARLinear();
-    	line1.setParam(vec1.dx,vec1.dy,vec1.x,vec1.y);
+    	line1.setVector(vec1.dx,vec1.dy,vec1.x,vec1.y);
     	line1.orthogonalLine();
-    	line2.setParam(vec2.dx,vec2.dy,vec2.x,vec2.y);
+    	line2.setVector(vec1.dx,vec1.dy,vec1.x,vec1.y);
     	line2.orthogonalLine();
     	NyARLinear.crossPos(line1,line2, o_pos);
+    	o_pos.y=o_pos.y;
     	
     }
 

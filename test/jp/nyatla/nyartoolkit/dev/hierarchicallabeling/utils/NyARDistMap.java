@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking;
+package jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils;
 
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;

@@ -16,7 +16,6 @@ import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ignoretarget.Igno
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.newtarget.NewTargetList.NewTargetItem;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.rasterreader.NyARVectorReader_INT1D_GRAY_8;
-import jp.nyatla.nyartoolkit.core.rasterreader.NyARVectorReader_INT1D_GRAY_8.NyARDoublePosVec2d;
 /**
  * 輪郭ソースから、輪郭を得るんだけど・・・・・。輪郭の特徴って何だ？
  * 

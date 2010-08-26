@@ -134,9 +134,9 @@ public class NyARCoord2Linear
 
 		
 		this._pca.pca(this._xpos,this._ypos,n,evec, this.__getSquareLine_ev,mean);
-		o_line.dx = evec.m01;// line[i][0] = evec->m[1];
-		o_line.dy = -evec.m00;// line[i][1] = -evec->m[0];
-		o_line.c = -(o_line.dx * mean[0] + o_line.dy * mean[1]);// line[i][2] = -(line[i][0]*mean->v[0] + line[i][1]*mean->v[1]);
+		o_line.a = evec.m01;// line[i][0] = evec->m[1];
+		o_line.b = -evec.m00;// line[i][1] = -evec->m[0];
+		o_line.c = -(o_line.a * mean[0] + o_line.b * mean[1]);// line[i][2] = -(line[i][0]*mean->v[0] + line[i][1]*mean->v[1]);
 
 		return true;
 	}

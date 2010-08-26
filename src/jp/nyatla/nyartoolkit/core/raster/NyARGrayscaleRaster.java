@@ -74,15 +74,22 @@ public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 	 * @throws NyARException
 	 */
 	public NyARGrayscaleRaster(int i_width, int i_height, int i_raster_type,
-			boolean i_is_alloc) throws NyARException {
+			boolean i_is_alloc) throws NyARException
+	{
 		super(i_width, i_height, i_raster_type);
 		if (!initInstance(this._size, i_raster_type, i_is_alloc)) {
 			throw new NyARException();
 		}
 	}
 
-	protected boolean initInstance(NyARIntSize i_size, int i_buf_type,
-			boolean i_is_alloc)
+	/**
+	 * このクラスの初期化シーケンスです。コンストラクタから呼び出します。
+	 * @param i_size
+	 * @param i_buf_type
+	 * @param i_is_alloc
+	 * @return
+	 */
+	protected boolean initInstance(NyARIntSize i_size, int i_buf_type,boolean i_is_alloc)
 	{
 		switch (i_buf_type) {
 		case NyARBufferType.INT1D_GRAY_8:
@@ -107,10 +114,10 @@ public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 	/**
 	 * インスタンスがバッファを所有するかを返します。 コンストラクタでi_is_allocをfalseにしてラスタを作成した場合、
 	 * バッファにアクセスするまえに、バッファの有無をこの関数でチェックしてください。
-	 * 
 	 * @return
 	 */
-	public boolean hasBuffer() {
+	public boolean hasBuffer()
+	{
 		return this._buf != null;
 	}
 

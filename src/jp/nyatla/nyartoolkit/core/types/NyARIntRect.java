@@ -151,6 +151,7 @@ public class NyARIntRect
 		this.y=y;
 		return;
 	}
+
 	/**
 	 * 点がRECTの範囲内であるか判定します。
 	 * @param i_x

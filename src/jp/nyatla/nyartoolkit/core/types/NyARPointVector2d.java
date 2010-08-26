@@ -1,5 +1,10 @@
-package jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking;
+package jp.nyatla.nyartoolkit.core.types;
 
+
+/**
+ * 点の座標と、そのベクトルを格納します。
+ *
+ */
 public class NyARPointVector2d
 {
 	public double x;
@@ -15,7 +20,7 @@ public class NyARPointVector2d
 		}
 		return r;
 	}
-	/* 直行するベクトルを計算する。
+	/* 法線ベクトルを計算する。
 	 */
 	public void OrthogonalVec(NyARPointVector2d i_src)
 	{

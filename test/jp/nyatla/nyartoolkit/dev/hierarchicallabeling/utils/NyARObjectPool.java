@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking;
+package jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils;
 
 import java.lang.reflect.Array;
 

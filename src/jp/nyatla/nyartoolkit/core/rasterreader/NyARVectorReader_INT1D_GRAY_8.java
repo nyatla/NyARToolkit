@@ -26,13 +26,12 @@ package jp.nyatla.nyartoolkit.core.rasterreader;
 
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
-import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.NyARPointVector2d;
 
-public 	class NyARVectorReader_INT1D_GRAY_8
+public class NyARVectorReader_INT1D_GRAY_8
 {
 	private int[] _ref_buf;
 	private NyARIntSize _ref_size;
@@ -43,7 +42,8 @@ public 	class NyARVectorReader_INT1D_GRAY_8
 		this._ref_size=i_ref_raster.getSize();
 	}
 	/**
-	 * 4近傍の画素ベクトルを取得します。
+	 * 画素の4近傍の画素ベクトルを取得します。
+	 * 取得可能な範囲は、Rasterの1ドット内側です。
 	 * 0 ,-1, 0    0, 0, 0
 	 * 0 , x, 0　+ -1, y,+1  
 	 * 0 ,+1, 0    0, 0, 0
@@ -54,6 +54,7 @@ public 	class NyARVectorReader_INT1D_GRAY_8
 	 */
 	public void getPixelVector4(int x,int y,NyARIntPoint2d o_v)
 	{
+		assert((x>0) && (y>0) && (x)<this._ref_size.w && (y)<this._ref_size.h);
 		int[] buf=this._ref_buf;
 		int w=this._ref_size.w;
 		int idx=w*y+x;
@@ -61,7 +62,8 @@ public 	class NyARVectorReader_INT1D_GRAY_8
 		o_v.y=(buf[idx+w]-buf[idx-w])>>1;
 	}
 	/**
-	 * 8近傍画素ベクトル
+	 * 画素の8近傍画素ベクトルを取得します。
+	 * 取得可能な範囲は、Rasterの1ドット内側です。
 	 * -1,-2,-1    -1, 0,+1
 	 *  0, y, 0  + -2, x,+2
 	 * +1,+2,+1    -1, 0,+1
@@ -72,6 +74,7 @@ public 	class NyARVectorReader_INT1D_GRAY_8
 	 */
 	public void getPixelVector8(int x,int y,NyARIntPoint2d o_v)
 	{
+		assert((x>0) && (y>0) && (x)<this._ref_size.w && (y)<this._ref_size.h);
 		int[] buf=this._ref_buf;
 		NyARIntSize s=this._ref_size;
 		int idx_0 =s.w*y+x;
@@ -85,7 +88,8 @@ public 	class NyARVectorReader_INT1D_GRAY_8
 		o_v.y=((buf[idx_p1]-buf[idx_m1])>>1)+((f-d+h-b)>>2);
 	}
 	/**
-	 * 領域を指定した8近傍ベクトル
+	 * 範囲の8近傍画素ベクトルを取得します。
+	 * 取得可能な範囲は、Rasterの1ドット内側です。
 	 * @param i_gs
 	 * @param i_area
 	 * @param i_pos
@@ -93,6 +97,8 @@ public 	class NyARVectorReader_INT1D_GRAY_8
 	 */
 	public void getAreaVector8(NyARIntRect i_area,NyARPointVector2d o_posvec)
 	{
+		//クリッピングされていること。
+		assert((i_area.x>0) && (i_area.y>0) && (i_area.x+i_area.w)<this._ref_size.w && (i_area.y+i_area.h)<this._ref_size.h);
 		int[] buf=this._ref_buf;
 		int stride=this._ref_size.w;
 		//x=(Σ|Vx|*Xn)/n,y=(Σ|Vy|*Yn)/n
@@ -100,7 +106,6 @@ public 	class NyARVectorReader_INT1D_GRAY_8
 		int sum_x,sum_y,sum_wx,sum_wy,sum_vx,sum_vy;
 		sum_x=sum_y=sum_wx=sum_wy=sum_vx=sum_vy=0;
 		int vx,vy;
-//クリッピングできるよね
 		for(int i=i_area.h-1;i>=0;i--){
 			for(int i2=i_area.w-1;i2>=0;i2--){
 				//1ビット分のベクトルを計算
