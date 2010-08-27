@@ -11,7 +11,6 @@ public class NyARPointVector2d
 	public double y;
 	public double dx;
 	public double dy;
-	public double dist;
 	public static NyARPointVector2d[] createArray(int i_length)
 	{
 		NyARPointVector2d[] r=new NyARPointVector2d[i_length];

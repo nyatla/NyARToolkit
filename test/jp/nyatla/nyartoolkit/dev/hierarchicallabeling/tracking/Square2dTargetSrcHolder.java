@@ -2,9 +2,11 @@ package jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfo;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
+import jp.nyatla.nyartoolkit.core.types.NyARLinear;
 import jp.nyatla.nyartoolkit.core.types.NyARPointVector2d;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.HierarchyRect;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARObjectPool;
@@ -15,6 +17,7 @@ public class Square2dTargetSrcHolder extends NyARObjectPool<Square2dTargetSrcHol
 {
 	public static class Square2dSrcItem
 	{
+		NyARSquare square;
 		/**
 		 * 4頂点
 		 */
@@ -43,58 +46,32 @@ public class Square2dTargetSrcHolder extends NyARObjectPool<Square2dTargetSrcHol
 			return null;
 		}
 		//coordVectorから、distの大きい値のものを4個選ぶ
-		//4つの合計が、全体の50%を超えている？
-		//4つの値がそれぞれ10%を超えている？
-		//インデクスでソート
-		
-//輪郭ソースから4頂点(観察系)を生成
+		int[] rectvec=new int[4];
+		ContourTargetSrcHolder.ContourTargetSrcItem.CoordData.getKeyCoordInfoIndex(i_item.vecpos,i_item.vecpos_length, rectvec);
+		//ベクトルの強度がそれぞれ10%を超えている？
+		final double th_val=i_item.sq_dist_sum*0.1;
+		for(int i=3;i>=0;i--){
+			if(i_item.vecpos[rectvec[i]].sq_dist<th_val){
+				//既定の基準に達しない。
+				this.deleteObject(item);
+				return null;
+			}
+		}
+		NyARSquare sq=item.square;
+		//4頂点を計算する。(本当はベクトルの方向を調整してから計算するべき)
+		for(int i=3;i>=0;i--){
+			ContourTargetSrcHolder.ContourTargetSrcItem.CoordData cv=i_item.vecpos[rectvec[i]];
+			sq.line[i].setVector(cv.dx,cv.dy,cv.x,cv.y);
+		}
+		for(int i=3;i>=0;i--){
+			if(!NyARLinear.crossPos(sq.line[i],sq.line[(i + 3) % 4],sq.sqvertex[i])){
+				//四角が作れない。
+				this.deleteObject(item);
+				return null;
+			}
+		}
 		return item;
 	}
-	public class CoordItem
-	{
-		public int i_index;
-		public NyARPointVector2d _ref;
-	}
-		
 	
-	public static void getLagestVectors(NyARPointVector2d[] i_vecpos,int i_len)
-	{
-		int[] idx=new int[4];
-		idx[0]=0;
-		idx[1]=1;
-		idx[2]=2;
-		idx[3]=3;
-		//distでソートする
-		for(int i=0;i<3;){
-			if(i_vecpos[idx[i]].dist<i_vecpos[idx[i+1]].dist){
-				int t=idx[i];
-				idx[i]=idx[i+1];
-				idx[i+1]=t;
-				i=0;
-			}
-		}
-		//先に4個をdistでソートしながら格納
-		for(int i=4;i<i_len;i++){
-			//配列の値と比較
-			for(int i2=3;i2>=0;i2--){
-				if(i_vecpos[i].dist>i_vecpos[idx[i2]].dist){				
-					//値挿入の為のシフト
-					for(int i3=2;i3>i2;i3--){
-						idx[i3+1]=idx[i3];
-					}
-					//設定
-					idx[i2]=i;
-				}
-			}
-		}
-		//idxでソート
-		for(int i=0;i<3;){
-			if(idx[i]<idx[i+1]){
-				int t=idx[i];
-				idx[i]=idx[i+1];
-				idx[i+1]=t;
-				i=0;
-			}
-		}
-	}
+
 }

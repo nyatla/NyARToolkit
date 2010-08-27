@@ -9,9 +9,9 @@ import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ContourTargetSrcH
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcHolder.AreaSrcItem;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.newtarget.NewTargetSrc;
 
-public class SquareTargetSrc extends NyARObjectStack<SquareTargetSrc.SquareContoureTargetSrcItem>
+public class SquareTargetSrc extends NyARObjectStack<SquareTargetSrc.SquareTargetSrcItem>
 {
-	public static class SquareContoureTargetSrcItem
+	public static class SquareTargetSrcItem
 	{
 		public AreaTargetSrcHolder.AreaSrcItem ref_area_src;
 		public ContourTargetSrcHolder.ContourTargetSrcItem ref_contour_src;
@@ -19,9 +19,9 @@ public class SquareTargetSrc extends NyARObjectStack<SquareTargetSrc.SquareConto
 	private AreaTargetSrcHolder _ref_area_pool;
 	private ContourTargetSrcHolder _ref_contoure_pool;
 	
-	public SquareTargetSrc.SquareContoureTargetSrcItem pushSrcTarget(ContourTargetSrcHolder.ContourTargetSrcItem i_item)
+	public SquareTargetSrc.SquareTargetSrcItem pushSrcTarget(ContourTargetSrcHolder.ContourTargetSrcItem i_item)
 	{
-		SquareTargetSrc.SquareContoureTargetSrcItem item=this.prePush();
+		SquareTargetSrc.SquareTargetSrcItem item=this.prePush();
 		if(item==null){
 			return null;
 		}
@@ -29,15 +29,15 @@ public class SquareTargetSrc extends NyARObjectStack<SquareTargetSrc.SquareConto
 		item.ref_contour_src=i_item;
 		return item;
 	}
-	protected SquareContoureTargetSrcItem createElement()
+	protected SquareTargetSrcItem createElement()
 	{
-		return new SquareContoureTargetSrcItem();
+		return new SquareTargetSrcItem();
 	}
 	public SquareTargetSrc(int i_size,AreaTargetSrcHolder i_area_pool,ContourTargetSrcHolder i_contoure_pool) throws NyARException
 	{
 		this._ref_area_pool=i_area_pool;
 		this._ref_contoure_pool=i_contoure_pool;
-		super.initInstance(i_size,SquareContoureTargetSrcItem.class);
+		super.initInstance(i_size,SquareTargetSrcItem.class);
 	}
 	public void clear()
 	{

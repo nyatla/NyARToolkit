@@ -145,11 +145,6 @@ public class NyARVectorReader_INT1D_GRAY_8
 			o_posvec.y=(double)sum_y/sum_wy;			
 			o_posvec.dy=(double)sum_vy/sum_wy;
 		}
-		double dist=o_posvec.dx*o_posvec.dx+o_posvec.dy*o_posvec.dy;
-		if(dist>0){
-			o_posvec.dx/=dist;
-			o_posvec.dy/=dist;
-		}
 		return;
 	}	
 	

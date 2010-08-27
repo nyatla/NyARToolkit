@@ -41,23 +41,28 @@ import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.core.types.*;
 /**
- * NyARToolkit用のJOGL支援関数群
+ * OpenGLの支援機能を提供するクラスです。
  */
 public class NyARGLUtil
 {
 	private javax.media.opengl.GL _gl;
 
 	private javax.media.opengl.glu.GLU _glu;
-
+	/**
+	 * 参照するOpenGLのインスタンスを指定します。
+	 * @param i_gl
+	 */
 	public NyARGLUtil(javax.media.opengl.GL i_gl)
 	{
 		this._gl = i_gl;
 		this._glu = new GLU();
 	}
 	/**
-	 * ラスタのGLタイプを取得する。
+	 * BufferType値から、OpenGLのピクセルタイプ値を計算します。
 	 * @param i_buffer_type
+	 * BufferType値を指定します。
 	 * @return
+	 * OpenGLのピクセルタイプ値
 	 * @throws NyARException
 	 */
 	final static private int getGlPixelFormat(int i_buffer_type) throws NyARException

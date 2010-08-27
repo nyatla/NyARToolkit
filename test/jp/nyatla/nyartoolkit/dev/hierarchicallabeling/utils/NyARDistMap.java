@@ -5,7 +5,7 @@ import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 
 
 /**
- * 距離マップから、最も距離が短くなる組み合わせを計算するクラス
+ * 複数の点の距離から、最も距離が短くなる組み合わせを計算するクラスです。
  *
  */
 public class NyARDistMap

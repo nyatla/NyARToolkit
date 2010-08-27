@@ -20,26 +20,89 @@ import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARObjectPool;
  */
 public class ContourTargetSrcHolder extends NyARObjectPool<ContourTargetSrcHolder.ContourTargetSrcItem>
 {	
+	/**
+	 * 輪郭ソース1個を格納するクラスです。
+	 *
+	 */
 	public static class ContourTargetSrcItem
 	{
+		/**
+		 * 輪郭要素1個を格納するデータ型です。
+		 */
+		public static class CoordData extends NyARPointVector2d
+		{
+			/**
+			 * ベクトルの2乗値です。輪郭の強度値にもなります。
+			 */
+			public double sq_dist;
+			public static CoordData[] createArray(int i_length)
+			{
+				CoordData[] r=new CoordData[i_length];
+				for(int i=0;i<i_length;i++){
+					r[i]=new CoordData();
+				}
+				return r;
+			}
+			/**
+			 * 輪郭配列から、から、キーのベクトル(絶対値の大きいベクトル)を順序を壊さずに抽出します。
+			 * @param i_vecpos
+			 * @param i_len
+			 * @param o_index
+			 * int[4]以上の配列を渡します。
+			 */
+			public static void getKeyCoordInfoIndex(CoordData[] i_vecpos,int i_len,int[] o_index)
+			{
+				assert(o_index.length<i_vecpos.length);
+				int i;
+				int out_len=o_index.length;
+				int out_len_1=out_len-1;
+				for(i=out_len-1;i>=0;i--){
+					o_index[i]=0;			
+				}
+				//sqdistでソートする
+				for(i=0;i<out_len_1;i++){
+					if(i_vecpos[o_index[i]].sq_dist<i_vecpos[o_index[i+1]].sq_dist){
+						int t=o_index[i];
+						o_index[i]=o_index[i+1];
+						o_index[i+1]=t;
+						i=0;
+					}
+				}
+				//先に4個をsq_distでソートしながら格納
+				for(i=out_len;i<i_len;i++){
+					//配列の値と比較
+					for(int i2=out_len_1;i2>=0;i2--){
+						if(i_vecpos[i].sq_dist>i_vecpos[o_index[i2]].sq_dist){				
+							//値挿入の為のシフト
+							for(int i3=out_len-2;i3>i2;i3--){
+								o_index[i3+1]=o_index[i3];
+							}
+							//設定
+							o_index[i2]=i;
+						}
+					}
+				}
+				//idxでソート
+				for(i=0;i<out_len_1;i++){
+					if(o_index[i]<o_index[i+1]){
+						int t=o_index[i];
+						o_index[i]=o_index[i+1];
+						o_index[i+1]=t;
+						i=0;
+					}
+				}
+				return;
+			}		
+		}		
 		//関連する領域ソースへのポインタ
 		public AreaTargetSrcHolder.AreaSrcItem _ref_area_src;
 		public NyARIntPoint2d coord_center=new NyARIntPoint2d();
-		public NyARPointVector2d[] vecpos=NyARPointVector2d.createArray(100);
+		public CoordData[] vecpos=CoordData.createArray(100);
 		public int vecpos_length;
+		/*distの合計値*/
+		public double sq_dist_sum;
 		/*部分矩形の左上インデクス*/
 		public NyARIntPoint2d image_lt=new NyARIntPoint2d();
-		/**
-		 * ベクトル配列を点集合に変換して返します。
-		 * @param o_vertex
-		 */
-		public void getVertex(NyARIntPoint2d o_vertex)
-		{
-			//ベクトルに直行する2つのベクトルを90度傾けての交点を計算
-			for(int i=0;i<vecpos_length-1;i++){
-				
-			}
-		}
 	}
 	private final NyARContourPickup _cpickup=new NyARContourPickup();
 
@@ -111,8 +174,8 @@ public class ContourTargetSrcHolder extends NyARObjectPool<ContourTargetSrcHolde
 
 		int ccx=0;
 		int ccy=0;
-		NyARPointVector2d prev_vec_ptr    = item.vecpos[0];
-		NyARPointVector2d current_vec_ptr = null;
+		ContourTargetSrcItem.CoordData prev_vec_ptr    = item.vecpos[0];
+		ContourTargetSrcItem.CoordData current_vec_ptr = null;
 
 		//ベクトル化1:vecposに線分と直行するベクトルを格納。隣接成分と似ている場合は、連結する。
 		for(int i=1;i<coord_len;i++){
@@ -158,6 +221,19 @@ public class ContourTargetSrcHolder extends NyARObjectPool<ContourTargetSrcHolde
 		item.coord_center.x=ccx/coord_len;
 		item.coord_center.y=ccy/coord_len;
 		item.vecpos_length=number_of_data;
+		//vectorのsq_distを必要なだけ計算
+		double d=0;
+		for(int i=number_of_data-1;i>=0;i--)
+		{
+			current_vec_ptr=item.vecpos[i];
+			//ベクトルの法線を取る。
+			current_vec_ptr.OrthogonalVec(current_vec_ptr);
+			//sqdistを計算
+			current_vec_ptr.sq_dist=current_vec_ptr.dx*current_vec_ptr.dx+current_vec_ptr.dy*current_vec_ptr.dy;
+			d+=current_vec_ptr.sq_dist;
+		}
+		//sq_distの合計を計算
+		item.sq_dist_sum=d;
 		return item;
 	}	
 	private double getVecCos(NyARPointVector2d i_v1,NyARPointVector2d i_v2)
