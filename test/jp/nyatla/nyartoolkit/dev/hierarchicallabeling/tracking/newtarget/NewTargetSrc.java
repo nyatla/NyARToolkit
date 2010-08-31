@@ -10,7 +10,7 @@ public class NewTargetSrc extends NyARObjectStack<NewTargetSrc.NewSrcItem>
 {
 	public static class NewSrcItem
 	{
-		public AreaTargetSrcHolder.AreaSrcItem ref_area_src;
+		public AreaTargetSrcHolder.AreaSrcItem area_src;
 		public int match_index;
 	}
 	private AreaTargetSrcHolder _ref_area_pool;
@@ -20,7 +20,7 @@ public class NewTargetSrc extends NyARObjectStack<NewTargetSrc.NewSrcItem>
 		if(item==null){
 			return null;
 		}
-		item.ref_area_src=i_item;
+		item.area_src=i_item;
 		item.match_index=-1;
 		return item;
 	}
@@ -37,8 +37,8 @@ public class NewTargetSrc extends NyARObjectStack<NewTargetSrc.NewSrcItem>
 	{
 		//所有するオブジェクトを開放してからクリア処理
 		for(int i=this._length-1;i>=0;i--){
-			if(this._items[i].ref_area_src!=null){
-				this._ref_area_pool.deleteObject(this._items[i].ref_area_src);
+			if(this._items[i].area_src!=null){
+				this._ref_area_pool.deleteObject(this._items[i].area_src);
 			}
 		}
 		super.clear();

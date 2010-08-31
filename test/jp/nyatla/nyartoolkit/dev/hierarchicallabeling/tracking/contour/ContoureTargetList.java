@@ -26,6 +26,10 @@ public class ContoureTargetList extends NyARObjectStack<ContoureTargetList.Conto
 {
 	public static class ContoureTargetItem extends TrackTarget
 	{
+		/**
+		 * この要素が、十分なデータを持っているかを返します。このプロパティは将来削除するかも？
+		 */
+		public boolean enable;
 		public AreaTargetSrcHolder.AreaSrcItem ref_area;
 		public ContourTargetSrcHolder.ContourTargetSrcItem ref_contoure;
 		/**
@@ -36,8 +40,8 @@ public class ContoureTargetList extends NyARObjectStack<ContoureTargetList.Conto
 		public boolean isMatchContoure(ContoureTargetSrc.ContoureTargetSrcItem i_item)
 		{
 			//輪郭中心地の距離2乗
-			int d2=NyARMath.sqNorm(i_item.ref_contour_src.coord_center,this.ref_contoure.coord_center);
-			int max_dist=i_item.ref_area_src.area_sq_diagonal/100;//(10%)の2乗
+			int d2=NyARMath.sqNorm(i_item.contour_src.coord_center,this.ref_contoure.coord_center);
+			int max_dist=i_item.area_src.area_sq_diagonal/100;//(10%)の2乗
 			//輪郭線の中央位置を比較して、一定の範囲内であれば、同じ対象の可能性があると判断する。
 			if(d2>max_dist){
 				return false;//範囲外
@@ -79,6 +83,7 @@ public class ContoureTargetList extends NyARObjectStack<ContoureTargetList.Conto
 		i_item.ref_area=null;
 		//countoureは委譲元が存在しないので、nullを指定する。
 		item.ref_contoure=null;
+		item.enable=false;
 		return item;
 	}
 
@@ -96,15 +101,16 @@ public class ContoureTargetList extends NyARObjectStack<ContoureTargetList.Conto
 		
 		//areaの差し替え
 		this._ref_area_pool.deleteObject(item.ref_area);
-		item.ref_area=i_src.ref_area_src;
-		i_src.ref_area_src=null;
+		item.ref_area=i_src.area_src;
+		i_src.area_src=null;
 
 		//contoureの差し替え
 		if(item.ref_contoure!=null){
 			this._ref_contoure_pool.deleteObject(item.ref_contoure);
 		}
-		item.ref_contoure=i_src.ref_contour_src;
-		i_src.ref_contour_src=null;
+		item.ref_contoure=i_src.contour_src;
+		i_src.contour_src=null;
+		item.enable=true;
 		return;
 	}
 	public void deleteTarget(int i_index)

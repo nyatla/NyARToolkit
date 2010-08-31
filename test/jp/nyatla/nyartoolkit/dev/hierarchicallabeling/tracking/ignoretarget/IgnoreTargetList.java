@@ -73,8 +73,8 @@ public class IgnoreTargetList extends NyARObjectStack<IgnoreTargetList.IgnoreTar
 		item.last_update=i_tick;
 		//オブジェクトの差し替え
 		this._area_pool.deleteObject(item.ref_area);
-		item.ref_area=i_item.ref_area_src;
-		i_item.ref_area_src=null;
+		item.ref_area=i_item.area_src;
+		i_item.area_src=null;
 		return;
 	}
 	/**

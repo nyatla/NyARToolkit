@@ -29,8 +29,8 @@ public class NewTargetList extends NyARObjectStack<NewTargetList.NewTargetItem>
 		item.age=0;
 		item.last_update=i_tick;
 		//所有権の移転
-		item.ref_area=i_item.ref_area_src;
-		i_item.ref_area_src=null;
+		item.ref_area=i_item.area_src;
+		i_item.area_src=null;
 		return item;
 	}
 	/**

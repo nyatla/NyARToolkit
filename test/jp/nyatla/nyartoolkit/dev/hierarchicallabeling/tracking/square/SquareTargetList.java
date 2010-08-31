@@ -20,6 +20,7 @@ public class SquareTargetList extends NyARObjectStack<SquareTargetList.SquareTar
 		public Square2dTargetSrcHolder.Square2dSrcItem ref_square2d;
 	}
 	private AreaTargetSrcHolder _area_pool;
+	private Square2dTargetSrcHolder _sq2d_pool;
 	/**
 	 * ContourTargetから、Square2dTargetへの昇格に使います。昇格直後は一部のパラメータが不定です。
 	 * @param i_item
@@ -58,16 +59,17 @@ public class SquareTargetList extends NyARObjectStack<SquareTargetList.SquareTar
 		item.last_update=i_tick;
 		
 		//areaの差し替え
-		this._ref_area_pool.deleteObject(item.ref_area);
+		this._area_pool.deleteObject(item.ref_area);
 		item.ref_area=i_src.ref_area_src;
 		i_src.ref_area_src=null;
 
-		//contoureの差し替え
-		if(item.ref_contoure!=null){
-			this._ref_contoure_pool.deleteObject(item.ref_contoure);
+		//sq_2d差し替え
+		if(item.ref_square2d!=null){
+			this._sq2d_pool.deleteObject(item.ref_square2d);
 		}
-		item.ref_contoure=i_src.ref_contour_src;
-		i_src.ref_contour_src=null;
+		item.ref_square2d=i_src.ref_square2d_src;
+		i_src.ref_square2d_src=null;
+
 		item.enable=true;
 		return;
 	}	
@@ -90,10 +92,11 @@ public class SquareTargetList extends NyARObjectStack<SquareTargetList.SquareTar
 	{
 		return new SquareTargetItem();
 	}
-	public SquareTargetList(int i_size,AreaTargetSrcHolder i_area_pool) throws NyARException
+	public SquareTargetList(int i_size,AreaTargetSrcHolder i_area_pool,Square2dTargetSrcHolder i_sq2d_pool) throws NyARException
 	{
 		super.initInstance(i_size,SquareTargetItem.class);
 		this._area_pool=i_area_pool;
+		this._sq2d_pool=i_sq2d_pool;
 	}
 	/**
 	 * AppearTargetSrcと合致する可能性のあるアイテムのインデクスを返す。

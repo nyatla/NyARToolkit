@@ -26,7 +26,7 @@ public class IgnoreTracking
 					map[idx].row=r;
 					//中央座標の距離？
 					
-					int d=TrackingUtils.rectSqNorm(i_vertex_r[r].ref_area.area,i_vertex_c[c].ref_area_src.area);
+					int d=TrackingUtils.rectSqNorm(i_vertex_r[r].ref_area.area,i_vertex_c[c].area_src.area);
 					map[idx].dist=d;
 					if(min_dist>d){
 						min_index=idx;

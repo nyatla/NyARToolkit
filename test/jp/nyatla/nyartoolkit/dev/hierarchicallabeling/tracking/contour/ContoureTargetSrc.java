@@ -13,8 +13,8 @@ public class ContoureTargetSrc extends NyARObjectStack<ContoureTargetSrc.Contour
 {
 	public static class ContoureTargetSrcItem
 	{
-		public AreaTargetSrcHolder.AreaSrcItem ref_area_src;
-		public ContourTargetSrcHolder.ContourTargetSrcItem ref_contour_src;
+		public AreaTargetSrcHolder.AreaSrcItem area_src;
+		public ContourTargetSrcHolder.ContourTargetSrcItem contour_src;
 	}
 	private AreaTargetSrcHolder _ref_area_pool;
 	private ContourTargetSrcHolder _ref_contoure_pool;
@@ -25,8 +25,8 @@ public class ContoureTargetSrc extends NyARObjectStack<ContoureTargetSrc.Contour
 		if(item==null){
 			return null;
 		}
-		item.ref_area_src=i_item._ref_area_src;
-		item.ref_contour_src=i_item;
+		item.area_src=i_item._ref_area_src;
+		item.contour_src=i_item;
 		return item;
 	}
 	protected ContoureTargetSrcItem createElement()
@@ -43,9 +43,9 @@ public class ContoureTargetSrc extends NyARObjectStack<ContoureTargetSrc.Contour
 	{
 		//所有するオブジェクトを開放してからクリア処理
 		for(int i=this._length-1;i>=0;i--){
-			if(this._items[i].ref_area_src!=null){
-				this._ref_area_pool.deleteObject(this._items[i].ref_area_src);
-				this._ref_contoure_pool.deleteObject(this._items[i].ref_contour_src);
+			if(this._items[i].area_src!=null){
+				this._ref_area_pool.deleteObject(this._items[i].area_src);
+				this._ref_contoure_pool.deleteObject(this._items[i].contour_src);
 			}
 		}
 		super.clear();

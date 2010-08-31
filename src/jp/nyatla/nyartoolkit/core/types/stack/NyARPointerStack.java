@@ -62,7 +62,7 @@ public class NyARPointerStack<T>
 	 * 見かけ上の要素数を1減らして、そのオブジェクトを返します。
 	 * @return
 	 */
-	public final T pop()
+	public T pop()
 	{
 		assert(this._length>=1);
 		this._length--;

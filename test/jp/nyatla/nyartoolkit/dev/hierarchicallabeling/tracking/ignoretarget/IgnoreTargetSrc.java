@@ -8,7 +8,7 @@ public class IgnoreTargetSrc extends NyARObjectStack<IgnoreTargetSrc.NyARIgnoreS
 {
 	public static class NyARIgnoreSrcItem
 	{
-		public AreaTargetSrcHolder.AreaSrcItem ref_area_src;
+		public AreaTargetSrcHolder.AreaSrcItem area_src;
 		public int match_index;
 
 	}
@@ -19,7 +19,7 @@ public class IgnoreTargetSrc extends NyARObjectStack<IgnoreTargetSrc.NyARIgnoreS
 		if(item==null){
 			return null;
 		}
-		item.ref_area_src=i_item;
+		item.area_src=i_item;
 		item.match_index=-1;
 		return item;
 	}
@@ -36,8 +36,8 @@ public class IgnoreTargetSrc extends NyARObjectStack<IgnoreTargetSrc.NyARIgnoreS
 	{
 		//所有するオブジェクトを開放してからクリア処理
 		for(int i=this._length-1;i>=0;i--){
-			if(this._items[i].ref_area_src!=null){
-				this._ref_area_pool.deleteObject(this._items[i].ref_area_src);
+			if(this._items[i].area_src!=null){
+				this._ref_area_pool.deleteObject(this._items[i].area_src);
 			}
 		}
 		super.clear();

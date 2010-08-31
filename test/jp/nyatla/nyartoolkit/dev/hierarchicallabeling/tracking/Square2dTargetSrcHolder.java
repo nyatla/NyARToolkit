@@ -1,14 +1,9 @@
 package jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfo;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
-import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
-import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
-import jp.nyatla.nyartoolkit.core.types.NyARPointVector2d;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.HierarchyRect;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARObjectPool;
 
 
@@ -22,8 +17,8 @@ public class Square2dTargetSrcHolder extends NyARObjectPool<Square2dTargetSrcHol
 		 * 4頂点
 		 */
 		public NyARDoublePoint2d[] vertex=NyARDoublePoint2d.createArray(4);
-		public AreaTargetSrcHolder.AreaSrcItem _ref_area_src;
-		public ContourTargetSrcHolder.ContourTargetSrcItem _ref_contoure_src;
+		public AreaTargetSrcHolder.AreaSrcItem area_src;
+		public ContourTargetSrcHolder.ContourTargetSrcItem contoure_src;
 	}
 	protected Square2dTargetSrcHolder.Square2dSrcItem createElement() throws NyARException
 	{
@@ -39,7 +34,7 @@ public class Square2dTargetSrcHolder extends NyARObjectPool<Square2dTargetSrcHol
 		if(item==null){
 			return null;
 		}				
-		item._ref_contoure_src=i_item;
+		item.contoure_src=i_item;
 		//個数チェック
 		if(i_item.vecpos_length<4){
 			this.deleteObject(item);

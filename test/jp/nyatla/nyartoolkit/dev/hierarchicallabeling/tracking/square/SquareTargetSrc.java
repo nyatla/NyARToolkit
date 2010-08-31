@@ -1,13 +1,10 @@
 package jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.square;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
-import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcHolder;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ContourTargetSrcHolder;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcHolder.AreaSrcItem;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.newtarget.NewTargetSrc;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.Square2dTargetSrcHolder;
 
 public class SquareTargetSrc extends NyARObjectStack<SquareTargetSrc.SquareTargetSrcItem>
 {
@@ -15,6 +12,7 @@ public class SquareTargetSrc extends NyARObjectStack<SquareTargetSrc.SquareTarge
 	{
 		public AreaTargetSrcHolder.AreaSrcItem ref_area_src;
 		public ContourTargetSrcHolder.ContourTargetSrcItem ref_contour_src;
+		public Square2dTargetSrcHolder.Square2dSrcItem ref_square2d_src;
 	}
 	private AreaTargetSrcHolder _ref_area_pool;
 	private ContourTargetSrcHolder _ref_contoure_pool;
