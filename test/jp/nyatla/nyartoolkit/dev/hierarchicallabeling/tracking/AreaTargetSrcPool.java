@@ -5,13 +5,14 @@ import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfo;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.HierarchyRect;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.newtarget.NewTargetSrc;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARObjectPool;
 
 
 
-public class AreaTargetSrcHolder extends NyARObjectPool<AreaTargetSrcHolder.AreaSrcItem>
+public class AreaTargetSrcPool extends NyARObjectPool<AreaTargetSrcPool.AreaTargetSrcItem>
 {
-	public static class AreaSrcItem
+	public static class AreaTargetSrcItem
 	{
 		public NyARIntRect    area  =new NyARIntRect();
 		public NyARIntPoint2d area_center=new NyARIntPoint2d();
@@ -19,18 +20,31 @@ public class AreaTargetSrcHolder extends NyARObjectPool<AreaTargetSrcHolder.Area
 		 * エリア矩形の対角距離の2乗値
 		 */
 		public int area_sq_diagonal;
+		//制御部
+		private AreaTargetSrcPool _pool;
+		public AreaTargetSrcItem(AreaTargetSrcPool i_pool)
+		{
+			this._pool=i_pool;
+		}
+		/**
+		 * このインスタンスを開放します。
+		 */
+		public void deleteMe()
+		{
+			this._pool.deleteObject(this);
+		}
 	}
-	protected AreaTargetSrcHolder.AreaSrcItem createElement() throws NyARException
+	protected AreaTargetSrcPool.AreaTargetSrcItem createElement() throws NyARException
 	{
-		return new AreaSrcItem();
+		return new AreaTargetSrcItem(this);
 	}
-	public AreaTargetSrcHolder(int i_length) throws NyARException
+	public AreaTargetSrcPool(int i_length) throws NyARException
 	{
-		super.initInstance(i_length, AreaTargetSrcHolder.AreaSrcItem.class);
+		super.initInstance(i_length, AreaTargetSrcPool.AreaTargetSrcItem.class);
 	}
-	public AreaTargetSrcHolder.AreaSrcItem newSrcTarget(HierarchyRect i_imgmap,NyARRleLabelFragmentInfo info)
+	public AreaTargetSrcPool.AreaTargetSrcItem newSrcTarget(HierarchyRect i_imgmap,NyARRleLabelFragmentInfo info)
 	{
-		AreaTargetSrcHolder.AreaSrcItem item=this.newObject();
+		AreaTargetSrcPool.AreaTargetSrcItem item=this.newObject();
 		if(item==null){
 			return null;
 		}

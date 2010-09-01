@@ -11,29 +11,29 @@ import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARObjectPool;
 
 
 
-public class Square3dTargetSrcHolder extends NyARObjectPool<Square3dTargetSrcHolder.Square3dSrcItem>
+public class Square3dTargetSrcPool extends NyARObjectPool<Square3dTargetSrcPool.Square3dSrcItem>
 {
 	public static class Square3dSrcItem
 	{
-		public ContourTargetSrcHolder.ContourTargetSrcItem _ref_contour_src;
+		public ContourTargetSrcPool.ContourTargetSrcItem _ref_contour_src;
 		/**
 		 * 理想頂点(OPTION)
 		 */
 		public NyARDoublePoint2d[] vertex=NyARDoublePoint2d.createArray(4);
 //定義]変換行列(angle,t) or Q
 	}
-	protected Square3dTargetSrcHolder.Square3dSrcItem createElement() throws NyARException
+	protected Square3dTargetSrcPool.Square3dSrcItem createElement() throws NyARException
 	{
 		return new Square3dSrcItem();
 	}
-	public Square3dTargetSrcHolder(int i_length) throws NyARException
+	public Square3dTargetSrcPool(int i_length) throws NyARException
 	{
-		super.initInstance(i_length, Square3dTargetSrcHolder.Square3dSrcItem.class);
+		super.initInstance(i_length, Square3dTargetSrcPool.Square3dSrcItem.class);
 	}
-	public Square3dTargetSrcHolder.Square3dSrcItem newSrcTarget(ContourTargetSrcHolder.ContourTargetSrcItem i_item)
+	public Square3dTargetSrcPool.Square3dSrcItem newSrcTarget(ContourTargetSrcPool.ContourTargetSrcItem i_item)
 	{
 //処理]Square2dから3dへの変換？
-		Square3dTargetSrcHolder.Square3dSrcItem item=this.newObject();
+		Square3dTargetSrcPool.Square3dSrcItem item=this.newObject();
 		if(item==null){
 			return null;
 		}

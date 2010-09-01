@@ -3,12 +3,9 @@ package jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.square;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcHolder;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.EnterTargetSrc;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.Square2dTargetSrcHolder;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcPool;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.Square2dTargetSrcPool;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.TrackTarget;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.contour.ContoureTargetSrc;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.contour.ContoureTargetList.ContoureTargetItem;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.newtarget.NewTargetList.NewTargetItem;
 
 public class SquareTargetList extends NyARObjectStack<SquareTargetList.SquareTargetItem>
@@ -16,11 +13,11 @@ public class SquareTargetList extends NyARObjectStack<SquareTargetList.SquareTar
 	public static class SquareTargetItem extends TrackTarget
 	{
 		public boolean enable;
-		public AreaTargetSrcHolder.AreaSrcItem ref_area;
-		public Square2dTargetSrcHolder.Square2dSrcItem ref_square2d;
+		public AreaTargetSrcPool.AreaTargetSrcItem ref_area;
+		public Square2dTargetSrcPool.Square2dSrcItem ref_square2d;
 	}
-	private AreaTargetSrcHolder _area_pool;
-	private Square2dTargetSrcHolder _sq2d_pool;
+	private AreaTargetSrcPool _area_pool;
+	private Square2dTargetSrcPool _sq2d_pool;
 	/**
 	 * ContourTargetから、Square2dTargetへの昇格に使います。昇格直後は一部のパラメータが不定です。
 	 * @param i_item
@@ -60,15 +57,15 @@ public class SquareTargetList extends NyARObjectStack<SquareTargetList.SquareTar
 		
 		//areaの差し替え
 		this._area_pool.deleteObject(item.ref_area);
-		item.ref_area=i_src.ref_area_src;
-		i_src.ref_area_src=null;
+		item.ref_area=i_src.area_src;
+		i_src.area_src=null;
 
 		//sq_2d差し替え
 		if(item.ref_square2d!=null){
 			this._sq2d_pool.deleteObject(item.ref_square2d);
 		}
-		item.ref_square2d=i_src.ref_square2d_src;
-		i_src.ref_square2d_src=null;
+		item.ref_square2d=i_src.square2d_src;
+		i_src.square2d_src=null;
 
 		item.enable=true;
 		return;
@@ -92,7 +89,7 @@ public class SquareTargetList extends NyARObjectStack<SquareTargetList.SquareTar
 	{
 		return new SquareTargetItem();
 	}
-	public SquareTargetList(int i_size,AreaTargetSrcHolder i_area_pool,Square2dTargetSrcHolder i_sq2d_pool) throws NyARException
+	public SquareTargetList(int i_size,AreaTargetSrcPool i_area_pool,Square2dTargetSrcPool i_sq2d_pool) throws NyARException
 	{
 		super.initInstance(i_size,SquareTargetItem.class);
 		this._area_pool=i_area_pool;
@@ -103,9 +100,9 @@ public class SquareTargetList extends NyARObjectStack<SquareTargetList.SquareTar
 	 * @param i_item
 	 * @return
 	 */
-	public int getMatchTargetIndex(AreaTargetSrcHolder.AreaSrcItem i_item)
+	public int getMatchTargetIndex(AreaTargetSrcPool.AreaTargetSrcItem i_item)
 	{
-		AreaTargetSrcHolder.AreaSrcItem iitem;
+		AreaTargetSrcPool.AreaTargetSrcItem iitem;
 		//許容距離誤差の2乗を計算(許容誤差10%)
 		//(Math.sqrt((i_item.area.w*i_item.area.w+i_item.area.h*i_item.area.h))/10)^2
 		int dist_rate2=(i_item.area_sq_diagonal)/100;

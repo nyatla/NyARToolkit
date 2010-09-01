@@ -5,8 +5,8 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcHolder;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ContourTargetSrcHolder;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcPool;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ContourTargetSrcPool;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.TrackTarget;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.newtarget.NewTargetList.*;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.contour.ContoureTargetList;
@@ -16,9 +16,9 @@ public class IgnoreTargetList extends NyARObjectStack<IgnoreTargetList.IgnoreTar
 {
 	public static class IgnoreTargetItem extends TrackTarget
 	{
-		public AreaTargetSrcHolder.AreaSrcItem ref_area;
+		public AreaTargetSrcPool.AreaTargetSrcItem ref_area;
 	}
-	private AreaTargetSrcHolder _area_pool;
+	private AreaTargetSrcPool _area_pool;
 	
 	/**
 	 * NewTargetItemのアイテムをアップグレードします。アップグレードすると、参照オブジェクトをこのターゲットに取り付け、NewTargetItemから
@@ -38,9 +38,8 @@ public class IgnoreTargetList extends NyARObjectStack<IgnoreTargetList.IgnoreTar
 		item.serial=i_item.serial;
 		item.tag=i_item.tag;
 		
-		//NewTargetItemの参照を委譲
-		item.ref_area=i_item.ref_area;
-		i_item.ref_area=null;
+		//i_itemの所有値を移転
+		i_item.giveData(item);
 		return item;
 	}
 	public IgnoreTargetItem upgradeTarget(ContoureTargetList.ContoureTargetItem i_item)
@@ -55,8 +54,8 @@ public class IgnoreTargetList extends NyARObjectStack<IgnoreTargetList.IgnoreTar
 		item.tag=i_item.tag;
 
 		//Areaのみ委譲
-		item.ref_area=i_item.ref_area;
-		i_item.ref_area=null;
+		item.ref_area=i_item.area;
+		i_item.area=null;
 		return item;
 	}
 
@@ -71,10 +70,8 @@ public class IgnoreTargetList extends NyARObjectStack<IgnoreTargetList.IgnoreTar
 		IgnoreTargetItem item=this._items[i_index];
 		item.age++;
 		item.last_update=i_tick;
-		//オブジェクトの差し替え
-		this._area_pool.deleteObject(item.ref_area);
-		item.ref_area=i_item.area_src;
-		i_item.area_src=null;
+		//Srcオブジェクトをアイテムにアタッチ
+		i_item.attachToTarget(item);
 		return;
 	}
 	/**
@@ -94,7 +91,7 @@ public class IgnoreTargetList extends NyARObjectStack<IgnoreTargetList.IgnoreTar
 	{
 		return new IgnoreTargetItem();
 	}
-	public IgnoreTargetList(int i_size,AreaTargetSrcHolder i_area_pool) throws NyARException
+	public IgnoreTargetList(int i_size,AreaTargetSrcPool i_area_pool) throws NyARException
 	{
 		super.initInstance(i_size,IgnoreTargetItem.class);
 		this._area_pool=i_area_pool;
@@ -104,9 +101,9 @@ public class IgnoreTargetList extends NyARObjectStack<IgnoreTargetList.IgnoreTar
 	 * @param i_item
 	 * @return
 	 */
-	public int getMatchTargetIndex(AreaTargetSrcHolder.AreaSrcItem i_item)
+	public int getMatchTargetIndex(AreaTargetSrcPool.AreaTargetSrcItem i_item)
 	{
-		AreaTargetSrcHolder.AreaSrcItem iitem;
+		AreaTargetSrcPool.AreaTargetSrcItem iitem;
 		//許容距離誤差の2乗を計算(10%)
 		//(Math.sqrt((i_item.area.w*i_item.area.w+i_item.area.h*i_item.area.h))/10)^2
 		int dist_rate2=(i_item.area_sq_diagonal)/100;

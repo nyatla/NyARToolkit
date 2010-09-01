@@ -5,17 +5,24 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcHolder;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcPool;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.EnterTargetSrc;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.TrackTarget;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ignoretarget.IgnoreTargetList;
 
 public class NewTargetList extends NyARObjectStack<NewTargetList.NewTargetItem>
 {
 	public static class NewTargetItem extends TrackTarget
 	{
-		public AreaTargetSrcHolder.AreaSrcItem ref_area;
+		public AreaTargetSrcPool.AreaTargetSrcItem ref_area;
+		public void giveData(IgnoreTargetList.IgnoreTargetItem o_output)
+		{
+			assert(o_output!=null);
+			o_output.ref_area=this.ref_area;
+			this.ref_area=null;
+		}
 	}
-	private AreaTargetSrcHolder _area_pool;
+	private AreaTargetSrcPool _area_pool;
 	/**
 	 * i_itemの内容で初期化する。
 	 * @param i_item
@@ -28,9 +35,8 @@ public class NewTargetList extends NyARObjectStack<NewTargetList.NewTargetItem>
 		item.tag=null;
 		item.age=0;
 		item.last_update=i_tick;
-		//所有権の移転
-		item.ref_area=i_item.area_src;
-		i_item.area_src=null;
+		//情報の譲渡
+		i_item.attachToTarget(item);
 		return item;
 	}
 	/**
@@ -42,10 +48,8 @@ public class NewTargetList extends NyARObjectStack<NewTargetList.NewTargetItem>
 		NewTargetItem item=this._items[i_index];
 		item.age++;
 		item.last_update=i_tick;
-		//オブジェクトの差し替え
-		this._area_pool.deleteObject(item.ref_area);
-		item.ref_area=i_item.ref_area_src;
-		i_item.ref_area_src=null;
+		//情報の譲渡
+		i_item.attachToTarget(item);
 	}
 	/**
 	 * ターゲットを削除します。同時に、ターゲットの参照している外部リソースも開放します。
@@ -65,7 +69,7 @@ public class NewTargetList extends NyARObjectStack<NewTargetList.NewTargetItem>
 	{
 		return new NewTargetItem();
 	}
-	public NewTargetList(int i_size,AreaTargetSrcHolder i_area_pool) throws NyARException
+	public NewTargetList(int i_size,AreaTargetSrcPool i_area_pool) throws NyARException
 	{
 		super.initInstance(i_size,NewTargetItem.class);
 		this._area_pool=i_area_pool;
@@ -75,9 +79,9 @@ public class NewTargetList extends NyARObjectStack<NewTargetList.NewTargetItem>
 	 * @param i_item
 	 * @return
 	 */
-	public int getMatchTargetIndex(AreaTargetSrcHolder.AreaSrcItem i_item)
+	public int getMatchTargetIndex(AreaTargetSrcPool.AreaTargetSrcItem i_item)
 	{
-		AreaTargetSrcHolder.AreaSrcItem iitem;
+		AreaTargetSrcPool.AreaTargetSrcItem iitem;
 		//許容距離誤差の2乗を計算(許容誤差10%)
 		//(Math.sqrt((i_item.area.w*i_item.area.w+i_item.area.h*i_item.area.h))/10)^2
 		int dist_rate2=(i_item.area_sq_diagonal)/100;

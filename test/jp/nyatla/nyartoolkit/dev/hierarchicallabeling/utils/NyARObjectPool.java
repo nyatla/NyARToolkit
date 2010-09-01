@@ -4,19 +4,21 @@ import java.lang.reflect.Array;
 
 import jp.nyatla.nyartoolkit.NyARException;
 
+
+
 /**
  * このクラスは、Tのオブジェクトをプールします。
  *
  * @param <T>
  */
-public class NyARObjectPool<T>
+public class NyARObjectPool<T extends Object>
 {
 	protected T[] _buffer;
 	protected T[] _pool;
 	protected int _pool_stock;
 
 	/**
-	 * オブジェクトを取り出します。
+	 * オブジェクトを割り当てます。
 	 * @return
 	 */
 	public T newObject()
@@ -45,7 +47,7 @@ public class NyARObjectPool<T>
 	 * このクラスは実体化できません。
 	 * @throws NyARException
 	 */
-	protected NyARObjectPool() throws NyARException
+	public NyARObjectPool() throws NyARException
 	{
 	}
 	/**

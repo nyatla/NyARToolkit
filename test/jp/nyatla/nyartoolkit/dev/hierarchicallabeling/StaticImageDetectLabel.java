@@ -25,7 +25,8 @@ import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_RGB;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.*;
 //import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcHolder.AreaSrcItem;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcHolder.AreaSrcItem;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcPool.AreaTargetSrcItem;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.EnterTargetSrc.EnterSrcItem;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.contour.ContoureTargetList;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.contour.ContoureTargetSrc;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.contour.ContoureTracking;
@@ -37,6 +38,8 @@ import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.newtarget.NewTarg
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.newtarget.NewTargetSrc;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.newtarget.NewTracking;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.newtarget.NewTargetList.NewTargetItem;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.square.SquareTargetList;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.square.SquareTargetSrc;
 
 
 
@@ -49,8 +52,8 @@ class MyDetector extends HierarchyLabeling
 	{
 		super(i_width,i_height,i_depth,i_raster_type);
 		//データソースの準備
-		this._area_holder=new AreaTargetSrcHolder(100);
-		this._contoure_holder=new ContourTargetSrcHolder(100,i_width+i_height*2);
+		this._area_holder=new AreaTargetSrcPool(100);
+		this._contoure_holder=new ContourTargetSrcPool(100,i_width+i_height*2);
 
 		//ソースターゲット
 		this._newtargetsrc=new NewTargetSrc(10, this._area_holder);
@@ -78,19 +81,21 @@ class MyDetector extends HierarchyLabeling
 	}
 	private NyARGrayscaleRaster _base_gs;
 
-	public AreaTargetSrcHolder _area_holder;
-	public ContourTargetSrcHolder _contoure_holder;
-	
+	public AreaTargetSrcPool _area_holder;
+	public ContourTargetSrcPool _contoure_holder;
+	public Square2dTargetSrcPool _square_holder;
 
 	
 	public EnterTargetSrc _entersrc;	
 	public NewTargetSrc _newtargetsrc;
 	public IgnoreTargetSrc _ignoretargetsrc;
 	public ContoureTargetSrc _contouretargetsrc;
+	public SquareTargetSrc _squaretargetsrc;
 
 	NewTargetList _newtarget;
 	IgnoreTargetList _ignoretarget;
 	ContoureTargetList _contouretarget;
+	SquareTargetList _squaretarget;
 	
 	
 	
@@ -98,32 +103,38 @@ class MyDetector extends HierarchyLabeling
 	protected void onLabelFound(HierarchyRect i_imgmap,NyARGrayscaleRaster i_raster,int i_th,NyARRleLabelFragmentInfo info) throws NyARException
 	{
 		//領域ソースホルダに追加
-		AreaTargetSrcHolder.AreaSrcItem item=this._area_holder.newSrcTarget(i_imgmap, info);
+		AreaTargetSrcPool.AreaTargetSrcItem item=this._area_holder.newSrcTarget(i_imgmap, info);
 		if(item==null){
 			return;
 		}
-		int match_index;
-		
-		//ログ付き輪郭トラッキング対象か確認する。
-		match_index=this._contouretarget.getMatchTargetIndex(item);
-		if(match_index>=0){
+
+		//ログ付きRECTトラッキング or ログ付き輪郭トラッキング対象か確認する。
+		int sq_match_index=this._squaretarget.getMatchTargetIndex(item);
+		int coord_match_index=this._contouretarget.getMatchTargetIndex(item);
+		if(coord_match_index>=0 || sq_match_index>=0){
 			//輪郭ホルダに追加
-			ContourTargetSrcHolder.ContourTargetSrcItem contour_item=this._contoure_holder.newSrcTarget(item, i_imgmap,i_raster,this._base_gs, i_th, info);
-			//対象になる輪郭ソースに追加	
-			if(match_index>=0){
+			ContourTargetSrcPool.ContourTargetSrcItem contour_item=this._contoure_holder.newSrcTarget(item, i_imgmap,i_raster,this._base_gs, i_th, info);
+			if(contour_item==null){
+				return;
+			}
+			if(sq_match_index>=0){
+				Square2dTargetSrcPool.Square2dSrcItem sq2d_item=this._square_holder.newSrcTarget(contour_item);
+				this._squaretargetsrc.pushSrcTarget(sq2d_item);
+			}else{
+				//対象になる輪郭ソースに追加	
 				this._contouretargetsrc.pushSrcTarget(contour_item);
 			}
 			return;
 		}
 		//ログ付き認識待ち対象
-		match_index=this._newtarget.getMatchTargetIndex(item);
-		if(match_index>=0){
+		int new_match_index=this._newtarget.getMatchTargetIndex(item);
+		if(new_match_index>=0){
 			this._newtargetsrc.pushSrcTarget(item);
 			return;
 		}
 		//ログ付き無視対象であるか確認する。
-		match_index=this._ignoretarget.getMatchTargetIndex(item);
-		if(match_index>=0){
+		int ignore_match_index=this._ignoretarget.getMatchTargetIndex(item);
+		if(ignore_match_index>=0){
 			this._ignoretargetsrc.pushSrcTarget(item);
 			return;
 		}
@@ -296,6 +307,7 @@ public class StaticImageDetectLabel extends Frame implements MouseMotionListener
 				if(psd._newtarget.pushTarget(0,psd._entersrc.getItem(i))==null){
 					break;
 				}
+				psd._entersrc.pop();
 			}
 			
 			//ソースホルダの解放
@@ -341,7 +353,7 @@ public class StaticImageDetectLabel extends Frame implements MouseMotionListener
 			//無視リスト描画
 			g2.setColor(Color.blue);
 			for(int i=0;i<this._psd._ignoretarget.getLength();i++){
-				AreaSrcItem e=this._psd._newtarget.getItem(i).ref_area;
+				AreaTargetSrcItem e=this._psd._newtarget.getItem(i).ref_area;
 				g2.drawRect(e.area.x, e.area.y, e.area.w, e.area.h);
 				g2.drawString("IGN",e.area.x, e.area.y);
 			}
@@ -349,7 +361,7 @@ public class StaticImageDetectLabel extends Frame implements MouseMotionListener
 			g2.setColor(Color.red);
 			for(int i=0;i<this._psd._newtarget.getLength();i++){
 				
-				AreaSrcItem e=this._psd._newtarget.getItem(i).ref_area;
+				AreaTargetSrcItem e=this._psd._newtarget.getItem(i).ref_area;
 				g2.drawRect(e.area.x, e.area.y, e.area.w, e.area.h);
 				g2.drawString("NEW",e.area.x, e.area.y);
 			}
@@ -359,16 +371,16 @@ public class StaticImageDetectLabel extends Frame implements MouseMotionListener
 			for(int i=0;i<this._psd._contouretarget.getLength();i++){
 				//coordTargetを頂点集合に変換
 				ContoureTargetList.ContoureTargetItem e=this._psd._contouretarget.getItem(i);
-				if(e.ref_contoure==null){
+				if(e.contoure==null){
 					break;
 				}
-				NyARDoublePoint2d[] ppos=NyARDoublePoint2d.createArray(e.ref_contoure.vecpos_length);
-				for(int i2=0;i2<e.ref_contoure.vecpos_length;i2++){
-					ppos[i2].x=e.ref_contoure.vecpos[i2].x;
-					ppos[i2].y=e.ref_contoure.vecpos[i2].y;
-					getCrossPos(e.ref_contoure.vecpos[i2],e.ref_contoure.vecpos[(i2+1)%e.ref_contoure.vecpos_length],ppos[i2]);
+				NyARDoublePoint2d[] ppos=NyARDoublePoint2d.createArray(e.contoure.vecpos_length);
+				for(int i2=0;i2<e.contoure.vecpos_length;i2++){
+					ppos[i2].x=e.contoure.vecpos[i2].x;
+					ppos[i2].y=e.contoure.vecpos[i2].y;
+					getCrossPos(e.contoure.vecpos[i2],e.contoure.vecpos[(i2+1)%e.contoure.vecpos_length],ppos[i2]);
 				}
-				GraphicsTools.drawPolygon(g2,ppos,e.ref_contoure.vecpos_length);
+				GraphicsTools.drawPolygon(g2,ppos,e.contoure.vecpos_length);
 			}
 			sink.setRGB((int)pos.x,(int)pos.y,0xff0000);
 			

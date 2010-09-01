@@ -1,7 +1,7 @@
 package jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.contour;
 
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.TrackingUtils;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcHolder;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcPool;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARDistMap;
 
 public class ContoureTracking
@@ -25,7 +25,7 @@ public class ContoureTracking
 					map[idx].row=r;
 					//中央座標の距離？
 					
-					int d=TrackingUtils.rectSqNorm(i_vertex_r[r].ref_area.area,i_vertex_c[c].area_src.area);
+					int d=TrackingUtils.rectSqNorm(i_vertex_r[r].area.area,i_vertex_c[c].area_src.area);
 					map[idx].dist=d;
 					if(min_dist>d){
 						min_index=idx;

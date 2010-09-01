@@ -8,8 +8,8 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcHolder;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ContourTargetSrcHolder;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcPool;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ContourTargetSrcPool;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.TrackTarget;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ignoretarget.IgnoreTargetList.IgnoreTargetItem;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ignoretarget.IgnoreTargetSrc.NyARIgnoreSrcItem;
@@ -30,8 +30,8 @@ public class ContoureTargetList extends NyARObjectStack<ContoureTargetList.Conto
 		 * この要素が、十分なデータを持っているかを返します。このプロパティは将来削除するかも？
 		 */
 		public boolean enable;
-		public AreaTargetSrcHolder.AreaSrcItem ref_area;
-		public ContourTargetSrcHolder.ContourTargetSrcItem ref_contoure;
+		public AreaTargetSrcPool.AreaTargetSrcItem area;
+		public ContourTargetSrcPool.ContourTargetSrcItem contoure;
 		/**
 		 * 輪郭線の中心距離を使った一致判定
 		 * @param i_item
@@ -40,7 +40,7 @@ public class ContoureTargetList extends NyARObjectStack<ContoureTargetList.Conto
 		public boolean isMatchContoure(ContoureTargetSrc.ContoureTargetSrcItem i_item)
 		{
 			//輪郭中心地の距離2乗
-			int d2=NyARMath.sqNorm(i_item.contour_src.coord_center,this.ref_contoure.coord_center);
+			int d2=NyARMath.sqNorm(i_item.contour_src.coord_center,this.contoure.coord_center);
 			int max_dist=i_item.area_src.area_sq_diagonal/100;//(10%)の2乗
 			//輪郭線の中央位置を比較して、一定の範囲内であれば、同じ対象の可能性があると判断する。
 			if(d2>max_dist){
@@ -48,11 +48,16 @@ public class ContoureTargetList extends NyARObjectStack<ContoureTargetList.Conto
 			}
 			return true;
 		}
+		public void giveData(IgnoreTargetItem o_output)
+		{
+			o_output.ref_area=this.area;
+			this.area=null;
+		}
 	}
-	private AreaTargetSrcHolder _ref_area_pool;
-	private ContourTargetSrcHolder _ref_contoure_pool;
+	private AreaTargetSrcPool _ref_area_pool;
+	private ContourTargetSrcPool _ref_contoure_pool;
 	
-	public ContoureTargetList(int i_size,AreaTargetSrcHolder i_area_pool,ContourTargetSrcHolder i_contoure_pool) throws NyARException
+	public ContoureTargetList(int i_size,AreaTargetSrcPool i_area_pool,ContourTargetSrcPool i_contoure_pool) throws NyARException
 	{
 		this._ref_area_pool=i_area_pool;
 		this._ref_contoure_pool=i_contoure_pool;
@@ -79,10 +84,11 @@ public class ContoureTargetList extends NyARObjectStack<ContoureTargetList.Conto
 		item.tag=i_item.tag;
 
 		//areaの委譲
-		item.ref_area   =i_item.ref_area;
+		i_item.giveData(o_output)
+		item.area   =i_item.ref_area;
 		i_item.ref_area=null;
 		//countoureは委譲元が存在しないので、nullを指定する。
-		item.ref_contoure=null;
+		item.contoure=null;
 		item.enable=false;
 		return item;
 	}
@@ -99,27 +105,17 @@ public class ContoureTargetList extends NyARObjectStack<ContoureTargetList.Conto
 		item.age++;
 		item.last_update=i_tick;
 		
-		//areaの差し替え
-		this._ref_area_pool.deleteObject(item.ref_area);
-		item.ref_area=i_src.area_src;
-		i_src.area_src=null;
-
-		//contoureの差し替え
-		if(item.ref_contoure!=null){
-			this._ref_contoure_pool.deleteObject(item.ref_contoure);
-		}
-		item.ref_contoure=i_src.contour_src;
-		i_src.contour_src=null;
+		i_src.giveData(item);
 		item.enable=true;
 		return;
 	}
 	public void deleteTarget(int i_index)
 	{
-		if(this._items[i_index].ref_area!=null){
-			this._ref_contoure_pool.deleteObject(this._items[i_index].ref_contoure);
+		if(this._items[i_index].area!=null){
+			this._ref_contoure_pool.deleteObject(this._items[i_index].contoure);
 		}
-		if(this._items[i_index].ref_contoure!=null){
-			this._ref_contoure_pool.deleteObject(this._items[i_index].ref_contoure);
+		if(this._items[i_index].contoure!=null){
+			this._ref_contoure_pool.deleteObject(this._items[i_index].contoure);
 		}
 		super.removeIgnoreOrder(i_index);
 	}	
@@ -140,16 +136,16 @@ public class ContoureTargetList extends NyARObjectStack<ContoureTargetList.Conto
 	 * @param i_item
 	 * @return
 	 */
-	public int getMatchTargetIndex(AreaTargetSrcHolder.AreaSrcItem i_item)
+	public int getMatchTargetIndex(AreaTargetSrcPool.AreaTargetSrcItem i_item)
 	{
-		AreaTargetSrcHolder.AreaSrcItem iitem;
+		AreaTargetSrcPool.AreaTargetSrcItem iitem;
 		//許容距離誤差の2乗を計算(50%)
 		//(Math.sqrt((i_item.area.w*i_item.area.w+i_item.area.h*i_item.area.h))/2)^2
 		int dist_rate2=(i_item.area.w*i_item.area.w+i_item.area.h*i_item.area.h)/4;
 
 		for(int i=this._length-1;i>=0;i--)
 		{
-			iitem=this._items[i].ref_area;
+			iitem=this._items[i].area;
 			//大きさチェック(50%誤差)
 			double ratio;
 			ratio=((double)iitem.area.w)/i_item.area.w;

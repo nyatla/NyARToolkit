@@ -18,7 +18,7 @@ import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARObjectPool;
  * 輪郭情報を保管します。
  * このクラスの要素は、他の要素から参照する可能性があります。
  */
-public class ContourTargetSrcHolder extends NyARObjectPool<ContourTargetSrcHolder.ContourTargetSrcItem>
+public class ContourTargetSrcPool extends NyARObjectPool<ContourTargetSrcPool.ContourTargetSrcItem>
 {	
 	/**
 	 * 輪郭ソース1個を格納するクラスです。
@@ -95,7 +95,6 @@ public class ContourTargetSrcHolder extends NyARObjectPool<ContourTargetSrcHolde
 			}		
 		}		
 		//関連する領域ソースへのポインタ
-		public AreaTargetSrcHolder.AreaSrcItem _ref_area_src;
 		public NyARIntPoint2d coord_center=new NyARIntPoint2d();
 		public CoordData[] vecpos=CoordData.createArray(100);
 		public int vecpos_length;
@@ -103,6 +102,21 @@ public class ContourTargetSrcHolder extends NyARObjectPool<ContourTargetSrcHolde
 		public double sq_dist_sum;
 		/*部分矩形の左上インデクス*/
 		public NyARIntPoint2d image_lt=new NyARIntPoint2d();
+		//
+		//制御部
+		private ContourTargetSrcPool _pool;
+		public ContourTargetSrcItem(ContourTargetSrcPool i_pool)
+		{
+			this._pool=i_pool;
+		}
+		/**
+		 * このインスタンスを開放します。
+		 */
+		public void deleteMe()
+		{
+			this._pool.deleteObject(this);
+		}
+
 	}
 	private final NyARContourPickup _cpickup=new NyARContourPickup();
 
@@ -113,14 +127,14 @@ public class ContourTargetSrcHolder extends NyARObjectPool<ContourTargetSrcHolde
 	 * 輪郭ベクトルの最大数
 	 * @throws NyARException
 	 */
-	public ContourTargetSrcHolder(int i_size,int i_cood_max) throws NyARException
+	public ContourTargetSrcPool(int i_size,int i_cood_max) throws NyARException
 	{
 		this._coord=NyARIntPoint2d.createArray(i_cood_max);
 		super.initInstance(i_size,ContourTargetSrcItem.class);
 	}
 	protected ContourTargetSrcItem createElement()
 	{
-		return new ContourTargetSrcItem();
+		return new ContourTargetSrcItem(this);
 	}
 	private NyARIntPoint2d[] _coord;
 	
@@ -136,14 +150,14 @@ public class ContourTargetSrcHolder extends NyARObjectPool<ContourTargetSrcHolde
 	 * @return
 	 * @throws NyARException
 	 */
-	public ContourTargetSrcItem newSrcTarget(AreaTargetSrcHolder.AreaSrcItem i_item,HierarchyRect i_hrect,NyARGrayscaleRaster i_parcical_raster,NyARGrayscaleRaster i_base_raster,int i_th,NyARRleLabelFragmentInfo info) throws NyARException
+	public ContourTargetSrcItem newSrcTarget(AreaTargetSrcPool.AreaTargetSrcItem i_item,HierarchyRect i_hrect,NyARGrayscaleRaster i_parcical_raster,NyARGrayscaleRaster i_base_raster,int i_th,NyARRleLabelFragmentInfo info) throws NyARException
 	{
 		NyARIntPoint2d[] coord=this._coord;
 		ContourTargetSrcItem item=this.newObject();
 		if(item==null){
 			return null;
 		}
-		item._ref_area_src=i_item;
+//		item._ref_area_src=i_item;
 		item.image_lt.x=i_hrect.x;
 		item.image_lt.y=i_hrect.y;
 

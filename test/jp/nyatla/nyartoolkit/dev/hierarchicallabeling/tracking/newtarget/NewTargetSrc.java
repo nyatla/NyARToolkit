@@ -4,17 +4,27 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcHolder;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcPool;
 
 public class NewTargetSrc extends NyARObjectStack<NewTargetSrc.NewSrcItem>
 {
 	public static class NewSrcItem
 	{
-		public AreaTargetSrcHolder.AreaSrcItem area_src;
+		public AreaTargetSrcPool.AreaTargetSrcItem area_src;
 		public int match_index;
+		/**
+		 * このオブジェクトの持つデータを、o_targetに割り付けます。
+		 * @param o_target
+		 */
+		public void attachToTarget(NewTargetList.NewTargetItem o_target)
+		{
+			o_target.ref_area.deleteMe();
+			o_target.ref_area=this.area_src;
+			this.area_src=null;
+			return;
+		}
 	}
-	private AreaTargetSrcHolder _ref_area_pool;
-	public NewTargetSrc.NewSrcItem pushSrcTarget(AreaTargetSrcHolder.AreaSrcItem i_item)
+	public NewTargetSrc.NewSrcItem pushSrcTarget(AreaTargetSrcPool.AreaTargetSrcItem i_item)
 	{
 		NewTargetSrc.NewSrcItem item=this.prePush();
 		if(item==null){
@@ -28,9 +38,8 @@ public class NewTargetSrc extends NyARObjectStack<NewTargetSrc.NewSrcItem>
 	{
 		return new NewSrcItem();
 	}
-	public NewTargetSrc(int i_size,AreaTargetSrcHolder i_area_pool) throws NyARException
+	public NewTargetSrc(int i_size) throws NyARException
 	{
-		this._ref_area_pool=i_area_pool;
 		super.initInstance(i_size, NewTargetSrc.NewSrcItem.class);
 	}
 	public void clear()
@@ -38,7 +47,7 @@ public class NewTargetSrc extends NyARObjectStack<NewTargetSrc.NewSrcItem>
 		//所有するオブジェクトを開放してからクリア処理
 		for(int i=this._length-1;i>=0;i--){
 			if(this._items[i].area_src!=null){
-				this._ref_area_pool.deleteObject(this._items[i].area_src);
+				this._items[i].area_src.deleteMe();
 			}
 		}
 		super.clear();
