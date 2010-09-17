@@ -35,7 +35,7 @@ import jp.nyatla.nyartoolkit.core.rasterreader.NyARVectorReader_INT1D_GRAY_8;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
- * 1枚のグレースケール画像を定義するクラスです。
+ * 1枚のグレースケール画像を定義するクラスです。画像データは内部保持/外部保持が選択可能です。
  */
 public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 {
@@ -54,7 +54,15 @@ public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 			throw new NyARException();
 		}
 	}
-
+	/**
+	 * 
+	 * @param i_width
+	 * @param i_height
+	 * @param i_is_alloc
+	 * 画像バッファを内部保持にするかのフラグ値。trueなら、インスタンスがバッファを確保します。falseなら、
+	 * 画像バッファは外部参照になり、wrapBuffer関数を使用できます。
+	 * @throws NyARException
+	 */
 	public NyARGrayscaleRaster(int i_width, int i_height, boolean i_is_alloc)
 			throws NyARException
 	{
@@ -120,7 +128,9 @@ public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 	{
 		return this._buf != null;
 	}
-
+	/**
+	 *　追加機能-無し。
+	 */
 	public void wrapBuffer(Object i_ref_buf)
 	{
 		assert (!this._is_attached_buffer);// バッファがアタッチされていたら機能しない。
@@ -129,6 +139,7 @@ public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 
 	/**
 	 * 指定した数値でラスタを埋めます。
+	 * この関数は高速化していません。
 	 * @param i_value
 	 */
 	public void fill(int i_value) {

@@ -8,7 +8,7 @@ import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARObjectPool;
 
 
 
-public class Square2dTargetSrcPool extends NyARObjectPool<Square2dTargetSrcPool.Square2dSrcItem>
+public class Square2dDataPool extends NyARObjectPool<Square2dDataPool.Square2dSrcItem>
 {
 	public static class Square2dSrcItem
 	{
@@ -18,8 +18,8 @@ public class Square2dTargetSrcPool extends NyARObjectPool<Square2dTargetSrcPool.
 		 */
 		public NyARDoublePoint2d[] vertex=NyARDoublePoint2d.createArray(4);
 		//制御部
-		private Square2dTargetSrcPool _pool;
-		public Square2dSrcItem(Square2dTargetSrcPool i_pool)
+		private Square2dDataPool _pool;
+		public Square2dSrcItem(Square2dDataPool i_pool)
 		{
 			this._pool=i_pool;
 		}
@@ -31,17 +31,17 @@ public class Square2dTargetSrcPool extends NyARObjectPool<Square2dTargetSrcPool.
 			this._pool.deleteObject(this);
 		}
 	}
-	protected Square2dTargetSrcPool.Square2dSrcItem createElement() throws NyARException
+	protected Square2dDataPool.Square2dSrcItem createElement() throws NyARException
 	{
 		return new Square2dSrcItem(this);
 	}
-	public Square2dTargetSrcPool(int i_length) throws NyARException
+	public Square2dDataPool(int i_length) throws NyARException
 	{
-		super.initInstance(i_length, Square2dTargetSrcPool.Square2dSrcItem.class);
+		super.initInstance(i_length, Square2dDataPool.Square2dSrcItem.class);
 	}
-	public Square2dTargetSrcPool.Square2dSrcItem newSrcTarget(ContourTargetSrcPool.ContourTargetSrcItem i_item)
+	public Square2dDataPool.Square2dSrcItem newSrcTarget(ContourDataPool.ContourTargetSrcItem i_item)
 	{
-		Square2dTargetSrcPool.Square2dSrcItem item=this.newObject();
+		Square2dDataPool.Square2dSrcItem item=this.newObject();
 		if(item==null){
 			return null;
 		}
@@ -53,7 +53,7 @@ public class Square2dTargetSrcPool extends NyARObjectPool<Square2dTargetSrcPool.
 		}
 		//coordVectorから、distの大きい値のものを4個選ぶ
 		int[] rectvec=new int[4];
-		ContourTargetSrcPool.ContourTargetSrcItem.CoordData.getKeyCoordInfoIndex(i_item.vecpos,i_item.vecpos_length, rectvec);
+		ContourDataPool.ContourTargetSrcItem.CoordData.getKeyCoordInfoIndex(i_item.vecpos,i_item.vecpos_length, rectvec);
 		//ベクトルの強度がそれぞれ10%を超えている？
 		final double th_val=i_item.sq_dist_sum*0.1;
 		for(int i=3;i>=0;i--){
@@ -66,7 +66,7 @@ public class Square2dTargetSrcPool extends NyARObjectPool<Square2dTargetSrcPool.
 		NyARSquare sq=item.square;
 		//4頂点を計算する。(本当はベクトルの方向を調整してから計算するべき)
 		for(int i=3;i>=0;i--){
-			ContourTargetSrcPool.ContourTargetSrcItem.CoordData cv=i_item.vecpos[rectvec[i]];
+			ContourDataPool.ContourTargetSrcItem.CoordData cv=i_item.vecpos[rectvec[i]];
 			sq.line[i].setVector(cv.dx,cv.dy,cv.x,cv.y);
 		}
 		for(int i=3;i>=0;i--){

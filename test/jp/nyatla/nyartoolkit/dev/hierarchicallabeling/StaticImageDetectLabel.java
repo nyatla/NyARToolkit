@@ -25,7 +25,7 @@ import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_RGB;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.*;
 //import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcHolder.AreaSrcItem;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcPool.AreaTargetSrcItem;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaDataPool.AreaDataItem;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.EnterTargetSrc.EnterSrcItem;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.contour.ContoureTargetList;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.contour.ContoureTargetSrc;
@@ -52,18 +52,18 @@ class MyDetector extends HierarchyLabeling
 	{
 		super(i_width,i_height,i_depth,i_raster_type);
 		//データソースの準備
-		this._area_holder=new AreaTargetSrcPool(100);
-		this._contoure_holder=new ContourTargetSrcPool(100,i_width+i_height*2);
+		this._area_holder=new AreaDataPool(100);
+		this._contoure_holder=new ContourDataPool(100,i_width+i_height*2);
 
 		//ソースターゲット
-		this._newtargetsrc=new NewTargetSrc(10, this._area_holder);
-		this._ignoretargetsrc=new IgnoreTargetSrc(10, this._area_holder);
-		this._entersrc=new EnterTargetSrc(10, this._area_holder);
-		this._contouretargetsrc=new ContoureTargetSrc(10,this._area_holder, this._contoure_holder);
+		this._newtargetsrc=new NewTargetSrc(10);
+		this._ignoretargetsrc=new IgnoreTargetSrc(10);
+		this._entersrc=new EnterTargetSrc(10);
+		this._contouretargetsrc=new ContoureTargetSrc(10);
 		//トラッキングターゲット
-		this._newtarget=new NewTargetList(10, this._area_holder);
-		this._ignoretarget=new IgnoreTargetList(10, this._area_holder);
-		this._contouretarget= new ContoureTargetList(10, this._area_holder, this._contoure_holder);
+		this._newtarget=new NewTargetList(10);
+		this._ignoretarget=new IgnoreTargetList(10);
+		this._contouretarget= new ContoureTargetList(10);
 		
 		
 		
@@ -81,9 +81,9 @@ class MyDetector extends HierarchyLabeling
 	}
 	private NyARGrayscaleRaster _base_gs;
 
-	public AreaTargetSrcPool _area_holder;
-	public ContourTargetSrcPool _contoure_holder;
-	public Square2dTargetSrcPool _square_holder;
+	public AreaDataPool _area_holder;
+	public ContourDataPool _contoure_holder;
+	public Square2dDataPool _square_holder;
 
 	
 	public EnterTargetSrc _entersrc;	
@@ -103,7 +103,7 @@ class MyDetector extends HierarchyLabeling
 	protected void onLabelFound(HierarchyRect i_imgmap,NyARGrayscaleRaster i_raster,int i_th,NyARRleLabelFragmentInfo info) throws NyARException
 	{
 		//領域ソースホルダに追加
-		AreaTargetSrcPool.AreaTargetSrcItem item=this._area_holder.newSrcTarget(i_imgmap, info);
+		AreaDataPool.AreaDataItem item=this._area_holder.newSrcTarget(i_imgmap, info);
 		if(item==null){
 			return;
 		}
@@ -113,16 +113,16 @@ class MyDetector extends HierarchyLabeling
 		int coord_match_index=this._contouretarget.getMatchTargetIndex(item);
 		if(coord_match_index>=0 || sq_match_index>=0){
 			//輪郭ホルダに追加
-			ContourTargetSrcPool.ContourTargetSrcItem contour_item=this._contoure_holder.newSrcTarget(item, i_imgmap,i_raster,this._base_gs, i_th, info);
+			ContourDataPool.ContourTargetSrcItem contour_item=this._contoure_holder.newSrcTarget(item, i_imgmap,i_raster,this._base_gs, i_th, info);
 			if(contour_item==null){
 				return;
 			}
 			if(sq_match_index>=0){
-				Square2dTargetSrcPool.Square2dSrcItem sq2d_item=this._square_holder.newSrcTarget(contour_item);
-				this._squaretargetsrc.pushSrcTarget(sq2d_item);
+				Square2dDataPool.Square2dSrcItem sq2d_item=this._square_holder.newSrcTarget(contour_item);
+				this._squaretargetsrc.pushSrcTarget(item,contour_item,sq2d_item);
 			}else{
 				//対象になる輪郭ソースに追加	
-				this._contouretargetsrc.pushSrcTarget(contour_item);
+				this._contouretargetsrc.pushSrcTarget(item,contour_item);
 			}
 			return;
 		}
@@ -272,21 +272,24 @@ public class StaticImageDetectLabel extends Frame implements MouseMotionListener
 			{
 				//newtarget->ignoreの昇格処理(ageが100超えてもなにもされないならignore)
 				if(psd._newtarget.getItem(i).age>100){
-					IgnoreTargetList.IgnoreTargetItem ig=psd._ignoretarget.upgradeTarget(psd._newtarget.getItem(i));
+					IgnoreTargetList.IgnoreTargetItem ig=psd._ignoretarget.prePush();
 					if(ig==null){
 						//失敗リストが埋まっていたら何もしない
 						continue;
 					}
-					psd._newtarget.deleteTarget(i);
+					//newtargetをignoreへアップグレードして、リストから削除
+					psd._newtarget.getItem(i).upgrade(ig);
+					psd._newtarget.removeIgnoreOrder(i);
 					continue;
 				}
 				//newtarget->coordの昇格処理(coordに空きがあれば昇格)
-				ContoureTargetList.ContoureTargetItem ct=psd._contouretarget.upgradeTarget(psd._newtarget.getItem(i));
+				ContoureTargetList.ContoureTargetItem ct=psd._contouretarget.prePush();
 				if(ct==null){
 					//失敗リストが埋まっていたら何もしない。
 					continue;
 				}
-				psd._newtarget.deleteTarget(i);
+				psd._newtarget.getItem(i).upgrade(ct);
+				psd._newtarget.removeIgnoreOrder(i);
 			}
 			//coord->ignore,rect
 			for(int i=psd._contouretarget.getLength()-1;i>=0;i--)
@@ -353,7 +356,7 @@ public class StaticImageDetectLabel extends Frame implements MouseMotionListener
 			//無視リスト描画
 			g2.setColor(Color.blue);
 			for(int i=0;i<this._psd._ignoretarget.getLength();i++){
-				AreaTargetSrcItem e=this._psd._newtarget.getItem(i).ref_area;
+				AreaDataItem e=this._psd._newtarget.getItem(i).ref_area;
 				g2.drawRect(e.area.x, e.area.y, e.area.w, e.area.h);
 				g2.drawString("IGN",e.area.x, e.area.y);
 			}
@@ -361,7 +364,7 @@ public class StaticImageDetectLabel extends Frame implements MouseMotionListener
 			g2.setColor(Color.red);
 			for(int i=0;i<this._psd._newtarget.getLength();i++){
 				
-				AreaTargetSrcItem e=this._psd._newtarget.getItem(i).ref_area;
+				AreaDataItem e=this._psd._newtarget.getItem(i).ref_area;
 				g2.drawRect(e.area.x, e.area.y, e.area.w, e.area.h);
 				g2.drawString("NEW",e.area.x, e.area.y);
 			}

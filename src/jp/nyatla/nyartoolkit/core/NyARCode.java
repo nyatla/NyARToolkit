@@ -40,13 +40,19 @@ import jp.nyatla.nyartoolkit.core.match.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 
+/**
+ * NyARCodeクラスの支援クラスです。このクラスは、NyARCodeのマーカファイル読み取り格納部分を担当します。
+ * InputStreamからARToolkit形式のマーカデータを読み取って配列に格納する手順を実装します。
+ */
 class NyARCodeFileReader
 {
 
 	/**
-	 * ARコードファイルからデータを読み込んでo_raster[4]に格納します。
+	 * ImputStreamからARToolKit形式のマーカデータを読み込んでo_raster[4]に格納します。
 	 * @param i_stream
+	 * 読出し元のストリームです。
 	 * @param o_raster
+	 * 出力先のラスタ配列です。バッファ形式は形式はINT1D_X8R8G8B8_32であり、全て同一なサイズである必要があります。
 	 * @throws NyARException
 	 */
 	public static void loadFromARToolKitFormFile(InputStream i_stream,NyARRaster[] o_raster) throws NyARException
@@ -67,9 +73,11 @@ class NyARCodeFileReader
 		return;
 	}
 	/**
-	 * ARコードファイルからデータを読み込んでo_codeに格納します。
+	 * ImputStreamからARToolKit形式のマーカデータを読み込んでo_codeに格納します。
 	 * @param i_stream
+	 * 読出し元のストリームです。
 	 * @param o_code
+	 * 出力先のNyARCodeオブジェクトです。
 	 * @throws NyARException
 	 */
 	public static void loadFromARToolKitFormFile(InputStream i_stream,NyARCode o_code) throws NyARException
@@ -97,7 +105,14 @@ class NyARCodeFileReader
 	/**
 	 * 1ブロック分のXRGBデータをi_stからo_bufへ読みだします。
 	 * @param i_st
+	 * 入力元のStreamTokenizerを指定します。関数実行後、読み取り位置は更新されます。
+	 * @param i_width
+	 * パターンの横幅です。
+	 * @param i_height
+	 * パターンの縦幅です。
 	 * @param o_buf
+	 * 読み取った値を格納する配列です。
+	 * @throws NyARException
 	 */
 	private static void readBlock(StreamTokenizer i_st,int i_width,int i_height,int[] o_buf) throws NyARException
 	{
@@ -127,8 +142,8 @@ class NyARCodeFileReader
 }
 
 /**
- * ARToolKitのマーカーコードを1個保持します。
- * 
+ * ARToolKitのマーカーパターン1個のデータを保持します。
+ * マーカのデータには、サイズと、カラー、グレースケールのdirection値毎のパターンオブジェクトがあります。
  */
 public class NyARCode
 {
@@ -137,6 +152,13 @@ public class NyARCode
 	private int _width;
 	private int _height;
 	
+	/**
+	 * i_index番目のNyARMatchPattDeviationColorDataオブジェクトを取得します。i_indexには、direction値を指定します。
+	 * @param i_index
+	 * 0<=n<4の数値
+	 * @return
+	 * NyARMatchPattDeviationColorDataオブジェクト
+	 */
 	public NyARMatchPattDeviationColorData getColorData(int i_index)
 	{
 		return this._color_pat[i_index];
@@ -150,6 +172,10 @@ public class NyARCode
 		return _width;
 	}
 
+	/**
+	 * パターンデータの高さを取得します。
+	 * @return
+	 */
 	public int getHeight()
 	{
 		return _height;
@@ -183,6 +209,12 @@ public class NyARCode
 		}
 		return;
 	}
+	/**
+	 * inputStreamから、パターンデータをロードします。
+	 * ロードするパターンのサイズは、現在の値を使用します。
+	 * @param i_stream
+	 * @throws NyARException
+	 */
 
 	public void loadARPatt(InputStream i_stream) throws NyARException
 	{

@@ -8,7 +8,7 @@ public class EnterTargetSrc extends NyARObjectStack<EnterTargetSrc.EnterSrcItem>
 {
 	public static class EnterSrcItem
 	{
-		public AreaTargetSrcPool.AreaTargetSrcItem area_src;
+		public AreaDataPool.AreaDataItem area_src;
 		public void attachToTarget(NewTargetList.NewTargetItem o_target)
 		{
 			assert(this.area_src!=null);
@@ -16,7 +16,7 @@ public class EnterTargetSrc extends NyARObjectStack<EnterTargetSrc.EnterSrcItem>
 			this.area_src=null;
 		}
 	}
-	public EnterTargetSrc.EnterSrcItem pushSrcTarget(AreaTargetSrcPool.AreaTargetSrcItem i_item)
+	public EnterTargetSrc.EnterSrcItem pushSrcTarget(AreaDataPool.AreaDataItem i_item)
 	{
 		EnterTargetSrc.EnterSrcItem item=this.prePush();
 		if(item==null){

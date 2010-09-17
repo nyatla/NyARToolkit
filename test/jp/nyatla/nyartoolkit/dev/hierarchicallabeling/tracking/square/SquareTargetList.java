@@ -3,8 +3,8 @@ package jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.square;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcPool;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.Square2dTargetSrcPool;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaDataPool;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.Square2dDataPool;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.TrackTarget;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.newtarget.NewTargetList.NewTargetItem;
 
@@ -13,11 +13,11 @@ public class SquareTargetList extends NyARObjectStack<SquareTargetList.SquareTar
 	public static class SquareTargetItem extends TrackTarget
 	{
 		public boolean enable;
-		public AreaTargetSrcPool.AreaTargetSrcItem ref_area;
-		public Square2dTargetSrcPool.Square2dSrcItem ref_square2d;
+		public AreaDataPool.AreaDataItem ref_area;
+		public Square2dDataPool.Square2dSrcItem ref_square2d;
 	}
-	private AreaTargetSrcPool _area_pool;
-	private Square2dTargetSrcPool _sq2d_pool;
+	private AreaDataPool _area_pool;
+	private Square2dDataPool _sq2d_pool;
 	/**
 	 * ContourTargetから、Square2dTargetへの昇格に使います。昇格直後は一部のパラメータが不定です。
 	 * @param i_item
@@ -89,7 +89,7 @@ public class SquareTargetList extends NyARObjectStack<SquareTargetList.SquareTar
 	{
 		return new SquareTargetItem();
 	}
-	public SquareTargetList(int i_size,AreaTargetSrcPool i_area_pool,Square2dTargetSrcPool i_sq2d_pool) throws NyARException
+	public SquareTargetList(int i_size,AreaDataPool i_area_pool,Square2dDataPool i_sq2d_pool) throws NyARException
 	{
 		super.initInstance(i_size,SquareTargetItem.class);
 		this._area_pool=i_area_pool;
@@ -100,9 +100,9 @@ public class SquareTargetList extends NyARObjectStack<SquareTargetList.SquareTar
 	 * @param i_item
 	 * @return
 	 */
-	public int getMatchTargetIndex(AreaTargetSrcPool.AreaTargetSrcItem i_item)
+	public int getMatchTargetIndex(AreaDataPool.AreaDataItem i_item)
 	{
-		AreaTargetSrcPool.AreaTargetSrcItem iitem;
+		AreaDataPool.AreaDataItem iitem;
 		//許容距離誤差の2乗を計算(許容誤差10%)
 		//(Math.sqrt((i_item.area.w*i_item.area.w+i_item.area.h*i_item.area.h))/10)^2
 		int dist_rate2=(i_item.area_sq_diagonal)/100;

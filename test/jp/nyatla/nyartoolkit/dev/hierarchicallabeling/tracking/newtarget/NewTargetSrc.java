@@ -4,13 +4,13 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcPool;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaDataPool;
 
 public class NewTargetSrc extends NyARObjectStack<NewTargetSrc.NewSrcItem>
 {
 	public static class NewSrcItem
 	{
-		public AreaTargetSrcPool.AreaTargetSrcItem area_src;
+		public AreaDataPool.AreaDataItem area_src;
 		public int match_index;
 		/**
 		 * このオブジェクトの持つデータを、o_targetに割り付けます。
@@ -24,7 +24,7 @@ public class NewTargetSrc extends NyARObjectStack<NewTargetSrc.NewSrcItem>
 			return;
 		}
 	}
-	public NewTargetSrc.NewSrcItem pushSrcTarget(AreaTargetSrcPool.AreaTargetSrcItem i_item)
+	public NewTargetSrc.NewSrcItem pushSrcTarget(AreaDataPool.AreaDataItem i_item)
 	{
 		NewTargetSrc.NewSrcItem item=this.prePush();
 		if(item==null){

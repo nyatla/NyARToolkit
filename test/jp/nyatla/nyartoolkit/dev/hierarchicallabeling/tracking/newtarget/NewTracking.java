@@ -1,7 +1,7 @@
 package jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.newtarget;
 
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.TrackingUtils;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcPool;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaDataPool;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARDistMap;
 
 public class NewTracking
@@ -63,14 +63,16 @@ public class NewTracking
 		this._distmap.setPointDists(i_target.getArray(),row_len,i_src.getArray(),i_src.getLength());
 		this._distmap.getMinimumPair(this._rowindex);
 		//割り当ててみる。
-		for(int i=0;i<row_len;i++){
+		for(int i=row_len-1;i>=0;i--){
+			//古い物は削除
+			if(i_target.getItem(i).last_update<tick_range){
+				i_target.getItem(i).terminate();
+				i_target.removeIgnoreOrder(i);
+				continue;
+			}
+			//ソースの候補が見つからなければ何もしない
 			int idx=this._rowindex[i];
 			if(idx<0){
-				//指定tickよりも更新が古ければ、消す。
-				if(i_target.getItem(i).last_update<tick_range){
-					//ターゲットを削除する。
-					i_target.deleteTarget(i);
-				}
 				continue;
 			}
 			i_target.updateTarget(i,i_tick,i_src.getItem(idx));

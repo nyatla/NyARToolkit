@@ -71,7 +71,7 @@ public class NyARObjectStack<T> extends NyARPointerStack<T>
 			this._items[i] =createElement(i_param);
 		}
 		return;
-	}	
+	}
 	protected T createElement() throws NyARException
 	{
 		throw new NyARException();

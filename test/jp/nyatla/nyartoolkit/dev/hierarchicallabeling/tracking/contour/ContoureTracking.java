@@ -1,7 +1,7 @@
 package jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.contour;
 
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.TrackingUtils;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcPool;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaDataPool;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARDistMap;
 
 public class ContoureTracking
@@ -63,13 +63,14 @@ public class ContoureTracking
 		this._distmap.setPointDists(i_target.getArray(),row_len,i_src.getArray(),i_src.getLength());
 		this._distmap.getMinimumPair(this._rowindex);
 		//割り当ててみる。
-		for(int i=0;i<row_len;i++){
+		for(int i=row_len-1;i>=0;i--){
 			int idx=this._rowindex[i];
 			if(idx<0){
 				//指定tickよりも更新が古ければ、消す。
 				if(i_target.getItem(i).last_update<tick_range){
 					//ターゲットを削除する。
-					i_target.deleteTarget(i);
+					i_target.getItem(i).terminate();
+					i_target.removeIgnoreOrder(i);
 				}
 				continue;
 			}

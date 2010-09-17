@@ -8,9 +8,9 @@ public class SquareTargetSrc extends NyARObjectStack<SquareTargetSrc.SquareTarge
 {
 	public static class SquareTargetSrcItem
 	{
-		public AreaTargetSrcPool.AreaTargetSrcItem area_src;
-		public ContourTargetSrcPool.ContourTargetSrcItem contour_src;
-		public Square2dTargetSrcPool.Square2dSrcItem square2d_src;
+		public AreaDataPool.AreaDataItem area_src;
+		public ContourDataPool.ContourTargetSrcItem contour_src;
+		public Square2dDataPool.Square2dSrcItem square2d_src;
 		/**
 		 * このオブジェクトの持つデータを、o_targetに割り付けます。
 		 * @param o_target
@@ -30,9 +30,9 @@ public class SquareTargetSrc extends NyARObjectStack<SquareTargetSrc.SquareTarge
 	}
 	
 	public SquareTargetSrc.SquareTargetSrcItem pushSrcTarget(
-			AreaTargetSrcPool.AreaTargetSrcItem i_area_item,
-			ContourTargetSrcPool.ContourTargetSrcItem i_contoure_item,
-			Square2dTargetSrcPool.Square2dSrcItem i_sq_item)
+			AreaDataPool.AreaDataItem i_area_item,
+			ContourDataPool.ContourTargetSrcItem i_contoure_item,
+			Square2dDataPool.Square2dSrcItem i_sq_item)
 	{
 		SquareTargetSrc.SquareTargetSrcItem item=this.prePush();
 		if(item==null){

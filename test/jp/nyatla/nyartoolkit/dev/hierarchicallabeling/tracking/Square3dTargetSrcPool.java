@@ -15,7 +15,7 @@ public class Square3dTargetSrcPool extends NyARObjectPool<Square3dTargetSrcPool.
 {
 	public static class Square3dSrcItem
 	{
-		public ContourTargetSrcPool.ContourTargetSrcItem _ref_contour_src;
+		public ContourDataPool.ContourTargetSrcItem _ref_contour_src;
 		/**
 		 * 理想頂点(OPTION)
 		 */
@@ -30,7 +30,7 @@ public class Square3dTargetSrcPool extends NyARObjectPool<Square3dTargetSrcPool.
 	{
 		super.initInstance(i_length, Square3dTargetSrcPool.Square3dSrcItem.class);
 	}
-	public Square3dTargetSrcPool.Square3dSrcItem newSrcTarget(ContourTargetSrcPool.ContourTargetSrcItem i_item)
+	public Square3dTargetSrcPool.Square3dSrcItem newSrcTarget(ContourDataPool.ContourTargetSrcItem i_item)
 	{
 //処理]Square2dから3dへの変換？
 		Square3dTargetSrcPool.Square3dSrcItem item=this.newObject();

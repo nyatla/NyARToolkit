@@ -10,9 +10,9 @@ import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARObjectPool;
 
 
 
-public class AreaTargetSrcPool extends NyARObjectPool<AreaTargetSrcPool.AreaTargetSrcItem>
+public class AreaDataPool extends NyARObjectPool<AreaDataPool.AreaDataItem>
 {
-	public static class AreaTargetSrcItem
+	public static class AreaDataItem
 	{
 		public NyARIntRect    area  =new NyARIntRect();
 		public NyARIntPoint2d area_center=new NyARIntPoint2d();
@@ -21,8 +21,8 @@ public class AreaTargetSrcPool extends NyARObjectPool<AreaTargetSrcPool.AreaTarg
 		 */
 		public int area_sq_diagonal;
 		//制御部
-		private AreaTargetSrcPool _pool;
-		public AreaTargetSrcItem(AreaTargetSrcPool i_pool)
+		private AreaDataPool _pool;
+		public AreaDataItem(AreaDataPool i_pool)
 		{
 			this._pool=i_pool;
 		}
@@ -34,17 +34,17 @@ public class AreaTargetSrcPool extends NyARObjectPool<AreaTargetSrcPool.AreaTarg
 			this._pool.deleteObject(this);
 		}
 	}
-	protected AreaTargetSrcPool.AreaTargetSrcItem createElement() throws NyARException
+	protected AreaDataPool.AreaDataItem createElement() throws NyARException
 	{
-		return new AreaTargetSrcItem(this);
+		return new AreaDataItem(this);
 	}
-	public AreaTargetSrcPool(int i_length) throws NyARException
+	public AreaDataPool(int i_length) throws NyARException
 	{
-		super.initInstance(i_length, AreaTargetSrcPool.AreaTargetSrcItem.class);
+		super.initInstance(i_length, AreaDataPool.AreaDataItem.class);
 	}
-	public AreaTargetSrcPool.AreaTargetSrcItem newSrcTarget(HierarchyRect i_imgmap,NyARRleLabelFragmentInfo info)
+	public AreaDataPool.AreaDataItem newSrcTarget(HierarchyRect i_imgmap,NyARRleLabelFragmentInfo info)
 	{
-		AreaTargetSrcPool.AreaTargetSrcItem item=this.newObject();
+		AreaDataPool.AreaDataItem item=this.newObject();
 		if(item==null){
 			return null;
 		}

@@ -69,12 +69,14 @@ public class IgnoreTracking
 			if(idx<0){
 				//指定tickよりも更新が古ければ、消す。
 				if(item.last_update<tick_range){
-					i_target.deleteTarget(i);
+					item.terminate();
+					i_target.removeIgnoreOrder(i);
 				}
 				continue;
 			}else if(item.age>MAX_AGE){
 				//ある程度古くなったら消す。
-				i_target.deleteTarget(i);
+				item.terminate();
+				i_target.removeIgnoreOrder(i);
 				continue;
 			}
 			i_target.updateTarget(i, i_tick,i_src.getItem(idx));

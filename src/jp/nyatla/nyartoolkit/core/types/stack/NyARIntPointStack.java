@@ -34,6 +34,10 @@ package jp.nyatla.nyartoolkit.core.types.stack;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
 
+/**
+ * NyARIntPoint2d型の可変長配列です。
+ *
+ */
 public class NyARIntPointStack extends NyARObjectStack<NyARIntPoint2d>
 {
 	public NyARIntPointStack(int i_length) throws NyARException

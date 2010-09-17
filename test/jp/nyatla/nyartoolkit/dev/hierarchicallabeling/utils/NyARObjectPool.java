@@ -7,7 +7,7 @@ import jp.nyatla.nyartoolkit.NyARException;
 
 
 /**
- * このクラスは、Tのオブジェクトをプールします。
+ * このクラスは、型Tのオブジェクトプールを提供します。
  *
  * @param <T>
  */
@@ -18,7 +18,7 @@ public class NyARObjectPool<T extends Object>
 	protected int _pool_stock;
 
 	/**
-	 * オブジェクトを割り当てます。
+	 * オブジェクトプールからオブジェクトを取り出します。
 	 * @return
 	 */
 	public T newObject()
@@ -31,7 +31,7 @@ public class NyARObjectPool<T extends Object>
 		
 	}
 	/**
-	 * オブジェクトを返却します。
+	 * オブジェクトプールへオブジェクトを返却します。
 	 * @return
 	 */
 	public void deleteObject(T i_object)

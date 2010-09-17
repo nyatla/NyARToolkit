@@ -18,7 +18,7 @@ import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARObjectPool;
  * 輪郭情報を保管します。
  * このクラスの要素は、他の要素から参照する可能性があります。
  */
-public class ContourTargetSrcPool extends NyARObjectPool<ContourTargetSrcPool.ContourTargetSrcItem>
+public class ContourDataPool extends NyARObjectPool<ContourDataPool.ContourTargetSrcItem>
 {	
 	/**
 	 * 輪郭ソース1個を格納するクラスです。
@@ -104,8 +104,8 @@ public class ContourTargetSrcPool extends NyARObjectPool<ContourTargetSrcPool.Co
 		public NyARIntPoint2d image_lt=new NyARIntPoint2d();
 		//
 		//制御部
-		private ContourTargetSrcPool _pool;
-		public ContourTargetSrcItem(ContourTargetSrcPool i_pool)
+		private ContourDataPool _pool;
+		public ContourTargetSrcItem(ContourDataPool i_pool)
 		{
 			this._pool=i_pool;
 		}
@@ -127,7 +127,7 @@ public class ContourTargetSrcPool extends NyARObjectPool<ContourTargetSrcPool.Co
 	 * 輪郭ベクトルの最大数
 	 * @throws NyARException
 	 */
-	public ContourTargetSrcPool(int i_size,int i_cood_max) throws NyARException
+	public ContourDataPool(int i_size,int i_cood_max) throws NyARException
 	{
 		this._coord=NyARIntPoint2d.createArray(i_cood_max);
 		super.initInstance(i_size,ContourTargetSrcItem.class);
@@ -150,7 +150,7 @@ public class ContourTargetSrcPool extends NyARObjectPool<ContourTargetSrcPool.Co
 	 * @return
 	 * @throws NyARException
 	 */
-	public ContourTargetSrcItem newSrcTarget(AreaTargetSrcPool.AreaTargetSrcItem i_item,HierarchyRect i_hrect,NyARGrayscaleRaster i_parcical_raster,NyARGrayscaleRaster i_base_raster,int i_th,NyARRleLabelFragmentInfo info) throws NyARException
+	public ContourTargetSrcItem newSrcTarget(AreaDataPool.AreaDataItem i_item,HierarchyRect i_hrect,NyARGrayscaleRaster i_parcical_raster,NyARGrayscaleRaster i_base_raster,int i_th,NyARRleLabelFragmentInfo info) throws NyARException
 	{
 		NyARIntPoint2d[] coord=this._coord;
 		ContourTargetSrcItem item=this.newObject();
