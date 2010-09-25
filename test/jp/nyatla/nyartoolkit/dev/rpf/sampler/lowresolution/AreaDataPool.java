@@ -13,11 +13,26 @@ public class AreaDataPool extends NyARManagedObjectPool<AreaDataPool.AreaDataIte
 {
 	class AreaDataItem extends NyARManagedObject
 	{
+		/**
+		 * この塊を検出したラスタへの参照ポインタ。
+		 */
 		public NyARGrayscaleRaster ref_raster;
+		/**
+		 * ラスタの解像度値
+		 */
 		public int resolution;
-		public NyARIntPoint2d entry_pos;		
-		public NyARIntRect    area  =new NyARIntRect();
-		public NyARIntPoint2d area_center=new NyARIntPoint2d();
+		/**
+		 * 塊の輪郭を検出するためのエントリポイント
+		 */
+		public NyARIntPoint2d entry_pos;
+		/**
+		 * 検出した塊のクリップ範囲
+		 */
+		public NyARIntRect    clip  =new NyARIntRect();
+		/**
+		 * 検出した塊のクリップ中心
+		 */
+		public NyARIntPoint2d clip_center=new NyARIntPoint2d();
 		/**
 		 * エリア矩形の対角距離の2乗値
 		 */

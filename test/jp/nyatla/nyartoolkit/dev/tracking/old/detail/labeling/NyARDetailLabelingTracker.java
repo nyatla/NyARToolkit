@@ -61,7 +61,7 @@ public class NyARDetailLabelingTracker
 			super(i_max_col,i_max_row);
 		}
 		
-		public void bindPoints(NyARDetailLabelingTrackSrcTable.Item[] i_vertex_r,int i_row_len,NyARDetailLabelingTrackItem[] i_vertex_c,int i_col_len,int o_track_item[])
+		public void bindPoints(NyARDetailLabelingTrackSrcTable.NyARContourTargetStatus[] i_vertex_r,int i_row_len,NyARDetailLabelingTrackItem[] i_vertex_c,int i_col_len,int o_track_item[])
 		{
 			VertexBinder.DistItem[] map=this._map;
 			//distortionMapを作成。ついでに最小値のインデクスも取得
@@ -193,7 +193,7 @@ public class NyARDetailLabelingTracker
 	 */
 	public void trackTarget(NyARDetailLabelingTrackSrcTable i_datasource) throws NyARException
 	{
-		NyARDetailLabelingTrackSrcTable.Item[] temp_items=i_datasource.getArray();
+		NyARDetailLabelingTrackSrcTable.NyARContourTargetStatus[] temp_items=i_datasource.getArray();
 		SquareBinder binder=this._binder;
 		int track_item_len= this._tracker_items.getLength();
 		NyARDetailLabelingTrackItem[] track_items=this._tracker_items.getArray();
@@ -280,7 +280,7 @@ NyARDoublePoint2d[] vertex=NyARDoublePoint2d.createArray(4);
 	/**
 	 * データソースを使ったアップデート
 	 */
-	private boolean updateByDataSource(NyARDetailLabelingTrackSrcTable.Item temp_item_ptr,NyARDetailLabelingTrackItem item) throws NyARException
+	private boolean updateByDataSource(NyARDetailLabelingTrackSrcTable.NyARContourTargetStatus temp_item_ptr,NyARDetailLabelingTrackItem item) throws NyARException
 	{
 		NyARPerspectiveProjectionMatrix prjmat=this._ref_prjmat;
 		

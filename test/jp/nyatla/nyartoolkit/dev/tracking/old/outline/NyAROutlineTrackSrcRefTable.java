@@ -7,7 +7,7 @@ public class NyAROutlineTrackSrcRefTable extends NyARPointerStack<NyAROutlineTra
 {	
 	public NyAROutlineTrackSrcRefTable(int i_length) throws NyARException
 	{
-		super(i_length,NyAROutlineTrackSrcTable.Item.class);
+		super(i_length,NyAROutlineTrackSrcTable.NyARContourTargetStatus.class);
 		return;
 	}
 }

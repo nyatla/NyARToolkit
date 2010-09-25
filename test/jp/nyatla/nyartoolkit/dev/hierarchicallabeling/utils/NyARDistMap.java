@@ -5,8 +5,9 @@ import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 
 
 /**
- * 複数の点の距離から、最も距離が短くなる組み合わせを計算するクラスです。
- *
+ * 2つの点集合同士を比較して、集合の各点同士の距離が最も近くになる組み合わせを計算
+ * するためのクラスです。
+ * 点集合の2次元距離マップを作成して、そこから最適な組み合わせを計算します。
  */
 public class NyARDistMap
 {
@@ -35,7 +36,10 @@ public class NyARDistMap
 		}
 	}
 	/**
-	 * マップサイズを変更します。
+	 * マップのサイズを再設定します。内容は不定になり、距離マップの再設定が必要です。
+	 * @param i_col
+	 * 列数
+	 * @param i_row
 	 */
 	public void setMapSize(int i_col,int i_row)
 	{
@@ -43,9 +47,8 @@ public class NyARDistMap
 		this._size_col=i_col;
 	}
 	/**
-	 * 行と列を指定して、その組み合わせの距離値をマップにセットします。
-	 * このAPIは低速なので、距離の計算式が確定しているなら、setPointsDistsを参考に、マップに直接
-	 * 距離値を置く関数を検討してください。
+	 * 列と行を指定して、距離値をマップに値をセットします。
+	 * このAPIは低速です。setPointsDistsを参考に、マップに直接距離値を置く関数を検討してください。
 	 * @param i_col
 	 * @param i_row
 	 * @param i_dist
@@ -64,7 +67,8 @@ public class NyARDistMap
 		return;
 	}
 	/**
-	 * 2座標の距離を計算して、マップにセットします。
+	 * 2つの点集合同士の距離を計算して、距離マップに値をセットします。
+	 * 点の座標が他の表現で実装されている場合は、この関数をオーバーロードして実装してください。
 	 * @param i_vertex_r
 	 * @param i_row_len
 	 * @param i_vertex_c
@@ -98,8 +102,9 @@ public class NyARDistMap
 		return;
 	}
 	/**
-	 * 最小距離の組み合わせを計算して、rowベースの組み合わせを返します。
-	 * 計算後は、クラス内のデータは不定になります。
+	 * 現在の距離マップから、rowに対するcolの組み合わせを計算します。
+	 * rowに対して最適なものが無い場合は、o_rowindexの値に-1がセットされます。
+	 * この関数は内部データを不可逆に変更します。計算後は、距離マップの再セットが必要です。
 	 * @param o_rowindex
 	 */
 	public void getMinimumPair(int[] o_rowindex)

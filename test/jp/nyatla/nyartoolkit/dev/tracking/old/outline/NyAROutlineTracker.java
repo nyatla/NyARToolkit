@@ -21,7 +21,7 @@ public class NyAROutlineTracker
 			super(i_max_col,i_max_row);
 		}
 		
-		public void bindPoints(NyAROutlineTrackSrcTable.Item[] i_vertex_r,int i_row_len,NyAROutlineTrackItem[] i_vertex_c,int i_col_len,int o_track_item[])
+		public void bindPoints(NyAROutlineTrackSrcTable.NyARContourTargetStatus[] i_vertex_r,int i_row_len,NyAROutlineTrackItem[] i_vertex_c,int i_col_len,int o_track_item[])
 		{
 			VertexBinder.DistItem[] map=this._map;
 			//distortionMapを作成。ついでに最小値のインデクスも取得
@@ -123,7 +123,7 @@ public class NyAROutlineTracker
 	 */
 	public boolean addTrackTarget(NyAROutlineTrackSrcRefTable i_datasource)
 	{
-		NyAROutlineTrackSrcTable.Item[] items=i_datasource.getArray();
+		NyAROutlineTrackSrcTable.NyARContourTargetStatus[] items=i_datasource.getArray();
 		for(int i=i_datasource.getLength()-1;i>=0;i--)
 		{
 			NyAROutlineTrackInternalItem item=(NyAROutlineTrackInternalItem)this._tracker_items.prePush();
@@ -179,7 +179,7 @@ public class NyAROutlineTracker
 	 */
 	public void trackTarget(NyAROutlineTrackSrcRefTable i_datasource)
 	{
-		NyAROutlineTrackSrcTable.Item[] temp_items=i_datasource.getArray();
+		NyAROutlineTrackSrcTable.NyARContourTargetStatus[] temp_items=i_datasource.getArray();
 		OutlineBinder binder=this._binder;
 		int track_item_len= this._tracker_items.getLength();
 
@@ -200,7 +200,7 @@ public class NyAROutlineTracker
 				}
 				continue;
 			}
-			NyAROutlineTrackSrcTable.Item temp_item_ptr=temp_items[this._track_index[i]];
+			NyAROutlineTrackSrcTable.NyARContourTargetStatus temp_item_ptr=temp_items[this._track_index[i]];
 
 			//探した一時情報でテーブルを更新
 			item.center.x=temp_item_ptr.ideal_center.x;

@@ -16,14 +16,14 @@ public class NyAROutlineTrackSrcTable extends NyARObjectStack<NyAROutlineTrackSr
 		public NyARIntPoint2d[] vertex=NyARIntPoint2d.createArray(4);
 	}	
 	
-	protected NyAROutlineTrackSrcTable.Item createElement()
+	protected NyAROutlineTrackSrcTable.NyARContourTargetStatus createElement()
 	{
-		return new NyAROutlineTrackSrcTable.Item();
+		return new NyAROutlineTrackSrcTable.NyARContourTargetStatus();
 	}
 	
 	public NyAROutlineTrackSrcTable(int i_length) throws NyARException
 	{
-		super(i_length,NyAROutlineTrackSrcTable.Item.class);
+		super(i_length,NyAROutlineTrackSrcTable.NyARContourTargetStatus.class);
 		return;
 	}
 	public int getNearestItem(NyARIntPoint2d i_pos,int i_sq_dist)
@@ -48,7 +48,7 @@ public class NyAROutlineTrackSrcTable extends NyARObjectStack<NyAROutlineTrackSr
 	NyARObserv2IdealMap _dist;
 	public NyAROutlineTrackSrcTable.Item push(NyARIntPoint2d i_v1,NyARIntPoint2d i_v2,NyARIntPoint2d i_v3,NyARIntPoint2d i_v4)
 	{
-		NyAROutlineTrackSrcTable.Item item=this.prePush();
+		NyAROutlineTrackSrcTable.NyARContourTargetStatus item=this.prePush();
 		if(item==null){
 			return null;
 		}

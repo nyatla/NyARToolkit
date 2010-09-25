@@ -16,7 +16,11 @@ import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARManagedObject.IN
  */
 public class LowResolutionLabelingSamplerOut
 {
-	class AreaDataItem extends NyARManagedObject
+	/**
+	 * クラス内定義ができない処理系では、LowResolutionLabelingSamplerOutItemで定義してください。
+	 *
+	 */
+	public class Item extends NyARManagedObject
 	{
 		/**
 		 * ラべリング元の画像へのポインタです。
@@ -33,16 +37,17 @@ public class LowResolutionLabelingSamplerOut
 		/**
 		 * ラべリング対象の範囲を、トップレベル換算した値です。クリップ情報から計算されます。
 		 */
-		public NyARIntRect    top_area  =new NyARIntRect();
+		public NyARIntRect    base_area  =new NyARIntRect();
 		/**
 		 * ラべリング対象の範囲中心を、トップレベルに換算した値です。クリップ情報から計算されます。
 		 */
-		public NyARIntPoint2d top_area_center=new NyARIntPoint2d();
+		public NyARIntPoint2d base_area_center=new NyARIntPoint2d();
 		/**
 		 * エリア矩形の対角距離の2乗値
 		 */
-		public int abs_area_sq_diagonal;
-		public AreaDataItem(INyARManagedObjectPoolOperater i_pool)
+		public int base_area_sq_diagonal;
+		
+		public Item(INyARManagedObjectPoolOperater i_pool)
 		{
 			super(i_pool);
 		}
@@ -51,32 +56,35 @@ public class LowResolutionLabelingSamplerOut
 	 * AreaのPoolクラス
 	 *
 	 */
-	private class AreaPool extends NyARManagedObjectPool<AreaDataItem>
+	private class AreaPool extends NyARManagedObjectPool<Item>
 	{
 		public AreaPool(int i_length) throws NyARException
 		{
-			super.initInstance(i_length,AreaDataItem.class);
+			super.initInstance(i_length,Item.class);
 			return;
 		}
-		protected AreaDataItem createElement()
+		protected Item createElement()
 		{
-			return new AreaDataItem(this._inner_pool);
+			return new Item(this._inner_pool);
 		}
 	}
 	/**
 	 * AreaのStackクラス
 	 *
 	 */
-	private class AreaStack extends NyARPointerStack<AreaDataItem>
+	private class AreaStack extends NyARPointerStack<Item>
 	{
 		public AreaStack(int i_length) throws NyARException
 		{
-			super.initInstance(i_length, AreaDataItem.class);
+			super.initInstance(i_length, Item.class);
 		}
 	}
+	/**
+	 * 元
+	 */
+	public NyARGrayscaleRaster ref_base_raster;
 	private AreaPool _pool;
 	private AreaStack _stack;
-	private LowResolutionLabelingSamplerIn _ref_source;
 
 	public LowResolutionLabelingSamplerOut(int i_length) throws NyARException
 	{
@@ -91,7 +99,7 @@ public class LowResolutionLabelingSamplerOut
 	 */
 	public void initializeParams(LowResolutionLabelingSamplerIn i_source)
 	{
-		AreaDataItem[] items=this._stack.getArray();
+		Item[] items=this._stack.getArray();
 		//スタック内容の初期化
 		for(int i=this._stack.getLength()-1;i>=0;i--){
 			items[i].releaseObject();
@@ -101,9 +109,9 @@ public class LowResolutionLabelingSamplerOut
 		//ソースをセット
 		this._ref_source=i_source;
 	}
-	public AreaDataItem prePush()
+	public Item prePush()
 	{
-		AreaDataItem result=this._pool.newObject();
+		Item result=this._pool.newObject();
 		if(result==null){
 			return null;
 		}
@@ -118,7 +126,7 @@ public class LowResolutionLabelingSamplerOut
 	 * 検出したエリアデータの配列を返します。
 	 * @return
 	 */
-	public AreaDataItem[] getArray()
+	public Item[] getArray()
 	{
 		return this._stack.getArray();
 	}

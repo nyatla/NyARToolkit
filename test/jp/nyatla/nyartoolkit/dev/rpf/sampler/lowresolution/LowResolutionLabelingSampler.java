@@ -43,13 +43,18 @@ public class LowResolutionLabelingSampler
 				//今のところは再検出機構なし。
 				return;
 			}
-			LowResolutionLabelingSamplerOut.AreaDataItem item=current_output.prePush();
+			LowResolutionLabelingSamplerOut.Item item=current_output.prePush();
 			if(item==null){
 				return;
 			}
 			item.entry_pos.x=iRefLabel.entry_x;
 			item.entry_pos.y=iRefLabel.clip_t;
 			item.ref_raster=this.current_gs;
+			item.base_area.x=iRefLabel.clip_l*4;
+			item.base_area.y=iRefLabel.clip_t*4;
+			item.base_area.w=w*4;
+			item.base_area.h=h*4;
+			item.base_area_sq_diagonal=(w*w+h*h)*(4*4);
 		}
 		
 	}
@@ -58,6 +63,14 @@ public class LowResolutionLabelingSampler
 	{
 		this._main_labeling=new Main_Labeling(i_width,i_height);
 	}
+	/**
+	 * i_inのデータをサンプリングして、o_outにサンプル値を作成します。この関数は、o_outを初期化します。
+	 * @param i_in
+	 * 入力元のデータです。
+	 * @param o_out
+	 * 出力先のデータです。
+	 * @throws NyARException
+	 */
 	public void Sampling(LowResolutionLabelingSamplerIn i_in,LowResolutionLabelingSamplerOut o_out) throws NyARException
 	{
 		//ラスタを取得(Depth3=2^2解像度のデータ)
