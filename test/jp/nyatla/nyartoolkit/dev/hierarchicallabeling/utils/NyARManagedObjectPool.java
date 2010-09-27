@@ -37,7 +37,7 @@ public class NyARManagedObjectPool<T extends NyARManagedObject>
 	/**
 	 * 内部のプールオブジェクトです。
 	 */
-	protected NyARManagedObjectInnerPool _inner_pool;
+	protected NyARManagedObjectInnerPool _inner_pool=new NyARManagedObjectInnerPool();
 
 	/**
 	 * プールから型Tのオブジェクトを割り当てて返します。

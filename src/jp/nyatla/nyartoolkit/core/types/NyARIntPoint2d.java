@@ -74,4 +74,13 @@ public class NyARIntPoint2d
 		this.x=cx/i_number_of_vertex;
 		this.y=cy/i_number_of_vertex;
 	}
+	/**
+	 * i_sourceの値を、thisへセットします。
+	 * @param i_source
+	 */
+	public void setValue(NyARIntPoint2d i_source)
+	{
+		this.x=i_source.x;
+		this.y=i_source.y;
+	}
 }

@@ -39,10 +39,10 @@ public class LowResolutionLabelingSampler
 			//1*1(1bitPixelの5*5)以下の場合は、検出不能
 			//未実装部分:2*2(1bitPixelの8*8)以下の場合は、解像度1で再検出
 			//未実装部分:3*3,4*4(1bitPixelの12*12,16*16)以下の場合は、解像度2で再検出
-			if(w<5 || h<5){
+/*			if(w<5 || h<5){
 				//今のところは再検出機構なし。
 				return;
-			}
+			}*/
 			LowResolutionLabelingSamplerOut.Item item=current_output.prePush();
 			if(item==null){
 				return;
@@ -59,23 +59,38 @@ public class LowResolutionLabelingSampler
 		
 	}
 	private Main_Labeling _main_labeling;
-	public LowResolutionLabelingSampler(int i_width,int i_height) throws NyARException
+	/**
+	 * コンストラクタです。samplingするラスターのパラメタを指定して、インスタンスを初期化します。
+	 * @param i_width
+	 * サンプリングするLowResolutionLabelingSamplerInの基本解像度幅
+	 * @param i_height
+	 * サンプリングするLowResolutionLabelingSamplerInの基本解像度高さ
+	 * @param i_depth
+	 * 最低解像度とするRasterのdepth。この値は、samplingに渡すLowResolutionLabelingSamplerInの最大値以下の値を指定してください。
+	 * @throws NyARException
+	 */
+	public LowResolutionLabelingSampler(int i_width,int i_height,int i_depth) throws NyARException
 	{
-		this._main_labeling=new Main_Labeling(i_width,i_height);
+		int pix=(int)Math.pow(2,i_depth);
+		this._main_labeling=new Main_Labeling(i_width/pix,i_height/pix);
 	}
 	/**
-	 * i_inのデータをサンプリングして、o_outにサンプル値を作成します。この関数は、o_outを初期化します。
+	 * i_inのデータをサンプリングして、o_outにサンプル値を作成します。
+	 * この関数は、o_outにi_inのサンプリング結果を出力します。既にo_outにあるデータは初期化されます。
 	 * @param i_in
 	 * 入力元のデータです。
 	 * @param o_out
 	 * 出力先のデータです。
 	 * @throws NyARException
 	 */
-	public void Sampling(LowResolutionLabelingSamplerIn i_in,LowResolutionLabelingSamplerOut o_out) throws NyARException
+	public void sampling(LowResolutionLabelingSamplerIn i_in,LowResolutionLabelingSamplerOut o_out) throws NyARException
 	{
-		//ラスタを取得(Depth3=2^2解像度のデータ)
-		NyARGrayscaleRaster raster4=i_in.getRasterByDepth(3);
-		int th=1;
+		//暫定仕様。depthは3以上であること。
+		assert(i_in.getDepth()>=3);
+
+		//ラスタを取得(Depth2=2^2解像度のデータ)
+		NyARGrayscaleRaster raster4=i_in.getRasterByDepth(2);
+		int th=80;
 		//クラスのパラメータ初期化
 		this._main_labeling.current_gs=raster4;
 		this._main_labeling.current_output=o_out;
@@ -83,13 +98,7 @@ public class LowResolutionLabelingSampler
 		//パラメータの設定
 		o_out.initializeParams(i_in);
 		//ラべリング
+		this._main_labeling.setAreaRange(10000,1);
 		this._main_labeling.labeling(raster4,th);
 	}
 }
-
-
-
-
-
-
-

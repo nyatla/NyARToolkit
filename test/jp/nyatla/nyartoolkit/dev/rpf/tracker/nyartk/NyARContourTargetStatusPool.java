@@ -21,6 +21,7 @@ import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.LowResolutionLabeling
  */
 public class NyARContourTargetStatusPool extends NyARManagedObjectPool<NyARContourTargetStatus>
 {	
+	private int _VEC_MAX_COORD;
 	private final NyARContourPickup _cpickup=new NyARContourPickup();
 
 	/**
@@ -33,6 +34,7 @@ public class NyARContourTargetStatusPool extends NyARManagedObjectPool<NyARConto
 	public NyARContourTargetStatusPool(int i_size,int i_cood_max) throws NyARException
 	{
 		this._coord=NyARIntPoint2d.createArray(i_cood_max);
+		this._VEC_MAX_COORD=i_cood_max;
 		super.initInstance(i_size,NyARContourTargetStatus.class);
 	}
 	protected NyARContourTargetStatus createElement()
@@ -74,6 +76,7 @@ public class NyARContourTargetStatusPool extends NyARManagedObjectPool<NyARConto
 		
 
 		//ベクトル化
+		int MAX_COORD=this._VEC_MAX_COORD;
 		int skip=i_sample.resolution;
 		tmprect.w=tmprect.h=skip*2;
 
@@ -116,7 +119,11 @@ public class NyARContourTargetStatusPool extends NyARManagedObjectPool<NyARConto
 //			//輪郭中心を出すための計算
 //			ccx+=this._coord[i].x;
 //			ccy+=this._coord[i].y;
-//輪郭ベクトルバッファの最大を超えたら失敗
+			if(number_of_data==MAX_COORD){
+				//輪郭ベクトルバッファの最大を超えたら失敗
+				item.releaseObject();
+				return null;
+			}
 		}
 		//ベクトル化2:最後尾と先頭の要素が似ていれば連結する。
 		prev_vec_ptr=item.vecpos[0];

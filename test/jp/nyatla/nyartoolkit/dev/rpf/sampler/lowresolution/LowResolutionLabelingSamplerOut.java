@@ -33,7 +33,7 @@ public class LowResolutionLabelingSamplerOut
 		/**
 		 * ラべリング対象のエントリポイントです。
 		 */
-		public NyARIntPoint2d entry_pos;
+		public NyARIntPoint2d entry_pos=new NyARIntPoint2d();
 		/**
 		 * ラべリング対象の範囲を、トップレベル換算した値です。クリップ情報から計算されます。
 		 */
@@ -106,8 +106,6 @@ public class LowResolutionLabelingSamplerOut
 		}
 		//スタックをクリア
 		this._stack.clear();
-		//ソースをセット
-		this._ref_source=i_source;
 	}
 	public Item prePush()
 	{

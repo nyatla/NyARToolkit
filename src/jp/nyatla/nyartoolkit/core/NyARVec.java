@@ -72,28 +72,7 @@ public class NyARVec
 		return v;
 	}
 
-	/**
-	 * arVecDispの代替品
-	 * 
-	 * @param value
-	 * @return
-	 */
-	public int arVecDisp() throws NyARException
-	{
-		NyARException.trap("未チェックのパス");
-		System.out.println(" === vector (" + clm + ") ===\n");// printf(" ===
-																// vector (%d)
-																// ===\n",
-																// v->clm);
-		System.out.print(" |");// printf(" |");
-		for (int c = 0; c < clm; c++) {// for( c = 0; c < v->clm; c++ ){
-			System.out.print(" " + v[c]);// printf( " %10g", v->v[c] );
-		}
-		System.out.println(" |");// printf(" |\n");
-		System.out.println(" ===================");// printf("
-													// ===================\n");
-		return 0;
-	}
+
 
 	/**
 	 * arVecInnerproduct関数の代替品

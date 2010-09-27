@@ -41,7 +41,7 @@ import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 
 /**
- * NyARCodeクラスの支援クラスです。このクラスは、NyARCodeのマーカファイル読み取り格納部分を担当します。
+ * NyARCodeクラスの支援クラスです。このクラスは、NyARCodeのマーカファイル読み取り機能を担当します。
  * InputStreamからARToolkit形式のマーカデータを読み取って配列に格納する手順を実装します。
  */
 class NyARCodeFileReader
@@ -142,8 +142,8 @@ class NyARCodeFileReader
 }
 
 /**
- * ARToolKitのマーカーパターン1個のデータを保持します。
- * マーカのデータには、サイズと、カラー、グレースケールのdirection値毎のパターンオブジェクトがあります。
+ * ARToolKitのマーカーパターン1個のデータに相当するクラスです。
+ * マーカーパターンに対する、ARToolKit相当のプロパティ値を提供します。
  */
 public class NyARCode
 {
@@ -153,7 +153,7 @@ public class NyARCode
 	private int _height;
 	
 	/**
-	 * i_index番目のNyARMatchPattDeviationColorDataオブジェクトを取得します。i_indexには、direction値を指定します。
+	 * directionを指定して、NyARMatchPattDeviationColorDataオブジェクトを取得します。
 	 * @param i_index
 	 * 0<=n<4の数値
 	 * @return
@@ -180,6 +180,14 @@ public class NyARCode
 	{
 		return _height;
 	}
+	/**
+	 * コンストラクタです。空のNyARCodeオブジェクトを作成します。
+	 * @param i_width
+	 * 作成するマーカパターンの幅
+	 * @param i_height
+	 * 作成するマーカパターンの高さ
+	 * @throws NyARException
+	 */
 	public NyARCode(int i_width, int i_height) throws NyARException
 	{
 		this._width = i_width;
@@ -191,6 +199,13 @@ public class NyARCode
 		}
 		return;
 	}
+	/**
+	 * ファイル名を指定して、パターンデータをロードします。
+	 * ロードするパターンデータのサイズは、現在の値と同じである必要があります。
+	 * @param filename
+	 * ARToolKit形式のパターンデータファイルの名前
+	 * @throws NyARException
+	 */
 	public void loadARPattFromFile(String filename) throws NyARException
 	{
 		try {
@@ -200,6 +215,13 @@ public class NyARCode
 		}
 		return;
 	}
+	/**
+	 * 4枚のラスタから、マーカーパターンを生成して格納します。
+	 * @param i_raster
+	 * direction毎のパターンを格納したラスタ配列を指定します。
+	 * ラスタは同一なサイズかつマーカーパターンと同じサイズである必要があります。
+	 * @throws NyARException
+	 */
 	public void setRaster(NyARRaster[] i_raster) throws NyARException
 	{
 		assert i_raster.length!=4;
@@ -211,11 +233,10 @@ public class NyARCode
 	}
 	/**
 	 * inputStreamから、パターンデータをロードします。
-	 * ロードするパターンのサイズは、現在の値を使用します。
+	 * ロードするパターンのサイズは、現在の値と同じである必要があります。
 	 * @param i_stream
 	 * @throws NyARException
 	 */
-
 	public void loadARPatt(InputStream i_stream) throws NyARException
 	{
 		//ラスタにパターンをロードする。

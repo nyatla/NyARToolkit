@@ -33,7 +33,7 @@ public class NyARRleLabelFragmentInfoPtrStack  extends NyARPointerStack<NyARRleL
 {
 	public NyARRleLabelFragmentInfoPtrStack(int i_length) throws NyARException
 	{
-		super(i_length, NyARRleLabelFragmentInfo.class);
+		this.initInstance(i_length, NyARRleLabelFragmentInfo.class);
 		return;
 	}
 

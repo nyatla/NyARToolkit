@@ -6,11 +6,21 @@ import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 /**
  * LowResolutionLabelingSamplerへの入力コンテナです。
  * このコンテナには、GS画像をセットできます。
+ * プロパティには、解像度別のグレースケール画像があります。
  *
  */
 public class LowResolutionLabelingSamplerIn
 {
 	private NyARGrayscaleRaster[] _raster;
+
+	/**
+	 * ラスタの深さを返します。
+	 * @return
+	 */
+	public int getDepth()
+	{
+		return this._raster.length;
+	}
 	/**
 	 * 
 	 * @param i_width
@@ -32,7 +42,7 @@ public class LowResolutionLabelingSamplerIn
 		}
 	}
 	/**
-	 * 指定したGS画像をセットします。この画像は、
+	 * GS画像をセットします。この関数を使ってセットした画像は、インスタンスから参照されます。
 	 * @param i_ref_source
 	 */
 	public void wrapBuffer(NyARGrayscaleRaster i_ref_source)
@@ -42,12 +52,13 @@ public class LowResolutionLabelingSamplerIn
 		int len=this._raster.length;
 		//解像度を半分にしながらコピー
 		for(int i=1;i<len;i++){
-			NyARGrayscaleRaster.copy(this._raster[i-1],0,0,1,this._raster[i]);
+			NyARGrayscaleRaster.copy(this._raster[i-1],0,0,2,this._raster[i]);
 		}
 	}
 	/**
-	 * 指定した深さのラスタを取り出します。
+	 * 指定した深さのラスタを取り出します。0は元画像、1以降は、元画像の1/2^nの解像度の画像です。
 	 * @param i_depth
+	 * ラスタの深さ。値の範囲は、0<=n<getDepth()です。
 	 * @return
 	 */
 	public NyARGrayscaleRaster getRasterByDepth(int i_depth)

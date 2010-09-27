@@ -3,17 +3,17 @@ package jp.nyatla.nyartoolkit.core.analyzer.histogram;
 import jp.nyatla.nyartoolkit.core.types.NyARHistogram;
 
 /**
+ * 敷居値を求めるヒストグラム分析器です。
  * 判別法で閾値を求めます。
+ * @note
  * 画素数が2048^2に満たない場合は、fixedint(24-8)で計算できます。
- * @param i_histogram
- * @param o_value
- * @return
  */
 public class NyARHistogramAnalyzer_DiscriminantThreshold implements INyARHistogramAnalyzer_Threshold
 {
 	private double _score;
-
-
+	/**
+	 * @override
+	 */
 	public int getThreshold(NyARHistogram i_histogram)
 	{
 		int[] hist=i_histogram.data;
@@ -66,8 +66,10 @@ public class NyARHistogramAnalyzer_DiscriminantThreshold implements INyARHistogr
 	}
 	/**
 	 * 最後に実行したgetThresholdのスコアを返します。
-	 * スコアは正規化された分離度。1.0-0.0の範囲を取る。0.7以上なら概ね双峰的です。
+	 * スコアは正規化された分離度です。1.0>n>0.0の値を取ります。
+	 * 0.7以上なら概ね双峰的で有ることを示します。
 	 * @return
+	 * 分離度
 	 */
 	public final double getLastScore()
 	{

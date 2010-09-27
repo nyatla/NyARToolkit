@@ -188,5 +188,16 @@ public class NyARIntRect
 		int lh=ly+i_h;
 		return (0<=lx && lx<this.w && 0<=ly && ly<this.h && lw<=this.w && lh<=this.h);
 	}
+	/**
+	 * i_sourceの値をthisにセットします。
+	 * @param i_source
+	 */
+	public final void setValue(NyARIntRect i_source)
+	{
+		this.x=i_source.x;
+		this.y=i_source.y;
+		this.h=i_source.h;
+		this.w=i_source.w;
+	}
 
 }

@@ -17,9 +17,10 @@ class SampleStack extends NyARPointerStack<SampleStack.Item>
 	{
 		LowResolutionLabelingSamplerOut.Item ref_sampleout;
 	}
-	protected SampleStack() throws NyARException
+	protected SampleStack(int i_size) throws NyARException
 	{
 		super();
+		this.initInstance(i_size,SampleStack.Item.class);
 	}
 	
 	
@@ -31,83 +32,123 @@ class SampleStack extends NyARPointerStack<SampleStack.Item>
 
 
 
-class NyARTargetPool extends NyARManagedObjectPool<NyARTarget>
+
+
+class NyARTrackerOut
 {
-	private NyARNewTargetStatusPool _ref_pool;
-	protected NyARTarget createElement() throws NyARException
+	public NyARNewTargetList newtarget;
+	public NyARIgnoreTargetList igtarget;
+	public NyARCoordTargetList coordtarget;
+	
+	public NyARNewTargetStatusPool newst_pool;
+	public NyARContourTargetStatusPool contourst_pool;
+	public NyARTargetPool target_pool;
+	
+	public final static int NUMBER_OF_NEW=5;
+	public final static int NUMBER_OF_CONTURE=5;
+	public final static int NUMBER_OF_IGNORE=10;
+	public NyARTrackerOut() throws NyARException
 	{
-		return new NyARTarget(this._inner_pool);
-	}
-	/**
-	 * NyARTargetStatusを持つターゲットを新規に作成します。
-	 * @param i_clock
-	 * システムクロック値
-	 * @param i_sample
-	 * 初期化元のサンプリングアイテム
-	 * @return
-	 */
-	public NyARTarget newNewTarget(long i_clock,LowResolutionLabelingSamplerOut.Item i_sample)
-	{
-		NyARTarget t=super.newObject();
-		if(t==null){
-			return null;
-		}
-		t.age=0;
-		t.last_update=i_clock;
-		t.setValue(i_sample);
-		t.serial=NyARTarget.getSerial();
-		t.tag=null;
-		t.ref_status=this._ref_pool.newObject();
-		if(t.ref_status==null){
-			t.releaseObject();
-			return null;
-		}
-		return t;
+		//ステータスプール
+		this.newst_pool=new NyARNewTargetStatusPool();
+		this.contourst_pool=new NyARContourTargetStatusPool(NUMBER_OF_CONTURE*2,50);
+		//ターゲットプール
+		this.target_pool=new NyARTargetPool(NUMBER_OF_NEW+NUMBER_OF_CONTURE+NUMBER_OF_IGNORE,this.newst_pool);
+		//ターゲット
+		this.newtarget=new NyARNewTargetList(NUMBER_OF_NEW, this.newst_pool, this.contourst_pool);
+		this.igtarget=new NyARIgnoreTargetList(NUMBER_OF_IGNORE);
+		this.coordtarget=new NyARCoordTargetList(NUMBER_OF_CONTURE, this.contourst_pool);
 	}	
 }
-
 
 public class NyARTracker
 {
 	private long _clock=0;
-	private NyARTargetPool _target_pool;
+
+	
 	private SampleStack _newsource;
 	private SampleStack _igsource;
 	private SampleStack _coordsource;
 
-	private NyARNewTargetList _newtarget;
-	private NyARIgnoreTargetList _igtarget;
-	private NyARCoordTargetList _coordtarget;
-	
-	public void update(LowResolutionLabelingSamplerOut i_source) throws NyARException
+//	private NyARNewTargetList _newtarget;
+//	private NyARIgnoreTargetList _igtarget;
+//	private NyARCoordTargetList _coordtarget;
+//	
+//	private NyARNewTargetStatusPool _newst_pool;
+//	private NyARContourTargetStatusPool _contourst_pool;
+//	private NyARTargetPool _target_pool;
+//	
+//	private static int NUMBER_OF_NEW=5;
+//	private static int NUMBER_OF_CONTURE=5;
+//	private static int NUMBER_OF_IGNORE=10;
+	/**
+	 * コンストラクタです。
+	 * @throws NyARException
+	 */
+	public NyARTracker() throws NyARException
+	{
+/*
+		//ステータスプール
+		this._newst_pool=new NyARNewTargetStatusPool();
+		this._contourst_pool=new NyARContourTargetStatusPool(NUMBER_OF_CONTURE*2,50);
+		//ターゲットプール
+		this._target_pool=new NyARTargetPool(NUMBER_OF_NEW+NUMBER_OF_CONTURE+NUMBER_OF_IGNORE,this._newst_pool);
+		//ターゲット
+		this._newtarget=new NyARNewTargetList(NUMBER_OF_NEW, this._newst_pool, this._contourst_pool);
+		this._igtarget=new NyARIgnoreTargetList(NUMBER_OF_IGNORE);
+		this._coordtarget=new NyARCoordTargetList(NUMBER_OF_CONTURE, this._contourst_pool);
+*/
+		//ソースターゲット
+		this._newsource=new SampleStack(NyARTrackerOut.NUMBER_OF_NEW);
+		this._igsource=new SampleStack(NyARTrackerOut.NUMBER_OF_IGNORE);
+		this._coordsource=new SampleStack(NyARTrackerOut.NUMBER_OF_CONTURE);
+	}
+	/**
+	 * i_trackdataの状態を更新します。
+	 * @param i_source
+	 * @throws NyARException
+	 */
+	public void progress(LowResolutionLabelingSamplerOut i_source,NyARTrackerOut i_trackdata) throws NyARException
 	{
 		//クロック進行
 		this._clock++;
 		long clock=this._clock;
 
 		//サンプルのマッピング
-		sampleMapper(i_source);
+		sampleMapper(i_source,i_trackdata);
 		
 		//それぞれのターゲットの更新処理
 		
-		this._coordtarget.update(clock,i_source.ref_base_raster,this._coordsource);
-		this._newtarget.update(clock,this._newsource);
-		this._igtarget.update(clock,this._igsource);
+		i_trackdata.coordtarget.update(clock,i_source.ref_base_raster,this._coordsource);
+		i_trackdata.newtarget.update(clock,this._newsource);
+		i_trackdata.igtarget.update(clock,this._igsource);
+		//アップグレード
+		upgradeTarget(i_source,i_trackdata);
 	}
 	/**
-	 * ターゲットのステータスをアップグレードします。
+	 * ターゲットをアップグレードします。
 	 * @throws NyARException 
 	 */
-	public void upgrade(LowResolutionLabelingSamplerOut i_source) throws NyARException
+	private void upgradeTarget(LowResolutionLabelingSamplerOut i_source,NyARTrackerOut i_trackdata) throws NyARException
 	{
 		long clock=this._clock;
 		//coord targetの遷移
 		//new targetの遷移
-		this._newtarget.upgrade(clock,i_source.ref_base_raster,this._igtarget,this._coordtarget);
+		i_trackdata.newtarget.upgrade(clock,i_source.ref_base_raster,i_trackdata.igtarget,i_trackdata.coordtarget);
 		//ignore targetの遷移
-		this._igtarget.upgrade(clock);
+		i_trackdata.igtarget.upgrade(clock);
 	}
-	private void sampleMapper(LowResolutionLabelingSamplerOut i_source)
+	/**
+	 * 
+	 * @param i_source
+	 * @param i_trackdata
+	 * @throws NyARException
+	 */
+	private void updateStatus(LowResolutionLabelingSamplerOut i_source,NyARTrackerOut i_trackdata) throws NyARException
+	{
+		
+	}
+	private void sampleMapper(LowResolutionLabelingSamplerOut i_source,NyARTrackerOut i_trackdata)
 	{
 		LowResolutionLabelingSamplerOut.Item[] sample_items=i_source.getArray();
 		for(int i=i_source.getLength()-1;i>=0;i--)
@@ -116,30 +157,32 @@ public class NyARTracker
 			LowResolutionLabelingSamplerOut.Item sample_item=sample_items[i];
 			int id;
 			//coord
-			id=this._coordtarget.getMatchTargetIndex(sample_item);
+			id=i_trackdata.coordtarget.getMatchTargetIndex(sample_item);
 			if(id>=0){
 				this._coordsource.push(null);
 			}
 			//newtarget
-			id=this._newtarget.getMatchTargetIndex(sample_item);
+			id=i_trackdata.newtarget.getMatchTargetIndex(sample_item);
 			if(id>=0){
 				this._newsource.push(null);
 			}
 			//ignore target
-			id=this._igtarget.getMatchTargetIndex(sample_item);
+			id=i_trackdata.igtarget.getMatchTargetIndex(sample_item);
 			if(id>=0){
 				this._igsource.push(null);
 			}
 			//マップできなかったものは、NewTragetへ登録
-			NyARTarget t=this._target_pool.newNewTarget(this._clock,sample_item);
+			NyARTarget t=i_trackdata.target_pool.newNewTarget(this._clock,sample_item);
 			if(t==null){
 				continue;
 			}
-			if(this._newtarget.push(t)==null){
+			if(i_trackdata.newtarget.push(t)==null){
 				//todo:次回に重複チェックでが発生するけど、どうしようか。回避するには、一旦エントリリストにしないといけないね？
 				//newtargetへの遷移が失敗したら、ターゲットを解放。
 				t.releaseObject();
 			}
 		}
 	}
+
+	
 }
