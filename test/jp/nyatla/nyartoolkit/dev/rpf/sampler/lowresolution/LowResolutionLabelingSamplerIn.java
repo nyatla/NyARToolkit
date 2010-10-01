@@ -44,8 +44,9 @@ public class LowResolutionLabelingSamplerIn
 	/**
 	 * GS画像をセットします。この関数を使ってセットした画像は、インスタンスから参照されます。
 	 * @param i_ref_source
+	 * @throws NyARException 
 	 */
-	public void wrapBuffer(NyARGrayscaleRaster i_ref_source)
+	public void wrapBuffer(NyARGrayscaleRaster i_ref_source) throws NyARException
 	{
 		//バッファのスイッチ
 		this._raster[0].wrapBuffer(i_ref_source.getBuffer());

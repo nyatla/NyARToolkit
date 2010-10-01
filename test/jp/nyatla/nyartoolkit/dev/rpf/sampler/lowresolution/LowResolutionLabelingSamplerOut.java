@@ -47,6 +47,8 @@ public class LowResolutionLabelingSamplerOut
 		 */
 		public int base_area_sq_diagonal;
 		
+		public int lebeling_th;
+		
 		public Item(INyARManagedObjectPoolOperater i_pool)
 		{
 			super(i_pool);
@@ -99,15 +101,19 @@ public class LowResolutionLabelingSamplerOut
 	 */
 	public void initializeParams(LowResolutionLabelingSamplerIn i_source)
 	{
+		//基準ラスタの設定
+		this.ref_base_raster=i_source.getRasterByDepth(0);
+		
 		Item[] items=this._stack.getArray();
 		//スタック内容の初期化
 		for(int i=this._stack.getLength()-1;i>=0;i--){
 			items[i].releaseObject();
+			items[i]=null;
 		}
 		//スタックをクリア
 		this._stack.clear();
 	}
-	public Item prePush()
+	public Item prePush() throws NyARException
 	{
 		Item result=this._pool.newObject();
 		if(result==null){

@@ -107,9 +107,9 @@ public class NyARLinear
 	 */
 	public final void setVector(double i_dx,double i_dy,double i_x,double i_y)
 	{
-		this.a=-i_dy;
-		this.b= i_dx;
-		this.c=i_y-(i_dy*i_x/i_dx);
+		this.a= i_dy;
+		this.b=-i_dx;
+		this.c=(i_dx*i_y-i_dy*i_x)/i_dx;
 		return;
 	}
 	/**

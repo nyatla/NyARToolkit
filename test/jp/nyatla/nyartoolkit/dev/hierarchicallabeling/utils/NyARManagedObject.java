@@ -31,12 +31,19 @@ public class NyARManagedObject
 		this._count=0;
 		this._pool_operater=i_ref_pool_operator;
 	}
+	public NyARManagedObject initObject()
+	{
+		assert(this._count==0);
+		this._count=1;
+		return this;
+	}
 	/**
 	 * このオブジェクトに対する、新しい参照オブジェクトを返します。
 	 * @return
 	 */
 	public NyARManagedObject refObject()
 	{
+		assert(this._count>0);
 		this._count++;
 		return this;
 	}
@@ -46,10 +53,19 @@ public class NyARManagedObject
 	 */
 	public int releaseObject()
 	{
+		assert(this._count>0);
 		this._count--;
 		if(this._count==0){
 			this._pool_operater.deleteObject(this);
 		}
 		return this._count;
-	}	
+	}
+	/**
+	 * 現在の参照カウンタを返します。
+	 * @return
+	 */
+	public int getCount()
+	{
+		return this._count;
+	}
 }

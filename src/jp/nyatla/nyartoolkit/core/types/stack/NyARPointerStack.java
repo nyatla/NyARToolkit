@@ -14,7 +14,7 @@ public class NyARPointerStack<T>
 {
 	protected T[] _items;
 	protected int _length;
-
+	
 	/**
 	 * このクラスは実体化できません。
 	 * @throws NyARException

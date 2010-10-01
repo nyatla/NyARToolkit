@@ -1,6 +1,7 @@
 package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.*;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.LowResolutionLabelingSamplerOut;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.LowResolutionLabelingSamplerOut.Item;
@@ -9,26 +10,21 @@ import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.LowResolutionLabeling
 public class NyARNewTargetStatusPool extends NyARManagedObjectPool<NyARNewTargetStatus>
 {
 	/**
-	 * @Override
-	 * 引数なしの関数は使用を禁止します。
+	 * コンストラクタです。
+	 * @param i_size
+	 * poolのサイズ
+	 * @throws NyARException
 	 */
-	public NyARNewTargetStatus newObject()
+	public NyARNewTargetStatusPool(int i_size) throws NyARException
 	{
-		return null;
+		super.initInstance(i_size,NyARNewTargetStatus.class);
 	}
 	/**
-	 * 初期化済みのNyARNewTargetStatusを作成します。
-	 * @param i_src
-	 * 参照するSampleObject
-	 * @return
+	 * @Override
 	 */
-	public NyARNewTargetStatus newObject(LowResolutionLabelingSamplerOut.Item i_src)
+	protected NyARNewTargetStatus createElement() throws NyARException
 	{
-		NyARNewTargetStatus s=super.newObject();
-		if(s==null){
-			return null;
-		}
-		s.sampleout=(Item) i_src.refObject();
-		return s;
+		return new NyARNewTargetStatus(this._inner_pool);
 	}
+
 }

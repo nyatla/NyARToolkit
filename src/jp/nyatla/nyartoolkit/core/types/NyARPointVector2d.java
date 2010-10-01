@@ -23,7 +23,8 @@ public class NyARPointVector2d
 	 */
 	public void OrthogonalVec(NyARPointVector2d i_src)
 	{
+		double w=this.dx;
 		this.dx=i_src.dy;
-		this.dy=-i_src.dx;
+		this.dy=-w;
 	}
 }

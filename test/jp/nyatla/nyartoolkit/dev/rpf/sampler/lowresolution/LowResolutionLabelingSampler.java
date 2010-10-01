@@ -23,6 +23,7 @@ public class LowResolutionLabelingSampler
 	class Main_Labeling extends NyARLabeling_Rle
 	{
 		public NyARGrayscaleRaster current_gs;
+		public int current_th;
 		public LowResolutionLabelingSamplerOut current_output;
 		public Main_Labeling(int i_width,int i_height) throws NyARException
 		{
@@ -39,10 +40,10 @@ public class LowResolutionLabelingSampler
 			//1*1(1bitPixelの5*5)以下の場合は、検出不能
 			//未実装部分:2*2(1bitPixelの8*8)以下の場合は、解像度1で再検出
 			//未実装部分:3*3,4*4(1bitPixelの12*12,16*16)以下の場合は、解像度2で再検出
-/*			if(w<5 || h<5){
+			if(w<1 || h<1){
 				//今のところは再検出機構なし。
 				return;
-			}*/
+			}
 			LowResolutionLabelingSamplerOut.Item item=current_output.prePush();
 			if(item==null){
 				return;
@@ -54,7 +55,11 @@ public class LowResolutionLabelingSampler
 			item.base_area.y=iRefLabel.clip_t*4;
 			item.base_area.w=w*4;
 			item.base_area.h=h*4;
+			item.base_area_center.x=item.base_area.x+item.base_area.w/2;
+			item.base_area_center.y=item.base_area.y+item.base_area.h/2;
 			item.base_area_sq_diagonal=(w*w+h*h)*(4*4);
+			item.resolution=4;
+			item.lebeling_th=this.current_th;
 		}
 		
 	}
@@ -92,13 +97,16 @@ public class LowResolutionLabelingSampler
 		NyARGrayscaleRaster raster4=i_in.getRasterByDepth(2);
 		int th=80;
 		//クラスのパラメータ初期化
-		this._main_labeling.current_gs=raster4;
-		this._main_labeling.current_output=o_out;
+		Main_Labeling lb=this._main_labeling;
+		lb.current_gs=raster4;
+		lb.current_output=o_out;
+		lb.current_th=th;
+
 
 		//パラメータの設定
 		o_out.initializeParams(i_in);
 		//ラべリング
-		this._main_labeling.setAreaRange(10000,1);
-		this._main_labeling.labeling(raster4,th);
+		lb.setAreaRange(10000,1);
+		lb.labeling(raster4,th);
 	}
 }

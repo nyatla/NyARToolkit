@@ -35,7 +35,7 @@ public class NyARTarget extends NyARManagedObject
 	 */
 	public long last_update;
 	/**
-	 * 寿命値
+	 * 現在のステータスになってからのターゲットの寿命値
 	 */
 	public int age;
 	////////////////////////
@@ -60,11 +60,13 @@ public class NyARTarget extends NyARManagedObject
 	 */
 	public int releaseObject()
 	{
-		if(this.ref_status!=null)
+		int ret=super.releaseObject();
+		if(ret==0 && this.ref_status!=null)
 		{
 			this.ref_status.releaseObject();
+			this.ref_status=null;
 		}
-		return super.releaseObject();
+		return ret;
 	}	
 	
 	/**
@@ -79,8 +81,10 @@ public class NyARTarget extends NyARManagedObject
 	}
 	/**
 	 * このターゲットのステータスを、IgnoreStatusへ変更します。
+	 * @param i_clock
+	 * ステータスを遷移させた時刻です。
 	 */
-	public void setIgnoreStatus()
+	public void setIgnoreStatus(long i_clock)
 	{
 		//遷移元のステータスを制限すること！
 		assert(
@@ -88,15 +92,28 @@ public class NyARTarget extends NyARManagedObject
 				((this.ref_status instanceof NyARNewTargetStatus)== true)
 		);
 		this.ref_status.releaseObject();
+		this.last_update=i_clock;
+		this.age=0;
 		this.ref_status=null;
 	}
-	
+	/**
+	 * このターゲットのステータスを、CntoureStatusへ遷移させます。
+	 * @param i_c
+	 */
 	public void setCntoureStatus(NyARContourTargetStatus i_c)
 	{
 		//遷移元のステータスを制限
 		assert((this.ref_status instanceof NyARNewTargetStatus) == true);
 		this.ref_status.releaseObject();
+		this.age=0;
 		this.ref_status=i_c;
+	}
+	public void setRectStatus(NyARRectTargetStatus i_c)
+	{
+		assert((this.ref_status instanceof NyARContourTargetStatus) == true);
+		this.ref_status.releaseObject();
+		this.age=0;
+		this.ref_status=i_c;		
 	}
 	
 }

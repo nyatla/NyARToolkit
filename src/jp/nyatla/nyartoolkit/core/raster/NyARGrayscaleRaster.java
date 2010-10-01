@@ -130,10 +130,12 @@ public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 	}
 	/**
 	 *　追加機能-無し。
+	 * @throws NyARException 
 	 */
-	public void wrapBuffer(Object i_ref_buf)
+	public void wrapBuffer(Object i_ref_buf) throws NyARException
 	{
 		assert (!this._is_attached_buffer);// バッファがアタッチされていたら機能しない。
+		this._vr.switchBuffer(i_ref_buf);
 		this._buf = i_ref_buf;
 	}
 

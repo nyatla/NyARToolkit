@@ -24,6 +24,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterreader;
 
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
@@ -92,6 +93,8 @@ public class NyARVectorReader_INT1D_GRAY_8
 	 * 取得可能な範囲は、Rasterの1ドット内側です。
 	 * @param i_gs
 	 * @param i_area
+	 * ピクセル取得を行う範囲を設定します。
+	 * 320*240の場合、RECTの範囲は(x>0 && x<319 x+w>0 && x+w<319),(y>0 && y<239 x+w>0 && x+w<319)となります。
 	 * @param i_pos
 	 * @param i_vec
 	 */
@@ -146,7 +149,16 @@ public class NyARVectorReader_INT1D_GRAY_8
 			o_posvec.dy=(double)sum_vy/sum_wy;
 		}
 		return;
+	}
+	/**
+	 * 参照している画素バッファを、i_ref_bufferに切り替えます。
+	 * @param i_ref_buffer
+	 * @throws NyARException
+	 */
+	public void switchBuffer(Object i_ref_buffer) throws NyARException
+	{
+		assert(((int[])i_ref_buffer).length>=this._ref_size.w*this._ref_size.h);
+		this._ref_buf=(int[])i_ref_buffer;
 	}	
-	
 	
 }

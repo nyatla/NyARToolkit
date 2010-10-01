@@ -31,7 +31,7 @@ public class NyARManagedObjectPool<T extends NyARManagedObject>
 			assert(i_object!=null);
 			assert(this._pool_stock<this._pool.length);
 			this._pool[this._pool_stock]=i_object;
-			this._pool_stock++;			
+			this._pool_stock++;
 		}
 	}
 	/**
@@ -45,7 +45,7 @@ public class NyARManagedObjectPool<T extends NyARManagedObject>
 	 * 新しいオブジェクト
 	 */
 	@SuppressWarnings("unchecked")
-	public T newObject()
+	public T newObject() throws NyARException
 	{
 		NyARManagedObjectInnerPool pool=this._inner_pool;
 		if(pool._pool_stock<1){
@@ -53,7 +53,7 @@ public class NyARManagedObjectPool<T extends NyARManagedObject>
 		}
 		pool._pool_stock--;
 		//参照オブジェクトを作成して返す。
-		return (T)(pool._pool[pool._pool_stock].refObject());
+		return (T)(pool._pool[pool._pool_stock].initObject());
 	}
 	/**
 	 * 実体化の拒否の為に、コンストラクタを隠蔽します。
@@ -84,6 +84,23 @@ public class NyARManagedObjectPool<T extends NyARManagedObject>
 		}
 		return;		
 	}
+
+	@SuppressWarnings("unchecked")
+	protected void initInstance(int i_length,Class<T> i_element_type,Object i_param) throws NyARException
+	{
+		NyARManagedObjectInnerPool pool=this._inner_pool;
+		//領域確保
+		pool._buffer = (T[])Array.newInstance(i_element_type, i_length);
+		pool._pool = (T[])Array.newInstance(i_element_type, i_length);
+		//使用中個数をリセット
+		pool._pool_stock=i_length;
+		//オブジェクトを作成
+		for(int i=pool._pool.length-1;i>=0;i--)
+		{
+			pool._buffer[i]=pool._pool[i]=createElement(i_param);
+		}
+		return;		
+	}
 	/**
 	 * オブジェクトを作成します。継承クラス内で、型Tのオブジェクトを作成して下さい。
 	 * @return
@@ -93,4 +110,8 @@ public class NyARManagedObjectPool<T extends NyARManagedObject>
 	{
 		throw new NyARException();
 	}
+	protected T createElement(Object i_param) throws NyARException
+	{
+		throw new NyARException();
+	}	
 }
