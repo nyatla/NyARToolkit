@@ -71,18 +71,18 @@ class NyARRectTargetStatus extends NyARTargetStatus
 		//[省略]正当性チェック？(もしやるなら輪郭抽出系にも手を加えないと。)
 		NyARSquare sq=this.square;
 		//4頂点を計算する。(本当はベクトルの方向を調整してから計算するべき)
-//		for(int i=3;i>=0;i--){
-//			NyARContourTargetStatus.CoordData cv=i_contour_status.vecpos[indexbuf[i]];
-//			sq.line[i].setVector(cv.dx,cv.dy,cv.x,cv.y);
-//		}
+		for(int i=3;i>=0;i--){
+			NyARContourTargetStatus.CoordData cv=i_contour_status.vecpos[indexbuf[i]];
+			sq.line[i].setVector(cv.dx,cv.dy,cv.x,cv.y);
+		}
 		//4点抽出
 		for(int i=3;i>=0;i--){
-//			if(!NyARLinear.crossPos(sq.line[i],sq.line[(i + 3) % 4],sq.sqvertex[i])){
-//				//四角が作れない。
-//				return false;
-//			}
-			sq.sqvertex[i].x=i_contour_status.vecpos[indexbuf[i]].x;
-			sq.sqvertex[i].y=i_contour_status.vecpos[indexbuf[i]].y;
+			if(!NyARLinear.crossPos(sq.line[i],sq.line[(i + 3) % 4],sq.sqvertex[i])){
+				//四角が作れない。
+				return false;
+			}
+//			sq.sqvertex[i].x=i_contour_status.vecpos[indexbuf[i]].x;
+//			sq.sqvertex[i].y=i_contour_status.vecpos[indexbuf[i]].y;
 		}
 		return true;
 	}
@@ -167,7 +167,7 @@ public class NyARTrackerOut
 	public final static int NUMBER_OF_NEW=3;
 	public final static int NUMBER_OF_CONTURE=3;
 	public final static int NUMBER_OF_IGNORE=10;
-	public final static int NUMBER_OF_RECT=3;
+	public final static int NUMBER_OF_RECT=5;
 
 	public final static int NUMBER_OF_CONTURE_POOL=NUMBER_OF_RECT+NUMBER_OF_CONTURE*2;
 

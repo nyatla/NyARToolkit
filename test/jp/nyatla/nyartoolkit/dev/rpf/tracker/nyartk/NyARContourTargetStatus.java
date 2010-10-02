@@ -59,6 +59,11 @@ public class NyARContourTargetStatus extends NyARTargetStatus
 		this._shared=i_shared;
 	}
 	/**
+	 * ベクトル結合時の、敷居値(cos(x)の値)
+	 * 0.98は約10度
+	 */
+	private final double _ANG_TH=0.98;
+	/**
 	 * 値をセットします。この関数は、処理の成功失敗に関わらず、内容変更を行います。
 	 * @param i_raster
 	 * @param i_sample
@@ -111,7 +116,7 @@ public class NyARContourTargetStatus extends NyARTargetStatus
 			vr.getAreaVector8(tmprect,current_vec_ptr);
 			
 			//類似度判定
-			if(getVecCos(prev_vec_ptr,current_vec_ptr)<0.999){
+			if(getVecCos(prev_vec_ptr,current_vec_ptr)<_ANG_TH){
 				//相関なし
 				number_of_data++;
 				prev_vec_ptr=current_vec_ptr;
@@ -133,7 +138,7 @@ public class NyARContourTargetStatus extends NyARTargetStatus
 		}
 		//ベクトル化2:最後尾と先頭の要素が似ていれば連結する。
 		prev_vec_ptr=this.vecpos[0];
-		if(getVecCos(current_vec_ptr,prev_vec_ptr)<0.999){
+		if(getVecCos(current_vec_ptr,prev_vec_ptr)<_ANG_TH){
 			//相関なし
 		}else{
 			//相関あり(ベクトルの統合)
@@ -194,7 +199,7 @@ public class NyARContourTargetStatus extends NyARTargetStatus
 		//先に4個をsq_distでソートしながら格納
 		for(i=out_len;i<i_len;i++){
 			//配列の値と比較
-			for(int i2=0;i2<out_len_1;i2++){
+			for(int i2=0;i2<out_len;i2++){
 				if(vp[i].sq_dist>vp[o_index[i2]].sq_dist){				
 					//値挿入の為のシフト
 					for(int i3=out_len-1;i3>i2;i3--){

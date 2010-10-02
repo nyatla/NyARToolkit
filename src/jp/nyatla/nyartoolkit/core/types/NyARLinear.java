@@ -109,7 +109,7 @@ public class NyARLinear
 	{
 		this.a= i_dy;
 		this.b=-i_dx;
-		this.c=(i_dx*i_y-i_dy*i_x)/i_dx;
+		this.c=(i_dx*i_y-i_dy*i_x);
 		return;
 	}
 	/**
