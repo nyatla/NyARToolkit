@@ -167,7 +167,7 @@ public class NyARTrackerOut
 	public final static int NUMBER_OF_NEW=3;
 	public final static int NUMBER_OF_CONTURE=3;
 	public final static int NUMBER_OF_IGNORE=10;
-	public final static int NUMBER_OF_RECT=5;
+	public final static int NUMBER_OF_RECT=8;
 
 	public final static int NUMBER_OF_CONTURE_POOL=NUMBER_OF_RECT+NUMBER_OF_CONTURE*2;
 

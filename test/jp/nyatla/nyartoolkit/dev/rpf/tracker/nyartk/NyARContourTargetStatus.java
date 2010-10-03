@@ -60,9 +60,9 @@ public class NyARContourTargetStatus extends NyARTargetStatus
 	}
 	/**
 	 * ベクトル結合時の、敷居値(cos(x)の値)
-	 * 0.98は約10度
+	 * 0.99は約?度
 	 */
-	private final double _ANG_TH=0.98;
+	private final double _ANG_TH=0.99;
 	/**
 	 * 値をセットします。この関数は、処理の成功失敗に関わらず、内容変更を行います。
 	 * @param i_raster
