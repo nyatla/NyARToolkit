@@ -36,10 +36,6 @@ class NyARRectTargetStatus extends NyARTargetStatus
 	public NyARSquare square;
 
 	/**
-	 * ベクトル要素を格納する配列です。
-	 */
-	public CoordData[] vecpos=CoordData.createArray(100);
-	/**
 	 * ベクトル配列の有効長です。
 	 */
 	public int vecpos_length;
