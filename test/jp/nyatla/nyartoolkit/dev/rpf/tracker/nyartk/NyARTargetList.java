@@ -21,28 +21,33 @@ public class NyARTargetList<T extends NyARTarget> extends NyARPointerStack<T>
 	public int getMatchTargetIndex(LowResolutionLabelingSamplerOut.Item i_item)
 	{
 		NyARTarget iitem;
-		//許容距離誤差の2乗を計算(10%)
-		//(Math.sqrt((i_item.area.w*i_item.area.w+i_item.area.h*i_item.area.h))/10)^2
-		int dist_rate2=(i_item.base_area_sq_diagonal)/100;
 
-		//距離は領域の10%以内の誤差、大きさは10%以内の誤差であること。
+		int ret=-1;
+		int min_d=Integer.MAX_VALUE;
+
+		//対角範囲の距離が、対角距離の1/2以下で、最も小さいこと。
 		for(int i=this._length-1;i>=0;i--)
 		{
+			
 			iitem=this._items[i];
-			//大きさチェック
-			double ratio;
-			ratio=((double)iitem.sample_area.w)/i_item.base_area.w;
-			if(ratio<0.81 || 1.21<ratio){
-				continue;
+			int d;
+			int x1,y1;
+			//対角点同士の距離を計算
+			x1=iitem.sample_area.x-i_item.base_area.x;
+			y1=iitem.sample_area.y-i_item.base_area.y;
+			d=x1*x1+y1*y1;
+			x1=x1+iitem.sample_area.w-i_item.base_area.w;
+			y1=x1+iitem.sample_area.h-i_item.base_area.h;
+			d+=x1*x1+y1*y1;			
+			if(d<min_d){
+				min_d=d;
+				ret=i;
 			}
-			//距離チェック
-			int d2=NyARMath.sqNorm(i_item.base_area_center,iitem.sample_area_center);
-			if(d2>dist_rate2)
-			{
-				continue;
-			}
-			//多分同じ対象物
-			return i;
+		}
+		//許容距離誤差の2乗を計算(対角線の20%以内)
+		//(Math.sqrt((i_item.area.w*i_item.area.w+i_item.area.h*i_item.area.h))/5)^2
+		if(min_d<(2*(i_item.base_area_sq_diagonal)/25)){
+			return ret;
 		}
 		return -1;
 	}

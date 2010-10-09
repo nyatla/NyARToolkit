@@ -11,7 +11,7 @@ import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
  */
 public class LowResolutionLabelingSamplerIn
 {
-	private NyARGrayscaleRaster[] _raster;
+	private LrlsGsRaster[] _raster;
 
 	/**
 	 * ラスタの深さを返します。
@@ -30,14 +30,14 @@ public class LowResolutionLabelingSamplerIn
 	 */
 	public LowResolutionLabelingSamplerIn(int i_width,int i_height,int i_depth) throws NyARException
 	{
-		this._raster=new NyARGrayscaleRaster[i_depth];
+		this._raster=new LrlsGsRaster[i_depth];
 		//1番目のラスタは外部バッファを参照
-		this._raster[0]=new NyARGrayscaleRaster(i_width,i_height,false);
+		this._raster[0]=new LrlsGsRaster(i_width,i_height,null,1,false);
 		//2番目のラスタ以降は内部バッファを参照
 		int div=2;
 		for(int i=1;i<i_depth;i++)
 		{
-			this._raster[i]=new NyARGrayscaleRaster(i_width/div,i_height/div);
+			this._raster[i]=new LrlsGsRaster(i_width/div,i_height/div,this._raster[0],div,true);
 			div*=2;
 		}
 	}
@@ -62,7 +62,7 @@ public class LowResolutionLabelingSamplerIn
 	 * ラスタの深さ。値の範囲は、0<=n<getDepth()です。
 	 * @return
 	 */
-	public NyARGrayscaleRaster getRasterByDepth(int i_depth)
+	public LrlsGsRaster getRasterByDepth(int i_depth)
 	{
 		return this._raster[i_depth];
 	}

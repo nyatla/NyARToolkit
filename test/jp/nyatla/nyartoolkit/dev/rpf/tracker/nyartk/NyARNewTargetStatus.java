@@ -5,11 +5,11 @@ import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.LowResolutionLabeling
 
 public class NyARNewTargetStatus extends NyARTargetStatus
 {
-	public LowResolutionLabelingSamplerOut.Item sampleout;
+	public LowResolutionLabelingSamplerOut.Item current_sampleout;
 	protected NyARNewTargetStatus(INyARManagedObjectPoolOperater i_ref_pool_operator) throws NyARException
 	{
 		super(i_ref_pool_operator);
-		this.sampleout=null;
+		this.current_sampleout=null;
 	}
 	/**
 	 * @Override
@@ -17,10 +17,10 @@ public class NyARNewTargetStatus extends NyARTargetStatus
 	public int releaseObject()
 	{
 		int ret=super.releaseObject();
-		if(ret==0 && this.sampleout!=null)
+		if(ret==0 && this.current_sampleout!=null)
 		{
-			this.sampleout.releaseObject();
-			this.sampleout=null;
+			this.current_sampleout.releaseObject();
+			this.current_sampleout=null;
 		}
 		return ret;
 	}
@@ -32,10 +32,14 @@ public class NyARNewTargetStatus extends NyARTargetStatus
 	 */
 	public void setValue(LowResolutionLabelingSamplerOut.Item i_src) throws NyARException
 	{
-		if(this.sampleout!=null){
-			this.sampleout.releaseObject();
+		if(this.current_sampleout!=null){
+			this.current_sampleout.releaseObject();
 		}
-		this.sampleout=(LowResolutionLabelingSamplerOut.Item)i_src.refObject();
+		if(i_src!=null){
+			this.current_sampleout=(LowResolutionLabelingSamplerOut.Item)i_src.refObject();
+		}else{
+			this.current_sampleout=null;
+		}
 	}
 	
 }

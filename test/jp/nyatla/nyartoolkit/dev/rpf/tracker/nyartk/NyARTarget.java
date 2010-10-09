@@ -88,6 +88,7 @@ public class NyARTarget extends NyARManagedObject
 	{
 		//遷移元のステータスを制限すること！
 		assert(
+				((this.ref_status instanceof NyARRectTargetStatus) == true) || 
 				((this.ref_status instanceof NyARContourTargetStatus) == true) || 
 				((this.ref_status instanceof NyARNewTargetStatus)== true)
 		);

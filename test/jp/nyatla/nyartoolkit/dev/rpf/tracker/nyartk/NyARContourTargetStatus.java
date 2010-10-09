@@ -2,12 +2,15 @@ package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
-import jp.nyatla.nyartoolkit.core.rasterreader.NyARVectorReader_INT1D_GRAY_8;
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.NyARPointVector2d;
+import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.LowResolutionLabelingSamplerOut;
+import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.LrlsGsRaster;
+import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.NyARVectorReader_INT1D_GRAY_8;
 
 /**
  * 輪郭ソース1個を格納するクラスです。
@@ -16,8 +19,96 @@ import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.LowResolutionLabeling
 public class NyARContourTargetStatus extends NyARTargetStatus
 {
 	private NyARContourTargetStatusPool.WorkObject _shared;
+	
+	public static class VectorCoords
+	{
+		public int length;
+		public CoordData item[];
+		public VectorCoords(int i_length)
+		{
+			this.length=0;
+			this.item=CoordData.createArray(i_length);
+		}
+		/**
+		 * 輪郭配列から、から、キーのベクトル(絶対値の大きいベクトル)を順序を壊さずに抽出します。
+		 * @param i_vecpos
+		 * 抽出元の
+		 * @param i_len
+		 * @param o_index
+		 * インデクス番号を受け取る配列。受け取るインデックスの個数は、この配列の数と同じになります。
+		 */
+		public void getKeyCoordIndexes(int[] o_index)
+		{
+			CoordData[] vp=this.item;
+			assert(o_index.length<=this.length);
+			int i;
+			int out_len=o_index.length;
+			int out_len_1=out_len-1;
+			for(i=out_len-1;i>=0;i--){
+				o_index[i]=i;			
+			}
+			//sqdistでソートする(B->S)
+			for(i=0;i<out_len_1;){
+				if(vp[o_index[i]].sq_dist<vp[o_index[i+1]].sq_dist){
+					int t=o_index[i];
+					o_index[i]=o_index[i+1];
+					o_index[i+1]=t;
+					i=0;
+					continue;
+				}
+				i++;
+			}
+			//先に4個をsq_distでソートしながら格納
+			for(i=out_len;i<this.length;i++){
+				//配列の値と比較
+				for(int i2=0;i2<out_len;i2++){
+					if(vp[i].sq_dist>vp[o_index[i2]].sq_dist){				
+						//値挿入の為のシフト
+						for(int i3=out_len-1;i3>i2;i3--){
+							o_index[i3]=o_index[i3-1];
+						}
+						//設定
+						o_index[i2]=i;
+						break;
+					}
+				}
+			}
+			//idxでソート
+			for(i=0;i<out_len_1;){
+				if(o_index[i]>o_index[i+1]){
+					int t=o_index[i];
+					o_index[i]=o_index[i+1];
+					o_index[i+1]=t;
+					i=0;
+					continue;
+				}
+				i++;
+			}
+			return;
+		}
+		/**
+		 * 最も大きいベクトル成分のインデクスを返します。
+		 * @return
+		 */
+		public int getMaxCoordIndex()
+		{
+			CoordData[] vp=this.item;
+			int index=0;
+			double max_dist=vp[0].sq_dist;
+			for(int i=this.length-1;i>0;i--){
+				if(max_dist<vp[i].sq_dist){
+					max_dist=vp[index].sq_dist;
+					index=i;
+				}
+			}
+			return index;
+		}
+		
+	}
+	
 	/**
-	 * 輪郭ベクトル配列を格納するクラスです。
+	 * データ型です。
+	 * 輪郭ベクトルを格納します。
 	 */
 	public static class CoordData extends NyARPointVector2d
 	{
@@ -33,15 +124,16 @@ public class NyARContourTargetStatus extends NyARTargetStatus
 			}
 			return r;
 		}
+		
 	}
 	/**
 	 * ベクトル要素を格納する配列です。
 	 */
-	public CoordData[] vecpos=CoordData.createArray(100);
+	public VectorCoords vecpos=new VectorCoords(100);
 	/**
 	 * ベクトル配列の有効長です。
 	 */
-	public int vecpos_length;
+//	public int vecpos_length;
 	
 	
 	//
@@ -62,7 +154,11 @@ public class NyARContourTargetStatus extends NyARTargetStatus
 	 * ベクトル結合時の、敷居値(cos(x)の値)
 	 * 0.99は約?度
 	 */
-	private final double _ANG_TH=0.99;
+	public boolean setValue(LowResolutionLabelingSamplerOut.Item i_sample) throws NyARException
+	{
+		LrlsGsRaster r=(LrlsGsRaster)i_sample.ref_raster;
+		return r.baseraster.getVectorReader().traceConture(r, i_sample.lebeling_th, i_sample.entry_pos, vecpos);
+	}	
 	/**
 	 * 値をセットします。この関数は、処理の成功失敗に関わらず、内容変更を行います。
 	 * @param i_raster
@@ -70,7 +166,7 @@ public class NyARContourTargetStatus extends NyARTargetStatus
 	 * @return
 	 * @throws NyARException
 	 */
-	public boolean setValue(NyARGrayscaleRaster i_raster,LowResolutionLabelingSamplerOut.Item i_sample) throws NyARException
+	public boolean setValue_xxx(LowResolutionLabelingSamplerOut.Item i_sample) throws NyARException
 	{
 		NyARContourTargetStatusPool.WorkObject sh=this._shared;
 		NyARIntPoint2d[] coord=sh.coord_buf;
@@ -80,14 +176,15 @@ public class NyARContourTargetStatus extends NyARTargetStatus
 			//輪郭線MAXならなにもできないね。
 			return false;
 		}
-		NyARIntSize base_size=i_raster.getSize();
-		NyARVectorReader_INT1D_GRAY_8 vr=i_raster.getVectorReader();
+		LrlsGsRaster r=(LrlsGsRaster)i_sample.ref_raster;
+		NyARIntSize base_size=r.baseraster.getSize();
+		NyARVectorReader_INT1D_GRAY_8 vr=r.baseraster.getVectorReader();
 		NyARIntRect tmprect=new NyARIntRect();
 		//輪郭→ベクトルの変換
 		
 
 		//ベクトル化
-		int MAX_COORD=this.vecpos.length;
+		int MAX_COORD=this.vecpos.item.length;
 		int skip=i_sample.resolution;
 		tmprect.w=tmprect.h=skip*2;
 
@@ -97,16 +194,16 @@ public class NyARContourTargetStatus extends NyARTargetStatus
 		tmprect.x=(coord[0].x-1)*skip;
 		tmprect.y=(coord[0].y-1)*skip;
 		tmprect.clip(1,1,base_size.w-2,base_size.h-2);
-		vr.getAreaVector8(tmprect,this.vecpos[0]);
+		vr.getAreaVector8(tmprect,this.vecpos.item[0]);
 
 //		int ccx=0;
 //		int ccy=0;
-		NyARContourTargetStatus.CoordData prev_vec_ptr    = this.vecpos[0];
+		NyARContourTargetStatus.CoordData prev_vec_ptr    = this.vecpos.item[0];
 		NyARContourTargetStatus.CoordData current_vec_ptr = null;
 
 		//ベクトル化1:vecposに線分と直行するベクトルを格納。隣接成分と似ている場合は、連結する。
 		for(int i=1;i<coord_len;i++){
-			current_vec_ptr = this.vecpos[number_of_data];
+			current_vec_ptr = this.vecpos.item[number_of_data];
 			//ベクトル定義矩形を作る。
 			tmprect.x=(coord[i].x-1)*skip;
 			tmprect.y=(coord[i].y-1)*skip;
@@ -116,7 +213,7 @@ public class NyARContourTargetStatus extends NyARTargetStatus
 			vr.getAreaVector8(tmprect,current_vec_ptr);
 			
 			//類似度判定
-			if(getVecCos(prev_vec_ptr,current_vec_ptr)<_ANG_TH){
+			if(NyARPointVector2d.getVecCos(prev_vec_ptr,current_vec_ptr)<0.99){
 				//相関なし
 				number_of_data++;
 				prev_vec_ptr=current_vec_ptr;
@@ -137,8 +234,8 @@ public class NyARContourTargetStatus extends NyARTargetStatus
 			}
 		}
 		//ベクトル化2:最後尾と先頭の要素が似ていれば連結する。
-		prev_vec_ptr=this.vecpos[0];
-		if(getVecCos(current_vec_ptr,prev_vec_ptr)<_ANG_TH){
+		prev_vec_ptr=this.vecpos.item[0];
+		if(NyARPointVector2d.getVecCos(current_vec_ptr,prev_vec_ptr)<0.99){
 			//相関なし
 		}else{
 			//相関あり(ベクトルの統合)
@@ -151,12 +248,12 @@ public class NyARContourTargetStatus extends NyARTargetStatus
 		//輪郭中心位置の保存
 //		item.coord_center.x=ccx/coord_len;
 //		item.coord_center.y=ccy/coord_len;
-		this.vecpos_length=number_of_data;
+		this.vecpos.length=number_of_data;
 		//vectorのsq_distを必要なだけ計算
 		double d=0;
 		for(int i=number_of_data-1;i>=0;i--)
 		{
-			current_vec_ptr=this.vecpos[i];
+			current_vec_ptr=this.vecpos.item[i];
 			//ベクトルの法線を取る。
 			current_vec_ptr.OrthogonalVec(current_vec_ptr);
 			//sqdistを計算
@@ -166,7 +263,10 @@ public class NyARContourTargetStatus extends NyARTargetStatus
 		//sq_distの合計を計算
 //		item.sq_dist_sum=d;
 		return true;
-	}	
+	}	 
+ 
+	
+	
 	/**
 	 * 輪郭配列から、から、キーのベクトル(絶対値の大きいベクトル)を順序を壊さずに抽出します。
 	 * @param i_vecpos
@@ -174,7 +274,7 @@ public class NyARContourTargetStatus extends NyARTargetStatus
 	 * @param i_len
 	 * @param o_index
 	 * インデクス番号を受け取る配列。受け取るインデックスの個数は、この配列の数と同じになります。
-	 */
+	 *//*
 	public void getKeyCoordIndexes(int i_len,int[] o_index)
 	{
 		CoordData[] vp=this.vecpos;
@@ -223,15 +323,5 @@ public class NyARContourTargetStatus extends NyARTargetStatus
 			i++;
 		}
 		return;
-	}
-	private double getVecCos(NyARPointVector2d i_v1,NyARPointVector2d i_v2)
-	{
-		double x1=i_v1.dx;
-		double y1=i_v1.dy;
-		double x2=i_v2.dx;
-		double y2=i_v2.dy;
-		double d=(x1*x2+y1*y2)/Math.sqrt((x1*x1+y1*y1)*(x2*x2+y2*y2));
-		return d;
-		
-	}
+	}*/
 }

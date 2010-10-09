@@ -84,7 +84,7 @@ public class LowResolutionLabelingSamplerOut
 	/**
 	 * 元
 	 */
-	public NyARGrayscaleRaster ref_base_raster;
+	public LrlsGsRaster ref_base_raster;
 	private AreaPool _pool;
 	private AreaStack _stack;
 

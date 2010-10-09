@@ -6,6 +6,10 @@ import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfo;
 import jp.nyatla.nyartoolkit.core.raster.*;
 
 
+
+
+
+
 /**
  * 画像データのサンプラです。画像データから、輪郭線抽出のヒントを計算して、出力コンテナに格納します。
  * 入力-LowResolutionLabelingSamplerIn
