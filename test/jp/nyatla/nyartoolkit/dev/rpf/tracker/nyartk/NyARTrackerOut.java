@@ -62,8 +62,8 @@ public class NyARTrackerOut
 	public NyARTargetPool target_pool;
 	public NyARRectTargetStatusPool rect_pool;
 	
-	public final static int NUMBER_OF_NEW=3;
-	public final static int NUMBER_OF_CONTURE=3;
+	public final static int NUMBER_OF_NEW=10;
+	public final static int NUMBER_OF_CONTURE=1;
 	public final static int NUMBER_OF_IGNORE=100;
 	public final static int NUMBER_OF_RECT=8;
 
@@ -72,7 +72,7 @@ public class NyARTrackerOut
 	public NyARTrackerOut() throws NyARException
 	{
 		//ステータスプール
-		this.newst_pool=new NyARNewTargetStatusPool(NUMBER_OF_CONTURE*2);
+		this.newst_pool=new NyARNewTargetStatusPool(NUMBER_OF_NEW*2);
 		this.contourst_pool=new NyARContourTargetStatusPool(NUMBER_OF_CONTURE_POOL,160+120);
 		this.rect_pool=new NyARRectTargetStatusPool(NUMBER_OF_RECT*2);
 		//ターゲットプール

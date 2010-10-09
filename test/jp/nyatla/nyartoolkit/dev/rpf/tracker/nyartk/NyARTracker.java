@@ -128,7 +128,7 @@ public class NyARTracker
 	/**
 	 * アップグレードパラメータ。Ignoreを消失させるまでの待ち期間です。
 	 */
-	private static int IGNPARAM_EXPIRE_COUNT=100;
+	private static int IGNPARAM_EXPIRE_COUNT=5;
 	
 	
 	
@@ -178,6 +178,7 @@ System.out.println("drop:new->ignore"+t.serial+":"+t.last_update);
 			NyARContourTargetStatus c=i_trackdata.contourst_pool.newObject();
 			if(c==null){
 				//ターゲットがいっぱい。
+				System.out.println("upgradeNewTarget:status pool full");
 				break;
 			}
 			//ステータスの値をセット
@@ -238,7 +239,7 @@ System.out.println("lost:ignore:"+t.serial+":"+t.last_update);
 		len_of_cont=i_trackdata.coordtarget.getLength();
 		for(int i=len_of_cont-1;i>=0;i--){
 			NyARTarget t=array_of_new[i];
-			if(t.age>300)//UPGPARAM_CONTOUR_TO_RECT_EXPIRE)
+			if(t.age>UPGPARAM_CONTOUR_TO_RECT_EXPIRE)
 			{
 				//一定の期間が経過したら、ignoreへ遷移
 				if(i_trackdata.igtarget.push(t)!=null){
@@ -366,6 +367,7 @@ System.out.println("lost:ignore:"+t.serial+":"+t.last_update);
 			NyARNewTargetStatus st=i_trackdata.newst_pool.newObject();
 			if(st==null){
 				//ステータスの生成に失敗
+System.out.println("updateNewStatus:status pool full");
 				continue;
 			}
 			//新しいステータス値のセット
@@ -449,12 +451,12 @@ System.out.println("lost:ignore:"+t.serial+":"+t.last_update);
 				continue;
 			}
 			//{単独検出を試行}
-			if(st.setValue(i_base_raster,(NyARRectTargetStatus)d_ptr.ref_status)){
+/*			if(st.setValue(i_base_raster,(NyARRectTargetStatus)d_ptr.ref_status)){
 				//単独検出に成功
 				d_ptr.sample_area.setAreaRect(st.square.sqvertex,4);
 				d_ptr.sample_area_center.x=d_ptr.sample_area.x+d_ptr.sample_area.w/2;
 				d_ptr.sample_area_center.y=d_ptr.sample_area.y+d_ptr.sample_area.h/2;
-			}else{
+			}else*/{
 				int sample_index=this._index[i];
 				if(sample_index<0){
 					//このターゲットに合致するアイテムは無い。

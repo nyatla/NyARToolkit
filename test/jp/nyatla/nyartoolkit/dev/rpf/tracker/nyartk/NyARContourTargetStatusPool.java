@@ -12,6 +12,7 @@ import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.HierarchyRect;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.*;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARManagedObject.INyARManagedObjectPoolOperater;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.LowResolutionLabelingSamplerOut;
+import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.NyARLinePickup;
 
 
 /*
@@ -24,7 +25,7 @@ public class NyARContourTargetStatusPool extends NyARManagedObjectPool<NyARConto
 	{
 		public int VEC_MAX_COORD;
 		public NyARIntPoint2d[] coord_buf;
-		public final NyARContourPickup cpickup=new NyARContourPickup();
+		public final NyARLinePickup cpickup=new NyARLinePickup();
 		public WorkObject(int i_cood_max)
 		{
 			this.VEC_MAX_COORD=i_cood_max;

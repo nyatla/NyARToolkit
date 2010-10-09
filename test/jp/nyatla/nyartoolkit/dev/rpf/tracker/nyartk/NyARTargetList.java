@@ -37,7 +37,7 @@ public class NyARTargetList<T extends NyARTarget> extends NyARPointerStack<T>
 			y1=iitem.sample_area.y-i_item.base_area.y;
 			d=x1*x1+y1*y1;
 			x1=x1+iitem.sample_area.w-i_item.base_area.w;
-			y1=x1+iitem.sample_area.h-i_item.base_area.h;
+			y1=y1+iitem.sample_area.h-i_item.base_area.h;
 			d+=x1*x1+y1*y1;			
 			if(d<min_d){
 				min_d=d;

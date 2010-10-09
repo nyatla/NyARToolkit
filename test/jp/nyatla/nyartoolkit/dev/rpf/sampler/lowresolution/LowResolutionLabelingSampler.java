@@ -44,7 +44,7 @@ public class LowResolutionLabelingSampler
 			//1*1(1bitPixelの5*5)以下の場合は、検出不能
 			//未実装部分:2*2(1bitPixelの8*8)以下の場合は、解像度1で再検出
 			//未実装部分:3*3,4*4(1bitPixelの12*12,16*16)以下の場合は、解像度2で再検出
-			if(w<1 || h<1){
+			if(w<4 || h<4){
 				//今のところは再検出機構なし。
 				return;
 			}
@@ -59,8 +59,8 @@ public class LowResolutionLabelingSampler
 			item.base_area.y=iRefLabel.clip_t*4;
 			item.base_area.w=w*4;
 			item.base_area.h=h*4;
-			item.base_area_center.x=item.base_area.x+item.base_area.w/2;
-			item.base_area_center.y=item.base_area.y+item.base_area.h/2;
+//			item.base_area_center.x=item.base_area.x+item.base_area.w/2;
+//			item.base_area_center.y=item.base_area.y+item.base_area.h/2;
 			item.base_area_sq_diagonal=(w*w+h*h)*(4*4);
 			item.resolution=4;
 			item.lebeling_th=this.current_th;
@@ -98,8 +98,8 @@ public class LowResolutionLabelingSampler
 		assert(i_in.getDepth()>=3);
 
 		//ラスタを取得(Depth2=2^2解像度のデータ)
-		NyARGrayscaleRaster raster4=i_in.getRasterByDepth(2);
-		int th=80;
+		NyARGrayscaleRaster raster4=i_in._rbraster;
+		int th=230;
 		//クラスのパラメータ初期化
 		Main_Labeling lb=this._main_labeling;
 		lb.current_gs=raster4;

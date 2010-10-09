@@ -131,10 +131,10 @@ public class NyARVectorReader_INT1D_GRAY_8
 				vx=((buf[idx_0+1]-buf[idx_0-1])>>1)+((d-b+f-h)>>2);
 				vy=((buf[idx_p1]-buf[idx_m1])>>1)+((f-d+h-b)>>2);
 				//3,4象限方向の統合
-/*				if(vy<0){
+				if(vy<0){
 					vx*=-1;
 					vy*=-1;
-				}*/
+				}
 
 				//加重はvectorの絶対値
 				int wx=vx*vx;
@@ -182,26 +182,22 @@ public class NyARVectorReader_INT1D_GRAY_8
 	public final NyARContourPickup _cpickup=new NyARContourPickup();
 	private final double _ANG_TH=0.99;
 	
-	public boolean traceConture(LrlsGsRaster i_labeling_raster,int i_th,NyARIntPoint2d i_entry,NyARContourTargetStatus.VectorCoords o_coord) throws NyARException
+	public boolean traceConture(LrlsGsRaster i_rob_raster,int i_th,NyARIntPoint2d i_entry,NyARContourTargetStatus.VectorCoords o_coord) throws NyARException
 	{
 		NyARIntPoint2d[] coord=this._coord_buf;
-		//輪郭抽出
-		int coord_len=this._cpickup.getContour(i_labeling_raster,i_th,i_entry.x,i_entry.y,coord);
+		//Robertsラスタから輪郭抽出
+		int coord_len=this._cpickup.getContour(i_rob_raster,i_th,i_entry.x,i_entry.y,coord);
 		if(coord_len==coord.length){
 			//輪郭線MAXならなにもできないね。
 			return false;
 		}
 		NyARIntRect tmprect=new NyARIntRect();
-		int bottom=this._ref_size.h-2;
-		int right=this._ref_size.w-2;
-		
-		//輪郭点からベクトルを計算しながら統合
-
 		//ベクトル化
 		NyARContourTargetStatus.CoordData[] array_of_vec=o_coord.item;
 		int MAX_COORD=o_coord.item.length;
-		int skip=i_labeling_raster.resolution;
-		tmprect.w=tmprect.h=skip*2;
+		int skip=i_rob_raster.resolution;
+		//検出RECTのサイズは、1ドット内側になる。
+		tmprect.w=tmprect.h=skip*2-2;
 		
 		NyARContourTargetStatus.CoordData prev_vec_ptr,current_vec_ptr,tmp_ptr;		
 		CoordData[] tmp_cd=CoordData.createArray(3);
@@ -211,9 +207,8 @@ public class NyARVectorReader_INT1D_GRAY_8
 		int number_of_data=1;
 		int sum=1;
 		//0個目のベクトル
-		tmprect.x=(coord[0].x-1)*skip;
-		tmprect.y=(coord[0].y-1)*skip;
-		tmprect.clip(1,1,right,bottom);
+		tmprect.x=coord[0].x*skip+1;
+		tmprect.y=coord[0].y*skip+1;
 		this.getAreaVector8(tmprect,current_vec_ptr);
 		array_of_vec[0].setValue(current_vec_ptr);
 		//[2]に0番目のバックアップを取る。
@@ -231,10 +226,9 @@ public class NyARVectorReader_INT1D_GRAY_8
 			cdx++;
 
 			//ベクトル定義矩形を作る。
-			tmprect.x=(coord[i].x-1)*skip;
-			tmprect.y=(coord[i].y-1)*skip;
-			tmprect.w=tmprect.h=skip*2;
-			tmprect.clip(1,1,right,bottom);
+			tmprect.x=coord[i].x*skip+1;
+			tmprect.y=coord[i].y*skip+1;
+
 			//ベクトル取得
 			this.getAreaVector8(tmprect,current_vec_ptr);
 			
@@ -268,9 +262,9 @@ public class NyARVectorReader_INT1D_GRAY_8
 		}
 		
 		//ベクトル化2:最後尾と先頭の要素が似ていれば連結する。
-		prev_vec_ptr=tmp_cd[2];
-		//current_vec_ptrには最後のベクトルが入ってる。
-		if(NyARPointVector2d.getVecCos(current_vec_ptr,prev_vec_ptr)<_ANG_TH){
+//		prev_vec_ptr=tmp_cd[2];
+		//current_vec_ptrには最後のベクトルが入ってる。temp_cdには開始のベクトルが入ってる。
+		if(NyARPointVector2d.getVecCos(current_vec_ptr,tmp_cd[2])<_ANG_TH){
 			//相関なし->最後尾のクローズのみ
 			tmp_ptr=array_of_vec[number_of_data-1];
 			tmp_ptr.x/=sum;
@@ -278,11 +272,12 @@ public class NyARVectorReader_INT1D_GRAY_8
 		}else{
 			//相関あり(ベクトルの統合)
 			sum++;
-			tmp_ptr=array_of_vec[0];
-			tmp_ptr.x=(tmp_ptr.x+prev_vec_ptr.x)/sum;
-			tmp_ptr.y=(tmp_ptr.y+prev_vec_ptr.y)/sum;
-			tmp_ptr.dx=tmp_ptr.dx+prev_vec_ptr.dx;
-			tmp_ptr.dy=tmp_ptr.dy+prev_vec_ptr.dy;
+			prev_vec_ptr=array_of_vec[0];
+			current_vec_ptr=array_of_vec[number_of_data-1];
+			prev_vec_ptr.x=(prev_vec_ptr.x+current_vec_ptr.x)/sum;
+			prev_vec_ptr.y=(prev_vec_ptr.y+current_vec_ptr.y)/sum;
+			prev_vec_ptr.dx=prev_vec_ptr.dx+current_vec_ptr.dx;
+			prev_vec_ptr.dy=prev_vec_ptr.dy+current_vec_ptr.dy;
 			number_of_data--;
 		}
 		//輪郭中心位置の保存

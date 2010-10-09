@@ -78,6 +78,40 @@ class ImageSource implements InputSource
 		
 	}
 }
+class MoveSource implements InputSource
+{
+	private BufferedImage _src_image=new BufferedImage(320,240,BufferedImage.TYPE_INT_RGB);
+	private int sx,sy,x,y;
+	private int sx2,sy2,x2,y2;
+
+	public MoveSource()
+	{
+		sx=1;sy=1;x=10;y=10;
+		sx2=-2;sy2=1;x2=100;y2=10;
+	}
+	public void UpdateInput(LowResolutionLabelingSamplerIn o_input) throws NyARException
+	{
+        Graphics s=_src_image.getGraphics();
+        s.setColor(Color.white);
+        s.fillRect(0,0,320,240);
+        s.setColor(Color.black);
+        s.fillRect(x, y,50,50);
+        s.fillRect(x2, y2,50,50);
+        x+=sx;y+=sy;
+        if(x<0 || x>200){sx*=-1;}if(y<0 || y>200){sy*=-1;}
+        x2+=sx2;y2+=sy2;
+        if(x2<0 || x2>200){sx2*=-1;}if(y2<0 || y2>200){sy2*=-1;}
+        INyARRgbRaster ra =new NyARRgbRaster_RGB(320,240);
+        NyARRasterImageIO.copy(_src_image, ra);
+		//GS値化
+		NyARGrayscaleRaster gs=new NyARGrayscaleRaster(320,240);
+		NyARRasterFilter_Rgb2Gs_RgbAve filter=new NyARRasterFilter_Rgb2Gs_RgbAve(ra.getBufferType());
+		filter.doFilter(ra,gs);
+		//samplerへ入力
+		o_input.wrapBuffer(gs);
+		
+	}
+}
 
 class LiveSource implements InputSource,JmfCaptureListener
 {
@@ -170,6 +204,7 @@ public class TestTerget extends Frame
 		this.setSize(1024 + ins.left + ins.right, 768 + ins.top + ins.bottom);
 		
 //		this._input_source=new ImageSource(SAMPLE_FILES);
+//		this._input_source=new MoveSource();
 		this._input_source=new LiveSource();
 		//create sampler
 		this.samplerin=new LowResolutionLabelingSamplerIn(W, H, 3);
@@ -221,6 +256,13 @@ public class TestTerget extends Frame
 		
     	//表示
     	ig.drawImage(bmp,ins.left,ins.top,null);
+    	drawImage(ig,ins.left+320,ins.top,this.samplerin._rbraster);
+    }
+    private void drawImage(Graphics g,int x,int y,NyARGrayscaleRaster r) throws NyARException
+    {
+        BufferedImage _tmp_bf=new BufferedImage(r.getWidth(),r.getHeight(),BufferedImage.TYPE_INT_RGB);
+    	NyARRasterImageIO.copy(r, _tmp_bf);
+    	g.drawImage(_tmp_bf, x,y, null);
     }
     //
     //描画関数
@@ -262,6 +304,7 @@ public class TestTerget extends Frame
 			g.drawRect(t.sample_area.x,t.sample_area.y,t.sample_area.w,t.sample_area.h);
 			NyARContourTargetStatus st=(NyARContourTargetStatus)t.ref_status;
 			for(int i2=0;i2<st.vecpos.length;i2++){
+				//g.drawString(i2+":"+(int)st.vecpos.item[i2].sq_dist,(int)st.vecpos.item[i2].x-1, (int)st.vecpos.item[i2].y-1);
 				g.fillRect((int)st.vecpos.item[i2].x-1, (int)st.vecpos.item[i2].y-1,2,2);
 			}
 		}
