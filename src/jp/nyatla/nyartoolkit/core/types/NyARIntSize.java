@@ -112,13 +112,22 @@ public class NyARIntSize
 	}
 	/**
 	 * 点が、サイズの内部にあるか判定します。
+	 * @param i_point
+	 * @return
+	 */
+	public boolean isInnerSize(NyARDoublePoint2d i_point)
+	{
+		return (i_point.x<this.w && i_point.y<this.h && 0<=i_point.x && 0<=i_point.y);
+	}
+	/**
+	 * 点が、サイズの内部にあるか判定します。
 	 * @param i_x
 	 * @param i_y
 	 * @return
 	 */
 	public boolean isInnerPoint(int i_x,int i_y)
 	{
-		return (i_x<this.w && i_y<this.h);
+		return (i_x<this.w && i_y<this.h && 0<=i_x && 0<=i_y);
 	}
 	/**
 	 * 頂点セットの広がりを計算して格納する。

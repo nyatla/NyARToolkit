@@ -31,7 +31,6 @@
 package jp.nyatla.nyartoolkit.core.raster;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.rasterreader.NyARVectorReader_INT1D_GRAY_8;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
@@ -39,7 +38,6 @@ import jp.nyatla.nyartoolkit.core.types.*;
  */
 public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 {
-	private NyARVectorReader_INT1D_GRAY_8 _vr;
 	protected Object _buf;
 	/**
 	 * バッファオブジェクトがアタッチされていればtrue
@@ -107,12 +105,7 @@ public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 			return false;
 		}
 		this._is_attached_buffer = i_is_alloc;
-		this._vr=new NyARVectorReader_INT1D_GRAY_8(this);
 		return true;
-	}
-	public NyARVectorReader_INT1D_GRAY_8 getVectorReader()
-	{
-		return this._vr;
 	}
 	public Object getBuffer()
 	{
@@ -135,7 +128,6 @@ public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 	public void wrapBuffer(Object i_ref_buf) throws NyARException
 	{
 		assert (!this._is_attached_buffer);// バッファがアタッチされていたら機能しない。
-		this._vr.switchBuffer(i_ref_buf);
 		this._buf = i_ref_buf;
 	}
 

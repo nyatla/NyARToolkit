@@ -31,6 +31,7 @@
 package jp.nyatla.nyartoolkit.core.squaredetect;
 
 import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 /**
  * ARMarkerInfoに相当するクラス。 矩形情報を保持します。
  * 
@@ -42,6 +43,7 @@ public class NyARSquare
 {
     public NyARLinear[] line = NyARLinear.createArray(4);
     public NyARDoublePoint2d[] sqvertex = NyARDoublePoint2d.createArray(4);
+    
     /**
      * 中心点を計算します。
      * @param o_out
@@ -54,40 +56,69 @@ public class NyARSquare
     	return;
     }
     /**
-     * 頂点同士の距離から、頂点の位相差を返します。この関数は、よく似た２つの矩形の頂点同士の対応を取るために使用します。
+     * 頂点同士の距離から、頂点のシフト量を返します。この関数は、よく似た２つの矩形の頂点同士の対応を取るために使用します。
      * @param i_square
+     * 比較対象の矩形
      * @return
-     * 位相差を数値で返します。
-     * 位相差はthis-argです。1の場合、this.sqvertex[0]とthis.sqvertex[1]が対応点になることを示します。
+     * シフト量を数値で返します。
+     * シフト量はthis-argです。1の場合、this.sqvertex[0]とi_square.sqvertex[1]が対応点になる(shift量1)であることを示します。
      */
-    public int getVertexPhaseShift(NyARSquare i_square)
+    public int checkVertexShiftValue(NyARSquare i_square)
     {
     	NyARDoublePoint2d[] a=this.sqvertex;
     	NyARDoublePoint2d[] b=i_square.sqvertex;
     	
-    	int shift;
-    	//割り算したくないでござる。→展開
-
-    	//3番目
-
-    	//2-0番目
-    	int max_dist=Integer.MAX_VALUE;
+    	//3-0番目
+    	int min_dist=0;
+    	int min_index=0;
+    	int xd,yd;
     	for(int i=3;i>=0;i--){
-    		int idx=
+    		int d=0;
     		for(int i2=3;i2>=0;i2--){
-    			int xd= (int)(a[i].x-b[i].x);
-    			int yd= (int)(a[i].y-b[i].y);
-    			int d=xd*xd+yd*yd;
+    			xd= (int)(a[i2].x-b[(i2+i)%4].x);
+    			yd= (int)(a[i2].y-b[(i2+i)%4].y);
+    			d+=xd*xd+yd*yd;
+    		}
+    		if(min_dist>d){
+    			min_dist=d;
+    			min_index=i;
     		}
     	}
+    	return min_index;
     }
     /**
-     * 頂点をシフトして、矩形を回転させます。
+     * 4とnの最大公約数テーブル
+     */
+    private final static int[] _gcd_table4={-1,1,2,1};
+    /**
+     * 頂点を左回転して、矩形を回転させます。
      * @param i_shift
      */
-    public void rotateVertex(int i_shift)
+    public void rotateVertexL(int i_shift)
     {
-    	
-    }
-
+    	assert(i_shift<4);
+    	NyARDoublePoint2d vertext;
+    	NyARLinear linet;
+    	if(i_shift==0){
+    		return;
+    	}
+    	int t1,t2;
+    	int d, i, j, mk;
+	    int ll=4-i_shift;
+	    d = _gcd_table4[ll];//NyMath.gcn(4,ll);
+	    mk = (4-ll) % 4;
+	    for (i = 0; i < d; i++) {
+	    	linet=this.line[i];
+	    	vertext=this.sqvertex[i];
+	        for (j = 1; j < 4/d; j++) {
+	            t1=(i + (j-1)*mk) % 4;
+	            t2=(i + j*mk) % 4;
+	    		this.line[t1]=this.line[t2];
+	    		this.sqvertex[t1]=this.sqvertex[t2];
+	        }
+	        t1=(i + ll) % 4;
+    		this.line[t1]=linet;
+    		this.sqvertex[t1]=vertext;
+	    }
+    }    
 }

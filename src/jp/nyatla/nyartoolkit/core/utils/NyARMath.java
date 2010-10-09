@@ -83,6 +83,25 @@ public class NyARMath
 		double res = Math.pow(Math.abs(i_in), 1.0 / 3.0);
 		return (i_in >= 0) ? res : -res;
 	}
+	/**
+	 * ユークリッドの互除法により、2変数の最大公約数を求める。
+	 * http://ja.wikipedia.org/wiki/%E3%83%A6%E3%83%BC%E3%82%AF%E3%83%AA%E3%83%83%E3%83%89%E3%81%AE%E4%BA%92%E9%99%A4%E6%B3%95
+	 * @param i_x
+	 * @param i_y
+	 * @return
+	 */
+	public static int gcd(int i_x,int i_y)
+	{
+		int x=i_x;
+		int y=i_y;
+	    int r;
+	    while (y != 0) {
+	        r = x % y;
+	        x = y;
+	        y = r;
+	    }
+	    return x;
+	}
 //	/**
 //	 * 格納値をベクトルとして、距離を返します。
 //	 * @return

@@ -30,7 +30,10 @@
  */
 package jp.nyatla.nyartoolkit.core.types;
 
-
+/**
+ * データ型です。
+ * 2次元の浮動小数点方の点を格納します。
+ */
 public class NyARDoublePoint2d
 {
 	public double x;
@@ -61,36 +64,59 @@ public class NyARDoublePoint2d
 		}
 		return ret;
 	}
+	/**
+	 * コンストラクタです。
+	 */
 	public NyARDoublePoint2d()
 	{
 		this.x=0;
 		this.y=0;
 		return;
-	}	
+	}
+	/**
+	 * i_srcの値をthisへセットします。
+	 * @param i_src
+	 */
 	public NyARDoublePoint2d(double i_x,double i_y)
 	{
 		this.x=i_x;
 		this.y=i_y;
 		return;
 	}
+	/**
+	 * i_srcの値をthisへセットします。
+	 * @param i_src
+	 */
 	public NyARDoublePoint2d(NyARDoublePoint2d i_src)
 	{
 		this.x=i_src.x;
 		this.y=i_src.y;
 		return;
 	}
+	/**
+	 * i_srcの値をthisへセットします。
+	 * @param i_src
+	 */
 	public NyARDoublePoint2d(NyARIntPoint2d i_src)
 	{
 		this.x=(double)i_src.x;
 		this.y=(double)i_src.y;
 		return;
 	}
+	/**
+	 * i_srcの値をthisへセットします。
+	 * @param i_src
+	 */
 	public void setValue(NyARDoublePoint2d i_src)
 	{
 		this.x=i_src.x;
 		this.y=i_src.y;
 		return;
 	}
+	/**
+	 * i_srcの値をthisへセットします。
+	 * @param i_src
+	 */
 	public void setValue(NyARIntPoint2d i_src)
 	{
 		this.x=(double)i_src.x;
