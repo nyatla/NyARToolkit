@@ -56,15 +56,19 @@ public class NyARContourPickup
 		return impl_getContour(i_raster,i_area.x,i_area.y,i_area.x+i_area.w-1,i_area.h+i_area.y-1,0,i_entry_x,i_entry_y,o_coord);
 	}
 	/**
-	 * 
+	 * ラスタの指定点を基点に、輪郭線を抽出します。開始点は、輪郭の一部、かつ左上のエッジで有る必要があります。
 	 * @param i_raster
+	 * 輪郭線を抽出するラスタを指定します。
 	 * @param i_th
-	 * 画像を２値化するための閾値。暗点<=i_th<明点となります。
+	 * 輪郭とみなす暗点の敷居値を指定します。
 	 * @param i_entry_x
-	 * 輪郭の追跡開始点を指定します。
+	 * 輪郭抽出の開始点です。
 	 * @param i_entry_y
+	 * 輪郭抽出の開始点です。
 	 * @param o_coord
+	 * 輪郭点を格納する配列を指定します。i_array_sizeよりも大きなサイズの配列が必要です。
 	 * @return
+	 * o_coordに抽出した輪郭点の数、またはo_coordのサイズです。o_coordのサイズを返した時には、途中で輪郭線抽出を打ち切った場合があります。
 	 * @throws NyARException
 	 */
 	public int getContour(NyARGrayscaleRaster i_raster,int i_th,int i_entry_x,int i_entry_y,NyARIntPoint2d[] o_coord) throws NyARException
@@ -80,20 +84,17 @@ public class NyARContourPickup
 	}
 	
 	/**
-	 * ラスタのエントリポイントから辿れる輪郭線を配列に返します。
-	 * 探索範囲は、i_l<=n<=i_r,i_t<=n<=i_b
+	 * 輪郭線抽出関数の実体です。
 	 * @param i_raster
 	 * @param i_l
 	 * @param i_t
 	 * @param i_r
 	 * @param i_b
 	 * @param i_th
-	 * 暗点<=th<明点
 	 * @param i_entry_x
 	 * @param i_entry_y
 	 * @param o_coord
 	 * @return
-	 * 輪郭線の長さを返します。
 	 * @throws NyARException
 	 */
 	private int impl_getContour(INyARRaster i_raster,int i_l,int i_t,int i_r,int i_b,int i_th,int i_entry_x,int i_entry_y,NyARIntPoint2d[] o_coord) throws NyARException
@@ -102,7 +103,7 @@ public class NyARContourPickup
 		final int[] xdir = _getContour_xdir;// static int xdir[8] = { 0, 1, 1, 1, 0,-1,-1,-1};
 		final int[] ydir = _getContour_ydir;// static int ydir[8] = {-1,-1, 0, 1, 1, 1, 0,-1};
 
-		final int[] i_buf=(int[])i_raster.getBuffer();
+		final int[] buf=(int[])i_raster.getBuffer();
 		final int width=i_raster.getWidth();
 		//クリップ領域の上端に接しているポイントを得る。
 
@@ -122,35 +123,35 @@ public class NyARContourPickup
 			if(c>i_l && c<i_r && r>i_t && r<i_b){
 				for(;;){//gotoのエミュレート用のfor文
 					//境界に接していないとき(暗点判定)
-					if (i_buf[(r + ydir[dir])*width+(c + xdir[dir])] <= i_th) {
+					if (buf[(r + ydir[dir])*width+(c + xdir[dir])] <= i_th) {
 						break;
 					}
 					dir++;
-					if (i_buf[(r + ydir[dir])*width+(c + xdir[dir])] <= i_th) {
+					if (buf[(r + ydir[dir])*width+(c + xdir[dir])] <= i_th) {
 						break;
 					}
 					dir++;
-					if (i_buf[(r + ydir[dir])*width+(c + xdir[dir])] <= i_th) {
+					if (buf[(r + ydir[dir])*width+(c + xdir[dir])] <= i_th) {
 						break;
 					}
 					dir++;
-					if (i_buf[(r + ydir[dir])*width+(c + xdir[dir])] <= i_th) {
+					if (buf[(r + ydir[dir])*width+(c + xdir[dir])] <= i_th) {
 						break;
 					}
 					dir++;
-					if (i_buf[(r + ydir[dir])*width+(c + xdir[dir])] <= i_th) {
+					if (buf[(r + ydir[dir])*width+(c + xdir[dir])] <= i_th) {
 						break;
 					}
 					dir++;
-					if (i_buf[(r + ydir[dir])*width+(c + xdir[dir])] <= i_th) {
+					if (buf[(r + ydir[dir])*width+(c + xdir[dir])] <= i_th) {
 						break;
 					}
 					dir++;
-					if (i_buf[(r + ydir[dir])*width+(c + xdir[dir])] <= i_th) {
+					if (buf[(r + ydir[dir])*width+(c + xdir[dir])] <= i_th) {
 						break;
 					}
 					dir++;
-					if (i_buf[(r + ydir[dir])*width+(c + xdir[dir])] <= i_th) {
+					if (buf[(r + ydir[dir])*width+(c + xdir[dir])] <= i_th) {
 						break;
 					}
 
@@ -158,14 +159,14 @@ public class NyARContourPickup
 					throw new NyARException();			
 				}
 			}else{
-				//境界に接しているとき				
+				//境界に接しているとき
 				int i;
 				for (i = 0; i < 8; i++){				
 					final int x=c + xdir[dir];
 					final int y=r + ydir[dir];
 					//境界チェック
 					if(x>=i_l && x<=i_r && y>=i_t && y<=i_b){
-						if (i_buf[(y)*width+(x)] <= i_th) {
+						if (buf[(y)*width+(x)] <= i_th) {
 							break;
 						}
 					}
@@ -176,25 +177,57 @@ public class NyARContourPickup
 					throw new NyARException();// return(-1);
 				}				
 			}
-			
-			dir=dir% 8;//dirの正規化
 
 			// xcoordとycoordをc,rにも保存
 			c = c + xdir[dir];
 			r = r + ydir[dir];
 			o_coord[coord_num].x = c;
 			o_coord[coord_num].y = r;
-			// 終了条件判定
+			//終了条件判定
 			if (c == i_entry_x && r == i_entry_y){
+				//開始点と同じピクセルに到達したら、終点の可能性がある。
 				coord_num++;
-				break;
+				//末端のチェック
+				if (coord_num == max_coord) {
+					//輪郭bufが末端に達した
+					return coord_num;
+				}				
+				//末端候補の次のピクセルを調べる
+				dir = (dir + 5) % 8;//dirの正規化
+				int i;
+				for (i = 0; i < 8; i++){				
+					final int x=c + xdir[dir];
+					final int y=r + ydir[dir];
+					//境界チェック
+					if(x>=i_l && x<=i_r && y>=i_t && y<=i_b){
+						if (buf[(y)*width+(x)] <= i_th) {
+							break;
+						}
+					}
+					dir++;//倍長テーブルを参照するので問題なし
+				}
+				if (i == 8) {
+					//8方向全て調べたけどラベルが無いよ？
+					throw new NyARException();
+				}
+				//得たピクセルが、[1]と同じならば、末端である。
+				c = c + xdir[dir];
+				r = r + ydir[dir];
+				if(o_coord[1].x ==c && o_coord[1].y ==r){
+					//終点に達している。
+					return coord_num;
+				}else{
+					//終点ではない。
+					o_coord[coord_num].x = c;
+					o_coord[coord_num].y = r;
+				}
 			}
 			coord_num++;
+			//末端のチェック
 			if (coord_num == max_coord) {
 				//輪郭が末端に達した
 				return coord_num;
 			}
 		}
-		return coord_num;
 	}
 }

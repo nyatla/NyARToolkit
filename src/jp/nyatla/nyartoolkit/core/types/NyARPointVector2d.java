@@ -51,6 +51,12 @@ public class NyARPointVector2d
 		double y2=i_v2.dy;
 		double d=(x1*x2+y1*y2)/Math.sqrt((x1*x1+y1*y1)*(x2*x2+y2*y2));
 		return d;
-		
+	}
+	public static double getVecCos(NyARPointVector2d i_v1,double i_v2_x,double i_v2_y)
+	{
+		double x1=i_v1.dx;
+		double y1=i_v1.dy;
+		double d=(x1*i_v2_x+y1*i_v2_y)/Math.sqrt((x1*x1+y1*y1)*(i_v2_x*i_v2_x+i_v2_y*i_v2_y));
+		return d;
 	}	
 }

@@ -4,8 +4,29 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingImage;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 
+/**
+ * NyARLabelingImageから、輪郭線を抽出します。
+ * @bug
+ * この輪郭線抽出は、1ドット幅の輪郭を正しく抽出できません。ARToolKit互換の画像処理では問題になることは少ないので、
+ * 大きな影響はありませんが、必要に応じてNyARContourPickupを参考に直してください。
+ */
 public class NyARContourPickup_ARToolKit extends NyARContourPickup
 {
+	/**
+	 * ラスタの指定点を基点に、輪郭線を抽出します。開始点は、輪郭の一部、かつ左上のエッジで有る必要があります。
+	 * @param i_raster
+	 * 輪郭線を抽出するラスタを指定します。
+	 * @param i_entry_x
+	 * 輪郭抽出の開始点です。
+	 * @param i_entry_y
+	 * 輪郭抽出の開始点です。
+	 * @param i_array_size
+	 * o_coordの有効長を指定します。
+	 * @param o_coord
+	 * 輪郭点を格納する配列を指定します。i_array_sizeよりも大きなサイズの配列が必要です。
+	 * @return
+	 * @throws NyARException
+	 */
 	public int getContour(NyARLabelingImage i_raster,int i_entry_x,int i_entry_y,int i_array_size,NyARIntPoint2d[] o_coord) throws NyARException
 	{	
 		final int[] xdir = _getContour_xdir;// static int xdir[8] = { 0, 1, 1, 1, 0,-1,-1,-1};

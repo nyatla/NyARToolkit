@@ -112,14 +112,30 @@ public class NyARLinear
 		this.c=(i_dx*i_y-i_dy*i_x);
 		return;
 	}
+	public final void setVector(NyARPointVector2d i_vector)
+	{
+		this.a= i_vector.dy;
+		this.b=-i_vector.dx;
+		this.c=(i_vector.dx*i_vector.y-i_vector.dy*i_vector.x);
+		return;		
+	}
 	/**
 	 * 直行する直線を求めます。
 	 */
-	public final void orthogonalLine()
+	public final void orthogonalLine(double i_x,double i_y)
 	{
-		double dx=this.a;
-		this.a=this.b;
-		this.b=dx;
+		double a=this.a;
+		double b=this.b;
+		this.a=b;
+		this.b=-a;
+		this.c=-(b*i_x-a*i_y);
 	}
-
+	public final void orthogonalLine(NyARLinear i_source,double i_x,double i_y)
+	{
+		double a=i_source.a;
+		double b=i_source.b;
+		this.a=b;
+		this.b=-a;
+		this.c=-(b*i_x-a*i_y);
+	}
 }
