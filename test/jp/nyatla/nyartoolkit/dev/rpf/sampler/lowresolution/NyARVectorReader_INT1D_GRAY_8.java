@@ -98,19 +98,19 @@ public class NyARVectorReader_INT1D_GRAY_8
 		o_v.y=((buf[idx_p1]-buf[idx_m1])>>1)+((f-d+h-b)>>2);
 	}
 	/**
-	 * 範囲の8近傍画素ベクトルを取得します。
-	 * 取得可能な範囲は、Rasterの1ドット内側です。
+	 * RECT範囲内の画素ベクトルの合計値と、ベクトルのエッジ中心を取得します。
 	 * @param i_gs
 	 * @param i_area
-	 * ピクセル取得を行う範囲を設定します。クリッピングは行われません。
+	 * ピクセル取得を行う範囲を設定します。i_area.w,hは、それぞれ3以上の数値である必要があります。
+	 * 
 	 * 320*240の場合、RECTの範囲は(x>0 && x<319 x+w>0 && x+w<319),(y>0 && y<239 x+w>0 && x+w<319)となります。
 	 * @param i_pos
 	 * @param i_vec
 	 */
 	public void getAreaVector8(NyARIntRect i_area,NyARPointVector2d o_posvec)
 	{
-		//クリッピングされていること。
-		assert((i_area.x>0) && (i_area.y>0) && (i_area.x+i_area.w)<this._ref_size.w && (i_area.y+i_area.h)<this._ref_size.h);
+		assert(i_area.h>=3 && i_area.w>=3);
+		assert((i_area.x>=0) && (i_area.y>=0) && (i_area.x+i_area.w)<=this._ref_size.w && (i_area.y+i_area.h)<=this._ref_size.h);
 		int[] buf=this._ref_buf;
 		int stride=this._ref_size.w;
 		//x=(Σ|Vx|*Xn)/n,y=(Σ|Vy|*Yn)/n
@@ -118,10 +118,10 @@ public class NyARVectorReader_INT1D_GRAY_8
 		int sum_x,sum_y,sum_wx,sum_wy,sum_vx,sum_vy;
 		sum_x=sum_y=sum_wx=sum_wy=sum_vx=sum_vy=0;
 		int vx,vy;
-		for(int i=i_area.h-1;i>=0;i--){
-			for(int i2=i_area.w-1;i2>=0;i2--){
+		for(int i=i_area.h-3;i>=0;i--){
+			for(int i2=i_area.w-3;i2>=0;i2--){
 				//1ビット分のベクトルを計算
-				int idx_0 =stride*(i+i_area.y)+(i2+i_area.x);
+				int idx_0 =stride*(i+1+i_area.y)+(i2+1+i_area.x);
 				int idx_p1=idx_0+stride;
 				int idx_m1=idx_0-stride;
 				int b=buf[idx_m1-1];
@@ -130,11 +130,6 @@ public class NyARVectorReader_INT1D_GRAY_8
 				int f=buf[idx_p1+1];
 				vx=((buf[idx_0+1]-buf[idx_0-1])>>1)+((d-b+f-h)>>2);
 				vy=((buf[idx_p1]-buf[idx_m1])>>1)+((f-d+h-b)>>2);
-				//3,4象限方向の統合
-				if(vy<0){
-					vx*=-1;
-					vy*=-1;
-				}
 
 				//加重はvectorの絶対値
 				int wx=vx*vx;
@@ -143,8 +138,8 @@ public class NyARVectorReader_INT1D_GRAY_8
 				sum_wy+=wy;
 				sum_vx+=wx*vx;
 				sum_vy+=wy*vy;
-				sum_x+=wx*(i2+i_area.x);
-				sum_y+=wy*(i+i_area.y);
+				sum_x+=wx*(i2+1+i_area.x);
+				sum_y+=wy*(i+1+i_area.y);
 			}
 		}
 		//加重平均(posが0の場合の位置は中心)
@@ -197,7 +192,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 		int MAX_COORD=o_coord.item.length;
 		int skip=i_rob_raster.resolution;
 		//検出RECTのサイズは、1ドット内側になる。
-		tmprect.w=tmprect.h=skip*2-2;
+		tmprect.w=tmprect.h=skip*2;
 		
 		NyARContourTargetStatus.CoordData prev_vec_ptr,current_vec_ptr,tmp_ptr;		
 		CoordData[] tmp_cd=CoordData.createArray(3);
@@ -207,8 +202,8 @@ public class NyARVectorReader_INT1D_GRAY_8
 		int number_of_data=1;
 		int sum=1;
 		//0個目のベクトル
-		tmprect.x=coord[0].x*skip+1;
-		tmprect.y=coord[0].y*skip+1;
+		tmprect.x=coord[0].x*skip;
+		tmprect.y=coord[0].y*skip;
 		this.getAreaVector8(tmprect,current_vec_ptr);
 		array_of_vec[0].setValue(current_vec_ptr);
 		//[2]に0番目のバックアップを取る。
@@ -226,8 +221,8 @@ public class NyARVectorReader_INT1D_GRAY_8
 			cdx++;
 
 			//ベクトル定義矩形を作る。
-			tmprect.x=coord[i].x*skip+1;
-			tmprect.y=coord[i].y*skip+1;
+			tmprect.x=coord[i].x*skip;
+			tmprect.y=coord[i].y*skip;
 
 			//ベクトル取得
 			this.getAreaVector8(tmprect,current_vec_ptr);

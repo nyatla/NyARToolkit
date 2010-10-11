@@ -99,7 +99,7 @@ public class LowResolutionLabelingSampler
 
 		//ラスタを取得(Depth2=2^2解像度のデータ)
 		NyARGrayscaleRaster raster4=i_in._rbraster;
-		int th=230;
+		int th=200;
 		//クラスのパラメータ初期化
 		Main_Labeling lb=this._main_labeling;
 		lb.current_gs=raster4;

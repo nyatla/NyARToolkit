@@ -203,9 +203,9 @@ public class TestTerget extends Frame
 		Insets ins = this.getInsets();
 		this.setSize(1024 + ins.left + ins.right, 768 + ins.top + ins.bottom);
 		
-//		this._input_source=new ImageSource(SAMPLE_FILES);
+		this._input_source=new ImageSource(SAMPLE_FILES);
 //		this._input_source=new MoveSource();
-		this._input_source=new LiveSource();
+//		this._input_source=new LiveSource();
 		//create sampler
 		this.samplerin=new LowResolutionLabelingSamplerIn(W, H, 3);
 		this.samplerout=new LowResolutionLabelingSamplerOut(100);
@@ -253,7 +253,6 @@ public class TestTerget extends Frame
     	drawIgnoreTarget(bmp,Color.red);
     	drawContourTarget(bmp,Color.blue);
     	drawRectTarget(bmp,Color.cyan);
-		
     	//表示
     	ig.drawImage(bmp,ins.left,ins.top,null);
     	drawImage(ig,ins.left+320,ins.top,this.samplerin._rbraster);

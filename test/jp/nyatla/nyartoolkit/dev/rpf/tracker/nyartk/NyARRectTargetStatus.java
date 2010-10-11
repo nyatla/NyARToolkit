@@ -60,6 +60,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		if(i_contour_status.vecpos.length<4){
 			return false;
 		}
+		i_contour_status.vecpos.margeResembleCoordIgnoreOrder();
 		i_contour_status.vecpos.getKeyCoordIndexes(indexbuf);
 		//[省略]正当性チェック？(もしやるなら輪郭抽出系にも手を加えないと。)
 		NyARSquare sq=this.square;

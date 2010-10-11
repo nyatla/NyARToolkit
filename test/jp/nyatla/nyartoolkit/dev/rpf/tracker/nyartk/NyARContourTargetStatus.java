@@ -6,6 +6,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+import jp.nyatla.nyartoolkit.core.types.NyARLinear;
 import jp.nyatla.nyartoolkit.core.types.NyARPointVector2d;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.LowResolutionLabelingSamplerOut;
@@ -38,6 +39,30 @@ public class NyARContourTargetStatus extends NyARTargetStatus
 		 * インデクス番号を受け取る配列。受け取るインデックスの個数は、この配列の数と同じになります。
 		 */
 		public void getKeyCoordIndexes(int[] o_index)
+		{
+			getKeyCoordIndexesNoOrder(o_index);
+			//idxでソート
+			int out_len_1=o_index.length-1;
+			for(int i=0;i<out_len_1;){
+				if(o_index[i]>o_index[i+1]){
+					int t=o_index[i];
+					o_index[i]=o_index[i+1];
+					o_index[i+1]=t;
+					i=0;
+					continue;
+				}
+				i++;
+			}
+			return;
+		}
+		/**
+		 * 輪郭配列から、から、キーのベクトル(絶対値の大きいベクトル)を順序を無視して抽出します。
+		 * @param i_vecpos
+		 * @param i_len
+		 * @param o_index
+		 * インデクス番号を受け取る配列。受け取るインデックスの個数は、この配列の数と同じになります。
+		 */
+		public void getKeyCoordIndexesNoOrder(int[] o_index)
 		{
 			CoordData[] vp=this.item;
 			assert(o_index.length<=this.length);
@@ -73,19 +98,8 @@ public class NyARContourTargetStatus extends NyARTargetStatus
 					}
 				}
 			}
-			//idxでソート
-			for(i=0;i<out_len_1;){
-				if(o_index[i]>o_index[i+1]){
-					int t=o_index[i];
-					o_index[i]=o_index[i+1];
-					o_index[i+1]=t;
-					i=0;
-					continue;
-				}
-				i++;
-			}
 			return;
-		}
+		}		
 		/**
 		 * 最も大きいベクトル成分のインデクスを返します。
 		 * @return
@@ -103,7 +117,62 @@ public class NyARContourTargetStatus extends NyARTargetStatus
 			}
 			return index;
 		}
-		
+		/**
+		 * 順番を無視して、類似する輪郭線のベクトルをまとめます。
+		 * @return
+		 */
+		public void margeResembleCoordIgnoreOrder()
+		{
+			for(int i=this.length-1;i>=0;i--){
+				CoordData target1=this.item[i];
+				if(target1.dy<0){
+					target1.dy*=-1;
+					target1.dx*=-1;
+				}
+			}
+			
+			for(int i=this.length-1;i>=0;i--){
+				CoordData target1=this.item[i];
+				for(int i2=i-1;i2>=0;i2--){
+					CoordData target2=this.item[i2];
+					if(NyARPointVector2d.getVecCos(target1,target2)>=0.99){
+						//それぞれの代表点から法線を引いて、相手の直線との交点を計算する。
+						NyARLinear l1=new NyARLinear();
+						NyARLinear l2=new NyARLinear();
+						NyARLinear ol=new NyARLinear();
+						NyARDoublePoint2d p=new NyARDoublePoint2d();
+						l1.setVector(target1);
+						l2.setVector(target2);
+						ol.orthogonalLine(l1,target1.x,target1.y);
+						double wx,wy;
+						double l=0;
+						NyARLinear.crossPos(ol,l2,p);
+						//交点間の距離の合計を計算。lに2*dist^2を得る。
+						wx=(p.x-target1.x);wy=(p.y-target1.y);
+						l+=wx*wx+wy*wy;
+						ol.orthogonalLine(l2,target2.x,target2.y);
+						NyARLinear.crossPos(ol,l1,p);
+						wx=(p.x-target2.x);wy=(p.y-target2.y);
+						l+=wx*wx+wy*wy;
+						//距離が一定値以下なら、マージ
+						if(l>((5*5)*2))
+						{
+							continue;
+						}
+						//似たようなベクトル発見したら、前方のアイテムに値を統合。
+						target2.x=(target1.x+target2.x)/2;
+						target2.y=(target1.y+target2.y)/2;
+						target2.dx+=target1.dx;
+						target2.dy+=target1.dy;
+						target2.sq_dist+=target1.sq_dist;
+						//最後尾のアイテムと、現在のアイテムを差し替え
+						this.item[i2]=this.item[this.length-1];
+						this.item[this.length-1]=target2;
+						this.length-=1;
+					}
+				}
+			}
+		}
 	}
 	
 	/**
@@ -148,9 +217,12 @@ public class NyARContourTargetStatus extends NyARTargetStatus
 		this._shared=i_shared;
 	}
 	/**
-	 * ベクトル結合時の、敷居値(cos(x)の値)
-	 * 0.99は約?度
+	 * データソースから値をセットします。
+	 * @param i_sample
+	 * @return
+	 * @throws NyARException
 	 */
+
 	public boolean setValue(LowResolutionLabelingSamplerOut.Item i_sample) throws NyARException
 	{
 		LrlsGsRaster r=(LrlsGsRaster)i_sample.ref_raster;
