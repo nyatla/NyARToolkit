@@ -116,7 +116,7 @@ public class NyARTracker
 		updateIgnoreStatus(i_trackdata);
 		//ターゲットのアップグレード
 		upgradeRectTarget(i_trackdata);
-//		upgradeContourTarget(i_trackdata);
+		upgradeContourTarget(i_trackdata);
 		upgradeNewTarget(i_source.ref_base_raster,i_trackdata);
 		upgradeIgnoreTarget(i_trackdata);
 	}
@@ -421,9 +421,7 @@ System.out.println("updateNewStatus:status pool full");
 				st.releaseObject();
 				continue;
 			}
-			//デバグ用
-			st.vecpos.margeResembleCoordIgnoreOrder();
-
+//[DEBUG:]st.vecpos.margeResembleCoordIgnoreOrder();
 			d_ptr.setValue(s);
 			d_ptr.last_update=clock;
 			//ref_statusの切り替え

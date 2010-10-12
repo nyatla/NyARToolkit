@@ -41,7 +41,7 @@ public class LowResolutionLabelingSamplerOut
 		/**
 		 * ラべリング対象の範囲中心を、トップレベルに換算した値です。クリップ情報から計算されます。
 		 */
-//		public NyARIntPoint2d base_area_center=new NyARIntPoint2d();
+		public NyARIntPoint2d base_area_center=new NyARIntPoint2d();
 		/**
 		 * エリア矩形の対角距離の2乗値
 		 */
@@ -67,7 +67,7 @@ public class LowResolutionLabelingSamplerOut
 		}
 		protected Item createElement()
 		{
-			return new Item(this._inner_pool);
+			return new Item(this._op_interface);
 		}
 	}
 	/**

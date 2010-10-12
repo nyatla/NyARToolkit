@@ -44,7 +44,7 @@ public class AreaDataPool extends NyARManagedObjectPool<AreaDataPool.AreaDataIte
 	}
 	protected AreaDataPool.AreaDataItem createElement() throws NyARException
 	{
-		return new AreaDataItem(this._inner_pool);
+		return new AreaDataItem(this._op_interface);
 	}
 	public AreaDataPool(int i_length) throws NyARException
 	{

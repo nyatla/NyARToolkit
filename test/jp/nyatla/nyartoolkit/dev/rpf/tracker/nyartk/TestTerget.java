@@ -203,9 +203,9 @@ public class TestTerget extends Frame
 		Insets ins = this.getInsets();
 		this.setSize(1024 + ins.left + ins.right, 768 + ins.top + ins.bottom);
 		
-		this._input_source=new ImageSource(SAMPLE_FILES);
+//	this._input_source=new ImageSource(SAMPLE_FILES);
 //		this._input_source=new MoveSource();
-//		this._input_source=new LiveSource();
+		this._input_source=new LiveSource();
 		//create sampler
 		this.samplerin=new LowResolutionLabelingSamplerIn(W, H, 3);
 		this.samplerout=new LowResolutionLabelingSamplerOut(100);
@@ -276,9 +276,9 @@ public class TestTerget extends Frame
     	g.setColor(c);
 		for(int i=this.trackerout.recttarget.getLength()-1;i>=0;i--){
 			NyARTarget t=this.trackerout.recttarget.getItem(i);
-			g.drawString("RT",t.sample_area.x,t.sample_area.y);
+			NyARRectTargetStatus s=(NyARRectTargetStatus)t.ref_status;
+			g.drawString("RT:"+t.serial,t.sample_area.x,t.sample_area.y);
 			for(int i2=0;i2<4;i2++){
-				NyARRectTargetStatus s=(NyARRectTargetStatus)t.ref_status;
 //				g.fillRect((int)st.vecpos[i2].x-1, (int)st.vecpos[i2].y-1,2,2);
 				g.drawLine(
 					(int)s.square.sqvertex[i2].x,
@@ -303,7 +303,7 @@ public class TestTerget extends Frame
 			g.drawRect(t.sample_area.x,t.sample_area.y,t.sample_area.w,t.sample_area.h);
 			NyARContourTargetStatus st=(NyARContourTargetStatus)t.ref_status;
 			for(int i2=0;i2<st.vecpos.length;i2++){
-				//g.drawString(i2+":"+(int)st.vecpos.item[i2].sq_dist,(int)st.vecpos.item[i2].x-1, (int)st.vecpos.item[i2].y-1);
+				g.drawString(i2+":"/*+(int)st.vecpos.item[i2].sq_dist*/,(int)st.vecpos.item[i2].x-1, (int)st.vecpos.item[i2].y-1);
 				g.fillRect((int)st.vecpos.item[i2].x-1, (int)st.vecpos.item[i2].y-1,2,2);
 			}
 		}
@@ -356,18 +356,7 @@ public class TestTerget extends Frame
     }
     
     
-    public void getCrossPos(NyARPointVector2d vec1,NyARPointVector2d vec2,NyARDoublePoint2d o_pos)
-    {
-    	NyARLinear line1=new NyARLinear();
-    	NyARLinear line2=new NyARLinear();
-    	line1.setVector(vec1.dx,vec1.dy,vec1.x,vec1.y);
-    	line1.orthogonalLine();
-    	line2.setVector(vec1.dx,vec1.dy,vec1.x,vec1.y);
-    	line2.orthogonalLine();
-    	NyARLinear.crossPos(line1,line2, o_pos);
-    	o_pos.y=o_pos.y;
-    	
-    }
+
 
     public void mainloop() throws Exception
     {

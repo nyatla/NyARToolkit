@@ -13,7 +13,7 @@ import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ContourDataPool;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARManagedObjectPool;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARManagedObject.INyARManagedObjectPoolOperater;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.LowResolutionLabelingSamplerOut;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARContourTargetStatus.CoordData;
+
 
 class NyARRectTargetList extends NyARTargetList<NyARTarget>
 {
@@ -24,30 +24,7 @@ class NyARRectTargetList extends NyARTargetList<NyARTarget>
 }
 
 
-/*
- * 輪郭情報を保管します。
- * このクラスの要素は、他の要素から参照する可能性があります。
- */
-class NyARRectTargetStatusPool extends NyARManagedObjectPool<NyARRectTargetStatus>
-{	
 
-	/**
-	 * @param i_size
-	 * スタックの最大サイズ
-	 * @param i_cood_max
-	 * 輪郭ベクトルの最大数
-	 * @throws NyARException
-	 */
-	public NyARRectTargetStatusPool(int i_size) throws NyARException
-	{
-		super.initInstance(i_size,NyARRectTargetStatus.class);
-	}
-	protected NyARRectTargetStatus createElement()
-	{
-		return new NyARRectTargetStatus(this._inner_pool);
-	}
-
-}
 
 public class NyARTrackerOut
 {
@@ -65,7 +42,7 @@ public class NyARTrackerOut
 	public final static int NUMBER_OF_NEW=10;
 	public final static int NUMBER_OF_CONTURE=1;
 	public final static int NUMBER_OF_IGNORE=100;
-	public final static int NUMBER_OF_RECT=8;
+	public final static int NUMBER_OF_RECT=10;
 
 	public final static int NUMBER_OF_CONTURE_POOL=NUMBER_OF_RECT+NUMBER_OF_CONTURE*2;
 

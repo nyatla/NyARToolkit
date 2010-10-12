@@ -59,8 +59,8 @@ public class LowResolutionLabelingSampler
 			item.base_area.y=iRefLabel.clip_t*4;
 			item.base_area.w=w*4;
 			item.base_area.h=h*4;
-//			item.base_area_center.x=item.base_area.x+item.base_area.w/2;
-//			item.base_area_center.y=item.base_area.y+item.base_area.h/2;
+			item.base_area_center.x=item.base_area.x+item.base_area.w/2;
+			item.base_area_center.y=item.base_area.y+item.base_area.h/2;
 			item.base_area_sq_diagonal=(w*w+h*h)*(4*4);
 			item.resolution=4;
 			item.lebeling_th=this.current_th;
@@ -99,7 +99,7 @@ public class LowResolutionLabelingSampler
 
 		//ラスタを取得(Depth2=2^2解像度のデータ)
 		NyARGrayscaleRaster raster4=i_in._rbraster;
-		int th=200;
+		int th=220;
 		//クラスのパラメータ初期化
 		Main_Labeling lb=this._main_labeling;
 		lb.current_gs=raster4;

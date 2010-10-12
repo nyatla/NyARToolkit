@@ -35,7 +35,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.NyARPointVector2d;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARContourTargetStatus;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARContourTargetStatusPool;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARContourTargetStatus.CoordData;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.VectorCoords;
 
 public class NyARVectorReader_INT1D_GRAY_8
 {
@@ -177,7 +177,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 	public final NyARContourPickup _cpickup=new NyARContourPickup();
 	private final double _ANG_TH=0.99;
 	
-	public boolean traceConture(LrlsGsRaster i_rob_raster,int i_th,NyARIntPoint2d i_entry,NyARContourTargetStatus.VectorCoords o_coord) throws NyARException
+	public boolean traceConture(LrlsGsRaster i_rob_raster,int i_th,NyARIntPoint2d i_entry,VectorCoords o_coord) throws NyARException
 	{
 		NyARIntPoint2d[] coord=this._coord_buf;
 		//Robertsラスタから輪郭抽出
@@ -188,14 +188,14 @@ public class NyARVectorReader_INT1D_GRAY_8
 		}
 		NyARIntRect tmprect=new NyARIntRect();
 		//ベクトル化
-		NyARContourTargetStatus.CoordData[] array_of_vec=o_coord.item;
+		VectorCoords.CoordData[] array_of_vec=o_coord.item;
 		int MAX_COORD=o_coord.item.length;
 		int skip=i_rob_raster.resolution;
 		//検出RECTのサイズは、1ドット内側になる。
 		tmprect.w=tmprect.h=skip*2;
 		
-		NyARContourTargetStatus.CoordData prev_vec_ptr,current_vec_ptr,tmp_ptr;		
-		CoordData[] tmp_cd=CoordData.createArray(3);
+		VectorCoords.CoordData prev_vec_ptr,current_vec_ptr,tmp_ptr;		
+		VectorCoords.CoordData[] tmp_cd=VectorCoords.CoordData.createArray(3);
 		current_vec_ptr=tmp_cd[0];
 
 
@@ -305,17 +305,17 @@ public class NyARVectorReader_INT1D_GRAY_8
 	 * @param i_number_of_sample
 	 * サンプリング数です。o_coordの要素数以下の値を指定してください。
 	 */
-	public void traceLineVector(NyARDoublePoint2d i_p1,NyARDoublePoint2d i_p2,int i_cellsize,NyARContourTargetStatus.VectorCoords o_coord,int i_number_of_sample)
+	public void traceLineVector(NyARDoublePoint2d i_p1,NyARDoublePoint2d i_p2,int i_cellsize,VectorCoords o_coord,int i_number_of_sample)
 	{
 		assert(i_number_of_sample>1);
 		//ベクトル化
-		NyARContourTargetStatus.CoordData prev_vec_ptr,current_vec_ptr,tmp_ptr;		
-		NyARContourTargetStatus.CoordData[] array_of_vec=o_coord.item;
+		VectorCoords.CoordData prev_vec_ptr,current_vec_ptr,tmp_ptr;		
+		VectorCoords.CoordData[] array_of_vec=o_coord.item;
 		NyARIntRect tmprect=new NyARIntRect();
 		tmprect.w=tmprect.h=i_cellsize;
 		int half_cell_size=i_cellsize/2;
 		
-		CoordData[] tmp_cd=CoordData.createArray(3);
+		VectorCoords.CoordData[] tmp_cd=VectorCoords.CoordData.createArray(3);
 		current_vec_ptr=tmp_cd[0];
 		int bottom=this._ref_size.h-2;
 		int right=this._ref_size.w-2;

@@ -1,6 +1,7 @@
 package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.stack.*;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.*;
@@ -31,14 +32,15 @@ public class NyARTargetList<T extends NyARTarget> extends NyARPointerStack<T>
 			
 			iitem=this._items[i];
 			int d;
-			int x1,y1;
+			d=NyARIntRect.getSqDiagonalPointDiff(iitem.sample_area,i_item.base_area);
+/*			int x1,y1;
 			//対角点同士の距離を計算
 			x1=iitem.sample_area.x-i_item.base_area.x;
 			y1=iitem.sample_area.y-i_item.base_area.y;
 			d=x1*x1+y1*y1;
 			x1=x1+iitem.sample_area.w-i_item.base_area.w;
 			y1=y1+iitem.sample_area.h-i_item.base_area.h;
-			d+=x1*x1+y1*y1;			
+			d+=x1*x1+y1*y1;		*/	
 			if(d<min_d){
 				min_d=d;
 				ret=i;

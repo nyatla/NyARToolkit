@@ -12,7 +12,7 @@ import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.HierarchyRect;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.*;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARManagedObject.INyARManagedObjectPoolOperater;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.LowResolutionLabelingSamplerOut;
-import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.NyARLinePickup;
+
 
 
 /*
@@ -21,18 +21,6 @@ import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.NyARLinePickup;
  */
 public class NyARContourTargetStatusPool extends NyARManagedObjectPool<NyARContourTargetStatus>
 {	
-	public class WorkObject
-	{
-		public int VEC_MAX_COORD;
-		public NyARIntPoint2d[] coord_buf;
-		public final NyARLinePickup cpickup=new NyARLinePickup();
-		public WorkObject(int i_cood_max)
-		{
-			this.VEC_MAX_COORD=i_cood_max;
-			this.coord_buf=NyARIntPoint2d.createArray(i_cood_max);
-		}
-	}
-	private WorkObject _work_object;
 	/**
 	 * @param i_size
 	 * スタックの最大サイズ
@@ -42,14 +30,13 @@ public class NyARContourTargetStatusPool extends NyARManagedObjectPool<NyARConto
 	 */
 	public NyARContourTargetStatusPool(int i_size,int i_cood_max) throws NyARException
 	{
-		this._work_object=new WorkObject(i_cood_max);
-		super.initInstance(i_size,NyARContourTargetStatus.class,this._work_object);
+		super.initInstance(i_size,NyARContourTargetStatus.class);
 	}
 	/**
 	 * @Override
 	 */
-	protected NyARContourTargetStatus createElement(Object i_param)
+	protected NyARContourTargetStatus createElement()
 	{
-		return new NyARContourTargetStatus(this._inner_pool,(WorkObject)i_param);
+		return new NyARContourTargetStatus(this._op_interface);
 	}
 }

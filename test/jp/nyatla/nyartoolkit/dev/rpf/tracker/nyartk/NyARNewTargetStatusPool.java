@@ -24,7 +24,7 @@ public class NyARNewTargetStatusPool extends NyARManagedObjectPool<NyARNewTarget
 	 */
 	protected NyARNewTargetStatus createElement() throws NyARException
 	{
-		return new NyARNewTargetStatus(this._inner_pool);
+		return new NyARNewTargetStatus(this._op_interface);
 	}
 
 }

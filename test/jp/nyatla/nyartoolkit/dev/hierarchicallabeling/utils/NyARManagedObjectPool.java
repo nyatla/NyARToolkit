@@ -3,6 +3,7 @@ package jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils;
 import java.lang.reflect.Array;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARManagedObject.INyARManagedObjectPoolOperater;
 
 
 
@@ -21,7 +22,7 @@ public class NyARManagedObjectPool<T extends NyARManagedObject>
 	/**
 	 * Javaの都合でバッファを所有させていますが、別にこの形で実装しなくてもかまいません。
 	 */
-	private class NyARManagedObjectInnerPool implements NyARManagedObject.INyARManagedObjectPoolOperater
+	private class Operator implements NyARManagedObject.INyARManagedObjectPoolOperater
 	{
 		public NyARManagedObject[] _buffer;
 		public NyARManagedObject[] _pool;
@@ -35,9 +36,10 @@ public class NyARManagedObjectPool<T extends NyARManagedObject>
 		}
 	}
 	/**
-	 * 内部のプールオブジェクトです。
+	 * 公開するオペレータオブジェクトです。
+	 * このプールに所属する要素以外からは参照しないでください。
 	 */
-	protected NyARManagedObjectInnerPool _inner_pool=new NyARManagedObjectInnerPool();
+	public Operator _op_interface=new Operator();
 
 	/**
 	 * プールから型Tのオブジェクトを割り当てて返します。
@@ -47,7 +49,7 @@ public class NyARManagedObjectPool<T extends NyARManagedObject>
 	@SuppressWarnings("unchecked")
 	public T newObject() throws NyARException
 	{
-		NyARManagedObjectInnerPool pool=this._inner_pool;
+		Operator pool=this._op_interface;
 		if(pool._pool_stock<1){
 			return null;
 		}
@@ -71,7 +73,7 @@ public class NyARManagedObjectPool<T extends NyARManagedObject>
 	@SuppressWarnings("unchecked")
 	protected void initInstance(int i_length,Class<T> i_element_type) throws NyARException
 	{
-		NyARManagedObjectInnerPool pool=this._inner_pool;
+		Operator pool=this._op_interface;
 		//領域確保
 		pool._buffer = (T[])Array.newInstance(i_element_type, i_length);
 		pool._pool = (T[])Array.newInstance(i_element_type, i_length);
@@ -88,7 +90,7 @@ public class NyARManagedObjectPool<T extends NyARManagedObject>
 	@SuppressWarnings("unchecked")
 	protected void initInstance(int i_length,Class<T> i_element_type,Object i_param) throws NyARException
 	{
-		NyARManagedObjectInnerPool pool=this._inner_pool;
+		Operator pool=this._op_interface;
 		//領域確保
 		pool._buffer = (T[])Array.newInstance(i_element_type, i_length);
 		pool._pool = (T[])Array.newInstance(i_element_type, i_length);
@@ -113,5 +115,5 @@ public class NyARManagedObjectPool<T extends NyARManagedObject>
 	protected T createElement(Object i_param) throws NyARException
 	{
 		throw new NyARException();
-	}	
+	}
 }

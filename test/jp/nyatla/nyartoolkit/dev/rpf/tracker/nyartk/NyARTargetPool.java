@@ -14,7 +14,7 @@ public class NyARTargetPool extends NyARManagedObjectPool<NyARTarget>
 	}
 	protected NyARTarget createElement() throws NyARException
 	{
-		return new NyARTarget(this._inner_pool);
+		return new NyARTarget(this._op_interface);
 	}
 	/**
 	 * NyARTargetStatusを持つターゲットを新規に作成します。

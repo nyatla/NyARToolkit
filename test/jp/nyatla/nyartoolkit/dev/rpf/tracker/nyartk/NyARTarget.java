@@ -77,7 +77,7 @@ public class NyARTarget extends NyARManagedObject
 	public void setValue(LowResolutionLabelingSamplerOut.Item i_item)
 	{
 		this.sample_area.setValue(i_item.base_area);
-//		this.sample_area_center.setValue(i_item.base_area_center);
+		this.sample_area_center.setValue(i_item.base_area_center);
 	}
 	/**
 	 * このターゲットのステータスを、IgnoreStatusへ変更します。
