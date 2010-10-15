@@ -24,7 +24,6 @@ public class VectorCoords
 			}
 			return r;
 		}
-		
 	}	
 	public int length;
 	public CoordData item[];
@@ -43,9 +42,9 @@ public class VectorCoords
 	 * @param o_index
 	 *            インデクス番号を受け取る配列。受け取るインデックスの個数は、この配列の数と同じになります。
 	 */
-	public void getKeyCoordIndexes(int[] o_index)
+	public void getOrderdKeyCoordIndexes(int[] o_index)
 	{
-		getKeyCoordIndexesNoOrder(o_index);
+		getKeyCoordIndexes(o_index);
 		// idxでソート
 		int out_len_1 = o_index.length - 1;
 		for (int i = 0; i < out_len_1;) {
@@ -60,7 +59,7 @@ public class VectorCoords
 		}
 		return;
 	}
-	public void getKeyCoordIndexesNoOrder(int[] o_index)
+	public void getKeyCoordIndexes(int[] o_index)
 	{
 		CoordData[] vp = this.item;
 		assert (o_index.length <= this.length);
@@ -98,7 +97,44 @@ public class VectorCoords
 		}
 		return;
 	}
- 	
+	public void getKeyCoord(CoordData[] o_index)
+	{
+		CoordData[] vp = this.item;
+		assert (o_index.length <= this.length);
+		int i;
+		int out_len = o_index.length;
+		int out_len_1 = out_len - 1;
+		for (i = out_len - 1; i >= 0; i--) {
+			o_index[i] = vp[i];
+		}
+		// sqdistでソートする(B->S)
+		for (i = 0; i < out_len_1;) {
+			if (o_index[i].sq_dist < o_index[i + 1].sq_dist) {
+				CoordData t = o_index[i];
+				o_index[i] = o_index[i + 1];
+				o_index[i + 1] = t;
+				i = 0;
+				continue;
+			}
+			i++;
+		}
+		// 先に4個をsq_distでソートしながら格納
+		for (i = out_len; i < this.length; i++) {
+			// 配列の値と比較
+			for (int i2 = 0; i2 < out_len; i2++) {
+				if (vp[i].sq_dist > o_index[i2].sq_dist) {
+					// 値挿入の為のシフト
+					for (int i3 = out_len - 1; i3 > i2; i3--) {
+						o_index[i3] = o_index[i3 - 1];
+					}
+					// 設定
+					o_index[i2] = vp[i];
+					break;
+				}
+			}
+		}
+		return;
+	} 	
 	
 	/**
 	 * 最も大きいベクトル成分のインデクスを返します。
