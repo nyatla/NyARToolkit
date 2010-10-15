@@ -189,6 +189,26 @@ public class NyARIntRect
 		return (0<=lx && lx<this.w && 0<=ly && ly<this.h && lw<=this.w && lh<=this.h);
 	}
 	/**
+	 * RECT1とRECT2の差分値を計算します。
+	 * 差分値は、矩形同士の対角点２点(左上,右下)の距離の二乗の合計値です。
+	 * @param i_rect1
+	 * @param i_rect2
+	 * @return
+	 */
+	public static int getSqDiagonalPointDiff(NyARIntRect i_rect1,NyARIntRect i_rect2)
+	{
+		int w1,w2;
+		int ret;
+		w1=i_rect1.x-i_rect2.x;
+		w2=i_rect1.y-i_rect2.y;
+		ret=w1*w1+w2*w2;
+		w1+=i_rect1.w-i_rect2.w;
+		w2+=i_rect1.h-i_rect2.h;
+		ret+=w1*w1+w2*w2;
+		return ret;
+	}
+
+	/**
 	 * i_sourceの値をthisにセットします。
 	 * @param i_source
 	 */

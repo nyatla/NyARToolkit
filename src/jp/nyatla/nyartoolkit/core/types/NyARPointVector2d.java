@@ -2,7 +2,7 @@ package jp.nyatla.nyartoolkit.core.types;
 
 
 /**
- * 点の座標と、そのベクトルを格納します。
+ * 点の座標と、そのベクトルで定義する直線を格納します。
  *
  */
 public class NyARPointVector2d
@@ -58,5 +58,28 @@ public class NyARPointVector2d
 		double y1=i_v1.dy;
 		double d=(x1*i_v2_x+y1*i_v2_y)/Math.sqrt((x1*x1+y1*y1)*(i_v2_x*i_v2_x+i_v2_y*i_v2_y));
 		return d;
+	}
+	/**
+	 * 交点を求めます。
+	 * @param i_vector1
+	 * @param i_vector2
+	 * @param o_point
+	 * @return
+	 */
+	public final static boolean crossPos(NyARPointVector2d i_vector1,NyARPointVector2d i_vector2,NyARDoublePoint2d o_point)
+	{
+		double a1= i_vector1.dy;
+		double b1=-i_vector1.dx;
+		double c1=(i_vector1.dx*i_vector1.y-i_vector1.dy*i_vector1.x);
+		double a2= i_vector2.dy;
+		double b2=-i_vector2.dx;
+		double c2=(i_vector2.dx*i_vector2.y-i_vector2.dy*i_vector2.x);
+		final double w1 = a1 * b2 - a2 * b1;
+		if (w1 == 0.0) {
+			return false;
+		}
+		o_point.x = (b1 * c2 - b2 * c1) / w1;
+		o_point.y = (a2 * c1 - a1 * c2) / w1;
+		return true;
 	}	
 }

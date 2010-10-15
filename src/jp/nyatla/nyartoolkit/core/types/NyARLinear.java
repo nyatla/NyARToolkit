@@ -75,6 +75,18 @@ public class NyARLinear
 		return true;
 	}
 	/**
+	 * 2直線が交差しているかを返します。
+	 * @param l_line_1
+	 * @param l_line_2
+	 * @return
+	 */
+	public final static boolean isCross(NyARLinear l_line_1,NyARLinear l_line_2)
+	{
+		final double w1 = l_line_1.a * l_line_2.b - l_line_2.a * l_line_1.b;
+		return (w1 == 0.0)?false:true;
+	}
+	
+	/**
 	 * ２点を結ぶ直線の式を得る。この式は正規化されている。
 	 * @param i_point1
 	 * @param i_point2
