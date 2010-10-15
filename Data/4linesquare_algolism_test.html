@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Language" content="ja" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta http-equiv="Content-Script-Type" content="text/javascript" />
+    <title>Canvas</title>
+    <!--[if IE]><script type="text/javascript" src="excanvas.js"></script><![endif]-->
+	<script type="text/javascript">
+	/**********************
+	実験用データの生成
+	**********************/
+
+
+	//2点を通る直線を定義
+	function getline(x1,y1,x2,y2)
+	{
+		var n=new Object();
+		var dx=y2-y1;
+		var dy=x1-x2;
+		var sq=Math.sqrt(dx*dx+dy*dy);
+		if(sq==0){
+			return null;
+		}
+		sq=1/sq;
+		n.a=dx*sq;
+		n.b=dy*sq;
+		n.c=(x1*(y1-y2)+y1*(x2-x1))*sq;
+	
+		return n;
+	}
+	function randpos(w,h)
+	{
+		var n=new Object();
+		n.x=Math.random() * w;
+		n.y=Math.random() * h;
+		return n;
+	}
+	function create4randline()
+	{
+		var n=new Array(4);
+		var s,t;
+		s=t=randpos(320,240);
+		for(var i=0;i<3;i++){
+			var k=randpos(320,240);
+			
+			n[i]=getline(t.x,t.y,k.x,k.y);
+			if(n[i]==null){
+				i--;continue;
+			}
+			t=k;
+
+		}
+		n[3]=getline(s.x,s.y,k.x,k.y);
+		return n;
+	}
+
+	
+	function createpointarray(l){
+		var n=new Array(l);
+		for(var i=0;i<l;i++){
+			n[i]=new Object();
+			n[i].x=0;
+			n[i].y=0;
+		}
+		return n;
+	}
+	/**********************
+	ここから本体
+	**********************/
+
+
+	function crossPos(l_line_1,l_line_2,o_point)
+	{
+		var w1 = l_line_1.a * l_line_2.b - l_line_2.a * l_line_1.b;
+		if (w1 == 0.0) {
+			return false;
+		}
+		o_point.x = (l_line_1.b * l_line_2.c - l_line_2.b * l_line_1.c) / w1;
+		o_point.y = (l_line_2.a * l_line_1.c - l_line_1.a * l_line_2.c) / w1;
+		return true;
+	}
+
+
+	/**
+	 * p1->p2の直線と、p2->p3の外積を求める。
+	 * @param p1
+	 * @param p2
+	 * @param p3
+	 */
+	function exteriorProduct(p1,p2,p3)
+	{
+		var ax=p2.x-p1.x;
+		var ay=p2.y-p1.y;
+		var bx=p3.x-p2.x;
+		var by=p3.y-p2.y;
+
+		return ax * by - ay * bx ;
+	}
+	function countPlusExteriorProduct(p,order)
+	{
+		var ret=0;
+		for(var i=0;i<4;i++){
+			if(0<exteriorProduct(p[order[i+0]],p[order[(i+1)%4]],p[order[(i+2)%4]])){
+				ret++;
+			}
+		}
+		return ret;
+	}
+
+	/**
+	 * 適当に与えられた4線分から、四角形の頂点を計算する。
+	 */
+	function makeSquareVertex(line,point)
+	{
+		var v=createpointarray(6);
+		var number_of_vertex=0;
+		var non_vertexid=0;
+		var ptr=0;
+		for(var i=0;i<3;i++){
+			for(var i2=i+1;i2<4;i2++){
+				if(crossPos(line[i],line[i2],v[ptr])){
+					number_of_vertex++;
+				}else{
+					non_vertexid=ptr;
+				}
+				ptr++;
+			}
+		}
+		var num_of_plus=-1;
+		var target_order;
+		switch(number_of_vertex){
+		case 4:
+		case 5:
+			//5頂点用の、存在しないIDに対応した、調査テーブル。4頂点の時も使う。
+			var _45vertextable=new Array(
+					new Array(1,2,4,3),new Array(0,2,5,3),new Array(0,1,5,4),new Array(0,1,5,4),new Array(0,2,5,3),new Array(1,2,4,3));
+			//
+			//正の外積の数を得る。0,4ならば、目的の図形
+			num_of_plus=countPlusExteriorProduct(v,_45vertextable[non_vertexid]);
+			target_order=_45vertextable[non_vertexid];
+			break;
+		case 6:
+			//(0-5),(1-4),(2-3)の頂点ペアの組合せを試す。頂点の検索順は、(0,1,5,4),(0,2,5,3),(1,2,4,3)
+			var _order_table=new Array(new Array(0,1,5,4),new Array(0,2,5,3),new Array(1,2,4,3));
+			//3パターンについて、正の外積の数を得る。0,4のものがあればOK
+			var order_id=-1;
+			num_of_plus=-1;
+			for(var i=0;i<3;i++){
+				num_of_plus=countPlusExteriorProduct(v,_order_table[i]);
+				if(num_of_plus%4==0){
+					order_id=i;
+					break;
+				}
+			}
+			target_order=_order_table[order_id];
+			break;
+		default:
+			//他の頂点数の時はNG
+			return number_of_vertex;
+		}
+		//回転方向の正規化
+		switch(num_of_plus){
+		case  0:
+			//逆回転で検出した場合
+			for(var i=0;i<4;i++){
+				point[i].x=v[target_order[3-i]].x;
+				point[i].y=v[target_order[3-i]].y;
+			}
+			break;
+		case  4:
+			//正回転で検出した場合
+			for(var i=0;i<4;i++){
+				point[i].x=v[target_order[i]].x;
+				point[i].y=v[target_order[i]].y;
+			}
+			break;
+		default:
+			return -1;
+		}
+		return number_of_vertex;
+	}
+	
+
+	
+	
+	</script>
+  </head>
+  <body onload="update();">
+    <h1>適当な４線分から、四角形の交点を時計回りで取ってくるテスト。</h1>
+    <p>２線が平行に近い場合、画面外に頂点が飛ぶので目視できません。<br/>座標系は、左上基点でY↓X→なので注意。<br/>あとHTML5で実装してあるので、IE6とか使わないでください。</p>
+    <form><input type="button" value="この直線でテスト" onclick="update2();"/><input type="button" value="次の直線でテスト" onclick="update();"/>
+    直線の式</br>
+    <ul>
+    <li>Line1:<input id="a0" type="textbox" text=""/>x+<input id="b0" type="textbox" text=""/>y+<input id="c0" type="textbox" text=""/>=0
+    <li>Line2:<input id="a1" type="textbox" text=""/>x+<input id="b1" type="textbox" text=""/>y+<input id="c1" type="textbox" text=""/>=0
+    <li>Line3:<input id="a2" type="textbox" text=""/>x+<input id="b2" type="textbox" text=""/>y+<input id="c2" type="textbox" text=""/>=0
+    <li>Line4:<input id="a3" type="textbox" text=""/>x+<input id="b3" type="textbox" text=""/>y+<input id="c3" type="textbox" text=""/>=0
+    </ul>
+    </form>
+    <canvas id="canvassample" width="800" height="600"></canvas>
+ 	<script type="text/javascript">
+	var co=new Array("rgb(0,200,0)","rgb(0,200,200)","rgb(0,0,200)","rgb(200,0,200)");
+	function update()
+	{
+		var canvas = document.getElementById('canvassample');
+		var ctx = canvas.getContext('2d');
+		ctx.fillStyle=ctx.strokeStyl="rgb(0,0,0)";
+		ctx.rect(0,0,800,600);
+		ctx.fill();
+		var l=create4randline();
+		//inputに数値を反映
+		for(var i=0;i<4;i++){
+			document.getElementById('a'+i).value=l[i].a;
+			document.getElementById('b'+i).value=l[i].b;
+			document.getElementById('c'+i).value=l[i].c;
+			ctx.fillStyle=ctx.strokeStyle=co[i];
+			drawline(ctx,l[i]);
+			ctx.font = "9pt Arial nostroke";
+			drawformula(ctx,l[i],400,20+i*12);
+		}
+		var v=createpointarray(4);
+		var r=makeSquareVertex(l,v);
+		ctx.fillStyle= 'rgb(255,0,0)';
+		if(r>=4){
+		for(var i=0;i<4;i++){
+			ctx.font = "15pt Arial bold nostroke";
+			ctx.fillText(i,v[i].x,v[i].y);
+		}
+		}else if(r<0){
+			ctx.font = "16pt bold nostroke";
+			ctx.fillText("平行線の中心に交点のある四角形は対象外。",300,200);
+		}else{
+			ctx.font = "30pt bold nostroke";
+			ctx.fillText("交点が少ないが大丈夫か？",300,200);
+		}
+		ctx.fillStyle= 'rgb(255,255,255)';
+		ctx.fillText("cross="+(r==-1?5:r),400,80);
+	}
+	function update2()
+	{
+		var canvas = document.getElementById('canvassample');
+		var ctx = canvas.getContext('2d');
+		ctx.fillStyle=ctx.strokeStyl="rgb(0,0,0)";
+		ctx.rect(0,0,800,600);
+		ctx.fill();
+		//フィールドから値読出し
+		var l=new Array(4);
+		
+		for(var i=0;i<4;i++){
+			l[i]=new Object();
+			l[i].a=parseFloat(document.getElementById('a'+i).value);
+			l[i].b=parseFloat(document.getElementById('b'+i).value);
+			l[i].c=parseFloat(document.getElementById('c'+i).value);
+		}
+		
+		//inputに数値を反映
+		for(var i=0;i<4;i++){
+			ctx.fillStyle=ctx.strokeStyle=co[i];
+			drawline(ctx,l[i]);
+			ctx.font = "9pt Arial nostroke";
+			drawformula(ctx,l[i],400,20+i*12);
+		}
+		var v=createpointarray(4);
+		var r=makeSquareVertex(l,v);
+		ctx.fillStyle= 'rgb(255,0,0)';
+		if(r>=4){
+		for(var i=0;i<4;i++){
+			ctx.font = "15pt Arial bold nostroke";
+			ctx.fillText(i,v[i].x,v[i].y);
+		}
+		}else if(r<0){
+			ctx.font = "20pt bold nostroke";
+			ctx.fillText("四角形が見つからないが大丈夫か？。",300,200);
+		}else{
+			ctx.font = "30pt bold nostroke";
+			ctx.fillText("交点のある直線を頼む",200,200);
+		}
+		ctx.fillStyle= 'rgb(255,255,255)';
+		ctx.fillText("cross="+(r==-1?5:r),400,80);
+	}
+	function drawformula(ctx,l,x,y)
+	{
+		ctx.fillText("0="+l.a+"x+"+l.b+"y+"+l.c,x,y);
+	}
+	function drawline(ctx,l)
+	{
+	
+	var a,b,c,r;
+	var r=1000;
+	a=l.a;
+	b=l.b;
+	c=l.c;
+	var w=Math.sqrt(a*a*c*c-(a*a+b*b)*(c*c-b*b*r*r));
+	var x1=(-a*c+w)/(a*a+b*b);
+	var x2=(-a*c-w)/(a*a+b*b);
+	var y1,y2;
+	if(b!=0){
+	y1=-(a*x1+c)/b;
+	y2=-(a*x2+c)/b;
+	}else{
+	y1=-1000;
+	y2=1000;
+	}
+//			alert(x1+","+y1+","+x2+","+y2);
+//			alert(a+"x+"+b+"y+"+l.c+"=0");
+	ctx.beginPath();
+	ctx.moveTo(x1,y1);
+	ctx.lineTo(x2,y2);
+	ctx.closePath();
+  ctx.stroke();
+	
+	}
+ 	</script>
+ 	<div>Copyright (c) 2010 nyatla.jp All Rights Reserved.</div>    
+ 	<div>SpecialThanks @takmin,@b2ox,@yatta47,@kamakiri_ys,ニコニコ技術部IRCの皆さま, Blogで問題の証明に挑戦してくれた皆様</div>
+  </body>
+</html>
