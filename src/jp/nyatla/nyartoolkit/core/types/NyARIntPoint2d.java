@@ -49,6 +49,11 @@ public class NyARIntPoint2d
 		}
 		return ret;
 	}
+	/**
+	 * i_fromからi_toへ配列をコピーします。
+	 * @param i_from
+	 * @param i_to
+	 */
 	public static void copyArray(final NyARIntPoint2d[] i_from,NyARIntPoint2d[] i_to)
 	{
 		for(int i=i_from.length-1;i>=0;i--)
@@ -58,6 +63,20 @@ public class NyARIntPoint2d
 		}
 		return;
 	}
+	/**
+	 * p2-p1間の距離の二乗値を計算します。
+	 * @param i_p1
+	 * @param i_p2
+	 * @return
+	 */	
+	public static final int sqNorm(NyARIntPoint2d i_p1,NyARIntPoint2d i_p2)
+	{
+		int x,y;
+		x=i_p2.x-i_p1.x;
+		y=i_p2.y-i_p1.y;
+		return x*x+y*y;
+	}
+	
 	/**
 	 * 中心位置を計算して設定する。
 	 * @param i_point

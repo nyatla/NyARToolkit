@@ -17,40 +17,7 @@ public class NyARMath
 		y=i_p2y-i_p1y;
 		return x*x+y*y;
 	}
-	/**
-	 * p2-p1ベクトルのsquare normを計算する。
-	 * @param i_p1
-	 * @param i_p2
-	 * @return
-	 */	
-	public static final double sqNorm(NyARDoublePoint2d i_p1,NyARDoublePoint2d i_p2)
-	{
-		double x,y;
-		x=i_p2.x-i_p1.x;
-		y=i_p2.y-i_p1.y;
-		return x*x+y*y;
-	}
-	public static final int sqNorm(NyARIntPoint2d i_p1,NyARIntPoint2d i_p2)
-	{
-		int x,y;
-		x=i_p2.x-i_p1.x;
-		y=i_p2.y-i_p1.y;
-		return x*x+y*y;
-	}
-	/**
-	 * p2-p1ベクトルのsquare normを計算する。
-	 * @param i_p1
-	 * @param i_p2
-	 * @return
-	 */	
-	public static final double sqNorm(NyARDoublePoint3d i_p1,NyARDoublePoint3d i_p2)
-	{
-		double x,y,z;
-		x=i_p2.x-i_p1.x;
-		y=i_p2.y-i_p1.y;
-		z=i_p2.z-i_p1.z;
-		return x*x+y*y+z*z;
-	}
+
 	
 	
 	public static final double dist(double i_x1,double i_y1,double i_x2,double i_y2)

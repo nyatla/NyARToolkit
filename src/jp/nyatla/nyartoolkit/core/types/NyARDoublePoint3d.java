@@ -57,11 +57,18 @@ public class NyARDoublePoint3d
 		return;
 	}
 	/**
-	 * 格納値をベクトルとして、距離を返します。
+	 * p2-p1間の距離の二乗値を計算します。
+	 * @param i_p1
+	 * @param i_p2
 	 * @return
-	 */
-	public static final double dist(NyARDoublePoint3d i_vec)
+	 */	
+	public static final double sqNorm(NyARDoublePoint3d i_p1,NyARDoublePoint3d i_p2)
 	{
-		return Math.sqrt(i_vec.x*i_vec.x+i_vec.y*i_vec.y+i_vec.z*i_vec.z);
+		double x,y,z;
+		x=i_p2.x-i_p1.x;
+		y=i_p2.y-i_p1.y;
+		z=i_p2.z-i_p1.z;
+		return x*x+y*y+z*z;
 	}	
+	
 }

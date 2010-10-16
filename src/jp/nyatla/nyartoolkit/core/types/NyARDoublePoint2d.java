@@ -65,6 +65,19 @@ public class NyARDoublePoint2d
 		return ret;
 	}
 	/**
+	 * p2-p1間の距離の二乗値を計算します。
+	 * @param i_p1
+	 * @param i_p2
+	 * @return
+	 */	
+	public static final double sqNorm(NyARDoublePoint2d i_p1,NyARDoublePoint2d i_p2)
+	{
+		double x,y;
+		x=i_p2.x-i_p1.x;
+		y=i_p2.y-i_p1.y;
+		return x*x+y*y;
+	}
+	/**
 	 * コンストラクタです。
 	 */
 	public NyARDoublePoint2d()
@@ -133,5 +146,6 @@ public class NyARDoublePoint2d
 	public static double exteriorProduct3Point(NyARDoublePoint2d p1,NyARDoublePoint2d p2,NyARDoublePoint2d p3)
 	{
 		return (p2.x-p1.x)*(p3.y-p2.y)-(p2.y-p1.y)*(p3.x-p2.x);
-	}	
+	}
+	
 }
