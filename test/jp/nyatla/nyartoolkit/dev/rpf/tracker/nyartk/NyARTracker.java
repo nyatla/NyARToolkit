@@ -270,6 +270,12 @@ System.out.println("lost:ignore:"+t.serial+":"+t.last_update);
 				c.releaseObject();
 				continue;
 			}
+//初回だけきつめのチェックでリジェクト(検出サイズ、頂点間距離、頂点位置、等など)
+			if(!c.checkInitialRectCondition(t.sample_area)){
+				//追加失敗。生成したステータスを破棄
+				c.releaseObject();
+				continue;
+			}
 			if(i_trackdata.recttarget.push(t)==null){
 				//追加失敗。生成したステータスを破棄
 				c.releaseObject();
@@ -298,6 +304,7 @@ System.out.println("lost:ignore:"+t.serial+":"+t.last_update);
 					i_trackdata.recttarget.removeIgnoreOrder(i);	
 				}else{
 					//追加失敗→何もせず
+System.out.println("upgradeRectTarget:ignore pool full");
 					break;
 				}
 			}

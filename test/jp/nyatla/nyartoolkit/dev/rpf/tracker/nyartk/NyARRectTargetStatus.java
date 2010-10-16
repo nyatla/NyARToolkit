@@ -37,6 +37,9 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		this._ref_my_pool=i_pool;
 		this.square=new NyARSquare();
 	}
+	/**
+	 * @Override 
+	 */
 	public int releaseObject()
 	{
 		int ret=super.releaseObject();
@@ -115,10 +118,9 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 			i_reader.traceLineVector(i_prev_vertex[i],i_prev_vertex[(i+3)%4],4,this._vc,10);
 			//一番強いベクトルを取る
 			VectorCoords.CoordData ptr=this._vc.item[this._vc.getMaxCoordIndex()];
-//現在のベクトルと比較？
 			sq.line[i].setVector(ptr.dx,ptr.dy,ptr.x,ptr.y);
 		}
-//[省略]正当性チェック？(もしやるなら輪郭抽出系にも手を加えないと。)
+
 		//4点抽出
 		for(int i=3;i>=0;i--){
 			if(!NyARLinear.crossPos(sq.line[i],sq.line[(i + 3) % 4],sq.sqvertex[i])){
@@ -183,6 +185,54 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		setDiffParam(i_prev_status);
 		return true;
 	}
+	/**
+	 * このデータが初期チェック(CoordからRectへの遷移)をパスするかチェックします。
+	 * 条件は、
+	 *  1.対角線距離比が0.2～5.0,
+	 *  
+	 *  1.頂点範囲が全て検出エリアの1.5倍サイズ以内,1/10以上の大きさ
+	 *  2.頂点同士が極端に接近していないこと(全周距離の)
+	 * @todo この関数はリファクタリング対象。
+	 * 
+	 * @param sampleArea
+	 */
+	public boolean checkInitialRectCondition(NyARIntRect i_sample_area)
+	{
+		NyARDoublePoint2d[] v=this.square.sqvertex;
 
-	
+
+		//対角線比
+/*		double sq_dist_rate=NyARDoublePoint2d.sqNorm(v0,v2)/NyARDoublePoint2d.sqNorm(v1,v3);
+		if((0.2*0.2)>sq_dist_rate || sq_dist_rate>(5*5)){
+			System.out.println("DROP!!!!!!!!!!!!!!!!!!!![0]");
+			return false;
+		}*/
+		//検出した四角形の対角点が検出エリア内か？
+		int cx=(int)(v[0].x+v[1].x+v[2].x+v[3].x)/4;
+		int cy=(int)(v[0].y+v[1].y+v[2].y+v[3].y)/4;
+		if(!i_sample_area.isInnerPoint(cx,cy)){
+			System.out.println("DROP!!!!!!!!!!!!!!!!!!!![2]");
+			return false;
+		}
+		//一番長い辺と短い辺の比を確認(10倍の比があったらなんか変)
+		int max=Integer.MIN_VALUE;
+		int min=Integer.MAX_VALUE;
+		for(int i=0;i<4;i++){
+			int t=(int)NyARDoublePoint2d.sqNorm(v[i],v[(i+1)%4]);
+			if(t>max){max=t;}
+			if(t<min){min=t;}
+		}
+		if(max<(5*5) ||min<(5*5)){
+			System.out.println("DROP!!!!!!!!!!!!!!!!!!!![4]");
+			return false;
+		}
+		//10倍スケールの2乗
+		if((10*10)*min/max<(5*5)){
+			System.out.println("DROP!!!!!!!!!!!!!!!!!!!![3]");
+			return false;
+		}
+
+		
+		return true;
+	}
 }
