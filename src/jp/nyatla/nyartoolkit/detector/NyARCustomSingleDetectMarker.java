@@ -121,7 +121,7 @@ public class NyARCustomSingleDetectMarker
 		sq.line[3]=l1;*/
 		for (int i = 0; i < 4; i++) {
 			//直線同士の交点計算
-			if(!NyARLinear.crossPos(sq.line[i],sq.line[(i + 3) % 4],sq.sqvertex[i])){
+			if(!sq.line[i].crossPos(sq.line[(i + 3) % 4],sq.sqvertex[i])){
 				throw new NyARException();//ここのエラー復帰するならダブルバッファにすればOK
 			}
 		}

@@ -65,13 +65,13 @@ public class VectorCoordsOperator
 					ol.orthogonalLine(l1, target1.x, target1.y);
 					double wx, wy;
 					double l = 0;
-					NyARLinear.crossPos(ol, l2, p);
+					ol.crossPos(l2, p);
 					// 交点間の距離の合計を計算。lに2*dist^2を得る。
 					wx = (p.x - target1.x);
 					wy = (p.y - target1.y);
 					l += wx * wx + wy * wy;
 					ol.orthogonalLine(l2, target2.x, target2.y);
-					NyARLinear.crossPos(ol, l1, p);
+					ol.crossPos(l1, p);
 					wx = (p.x - target2.x);
 					wy = (p.y - target2.y);
 					l += wx * wx + wy * wy;

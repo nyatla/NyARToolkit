@@ -123,7 +123,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 
 		//4点抽出
 		for(int i=3;i>=0;i--){
-			if(!NyARLinear.crossPos(sq.line[i],sq.line[(i + 3) % 4],sq.sqvertex[i])){
+			if(!sq.line[i].crossPos(sq.line[(i + 3) % 4],sq.sqvertex[i])){
 				//四角が作れない。
 				return false;
 			}
@@ -222,6 +222,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 			if(t>max){max=t;}
 			if(t<min){min=t;}
 		}
+		//比率係数の確認
 		if(max<(5*5) ||min<(5*5)){
 			System.out.println("DROP!!!!!!!!!!!!!!!!!!!![4]");
 			return false;
@@ -231,8 +232,22 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 			System.out.println("DROP!!!!!!!!!!!!!!!!!!!![3]");
 			return false;
 		}
-
-		
 		return true;
 	}
+	/**
+	 * 直線式とRECTから、線分を計算します。
+	 * @param a
+	 * @param o_point1
+	 * @param o_point2
+	 * @return
+	 * 線分が作れない。
+	 */
+	public boolean clip(NyARLinear a,NyARIntRect i_rect,NyARDoublePoint2d o_point1,NyARDoublePoint2d o_point2)
+	{
+		//
+/*		a.crossPos(0,-1,i_rect.y,   o_point);     //y=rect.yの線
+		a.crossPos(0,-1,i_rect.y+i_rect.h, o_point);//y=(rect.y+=rect.h)の線
+		a.crossPos(-1,0,i_rect.x,   o_point);     //y=rect.yの線
+		a.crossPos(-1,0,i_rect.x+i_rect.w, o_point);//y=(rect.y+=rect.h)の線
+*/	}
 }

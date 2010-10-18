@@ -64,14 +64,14 @@ public class NyARLinear
 	 * @param o_point
 	 * @return
 	 */
-	public final static boolean crossPos(NyARLinear l_line_1,NyARLinear l_line_2,NyARDoublePoint2d o_point)
+	public final boolean crossPos(NyARLinear l_line_2,NyARDoublePoint2d o_point)
 	{
-		final double w1 = l_line_1.a * l_line_2.b - l_line_2.a * l_line_1.b;
+		final double w1 = this.a * l_line_2.b - l_line_2.a * this.b;
 		if (w1 == 0.0) {
 			return false;
 		}
-		o_point.x = (l_line_1.b * l_line_2.c - l_line_2.b * l_line_1.c) / w1;
-		o_point.y = (l_line_2.a * l_line_1.c - l_line_1.a * l_line_2.c) / w1;
+		o_point.x = (this.b * l_line_2.c - l_line_2.b * this.c) / w1;
+		o_point.y = (l_line_2.a * this.c - this.a * l_line_2.c) / w1;
 		return true;
 	}
 	/**
@@ -80,9 +80,9 @@ public class NyARLinear
 	 * @param l_line_2
 	 * @return
 	 */
-	public final static boolean isCross(NyARLinear l_line_1,NyARLinear l_line_2)
+	public final boolean isCross(NyARLinear l_line_2)
 	{
-		final double w1 = l_line_1.a * l_line_2.b - l_line_2.a * l_line_1.b;
+		final double w1 = this.a * l_line_2.b - l_line_2.a * this.b;
 		return (w1 == 0.0)?false:true;
 	}
 	
@@ -150,4 +150,22 @@ public class NyARLinear
 		this.b=-a;
 		this.c=-(b*i_x-a*i_y);
 	}
+	/**
+	 * 指定したパラメータの式との交点を得る。
+	 * @param i_a
+	 * @param i_b
+	 * @param i_c
+	 * @param o_point
+	 * @return
+	 */
+	public final boolean crossPos(double i_a,double i_b,double i_c,NyARDoublePoint2d o_point)
+	{
+		final double w1 = this.a * i_b - i_a * this.b;
+		if (w1 == 0.0) {
+			return false;
+		}
+		o_point.x = (this.b * i_c - i_b * this.c) / w1;
+		o_point.y = (i_a * this.c - this.a * i_c) / w1;
+		return true;
+	}	
 }
