@@ -303,8 +303,8 @@ public class TestTerget extends Frame
 			g.drawRect(t.sample_area.x,t.sample_area.y,t.sample_area.w,t.sample_area.h);
 			NyARContourTargetStatus st=(NyARContourTargetStatus)t.ref_status;
 			for(int i2=0;i2<st.vecpos.length;i2++){
-				g.drawString(i2+":"/*+(int)st.vecpos.item[i2].sq_dist*/,(int)st.vecpos.item[i2].x-1, (int)st.vecpos.item[i2].y-1);
-				g.fillRect((int)st.vecpos.item[i2].x-1, (int)st.vecpos.item[i2].y-1,2,2);
+				g.drawString(i2+":"/*+(int)st.vecpos.item[i2].sq_dist*/,(int)st.vecpos.items[i2].x-1, (int)st.vecpos.items[i2].y-1);
+				g.fillRect((int)st.vecpos.items[i2].x-1, (int)st.vecpos.items[i2].y-1,2,2);
 			}
 		}
     }

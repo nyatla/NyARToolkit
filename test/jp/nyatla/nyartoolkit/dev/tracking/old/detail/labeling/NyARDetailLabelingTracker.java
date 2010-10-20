@@ -146,10 +146,10 @@ public class NyARDetailLabelingTracker
 
 		//lineを計算()
 		NyARLinear[] temp_linear=this.__temp_linear;
-		temp_linear[0].calculateLine(vtx_ptr[0],vtx_ptr[1]);
-		temp_linear[1].calculateLine(vtx_ptr[1],vtx_ptr[2]);
-		temp_linear[2].calculateLine(vtx_ptr[2],vtx_ptr[3]);
-		temp_linear[3].calculateLine(vtx_ptr[3],vtx_ptr[0]);
+		temp_linear[0].calculateLineWithNormalize(vtx_ptr[0],vtx_ptr[1]);
+		temp_linear[1].calculateLineWithNormalize(vtx_ptr[1],vtx_ptr[2]);
+		temp_linear[2].calculateLineWithNormalize(vtx_ptr[2],vtx_ptr[3]);
+		temp_linear[3].calculateLineWithNormalize(vtx_ptr[3],vtx_ptr[0]);
 		//3次元位置を計算
 		this._transmat.transMat(vtx_ptr,temp_linear,item.estimate.offset,item.angle,item.trans);
 

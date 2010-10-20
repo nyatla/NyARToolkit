@@ -3,9 +3,9 @@ package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
 import jp.nyatla.nyartoolkit.core.types.NyARPointVector2d;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.VectorCoords;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.VecLinear;
 
-public class VectorCoordsOperator
+public class VecLinearOperator
 {
 	/**
 	 * margeResembleCoordsで使う距離敷居値の値です。
@@ -31,16 +31,16 @@ public class VectorCoordsOperator
 	 * 編集するオブジェクトを指定します。
 	 * @return
 	 */
-	public void margeResembleCoords(VectorCoords i_vector)
+	public void margeResembleCoords(VecLinear i_vector)
 	{
-		VectorCoords.CoordData[] items=i_vector.item;
+		VecLinear.CoordData[] items=i_vector.items;
 		NyARLinear l1 = this._l1;
 		NyARLinear l2 = this._l2;
 		NyARLinear ol = this._ol;
 		NyARDoublePoint2d p = this._p;		
 		//ベクトルの制限。1,2象限に集める。
 		for (int i = i_vector.length - 1; i >= 0; i--) {
-			VectorCoords.CoordData target1 = items[i];
+			VecLinear.CoordData target1 = items[i];
 			if (target1.dy < 0) {
 				target1.dy *= -1;
 				target1.dx *= -1;
@@ -48,16 +48,16 @@ public class VectorCoordsOperator
 		}
 
 		for (int i = i_vector.length - 1; i > 0; i--) {
-			VectorCoords.CoordData target1 = items[i];
+			VecLinear.CoordData target1 = items[i];
 			if(target1.sq_dist==0){
 				continue;
 			}
 			for (int i2 = i - 1; i2 >= 0; i2--) {
-				VectorCoords.CoordData target2 = items[i2];
+				VecLinear.CoordData target2 = items[i2];
 				if(target2.sq_dist==0){
 					continue;
 				}
-				if (NyARPointVector2d.getVecCos(target1, target2) >= _SQ_ANG_TH) {
+				if (target1.getVecCos(target2) >= _SQ_ANG_TH) {
 					// それぞれの代表点から法線を引いて、相手の直線との交点を計算する。
 
 					l1.setVector(target1);

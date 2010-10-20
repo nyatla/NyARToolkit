@@ -4,7 +4,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
 import jp.nyatla.nyartoolkit.core.types.NyARPointVector2d;
 
-public class VectorCoords
+public class VecLinear
 {	
 	/**
 	 * データ型です。
@@ -26,11 +26,11 @@ public class VectorCoords
 		}
 	}	
 	public int length;
-	public CoordData item[];
+	public CoordData items[];
 
-	public VectorCoords(int i_length) {
+	public VecLinear(int i_length) {
 		this.length = 0;
-		this.item = CoordData.createArray(i_length);
+		this.items = CoordData.createArray(i_length);
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class VectorCoords
 	}
 	public void getKeyCoordIndexes(int[] o_index)
 	{
-		CoordData[] vp = this.item;
+		CoordData[] vp = this.items;
 		assert (o_index.length <= this.length);
 		int i;
 		int out_len = o_index.length;
@@ -99,7 +99,7 @@ public class VectorCoords
 	}
 	public void getKeyCoord(CoordData[] o_index)
 	{
-		CoordData[] vp = this.item;
+		CoordData[] vp = this.items;
 		assert (o_index.length <= this.length);
 		int i;
 		int out_len = o_index.length;
@@ -143,12 +143,12 @@ public class VectorCoords
 	 */
 	public int getMaxCoordIndex()
 	{
-		CoordData[] vp = this.item;
+		CoordData[] vp = this.items;
 		int index = 0;
 		double max_dist = vp[0].sq_dist;
 		for (int i = this.length - 1; i > 0; i--) {
 			if (max_dist < vp[i].sq_dist) {
-				max_dist = vp[index].sq_dist;
+				max_dist = vp[i].sq_dist;
 				index = i;
 			}
 		}
@@ -167,15 +167,15 @@ public class VectorCoords
 		//前方詰め
 		int idx=0;
 		for(int i=0;i<this.length;i++){
-			if(this.item[i].sq_dist!=0){
+			if(this.items[i].sq_dist!=0){
 				idx++;
 				continue;
 			}
 			for(i=i+1;i<this.length;i++){
-				if(this.item[i].sq_dist!=0){
-					CoordData temp = this.item[i];
-					this.item[i]=this.item[idx];
-					this.item[idx]=temp;
+				if(this.items[i].sq_dist!=0){
+					CoordData temp = this.items[i];
+					this.items[i]=this.items[idx];
+					this.items[idx]=temp;
 					idx++;
 					i--;
 					break;

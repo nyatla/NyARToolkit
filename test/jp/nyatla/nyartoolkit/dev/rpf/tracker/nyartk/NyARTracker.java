@@ -265,14 +265,8 @@ System.out.println("lost:ignore:"+t.serial+":"+t.last_update);
 				break;
 			}
 			//ステータスの値をセット
-			if(!c.setValue(st)){
+			if(!c.setValueWithInitialCheck(st,t.sample_area)){
 				//値のセットに失敗した。
-				c.releaseObject();
-				continue;
-			}
-//初回だけきつめのチェックでリジェクト(検出サイズ、頂点間距離、頂点位置、等など)
-			if(!c.checkInitialRectCondition(t.sample_area)){
-				//追加失敗。生成したステータスを破棄
 				c.releaseObject();
 				continue;
 			}
@@ -464,7 +458,9 @@ System.out.println("updateNewStatus:status pool full");
 				d_ptr.sample_area.setAreaRect(st.square.sqvertex,4);
 				d_ptr.sample_area_center.x=d_ptr.sample_area.x+d_ptr.sample_area.w/2;
 				d_ptr.sample_area_center.y=d_ptr.sample_area.y+d_ptr.sample_area.h/2;
-			}else*/{
+			}else{
+//		st.releaseObject();
+//				continue;}*/
 				int sample_index=this._index[i];
 				if(sample_index<0){
 					//このターゲットに合致するアイテムは無い。
@@ -474,14 +470,15 @@ System.out.println("updateNewStatus:status pool full");
 				LowResolutionLabelingSamplerOut.Item s=source[sample_index];
 				//失敗の可能性を考慮して、Statusを先に生成しておく
 				//ステータスを更新
-				if(!st.setValue(i_trackdata.contourst_pool,i_base_raster,s,(NyARRectTargetStatus)d_ptr.ref_status)){
+				if(!st.setValueWithDeilyCheck(i_base_raster,s,(NyARRectTargetStatus)d_ptr.ref_status)){
 					//新しいステータスのセットに失敗？
 					st.releaseObject();
 					continue;
 				}
 				//ref_statusの切り替え
 				d_ptr.setValue(s);
-			}
+//			}
+//			*/
 			d_ptr.ref_status.releaseObject();
 			d_ptr.ref_status=st;
 			d_ptr.last_update=clock;

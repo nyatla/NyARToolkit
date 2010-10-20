@@ -29,7 +29,7 @@ public class LineBaseVertexDetector
 	 * @throws NyARException
 	 */
 
-	public boolean line2SquareVertex(VectorCoords.CoordData[] i_line,NyARDoublePoint2d[] o_point) throws NyARException
+	public boolean line2SquareVertex(VecLinear.CoordData[] i_line,NyARDoublePoint2d[] o_point) throws NyARException
 	{
 		NyARDoublePoint2d[] v=NyARDoublePoint2d.createArray(6);
 		int number_of_vertex=0;
@@ -37,7 +37,7 @@ public class LineBaseVertexDetector
 		int ptr=0;
 		for(int i=0;i<3;i++){
 			for(int i2=i+1;i2<4;i2++){
-				if(VectorCoords.CoordData.crossPos(i_line[i],i_line[i2],v[ptr])){
+				if(VecLinear.CoordData.crossPos(i_line[i],i_line[i2],v[ptr])){
 					number_of_vertex++;
 				}else{
 					non_vertexid=ptr;
