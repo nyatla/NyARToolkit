@@ -64,9 +64,9 @@ public class NyARSingleDetectMarker extends NyARCustomSingleDetectMarker
 			super(i_size);
 			this._parent=i_parent;
 		}
-		public void onSquareDetect(NyARIntPoint2d[] i_coord,int i_coor_num,int[] i_vertex_index) throws NyARException
+		public void onSquareDetect(NyARIntCoordinates i_coord,int[] i_vertex_index) throws NyARException
 		{
-			this._parent.updateSquareInfo(i_coord, i_coor_num, i_vertex_index);
+			this._parent.updateSquareInfo(i_coord, i_vertex_index);
 		}	
 	}
 	/**
@@ -81,9 +81,9 @@ public class NyARSingleDetectMarker extends NyARCustomSingleDetectMarker
 			super(i_size);
 			this._parent=i_parent;
 		}
-		public void onSquareDetect(NyARIntPoint2d[] i_coord,int i_coor_num,int[] i_vertex_index) throws NyARException
+		public void onSquareDetect(NyARIntCoordinates i_coord,int[] i_vertex_index) throws NyARException
 		{
-			this._parent.updateSquareInfo(i_coord, i_coor_num, i_vertex_index);
+			this._parent.updateSquareInfo(i_coord, i_vertex_index);
 		}	
 	}	
 	

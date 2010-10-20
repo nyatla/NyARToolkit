@@ -35,6 +35,7 @@ import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.param.NyARObserv2IdealMap;
 import jp.nyatla.nyartoolkit.core.pca2d.INyARPca2d;
 import jp.nyatla.nyartoolkit.core.pca2d.NyARPca2d_MatrixPCA_O2;
+import jp.nyatla.nyartoolkit.core.types.NyARIntCoordinates;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
@@ -88,11 +89,12 @@ public class NyARCoord2Linear
 	 * @return
 	 * @throws NyARException
 	 */
-	public boolean coord2Line(int i_st,int i_ed,NyARIntPoint2d[] i_coord,int i_cood_num, NyARLinear o_line) throws NyARException
+	public boolean coord2Line(int i_st,int i_ed,NyARIntCoordinates i_coord, NyARLinear o_line) throws NyARException
 	{
 		//頂点を取得
 		int n,st,ed;
 		double w1;
+		int cood_num=i_coord.length;
 	
 		//探索区間の決定
 		if(i_ed>=i_st){
@@ -103,24 +105,24 @@ public class NyARCoord2Linear
 			ed = (int) (i_ed - w1);
 		}else{
 			//頂点[i]から頂点[i+1]までの輪郭が、2区間に分かれているとき
-			w1 = (double)((i_ed+i_cood_num-i_st+1)%i_cood_num) * 0.05 + 0.5;
+			w1 = (double)((i_ed+cood_num-i_st+1)%cood_num) * 0.05 + 0.5;
 			//探索区間の決定
-			st = ((int) (i_st+w1))%i_cood_num;
-			ed = ((int) (i_ed+i_cood_num-w1))%i_cood_num;
+			st = ((int) (i_st+w1))%cood_num;
+			ed = ((int) (i_ed+cood_num-w1))%cood_num;
 		}
 		//探索区間数を確認
 		if(st<=ed){
 			//探索区間は1区間
 			n = ed - st + 1;
 			if(this._dist_factor!=null){
-				this._dist_factor.observ2IdealBatch(i_coord, st, n,this._xpos,this._ypos,0);
+				this._dist_factor.observ2IdealBatch(i_coord.items, st, n,this._xpos,this._ypos,0);
 			}
 		}else{
 			//探索区間は2区間
-			n=ed+1+i_cood_num-st;
+			n=ed+1+cood_num-st;
 			if(this._dist_factor!=null){
-				this._dist_factor.observ2IdealBatch(i_coord, st,i_cood_num-st,this._xpos,this._ypos,0);
-				this._dist_factor.observ2IdealBatch(i_coord, 0,ed+1,this._xpos,this._ypos,i_cood_num-st);
+				this._dist_factor.observ2IdealBatch(i_coord.items, st,cood_num-st,this._xpos,this._ypos,0);
+				this._dist_factor.observ2IdealBatch(i_coord.items, 0,ed+1,this._xpos,this._ypos,cood_num-st);
 			}
 		}
 		//要素数の確認

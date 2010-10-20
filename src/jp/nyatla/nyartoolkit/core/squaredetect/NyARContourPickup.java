@@ -44,13 +44,13 @@ public class NyARContourPickup
 	//                                           0  1  2  3  4  5  6  7   0  1  2  3  4  5  6
 	protected final static int[] _getContour_xdir = { 0, 1, 1, 1, 0,-1,-1,-1 , 0, 1, 1, 1, 0,-1,-1};
 	protected final static int[] _getContour_ydir = {-1,-1, 0, 1, 1, 1, 0,-1 ,-1,-1, 0, 1, 1, 1, 0};
-	public int getContour(NyARBinRaster i_raster,int i_entry_x,int i_entry_y,NyARIntPoint2d[] o_coord) throws NyARException
+	public boolean getContour(NyARBinRaster i_raster,int i_entry_x,int i_entry_y,NyARIntCoordinates o_coord) throws NyARException
 	{
 		assert(i_raster.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
 		NyARIntSize s=i_raster.getSize();
 		return impl_getContour(i_raster,0,0,s.w-1,s.h-1,0,i_entry_x,i_entry_y,o_coord);
 	}
-	public int getContour(NyARBinRaster i_raster,NyARIntRect i_area,int i_entry_x,int i_entry_y,NyARIntPoint2d[] o_coord) throws NyARException
+	public boolean getContour(NyARBinRaster i_raster,NyARIntRect i_area,int i_entry_x,int i_entry_y,NyARIntCoordinates o_coord) throws NyARException
 	{
 		assert(i_raster.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
 		return impl_getContour(i_raster,i_area.x,i_area.y,i_area.x+i_area.w-1,i_area.h+i_area.y-1,0,i_entry_x,i_entry_y,o_coord);
@@ -68,16 +68,16 @@ public class NyARContourPickup
 	 * @param o_coord
 	 * 輪郭点を格納する配列を指定します。i_array_sizeよりも大きなサイズの配列が必要です。
 	 * @return
-	 * o_coordに抽出した輪郭点の数、またはo_coordのサイズです。o_coordのサイズを返した時には、途中で輪郭線抽出を打ち切った場合があります。
+	 * 輪郭の抽出に成功するとtrueを返します。輪郭抽出に十分なバッファが無いと、falseになります。
 	 * @throws NyARException
 	 */
-	public int getContour(NyARGrayscaleRaster i_raster,int i_th,int i_entry_x,int i_entry_y,NyARIntPoint2d[] o_coord) throws NyARException
+	public boolean getContour(NyARGrayscaleRaster i_raster,int i_th,int i_entry_x,int i_entry_y,NyARIntCoordinates o_coord) throws NyARException
 	{
 		assert(i_raster.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
 		NyARIntSize s=i_raster.getSize();
 		return impl_getContour(i_raster,0,0,s.w-1,s.h-1,i_th,i_entry_x,i_entry_y,o_coord);
 	}
-	public int getContour(NyARGrayscaleRaster i_raster,NyARIntRect i_area,int i_th,int i_entry_x,int i_entry_y,NyARIntPoint2d[] o_coord) throws NyARException
+	public boolean getContour(NyARGrayscaleRaster i_raster,NyARIntRect i_area,int i_th,int i_entry_x,int i_entry_y,NyARIntCoordinates o_coord) throws NyARException
 	{
 		assert(i_raster.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
 		return impl_getContour(i_raster,i_area.x,i_area.y,i_area.x+i_area.w-1,i_area.h+i_area.y-1,i_th,i_entry_x,i_entry_y,o_coord);
@@ -97,9 +97,10 @@ public class NyARContourPickup
 	 * @return
 	 * @throws NyARException
 	 */
-	private int impl_getContour(INyARRaster i_raster,int i_l,int i_t,int i_r,int i_b,int i_th,int i_entry_x,int i_entry_y,NyARIntPoint2d[] o_coord) throws NyARException
+	private boolean impl_getContour(INyARRaster i_raster,int i_l,int i_t,int i_r,int i_b,int i_th,int i_entry_x,int i_entry_y,NyARIntCoordinates o_coord) throws NyARException
 	{
 		assert(i_t<=i_entry_x);
+		NyARIntPoint2d[] coord=o_coord.items;
 		final int[] xdir = _getContour_xdir;// static int xdir[8] = { 0, 1, 1, 1, 0,-1,-1,-1};
 		final int[] ydir = _getContour_ydir;// static int ydir[8] = {-1,-1, 0, 1, 1, 1, 0,-1};
 
@@ -108,10 +109,10 @@ public class NyARContourPickup
 		//クリップ領域の上端に接しているポイントを得る。
 
 
-		int max_coord=o_coord.length;
+		int max_coord=o_coord.items.length;
 		int coord_num = 1;
-		o_coord[0].x = i_entry_x;
-		o_coord[0].y = i_entry_y;
+		coord[0].x = i_entry_x;
+		coord[0].y = i_entry_y;
 		int dir = 5;
 
 		int c = i_entry_x;
@@ -181,8 +182,8 @@ public class NyARContourPickup
 			// xcoordとycoordをc,rにも保存
 			c = c + xdir[dir];
 			r = r + ydir[dir];
-			o_coord[coord_num].x = c;
-			o_coord[coord_num].y = r;
+			coord[coord_num].x = c;
+			coord[coord_num].y = r;
 			//終了条件判定
 			if (c == i_entry_x && r == i_entry_y){
 				//開始点と同じピクセルに到達したら、終点の可能性がある。
@@ -190,7 +191,7 @@ public class NyARContourPickup
 				//末端のチェック
 				if (coord_num == max_coord) {
 					//輪郭bufが末端に達した
-					return coord_num;
+					return false;
 				}				
 				//末端候補の次のピクセルを調べる
 				dir = (dir + 5) % 8;//dirの正規化
@@ -213,20 +214,21 @@ public class NyARContourPickup
 				//得たピクセルが、[1]と同じならば、末端である。
 				c = c + xdir[dir];
 				r = r + ydir[dir];
-				if(o_coord[1].x ==c && o_coord[1].y ==r){
+				if(coord[1].x ==c && coord[1].y ==r){
 					//終点に達している。
-					return coord_num;
+					o_coord.length=coord_num;
+					return true;
 				}else{
 					//終点ではない。
-					o_coord[coord_num].x = c;
-					o_coord[coord_num].y = r;
+					coord[coord_num].x = c;
+					coord[coord_num].y = r;
 				}
 			}
 			coord_num++;
 			//末端のチェック
 			if (coord_num == max_coord) {
 				//輪郭が末端に達した
-				return coord_num;
+				return false;
 			}
 		}
 	}

@@ -8,7 +8,7 @@
  * http://www.hitl.washington.edu/artoolkit/
  *
  * The NyARToolkit is Java edition ARToolKit class library.
- * Copyright (C)2008-2009 Ryo Iizuka
+ * Copyright (C)2008-2010 Ryo Iizuka
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,29 +28,24 @@
  *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.squaredetect;
-
-import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
-import jp.nyatla.nyartoolkit.core.types.*;
-
-public abstract class NyARSquareContourDetector
+package jp.nyatla.nyartoolkit.core.types;
+/**
+ * 座標点配列を定義します。
+ * 座標点配列は、輪郭線やパスの定義に使用します。
+ */
+public class NyARIntCoordinates
 {
 	/**
-	 * @param i_raster
-	 * @param o_square_stack
-	 * @throws NyARException
+	 * 点を格納する配列です。
 	 */
-	public abstract void detectMarker(NyARBinRaster i_raster) throws NyARException;
+	public NyARIntPoint2d[] items;
 	/**
-	 * 通知ハンドラです。
-	 * この関数は、detectMarker関数のコールバック関数として機能します。
-	 * 継承先のクラスで、矩形の発見時の処理をここに記述してください。
-	 * @param i_coord
-	 * @param i_coor_num
-	 * @param i_vertex_index
-	 * @throws NyARException
+	 * 配列の有効な長さです。0から、items.length-1までの数を取ります。
 	 */
-	protected abstract void onSquareDetect(NyARIntCoordinates i_coord,int[] i_vertex_index)  throws NyARException;
+	public int length;
+	public NyARIntCoordinates(int i_length)
+	{
+		this.items=NyARIntPoint2d.createArray(i_length);
+		this.length=0;
+	}
 }
-

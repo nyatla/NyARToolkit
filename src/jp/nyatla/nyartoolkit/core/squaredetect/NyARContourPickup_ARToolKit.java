@@ -2,6 +2,7 @@ package jp.nyatla.nyartoolkit.core.squaredetect;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingImage;
+import jp.nyatla.nyartoolkit.core.types.NyARIntCoordinates;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 
 /**
@@ -23,11 +24,12 @@ public class NyARContourPickup_ARToolKit extends NyARContourPickup
 	 * @param i_array_size
 	 * o_coordの有効長を指定します。
 	 * @param o_coord
-	 * 輪郭点を格納する配列を指定します。i_array_sizeよりも大きなサイズの配列が必要です。
+	 * 輪郭点を格納するオブジェクトを指定します。
 	 * @return
+	 * 輪郭線がo_coordの長さを超えた場合、falseを返します。
 	 * @throws NyARException
 	 */
-	public int getContour(NyARLabelingImage i_raster,int i_entry_x,int i_entry_y,int i_array_size,NyARIntPoint2d[] o_coord) throws NyARException
+	public boolean getContour(NyARLabelingImage i_raster,int i_entry_x,int i_entry_y,NyARIntCoordinates o_coord) throws NyARException
 	{	
 		final int[] xdir = _getContour_xdir;// static int xdir[8] = { 0, 1, 1, 1, 0,-1,-1,-1};
 		final int[] ydir = _getContour_ydir;// static int ydir[8] = {-1,-1, 0, 1, 1, 1, 0,-1};
@@ -35,17 +37,19 @@ public class NyARContourPickup_ARToolKit extends NyARContourPickup
 		final int[] i_buf=(int[])i_raster.getBuffer();
 		final int width=i_raster.getWidth();
 		final int height=i_raster.getHeight();
+		final NyARIntPoint2d[] coord=o_coord.items;
+		int i_array_size=o_coord.items.length;
 		//クリップ領域の上端に接しているポイントを得る。
 		int sx=i_entry_x;
 		int sy=i_entry_y;
 
 		int coord_num = 1;
-		o_coord[0].x = sx;
-		o_coord[0].y = sy;
+		coord[0].x = sx;
+		coord[0].y = sy;
 		int dir = 5;
 
-		int c = o_coord[0].x;
-		int r = o_coord[0].y;
+		int c = coord[0].x;
+		int r = coord[0].y;
 		for (;;) {
 			dir = (dir + 5) % 8;//dirの正規化
 			//ここは頑張ればもっと最適化できると思うよ。
@@ -112,8 +116,8 @@ public class NyARContourPickup_ARToolKit extends NyARContourPickup
 			// xcoordとycoordをc,rにも保存
 			c = c + xdir[dir];
 			r = r + ydir[dir];
-			o_coord[coord_num].x = c;
-			o_coord[coord_num].y = r;
+			coord[coord_num].x = c;
+			coord[coord_num].y = r;
 			// 終了条件判定
 			if (c == sx && r == sy){
 				coord_num++;
@@ -122,9 +126,10 @@ public class NyARContourPickup_ARToolKit extends NyARContourPickup
 			coord_num++;
 			if (coord_num == i_array_size) {
 				//輪郭が末端に達した
-				return coord_num;
+				return false;
 			}
 		}
-		return coord_num;
+		o_coord.length=coord_num;
+		return true;
 	}
 }

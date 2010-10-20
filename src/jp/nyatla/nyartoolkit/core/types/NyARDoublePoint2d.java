@@ -70,11 +70,11 @@ public class NyARDoublePoint2d
 	 * @param i_p2
 	 * @return
 	 */	
-	public static final double sqNorm(NyARDoublePoint2d i_p1,NyARDoublePoint2d i_p2)
+	public final double sqNorm(NyARDoublePoint2d i_p1)
 	{
 		double x,y;
-		x=i_p2.x-i_p1.x;
-		y=i_p2.y-i_p1.y;
+		x=this.x-i_p1.x;
+		y=this.y-i_p1.y;
 		return x*x+y*y;
 	}
 	/**

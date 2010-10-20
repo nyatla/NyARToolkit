@@ -30,6 +30,10 @@
  */
 package jp.nyatla.nyartoolkit.core.types;
 
+/**
+ * int型の二次元の点を格納します。
+ *
+ */
 public class NyARIntPoint2d
 {
 	public int x;
@@ -97,9 +101,14 @@ public class NyARIntPoint2d
 	 * i_sourceの値を、thisへセットします。
 	 * @param i_source
 	 */
-	public void setValue(NyARIntPoint2d i_source)
+	public final void setValue(NyARIntPoint2d i_source)
 	{
 		this.x=i_source.x;
 		this.y=i_source.y;
+	}
+	public final void setValue(int i_x,int i_y)
+	{
+		this.x=i_x;
+		this.y=i_y;
 	}
 }

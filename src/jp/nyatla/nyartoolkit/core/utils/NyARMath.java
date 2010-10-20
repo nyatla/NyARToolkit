@@ -1,15 +1,16 @@
 package jp.nyatla.nyartoolkit.core.utils;
 
-import jp.nyatla.nyartoolkit.core.types.*;
+
 /**
- * typeの
- * 
- * 
- * @author nyatla
+ * 数学関数を定義します。
  *
  */
 public class NyARMath
 {
+	public final static double COS_DEG_30=0.8660;
+	public final static double COS_DEG_10=0.9848;
+	public final static double COS_DEG_8 =0.9902;
+	public final static double COS_DEG_5 =0.9961;
 	public static final double sqNorm(double i_p1x,double i_p1y,double i_p2x,double i_p2y)
 	{
 		double x,y;
@@ -24,18 +25,7 @@ public class NyARMath
 	{
 		return Math.sqrt(i_x1*i_y1+i_x2+i_y2);
 	}
-	public static final double dist(NyARDoublePoint2d i_vec)
-	{
-		return Math.sqrt(i_vec.x*i_vec.x+i_vec.y+i_vec.y);
-	}
-	/**
-	 * 格納値をベクトルとして、距離を返します。
-	 * @return
-	 */
-	public static final double dist(NyARDoublePoint3d i_vec)
-	{
-		return Math.sqrt(i_vec.x*i_vec.x+i_vec.y*i_vec.y+i_vec.z*i_vec.z);
-	}	
+
 	
 	
 	

@@ -92,7 +92,7 @@ public class NyARLinear
 	 * @param i_point2
 	 * @return
 	 */
-	public final boolean calculateLine(NyARDoublePoint2d i_point1,NyARDoublePoint2d i_point2)
+	public final boolean calculateLineWithNormalize(NyARDoublePoint2d i_point1,NyARDoublePoint2d i_point2)
 	{
 		double x1=i_point1.x;
 		double y1=i_point1.y;
@@ -131,6 +131,20 @@ public class NyARLinear
 		this.c=(i_vector.dx*i_vector.y-i_vector.dy*i_vector.x);
 		return;		
 	}
+	public final boolean setVectorWithNormalize(NyARPointVector2d i_vector)
+	{
+		double dx=i_vector.dx;
+		double dy=i_vector.dy;
+		double sq=Math.sqrt(dx*dx+dy*dy);
+		if(sq==0){
+			return false;
+		}
+		sq=1/sq;
+		this.a= dy*sq;
+		this.b=-dx*sq;
+		this.c=(dx*i_vector.y-dy*i_vector.x)*sq;		
+		return true;
+	}
 	/**
 	 * 直行する直線を求めます。
 	 */
@@ -167,5 +181,16 @@ public class NyARLinear
 		o_point.x = (this.b * i_c - i_b * this.c) / w1;
 		o_point.y = (i_a * this.c - this.a * i_c) / w1;
 		return true;
+	}
+	public final boolean crossPos(double i_a,double i_b,double i_c,NyARIntPoint2d o_point)
+	{
+		final double w1 = this.a * i_b - i_a * this.b;
+		if (w1 == 0.0) {
+			return false;
+		}
+		o_point.x = (int)((this.b * i_c - i_b * this.c) / w1);
+		o_point.y = (int)((i_a * this.c - this.a * i_c) / w1);
+		return true;
 	}	
+	
 }

@@ -38,27 +38,39 @@ public class NyARPointVector2d
 		this.y=i_value.y;
 	}
 	/**
-	 * 2つのベクトルの作るCos値を返します。
+	 * このベクトルと指定したベクトルの作るCos値を返します。
 	 * @param i_v1
-	 * @param i_v2
 	 * @return
 	 */
-	public static double getVecCos(NyARPointVector2d i_v1,NyARPointVector2d i_v2)
+	public double getVecCos(NyARPointVector2d i_v1)
 	{
 		double x1=i_v1.dx;
 		double y1=i_v1.dy;
-		double x2=i_v2.dx;
-		double y2=i_v2.dy;
+		double x2=this.dx;
+		double y2=this.dy;
 		double d=(x1*x2+y1*y2)/Math.sqrt((x1*x1+y1*y1)*(x2*x2+y2*y2));
 		return d;
 	}
-	public static double getVecCos(NyARPointVector2d i_v1,double i_v2_x,double i_v2_y)
+	/**
+	 * 個のベクトルと指定したベクトルの作るCos値を返します。
+	 * @param i_v2_x
+	 * @param i_v2_y
+	 * @return
+	 */
+	public double getVecCos(double i_v2_x,double i_v2_y)
 	{
-		double x1=i_v1.dx;
-		double y1=i_v1.dy;
+		double x1=this.dx;
+		double y1=this.dy;
 		double d=(x1*i_v2_x+y1*i_v2_y)/Math.sqrt((x1*x1+y1*y1)*(i_v2_x*i_v2_x+i_v2_y*i_v2_y));
 		return d;
 	}
+	public double getAbsVecCos(double i_v2_x,double i_v2_y)
+	{
+		double x1=this.dx;
+		double y1=this.dy;
+		double d=(x1*i_v2_x+y1*i_v2_y)/Math.sqrt((x1*x1+y1*y1)*(i_v2_x*i_v2_x+i_v2_y*i_v2_y));
+		return d>=0?d:-d;
+	}	
 	/**
 	 * 交点を求めます。
 	 * @param i_vector1

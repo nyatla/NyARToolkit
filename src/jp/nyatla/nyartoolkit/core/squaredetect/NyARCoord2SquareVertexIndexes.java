@@ -46,28 +46,28 @@ public class NyARCoord2SquareVertexIndexes
 	}
 	/**
 	 * 座標集合から、頂点候補になりそうな場所を４箇所探して、そのインデクス番号を返します。
-	 * @param i_x_coord
-	 * @param i_y_coord
-	 * @param i_coord_num
+	 * @param i_coord
+	 * 輪郭を格納した配列です。
 	 * @param i_area
 	 * @param o_vertex
 	 * @return
 	 */
-	public boolean getVertexIndexes(NyARIntPoint2d[] i_coord, int i_coord_num, int i_area, int[] o_vertex)
+	public boolean getVertexIndexes(NyARIntCoordinates i_coord, int i_area, int[] o_vertex)
 	{
 		final NyARVertexCounter wv1 = this.__getSquareVertex_wv1;
 		final NyARVertexCounter wv2 = this.__getSquareVertex_wv2;
-		int vertex1_index=getFarPoint(i_coord,i_coord_num,0);
+		int i_coord_num=i_coord.length;
+		int vertex1_index=getFarPoint(i_coord.items,i_coord_num,0);
 		int prev_vertex_index=(vertex1_index+i_coord_num)%i_coord_num;
-		int v1=getFarPoint(i_coord,i_coord_num,vertex1_index);
+		int v1=getFarPoint(i_coord.items,i_coord_num,vertex1_index);
 		final double thresh = (i_area / 0.75) * 0.01 * VERTEX_FACTOR;
 
 		o_vertex[0] = vertex1_index;
 
-		if (!wv1.getVertex(i_coord,i_coord_num, vertex1_index, v1, thresh)) {
+		if (!wv1.getVertex(i_coord.items,i_coord_num, vertex1_index, v1, thresh)) {
 			return false;
 		}
-		if (!wv2.getVertex(i_coord,i_coord_num, v1,prev_vertex_index, thresh)) {
+		if (!wv2.getVertex(i_coord.items,i_coord_num, v1,prev_vertex_index, thresh)) {
 			return false;
 		}
 
@@ -83,10 +83,10 @@ public class NyARCoord2SquareVertexIndexes
 			}else{
 				v2 = ((v1+i_coord_num-vertex1_index)/2+vertex1_index)%i_coord_num;
 			}
-			if (!wv1.getVertex(i_coord,i_coord_num, vertex1_index, v2, thresh)) {
+			if (!wv1.getVertex(i_coord.items,i_coord_num, vertex1_index, v2, thresh)) {
 				return false;
 			}
-			if (!wv2.getVertex(i_coord,i_coord_num, v2, v1, thresh)) {
+			if (!wv2.getVertex(i_coord.items,i_coord_num, v2, v1, thresh)) {
 				return false;
 			}
 			if (wv1.number_of_vertex == 1 && wv2.number_of_vertex == 1) {
@@ -104,10 +104,10 @@ public class NyARCoord2SquareVertexIndexes
 				v2 = ((v1+i_coord_num+prev_vertex_index)/2)%i_coord_num;
 				
 			}
-			if (!wv1.getVertex(i_coord,i_coord_num, v1, v2, thresh)) {
+			if (!wv1.getVertex(i_coord.items,i_coord_num, v1, v2, thresh)) {
 				return false;
 			}
-			if (!wv2.getVertex(i_coord,i_coord_num, v2, prev_vertex_index, thresh)) {
+			if (!wv2.getVertex(i_coord.items,i_coord_num, v2, prev_vertex_index, thresh)) {
 				return false;
 			}
 			if (wv1.number_of_vertex == 1 && wv2.number_of_vertex == 1) {
