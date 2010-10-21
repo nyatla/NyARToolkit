@@ -92,12 +92,18 @@ public class NyARLinear
 	 * @param i_point2
 	 * @return
 	 */
-	public final boolean calculateLineWithNormalize(NyARDoublePoint2d i_point1,NyARDoublePoint2d i_point2)
+	public final boolean makeLinearWithNormalize(NyARIntPoint2d i_point1,NyARIntPoint2d i_point2)
 	{
-		double x1=i_point1.x;
-		double y1=i_point1.y;
-		double x2=i_point2.x;
-		double y2=i_point2.y;
+		return makeLinearWithNormalize(i_point1.x,i_point1.y,i_point2.x,i_point2.y);
+	}
+	/**
+	 */
+	public final boolean makeLinearWithNormalize(NyARDoublePoint2d i_point1,NyARDoublePoint2d i_point2)
+	{
+		return makeLinearWithNormalize(i_point1.x,i_point1.y,i_point2.x,i_point2.y);
+	}
+	public final boolean makeLinearWithNormalize(double x1,double y1,double x2,double y2)
+	{
 		double dx=y2-y1;
 		double dy=x1-x2;
 		double sq=Math.sqrt(dx*dx+dy*dy);
@@ -142,7 +148,7 @@ public class NyARLinear
 		sq=1/sq;
 		this.a= dy*sq;
 		this.b=-dx*sq;
-		this.c=(dx*i_vector.y-dy*i_vector.x)*sq;		
+		this.c=-(this.a*i_vector.x+this.b*i_vector.y);		
 		return true;
 	}
 	/**
@@ -191,6 +197,7 @@ public class NyARLinear
 		o_point.x = (int)((this.b * i_c - i_b * this.c) / w1);
 		o_point.y = (int)((i_a * this.c - this.a * i_c) / w1);
 		return true;
-	}	
+	}
+
 	
 }

@@ -69,7 +69,7 @@ public class NyARSquare
     	NyARDoublePoint2d[] b=i_square.sqvertex;
     	
     	//3-0番目
-    	int min_dist=0;
+    	int min_dist=Integer.MAX_VALUE;
     	int min_index=0;
     	int xd,yd;
     	for(int i=3;i>=0;i--){

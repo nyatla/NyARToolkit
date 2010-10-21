@@ -170,6 +170,12 @@ public class NyARIntRect
 		int y=(int)i_pos.y-this.y;
 		return (0<=x && x<this.w && 0<=y && y<this.h);
 	}
+	public boolean isInnerPoint(NyARIntPoint2d i_pos)
+	{
+		int x=i_pos.x-this.x;
+		int y=i_pos.y-this.y;
+		return (0<=x && x<this.w && 0<=y && y<this.h);
+	}
 	/**
 	 * RECTがこのRECTの範囲内であるか判定します。
 	 * @param i_rect

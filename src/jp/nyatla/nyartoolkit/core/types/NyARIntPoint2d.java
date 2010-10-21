@@ -73,11 +73,10 @@ public class NyARIntPoint2d
 	 * @param i_p2
 	 * @return
 	 */	
-	public static final int sqNorm(NyARIntPoint2d i_p1,NyARIntPoint2d i_p2)
+	public final int sqNorm(NyARIntPoint2d i_p1)
 	{
-		int x,y;
-		x=i_p2.x-i_p1.x;
-		y=i_p2.y-i_p1.y;
+		int x=this.x-i_p1.x;
+		int y=this.y-i_p1.y;
 		return x*x+y*y;
 	}
 	
