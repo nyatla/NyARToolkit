@@ -1,5 +1,6 @@
 package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
 
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARManagedObject;
@@ -48,7 +49,6 @@ public class NyARTarget extends NyARManagedObject
 	public Object tag;
 //	//Samplerからの基本情報
 	public NyARIntRect sample_area=new NyARIntRect();
-	public NyARIntPoint2d sample_area_center=new NyARIntPoint2d();
 	//アクセス用関数
 	
 	public NyARTarget(INyARManagedObjectPoolOperater iRefPoolOperator)
@@ -68,16 +68,18 @@ public class NyARTarget extends NyARManagedObject
 		}
 		return ret;
 	}	
-	
+	public void setSampleArea(NyARDoublePoint2d[] i_vertex)
+	{
+		this.sample_area.setAreaRect(i_vertex,4);
+	}	
 	/**
 	 * LowResolutionLabelingSamplerOut.Itemの値をセットします。セットされる値は、sample_areaとsample_area_centerだけです。
 	 * @param i_item
 	 * 設定する値です。
 	 */
-	public void setValue(LowResolutionLabelingSamplerOut.Item i_item)
+	public void setSampleArea(LowResolutionLabelingSamplerOut.Item i_item)
 	{
 		this.sample_area.setValue(i_item.base_area);
-		this.sample_area_center.setValue(i_item.base_area_center);
 	}
 	/**
 	 * このターゲットのステータスを、IgnoreStatusへ変更します。

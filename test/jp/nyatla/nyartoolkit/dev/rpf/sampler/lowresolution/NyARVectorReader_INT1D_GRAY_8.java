@@ -271,7 +271,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 	 * @return
 	 * @throws NyARException
 	 */
-	public boolean traceLine(NyARDoublePoint2d i_pos1,NyARDoublePoint2d i_pos2,int i_area ,VecLinear o_coord)
+	public boolean traceLine(NyARIntPoint2d i_pos1,NyARIntPoint2d i_pos2,int i_edge ,VecLinear o_coord)
 	{
 		NyARIntCoordinates coord=this._coord_buf;
 		//(i_area*2)の矩形が範囲内に収まるように線を引く
@@ -284,31 +284,65 @@ public class NyARVectorReader_INT1D_GRAY_8
 			return false;
 		}
 		//dist最大数の決定
-		if(dist>12){
-			dist=12;
+		if(dist>14){
+			dist=14;
 		}
 		//サンプリングサイズを決定(移動速度とサイズから)
-		int s=i_area*2;
-		double dx=(i_pos2.x-i_pos1.x);
-		double dy=(i_pos2.y-i_pos1.y);
+		int s=i_edge*2+1;
+		int dx=(i_pos2.x-i_pos1.x);
+		int dy=(i_pos2.y-i_pos1.y);
 		int r=this._ref_size.w-s;
 		int b=this._ref_size.h-s;
 		
-		//拡散範囲を考慮して、線のベクトル化
-//		coord.length=setlineCoord((int)i_pos1.x,(int)i_pos1.y,(int)i_pos2.x,(int)i_pos2.y,coord.items);
-		//最大12点を定義して、そのうち両端を除いた点を使用する。
-		for(int i=1;i<dist-1;i++){
-			int x=(int)(i*dx/dist+i_pos1.x-i_area);
-			int y=(int)(i*dy/dist+i_pos1.y-i_area);
+		//最大14点を定義して、そのうち両端を除いた点を使用する。
+		for(int i=3;i<dist-1;i++){
+			int x=i*dx/dist+i_pos1.x-i_edge;
+			int y=i*dy/dist+i_pos1.y-i_edge;
 			//limit
-			coord.items[i-1].x=x<0?0:(x>=r?r:x);
-			coord.items[i-1].y=y<0?0:(y>=b?b:y);
+			coord.items[i-3].x=x<0?0:(x>=r?r:x);
+			coord.items[i-3].y=y<0?0:(y>=b?b:y);
 		}
-		coord.length=dist-2;
+		
+		coord.length=dist-4;
 		//点数は10点程度を得る。
-		//i_area<x<w-i_area,i_area<y<h-i_areaに制限
 		return traceConture(coord,1,s,o_coord);
 	}
+	public boolean traceLine(NyARDoublePoint2d i_pos1,NyARDoublePoint2d i_pos2,int i_edge ,VecLinear o_coord)
+	{
+		NyARIntCoordinates coord=this._coord_buf;
+		//(i_area*2)の矩形が範囲内に収まるように線を引く
+		//移動量
+		
+		//点間距離を計算
+		int dist=(int)Math.sqrt(i_pos1.sqNorm(i_pos2));
+		//最低AREA*2以上の大きさが無いなら、ラインのトレースは不可能。
+		if(dist<4){
+			return false;
+		}
+		//dist最大数の決定
+		if(dist>14){
+			dist=14;
+		}
+		//サンプリングサイズを決定(移動速度とサイズから)
+		int s=i_edge*2+1;
+		int dx=(int)(i_pos2.x-i_pos1.x);
+		int dy=(int)(i_pos2.y-i_pos1.y);
+		int r=this._ref_size.w-s;
+		int b=this._ref_size.h-s;
+		
+		//最大14点を定義して、そのうち両端の2個を除いた点を使用する。
+		for(int i=dist-1;i>=0;i--){
+			int x=(int)((i+2)*dx/dist+i_pos1.x-i_edge);
+			int y=(int)((i+2)*dy/dist+i_pos1.y-i_edge);
+			//limit
+			coord.items[i].x=x<0?0:(x>=r?r:x);
+			coord.items[i].y=y<0?0:(y>=b?b:y);
+		}
+		
+		coord.length=dist-4;
+		//点数は10点程度を得る。
+		return traceConture(coord,1,s,o_coord);
+	}		
 	/**
 	 * 輪郭点の画像ベクトルを取得します。
 	 * @param i_coord

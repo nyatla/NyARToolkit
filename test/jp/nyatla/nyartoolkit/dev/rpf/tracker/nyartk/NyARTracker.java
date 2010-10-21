@@ -333,7 +333,7 @@ System.out.println("upgradeRectTarget:ignore pool full");
 				//このターゲットに合致するアイテムは無い。
 				continue;
 			}
-			d_ptr.setValue(source[sample_index]);
+			d_ptr.setSampleArea(source[sample_index]);
 			d_ptr.last_update=clock;
 		}
 	}		
@@ -375,7 +375,7 @@ System.out.println("updateNewStatus:status pool full");
 			st.setValue(s);
 			
 			//ターゲットの更新
-			d_ptr.setValue(s);
+			d_ptr.setSampleArea(s);
 			d_ptr.last_update=clock;
 
 			//ref_statusのセットと切り替え(失敗時の上書き防止のためにダブルバッファ化)
@@ -423,7 +423,7 @@ System.out.println("updateNewStatus:status pool full");
 				continue;
 			}
 //[DEBUG:]st.vecpos.margeResembleCoordIgnoreOrder();
-			d_ptr.setValue(s);
+			d_ptr.setSampleArea(s);
 			d_ptr.last_update=clock;
 			//ref_statusの切り替え
 			d_ptr.ref_status.releaseObject();
@@ -453,14 +453,12 @@ System.out.println("updateNewStatus:status pool full");
 				continue;
 			}
 			//{単独検出を試行}
-/*			if(st.setValue(i_base_raster,(NyARRectTargetStatus)d_ptr.ref_status)){
+			if(st.setValue(i_base_raster,(NyARRectTargetStatus)d_ptr.ref_status)){
 				//単独検出に成功
 				d_ptr.sample_area.setAreaRect(st.square.sqvertex,4);
-				d_ptr.sample_area_center.x=d_ptr.sample_area.x+d_ptr.sample_area.w/2;
-				d_ptr.sample_area_center.y=d_ptr.sample_area.y+d_ptr.sample_area.h/2;
 			}else{
-//		st.releaseObject();
-//				continue;}*/
+		st.releaseObject();
+				continue;}/*
 				int sample_index=this._index[i];
 				if(sample_index<0){
 					//このターゲットに合致するアイテムは無い。
@@ -476,7 +474,8 @@ System.out.println("updateNewStatus:status pool full");
 					continue;
 				}
 				//ref_statusの切り替え
-				d_ptr.setValue(s);
+//				d_ptr.setSampleArea(st.square.sqvertex);//ラベルの方がいいかもー
+				d_ptr.setSampleArea(s);
 //			}
 //			*/
 			d_ptr.ref_status.releaseObject();
@@ -498,7 +497,6 @@ System.out.println("updateNewStatus:status pool full");
 			//サンプラからの値を其々のターゲットのソースへ分配
 			LowResolutionLabelingSamplerOut.Item sample_item=sample_items[i];
 			int id;
-			//rect 
 			id=i_trackdata.recttarget.getMatchTargetIndex(sample_item);
 			if(id>=0){
 				this._rectsource.push(sample_item);

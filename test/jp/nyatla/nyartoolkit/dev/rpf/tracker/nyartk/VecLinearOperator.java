@@ -39,13 +39,13 @@ public class VecLinearOperator
 		NyARLinear ol = this._ol;
 		NyARDoublePoint2d p = this._p;		
 		//ベクトルの制限。1,2象限に集める。
-		for (int i = i_vector.length - 1; i >= 0; i--) {
+/*		for (int i = i_vector.length - 1; i >= 0; i--) {
 			VecLinear.CoordData target1 = items[i];
 			if (target1.dy < 0) {
 				target1.dy *= -1;
 				target1.dx *= -1;
 			}
-		}
+		}*/
 
 		for (int i = i_vector.length - 1; i > 0; i--) {
 			VecLinear.CoordData target1 = items[i];

@@ -29,18 +29,9 @@ public class NyARTargetList<T extends NyARTarget> extends NyARPointerStack<T>
 		//対角範囲の距離が、対角距離の1/2以下で、最も小さいこと。
 		for(int i=this._length-1;i>=0;i--)
 		{
-			
 			iitem=this._items[i];
 			int d;
-			d=NyARIntRect.getSqDiagonalPointDiff(iitem.sample_area,i_item.base_area);
-/*			int x1,y1;
-			//対角点同士の距離を計算
-			x1=iitem.sample_area.x-i_item.base_area.x;
-			y1=iitem.sample_area.y-i_item.base_area.y;
-			d=x1*x1+y1*y1;
-			x1=x1+iitem.sample_area.w-i_item.base_area.w;
-			y1=y1+iitem.sample_area.h-i_item.base_area.h;
-			d+=x1*x1+y1*y1;		*/	
+			d=NyARIntRect.getSqDiagonalPointDiff(iitem.sample_area,i_item.base_area);	
 			if(d<min_d){
 				min_d=d;
 				ret=i;
@@ -53,4 +44,5 @@ public class NyARTargetList<T extends NyARTarget> extends NyARPointerStack<T>
 		}
 		return -1;
 	}
+	
 }

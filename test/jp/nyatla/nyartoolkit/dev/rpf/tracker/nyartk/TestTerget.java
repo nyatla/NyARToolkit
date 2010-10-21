@@ -95,7 +95,7 @@ class MoveSource implements InputSource
         s.setColor(Color.white);
         s.fillRect(0,0,320,240);
         s.setColor(Color.black);
-        s.fillRect(x, y,50,50);
+        //s.fillRect(x, y,50,50);
         s.fillRect(x2, y2,50,50);
         x+=sx;y+=sy;
         if(x<0 || x>200){sx*=-1;}if(y<0 || y>200){sy*=-1;}
@@ -273,8 +273,8 @@ public class TestTerget extends Frame
     {
     	//サンプリング結果の表示
     	Graphics g=sink.getGraphics();
-    	g.setColor(c);
 		for(int i=this.trackerout.recttarget.getLength()-1;i>=0;i--){
+	    	g.setColor(c);
 			NyARTarget t=this.trackerout.recttarget.getItem(i);
 			NyARRectTargetStatus s=(NyARRectTargetStatus)t.ref_status;
 			g.drawString("RT:"+t.serial,t.sample_area.x,t.sample_area.y);
@@ -286,6 +286,14 @@ public class TestTerget extends Frame
 					(int)s.square.sqvertex[(i2+1)%4].x,
 					(int)s.square.sqvertex[(i2+1)%4].y);
 			}
+		   	g.setColor(Color.pink);
+			for(int i2=0;i2<4;i2++){
+				g.drawLine(
+						(int)s.estimate_vertex[i2].x,
+						(int)s.estimate_vertex[i2].y,
+						(int)s.estimate_vertex[(i2+1)%4].x,
+						(int)s.estimate_vertex[(i2+1)%4].y);
+				}
 		}
     }
 

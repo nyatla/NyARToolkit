@@ -28,6 +28,14 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	 * 頂点の速度値
 	 */
 	public NyARIntPoint2d[] vertex_v=NyARIntPoint2d.createArray(4);
+	/**
+	 * 予想頂点位置
+	 */
+	/**
+	 * 予想頂点範囲
+	 */
+	public NyARIntRect estimate_rect=new NyARIntRect();
+	public NyARIntPoint2d[] estimate_vertex=NyARIntPoint2d.createArray(4);
 
 	//
 	//制御部
@@ -50,30 +58,34 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		return ret;
 	}
 
-	
-
-
-	private void setDiffParam(NyARRectTargetStatus i_prev_param)
+	private void setEstimateParam(NyARRectTargetStatus i_prev_param)
 	{
+		NyARDoublePoint2d[] vc_ptr=this.square.sqvertex;
+		NyARIntPoint2d[] ve_ptr=this.estimate_vertex;
 		if(i_prev_param!=null){
-			//過去と比較して、周波数ずれを計算
-			int d=i_prev_param.square.checkVertexShiftValue(this.square);
-			this.square.rotateVertexL(d);
 			//差分パラメータをセット
-			NyARDoublePoint2d[] vc=this.square.sqvertex;
 			NyARDoublePoint2d[] vp=i_prev_param.square.sqvertex;
 			//頂点速度の計測
 			for(int i=3;i>=0;i--){
-				int x=(int)(vc[i].x-vp[i].x);
-				int y=(int)(vc[i].y-vp[i].y);
-				this.vertex_v[i].setValue(x,y);
+				int x=(int)((vc_ptr[i].x-vp[i].x));
+				int y=(int)((vc_ptr[i].y-vp[i].y));
+				this.vertex_v[i].x=x;//+this.vertex_v[i].x)/2;
+				this.vertex_v[i].y=y;//+this.vertex_v[i].y)/2;
+				//予想位置
+				ve_ptr[i].x=(int)vc_ptr[i].x+x;
+				ve_ptr[i].y=(int)vc_ptr[i].y+y;
 			}
 		}else{
 			//頂点速度のリセット
 			for(int i=3;i>=0;i--){
 				this.vertex_v[i].x=this.vertex_v[i].y=0;
+				ve_ptr[i].x=(int)vc_ptr[i].x;
+				ve_ptr[i].y=(int)vc_ptr[i].y;
 			}
 		}
+		//頂点予測と範囲予測
+		this.estimate_rect.setAreaRect(ve_ptr,4);
+//		this.estimate_rect.clip(i_left, i_top, i_right, i_bottom);
 		return;
 	}
 	
@@ -88,6 +100,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	public boolean setValueWithInitialCheck(NyARContourTargetStatus i_contour_status,NyARIntRect i_sample_area) throws NyARException
 	{
 		//ベクトルのマージ(マージするときに、3,4象限方向のベクトルは1,2象限のベクトルに変換する。)
+		i_contour_status.vecpos.limitQuadrantTo12();
 		this._ref_my_pool._vecpos_op.margeResembleCoords(i_contour_status.vecpos);
 		if(i_contour_status.vecpos.length<4){
 			return false;
@@ -101,10 +114,53 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		}
 		//点から直線を再計算
 		for(int i=3;i>=0;i--){
-			sq.line[i].calculateLineWithNormalize(sq.sqvertex[i],sq.sqvertex[(i+1)%4]);
+			sq.line[i].makeLinearWithNormalize(sq.sqvertex[i],sq.sqvertex[(i+1)%4]);
 		}
-		this.setDiffParam(null,false);
+		this.setEstimateParam(null);
 		return checkInitialRectCondition(i_sample_area);
+	}
+	/**
+	 * 値をセットします。この関数は、処理の成功失敗に関わらず、内容変更を行います。
+	 * @param i_contour_status
+	 * @return
+	 * @throws NyARException
+	 */
+	public boolean setValueWithDeilyCheck(LrlsGsRaster i_raster,LowResolutionLabelingSamplerOut.Item i_source,NyARRectTargetStatus i_prev_status) throws NyARException
+	{
+		VecLinear vecpos=this._ref_my_pool._vecpos;
+		//輪郭線を取る
+		if(!i_raster.getVectorReader().traceConture((LrlsGsRaster)i_source.ref_raster,i_source.lebeling_th,i_source.entry_pos,vecpos)){
+			return false;
+		}
+		//3,4象限方向のベクトルは1,2象限のベクトルに変換する。
+		vecpos.limitQuadrantTo12();
+		//ベクトルのマージ
+		this._ref_my_pool._vecpos_op.margeResembleCoords(vecpos);
+		if(vecpos.length<4){
+			return false;
+		}
+		//キーベクトルを取得
+		vecpos.getKeyCoord(this._ref_my_pool._indexbuf);
+		//点に変換
+		NyARSquare sq=this.square;
+		if(!this._ref_my_pool._line_detect.line2SquareVertex(this._ref_my_pool._indexbuf,this.square.sqvertex)){
+			return false;
+		}
+		//点から直線を再計算
+		for(int i=3;i>=0;i--){
+			sq.line[i].makeLinearWithNormalize(sq.sqvertex[i],sq.sqvertex[(i+1)%4]);
+		}
+		//頂点並び順の調整
+		this.square.rotateVertexL(i_prev_status.square.checkVertexShiftValue(this.square));		
+
+		//パラメタチェック
+		if(!checkDeilyRectCondition(i_prev_status)){
+			return false;
+		}
+		//次回の予測
+		setEstimateParam(i_prev_status);
+
+		return true;
 	}
 	/**
 	 * 現在の矩形を元に、線分をトレースして、頂点を取得します。
@@ -112,7 +168,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	 * @return
 	 * @throws NyARException 
 	 */
-	private boolean updateVertexParamByLineLog(NyARVectorReader_INT1D_GRAY_8 i_reader,NyARSquare i_prev_sq) throws NyARException
+	private boolean updateVertexParamByLineLog(NyARVectorReader_INT1D_GRAY_8 i_reader,NyARRectTargetStatus i_prev_sq) throws NyARException
 	{
 		//4本のベクトルを計算
 		NyARSquare sq=this.square;
@@ -120,6 +176,7 @@ NyARIntRect r=new NyARIntRect();
 r.x=r.y=0;
 r.h=240;
 r.w=320;
+//現在の速度と認識対象の大きさから、カーネルサイズを決定。
 		if(!clllip(i_reader,i_prev_sq,r)){
 			return false;
 		}
@@ -142,49 +199,18 @@ r.w=320;
 	 */
 	public boolean setValue(LrlsGsRaster i_raster,NyARRectTargetStatus i_prev_status) throws NyARException
 	{
-		if(!updateVertexParamByLineLog(i_raster.getVectorReader(),i_prev_status.square)){
+		if(!updateVertexParamByLineLog(i_raster.getVectorReader(),i_prev_status)){
 			return false;
 		}
+		//頂点並び順の調整
+		this.square.rotateVertexL(i_prev_status.square.checkVertexShiftValue(this.square));		
 		//差分パラメータのセット
-		setDiffParam(i_prev_status,false);
+		setEstimateParam(i_prev_status);
 		return true;
 	}
 	
 	
-	/**
-	 * 値をセットします。この関数は、処理の成功失敗に関わらず、内容変更を行います。
-	 * @param i_contour_status
-	 * @return
-	 * @throws NyARException
-	 */
-	public boolean setValueWithDeilyCheck(LrlsGsRaster i_raster,LowResolutionLabelingSamplerOut.Item i_source,NyARRectTargetStatus i_prev_status) throws NyARException
-	{
-		VecLinear vecpos=this._ref_my_pool._vecpos;
-		//輪郭線を取る
-		if(!i_raster.getVectorReader().traceConture((LrlsGsRaster)i_source.ref_raster,i_source.lebeling_th,i_source.entry_pos,vecpos)){
-			return false;
-		}
-		
-		//ベクトルのマージ(マージするときに、3,4象限方向のベクトルは1,2象限のベクトルに変換する。)
-		this._ref_my_pool._vecpos_op.margeResembleCoords(vecpos);
-		if(vecpos.length<4){
-			return false;
-		}
-		//キーベクトルを取得
-		vecpos.getKeyCoord(this._ref_my_pool._indexbuf);
-		//点に変換
-		NyARSquare sq=this.square;
-		if(!this._ref_my_pool._line_detect.line2SquareVertex(this._ref_my_pool._indexbuf,this.square.sqvertex)){
-			return false;
-		}
-		//点から直線を再計算
-		for(int i=3;i>=0;i--){
-			sq.line[i].calculateLineWithNormalize(sq.sqvertex[i],sq.sqvertex[(i+1)%4]);
-		}
-		//差分パラメータのセット
-		setDiffParam(i_prev_status,false);
-		return checkDeilyRectCondition(i_prev_status);
-	}
+
 	/**
 	 * このデータが初期チェック(CoordからRectへの遷移)をパスするかチェックします。
 	 * 条件は、
@@ -192,7 +218,7 @@ r.w=320;
 	 *  2.一番長い辺と短い辺の比は、0.1~10の範囲か？
 	 *  3.位置倍長い辺、短い辺が短すぎないか？
 	 * @param i_sample_area
-	 * この矩形を検出するために使った元データの範囲(ラべリング検出領域)
+	 * この矩形を検出するために使った元データの範囲(ターゲット検出範囲)
 	 */
 	private boolean checkInitialRectCondition(NyARIntRect i_sample_area)
 	{
@@ -223,7 +249,7 @@ r.w=320;
 		return true;
 	}
 	/**
-	 * このデータが初期チェック(CoordからRectへの遷移)をパスするかチェックします。
+	 * 2回目以降の履歴を使ったデータチェック。
 	 * 条件は、
 	 *  1.一番長い辺と短い辺の比は、0.1~10の範囲か？
 	 *  2.位置倍長い辺、短い辺が短すぎないか？
@@ -231,7 +257,7 @@ r.w=320;
 
 	 * @param i_sample_area
 	 */
-	public boolean checkDeilyRectCondition(NyARRectTargetStatus i_prev_st)
+	private boolean checkDeilyRectCondition(NyARRectTargetStatus i_prev_st)
 	{
 		NyARDoublePoint2d[] v=this.square.sqvertex;
 
@@ -251,45 +277,82 @@ r.w=320;
 		if((10*10)*min/max<(5*5)){
 			return false;
 		}
-		//4頂点の移動距離を確認
+		//移動距離平均より大きく剥離した点が無いか確認
+		return check1PointMove(this.square.sqvertex,i_prev_st.square.sqvertex);
+	}
+	/**
+	 * 頂点の移動距離の平均から、認識ミスを推測(あってｍのなくてもかわんなくね？)
+	 * @param i_point1
+	 * @param i_point2
+	 * @return
+	 */
+	private boolean check1PointMove(NyARDoublePoint2d[] i_point1,NyARDoublePoint2d[] i_point2)
+	{
+int[] sq_tbl=new int[4];
+		int ave=0;
+		for(int i=3;i>=0;i--){
+			sq_tbl[i]=(int)i_point1[i].sqNorm(i_point2[i]);
+			ave+=sq_tbl[i];
+		}
+		ave/=4;
+		if(ave==0){
+			return true;
+		}
 		for(int i=0;i<4;i++){
-			i_prev
+			//平均から2倍離れてるのはおかしい。
+			if(sq_tbl[i]>ave*(2)){
+				return false;
+			}
 		}
 		return true;
-	}	
-	private boolean clllip(NyARVectorReader_INT1D_GRAY_8 i_reader,NyARSquare i_prevsq,NyARIntRect i_rect) throws NyARException
+	}
+	private boolean clllip(NyARVectorReader_INT1D_GRAY_8 i_reader,NyARRectTargetStatus i_prevsq,NyARIntRect i_rect) throws NyARException
 	{
 		VecLinear vecpos=this._ref_my_pool._vecpos;
-		boolean p1,p2;
+		boolean is_p1_inside_area,is_p2_inside_area;
+		NyARIntPoint2d p1,p2;
+		NyARIntPoint2d[] pt;
 		//NyARIntRect i_rect
 		for(int i=0;i<4;i++)
 		{
 			//線分が範囲内にあるかを確認
-			p1=i_rect.isInnerPoint(i_prevsq.sqvertex[i]);
-			p2=i_rect.isInnerPoint(i_prevsq.sqvertex[(i+3)%4]);
+			p1=i_prevsq.estimate_vertex[i];
+			p2=i_prevsq.estimate_vertex[(i+1)%4];
+			is_p1_inside_area=i_rect.isInnerPoint(p1);
+			is_p2_inside_area=i_rect.isInnerPoint(p2);
 			//個数で分岐
-			if(p1 && p2){
+			if(is_p1_inside_area && is_p2_inside_area){
 				//2ならクリッピング必要なし。
-if(!i_reader.traceLine(i_prevsq.sqvertex[i],i_prevsq.sqvertex[(i+1)%4],3,vecpos)){
+				if(!i_reader.traceLine(p1,p2,3,vecpos)){
 					return false;
 				}
-			}else if(p1!=p2){
+			}else if(is_p1_inside_area!=is_p2_inside_area){
 				//1ならクリッピング後に、外に出ていた点に近い輪郭交点を得る。
-				if(p1){
+NyARLinear l=new NyARLinear();
+				l.makeLinearWithNormalize(p1,p2);
+				
+//				NyARDoublePoint2d
+NyARIntPoint2d[] p;
+				if(is_p1_inside_area){
 					//p2が範囲外
+					if(!clip(l,i_rect,pt)){
+					}
+					p2=(p2.sqNorm(pt[0])<p2.sqNorm(pt[1]))?pt[0]:pt[1];
 					return false;
 				}else{
 					//p1が範囲外
+					p1.sqNorm(p[0]),p2.sqNorm(p[1])
 					return false;
 				}
 			}else{
 				//0ならクリッピングして得られた２点を使う。
 			}
 			//クラスタリングして、傾きの近いベクトルを探す。(限界は10度)
+			
 			this._ref_my_pool._vecpos_op.margeResembleCoords(vecpos);
 			//基本的には1番でかいベクトルだよね。だって、直線状に取るんだもの。
 			int vid=vecpos.getMaxCoordIndex();
-			if(vecpos.items[vid].getAbsVecCos(-i_prevsq.line[i].b,i_prevsq.line[i].a)>NyARMath.COS_DEG_10){
+			if(vecpos.items[vid].getAbsVecCos(-i_prevsq.square.line[i].b,i_prevsq.square.line[i].a)>NyARMath.COS_DEG_10){
 				this.square.line[i].setVectorWithNormalize(vecpos.items[vid]);
 				//同定OK
 			}else{

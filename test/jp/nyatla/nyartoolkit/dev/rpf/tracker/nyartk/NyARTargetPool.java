@@ -33,7 +33,7 @@ public class NyARTargetPool extends NyARManagedObjectPool<NyARTarget>
 		}
 		t.age=0;
 		t.last_update=i_clock;
-		t.setValue(i_sample);
+		t.setSampleArea(i_sample);
 		t.serial=NyARTarget.getSerial();
 		t.tag=null;
 		t.ref_status=this._ref_pool.newObject();
