@@ -457,9 +457,9 @@ System.out.println("updateNewStatus:status pool full");
 				//単独検出に成功
 				d_ptr.sample_area.setAreaRect(st.square.sqvertex,4);
 			}else{
-		st.releaseObject();
-				continue;}
-/*				int sample_index=this._index[i];
+//		st.releaseObject();
+//				continue;}
+				int sample_index=this._index[i];
 				if(sample_index<0){
 					//このターゲットに合致するアイテムは無い。
 					st.releaseObject();

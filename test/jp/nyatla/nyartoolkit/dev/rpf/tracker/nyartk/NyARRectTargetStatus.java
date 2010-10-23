@@ -302,6 +302,7 @@ int[] sq_tbl=new int[4];
 		}
 		return true;
 	}
+	/**/
 	private boolean clllip(NyARVectorReader_INT1D_GRAY_8 i_reader,NyARRectTargetStatus i_prevsq) throws NyARException
 	{
 		NyARDoublePoint2d p1,p2;
@@ -313,7 +314,7 @@ int[] sq_tbl=new int[4];
 			p2=i_prevsq.estimate_vertex[(i+1)%4];
 			
 			//クリップ付きで予想位置周辺の直線のトレース
-			i_reader.traceLineWithClip(p1,p2,3,vecpos);
+			i_reader.traceLineWithClip(p1,p2,5,vecpos);
 
 			//クラスタリングして、傾きの近いベクトルを探す。(限界は10度)
 			this._ref_my_pool._vecpos_op.margeResembleCoords(vecpos);
@@ -330,13 +331,9 @@ int[] sq_tbl=new int[4];
 			if(vecpos.items[vid].getAbsVecCos(-i_prevsq.square.line[i].b,i_prevsq.square.line[i].a)<NyARMath.COS_DEG_10){
 				return false;
 			}
-//			//予想点からさほど外れていない点であるか。(検出点の移動距離を計算する。)
-			NyARLinear li=new NyARLinear();
-			li.setVector(vecpos.items[vid]);
-			double dist=sqDistBySegmentLineEdge(li,i_prevsq.square.sqvertex[i],i_prevsq.square.sqvertex[i%4]);
-			
-		
-			System.out.println(">>"+dist);
+			//予想点からさほど外れていない点であるか。(検出点の移動距離を計算する。)
+			double dist;
+			dist=vecpos.items[vid].sqDistBySegmentLineEdge(i_prevsq.square.sqvertex[i],i_prevsq.square.sqvertex[i%4]);
 			if(dist<2*3*3){
 				this.square.line[i].setVectorWithNormalize(vecpos.items[vid]);
 			}else{
@@ -347,40 +344,4 @@ int[] sq_tbl=new int[4];
 		}
 		return true;
 	}
-	/**
-	 * 直線i_linearとi_sp1とi_sp2の作る線分との二乗距離値の合計を返します。
-	 * 線分と直線の類似度を
-	 * @param i_linear
-	 * @param i_sp1
-	 * @param i_sp2
-	 * @param o_point
-	 * @return
-	 * 距離が取れないときは無限大です。
-	 */
-	public final double sqDistBySegmentLineEdge(NyARLinear i_linear, NyARDoublePoint2d i_sp1,NyARDoublePoint2d i_sp2)
-	{
-		double la,lb,lc;
-		double x,y,w1;
-		//thisを法線に変換
-		la=i_linear.b;
-		lb=-i_linear.a;
-
-		//交点を計算
-		w1 = i_linear.a * lb - la * i_linear.b;
-		if (w1 == 0.0) {
-			return Double.POSITIVE_INFINITY;
-		}
-		//i_sp1と、i_linerの交点
-		lc=-(la*i_sp1.x+lb*i_sp1.y);
-		x = ((i_linear.b * lc - lb * i_linear.c) / w1)-i_sp1.x;
-		y = ((la * i_linear.c - i_linear.a * lc) / w1)-i_sp1.y;
-		double sqdist=x*x+y*y;
-
-		lc=-(la*i_sp2.x+lb*i_sp2.y);
-		x = ((i_linear.b * lc - lb * i_linear.c) / w1)-i_sp2.x;
-		y = ((la * i_linear.c - i_linear.a * lc) / w1)-i_sp2.y;
-
-		return sqdist+x*x+y*y;
-	}	
-
 }
