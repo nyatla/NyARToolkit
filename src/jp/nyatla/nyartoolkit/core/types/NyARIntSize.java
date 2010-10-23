@@ -54,7 +54,7 @@ public class NyARIntSize
 		this.h=i_height;
 		return;
 	}
-	public void setValue(int i_w,int i_h)
+	public final void setValue(int i_w,int i_h)
 	{
 		this.w=i_w;
 		this.h=i_h;
@@ -68,7 +68,7 @@ public class NyARIntSize
 	 * @return
 	 * @throws NyARException
 	 */
-	public boolean isEqualSize(int i_width, int i_height)
+	public final boolean isEqualSize(int i_width, int i_height)
 	{
 		if (i_width == this.w && i_height == this.h) {
 			return true;
@@ -84,7 +84,7 @@ public class NyARIntSize
 	 * @return
 	 * @throws NyARException
 	 */
-	public boolean isEqualSize(NyARIntSize i_size)
+	public final boolean isEqualSize(NyARIntSize i_size)
 	{
 		if (i_size.w == this.w && i_size.h == this.h) {
 			return true;
@@ -97,7 +97,7 @@ public class NyARIntSize
 	 * @param i_y
 	 * @return
 	 */
-	public boolean isInnerSize(int i_x,int i_y)
+	public final boolean isInnerSize(int i_x,int i_y)
 	{
 		return (i_x<=this.w && i_y<=this.h);
 	}
@@ -106,7 +106,7 @@ public class NyARIntSize
 	 * @param i_size
 	 * @return
 	 */
-	public boolean isInnerSize(NyARIntSize i_size)
+	public final boolean isInnerSize(NyARIntSize i_size)
 	{
 		return (i_size.w<=this.w && i_size.h<=this.h);
 	}
@@ -115,7 +115,7 @@ public class NyARIntSize
 	 * @param i_point
 	 * @return
 	 */
-	public boolean isInnerSize(NyARDoublePoint2d i_point)
+	public final boolean isInnerSize(NyARDoublePoint2d i_point)
 	{
 		return (i_point.x<this.w && i_point.y<this.h && 0<=i_point.x && 0<=i_point.y);
 	}
@@ -125,9 +125,29 @@ public class NyARIntSize
 	 * @param i_y
 	 * @return
 	 */
-	public boolean isInnerPoint(int i_x,int i_y)
+	public final boolean isInnerPoint(int i_x,int i_y)
 	{
 		return (i_x<this.w && i_y<this.h && 0<=i_x && 0<=i_y);
+	}
+	/**
+	 * 点が、サイズの内部にあるか判定します。
+	 * @param i_x
+	 * @param i_y
+	 * @return
+	 */
+	public final boolean isInnerPoint(NyARDoublePoint2d i_pos)
+	{
+		return (i_pos.x<this.w && i_pos.y<this.h && 0<=i_pos.x && 0<=i_pos.y);
+	}
+	/**
+	 * 点が、サイズの内部にあるか判定します。
+	 * @param i_x
+	 * @param i_y
+	 * @return
+	 */	
+	public final boolean isInnerPoint(NyARIntPoint2d i_pos)
+	{
+		return (i_pos.x<this.w && i_pos.y<this.h && 0<=i_pos.x && 0<=i_pos.y);
 	}
 	/**
 	 * 頂点セットの広がりを計算して格納する。
@@ -135,7 +155,7 @@ public class NyARIntSize
 	 * @param i_vertex
 	 * @param i_num_of_vertex
 	 */
-	public void setAreaRect(NyARDoublePoint2d i_vertex[],int i_num_of_vertex)
+	public final void setAreaRect(NyARDoublePoint2d i_vertex[],int i_num_of_vertex)
 	{
 		//エリアを求める。
 		int xmax,xmin,ymax,ymin;
@@ -156,7 +176,7 @@ public class NyARIntSize
 		this.h=ymax-ymin+1;
 		this.w=xmax-xmin+1;
 	}
-	public void setAreaRect(NyARIntPoint2d i_vertex[],int i_num_of_vertex)
+	public final void setAreaRect(NyARIntPoint2d i_vertex[],int i_num_of_vertex)
 	{
 		//エリアを求める。
 		int xmax,xmin,ymax,ymin;
@@ -177,4 +197,5 @@ public class NyARIntSize
 		this.h=ymax-ymin+1;
 		this.w=xmax-xmin+1;
 	}
+
 }

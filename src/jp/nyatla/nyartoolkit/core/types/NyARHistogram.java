@@ -62,7 +62,7 @@ public class NyARHistogram
 	 * @param i_ed
 	 * @return
 	 */
-	public int getTotal(int i_st,int i_ed)
+	public final int getTotal(int i_st,int i_ed)
 	{
 		assert(i_st<i_ed && i_ed<this.length);
 		int result=0;

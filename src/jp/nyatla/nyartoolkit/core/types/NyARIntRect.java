@@ -49,7 +49,7 @@ public class NyARIntRect
 	 * @param i_num_of_vertex
 	 * @param o_rect
 	 */
-	public void setAreaRect(NyARDoublePoint2d i_vertex[],int i_num_of_vertex)
+	public final void setAreaRect(NyARDoublePoint2d i_vertex[],int i_num_of_vertex)
 	{
 		//エリアを求める。
 		int xmax,xmin,ymax,ymin;
@@ -72,7 +72,7 @@ public class NyARIntRect
 		this.w=xmax-xmin+1;
 		this.y=ymin;
 	}
-	public void setAreaRect(NyARIntPoint2d i_vertex[],int i_num_of_vertex)
+	public final void setAreaRect(NyARIntPoint2d i_vertex[],int i_num_of_vertex)
 	{
 		//エリアを求める。
 		int xmax,xmin,ymax,ymin;
@@ -102,7 +102,7 @@ public class NyARIntRect
 	 * @param i_r
 	 * @param i_b
 	 */
-	public void setLtrb(int i_l,int i_t,int i_r,int i_b)
+	public final void setLtrb(int i_l,int i_t,int i_r,int i_b)
 	{
 		assert(i_l<=i_r && i_t<=i_b);
 		this.x=i_l;
@@ -118,7 +118,7 @@ public class NyARIntRect
 	 * @param left
 	 * @param right
 	 */
-	public void clip(int i_left,int i_top,int i_right,int i_bottom)
+	public final void clip(int i_left,int i_top,int i_right,int i_bottom)
 	{
 		int x=this.x;
 		int y=this.y;
@@ -158,19 +158,19 @@ public class NyARIntRect
 	 * @param i_y
 	 * @return
 	 */
-	public boolean isInnerPoint(int i_x,int i_y)
+	public final boolean isInnerPoint(int i_x,int i_y)
 	{
 		int x=i_x-this.x;
 		int y=i_y-this.y;
 		return (0<=x && x<this.w && 0<=y && y<this.h);
 	}
-	public boolean isInnerPoint(NyARDoublePoint2d i_pos)
+	public final boolean isInnerPoint(NyARDoublePoint2d i_pos)
 	{
 		int x=(int)i_pos.x-this.x;
 		int y=(int)i_pos.y-this.y;
 		return (0<=x && x<this.w && 0<=y && y<this.h);
 	}
-	public boolean isInnerPoint(NyARIntPoint2d i_pos)
+	public final boolean isInnerPoint(NyARIntPoint2d i_pos)
 	{
 		int x=i_pos.x-this.x;
 		int y=i_pos.y-this.y;
@@ -182,7 +182,7 @@ public class NyARIntRect
 	 * @param i_y
 	 * @return
 	 */
-	public boolean isInnerRect(NyARIntRect i_rect)
+	public final boolean isInnerRect(NyARIntRect i_rect)
 	{
 		assert(i_rect.w>=0 && i_rect.h>=0);
 		int lx=i_rect.x-this.x;
@@ -191,7 +191,7 @@ public class NyARIntRect
 		int lh=ly+i_rect.h;
 		return (0<=lx && lx<this.w && 0<=ly && ly<this.h && lw<=this.w && lh<=this.h);
 	}
-	public boolean isInnerRect(int i_x,int i_y,int i_w,int i_h)
+	public final boolean isInnerRect(int i_x,int i_y,int i_w,int i_h)
 	{
 		assert(i_w>=0 && i_h>=0);
 		int lx=i_x-this.x;
@@ -207,15 +207,15 @@ public class NyARIntRect
 	 * @param i_rect2
 	 * @return
 	 */
-	public static int getSqDiagonalPointDiff(NyARIntRect i_rect1,NyARIntRect i_rect2)
+	public final int getSqDiagonalPointDiff(NyARIntRect i_rect2)
 	{
 		int w1,w2;
 		int ret;
-		w1=i_rect1.x-i_rect2.x;
-		w2=i_rect1.y-i_rect2.y;
+		w1=this.x-i_rect2.x;
+		w2=this.y-i_rect2.y;
 		ret=w1*w1+w2*w2;
-		w1+=i_rect1.w-i_rect2.w;
-		w2+=i_rect1.h-i_rect2.h;
+		w1+=this.w-i_rect2.w;
+		w2+=this.h-i_rect2.h;
 		ret+=w1*w1+w2*w2;
 		return ret;
 	}

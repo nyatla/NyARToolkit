@@ -85,7 +85,7 @@ public class NyARIntPoint2d
 	 * @param i_point
 	 * @param i_number_of_vertex
 	 */
-	public void setCenterPos(NyARIntPoint2d[] i_point,int i_number_of_vertex)
+	public final void setCenterPos(NyARIntPoint2d[] i_point,int i_number_of_vertex)
 	{
 		int cx,cy;
 		cx=cy=0;
@@ -104,6 +104,11 @@ public class NyARIntPoint2d
 	{
 		this.x=i_source.x;
 		this.y=i_source.y;
+	}
+	public final void setValue(NyARDoublePoint2d i_source)
+	{
+		this.x=(int)i_source.x;
+		this.y=(int)i_source.y;
 	}
 	public final void setValue(int i_x,int i_y)
 	{

@@ -60,7 +60,6 @@ public class NyARLinear
 	/**
 	 * 2直線の交点を計算します。
 	 * @param l_line_2
-	 * @param l_line_1
 	 * @param o_point
 	 * @return
 	 */
@@ -75,8 +74,35 @@ public class NyARLinear
 		return true;
 	}
 	/**
+	 * 指定したパラメータの式との交点を得る。
+	 * @param i_a
+	 * @param i_b
+	 * @param i_c
+	 * @param o_point
+	 * @return
+	 */
+	public final boolean crossPos(double i_a,double i_b,double i_c,NyARDoublePoint2d o_point)
+	{
+		final double w1 = this.a * i_b - i_a * this.b;
+		if (w1 == 0.0) {
+			return false;
+		}
+		o_point.x = (this.b * i_c - i_b * this.c) / w1;
+		o_point.y = (i_a * this.c - this.a * i_c) / w1;
+		return true;
+	}
+	public final boolean crossPos(double i_a,double i_b,double i_c,NyARIntPoint2d o_point)
+	{
+		final double w1 = this.a * i_b - i_a * this.b;
+		if (w1 == 0.0) {
+			return false;
+		}
+		o_point.x = (int)((this.b * i_c - i_b * this.c) / w1);
+		o_point.y = (int)((i_a * this.c - this.a * i_c) / w1);
+		return true;
+	}
+	/**
 	 * 2直線が交差しているかを返します。
-	 * @param l_line_1
 	 * @param l_line_2
 	 * @return
 	 */
@@ -130,14 +156,14 @@ public class NyARLinear
 		this.c=(i_dx*i_y-i_dy*i_x);
 		return;
 	}
-	public final void setVector(NyARPointVector2d i_vector)
+	public final void setVector(NyARVecLinear2d i_vector)
 	{
 		this.a= i_vector.dy;
 		this.b=-i_vector.dx;
 		this.c=(i_vector.dx*i_vector.y-i_vector.dy*i_vector.x);
 		return;		
 	}
-	public final boolean setVectorWithNormalize(NyARPointVector2d i_vector)
+	public final boolean setVectorWithNormalize(NyARVecLinear2d i_vector)
 	{
 		double dx=i_vector.dx;
 		double dy=i_vector.dy;
@@ -152,52 +178,166 @@ public class NyARLinear
 		return true;
 	}
 	/**
-	 * 直行する直線を求めます。
+	 * i_x,i_yを通過する、直行する直線を求めます。
 	 */
-	public final void orthogonalLine(double i_x,double i_y)
+	public final void normalLine(double i_x,double i_y)
 	{
-		double a=this.a;
-		double b=this.b;
-		this.a=b;
-		this.b=-a;
-		this.c=-(b*i_x-a*i_y);
+		double la=this.a;
+		double lb=this.b;
+		this.a=lb;
+		this.b=-la;
+		this.c=-(lb*i_x-la*i_y);
 	}
-	public final void orthogonalLine(NyARLinear i_source,double i_x,double i_y)
+	public final void normalLine(NyARLinear i_linear,double i_x,double i_y)
 	{
-		double a=i_source.a;
-		double b=i_source.b;
-		this.a=b;
-		this.b=-a;
-		this.c=-(b*i_x-a*i_y);
+		double la=i_linear.a;
+		double lb=i_linear.b;
+		this.a=lb;
+		this.b=-la;
+		this.c=-(lb*i_x-la*i_y);
 	}
 	/**
-	 * 指定したパラメータの式との交点を得る。
-	 * @param i_a
-	 * @param i_b
-	 * @param i_c
+	 * i_x,i_yを通るこの直線の法線と、i_linearが交わる点を返します。
+	 * @param i_linear
+	 * @param i_x
+	 * @param i_y
 	 * @param o_point
 	 * @return
 	 */
-	public final boolean crossPos(double i_a,double i_b,double i_c,NyARDoublePoint2d o_point)
+	public final boolean normalLineCrossPos(NyARLinear i_linear, double i_x,double i_y,NyARDoublePoint2d o_point)
 	{
-		final double w1 = this.a * i_b - i_a * this.b;
+		//thisを法線に変換
+		double la=this.b;
+		double lb=-this.a;
+		double lc=-(la*i_x+lb*i_y);
+		//交点を計算
+		final double w1 = i_linear.a * lb - la * i_linear.b;
 		if (w1 == 0.0) {
 			return false;
 		}
-		o_point.x = (this.b * i_c - i_b * this.c) / w1;
-		o_point.y = (i_a * this.c - this.a * i_c) / w1;
+		o_point.x = ((i_linear.b * lc - lb * i_linear.c) / w1);
+		o_point.y = ((la * i_linear.c - i_linear.a * lc) / w1);
 		return true;
 	}
-	public final boolean crossPos(double i_a,double i_b,double i_c,NyARIntPoint2d o_point)
+	/**
+	 * i_x,i_yを通るこの直線の法線上での、この直線とi_linearの距離の二乗値を返します。
+	 * i_x,i_yに直線上の点を指定すると、この直線の垂線上での、もう一方の直線との距離の二乗値が得られます。
+	 * @param i_linear
+	 * @param i_x
+	 * @param i_y
+	 * @param o_point
+	 * @return
+	 * 交点が無い場合、無限大を返します。
+	 *//*
+	public final double sqDistWithLinear(NyARLinear i_linear, double i_x,double i_y)
 	{
-		final double w1 = this.a * i_b - i_a * this.b;
+		//thisを法線に変換
+		double la=this.b;
+		double lb=-this.a;
+		double lc=-(la*i_x+lb*i_y);
+		//交点を計算
+		final double w1 = i_linear.a * lb - la * i_linear.b;
 		if (w1 == 0.0) {
-			return false;
+			return Double.POSITIVE_INFINITY;
 		}
-		o_point.x = (int)((this.b * i_c - i_b * this.c) / w1);
-		o_point.y = (int)((i_a * this.c - this.a * i_c) / w1);
-		return true;
-	}
+		double x=i_x-((i_linear.b * lc - lb * i_linear.c) / w1);
+		double y=i_y-((la * i_linear.c - i_linear.a * lc) / w1);
+		return x*x+y*y;
+	}*/
 
+	/**
+	 * この矩形を任意の範囲でクリッピングしたときの2頂点を返します。
+	 * @param i_width
+	 * @param i_height
+	 * @param o_point
+	 * @return
+	 */
+	public final boolean makeSegmentLine(int i_width,int i_height,NyARIntPoint2d[] o_point)
+	{	
+		int idx=0;
+		NyARIntPoint2d ptr=o_point[0];
+		if(this.crossPos(0,-1,0,ptr) && ptr.x>=0 && ptr.x<i_width)
+		{
+			//y=rect.yの線
+			idx++;
+			ptr=o_point[idx];
+		}
+		if(this.crossPos(0,-1,i_height-1,ptr) && ptr.x>=0 && ptr.x<i_width)
+		{
+			//y=(rect.y+rect.h-1)の線
+			idx++;
+			if(idx==2){
+				return true;
+			}
+			ptr=o_point[idx];
+		}
+		if(this.crossPos(-1,0,0,ptr) && ptr.y>=0 && ptr.y<i_height)
+		{
+			//x=i_leftの線
+			idx++;
+			if(idx==2){
+				return true;
+			}
+			ptr=o_point[idx];
+		}
+		if(this.crossPos(-1,0,i_width-1, ptr) && ptr.y>=0 && ptr.y<i_height)
+		{
+			//x=i_right-1の線
+			idx++;
+			if(idx==2){
+				return true;
+			}
+		}
+		return false;
+	}	
+	/**
+	 * この直線を、任意の矩形でクリッピングしたときに得られる線分の2頂点を返します。
+	 * @param i_left
+	 * @param i_top
+	 * @param i_width
+	 * @param i_height
+	 * @param o_point
+	 * @return
+	 */
+	public final boolean makeSegmentLine(int i_left,int i_top,int i_width,int i_height,NyARIntPoint2d[] o_point)
+	{	
+		int bottom=i_top+i_height;
+		int right=i_left+i_width;
+		int idx=0;
+		NyARIntPoint2d ptr=o_point[0];
+		if(this.crossPos(0,-1,i_top,ptr) && ptr.x>=i_left && ptr.x<right)
+		{
+			//y=rect.yの線
+			idx++;
+			ptr=o_point[idx];
+		}
+		if(this.crossPos(0,-1,bottom-1,ptr) && ptr.x>=i_left && ptr.x<right)
+		{
+			//y=(rect.y+rect.h-1)の線
+			idx++;
+			if(idx==2){
+				return true;
+			}
+			ptr=o_point[idx];
+		}
+		if(this.crossPos(-1,0,i_left,ptr) && ptr.y>=i_top && ptr.y<bottom)
+		{
+			//x=i_leftの線
+			idx++;
+			if(idx==2){
+				return true;
+			}
+			ptr=o_point[idx];
+		}
+		if(this.crossPos(-1,0,right-1, ptr) && ptr.y>=i_top && ptr.y<bottom)
+		{
+			//x=i_right-1の線
+			idx++;
+			if(idx==2){
+				return true;
+			}
+		}
+		return false;
+	}
 	
 }

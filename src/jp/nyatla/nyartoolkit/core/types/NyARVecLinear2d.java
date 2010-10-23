@@ -5,17 +5,17 @@ package jp.nyatla.nyartoolkit.core.types;
  * 点の座標と、そのベクトルで定義する直線を格納します。
  *
  */
-public class NyARPointVector2d
+public class NyARVecLinear2d
 {
 	public double x;
 	public double y;
 	public double dx;
 	public double dy;
-	public static NyARPointVector2d[] createArray(int i_length)
+	public static NyARVecLinear2d[] createArray(int i_length)
 	{
-		NyARPointVector2d[] r=new NyARPointVector2d[i_length];
+		NyARVecLinear2d[] r=new NyARVecLinear2d[i_length];
 		for(int i=0;i<i_length;i++){
-			r[i]=new NyARPointVector2d();
+			r[i]=new NyARVecLinear2d();
 		}
 		return r;
 	}
@@ -24,13 +24,13 @@ public class NyARPointVector2d
 	 * @param i_src
 	 * 元のベクトルを指定します。この値には、thisを指定できます。
 	 */
-	public void OrthogonalVec(NyARPointVector2d i_src)
+	public final void normalVec(NyARVecLinear2d i_src)
 	{
 		double w=this.dx;
 		this.dx=i_src.dy;
 		this.dy=-w;
 	}
-	public void setValue(NyARPointVector2d i_value)
+	public final void setValue(NyARVecLinear2d i_value)
 	{
 		this.dx=i_value.dx;
 		this.dy=i_value.dy;
@@ -42,7 +42,7 @@ public class NyARPointVector2d
 	 * @param i_v1
 	 * @return
 	 */
-	public double getVecCos(NyARPointVector2d i_v1)
+	public final double getVecCos(NyARVecLinear2d i_v1)
 	{
 		double x1=i_v1.dx;
 		double y1=i_v1.dy;
@@ -57,14 +57,14 @@ public class NyARPointVector2d
 	 * @param i_v2_y
 	 * @return
 	 */
-	public double getVecCos(double i_v2_x,double i_v2_y)
+	public final double getVecCos(double i_v2_x,double i_v2_y)
 	{
 		double x1=this.dx;
 		double y1=this.dy;
 		double d=(x1*i_v2_x+y1*i_v2_y)/Math.sqrt((x1*x1+y1*y1)*(i_v2_x*i_v2_x+i_v2_y*i_v2_y));
 		return d;
 	}
-	public double getAbsVecCos(double i_v2_x,double i_v2_y)
+	public final double getAbsVecCos(double i_v2_x,double i_v2_y)
 	{
 		double x1=this.dx;
 		double y1=this.dy;
@@ -78,14 +78,14 @@ public class NyARPointVector2d
 	 * @param o_point
 	 * @return
 	 */
-	public final static boolean crossPos(NyARPointVector2d i_vector1,NyARPointVector2d i_vector2,NyARDoublePoint2d o_point)
+	public final boolean crossPos(NyARVecLinear2d i_vector1,NyARDoublePoint2d o_point)
 	{
 		double a1= i_vector1.dy;
 		double b1=-i_vector1.dx;
 		double c1=(i_vector1.dx*i_vector1.y-i_vector1.dy*i_vector1.x);
-		double a2= i_vector2.dy;
-		double b2=-i_vector2.dx;
-		double c2=(i_vector2.dx*i_vector2.y-i_vector2.dy*i_vector2.x);
+		double a2= this.dy;
+		double b2=-this.dx;
+		double c2=(this.dx*this.y-this.dy*this.x);
 		final double w1 = a1 * b2 - a2 * b1;
 		if (w1 == 0.0) {
 			return false;

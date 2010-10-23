@@ -65,18 +65,16 @@ public class NyARDoublePoint2d
 		return ret;
 	}
 	/**
-	 * p2-p1間の距離の二乗値を計算します。
-	 * @param i_p1
-	 * @param i_p2
+	 * p1->p2と、p2->p3の直線の外積を計算します。
+	 * @param p1
+	 * @param p2
+	 * @param p3
 	 * @return
-	 */	
-	public final double sqNorm(NyARDoublePoint2d i_p1)
+	 */
+	public static double exteriorProduct3Point(NyARDoublePoint2d p1,NyARDoublePoint2d p2,NyARDoublePoint2d p3)
 	{
-		double x,y;
-		x=this.x-i_p1.x;
-		y=this.y-i_p1.y;
-		return x*x+y*y;
-	}
+		return (p2.x-p1.x)*(p3.y-p2.y)-(p2.y-p1.y)*(p3.x-p2.x);
+	}	
 	/**
 	 * コンストラクタです。
 	 */
@@ -117,10 +115,30 @@ public class NyARDoublePoint2d
 		return;
 	}
 	/**
+	 * p2-p1間の距離の二乗値を計算します。
+	 * @param i_p1
+	 * @param i_p2
+	 * @return
+	 */	
+	public final double sqNorm(NyARDoublePoint2d i_p1)
+	{
+		double x,y;
+		x=this.x-i_p1.x;
+		y=this.y-i_p1.y;
+		return x*x+y*y;
+	}
+	public final double sqNorm(NyARIntPoint2d i_p1)
+	{
+		double x,y;
+		x=this.x-i_p1.x;
+		y=this.y-i_p1.y;
+		return x*x+y*y;
+	}	
+	/**
 	 * i_srcの値をthisへセットします。
 	 * @param i_src
 	 */
-	public void setValue(NyARDoublePoint2d i_src)
+	public final void setValue(NyARDoublePoint2d i_src)
 	{
 		this.x=i_src.x;
 		this.y=i_src.y;
@@ -130,22 +148,12 @@ public class NyARDoublePoint2d
 	 * i_srcの値をthisへセットします。
 	 * @param i_src
 	 */
-	public void setValue(NyARIntPoint2d i_src)
+	public final void setValue(NyARIntPoint2d i_src)
 	{
 		this.x=(double)i_src.x;
 		this.y=(double)i_src.y;
 		return;
 	}
-	/**
-	 * p1->p2と、p2->p3の直線の外積を計算します。
-	 * @param p1
-	 * @param p2
-	 * @param p3
-	 * @return
-	 */
-	public static double exteriorProduct3Point(NyARDoublePoint2d p1,NyARDoublePoint2d p2,NyARDoublePoint2d p3)
-	{
-		return (p2.x-p1.x)*(p3.y-p2.y)-(p2.y-p1.y)*(p3.x-p2.x);
-	}
+
 	
 }
