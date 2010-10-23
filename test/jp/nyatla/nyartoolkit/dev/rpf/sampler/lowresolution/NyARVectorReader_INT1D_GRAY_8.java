@@ -33,25 +33,23 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntCoordinates;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
-import jp.nyatla.nyartoolkit.core.types.NyARPointVector2d;
+import jp.nyatla.nyartoolkit.core.types.NyARLinear;
+import jp.nyatla.nyartoolkit.core.types.NyARVecLinear2d;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARContourTargetStatus;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARContourTargetStatusPool;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.VecLinear;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARRectTargetStatus;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.VecLinearCoordinates;
 
 public class NyARVectorReader_INT1D_GRAY_8
 {
 	private int[] _ref_buf;
 	private NyARIntSize _ref_size;
-	private NyARIntRect _clip_rect=new NyARIntRect();
 	public NyARVectorReader_INT1D_GRAY_8(LrlsGsRaster i_ref_raster)
 	{
 		assert(i_ref_raster.getBufferType()==NyARBufferType.INT1D_GRAY_8);
 		this._ref_buf=(int[])(i_ref_raster.getBuffer());
 		this._ref_size=i_ref_raster.getSize();
-		this._clip_rect.x=this._clip_rect.y=1;
-		this._clip_rect.w=this._ref_size.w-2;
-		this._clip_rect.h=this._ref_size.h-2;
 		this._coord_buf=new NyARIntCoordinates((i_ref_raster.getWidth()+i_ref_raster.getHeight())*4);
 	}
 	/**
@@ -115,7 +113,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 	 * @param o_posvec
 	 * エッジ中心とベクトルを返します。
 	 */
-	public void getAreaVector33(int ix,int iy,int iw,int ih,NyARPointVector2d o_posvec)
+	public void getAreaVector33(int ix,int iy,int iw,int ih,NyARVecLinear2d o_posvec)
 	{
 		assert(ih>=3 && iw>=3);
 		assert((ix>=0) && (iy>=0) && (ix+iw)<=this._ref_size.w && (iy+ih)<=this._ref_size.h);
@@ -185,7 +183,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 	public final NyARContourPickup _cpickup=new NyARContourPickup();
 	private final double _MARGE_ANG_TH=NyARMath.COS_DEG_8;
 	
-	public boolean traceConture(LrlsGsRaster i_rob_raster,int i_th,NyARIntPoint2d i_entry,VecLinear o_coord) throws NyARException
+	public boolean traceConture(LrlsGsRaster i_rob_raster,int i_th,NyARIntPoint2d i_entry,VecLinearCoordinates o_coord) throws NyARException
 	{
 		NyARIntCoordinates coord=this._coord_buf;
 		//Robertsラスタから輪郭抽出
@@ -271,7 +269,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 	 * @return
 	 * @throws NyARException
 	 */
-	public boolean traceLine(NyARIntPoint2d i_pos1,NyARIntPoint2d i_pos2,int i_edge ,VecLinear o_coord)
+	public boolean traceLine(NyARIntPoint2d i_pos1,NyARIntPoint2d i_pos2,int i_edge ,VecLinearCoordinates o_coord)
 	{
 		NyARIntCoordinates coord=this._coord_buf;
 		//(i_area*2)の矩形が範囲内に収まるように線を引く
@@ -307,7 +305,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 		//点数は10点程度を得る。
 		return traceConture(coord,1,s,o_coord);
 	}
-	public boolean traceLine(NyARDoublePoint2d i_pos1,NyARDoublePoint2d i_pos2,int i_edge ,VecLinear o_coord)
+	public boolean traceLine(NyARDoublePoint2d i_pos1,NyARDoublePoint2d i_pos2,int i_edge ,VecLinearCoordinates o_coord)
 	{
 		NyARIntCoordinates coord=this._coord_buf;
 		//(i_area*2)の矩形が範囲内に収まるように線を引く
@@ -320,8 +318,8 @@ public class NyARVectorReader_INT1D_GRAY_8
 			return false;
 		}
 		//dist最大数の決定
-		if(dist>14){
-			dist=14;
+		if(dist>24){
+			dist=24;
 		}
 		//サンプリングサイズを決定(移動速度とサイズから)
 		int s=i_edge*2+1;
@@ -331,12 +329,12 @@ public class NyARVectorReader_INT1D_GRAY_8
 		int b=this._ref_size.h-s;
 		
 		//最大14点を定義して、そのうち両端の2個を除いた点を使用する。
-		for(int i=dist-1;i>=0;i--){
-			int x=(int)((i+2)*dx/dist+i_pos1.x-i_edge);
-			int y=(int)((i+2)*dy/dist+i_pos1.y-i_edge);
+		for(int i=3;i<dist-1;i++){
+			int x=(int)(i*dx/dist+i_pos1.x-i_edge);
+			int y=(int)(i*dy/dist+i_pos1.y-i_edge);
 			//limit
-			coord.items[i].x=x<0?0:(x>=r?r:x);
-			coord.items[i].y=y<0?0:(y>=b?b:y);
+			coord.items[i-3].x=x<0?0:(x>=r?r:x);
+			coord.items[i-3].y=y<0?0:(y>=b?b:y);
 		}
 		
 		coord.length=dist-4;
@@ -356,16 +354,16 @@ public class NyARVectorReader_INT1D_GRAY_8
 	 * @param o_coord
 	 * @return
 	 */
-	public boolean traceConture(NyARIntCoordinates i_coord,int i_pos_mag,int i_cell_size,VecLinear o_coord)
+	public boolean traceConture(NyARIntCoordinates i_coord,int i_pos_mag,int i_cell_size,VecLinearCoordinates o_coord)
 	{
 		//ベクトル化
-		VecLinear.CoordData[] array_of_vec=o_coord.items;
+		VecLinearCoordinates.CoordData[] array_of_vec=o_coord.items;
 		int MAX_COORD=o_coord.items.length;
 		//検出RECTは、x,yと(x+w),(y+h)の間にあるものになる。
 
 		
-		VecLinear.CoordData prev_vec_ptr,current_vec_ptr,tmp_ptr;		
-		VecLinear.CoordData[] tmp_cd=VecLinear.CoordData.createArray(3);
+		VecLinearCoordinates.CoordData prev_vec_ptr,current_vec_ptr,tmp_ptr;		
+VecLinearCoordinates.CoordData[] tmp_cd=VecLinearCoordinates.CoordData.createArray(3);
 		current_vec_ptr=tmp_cd[0];
 		
 		int i_coordlen=i_coord.length;
@@ -442,13 +440,73 @@ public class NyARVectorReader_INT1D_GRAY_8
 		{
 			current_vec_ptr=array_of_vec[i];
 			//ベクトルの法線を取る。
-			current_vec_ptr.OrthogonalVec(current_vec_ptr);
+			current_vec_ptr.normalVec(current_vec_ptr);
 			//sqdistを計算
 			current_vec_ptr.sq_dist=current_vec_ptr.dx*current_vec_ptr.dx+current_vec_ptr.dy*current_vec_ptr.dy;
 			d+=current_vec_ptr.sq_dist;
 		}
 		//sq_distの合計を計算
 		o_coord.length=number_of_data;
+		return true;
+	}
+	
+	private NyARIntPoint2d[] __pt=NyARIntPoint2d.createArray(2);
+	private NyARLinear __temp_l=new NyARLinear();
+	/**
+	 * クリッピング付きのライントレーサです。
+	 * @param i_pos1
+	 * @param i_pos2
+	 * @param i_edge
+	 * @param o_coord
+	 * @return
+	 * @throws NyARException
+	 */
+	public boolean traceLineWithClip(NyARDoublePoint2d i_pos1,NyARDoublePoint2d i_pos2,int i_edge ,VecLinearCoordinates o_coord) throws NyARException
+	{
+		boolean is_p1_inside_area,is_p2_inside_area;
+
+		NyARIntPoint2d[] pt=this.__pt;
+			//線分が範囲内にあるかを確認
+			is_p1_inside_area=this._ref_size.isInnerPoint(i_pos1);
+			is_p2_inside_area=this._ref_size.isInnerPoint(i_pos2);
+			//個数で分岐
+			if(is_p1_inside_area && is_p2_inside_area){
+				//2ならクリッピング必要なし。
+				if(!this.traceLine(i_pos1,i_pos2,i_edge,o_coord)){
+					return false;
+				}
+				return true;
+				
+			}
+			if(!this.__temp_l.makeLinearWithNormalize(i_pos1,i_pos2)){
+				return false;
+			}
+			if(!this.__temp_l.makeSegmentLine(this._ref_size.w,this._ref_size.h,pt)){
+				return false;
+			}
+			if(is_p1_inside_area!=is_p2_inside_area){
+				//1ならクリッピング後に、外に出ていた点に近い輪郭交点を得る。
+
+				if(is_p1_inside_area){
+					//p2が範囲外
+					pt[(i_pos2.sqNorm(pt[0])<i_pos2.sqNorm(pt[1]))?1:0].setValue(i_pos1);
+				}else{
+					//p1が範囲外
+					pt[(i_pos1.sqNorm(pt[0])<i_pos2.sqNorm(pt[1]))?1:0].setValue(i_pos2);
+				}
+	}else{
+				//0ならクリッピングして得られた２点を使う。
+				if(!this.__temp_l.makeLinearWithNormalize(i_pos1,i_pos2)){
+					return false;
+				}
+				if(!this.__temp_l.makeSegmentLine(this._ref_size.w,this._ref_size.h,pt)){
+					return false;
+				}
+			}
+			if(!this.traceLine(pt[0],pt[1],i_edge,o_coord)){
+				return false;
+			}
+		
 		return true;
 	}	
 }

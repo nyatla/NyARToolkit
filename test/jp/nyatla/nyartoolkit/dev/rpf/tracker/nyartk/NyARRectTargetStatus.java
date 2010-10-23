@@ -6,7 +6,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
-import jp.nyatla.nyartoolkit.core.types.NyARPointVector2d;
+import jp.nyatla.nyartoolkit.core.types.NyARVecLinear2d;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.LowResolutionLabelingSamplerOut;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.LrlsGsRaster;
@@ -35,7 +35,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	 * 予想頂点範囲
 	 */
 	public NyARIntRect estimate_rect=new NyARIntRect();
-	public NyARIntPoint2d[] estimate_vertex=NyARIntPoint2d.createArray(4);
+	public NyARDoublePoint2d[] estimate_vertex=NyARDoublePoint2d.createArray(4);
 
 	//
 	//制御部
@@ -61,7 +61,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	private void setEstimateParam(NyARRectTargetStatus i_prev_param)
 	{
 		NyARDoublePoint2d[] vc_ptr=this.square.sqvertex;
-		NyARIntPoint2d[] ve_ptr=this.estimate_vertex;
+		NyARDoublePoint2d[] ve_ptr=this.estimate_vertex;
 		if(i_prev_param!=null){
 			//差分パラメータをセット
 			NyARDoublePoint2d[] vp=i_prev_param.square.sqvertex;
@@ -127,7 +127,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	 */
 	public boolean setValueWithDeilyCheck(LrlsGsRaster i_raster,LowResolutionLabelingSamplerOut.Item i_source,NyARRectTargetStatus i_prev_status) throws NyARException
 	{
-		VecLinear vecpos=this._ref_my_pool._vecpos;
+		VecLinearCoordinates vecpos=this._ref_my_pool._vecpos;
 		//輪郭線を取る
 		if(!i_raster.getVectorReader().traceConture((LrlsGsRaster)i_source.ref_raster,i_source.lebeling_th,i_source.entry_pos,vecpos)){
 			return false;
@@ -172,12 +172,8 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	{
 		//4本のベクトルを計算
 		NyARSquare sq=this.square;
-NyARIntRect r=new NyARIntRect();
-r.x=r.y=0;
-r.h=240;
-r.w=320;
 //現在の速度と認識対象の大きさから、カーネルサイズを決定。
-		if(!clllip(i_reader,i_prev_sq,r)){
+		if(!clllip(i_reader,i_prev_sq)){
 			return false;
 		}
 
@@ -243,7 +239,7 @@ r.w=320;
 			return false;
 		}
 		//10倍スケールの2乗
-		if((10*10)*min/max<(5*5)){
+		if((10*10)*min/max<(3*3)){
 			return false;
 		}
 		return true;
@@ -274,7 +270,7 @@ r.w=320;
 			return false;
 		}
 		//10倍スケールの2乗
-		if((10*10)*min/max<(5*5)){
+		if((10*10)*min/max<(3*3)){
 			return false;
 		}
 		//移動距離平均より大きく剥離した点が無いか確認
@@ -306,109 +302,85 @@ int[] sq_tbl=new int[4];
 		}
 		return true;
 	}
-	private boolean clllip(NyARVectorReader_INT1D_GRAY_8 i_reader,NyARRectTargetStatus i_prevsq,NyARIntRect i_rect) throws NyARException
+	private boolean clllip(NyARVectorReader_INT1D_GRAY_8 i_reader,NyARRectTargetStatus i_prevsq) throws NyARException
 	{
-		VecLinear vecpos=this._ref_my_pool._vecpos;
-		boolean is_p1_inside_area,is_p2_inside_area;
-		NyARIntPoint2d p1,p2;
-		NyARIntPoint2d[] pt;
+		NyARDoublePoint2d p1,p2;
+		VecLinearCoordinates vecpos=this._ref_my_pool._vecpos;
 		//NyARIntRect i_rect
+		p1=i_prevsq.estimate_vertex[0];
 		for(int i=0;i<4;i++)
 		{
-			//線分が範囲内にあるかを確認
-			p1=i_prevsq.estimate_vertex[i];
 			p2=i_prevsq.estimate_vertex[(i+1)%4];
-			is_p1_inside_area=i_rect.isInnerPoint(p1);
-			is_p2_inside_area=i_rect.isInnerPoint(p2);
-			//個数で分岐
-			if(is_p1_inside_area && is_p2_inside_area){
-				//2ならクリッピング必要なし。
-				if(!i_reader.traceLine(p1,p2,3,vecpos)){
-					return false;
-				}
-			}else if(is_p1_inside_area!=is_p2_inside_area){
-				//1ならクリッピング後に、外に出ていた点に近い輪郭交点を得る。
-NyARLinear l=new NyARLinear();
-				l.makeLinearWithNormalize(p1,p2);
-				
-//				NyARDoublePoint2d
-NyARIntPoint2d[] p;
-				if(is_p1_inside_area){
-					//p2が範囲外
-					if(!clip(l,i_rect,pt)){
-					}
-					p2=(p2.sqNorm(pt[0])<p2.sqNorm(pt[1]))?pt[0]:pt[1];
-					return false;
-				}else{
-					//p1が範囲外
-					p1.sqNorm(p[0]),p2.sqNorm(p[1])
-					return false;
-				}
-			}else{
-				//0ならクリッピングして得られた２点を使う。
-			}
-			//クラスタリングして、傾きの近いベクトルを探す。(限界は10度)
 			
+			//クリップ付きで予想位置周辺の直線のトレース
+			i_reader.traceLineWithClip(p1,p2,3,vecpos);
+
+			//クラスタリングして、傾きの近いベクトルを探す。(限界は10度)
 			this._ref_my_pool._vecpos_op.margeResembleCoords(vecpos);
 			//基本的には1番でかいベクトルだよね。だって、直線状に取るんだもの。
+
 			int vid=vecpos.getMaxCoordIndex();
-			if(vecpos.items[vid].getAbsVecCos(-i_prevsq.square.line[i].b,i_prevsq.square.line[i].a)>NyARMath.COS_DEG_10){
+			//データ品質規制(強度が多少強くないと。)
+			if(vecpos.items[vid].sq_dist<10000){
+				return false;
+			}
+
+			
+			//角度規制
+			if(vecpos.items[vid].getAbsVecCos(-i_prevsq.square.line[i].b,i_prevsq.square.line[i].a)<NyARMath.COS_DEG_10){
+				return false;
+			}
+//			//予想点からさほど外れていない点であるか。(検出点の移動距離を計算する。)
+			NyARLinear li=new NyARLinear();
+			li.setVector(vecpos.items[vid]);
+			double dist=sqDistBySegmentLineEdge(li,i_prevsq.square.sqvertex[i],i_prevsq.square.sqvertex[i%4]);
+			
+		
+			System.out.println(">>"+dist);
+			if(dist<2*3*3){
 				this.square.line[i].setVectorWithNormalize(vecpos.items[vid]);
-				//同定OK
 			}else{
 				return false;
-				//同定NG
 			}
+			//頂点のスライド
+			p1=p2;
 		}
 		return true;
 	}
 	/**
-	 * 直線式とRECTから、クリップされた線分を計算します。
-	 * @param a
-	 * 直線の方程式。
-	 * @param i_rect
-	 * 制限RECT
+	 * 直線i_linearとi_sp1とi_sp2の作る線分との二乗距離値の合計を返します。
+	 * 線分と直線の類似度を
+	 * @param i_linear
+	 * @param i_sp1
+	 * @param i_sp2
 	 * @param o_point
-	 * 点の座標は、RECT.X<N<RECT.X+RECT.W,RECT.H<M<RECT.Y+RECT.Hに制限されます。
 	 * @return
-	 * 線分が作れない。
+	 * 距離が取れないときは無限大です。
 	 */
-	public boolean clip(NyARLinear a,NyARIntRect i_rect,NyARIntPoint2d[] o_point)
-	{	
-		int idx=0;
-		NyARIntPoint2d ptr=o_point[0];
-		if(a.crossPos(0,-1,i_rect.y,ptr) && ptr.x>=i_rect.x && ptr.x<(i_rect.x+i_rect.w))
-		{
-			//y=rect.yの線
-			idx++;
+	public final double sqDistBySegmentLineEdge(NyARLinear i_linear, NyARDoublePoint2d i_sp1,NyARDoublePoint2d i_sp2)
+	{
+		double la,lb,lc;
+		double x,y,w1;
+		//thisを法線に変換
+		la=i_linear.b;
+		lb=-i_linear.a;
+
+		//交点を計算
+		w1 = i_linear.a * lb - la * i_linear.b;
+		if (w1 == 0.0) {
+			return Double.POSITIVE_INFINITY;
 		}
-		ptr=o_point[idx];
-		if(a.crossPos(0,-1,i_rect.y+i_rect.h-1,ptr) && ptr.x>=i_rect.x && ptr.x<(i_rect.x+i_rect.w))
-		{
-			//y=(rect.y+rect.h-1)の線
-			idx++;
-		}
-		if(idx==2){
-			return true;
-		}
-		ptr=o_point[idx];
-		if(a.crossPos(-1,0,i_rect.x,ptr) && ptr.y>=i_rect.y && ptr.y<(i_rect.y+i_rect.w))
-		{
-			//y=rect.yの線
-			idx++;
-		}
-		if(idx==2){
-			return true;
-		}
-		ptr=o_point[idx];
-		if(a.crossPos(-1,0,i_rect.x+i_rect.w-1, ptr) && ptr.y>=i_rect.y && ptr.y<(i_rect.y+i_rect.w))
-		{
-			//y=(rect.y+=rect.h)の線
-			idx++;
-		}
-		if(idx==2){
-			return true;
-		}
-		return false;
-	}
+		//i_sp1と、i_linerの交点
+		lc=-(la*i_sp1.x+lb*i_sp1.y);
+		x = ((i_linear.b * lc - lb * i_linear.c) / w1)-i_sp1.x;
+		y = ((la * i_linear.c - i_linear.a * lc) / w1)-i_sp1.y;
+		double sqdist=x*x+y*y;
+
+		lc=-(la*i_sp2.x+lb*i_sp2.y);
+		x = ((i_linear.b * lc - lb * i_linear.c) / w1)-i_sp2.x;
+		y = ((la * i_linear.c - i_linear.a * lc) / w1)-i_sp2.y;
+
+		return sqdist+x*x+y*y;
+	}	
+
 }

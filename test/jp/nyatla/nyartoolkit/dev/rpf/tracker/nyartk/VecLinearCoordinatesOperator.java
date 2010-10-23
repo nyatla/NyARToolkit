@@ -2,10 +2,10 @@ package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
 
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
-import jp.nyatla.nyartoolkit.core.types.NyARPointVector2d;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.VecLinear;
+import jp.nyatla.nyartoolkit.core.types.NyARVecLinear2d;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.VecLinearCoordinates;
 
-public class VecLinearOperator
+public class VecLinearCoordinatesOperator
 {
 	/**
 	 * margeResembleCoordsで使う距離敷居値の値です。
@@ -21,7 +21,6 @@ public class VecLinearOperator
 	//ワーク
 	private NyARLinear _l1 = new NyARLinear();
 	private NyARLinear _l2 = new NyARLinear();
-	private NyARLinear _ol = new NyARLinear();
 	private NyARDoublePoint2d _p = new NyARDoublePoint2d();
 	
 	/**
@@ -31,29 +30,22 @@ public class VecLinearOperator
 	 * 編集するオブジェクトを指定します。
 	 * @return
 	 */
-	public void margeResembleCoords(VecLinear i_vector)
+	public void margeResembleCoords(VecLinearCoordinates i_vector)
 	{
-		VecLinear.CoordData[] items=i_vector.items;
+		VecLinearCoordinates.CoordData[] items=i_vector.items;
 		NyARLinear l1 = this._l1;
 		NyARLinear l2 = this._l2;
-		NyARLinear ol = this._ol;
-		NyARDoublePoint2d p = this._p;		
+		NyARDoublePoint2d p = this._p;
 		//ベクトルの制限。1,2象限に集める。
-/*		for (int i = i_vector.length - 1; i >= 0; i--) {
-			VecLinear.CoordData target1 = items[i];
-			if (target1.dy < 0) {
-				target1.dy *= -1;
-				target1.dx *= -1;
-			}
-		}*/
+
 
 		for (int i = i_vector.length - 1; i > 0; i--) {
-			VecLinear.CoordData target1 = items[i];
+			VecLinearCoordinates.CoordData target1 = items[i];
 			if(target1.sq_dist==0){
 				continue;
 			}
 			for (int i2 = i - 1; i2 >= 0; i2--) {
-				VecLinear.CoordData target2 = items[i2];
+				VecLinearCoordinates.CoordData target2 = items[i2];
 				if(target2.sq_dist==0){
 					continue;
 				}
@@ -62,16 +54,14 @@ public class VecLinearOperator
 
 					l1.setVector(target1);
 					l2.setVector(target2);
-					ol.orthogonalLine(l1, target1.x, target1.y);
+					l1.normalLineCrossPos(l2, target1.x, target1.y, p);
 					double wx, wy;
 					double l = 0;
-					ol.crossPos(l2, p);
 					// 交点間の距離の合計を計算。lに2*dist^2を得る。
 					wx = (p.x - target1.x);
 					wy = (p.y - target1.y);
 					l += wx * wx + wy * wy;
-					ol.orthogonalLine(l2, target2.x, target2.y);
-					ol.crossPos(l1, p);
+					l2.normalLineCrossPos(l2, target2.x, target2.y,p);
 					wx = (p.x - target2.x);
 					wy = (p.y - target2.y);
 					l += wx * wx + wy * wy;

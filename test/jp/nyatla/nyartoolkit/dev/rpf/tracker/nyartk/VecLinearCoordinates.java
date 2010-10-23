@@ -2,15 +2,15 @@ package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
 
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
-import jp.nyatla.nyartoolkit.core.types.NyARPointVector2d;
+import jp.nyatla.nyartoolkit.core.types.NyARVecLinear2d;
 
-public class VecLinear
+public class VecLinearCoordinates
 {	
 	/**
 	 * データ型です。
 	 * 輪郭ベクトルを格納します。
 	 */
-	public static class CoordData extends NyARPointVector2d
+	public static class CoordData extends NyARVecLinear2d
 	{
 		/**
 		 * ベクトルの2乗値です。輪郭の強度値にもなります。
@@ -28,7 +28,7 @@ public class VecLinear
 	public int length;
 	public CoordData items[];
 
-	public VecLinear(int i_length)
+	public VecLinearCoordinates(int i_length)
 	{
 		this.length = 0;
 		this.items = CoordData.createArray(i_length);
@@ -36,10 +36,10 @@ public class VecLinear
 	/**
 	 * ベクトルを1,2象限に制限します。
 	 */
-	public void limitQuadrantTo12()
+	public final void limitQuadrantTo12()
 	{
 		for (int i = this.length - 1; i >= 0; i--) {
-			VecLinear.CoordData target1 = items[i];
+			VecLinearCoordinates.CoordData target1 = this.items[i];
 			if (target1.dy < 0) {
 				target1.dy *= -1;
 				target1.dx *= -1;
@@ -156,7 +156,7 @@ public class VecLinear
 	 * 
 	 * @return
 	 */
-	public int getMaxCoordIndex()
+	public final int getMaxCoordIndex()
 	{
 		CoordData[] vp = this.items;
 		int index = 0;

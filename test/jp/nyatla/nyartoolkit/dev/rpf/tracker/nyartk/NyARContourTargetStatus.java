@@ -7,7 +7,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
-import jp.nyatla.nyartoolkit.core.types.NyARPointVector2d;
+import jp.nyatla.nyartoolkit.core.types.NyARVecLinear2d;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.LowResolutionLabelingSamplerOut;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.LrlsGsRaster;
@@ -22,7 +22,7 @@ public class NyARContourTargetStatus extends NyARTargetStatus
 	/**
 	 * ベクトル要素を格納する配列です。
 	 */
-	public VecLinear vecpos=new VecLinear(100);
+	public VecLinearCoordinates vecpos=new VecLinearCoordinates(100);
 
 	
 	

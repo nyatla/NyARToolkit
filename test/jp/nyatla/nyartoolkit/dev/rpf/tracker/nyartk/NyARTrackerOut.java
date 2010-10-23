@@ -8,7 +8,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
-import jp.nyatla.nyartoolkit.core.types.NyARPointVector2d;
+import jp.nyatla.nyartoolkit.core.types.NyARVecLinear2d;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.ContourDataPool;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARManagedObjectPool;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARManagedObject.INyARManagedObjectPoolOperater;
@@ -40,7 +40,7 @@ class NyARRectTargetList extends NyARTargetList<NyARTarget>
 		{
 			iitem=(NyARRectTargetStatus)this._items[i].ref_status;
 			int d;
-			d=NyARIntRect.getSqDiagonalPointDiff(iitem.estimate_rect,i_item.base_area);	
+			d=i_item.base_area.getSqDiagonalPointDiff(iitem.estimate_rect);	
 			if(d<min_d){
 				min_d=d;
 				ret=i;

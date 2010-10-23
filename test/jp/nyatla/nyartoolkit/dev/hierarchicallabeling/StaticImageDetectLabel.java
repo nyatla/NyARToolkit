@@ -284,7 +284,7 @@ public class StaticImageDetectLabel extends Frame implements MouseMotionListener
 			g.drawImage(sink, ins.left, ins.top, this);   
 		}
     }
-    public void getCrossPos(NyARPointVector2d vec1,NyARPointVector2d vec2,NyARDoublePoint2d o_pos)
+    public void getCrossPos(NyARVecLinear2d vec1,NyARVecLinear2d vec2,NyARDoublePoint2d o_pos)
     {
     	NyARLinear line1=new NyARLinear();
     	NyARLinear line2=new NyARLinear();

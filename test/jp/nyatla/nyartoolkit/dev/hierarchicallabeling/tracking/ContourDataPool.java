@@ -8,7 +8,7 @@ import jp.nyatla.nyartoolkit.core.squaredetect.NyARContourPickup;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
-import jp.nyatla.nyartoolkit.core.types.NyARPointVector2d;
+import jp.nyatla.nyartoolkit.core.types.NyARVecLinear2d;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.HierarchyRect;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARObjectPool;
 
@@ -29,7 +29,7 @@ public class ContourDataPool extends NyARObjectPool<ContourDataPool.ContourTarge
 		/**
 		 * 輪郭要素1個を格納するデータ型です。
 		 */
-		public static class CoordData extends NyARPointVector2d
+		public static class CoordData extends NyARVecLinear2d
 		{
 			/**
 			 * ベクトルの2乗値です。輪郭の強度値にもなります。
@@ -241,7 +241,7 @@ public class ContourDataPool extends NyARObjectPool<ContourDataPool.ContourTarge
 		{
 			current_vec_ptr=item.vecpos[i];
 			//ベクトルの法線を取る。
-			current_vec_ptr.OrthogonalVec(current_vec_ptr);
+			current_vec_ptr.normalVec(current_vec_ptr);
 			//sqdistを計算
 			current_vec_ptr.sq_dist=current_vec_ptr.dx*current_vec_ptr.dx+current_vec_ptr.dy*current_vec_ptr.dy;
 			d+=current_vec_ptr.sq_dist;
@@ -250,7 +250,7 @@ public class ContourDataPool extends NyARObjectPool<ContourDataPool.ContourTarge
 		item.sq_dist_sum=d;
 		return item;
 	}	
-	private double getVecCos(NyARPointVector2d i_v1,NyARPointVector2d i_v2)
+	private double getVecCos(NyARVecLinear2d i_v1,NyARVecLinear2d i_v2)
 	{
 		double x1=i_v1.dx;
 		double y1=i_v1.dy;

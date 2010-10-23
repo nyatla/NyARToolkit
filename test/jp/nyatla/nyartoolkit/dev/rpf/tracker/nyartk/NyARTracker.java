@@ -458,8 +458,8 @@ System.out.println("updateNewStatus:status pool full");
 				d_ptr.sample_area.setAreaRect(st.square.sqvertex,4);
 			}else{
 		st.releaseObject();
-				continue;}/*
-				int sample_index=this._index[i];
+				continue;}
+/*				int sample_index=this._index[i];
 				if(sample_index<0){
 					//このターゲットに合致するアイテムは無い。
 					st.releaseObject();
@@ -476,7 +476,7 @@ System.out.println("updateNewStatus:status pool full");
 				//ref_statusの切り替え
 //				d_ptr.setSampleArea(st.square.sqvertex);//ラベルの方がいいかもー
 				d_ptr.setSampleArea(s);
-//			}
+			}
 //			*/
 			d_ptr.ref_status.releaseObject();
 			d_ptr.ref_status=st;

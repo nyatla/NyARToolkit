@@ -10,10 +10,10 @@ public class NyARRectTargetStatusPool extends NyARManagedObjectPool<NyARRectTarg
 	/**
 	 * 要素間で共有するオブジェクト。この変数は、NyARRectTargetStatus以外から使わないでください。
 	 */
-	public VecLinear _vecpos=new VecLinear(100);
+	public VecLinearCoordinates _vecpos=new VecLinearCoordinates(100);
 	public LineBaseVertexDetector _line_detect=new LineBaseVertexDetector();
-	public VecLinearOperator _vecpos_op=new VecLinearOperator(); 
-	public VecLinear.CoordData[] _indexbuf=new VecLinear.CoordData[4];
+	public VecLinearCoordinatesOperator _vecpos_op=new VecLinearCoordinatesOperator(); 
+	public VecLinearCoordinates.CoordData[] _indexbuf=new VecLinearCoordinates.CoordData[4];
 	/**
 	 * @param i_size
 	 * スタックの最大サイズ
