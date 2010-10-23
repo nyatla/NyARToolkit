@@ -93,5 +93,44 @@ public class NyARVecLinear2d
 		o_point.x = (b1 * c2 - b2 * c1) / w1;
 		o_point.y = (a2 * c1 - a1 * c2) / w1;
 		return true;
+	}
+	/**
+	 * 直線と、i_sp1とi_sp2の作る線分との二乗距離値の合計を返します。
+	 * 線分と直線の類似度を
+	 * @param i_sp1
+	 * @param i_sp2
+	 * @param o_point
+	 * @return
+	 * 距離が取れないときは無限大です。
+	 */
+	public final double sqDistBySegmentLineEdge(NyARDoublePoint2d i_sp1,NyARDoublePoint2d i_sp2)
+	{
+		double sa,sb,sc;
+		sa= this.dy;
+		sb=-this.dx;
+		sc=(this.dx*this.y-this.dy*this.x);
+		
+
+		double lc;
+		double x,y,w1;
+		//thisを法線に変換
+
+		//交点を計算
+		w1 = sa * (-sa) - sb * sb;
+		if (w1 == 0.0) {
+			return Double.POSITIVE_INFINITY;
+		}
+		//i_sp1と、i_linerの交点
+		lc=-(sb*i_sp1.x-sa*i_sp1.y);
+		x = ((sb * lc +sa * sc) / w1)-i_sp1.x;
+		y = ((sb * sc - sa * lc) / w1)-i_sp1.y;
+		double sqdist=x*x+y*y;
+
+		lc=-(sb*i_sp2.x-sa*i_sp2.y);
+		x = ((sb * lc + sa * sc) / w1)-i_sp2.x;
+		y = ((sb * sc - sa * lc) / w1)-i_sp2.y;
+
+		return sqdist+x*x+y*y;
 	}	
+
 }

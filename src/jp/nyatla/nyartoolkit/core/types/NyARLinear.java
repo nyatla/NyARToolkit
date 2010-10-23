@@ -339,5 +339,39 @@ public class NyARLinear
 		}
 		return false;
 	}
+	/**
+	 * 直線と、i_sp1とi_sp2の作る線分との二乗距離値の合計を返します。
+	 * 線分と直線の類似度を
+	 * @param i_sp1
+	 * @param i_sp2
+	 * @param o_point
+	 * @return
+	 * 距離が取れないときは無限大です。
+	 */
+	public final double sqDistBySegmentLineEdge(NyARDoublePoint2d i_sp1,NyARDoublePoint2d i_sp2)
+	{
+		double la,lb,lc;
+		double x,y,w1;
+		//thisを法線に変換
+		la=this.b;
+		lb=-this.a;
+
+		//交点を計算
+		w1 = this.a * lb - la * this.b;
+		if (w1 == 0.0) {
+			return Double.POSITIVE_INFINITY;
+		}
+		//i_sp1と、i_linerの交点
+		lc=-(la*i_sp1.x+lb*i_sp1.y);
+		x = ((this.b * lc - lb * this.c) / w1)-i_sp1.x;
+		y = ((la * this.c - this.a * lc) / w1)-i_sp1.y;
+		double sqdist=x*x+y*y;
+
+		lc=-(la*i_sp2.x+lb*i_sp2.y);
+		x = ((this.b * lc - lb * this.c) / w1)-i_sp2.x;
+		y = ((la * this.c - this.a * lc) / w1)-i_sp2.y;
+
+		return sqdist+x*x+y*y;
+	}	
 	
 }
