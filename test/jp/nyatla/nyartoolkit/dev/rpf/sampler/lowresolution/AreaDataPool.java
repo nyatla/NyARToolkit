@@ -33,10 +33,6 @@ public class AreaDataPool extends NyARManagedObjectPool<AreaDataPool.AreaDataIte
 		 * 検出した塊のクリップ中心
 		 */
 		public NyARIntPoint2d clip_center=new NyARIntPoint2d();
-		/**
-		 * エリア矩形の対角距離の2乗値
-		 */
-		public int area_sq_diagonal;
 		public AreaDataItem(INyARManagedObjectPoolOperater i_pool)
 		{
 			super(i_pool);
