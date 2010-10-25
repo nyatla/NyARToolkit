@@ -188,7 +188,7 @@ public class TestTerget extends Frame
 	NyARTracker tracker;
 	NyARTrackerOut trackerout;
 	
-	private final static String SAMPLE_FILES = "../Data/test.png";
+	private final static String SAMPLE_FILES = "../Data/320x240ABGR.png";
 
 	private static final long serialVersionUID = -2110888320986446576L;
 
@@ -203,9 +203,9 @@ public class TestTerget extends Frame
 		Insets ins = this.getInsets();
 		this.setSize(1024 + ins.left + ins.right, 768 + ins.top + ins.bottom);
 		
-//	this._input_source=new ImageSource(SAMPLE_FILES);
+	this._input_source=new ImageSource(SAMPLE_FILES);
 //		this._input_source=new MoveSource();
-		this._input_source=new LiveSource();
+//		this._input_source=new LiveSource();
 		//create sampler
 		this.samplerin=new LowResolutionLabelingSamplerIn(W, H, 3);
 		this.samplerout=new LowResolutionLabelingSamplerOut(100);
@@ -230,7 +230,20 @@ public class TestTerget extends Frame
     public void update()
     {
 		try {
+			// マーカーを検出
 			this._input_source.UpdateInput(this.samplerin);
+			Date d2 = new Date();
+			for (int i = 0; i < 100; i++) {
+				//tracker更新
+				this.sampler.sampling(this.samplerin,this.samplerout);
+				this.tracker.progress(this.samplerout,this.trackerout);
+			}
+			Date d = new Date();
+			System.out.println(d.getTime() - d2.getTime());
+
+			
+			
+			
 			this.sampler.sampling(this.samplerin,this.samplerout);
 			//tracker更新
 			this.tracker.progress(this.samplerout,this.trackerout);
@@ -368,12 +381,12 @@ public class TestTerget extends Frame
 
     public void mainloop() throws Exception
     {
-    	for(;;){
+//    	for(;;){
 	    	//処理
 	    	this.update();
-			this.draw(this.getGraphics());
-	    	Thread.sleep(30);
-    	}
+		//	this.draw(this.getGraphics());
+	    //	Thread.sleep(30);
+//    	}
     }
 
 	public static void main(String[] args)

@@ -3,7 +3,7 @@ package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.LowResolutionLabelingSamplerOut;
 
-public class NyARNewTargetStatus extends NyARTargetStatus
+public final class NyARNewTargetStatus extends NyARTargetStatus
 {
 	public LowResolutionLabelingSamplerOut.Item current_sampleout;
 	protected NyARNewTargetStatus(INyARManagedObjectPoolOperater i_ref_pool_operator) throws NyARException

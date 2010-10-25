@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils;
+package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
 
 /**
  * NyARManagedObjectPoolの要素クラスです。
@@ -31,7 +31,7 @@ public class NyARManagedObject
 		this._count=0;
 		this._pool_operater=i_ref_pool_operator;
 	}
-	public NyARManagedObject initObject()
+	public final NyARManagedObject initObject()
 	{
 		assert(this._count==0);
 		this._count=1;
@@ -41,7 +41,7 @@ public class NyARManagedObject
 	 * このオブジェクトに対する、新しい参照オブジェクトを返します。
 	 * @return
 	 */
-	public NyARManagedObject refObject()
+	public final NyARManagedObject refObject()
 	{
 		assert(this._count>0);
 		this._count++;
@@ -64,7 +64,7 @@ public class NyARManagedObject
 	 * 現在の参照カウンタを返します。
 	 * @return
 	 */
-	public int getCount()
+	public final int getCount()
 	{
 		return this._count;
 	}

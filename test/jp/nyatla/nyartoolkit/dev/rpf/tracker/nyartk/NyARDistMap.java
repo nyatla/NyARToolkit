@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils;
+package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
 
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
@@ -86,7 +86,7 @@ public class NyARDistMap
 			for(int c=0;c<i_col_len;c++){
 				map[idx].col=c;
 				map[idx].row=r;
-				int d=NyARMath.sqNorm(i_vertex_r[r],i_vertex_c[c]);
+				int d=i_vertex_r[r].sqNorm(i_vertex_c[c]);
 				map[idx].dist=d;
 				if(min_dist>d){
 					min_index=idx;

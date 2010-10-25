@@ -155,7 +155,7 @@ public class NyARTracker
 					//成功。ステータスの切り替えて、このターゲットのリストから外す。
 					t.setIgnoreStatus(clock);
 					i_trackdata.newtarget.removeIgnoreOrder(i);	
-System.out.println("drop:new->ignore"+t.serial+":"+t.last_update);
+//System.out.println("drop:new->ignore"+t.serial+":"+t.last_update);
 				}else{
 					//追加失敗→何もせず
 					break;
@@ -187,7 +187,7 @@ System.out.println("drop:new->ignore"+t.serial+":"+t.last_update);
 				if(i_trackdata.igtarget.push(t)!=null){
 					t.setIgnoreStatus(clock);
 					i_trackdata.newtarget.removeIgnoreOrder(i);	
-System.out.println("drop:new->ignore[contoure failed.]"+t.serial+":"+t.last_update);
+//System.out.println("drop:new->ignore[contoure failed.]"+t.serial+":"+t.last_update);
 				}
 				c.releaseObject();
 				continue;
@@ -200,7 +200,7 @@ System.out.println("drop:new->ignore[contoure failed.]"+t.serial+":"+t.last_upda
 				//成功。ステータスを切り替えて、このターゲットリストから外す。
 				t.setCntoureStatus(c);
 				i_trackdata.newtarget.removeIgnoreOrder(i);
-System.out.println("upgr:new->coord"+t.serial+":"+t.last_update);
+//System.out.println("upgr:new->coord"+t.serial+":"+t.last_update);
 				
 			}
 		}
@@ -216,7 +216,7 @@ System.out.println("upgr:new->coord"+t.serial+":"+t.last_update);
 			if(t.age>IGNPARAM_EXPIRE_COUNT)
 			{
 				//オブジェクトのリリース
-System.out.println("lost:ignore:"+t.serial+":"+t.last_update);
+//System.out.println("lost:ignore:"+t.serial+":"+t.last_update);
 				t.releaseObject();
 				i_trackdata.igtarget.removeIgnoreOrder(i);				
 			}
@@ -298,7 +298,7 @@ System.out.println("lost:ignore:"+t.serial+":"+t.last_update);
 					i_trackdata.recttarget.removeIgnoreOrder(i);	
 				}else{
 					//追加失敗→何もせず
-System.out.println("upgradeRectTarget:ignore pool full");
+//System.out.println("upgradeRectTarget:ignore pool full");
 					break;
 				}
 			}
@@ -368,7 +368,7 @@ System.out.println("upgradeRectTarget:ignore pool full");
 			NyARNewTargetStatus st=i_trackdata.newst_pool.newObject();
 			if(st==null){
 				//ステータスの生成に失敗
-System.out.println("updateNewStatus:status pool full");
+//System.out.println("updateNewStatus:status pool full");
 				continue;
 			}
 			//新しいステータス値のセット

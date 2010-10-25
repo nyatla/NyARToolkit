@@ -6,7 +6,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.HierarchyRect;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.newtarget.NewTargetSrc;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARObjectPool;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARObjectPool;
 
 
 

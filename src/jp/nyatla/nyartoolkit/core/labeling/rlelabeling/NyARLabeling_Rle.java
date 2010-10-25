@@ -120,7 +120,7 @@ public abstract class NyARLabeling_Rle
 	 * 暗点<=th<明点
 	 * @return
 	 */
-	private int toRel(int[] i_bin_buf, int i_st, int i_len, RleElement[] i_out,int i_th)
+	private final int toRel(int[] i_bin_buf, int i_st, int i_len, RleElement[] i_out,int i_th)
 	{
 		int current = 0;
 		int r = -1;
@@ -175,7 +175,7 @@ public abstract class NyARLabeling_Rle
 		return current;
 	}
 
-	private void addFragment(RleElement i_rel_img, int i_nof, int i_row_index,RleInfoStack o_stack) throws NyARException
+	private final void addFragment(RleElement i_rel_img, int i_nof, int i_row_index,RleInfoStack o_stack) throws NyARException
 	{
 		int l=i_rel_img.l;
 		final int len=i_rel_img.r - l;

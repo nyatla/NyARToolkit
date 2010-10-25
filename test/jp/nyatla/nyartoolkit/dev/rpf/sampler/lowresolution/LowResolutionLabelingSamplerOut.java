@@ -5,9 +5,9 @@ import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.stack.*;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARManagedObject;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARManagedObjectPool;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARManagedObject.INyARManagedObjectPoolOperater;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARManagedObject;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARManagedObjectPool;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARManagedObject.INyARManagedObjectPoolOperater;
 
 /**
  * LowResolutionLabelingSampler用の出力コンテナです。サンプリング結果を受け取ります。

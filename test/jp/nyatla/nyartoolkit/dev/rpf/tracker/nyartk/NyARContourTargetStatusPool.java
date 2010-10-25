@@ -10,8 +10,8 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.NyARVecLinear2d;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.HierarchyRect;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.*;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARManagedObject.INyARManagedObjectPoolOperater;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.LowResolutionLabelingSamplerOut;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARManagedObject.INyARManagedObjectPoolOperater;
 
 
 
@@ -19,7 +19,7 @@ import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.LowResolutionLabeling
  * 輪郭情報を保管します。
  * このクラスの要素は、他の要素から参照する可能性があります。
  */
-public class NyARContourTargetStatusPool extends NyARManagedObjectPool<NyARContourTargetStatus>
+public final class NyARContourTargetStatusPool extends NyARManagedObjectPool<NyARContourTargetStatus>
 {	
 	/**
 	 * @param i_size

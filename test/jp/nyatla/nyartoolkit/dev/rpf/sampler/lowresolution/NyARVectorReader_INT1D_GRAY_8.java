@@ -112,7 +112,7 @@ public class NyARVectorReader_INT1D_GRAY_8 {
 	 * @param o_posvec
 	 *            エッジ中心とベクトルを返します。
 	 */
-	public void getAreaVector33(int ix, int iy, int iw, int ih,
+	public final void getAreaVector33(int ix, int iy, int iw, int ih,
 			NyARVecLinear2d o_posvec) {
 		assert (ih >= 3 && iw >= 3);
 		assert ((ix >= 0) && (iy >= 0) && (ix + iw) <= this._ref_size.w && (iy + ih) <= this._ref_size.h);

@@ -1,9 +1,9 @@
-package jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils;
+package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
 
 import java.lang.reflect.Array;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARManagedObject.INyARManagedObjectPoolOperater;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARManagedObject.INyARManagedObjectPoolOperater;
 
 
 

@@ -4,7 +4,7 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
-import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.NyARObjectPool;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARObjectPool;
 
 
 

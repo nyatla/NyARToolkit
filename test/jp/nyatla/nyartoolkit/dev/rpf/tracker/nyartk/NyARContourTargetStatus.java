@@ -17,7 +17,7 @@ import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.NyARVectorReader_INT1
  * 輪郭ソース1個を格納するクラスです。
  *
  */
-public class NyARContourTargetStatus extends NyARTargetStatus
+public final class NyARContourTargetStatus extends NyARTargetStatus
 {
 	/**
 	 * ベクトル要素を格納する配列です。
