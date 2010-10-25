@@ -5,7 +5,8 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.AreaDataPool;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.LowResolutionLabelingSamplerOut;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARManagedObject.INyARManagedObjectPoolOperater;
+import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObject;
+import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObject.INyARManagedObjectPoolOperater;
 
 
 public class NyARTarget extends NyARManagedObject

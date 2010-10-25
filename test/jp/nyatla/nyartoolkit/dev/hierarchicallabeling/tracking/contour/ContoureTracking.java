@@ -2,7 +2,7 @@ package jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.contour;
 
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.TrackingUtils;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaDataPool;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARDistMap;
+import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARDistMap;
 
 public class ContoureTracking
 {

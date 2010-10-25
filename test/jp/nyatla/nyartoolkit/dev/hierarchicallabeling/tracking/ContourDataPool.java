@@ -10,7 +10,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.NyARVecLinear2d;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.HierarchyRect;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARObjectPool;
+import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARObjectPool;
 
 
 

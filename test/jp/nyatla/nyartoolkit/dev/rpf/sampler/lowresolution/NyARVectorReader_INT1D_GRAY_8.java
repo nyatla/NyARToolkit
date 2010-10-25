@@ -39,7 +39,7 @@ import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARContourTargetStatus;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARContourTargetStatusPool;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARRectTargetStatus;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.VecLinearCoordinates;
+import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinates;
 
 public class NyARVectorReader_INT1D_GRAY_8 {
 	private int[] _ref_buf;

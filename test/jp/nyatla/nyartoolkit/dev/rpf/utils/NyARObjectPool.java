@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
+package jp.nyatla.nyartoolkit.dev.rpf.utils;
 
 import java.lang.reflect.Array;
 

@@ -1,5 +1,7 @@
 package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
 
+import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObject;
+
 
 /**
  * Targetの基礎クラスです。

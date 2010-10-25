@@ -2,6 +2,7 @@ package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
+import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinates;
 /**
  * このクラスは、直線式の集合から頂点集合を計算する関数を提供します。
  */

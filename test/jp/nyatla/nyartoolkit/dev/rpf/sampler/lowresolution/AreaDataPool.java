@@ -4,8 +4,8 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARManagedObject;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARManagedObjectPool;
+import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObject;
+import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObjectPool;
 
 
 

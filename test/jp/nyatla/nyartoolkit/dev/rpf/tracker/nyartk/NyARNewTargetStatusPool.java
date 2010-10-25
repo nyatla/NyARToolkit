@@ -5,6 +5,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.utils.*;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.LowResolutionLabelingSamplerOut;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.LowResolutionLabelingSamplerOut.Item;
+import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObjectPool;
 
 
 public class NyARNewTargetStatusPool extends NyARManagedObjectPool<NyARNewTargetStatus>

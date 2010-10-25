@@ -3,7 +3,10 @@ package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARManagedObject.INyARManagedObjectPoolOperater;
+import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObjectPool;
+import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinates;
+import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinatesOperator;
+import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObject.INyARManagedObjectPoolOperater;
 
 public class NyARRectTargetStatusPool extends NyARManagedObjectPool<NyARRectTargetStatus>
 {
