@@ -7,6 +7,14 @@ package jp.nyatla.nyartoolkit.core.utils;
  */
 public class NyARMath
 {
+	public final static int SQ_40=40*40;
+	public final static int SQ_20=20*20;
+	public final static int SQ_10=10*10;
+	public final static int SQ_8=8*8;
+	public final static int SQ_5=5*5;
+	public final static int SQ_2=2*2;
+
+	
 	public final static double COS_DEG_30=0.8660;
 	public final static double COS_DEG_10=0.9848;
 	public final static double COS_DEG_8 =0.9902;

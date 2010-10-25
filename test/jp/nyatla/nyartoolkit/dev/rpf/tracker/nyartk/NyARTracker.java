@@ -452,35 +452,20 @@ System.out.println("updateNewStatus:status pool full");
 				//失敗（作れなかった？）
 				continue;
 			}
-			//{単独検出を試行}
-			if(st.setValue(i_base_raster,(NyARRectTargetStatus)d_ptr.ref_status)){
-				//単独検出に成功
-				d_ptr.sample_area.setAreaRect(st.square.sqvertex,4);
+			int sample_index=this._index[i];
+			LowResolutionLabelingSamplerOut.Item s=sample_index<0?null:source[sample_index];		
+			if(!st.setValueByAutoSelect(i_base_raster, s, (NyARRectTargetStatus)d_ptr.ref_status)){
+				st.releaseObject();
+				continue;
 			}else{
-//		st.releaseObject();
-//				continue;}
-				int sample_index=this._index[i];
-				if(sample_index<0){
-					//このターゲットに合致するアイテムは無い。
-					st.releaseObject();
-					continue;
+				if(s!=null){
+					d_ptr.setSampleArea(s);
 				}
-				LowResolutionLabelingSamplerOut.Item s=source[sample_index];
-				//失敗の可能性を考慮して、Statusを先に生成しておく
-				//ステータスを更新
-				if(!st.setValueWithDeilyCheck(i_base_raster,s,(NyARRectTargetStatus)d_ptr.ref_status)){
-					//新しいステータスのセットに失敗？
-					st.releaseObject();
-					continue;
-				}
-				//ref_statusの切り替え
-//				d_ptr.setSampleArea(st.square.sqvertex);//ラベルの方がいいかもー
-				d_ptr.setSampleArea(s);
 			}
-//			*/
 			d_ptr.ref_status.releaseObject();
 			d_ptr.ref_status=st;
 			d_ptr.last_update=clock;
+
 		}		
 	}
 

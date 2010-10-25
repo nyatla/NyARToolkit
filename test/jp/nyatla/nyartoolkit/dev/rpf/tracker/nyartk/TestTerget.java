@@ -277,7 +277,7 @@ public class TestTerget extends Frame
 	    	g.setColor(c);
 			NyARTarget t=this.trackerout.recttarget.getItem(i);
 			NyARRectTargetStatus s=(NyARRectTargetStatus)t.ref_status;
-			g.drawString("RT:"+t.serial,t.sample_area.x,t.sample_area.y);
+			g.drawString("RT:"+t.serial+"("+s.detect_type+")",t.sample_area.x,t.sample_area.y);
 			for(int i2=0;i2<4;i2++){
 //				g.fillRect((int)st.vecpos[i2].x-1, (int)st.vecpos[i2].y-1,2,2);
 				g.drawLine(
@@ -285,7 +285,7 @@ public class TestTerget extends Frame
 					(int)s.square.sqvertex[i2].y,
 					(int)s.square.sqvertex[(i2+1)%4].x,
 					(int)s.square.sqvertex[(i2+1)%4].y);
-			}
+			}/*
 		   	g.setColor(Color.pink);
 			for(int i2=0;i2<4;i2++){
 				g.drawLine(
@@ -293,7 +293,7 @@ public class TestTerget extends Frame
 						(int)s.estimate_vertex[i2].y,
 						(int)s.estimate_vertex[(i2+1)%4].x,
 						(int)s.estimate_vertex[(i2+1)%4].y);
-				}
+				}*/
 		}
     }
 

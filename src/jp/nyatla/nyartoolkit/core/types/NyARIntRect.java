@@ -95,22 +95,7 @@ public class NyARIntRect
 		this.w=xmax-xmin+1;
 		this.y=ymin;
 	}
-	/**
-	 * LTRB矩形表現を、RECTにセットします。
-	 * @param i_l
-	 * @param i_t
-	 * @param i_r
-	 * @param i_b
-	 */
-	public final void setLtrb(int i_l,int i_t,int i_r,int i_b)
-	{
-		assert(i_l<=i_r && i_t<=i_b);
-		this.x=i_l;
-		this.y=i_t;
-		this.w=i_r-i_l+1;
-		this.h=i_b-i_t+1;
-		
-	}
+
 	/**
 	 * 矩形を指定した領域内にクリップします。
 	 * @param top
@@ -218,6 +203,16 @@ public class NyARIntRect
 		w2+=this.h-i_rect2.h;
 		ret+=w1*w1+w2*w2;
 		return ret;
+	}
+	/**
+	 * 対角線の二乗距離を返します。
+	 * @return
+	 */
+	public final int getDiagonalSqDist()
+	{
+		int lh=this.h;
+		int lw=this.w;
+		return lh*lh+lw*lw;
 	}
 
 	/**
