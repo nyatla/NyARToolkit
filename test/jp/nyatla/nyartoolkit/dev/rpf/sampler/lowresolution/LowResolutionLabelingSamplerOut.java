@@ -102,7 +102,7 @@ public class LowResolutionLabelingSamplerOut
 	public void initializeParams(LowResolutionLabelingSamplerIn i_source)
 	{
 		//基準ラスタの設定
-		this.ref_base_raster=i_source.getRasterByDepth(0);
+		this.ref_base_raster=i_source._base_raster;
 		
 		Item[] items=this._stack.getArray();
 		//スタック内容の初期化

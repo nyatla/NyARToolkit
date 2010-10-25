@@ -207,7 +207,7 @@ public class TestTerget extends Frame
 //		this._input_source=new MoveSource();
 //		this._input_source=new LiveSource();
 		//create sampler
-		this.samplerin=new LowResolutionLabelingSamplerIn(W, H, 3);
+		this.samplerin=new LowResolutionLabelingSamplerIn(W, H, 2);
 		this.samplerout=new LowResolutionLabelingSamplerOut(100);
 		this.sampler=new LowResolutionLabelingSampler(W, H,2);
 		
@@ -233,7 +233,7 @@ public class TestTerget extends Frame
 			// マーカーを検出
 			this._input_source.UpdateInput(this.samplerin);
 			Date d2 = new Date();
-			for (int i = 0; i < 100; i++) {
+			for (int i = 0; i < 1000; i++) {
 				//tracker更新
 				this.sampler.sampling(this.samplerin,this.samplerout);
 				this.tracker.progress(this.samplerout,this.trackerout);
@@ -381,12 +381,12 @@ public class TestTerget extends Frame
 
     public void mainloop() throws Exception
     {
-//    	for(;;){
+    	for(;;){
 	    	//処理
 	    	this.update();
-		//	this.draw(this.getGraphics());
-	    //	Thread.sleep(30);
-//    	}
+			this.draw(this.getGraphics());
+//	    	Thread.sleep(30);
+    	}
     }
 
 	public static void main(String[] args)

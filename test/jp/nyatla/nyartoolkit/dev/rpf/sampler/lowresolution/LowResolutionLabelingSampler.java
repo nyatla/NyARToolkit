@@ -94,9 +94,6 @@ public class LowResolutionLabelingSampler
 	 */
 	public void sampling(LowResolutionLabelingSamplerIn i_in,LowResolutionLabelingSamplerOut o_out) throws NyARException
 	{
-		//暫定仕様。depthは3以上であること。
-		assert(i_in.getDepth()>=3);
-
 		//ラスタを取得(Depth2=2^2解像度のデータ)
 		NyARGrayscaleRaster raster4=i_in._rbraster;
 		int th=220;
