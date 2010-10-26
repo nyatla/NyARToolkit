@@ -9,7 +9,7 @@ import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObjectPool;
 
 
 
-public class AreaDataPool extends NyARManagedObjectPool<AreaDataPool.AreaDataItem>
+public class LrlAreaDataPool extends NyARManagedObjectPool<LrlAreaDataPool.AreaDataItem>
 {
 	class AreaDataItem extends NyARManagedObject
 	{
@@ -38,12 +38,12 @@ public class AreaDataPool extends NyARManagedObjectPool<AreaDataPool.AreaDataIte
 			super(i_pool);
 		}
 	}
-	protected AreaDataPool.AreaDataItem createElement() throws NyARException
+	protected LrlAreaDataPool.AreaDataItem createElement() throws NyARException
 	{
 		return new AreaDataItem(this._op_interface);
 	}
-	public AreaDataPool(int i_length) throws NyARException
+	public LrlAreaDataPool(int i_length) throws NyARException
 	{
-		super.initInstance(i_length, AreaDataPool.AreaDataItem.class);
+		super.initInstance(i_length, LrlAreaDataPool.AreaDataItem.class);
 	}
 }

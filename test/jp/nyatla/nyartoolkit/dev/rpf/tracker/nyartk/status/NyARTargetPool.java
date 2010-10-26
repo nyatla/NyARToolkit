@@ -1,7 +1,8 @@
-package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
+package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTarget;
 import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObjectPool;
 
 public class NyARTargetPool extends NyARManagedObjectPool<NyARTarget>
