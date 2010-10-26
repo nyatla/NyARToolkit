@@ -10,42 +10,6 @@ import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARDistMap;
 
 
 
-class NyARCoordTargetList extends NyARTargetList<NyARTarget>
-{
-	/**
-	 * コンストラクタです。NyARContourStatusのNyARTargetのリストクラスを生成します。
-	 * @param iMaxTarget
-	 * 取り扱うターゲットの最大数
-	 * @throws NyARException
-	 */
-	public NyARCoordTargetList(int iMaxTarget) throws NyARException
-	{
-		super(iMaxTarget);
-	}
-}
-class NyARIgnoreTargetList extends NyARTargetList<NyARTarget>
-{
-	public NyARIgnoreTargetList(int iMaxTarget) throws NyARException
-	{
-		super(iMaxTarget);
-	}
-}
-
-
-class NyARNewTargetList extends NyARTargetList<NyARTarget>
-{
-	/**
-	 * コンストラクタです。NewTargetステータスのNyARTargetオブジェクトをリストします。
-	 * @param iMaxTarget
-	 * 取り扱うターゲットの最大数。
-	 * @throws NyARException
-	 */
-	public NyARNewTargetList(int iMaxTarget) throws NyARException
-	{
-		super(iMaxTarget);
-	}
-}
-
 
 
 

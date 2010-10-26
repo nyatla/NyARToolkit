@@ -6,7 +6,6 @@ import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARContourTargetStat
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARNewTargetStatusPool;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARRectTargetStatus;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARRectTargetStatusPool;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARTargetPool;
 
 
 class NyARRectTargetList extends NyARTargetList<NyARTarget>
