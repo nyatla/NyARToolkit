@@ -2,7 +2,7 @@ package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.stack.*;
-import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.*;
+import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.*;
 
 public class NyARTargetList<T extends NyARTarget> extends NyARPointerStack<T>
 {

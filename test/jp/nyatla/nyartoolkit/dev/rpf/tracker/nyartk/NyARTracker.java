@@ -1,22 +1,11 @@
 package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.types.stack.NyARPointerStack;
-import jp.nyatla.nyartoolkit.dev.rpf.sampler.lowresolution.*;
+import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.*;
 import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARDistMap;
 
 
-/**
- * サンプルを格納するスタックです。
- */
-class SampleStack extends NyARPointerStack<LowResolutionLabelingSamplerOut.Item>
-{
-	protected SampleStack(int i_size) throws NyARException
-	{
-		super();
-		this.initInstance(i_size,LowResolutionLabelingSamplerOut.Item.class);
-	}
-}
+
 
 class NyARCoordTargetList extends NyARTargetList<NyARTarget>
 {
