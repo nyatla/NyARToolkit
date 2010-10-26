@@ -25,27 +25,17 @@
 package jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARContourPickup;
-import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
-import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
-import jp.nyatla.nyartoolkit.core.types.NyARIntCoordinates;
-import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
-import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
-import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
-import jp.nyatla.nyartoolkit.core.types.NyARLinear;
-import jp.nyatla.nyartoolkit.core.types.NyARVecLinear2d;
+import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARContourTargetStatus;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARContourTargetStatusPool;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARRectTargetStatus;
 import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinates;
 
 /**
  * グレイスケールラスタに対する、特殊な画素アクセス手段を提供します。
  *
  */
-public class NyARVectorReader_INT1D_GRAY_8 {
+public class NyARVectorReader_INT1D_GRAY_8
+{
 	private int[] _ref_buf;
 	private NyARIntSize _ref_size;
 
@@ -298,7 +288,7 @@ public class NyARVectorReader_INT1D_GRAY_8 {
 		return traceConture(coord, 1, s, o_coord);
 	}
 
-	private VecLinearCoordinates.CoordData[] _tmp_cd = VecLinearCoordinates.CoordData
+	private VecLinearCoordinates.NyARVecLinearPoint[] _tmp_cd = VecLinearCoordinates.NyARVecLinearPoint
 			.createArray(3);
 
 	/**
@@ -318,12 +308,12 @@ public class NyARVectorReader_INT1D_GRAY_8 {
 	public boolean traceConture(NyARIntCoordinates i_coord, int i_pos_mag,
 			int i_cell_size, VecLinearCoordinates o_coord) {
 		// ベクトル化
-		VecLinearCoordinates.CoordData[] array_of_vec = o_coord.items;
+		VecLinearCoordinates.NyARVecLinearPoint[] array_of_vec = o_coord.items;
 		int MAX_COORD = o_coord.items.length;
 		// 検出RECTは、x,yと(x+w),(y+h)の間にあるものになる。
 
-		VecLinearCoordinates.CoordData prev_vec_ptr, current_vec_ptr, tmp_ptr;
-		VecLinearCoordinates.CoordData[] tmp_cd = _tmp_cd;
+		VecLinearCoordinates.NyARVecLinearPoint prev_vec_ptr, current_vec_ptr, tmp_ptr;
+		VecLinearCoordinates.NyARVecLinearPoint[] tmp_cd = _tmp_cd;
 		current_vec_ptr = tmp_cd[0];
 
 		int i_coordlen = i_coord.length;

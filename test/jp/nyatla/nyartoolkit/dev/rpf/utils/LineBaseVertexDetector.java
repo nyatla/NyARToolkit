@@ -1,8 +1,7 @@
-package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
+package jp.nyatla.nyartoolkit.dev.rpf.utils;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
-import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinates;
 /**
  * このクラスは、直線式の集合から頂点集合を計算する関数を提供します。
  */
@@ -30,7 +29,7 @@ public class LineBaseVertexDetector
 	 * @throws NyARException
 	 */
 
-	public boolean line2SquareVertex(VecLinearCoordinates.CoordData[] i_line,NyARDoublePoint2d[] o_point) throws NyARException
+	public boolean line2SquareVertex(VecLinearCoordinates.NyARVecLinearPoint[] i_line,NyARDoublePoint2d[] o_point) throws NyARException
 	{
 		NyARDoublePoint2d[] v=NyARDoublePoint2d.createArray(6);
 		int number_of_vertex=0;

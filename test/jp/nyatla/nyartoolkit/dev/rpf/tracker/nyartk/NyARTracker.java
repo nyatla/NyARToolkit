@@ -1,6 +1,7 @@
 package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.types.stack.NyARPointerStack;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.*;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARContourTargetStatus;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARNewTargetStatus;
@@ -469,7 +470,17 @@ public class NyARTracker
 		return;
 	}	
 }
-
+/**
+ * サンプルを格納するスタックです。このクラスは、一時的なリストを作るために使います。
+ */
+class SampleStack extends NyARPointerStack<LowResolutionLabelingSamplerOut.Item>
+{
+	protected SampleStack(int i_size) throws NyARException
+	{
+		super();
+		this.initInstance(i_size,LowResolutionLabelingSamplerOut.Item.class);
+	}
+}
 
 
 /**
@@ -492,8 +503,9 @@ class DistMap extends NyARDistMap
 	 * @param i_sample
 	 * @return
 	 */
-	private int dist(NyARTarget i_target,LowResolutionLabelingSamplerOut.Item i_sample)
+	private final int dist(NyARTarget i_target,LowResolutionLabelingSamplerOut.Item i_sample)
 	{
+		//これ最適化できるんじゃねーの
 		int a=i_target.sample_area.y-i_sample.base_area.y;//t1 - t2
 		int b=i_target.sample_area.x-i_sample.base_area.x;//l1 - l2
 		

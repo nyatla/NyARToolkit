@@ -32,7 +32,7 @@ public class VecLinearCoordinatesOperator
 	 */
 	public void margeResembleCoords(VecLinearCoordinates i_vector)
 	{
-		VecLinearCoordinates.CoordData[] items=i_vector.items;
+		VecLinearCoordinates.NyARVecLinearPoint[] items=i_vector.items;
 		NyARLinear l1 = this._l1;
 		NyARLinear l2 = this._l2;
 		NyARDoublePoint2d p = this._p;
@@ -40,12 +40,12 @@ public class VecLinearCoordinatesOperator
 
 
 		for (int i = i_vector.length - 1; i > 0; i--) {
-			VecLinearCoordinates.CoordData target1 = items[i];
+			VecLinearCoordinates.NyARVecLinearPoint target1 = items[i];
 			if(target1.sq_dist==0){
 				continue;
 			}
 			for (int i2 = i - 1; i2 >= 0; i2--) {
-				VecLinearCoordinates.CoordData target2 = items[i2];
+				VecLinearCoordinates.NyARVecLinearPoint target2 = items[i2];
 				if(target2.sq_dist==0){
 					continue;
 				}

@@ -48,7 +48,7 @@ public class NyARTarget extends NyARManagedObject
 	public NyARTargetStatus ref_status;
 	
 	/**
-	 * ユーザオブジェクトを配置するポインタータグ
+	 * ユーザオブジェクトを配置するポインタータグです。リリース時にNULL初期化されます。
 	 */
 	public Object tag;
 //	//Samplerからの基本情報
@@ -58,6 +58,7 @@ public class NyARTarget extends NyARManagedObject
 	public NyARTarget(INyARManagedObjectPoolOperater iRefPoolOperator)
 	{
 		super(iRefPoolOperator);
+		this.tag=null;
 	}
 	/**
 	 * @Override
@@ -69,6 +70,7 @@ public class NyARTarget extends NyARManagedObject
 		{
 			this.ref_status.releaseObject();
 			this.ref_status=null;
+			this.tag=null;
 		}
 		return ret;
 	}	
