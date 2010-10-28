@@ -1,14 +1,11 @@
 package jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARNewTargetStatus;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARNewTargetStatusPool;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTarget;
 import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObjectPool;
 
 public class NyARRealityTargetPool extends NyARManagedObjectPool<NyARRealityTarget>
 {
-	private NyARNewTargetStatusPool _ref_pool;
 	public NyARRealityTargetPool(int i_size) throws NyARException
 	{
 		this.initInstance(i_size,NyARRealityTarget.class);
@@ -18,20 +15,21 @@ public class NyARRealityTargetPool extends NyARManagedObjectPool<NyARRealityTarg
 		return new NyARRealityTarget(this._op_interface);
 	}
 	/**
-	 * NyARTargetStatusを持つターゲットを新規に作成します。
-	 * @param i_clock
-	 * システムクロック値
-	 * @param i_sample
-	 * 初期化元のサンプリングアイテム
+	 * 新しいRealityTargetを作って返します。
+	 * @param tt
 	 * @return
 	 * @throws NyARException 
 	 */
-	public NyARRealityTarget newNewTarget(long i_clock,LowResolutionLabelingSamplerOut.Item i_sample) throws NyARException
+	public NyARRealityTarget newNewTarget(NyARTarget tt) throws NyARException
 	{
-		NyARRealityTarget t=super.newObject();
-		if(t==null){
+		NyARRealityTarget ret=super.newObject();
+		if(ret==null){
 			return null;
 		}
-		return t;
+		ret.target_age=0;
+		ret.target_type=NyARRealityTarget.RT_UNKNOWN;
+		ret.ref_ttarget=tt;
+		tt.tag=ret;//タグに値設定しておく。
+		return ret;
 	}	
 }

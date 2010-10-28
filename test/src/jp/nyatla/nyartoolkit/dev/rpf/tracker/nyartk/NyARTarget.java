@@ -38,11 +38,11 @@ public class NyARTarget extends NyARManagedObject
 	/**
 	 * このターゲットが最後にアップデートされたtick
 	 */
-	public long last_update;
+	public long last_update_tick;
 	/**
 	 * 現在のステータスになってからのターゲットの寿命値
 	 */
-	public int age;
+	public int status_age;
 	////////////////////////
 	//targetの情報
 	public NyARTargetStatus ref_status;
@@ -101,8 +101,8 @@ public class NyARTarget extends NyARManagedObject
 				((this.ref_status instanceof NyARNewTargetStatus)== true)
 		);
 		this.ref_status.releaseObject();
-		this.last_update=i_clock;
-		this.age=0;
+		this.last_update_tick=i_clock;
+		this.status_age=0;
 		this.ref_status=null;
 	}
 	/**
@@ -114,14 +114,14 @@ public class NyARTarget extends NyARManagedObject
 		//遷移元のステータスを制限
 		assert((this.ref_status instanceof NyARNewTargetStatus) == true);
 		this.ref_status.releaseObject();
-		this.age=0;
+		this.status_age=0;
 		this.ref_status=i_c;
 	}
 	public void setRectStatus(NyARRectTargetStatus i_c)
 	{
 		assert((this.ref_status instanceof NyARContourTargetStatus) == true);
 		this.ref_status.releaseObject();
-		this.age=0;
+		this.status_age=0;
 		this.ref_status=i_c;		
 	}
 	

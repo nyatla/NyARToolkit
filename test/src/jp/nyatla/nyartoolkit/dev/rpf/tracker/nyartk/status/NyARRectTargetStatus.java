@@ -27,25 +27,23 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	 * 現在の矩形情報
 	 */
 	public NyARSquare square;
-	/**
-	 * 頂点の速度値
-	 */
-	public NyARIntPoint2d[] vertex_v=NyARIntPoint2d.createArray(4);
+
 	/**
 	 * 予想した頂点速度の二乗値の合計
 	 */
 	public int estimate_sum_sq_vertex_velocity_ave;
-	/**
-	 * 予想頂点位置
-	 */
+
 	/**
 	 * 予想頂点範囲
 	 */
 	public NyARIntRect estimate_rect=new NyARIntRect();
+	/**
+	 * 予想頂点位置
+	 */
 	public NyARDoublePoint2d[] estimate_vertex=NyARDoublePoint2d.createArray(4);
 
 	/**
-	 * 最後に使われた検出タイプの値です。
+	 * 最後に使われた検出タイプの値です。DT_xxxの値をとります。
 	 */
 	public int detect_type;
 	/**
@@ -78,16 +76,12 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		this.square=new NyARSquare();
 		this.detect_type=DT_SQINIT;
 	}
-	/**
-	 * @Override 
-	 */
-	public int releaseObject()
-	{
-		int ret=super.releaseObject();
-		return ret;
-	}
 
-	private void setEstimateParam(NyARRectTargetStatus i_prev_param)
+	/**
+	 * 前回のステータスと予想パラメータを計算してセットします。
+	 * @param i_prev_param
+	 */
+	private final void setEstimateParam(NyARRectTargetStatus i_prev_param)
 	{
 		NyARDoublePoint2d[] vc_ptr=this.square.sqvertex;
 		NyARDoublePoint2d[] ve_ptr=this.estimate_vertex;
@@ -99,8 +93,6 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 			for(int i=3;i>=0;i--){
 				int x=(int)((vc_ptr[i].x-vp[i].x));
 				int y=(int)((vc_ptr[i].y-vp[i].y));
-				this.vertex_v[i].x=x;//+this.vertex_v[i].x)/2;
-				this.vertex_v[i].y=y;//+this.vertex_v[i].y)/2;
 				//予想位置
 				ve_ptr[i].x=(int)vc_ptr[i].x+x;
 				ve_ptr[i].y=(int)vc_ptr[i].y+y;
@@ -109,7 +101,6 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		}else{
 			//頂点速度のリセット
 			for(int i=3;i>=0;i--){
-				this.vertex_v[i].x=this.vertex_v[i].y=0;
 				ve_ptr[i].x=(int)vc_ptr[i].x;
 				ve_ptr[i].y=(int)vc_ptr[i].y;
 			}

@@ -37,13 +37,9 @@ public class NyARRealityTarget extends NyARManagedObject
 	 */
 	public long serial;
 	/**
-	 * このターゲットが最後にアップデートされたtick
+	 * このターゲットの年齢
 	 */
-	public long last_update;
-	/**
-	 * このターゲットの寿命値
-	 */
-	public int age;
+	public long target_age;
 	/**
 	 * このターゲットの位置と座標
 	 */
@@ -53,21 +49,28 @@ public class NyARRealityTarget extends NyARManagedObject
 	 */
 	public NyARRectOffset offset=new NyARRectOffset();
 	/**
+	 * このターゲットが参照しているトラックターゲット
+	 */
+	public NyARTarget ref_ttarget;
+	
+	/**
 	 * このターゲットの情報タイプ
 	 * 0=わからん2Dのみ。
 	 * 1=比率は判って相対3D
 	 * 2=大きさもわかって絶対3D
 	 */
+	public int target_type;
+	public final static int RT_UNKNOWN   =0;//思い出しまち
+	public final static int RT_RECALL    =1;//思い出し中
+	public final static int RT_KNOWN     =2;//知ってるターゲット
+	public final static int RT_DEAD      =4;//間もなく死ぬターゲット
 	
 	
 	/**
 	 * ユーザオブジェクトを配置するポインタータグ
 	 */
 	public Object tag;
-//	//Samplerからの基本情報
-	public NyARIntRect sample_area=new NyARIntRect();
-	//アクセス用関数
-	
+
 	public NyARRealityTarget(INyARManagedObjectPoolOperater iRefPoolOperator)
 	{
 		super(iRefPoolOperator);
@@ -78,12 +81,11 @@ public class NyARRealityTarget extends NyARManagedObject
 	public int releaseObject()
 	{
 		int ret=super.releaseObject();
-		if(ret==0 && this.ref_status!=null)
+		if(ret==0)
 		{
-			this.ref_status.releaseObject();
-			this.ref_status=null;
+			//参照ターゲットのタグをクリア
+			this.ref_ttarget.tag=null;
 		}
 		return ret;
-	}	
-
+	}
 }

@@ -99,7 +99,7 @@ public class NyARTracker
 		len_of_new=i_trackdata.newtarget.getLength();
 		for(int i=len_of_new-1;i>=0;i--){
 			NyARTarget t=array_of_new[i];
-			if(t.age>UPGPARAM_NEW_TO_IGNORE_EXPIRE)
+			if(t.status_age>UPGPARAM_NEW_TO_IGNORE_EXPIRE)
 			{
 				//一定の期間が経過したら、ignoreへ遷移
 				if(i_trackdata.igtarget.push(t)!=null){
@@ -164,7 +164,7 @@ public class NyARTracker
 		int len_of_ign=i_trackdata.igtarget.getLength();
 		for(int i=len_of_ign-1;i>=0;i--){
 			NyARTarget t=array_of_ign[i];
-			if(t.age>IGNPARAM_EXPIRE_COUNT)
+			if(t.status_age>IGNPARAM_EXPIRE_COUNT)
 			{
 				//オブジェクトのリリース
 //System.out.println("lost:ignore:"+t.serial+":"+t.last_update);
@@ -190,7 +190,7 @@ public class NyARTracker
 		len_of_cont=i_trackdata.coordtarget.getLength();
 		for(int i=len_of_cont-1;i>=0;i--){
 			NyARTarget t=array_of_new[i];
-			if(t.age>UPGPARAM_CONTOUR_TO_RECT_EXPIRE)
+			if(t.status_age>UPGPARAM_CONTOUR_TO_RECT_EXPIRE)
 			{
 				//一定の期間が経過したら、ignoreへ遷移
 				if(i_trackdata.igtarget.push(t)!=null){
@@ -240,7 +240,7 @@ public class NyARTracker
 		len_of_rect=i_trackdata.recttarget.getLength();
 		for(int i=len_of_rect-1;i>=0;i--){
 			NyARTarget t=array_of_new[i];
-			if(clock-t.last_update>20)
+			if(clock-t.last_update_tick>20)
 			{
 				//一定の期間が経過したら、ignoreへ遷移
 				if(i_trackdata.igtarget.push(t)!=null){
@@ -279,13 +279,13 @@ public class NyARTracker
 			d_ptr=igs[i];
 			int sample_index=this._index[i];
 			//年齢を加算
-			d_ptr.age++;
+			d_ptr.status_age++;
 			if(sample_index<0){
 				//このターゲットに合致するアイテムは無い。
 				continue;
 			}
 			d_ptr.setSampleArea(source[sample_index]);
-			d_ptr.last_update=clock;
+			d_ptr.last_update_tick=clock;
 		}
 	}		
 	/**
@@ -308,7 +308,7 @@ public class NyARTracker
 			d_ptr=nes[i];
 			int sample_index=this._index[i];
 			//年齢を加算
-			d_ptr.age++;
+			d_ptr.status_age++;
 			if(sample_index<0){
 				//このターゲットに合致するアイテムは無い。
 				((NyARNewTargetStatus)d_ptr.ref_status).setValue(null);
@@ -327,7 +327,7 @@ public class NyARTracker
 			
 			//ターゲットの更新
 			d_ptr.setSampleArea(s);
-			d_ptr.last_update=clock;
+			d_ptr.last_update_tick=clock;
 
 			//ref_statusのセットと切り替え(失敗時の上書き防止のためにダブルバッファ化)
 			d_ptr.ref_status.releaseObject();
@@ -356,7 +356,7 @@ public class NyARTracker
 			d_ptr=crd[i];
 			int sample_index=this._index[i];
 			//年齢を加算
-			d_ptr.age++;
+			d_ptr.status_age++;
 			if(sample_index<0){
 				//このターゲットに合致するアイテムは無い。
 				continue;
@@ -375,7 +375,7 @@ public class NyARTracker
 			}
 //[DEBUG:]st.vecpos.margeResembleCoordIgnoreOrder();
 			d_ptr.setSampleArea(s);
-			d_ptr.last_update=clock;
+			d_ptr.last_update_tick=clock;
 			//ref_statusの切り替え
 			d_ptr.ref_status.releaseObject();
 			d_ptr.ref_status=st;
@@ -396,7 +396,7 @@ public class NyARTracker
 		for(int i=len_of_rct-1;i>=0;i--){
 			d_ptr=rct[i];
 			//年齢を加算
-			d_ptr.age++;
+			d_ptr.status_age++;
 			//新しいステータスの作成
 			NyARRectTargetStatus st=i_trackdata.rect_pool.newObject();
 			if(st==null){
@@ -415,7 +415,7 @@ public class NyARTracker
 			}
 			d_ptr.ref_status.releaseObject();
 			d_ptr.ref_status=st;
-			d_ptr.last_update=clock;
+			d_ptr.last_update_tick=clock;
 
 		}		
 	}
