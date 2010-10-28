@@ -30,6 +30,8 @@
  */
 package jp.nyatla.nyartoolkit.core.types;
 
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
+
 /**
  * データ型です。
  * 2次元の浮動小数点方の点を格納します。
@@ -74,7 +76,7 @@ public class NyARDoublePoint2d
 	public static double exteriorProduct3Point(NyARDoublePoint2d p1,NyARDoublePoint2d p2,NyARDoublePoint2d p3)
 	{
 		return (p2.x-p1.x)*(p3.y-p2.y)-(p2.y-p1.y)*(p3.x-p2.x);
-	}	
+	}
 	/**
 	 * コンストラクタです。
 	 */

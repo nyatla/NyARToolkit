@@ -38,7 +38,7 @@ public class NyARVecLinear2d
 		this.y=i_value.y;
 	}
 	/**
-	 * このベクトルと指定したベクトルの作るCos値を返します。
+	 * このベクトルと指定した直線が作るCos値を返します。
 	 * @param i_v1
 	 * @return
 	 */
@@ -52,16 +52,16 @@ public class NyARVecLinear2d
 		return d;
 	}
 	/**
-	 * 個のベクトルと指定したベクトルの作るCos値を返します。
-	 * @param i_v2_x
-	 * @param i_v2_y
+	 * このベクトルと指定したベクトルが作るCos値を返します。
+	 * @param i_dx
+	 * @param i_dy
 	 * @return
 	 */
-	public final double getVecCos(double i_v2_x,double i_v2_y)
+	public final double getVecCos(double i_dx,double i_dy)
 	{
 		double x1=this.dx;
 		double y1=this.dy;
-		double d=(x1*i_v2_x+y1*i_v2_y)/Math.sqrt((x1*x1+y1*y1)*(i_v2_x*i_v2_x+i_v2_y*i_v2_y));
+		double d=(x1*i_dx+y1*i_dy)/Math.sqrt((x1*x1+y1*y1)*(i_dx*i_dx+i_dy*i_dy));
 		return d;
 	}
 	public final double getAbsVecCos(double i_v2_x,double i_v2_y)
@@ -70,7 +70,19 @@ public class NyARVecLinear2d
 		double y1=this.dy;
 		double d=(x1*i_v2_x+y1*i_v2_y)/Math.sqrt((x1*x1+y1*y1)*(i_v2_x*i_v2_x+i_v2_y*i_v2_y));
 		return d>=0?d:-d;
-	}	
+	}
+	/**
+	 * このベクトルと、i_pos1とi_pos2を結ぶ線分が作るcos値の絶対値を返します。
+	 * @param i_pos1
+	 * @param i_pos2
+	 * @return
+	 */
+	public final double getAbsVecCos(NyARDoublePoint2d i_pos1,NyARDoublePoint2d i_pos2)
+	{
+		double d=getVecCos(i_pos2.x-i_pos1.x,i_pos2.y-i_pos1.y);
+		return d>=0?d:-d;
+	}
+	
 	/**
 	 * 交点を求めます。
 	 * @param i_vector1

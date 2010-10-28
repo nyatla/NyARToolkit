@@ -86,36 +86,7 @@ public class NyARSquare
     	}
     	return min_index;
     }
-    /**
-     * 参照四角形に合せて頂点をマップして、その時の頂点距離の二乗誤差の和を返します。
-     * @param i_square
-     * @return
-     * 対応する頂点間の距離の二乗の合計値。
-     */
-    public int fitVertexToSquare(NyARSquare i_square)
-    {
-    	NyARDoublePoint2d[] a=this.sqvertex;
-    	NyARDoublePoint2d[] b=i_square.sqvertex;
-    	
-    	//頂点間の最低距離を計算
-    	int min_dist=0;
-    	int min_index=0;
-    	int xd,yd;
-    	for(int i=3;i>=0;i--){
-    		int d=0;
-    		for(int i2=3;i2>=0;i2--){
-    			xd= (int)(a[i2].x-b[(i2+i)%4].x);
-    			yd= (int)(a[i2].y-b[(i2+i)%4].y);
-    			d+=xd*xd+yd*yd;
-    		}
-    		if(min_dist>d){
-    			min_dist=d;
-    			min_index=i;
-    		}
-    	}
-    	this.rotateVertexL(min_index);
-    	return min_dist;
-    }    
+   
     
     
     /**
