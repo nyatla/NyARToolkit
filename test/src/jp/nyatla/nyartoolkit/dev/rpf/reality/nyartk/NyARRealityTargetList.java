@@ -10,6 +10,7 @@ public class NyARRealityTargetList<T extends NyARRealityTarget> extends NyARPoin
 	{
 		super.initInstance(i_max_target,(Class<T>)NyARRealityTarget.class);
 	}
+	
 	public final boolean moveToUnknownTarget(UnknowonTarget i_to,int i_index) throws NyARException
 	{
 		//入力制限
@@ -41,6 +42,18 @@ public class NyARRealityTargetList<T extends NyARRealityTarget> extends NyARPoin
 		}
 		this.removeIgnoreOrder(i_index);
 		ret.target_type=NyARRealityTarget.RT_DEAD;
+		return true;
+	}
+	public final boolean moveToRecallTarget(RecallTargetList i_to,int i_index) throws NyARException
+	{
+		//入力制限
+		NyARRealityTarget ret=i_to.push(this._items[i_index]);
+		if(ret==null){
+			return false;
+		}
+		//順序を守って削除(これは、recallから戻ってきたitemの積み直しのため)
+		this.remove(i_index);
+		ret.target_type=NyARRealityTarget.RT_RECALL;
 		return true;
 	}
 }

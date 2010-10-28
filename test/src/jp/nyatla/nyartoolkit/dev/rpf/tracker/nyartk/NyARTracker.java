@@ -92,34 +92,21 @@ public class NyARTracker
 	 */
 	private void upgradeNewTarget(LrlsGsRaster i_base_raster,NyARTrackerOut i_trackdata) throws NyARException
 	{
-		long clock=this._clock;
-		int len_of_new;
 		NyARTarget[] array_of_new=i_trackdata.newtarget.getArray();
 		
-		len_of_new=i_trackdata.newtarget.getLength();
-		for(int i=len_of_new-1;i>=0;i--){
-			NyARTarget t=array_of_new[i];
-			if(t.status_age>UPGPARAM_NEW_TO_IGNORE_EXPIRE)
+		for(int i=i_trackdata.newtarget.getLength()-1;i>=0;i--){
+			if(array_of_new[i].status_age>UPGPARAM_NEW_TO_IGNORE_EXPIRE)
 			{
-				//一定の期間が経過したら、ignoreへ遷移
-				if(i_trackdata.igtarget.push(t)!=null){
-					//成功。ステータスの切り替えて、このターゲットのリストから外す。
-					t.setIgnoreStatus(clock);
-					i_trackdata.newtarget.removeIgnoreOrder(i);	
-//System.out.println("drop:new->ignore"+t.serial+":"+t.last_update);
-				}else{
-					//追加失敗→何もせず
-					break;
+				if(!i_trackdata.newtarget.moveToIgnore(i_trackdata.igtarget,i)){
+					break;//newからignoreへの遷移に失敗したら、そこまで。
 				}
+				//System.out.println("drop:new->ignore"+t.serial+":"+t.last_update);
 			}
 		}
-		//リストの編集をしたので再度長さを取得
-		len_of_new=i_trackdata.newtarget.getLength();
 		//newtargetのいくつかをcoordtargetへ遷移。
-		for(int i=len_of_new-1;i>=0;i--)
+		for(int i=i_trackdata.newtarget.getLength()-1;i>=0;i--)
 		{
-			NyARTarget t=array_of_new[i];
-			NyARNewTargetStatus st=(NyARNewTargetStatus)t.ref_status;
+			NyARNewTargetStatus st=(NyARNewTargetStatus)array_of_new[i].ref_status;
 			//このターゲットをアップグレードできるか確認
 			if(st.current_sampleout==null){
 				//直近のsampleoutが無い。->なにもできない。
@@ -133,27 +120,20 @@ public class NyARTracker
 				break;
 			}
 			//ステータスの値をセット
-			if(!c.setValue(st.current_sampleout)){
+			if(!c.setValue(st.current_sampleout))
+			{
 				//値のセットに失敗したので、Ignoreへ遷移(この対象は輪郭認識できない)
-				if(i_trackdata.igtarget.push(t)!=null){
-					t.setIgnoreStatus(clock);
-					i_trackdata.newtarget.removeIgnoreOrder(i);	
-//System.out.println("drop:new->ignore[contoure failed.]"+t.serial+":"+t.last_update);
+				if(i_trackdata.newtarget.moveToIgnore(i_trackdata.igtarget,i)){
+					//System.out.println("drop:new->ignore[contoure failed.]"+t.serial+":"+t.last_update);
 				}
 				c.releaseObject();
 				continue;
 			}
-			if(i_trackdata.coordtarget.push(t)==null){
-				//追加失敗。生成したステータスを破棄
+			if(!i_trackdata.newtarget.moveToCoord(i_trackdata.coordtarget,i,c)){
 				c.releaseObject();
 				break;
-			}else{
-				//成功。ステータスを切り替えて、このターゲットリストから外す。
-				t.setCntoureStatus(c);
-				i_trackdata.newtarget.removeIgnoreOrder(i);
-//System.out.println("upgr:new->coord"+t.serial+":"+t.last_update);
-				
 			}
+//System.out.println("upgr:new->coord"+t.serial+":"+t.last_update);
 		}
 	}
 	
@@ -184,30 +164,21 @@ public class NyARTracker
 	 */
 	private void upgradeContourTarget(NyARTrackerOut i_trackdata) throws NyARException
 	{
-		long clock=this._clock;
-		int len_of_cont;
-		NyARTarget[] array_of_new=i_trackdata.coordtarget.getArray();
-		len_of_cont=i_trackdata.coordtarget.getLength();
-		for(int i=len_of_cont-1;i>=0;i--){
-			NyARTarget t=array_of_new[i];
-			if(t.status_age>UPGPARAM_CONTOUR_TO_RECT_EXPIRE)
+		NyARTarget[] array_of_coord=i_trackdata.coordtarget.getArray();
+		for(int i=i_trackdata.coordtarget.getLength()-1;i>=0;i--){
+			if(array_of_coord[i].status_age>UPGPARAM_CONTOUR_TO_RECT_EXPIRE)
 			{
 				//一定の期間が経過したら、ignoreへ遷移
-				if(i_trackdata.igtarget.push(t)!=null){
-					//成功。ステータスの切り替えて、このターゲットのリストから外す。
-					t.setIgnoreStatus(clock);
-					i_trackdata.coordtarget.removeIgnoreOrder(i);	
-				}else{
-					//追加失敗→何もせず
-					break;
+				if(i_trackdata.coordtarget.moveToIgnore(i_trackdata.igtarget,i)){
+					continue;
 				}
+				break;//失敗
 			}
 		}
 		//リストの編集をしたので再度長さを取得
-		len_of_cont=i_trackdata.coordtarget.getLength();
-		for(int i=len_of_cont-1;i>=0;i--)
+		for(int i=i_trackdata.coordtarget.getLength()-1;i>=0;i--)
 		{
-			NyARTarget t=array_of_new[i];
+			NyARTarget t=array_of_coord[i];
 			NyARContourTargetStatus st=(NyARContourTargetStatus)t.ref_status;
 			//coordステータスを生成
 			NyARRectTargetStatus c=i_trackdata.rect_pool.newObject();
@@ -221,37 +192,26 @@ public class NyARTracker
 				c.releaseObject();
 				continue;
 			}
-			if(i_trackdata.recttarget.push(t)==null){
-				//追加失敗。生成したステータスを破棄
+			if(!i_trackdata.coordtarget.moveToRect(i_trackdata.recttarget,i,c)){
+				//ターゲットいっぱい？
 				c.releaseObject();
 				break;
 			}
-			//成功。ステータスを切り替えて、このターゲットリストから外す。
-			//メモ：stは既にc.setValueで参照+1されているので、setRectStatusが-1してもOK
-			t.setRectStatus(c);
-			i_trackdata.coordtarget.removeIgnoreOrder(i);
 		}
 	}	
 	private void upgradeRectTarget(NyARTrackerOut i_trackdata) throws NyARException
 	{
 		long clock=this._clock;
-		int len_of_rect;
-		NyARTarget[] array_of_new=i_trackdata.recttarget.getArray();
-		len_of_rect=i_trackdata.recttarget.getLength();
-		for(int i=len_of_rect-1;i>=0;i--){
-			NyARTarget t=array_of_new[i];
-			if(clock-t.last_update_tick>20)
+		NyARTarget[] array_of_rect=i_trackdata.recttarget.getArray();
+		for(int i=i_trackdata.recttarget.getLength()-1;i>=0;i--){
+			if(clock-array_of_rect[i].last_update_tick>20)
 			{
-				//一定の期間が経過したら、ignoreへ遷移
-				if(i_trackdata.igtarget.push(t)!=null){
-					//成功。ステータスの切り替えて、このターゲットのリストから外す。
-					t.setIgnoreStatus(clock);
-					i_trackdata.recttarget.removeIgnoreOrder(i);	
-				}else{
-					//追加失敗→何もせず
-//System.out.println("upgradeRectTarget:ignore pool full");
-					break;
+				//一定の期間updateができなければ、ignoreへ遷移
+				if(i_trackdata.recttarget.moveToIgnore(i_trackdata.igtarget,i)){
+					continue;
 				}
+				//System.out.println("upgradeRectTarget:ignore pool full");
+				break;
 			}
 		}
 	}	

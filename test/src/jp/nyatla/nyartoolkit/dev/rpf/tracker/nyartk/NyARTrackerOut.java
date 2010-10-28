@@ -38,6 +38,10 @@ class NyARNewTargetList extends NyARTargetList<NyARTarget>
 	{
 		super(iMaxTarget);
 	}
+
+
+
+
 }
 
 

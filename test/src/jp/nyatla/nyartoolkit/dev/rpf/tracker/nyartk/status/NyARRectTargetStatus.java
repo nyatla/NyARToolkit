@@ -26,7 +26,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	/**
 	 * 現在の矩形情報
 	 */
-	public NyARSquare square;
+	public NyARDoublePoint2d[] vertex=NyARDoublePoint2d.createArray(4);
 
 	/**
 	 * 予想した頂点速度の二乗値の合計
@@ -73,7 +73,6 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	{
 		super(i_pool._op_interface);
 		this._ref_my_pool=i_pool;
-		this.square=new NyARSquare();
 		this.detect_type=DT_SQINIT;
 	}
 
@@ -83,12 +82,12 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	 */
 	private final void setEstimateParam(NyARRectTargetStatus i_prev_param)
 	{
-		NyARDoublePoint2d[] vc_ptr=this.square.sqvertex;
+		NyARDoublePoint2d[] vc_ptr=this.vertex;
 		NyARDoublePoint2d[] ve_ptr=this.estimate_vertex;
 		int sum_of_vertex_sq_dist=0;
 		if(i_prev_param!=null){
 			//差分パラメータをセット
-			NyARDoublePoint2d[] vp=i_prev_param.square.sqvertex;
+			NyARDoublePoint2d[] vp=i_prev_param.vertex;
 			//頂点速度の計測
 			for(int i=3;i>=0;i--){
 				int x=(int)((vc_ptr[i].x-vp[i].x));
@@ -131,14 +130,14 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		//キーベクトルを取得
 		i_contour_status.vecpos.getKeyCoord(this._ref_my_pool._indexbuf);
 		//点に変換
-		NyARSquare this_sq=this.square;
-		if(!this._ref_my_pool._line_detect.line2SquareVertex(this._ref_my_pool._indexbuf,this_sq.sqvertex)){
+		NyARDoublePoint2d[] this_vx=this.vertex;
+		if(!this._ref_my_pool._line_detect.line2SquareVertex(this._ref_my_pool._indexbuf,this_vx)){
 			return false;
 		}
-		//点から直線を再計算
-		for(int i=3;i>=0;i--){
-			this_sq.line[i].makeLinearWithNormalize(this_sq.sqvertex[i],this_sq.sqvertex[(i+1)%4]);
-		}
+//		//点から直線を再計算
+//		for(int i=3;i>=0;i--){
+//			this_sq.line[i].makeLinearWithNormalize(this_sq.sqvertex[i],this_sq.sqvertex[(i+1)%4]);
+//		}
 		this.setEstimateParam(null);
 		if(!checkInitialRectCondition(i_sample_area))
 		{
@@ -170,16 +169,12 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		//キーベクトルを取得
 		vecpos.getKeyCoord(this._ref_my_pool._indexbuf);
 		//点に変換
-		NyARSquare this_sq=this.square;
-		if(!this._ref_my_pool._line_detect.line2SquareVertex(this._ref_my_pool._indexbuf,this_sq.sqvertex)){
+		NyARDoublePoint2d[] this_vx=this.vertex;
+		if(!this._ref_my_pool._line_detect.line2SquareVertex(this._ref_my_pool._indexbuf,this_vx)){
 			return false;
 		}
-		//点から直線を再計算
-		for(int i=3;i>=0;i--){
-			this_sq.line[i].makeLinearWithNormalize(this_sq.sqvertex[i],this_sq.sqvertex[(i+1)%4]);
-		}
 		//頂点並び順の調整
-		this_sq.rotateVertexL(i_prev_status.square.checkVertexShiftValue(this_sq));		
+		rotateVertexL(this.vertex,checkVertexShiftValue(i_prev_status.vertex,this.vertex));	
 
 		//パラメタチェック
 		if(!checkDeilyRectCondition(i_prev_status)){
@@ -189,7 +184,6 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		setEstimateParam(i_prev_status);
 		return true;
 	}
-
 	/**
 	 * 輪郭からの単独検出
 	 * @param i_raster
@@ -219,23 +213,23 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		}
 		
 		//ライントレースの試行
-		NyARSquare sq=this.square;
-		if(!traceSquare(i_raster.getVectorReader(),d,i_prev_status)){
+
+		NyARLinear[] sh_l=this._ref_my_pool._line;
+		if(!traceSquareLine(i_raster.getVectorReader(),d,i_prev_status,sh_l)){
 			//System.out.println(">>>>>>>>>>>>>"+v_ave_limit+","+d);
 			return false;
 		}else{
 		}
-
 		//4点抽出
 		for(int i=3;i>=0;i--){
-			if(!sq.line[i].crossPos(sq.line[(i + 3) % 4],sq.sqvertex[i])){
+			if(!sh_l[i].crossPos(sh_l[(i + 3) % 4],this.vertex[i])){
 				//四角が作れない。
 				return false;
 			}
 		}		
 
 		//頂点並び順の調整
-		this.square.rotateVertexL(i_prev_status.square.checkVertexShiftValue(this.square));		
+		rotateVertexL(this.vertex,checkVertexShiftValue(i_prev_status.vertex,this.vertex));	
 		//差分パラメータのセット
 		setEstimateParam(i_prev_status);
 		return true;
@@ -307,11 +301,11 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	 */
 	private boolean checkInitialRectCondition(NyARIntRect i_sample_area)
 	{
-		NyARDoublePoint2d[] v=this.square.sqvertex;
+		NyARDoublePoint2d[] this_vx=this.vertex;
 
 		//検出した四角形の対角点が検出エリア内か？
-		int cx=(int)(v[0].x+v[1].x+v[2].x+v[3].x)/4;
-		int cy=(int)(v[0].y+v[1].y+v[2].y+v[3].y)/4;
+		int cx=(int)(this_vx[0].x+this_vx[1].x+this_vx[2].x+this_vx[3].x)/4;
+		int cy=(int)(this_vx[0].y+this_vx[1].y+this_vx[2].y+this_vx[3].y)/4;
 		if(!i_sample_area.isInnerPoint(cx,cy)){
 			return false;
 		}
@@ -319,7 +313,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		int max=Integer.MIN_VALUE;
 		int min=Integer.MAX_VALUE;
 		for(int i=0;i<4;i++){
-			int t=(int)v[i].sqNorm(v[(i+1)%4]);
+			int t=(int)this_vx[i].sqNorm(this_vx[(i+1)%4]);
 			if(t>max){max=t;}
 			if(t<min){min=t;}
 		}
@@ -344,13 +338,13 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	 */
 	private boolean checkDeilyRectCondition(NyARRectTargetStatus i_prev_st)
 	{
-		NyARDoublePoint2d[] v=this.square.sqvertex;
+		NyARDoublePoint2d[] this_vx=this.vertex;
 
 		//一番長い辺と短い辺の比を確認(10倍の比があったらなんか変)
 		int max=Integer.MIN_VALUE;
 		int min=Integer.MAX_VALUE;
 		for(int i=0;i<4;i++){
-			int t=(int)v[i].sqNorm(v[(i+1)%4]);
+			int t=(int)this_vx[i].sqNorm(this_vx[(i+1)%4]);
 			if(t>max){max=t;}
 			if(t<min){min=t;}
 		}
@@ -363,7 +357,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 			return false;
 		}
 		//移動距離平均より大きく剥離した点が無いか確認
-		return this._ref_my_pool.checkLargeDiff(this.square.sqvertex,i_prev_st.square.sqvertex);
+		return this._ref_my_pool.checkLargeDiff(this_vx,i_prev_st.vertex);
 	}
 
 	/**
@@ -374,7 +368,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	 * @return
 	 * @throws NyARException
 	 */
-	private boolean traceSquare(NyARVectorReader_INT1D_GRAY_8 i_reader,int i_edge_size,NyARRectTargetStatus i_prevsq) throws NyARException
+	private boolean traceSquareLine(NyARVectorReader_INT1D_GRAY_8 i_reader,int i_edge_size,NyARRectTargetStatus i_prevsq,NyARLinear[] o_line) throws NyARException
 	{
 		NyARDoublePoint2d p1,p2;
 		VecLinearCoordinates vecpos=this._ref_my_pool._vecpos;
@@ -402,16 +396,16 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 //			}
 //@todo:パラメタ調整
 			//角度規制(元の線分との角度を確認)
-			if(vecpos.items[vid].getAbsVecCos(-i_prevsq.square.line[i].b,i_prevsq.square.line[i].a)<NyARMath.COS_DEG_8){
+			if(vecpos.items[vid].getAbsVecCos(i_prevsq.vertex[i],i_prevsq.vertex[(i+1)%4])<NyARMath.COS_DEG_8){
 				//System.out.println("CODE1");
 				return false;
 			}
 //@todo:パラメタ調整
 			//予想点からさほど外れていない点であるか。(検出点の移動距離を計算する。)
 			double dist;
-			dist=vecpos.items[vid].sqDistBySegmentLineEdge(i_prevsq.square.sqvertex[i],i_prevsq.square.sqvertex[i%4]);
+			dist=vecpos.items[vid].sqDistBySegmentLineEdge(i_prevsq.vertex[i],i_prevsq.vertex[i]);
 			if(dist<dist_limit){
-				this.square.line[i].setVectorWithNormalize(vecpos.items[vid]);
+				o_line[i].setVectorWithNormalize(vecpos.items[vid]);
 			}else{
 				//System.out.println("CODE2:"+dist+","+dist_limit);
 				return false;
@@ -421,4 +415,64 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		}
 		return true;
 	}
+    /**
+     * 頂点同士の距離から、頂点のシフト量を返します。この関数は、よく似た２つの矩形の頂点同士の対応を取るために使用します。
+     * @param i_square
+     * 比較対象の矩形
+     * @return
+     * シフト量を数値で返します。
+     * シフト量はthis-i_squareです。1の場合、this.sqvertex[0]とi_square.sqvertex[1]が対応点になる(shift量1)であることを示します。
+     */
+    private final static int checkVertexShiftValue(NyARDoublePoint2d[] i_vertex1,NyARDoublePoint2d[] i_vertex2)
+    {
+    	assert(i_vertex1.length==4 && i_vertex2.length==4);
+    	//3-0番目
+    	int min_dist=Integer.MAX_VALUE;
+    	int min_index=0;
+    	int xd,yd;
+    	for(int i=3;i>=0;i--){
+    		int d=0;
+    		for(int i2=3;i2>=0;i2--){
+    			xd= (int)(i_vertex1[i2].x-i_vertex2[(i2+i)%4].x);
+    			yd= (int)(i_vertex1[i2].y-i_vertex2[(i2+i)%4].y);
+    			d+=xd*xd+yd*yd;
+    		}
+    		if(min_dist>d){
+    			min_dist=d;
+    			min_index=i;
+    		}
+    	}
+    	return min_index;
+    }
+    /**
+     * 4とnの最大公約数テーブル
+     */
+    private final static int[] _gcd_table4={-1,1,2,1};
+    /**
+     * 頂点を左回転して、矩形を回転させます。
+     * @param i_shift
+     */
+    private final void rotateVertexL(NyARDoublePoint2d[] i_vertex,int i_shift)
+    {
+    	assert(i_shift<4);
+    	NyARDoublePoint2d vertext;
+    	if(i_shift==0){
+    		return;
+    	}
+    	int t1,t2;
+    	int d, i, j, mk;
+	    int ll=4-i_shift;
+	    d = _gcd_table4[ll];//NyMath.gcn(4,ll);
+	    mk = (4-ll) % 4;
+	    for (i = 0; i < d; i++) {
+	    	vertext=i_vertex[i];
+	        for (j = 1; j < 4/d; j++) {
+	            t1=(i + (j-1)*mk) % 4;
+	            t2=(i + j*mk) % 4;
+	            i_vertex[t1]=i_vertex[t2];
+	        }
+	        t1=(i + ll) % 4;
+	        i_vertex[t1]=vertext;
+	    }
+    }    
 }

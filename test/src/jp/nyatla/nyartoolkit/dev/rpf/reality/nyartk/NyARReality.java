@@ -1,6 +1,7 @@
 package jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.*;
 
 class RecallTargetList extends NyARRealityTargetList<NyARRealityTarget>
@@ -18,7 +19,6 @@ class KnowonTarget extends NyARRealityTargetList<NyARRealityTarget>
 	{
 		super(iMaxTarget);
 	}
-	
 }
 class UnknowonTarget extends NyARRealityTargetList<NyARRealityTarget>
 {
@@ -67,7 +67,7 @@ public class NyARReality
 	{
 		return false;
 	}
-	public void upgradeLists(long i_reality_tick)
+	public void upgradeLists(long i_reality_tick) throws NyARException
 	{
 		NyARRealityTarget[] rt_array;
 		//deadターゲットの削除
@@ -87,44 +87,41 @@ public class NyARReality
 				}
 			}
 		}
-		//recallからの遷移。(->known or unknown)
-		rt_array=this.recall_target.getArray();
-		for(int i=this.recall_target.getLength()-1;i>=0;i--){
+		//unknownからの遷移。(->known or unknown or recall)
+		rt_array=this.unknown_target.getArray();
+		for(int i=this.unknown_target.getLength()-1;i>=0;i--){
 			if(!isTargetAlive(rt_array[i])){
-				this.recall_target.moveToDeadTarget(this.dead_target,i);
+				this.unknown_target.moveToDeadTarget(this.dead_target,i);
 				continue;
 			}
 			switch(this._db.recall(rt_array[i]))
 			{
 			case NyARRealityDB.RET_RECALL_FAILED:
-				//recallに失敗したらunknownへ戻す。
-				this.recall_target.moveToUnknownTarget(this.unknown_target, i);
+				//recallに失敗したら、unknownのローテーション?(今はとりあえずしない。)
 				continue;
 			case NyARRealityDB.RET_RECALL_SUCCESS:
-				this.recall_target.moveToKnownTarget(this.known_target,i);
+				//成功したら、knownターゲット行き
+				this.unknown_target.moveToKnownTarget(this.known_target,i);
 				continue;
 			default:
 				//非同期系は今実装してないから。
 				NyARException.notImplement();
 			}
 		}		
-		//unknownからの遷移。(->dead or recall)
-		rt_array=this.unknown_target.getArray();
-		int len=this.unknown_target.getLength();
-		for(int i=0;i<len;i++){
+		//recallからの遷移。(->dead or unknown)
+		rt_array=this.recall_target.getArray();
+		for(int i=0;i<this.recall_target.getLength();i++){
 			//dead遷移-ターゲットのdead条件を確認
 			if(!isUnknownTargetAlive(rt_array[i],i_reality_tick)){
-				this.unknown_target.moveToDeadTarget(this.dead_target,i);
+				this.recall_target.moveToDeadTarget(this.dead_target,i);
 				continue;
 			}
-			//recall遷移
-			if(this.unknown_target.recall_target.push(rt_array[i])==null){
+			if(this.recall_target.moveToUnknownTarget(this.unknown_target,i)){
 				continue;
 			}
-			//順序を守って削除(これは、recallから戻ってきたitemの積み直しのため)
-			this.unknown_target.remove(i);
 		}
 	}
+	protected INyARTransMat _transmat;
 	public void updateLists(long i_reality_tick)
 	{
 		//リアリティターゲットを更新
@@ -135,6 +132,7 @@ public class NyARReality
 		}
 		rt_array=this.known_target.getArray();
 		for(int i=this.known_target.getLength()-1;i>=0;i--){
+			
 			rt_array[i].target_age++;
 		}
 		rt_array=this.unknown_target.getArray();
@@ -142,6 +140,15 @@ public class NyARReality
 			rt_array[i].target_age++;
 		}
 	}
+	/**
+	 * 指定したIDのターゲットを無視します。
+	 * ここに指定できるターゲットは、knownターゲットリストにあるものだけです。
+	 * @return
+	 */
+	public boolean deleteTarget(long i_serial,int i_tick)
+	{
+	}
+	
 	
 	public void progress() throws NyARException
 	{
@@ -170,37 +177,4 @@ public class NyARReality
 		upgradeLists(tick);
 
 	}
-
-	/**
-	 * 非同期recallに成功した。指定したターゲットを遷移させることができる。
-	 * @param i_serial
-	 */
-	public void onAsyncSyncRrecallSuccess(long i_serial)
-	{
-		synchronized(this){
-			//そのターゲットを探して、遷移させる。
-		}
-	}
-	/**
-	 * 非同期recallに失敗した。詳細データは不明
-	 * @param i_serial
-	 */
-	public void onAsyncSyncRrecallFailed(long i_serial)
-	{
-		synchronized(this){
-			//そのターゲットを探して、遷移させる。
-		}
-	}
-	/**
-	 * 非同期recallの継続の為、指定したデータをライブラリに送信するべき
-	 * 現在の2D画像、射影変換画像、3D平面、etc...
-	 * @param i_serial
-	 */
-	public void onAsyncSyncRrecallFailed(long i_serial)
-	{
-		synchronized(this){
-			//そのターゲットを探して、遷移させる。
-		}
-	}
-
 }

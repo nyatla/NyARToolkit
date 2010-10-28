@@ -3,6 +3,7 @@ package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
+import jp.nyatla.nyartoolkit.core.types.NyARLinear;
 import jp.nyatla.nyartoolkit.dev.rpf.utils.LineBaseVertexDetector;
 import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObjectPool;
 import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinates;
@@ -18,6 +19,7 @@ public class NyARRectTargetStatusPool extends NyARManagedObjectPool<NyARRectTarg
 	public LineBaseVertexDetector _line_detect=new LineBaseVertexDetector();
 	public VecLinearCoordinatesOperator _vecpos_op=new VecLinearCoordinatesOperator(); 
 	public VecLinearCoordinates.NyARVecLinearPoint[] _indexbuf=new VecLinearCoordinates.NyARVecLinearPoint[4];
+	public NyARLinear[] _line=NyARLinear.createArray(4);
 	/**
 	 * @param i_size
 	 * スタックの最大サイズ
@@ -64,5 +66,6 @@ public class NyARRectTargetStatusPool extends NyARManagedObjectPool<NyARRectTarg
 		}
 		return true;
 	}	
-	
+
+
 }

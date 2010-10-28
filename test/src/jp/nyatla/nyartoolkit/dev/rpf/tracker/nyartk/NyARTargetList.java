@@ -3,6 +3,8 @@ package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.stack.*;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.*;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARContourTargetStatus;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARRectTargetStatus;
 
 public class NyARTargetList<T extends NyARTarget> extends NyARPointerStack<T>
 {
@@ -42,4 +44,41 @@ public class NyARTargetList<T extends NyARTarget> extends NyARPointerStack<T>
 		return -1;
 	}
 	
+	/**
+	 * リストのi_index番目のターゲットを、i_toへ遷移させます。
+	 * @param i_to
+	 * @param i_index
+	 * @param clock
+	 */
+	public final boolean moveToIgnore(NyARIgnoreTargetList i_to, int i_index)
+	{
+		NyARTarget t=this._items[i_index];
+		if(i_to.push(t)==null){
+			return false;
+		}
+		//成功。ステータスの切り替えて、このターゲットのリストから外す。
+		t.setIgnoreStatus();
+		this.removeIgnoreOrder(i_index);
+		return true;
+	}	
+	public final boolean moveToCoord(NyARCoordTargetList i_to, int i_index,NyARContourTargetStatus i_status)
+	{
+		NyARTarget t=this._items[i_index];
+		if(i_to.push(t)==null){
+			return false;
+		}
+		t.setCntoureStatus(i_status);
+		this.removeIgnoreOrder(i_index);
+		return true;
+	}
+	public final boolean moveToRect(NyARRectTargetList i_to, int i_index,NyARRectTargetStatus c)
+	{
+		NyARTarget t=this._items[i_index];
+		if(i_to.push(t)==null){
+			return false;
+		}
+		t.setRectStatus(c);
+		this.removeIgnoreOrder(i_index);
+		return true;
+	}
 }

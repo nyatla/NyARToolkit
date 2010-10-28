@@ -45,7 +45,7 @@ public class NyARRealityTarget extends NyARManagedObject
 	 */
 	public NyARDoubleMatrix44 transmat;
 	/**
-	 * このターゲットの大きさ
+	 * このターゲットの大きさ。3次元座標を計算するときに使います。
 	 */
 	public NyARRectOffset offset=new NyARRectOffset();
 	/**
@@ -64,6 +64,20 @@ public class NyARRealityTarget extends NyARManagedObject
 	public final static int RT_RECALL    =1;//思い出し中
 	public final static int RT_KNOWN     =2;//知ってるターゲット
 	public final static int RT_DEAD      =4;//間もなく死ぬターゲット
+	
+	/**
+	 * ライブラリから得たRealityパラメータ
+	 */
+	public Object detail;
+	
+	/**
+	 * ターゲットの情報アクセサ
+	 */
+	public void getPanelImage(){};
+	public void getAreaImage(){};
+	public void getMetadata(){};
+	public void getSquare(){};
+	public void get(){};
 	
 	
 	/**

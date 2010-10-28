@@ -89,10 +89,8 @@ public class NyARTarget extends NyARManagedObject
 	}
 	/**
 	 * このターゲットのステータスを、IgnoreStatusへ変更します。
-	 * @param i_clock
-	 * ステータスを遷移させた時刻です。
 	 */
-	public void setIgnoreStatus(long i_clock)
+	public void setIgnoreStatus()
 	{
 		//遷移元のステータスを制限すること！
 		assert(
@@ -101,7 +99,6 @@ public class NyARTarget extends NyARManagedObject
 				((this.ref_status instanceof NyARNewTargetStatus)== true)
 		);
 		this.ref_status.releaseObject();
-		this.last_update_tick=i_clock;
 		this.status_age=0;
 		this.ref_status=null;
 	}
