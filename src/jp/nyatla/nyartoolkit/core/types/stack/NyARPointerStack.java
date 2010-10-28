@@ -43,7 +43,6 @@ public class NyARPointerStack<T>
 	 * スタックに参照を積みます。
 	 * @return
 	 * 失敗するとnull
-	 * @throws NyARException
 	 */
 	public T push(T i_object)
 	{

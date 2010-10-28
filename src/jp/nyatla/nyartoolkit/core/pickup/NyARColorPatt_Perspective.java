@@ -28,7 +28,7 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core.utils.NyARPerspectiveParamGenerator_O1;
+import jp.nyatla.nyartoolkit.core.utils.*;
 
 
 /**
@@ -42,7 +42,7 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 	protected NyARIntPoint2d _pickup_lt=new NyARIntPoint2d();	
 	protected int _resolution;
 	protected NyARIntSize _size;
-	protected NyARPerspectiveParamGenerator_O1 _perspective_gen;
+	protected NyARPerspectiveParamGenerator _perspective_gen;
 	private NyARRgbPixelReader_INT1D_X8R8G8B8_32 _pixelreader;
 	private static final int LOCAL_LT=1;
 	private static final int BUFFER_FORMAT=NyARBufferType.INT1D_X8R8G8B8_32;

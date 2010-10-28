@@ -30,6 +30,7 @@ import jp.nyatla.nyartoolkit.core.types.matrix.*;
 
 /**
  * 遠近法を用いたPerspectiveパラメータを計算するクラスです。
+ * このクラスを最適化したクラスを使ってください。
  *
  */
 public class NyARPerspectiveParamGenerator
@@ -46,25 +47,21 @@ public class NyARPerspectiveParamGenerator
 		this._local_y=i_local_y;
 		return;
 	}
-
+	public boolean getParam(NyARIntPoint2d[] i_vertex,double[] o_param)throws NyARException
+	{
+		return this.getParam(i_vertex[0].x,i_vertex[0].y,i_vertex[1].x,i_vertex[1].y,i_vertex[2].x,i_vertex[2].y,i_vertex[3].x,i_vertex[3].y, o_param);
+	}
+	public boolean getParam(NyARDoublePoint2d[] i_vertex,double[] o_param)throws NyARException
+	{
+		return this.getParam(i_vertex[0].x,i_vertex[0].y,i_vertex[1].x,i_vertex[1].y,i_vertex[2].x,i_vertex[2].y,i_vertex[3].x,i_vertex[3].y, o_param);
+	}
 	
-	public boolean getParam(final NyARIntPoint2d[] i_vertex,double[] o_param)throws NyARException
+	private final boolean getParam(double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4,double[] o_param)throws NyARException
 	{
 		double ltx=this._local_x;
 		double lty=this._local_y;
 		double rbx=ltx+this._width;
-		double rby=lty+this._height;
-		double x1,x2,x3,x4;
-		double y1,y2,y3,y4;
-		x1=i_vertex[0].x;
-		x2=i_vertex[1].x;
-		x3=i_vertex[2].x;
-		x4=i_vertex[3].x;
-		y1=i_vertex[0].y;
-		y2=i_vertex[1].y;
-		y3=i_vertex[2].y;
-		y4=i_vertex[3].y;
-		
+		double rby=lty+this._height;		
 		
 		NyARDoubleMatrix44 mat_x=new NyARDoubleMatrix44();
 		mat_x.m00=ltx;	mat_x.m01=lty;	mat_x.m02=-ltx*x1;	mat_x.m03=-lty*x1;

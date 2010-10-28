@@ -83,4 +83,12 @@ public class NyARException extends Exception
 	{
 		throw new NyARException("Not Implement!");
 	}
+	/**
+	 * この関数は使用不能です。（別の関数を使用してください。）
+	 * @throws NyARException
+	 */
+	public static void unavailability() throws NyARException
+	{
+		throw new NyARException("unavailability!");
+	}
 }

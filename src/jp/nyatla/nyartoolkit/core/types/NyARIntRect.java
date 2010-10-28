@@ -192,7 +192,7 @@ public class NyARIntRect
 	 * @param i_rect2
 	 * @return
 	 */
-	public final int getSqDiagonalPointDiff(NyARIntRect i_rect2)
+	public final int sqDiagonalPointDiff(NyARIntRect i_rect2)
 	{
 		int w1,w2;
 		int ret;
