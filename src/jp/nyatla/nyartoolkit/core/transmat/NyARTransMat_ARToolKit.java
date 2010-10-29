@@ -90,7 +90,7 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 	 * @return
 	 * @throws NyARException
 	 */
-	public double transMat(final NyARSquare i_square,NyARRectOffset i_offset, NyARTransMatResult o_result_conv) throws NyARException
+	public void transMat(final NyARSquare i_square,NyARRectOffset i_offset, NyARTransMatResult o_result_conv) throws NyARException
 	{
 		final NyARDoublePoint3d trans=this.__transMat_trans;
 		
@@ -111,22 +111,22 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 		double err=this.optimize(this._rotmatrix, trans, this._transsolver,i_offset.vertex, vertex_2d);
 		
 		// マトリクスの保存
-		this.updateMatrixValue(this._rotmatrix,  trans,o_result_conv);
-		return err;
+		o_result_conv.setValue(this._rotmatrix,trans,err);
+		return;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see jp.nyatla.nyartoolkit.core.transmat.INyARTransMat#transMatContinue(jp.nyatla.nyartoolkit.core.NyARSquare, int, double, jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult)
 	 */
-	public double transMatContinue(NyARSquare i_square,NyARRectOffset i_offset,NyARTransMatResult i_prev_result,double i_prev_error_rate,NyARTransMatResult o_result) throws NyARException
-//	public double transMatContinue(NyARSquare i_square,NyARRectOffset i_offset, NyARTransMatResult o_result_conv) throws NyARException
+	public void transMatContinue(NyARSquare i_square,NyARRectOffset i_offset,NyARTransMatResult i_prev_result,NyARTransMatResult o_result) throws NyARException
 	{
 		final NyARDoublePoint3d trans=this.__transMat_trans;
 
 		// i_prev_resultが初期値なら、transMatで計算する。
 		if (!i_prev_result.has_value) {
-			return this.transMat(i_square, i_offset, o_result);
+			this.transMat(i_square, i_offset, o_result);
+			return;
 		}
 		
 		//平行移動量計算機に、2D座標系をセット
@@ -146,7 +146,7 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 		double err=this.optimize(this._rotmatrix, trans, this._transsolver,i_offset.vertex, vertex_2d);
 		
 		// マトリクスの保存
-		this.updateMatrixValue(this._rotmatrix,  trans,o_result);
+		o_result.setValue(this._rotmatrix,  trans, err);
 		
 		// エラー値が許容範囲でなければTransMatをやり直し
 		if (err > AR_GET_TRANS_CONT_MAT_MAX_FIT_ERROR) {
@@ -160,12 +160,12 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 			//エラー値が低かったら値を差換え
 			if (err2 < err) {
 				// 良い値が取れたら、差換え
-				this.updateMatrixValue(this._rotmatrix,  trans,o_result);
+				o_result.setValue(this._rotmatrix, trans, err2);
 			}
 			err=err2;
 		}
 		//エラー値保存
-		return err;
+		return;
 	}
 	private double optimize(NyARRotMatrix_ARToolKit io_rotmat,NyARDoublePoint3d io_transvec,INyARTransportVectorSolver i_solver,NyARDoublePoint3d[] i_offset_3d,NyARDoublePoint2d[] i_2d_vertex) throws NyARException
 	{
@@ -190,32 +190,5 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 		}
 		//System.out.println("END");
 		return err;
-	}	
-	/**
-	 * パラメータで変換行列を更新します。
-	 * 
-	 * @param i_rot
-	 * @param i_off
-	 * @param i_trans
-	 */
-	public void updateMatrixValue(NyARRotMatrix i_rot,NyARDoublePoint3d i_trans,NyARTransMatResult o_result)
-	{
-		o_result.m00=i_rot.m00;
-		o_result.m01=i_rot.m01;
-		o_result.m02=i_rot.m02;
-		o_result.m03=i_trans.x;
-
-		o_result.m10 = i_rot.m10;
-		o_result.m11 = i_rot.m11;
-		o_result.m12 = i_rot.m12;
-		o_result.m13 = i_trans.y;
-
-		o_result.m20 = i_rot.m20;
-		o_result.m21 = i_rot.m21;
-		o_result.m22 = i_rot.m22;
-		o_result.m23 = i_trans.z;
-
-		o_result.has_value = true;
-		return;
 	}	
 }

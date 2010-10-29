@@ -1,6 +1,8 @@
 package jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk;
 
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.transmat.NyARRectOffset;
+import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
@@ -43,7 +45,7 @@ public class NyARRealityTarget extends NyARManagedObject
 	/**
 	 * このターゲットの位置と座標
 	 */
-	public NyARDoubleMatrix44 transmat;
+	public NyARTransMatResult transmat;
 	/**
 	 * このターゲットの大きさ。3次元座標を計算するときに使います。
 	 */
@@ -52,6 +54,8 @@ public class NyARRealityTarget extends NyARManagedObject
 	 * このターゲットが参照しているトラックターゲット
 	 */
 	public NyARTarget ref_ttarget;
+	
+	public NyARSquare ideal_square;
 	
 	/**
 	 * このターゲットの情報タイプ

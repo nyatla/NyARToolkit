@@ -18,16 +18,16 @@ public class NyARRealityTargetList<T extends NyARRealityTarget> extends NyARPoin
 	 * @return
 	 * @throws NyARException
 	 */
-	public final boolean moveTarget(NyARRealityTargetList<T> i_to,int i_index,int i_new_type) throws NyARException
+	public final NyARRealityTarget moveTarget(NyARRealityTargetList<T> i_to,int i_index,int i_new_type) throws NyARException
 	{
 		//入力制限
 		NyARRealityTarget ret=i_to.push(this._items[i_index]);
 		if(ret==null){
-			return false;
+			return null;
 		}
 		this.remove(i_index);
 		ret.target_type=i_new_type;
-		return true;
+		return ret;
 	}
 	/**
 	 * i_index番目のターゲットを、i_toのリストへ移動します。
@@ -38,27 +38,31 @@ public class NyARRealityTargetList<T extends NyARRealityTarget> extends NyARPoin
 	 * @return
 	 * @throws NyARException
 	 */
-	public final boolean moveTargetNoOrder(NyARRealityTargetList<T> i_to,int i_index,int i_new_type) throws NyARException
+	public final NyARRealityTarget moveTargetNoOrder(NyARRealityTargetList<T> i_to,int i_index,int i_new_type) throws NyARException
 	{
 		//入力制限
 		NyARRealityTarget ret=i_to.push(this._items[i_index]);
 		if(ret==null){
-			return false;
+			return null;
 		}
 		this.removeIgnoreOrder(i_index);
 		ret.target_type=i_new_type;
-		return true;
+		return ret;
 	}
-	private final int getIndexBySerial(int i_serial)
+	/**
+	 * シリアルIDがi_serialに一致するターゲットのインデクス番号を返します。
+	 * @param i_serial
+	 * @return
+	 * @throws NyARException
+	 */
+	public final int getIndexBySerial(int i_serial)
 	{
 		for(int i=this._length-1;i>=0;i--)
 		{
-			
+			if(this._items[i].serial==i_serial){
+				return i;
+			}
 		}
-	}
-	public final boolean moveTargetBySerial(NyARRealityTargetList<T> i_to,int i_serial,int i_new_type)
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}		
+		return -1;
+	}	
 }

@@ -41,13 +41,25 @@ import jp.nyatla.nyartoolkit.core.types.matrix.*;
  */
 public class NyARTransMatResult extends NyARDoubleMatrix44
 {
+	/**
+	 * この行列に1度でも行列をセットしたかを返します。
+	 */
 	public boolean has_value = false;
+	/**
+	 * 観測値とのずれを示すエラーレート値です。SetValueにより更新されます。
+	 * has_valueがtrueの時に使用可能です。
+	 */
+	public double last_error;
+	/**
+	 * コンストラクタです。
+	 */
 	public NyARTransMatResult()
 	{
 		this.m30=this.m31=this.m32=0;
 		this.m33=1.0;
 	}
 	/**
+	 * ZXY系の角度値を返します。
 	 * この関数は、0-PIの間で値を返します。
 	 * @param o_out
 	 */
@@ -69,7 +81,7 @@ public class NyARTransMatResult extends NyARDoubleMatrix44
 		}
 	}
 	/**
-	 * 3行目は無視します。
+	 * 点を座標変換します。3行目の拡大率は無視します。
 	 * @param i_x
 	 * @param i_y
 	 * @param i_z
@@ -86,7 +98,12 @@ public class NyARTransMatResult extends NyARDoubleMatrix44
 	{
 		transformVertex(i_in.x,i_in.y,i_in.z,o_out);
 	}
-	public void setValue(NyARDoubleMatrix33 i_rot, NyARDoublePoint3d i_trans)
+	/**
+	 * 平行移動量と回転行列をセットします。この関数は、INyARTransmatインタフェイスのクラスが結果を保存するために使います。
+	 * @param i_rot
+	 * @param i_trans
+	 */
+	public final void setValue(NyARDoubleMatrix33 i_rot, NyARDoublePoint3d i_trans,double i_error)
 	{
 		this.m00=i_rot.m00;
 		this.m01=i_rot.m01;
@@ -106,6 +123,7 @@ public class NyARTransMatResult extends NyARDoubleMatrix44
 		this.m30=this.m31=this.m32=0;
 		this.m33=1.0;		
 		this.has_value = true;
+		this.last_error=i_error;
 		return;
 	}	
 }

@@ -1,7 +1,11 @@
 package jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
+import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat;
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSampler;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerIn;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
@@ -29,8 +33,6 @@ class UnknowonTarget extends NyARRealityTargetList<NyARRealityTarget>
 	{
 		super(iMaxTarget);
 	}
-
-
 }
 
 class DeadTarget extends NyARRealityTargetList<NyARRealityTarget>
@@ -45,78 +47,7 @@ class NyARRealityIn
 {
 	public LowResolutionLabelingSamplerOut lrsamplerout;
 }
-class NyARRealitySnapshot
-{
-	NyARTrackerSnapshot _trackout;
-	public NyARRealityTargetPool _pool;
-	public UnknowonTarget unknown_target;
-	public RecallTargetList recall_target;
-	public KnowonTarget known_target;
-	public DeadTarget dead_target;
-	public NyARRealitySnapshot(int i_max_target) throws NyARException
-	{
-		this._pool=new NyARRealityTargetPool(i_max_target);
-		this.known_target=new KnowonTarget(i_max_target);
-		this.recall_target=new RecallTargetList(1);
-		this.unknown_target=new UnknowonTarget(i_max_target);
-	}
-	/**
-	 * Unknownターゲットから、指定したインデクス番号のターゲットをKnownターゲットへ移動します。
-	 * @param i_index
-	 * @throws NyARException 
-	 */
-	public void unknownToKnown(int i_index) throws NyARException
-	{
-		this.unknown_target.moveTarget(this.known_target, i_index,NyARRealityTarget.RT_KNOWN);
-	}
-	/**
-	 * Knownターゲットから、指定したインデクス番号のターゲットをDeadターゲットへ移動します。
-	 * @param i_index
-	 * @throws NyARException 
-	 */
-	public void knownToDead(int i_index) throws NyARException
-	{
-		this.known_target.moveTarget(this.dead_target, i_index,NyARRealityTarget.RT_DEAD);
-	}
-	/**
-	 * Unknownターゲットから、指定したインデクス番号のターゲットをDeadターゲットへ移動します。
-	 * deadターゲットは、次のサイクルでrealityから削除されます。
-	 * @param i_index
-	 * @throws NyARException 
-	 */
-	public void unknownToDead(int i_index) throws NyARException
-	{
-		this.unknown_target.moveTarget(this.dead_target, i_index,NyARRealityTarget.RT_DEAD);
-	}
-	/**
-	 * Unknownターゲットから、指定したシリアル番号のターゲットをKnownターゲットへ移動します。
-	 * @param i_index
-	 * @throws NyARException 
-	 */
-	public boolean unknownToKnownBySerial(int i_serial) throws NyARException
-	{
-		return this.unknown_target.moveTargetBySerial(this.known_target, i_serial,NyARRealityTarget.RT_KNOWN);
-	}
-	/**
-	 * Knownターゲットから、指定したシリアル番号のターゲットをDeadターゲットへ移動します。
-	 * @param i_index
-	 * @throws NyARException 
-	 */
-	public boolean knownToDeadBySerial(int i_serial) throws NyARException
-	{
-		return this.known_target.moveTargetBySerial(this.dead_target, i_serial,NyARRealityTarget.RT_DEAD);
-	}
-	/**
-	 * Unknownターゲットから、指定したシリアル番号のターゲットをDeadターゲットへ移動します。
-	 * deadターゲットは、次のサイクルでrealityから削除されます。
-	 * @param i_index
-	 * @throws NyARException 
-	 */
-	public boolean unknownToDeadBySerial(int i_serial) throws NyARException
-	{
-		return this.unknown_target.moveTargetBySerial(this.dead_target, i_serial,NyARRealityTarget.RT_DEAD);
-	}	
-}
+
 /**
  * Trackerのデータを都合よく解釈するレイヤ。
  * recallからはじまって、clearlyTargetかunclearlyTargetで消滅する。
@@ -132,7 +63,7 @@ public class NyARReality
 	private final int UNKNOWN_TICK_LIMIT=100;
 	public NyARReality() throws NyARException
 	{
-		
+		this._transmat=new NyARTransMat(null);
 	}
 	private boolean isUnknownTargetAlive(NyARRealityTarget i_rt,long i_reality_tick)
 	{
@@ -157,7 +88,7 @@ public class NyARReality
 		rt_array=o_out.known_target.getArray();
 		for(int i=o_out.known_target.getLength()-1;i>=0;i--){
 			if(!isTargetAlive(rt_array[i])){
-				if(!o_out.known_target.moveTargetNoOrder(o_out.dead_target,i,NyARRealityTarget.RT_DEAD)){
+				if(o_out.known_target.moveTargetNoOrder(o_out.dead_target,i,NyARRealityTarget.RT_DEAD)==null){
 					break;
 				}
 			}
@@ -166,13 +97,29 @@ public class NyARReality
 		rt_array=o_out.unknown_target.getArray();
 		for(int i=o_out.unknown_target.getLength()-1;i>=0;i--){
 			if(!isTargetAlive(rt_array[i])){
-				if(!o_out.unknown_target.moveTargetNoOrder(o_out.dead_target,i,NyARRealityTarget.RT_DEAD)){
+				if(o_out.unknown_target.moveTargetNoOrder(o_out.dead_target,i,NyARRealityTarget.RT_DEAD)==null){
 					break;
 				}
 			}
 		}
 	}
-	public void updateLists(long i_reality_tick,NyARRealitySnapshot o_out)
+	/**
+	 * 観察
+	 * @param i_vx
+	 * @param i_s
+	 */
+	private final static void setSquare(NyARDoublePoint2d[] i_vx,NyARSquare i_s)
+	{
+		i_s.sqvertex[0].setValue(i_vx[0]);
+		i_s.sqvertex[1].setValue(i_vx[1]);
+		i_s.sqvertex[2].setValue(i_vx[2]);
+		i_s.sqvertex[3].setValue(i_vx[3]);
+		//点から直線を再計算
+		for(int i=3;i>=0;i--){
+			i_s.line[i].makeLinearWithNormalize(i_vx[i],i_vx[(i+1)%4]);
+		}
+	}
+	public void updateLists(long i_reality_tick,NyARRealitySnapshot o_out) throws NyARException
 	{
 		//リアリティターゲットを更新
 		NyARRealityTarget[] rt_array;
@@ -183,7 +130,11 @@ public class NyARReality
 		}
 		rt_array=o_out.known_target.getArray();
 		for(int i=o_out.known_target.getLength()-1;i>=0;i--){
-			//3d座標計算しとくか。
+			NyARRealityTarget tar=rt_array[i];
+			//矩形座標計算
+			setSquare(tar.ref_ttarget.*,tar.ideal_square);
+			//3d座標計算
+			this._transmat.transMatContinue(tar.ideal_square,tar.offset,tar.transmat,tar.transmat);
 			rt_array[i].target_age++;
 		}
 		rt_array=o_out.unknown_target.getArray();

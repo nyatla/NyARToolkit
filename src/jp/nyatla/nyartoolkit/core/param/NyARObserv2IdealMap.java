@@ -77,6 +77,7 @@ public class NyARObserv2IdealMap
 		o_point.y=this._mapy[idx];
 		return;
 	}
+	
 	public void observ2IdealBatch(NyARIntPoint2d[] i_coord,int i_start, int i_num, double[] o_x_coord,double[] o_y_coord,int i_out_start_index)
 	{
 		int idx;
