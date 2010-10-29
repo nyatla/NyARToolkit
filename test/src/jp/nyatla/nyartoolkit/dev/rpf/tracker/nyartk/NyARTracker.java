@@ -38,10 +38,10 @@ public class NyARTracker
 	public NyARTracker() throws NyARException
 	{
 		//ソースターゲット
-		this._newsource=new SampleStack(NyARTrackerOut.NUMBER_OF_NEW);
-		this._igsource=new SampleStack(NyARTrackerOut.NUMBER_OF_IGNORE);
-		this._coordsource=new SampleStack(NyARTrackerOut.NUMBER_OF_CONTURE);
-		this._rectsource=new SampleStack(NyARTrackerOut.NUMBER_OF_RECT);
+		this._newsource=new SampleStack(NyARTrackerSnapshot.NUMBER_OF_NEW);
+		this._igsource=new SampleStack(NyARTrackerSnapshot.NUMBER_OF_IGNORE);
+		this._coordsource=new SampleStack(NyARTrackerSnapshot.NUMBER_OF_CONTURE);
+		this._rectsource=new SampleStack(NyARTrackerSnapshot.NUMBER_OF_RECT);
 		//ここ注意！マップの最大値は、ソースアイテムの個数よりおおきいこと！
 		this._map=new DistMap(20,200);
 		this._index=new int[200];
@@ -52,7 +52,7 @@ public class NyARTracker
 	 * @param i_source
 	 * @throws NyARException
 	 */
-	public void progress(LowResolutionLabelingSamplerOut i_source,NyARTrackerOut i_trackdata) throws NyARException
+	public void progress(LowResolutionLabelingSamplerOut i_source,NyARTrackerSnapshot i_trackdata) throws NyARException
 	{
 		//クロック進行
 		this._clock++;
@@ -90,7 +90,7 @@ public class NyARTracker
 	 * @param i_trackdata
 	 * @throws NyARException
 	 */
-	private void upgradeNewTarget(LrlsGsRaster i_base_raster,NyARTrackerOut i_trackdata) throws NyARException
+	private void upgradeNewTarget(LrlsGsRaster i_base_raster,NyARTrackerSnapshot i_trackdata) throws NyARException
 	{
 		NyARTarget[] array_of_new=i_trackdata.newtarget.getArray();
 		
@@ -138,7 +138,7 @@ public class NyARTracker
 	}
 	
 	
-	private void upgradeIgnoreTarget(NyARTrackerOut i_trackdata)
+	private void upgradeIgnoreTarget(NyARTrackerSnapshot i_trackdata)
 	{
 		NyARTarget[] array_of_ign=i_trackdata.igtarget.getArray();
 		int len_of_ign=i_trackdata.igtarget.getLength();
@@ -162,7 +162,7 @@ public class NyARTracker
 	 * @param i_trackdata
 	 * @throws NyARException
 	 */
-	private void upgradeContourTarget(NyARTrackerOut i_trackdata) throws NyARException
+	private void upgradeContourTarget(NyARTrackerSnapshot i_trackdata) throws NyARException
 	{
 		NyARTarget[] array_of_coord=i_trackdata.coordtarget.getArray();
 		for(int i=i_trackdata.coordtarget.getLength()-1;i>=0;i--){
@@ -199,7 +199,7 @@ public class NyARTracker
 			}
 		}
 	}	
-	private void upgradeRectTarget(NyARTrackerOut i_trackdata) throws NyARException
+	private void upgradeRectTarget(NyARTrackerSnapshot i_trackdata) throws NyARException
 	{
 		long clock=this._clock;
 		NyARTarget[] array_of_rect=i_trackdata.recttarget.getArray();
@@ -224,7 +224,7 @@ public class NyARTracker
 	 * このターゲットを、SampleStackを使って更新します。
 	 * @param i_sample
 	 */
-	public void updateIgnoreStatus(NyARTrackerOut i_trackdata)
+	public void updateIgnoreStatus(NyARTrackerSnapshot i_trackdata)
 	{
 		long clock=this._clock;
 		LowResolutionLabelingSamplerOut.Item[] source=this._igsource.getArray();
@@ -253,7 +253,7 @@ public class NyARTracker
 	 * @param i_sample
 	 * @throws NyARException 
 	 */
-	public void updateNewStatus(NyARTrackerOut i_trackdata) throws NyARException
+	public void updateNewStatus(NyARTrackerSnapshot i_trackdata) throws NyARException
 	{
 		long clock=this._clock;
 		LowResolutionLabelingSamplerOut.Item[] source=this._newsource.getArray();
@@ -300,7 +300,7 @@ public class NyARTracker
 	 * @param i_trackdata
 	 * @throws NyARException
 	 */
-	public void updateContureStatus(LrlsGsRaster i_base_raster,NyARTrackerOut i_trackdata) throws NyARException
+	public void updateContureStatus(LrlsGsRaster i_base_raster,NyARTrackerSnapshot i_trackdata) throws NyARException
 	{
 		long clock=this._clock;
 		LowResolutionLabelingSamplerOut.Item[] source=this._coordsource.getArray();
@@ -341,7 +341,7 @@ public class NyARTracker
 			d_ptr.ref_status=st;
 		}
 	}
-	public void updateRectStatus(LrlsGsRaster i_base_raster,NyARTrackerOut i_trackdata) throws NyARException
+	public void updateRectStatus(LrlsGsRaster i_base_raster,NyARTrackerSnapshot i_trackdata) throws NyARException
 	{
 		long clock=this._clock;
 		LowResolutionLabelingSamplerOut.Item[] source=this._rectsource.getArray();
@@ -380,7 +380,7 @@ public class NyARTracker
 		}		
 	}
 
-	private void sampleMapper(LowResolutionLabelingSamplerOut i_source,NyARTrackerOut i_trackdata) throws NyARException
+	private void sampleMapper(LowResolutionLabelingSamplerOut i_source,NyARTrackerSnapshot i_trackdata) throws NyARException
 	{
 		//スタックを初期化
 		this._newsource.clear();

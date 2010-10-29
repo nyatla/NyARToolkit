@@ -188,7 +188,7 @@ public class TestTerget extends Frame
 	LowResolutionLabelingSamplerOut samplerout;
 	
 	NyARTracker tracker;
-	NyARTrackerOut trackerout;
+	NyARTrackerSnapshot trackerout;
 	
 	private final static String SAMPLE_FILES = "../Data/320x240ABGR.png";
 
@@ -215,7 +215,7 @@ public class TestTerget extends Frame
 		
 		//create tracker
 		this.tracker=new NyARTracker();
-		this.trackerout=new NyARTrackerOut();
+		this.trackerout=new NyARTrackerSnapshot();
 
 		return;
 	}

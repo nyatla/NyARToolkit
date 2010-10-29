@@ -10,50 +10,55 @@ public class NyARRealityTargetList<T extends NyARRealityTarget> extends NyARPoin
 	{
 		super.initInstance(i_max_target,(Class<T>)NyARRealityTarget.class);
 	}
-	
-	public final boolean moveToUnknownTarget(UnknowonTarget i_to,int i_index) throws NyARException
+	/**
+	 * i_index番目のターゲットを、i_toのリストへ移動します。
+	 * 移動後のリストは、前方詰めします。
+	 * @param i_to
+	 * @param i_index
+	 * @return
+	 * @throws NyARException
+	 */
+	public final boolean moveTarget(NyARRealityTargetList<T> i_to,int i_index,int i_new_type) throws NyARException
 	{
 		//入力制限
 		NyARRealityTarget ret=i_to.push(this._items[i_index]);
 		if(ret==null){
 			return false;
 		}
-		this.removeIgnoreOrder(i_index);
-		ret.target_type=NyARRealityTarget.RT_UNKNOWN;
-		return true;
-	}	
-	public final boolean moveToKnownTarget(KnowonTarget i_to,int i_index) throws NyARException
-	{
-		//入力制限
-		NyARRealityTarget ret=i_to.push(this._items[i_index]);
-		if(ret==null){
-			return false;
-		}
-		this.removeIgnoreOrder(i_index);
-		ret.target_type=NyARRealityTarget.RT_KNOWN;
-		return true;
-	}	
-	public final boolean moveToDeadTarget(DeadTarget i_to,int i_index) throws NyARException
-	{
-		//入力制限
-		NyARRealityTarget ret=i_to.push(this._items[i_index]);
-		if(ret==null){
-			return false;
-		}
-		this.removeIgnoreOrder(i_index);
-		ret.target_type=NyARRealityTarget.RT_DEAD;
-		return true;
-	}
-	public final boolean moveToRecallTarget(RecallTargetList i_to,int i_index) throws NyARException
-	{
-		//入力制限
-		NyARRealityTarget ret=i_to.push(this._items[i_index]);
-		if(ret==null){
-			return false;
-		}
-		//順序を守って削除(これは、recallから戻ってきたitemの積み直しのため)
 		this.remove(i_index);
-		ret.target_type=NyARRealityTarget.RT_RECALL;
+		ret.target_type=i_new_type;
 		return true;
 	}
+	/**
+	 * i_index番目のターゲットを、i_toのリストへ移動します。
+	 * 移動元のリストは、removeIgnoreOrderの仕様に従い、データ順序が変更されます。
+	 * @param i_to
+	 * @param i_index
+	 * @param i_new_type
+	 * @return
+	 * @throws NyARException
+	 */
+	public final boolean moveTargetNoOrder(NyARRealityTargetList<T> i_to,int i_index,int i_new_type) throws NyARException
+	{
+		//入力制限
+		NyARRealityTarget ret=i_to.push(this._items[i_index]);
+		if(ret==null){
+			return false;
+		}
+		this.removeIgnoreOrder(i_index);
+		ret.target_type=i_new_type;
+		return true;
+	}
+	private final int getIndexBySerial(int i_serial)
+	{
+		for(int i=this._length-1;i>=0;i--)
+		{
+			
+		}
+	}
+	public final boolean moveTargetBySerial(NyARRealityTargetList<T> i_to,int i_serial,int i_new_type)
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}		
 }

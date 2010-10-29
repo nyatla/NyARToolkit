@@ -49,7 +49,7 @@ class NyARNewTargetList extends NyARTargetList<NyARTarget>
 
 
 
-public class NyARTrackerOut
+public class NyARTrackerSnapshot
 {
 	public NyARNewTargetList newtarget;
 	public NyARIgnoreTargetList igtarget;
@@ -69,7 +69,7 @@ public class NyARTrackerOut
 
 	public final static int NUMBER_OF_CONTURE_POOL=NUMBER_OF_RECT+NUMBER_OF_CONTURE*2;
 
-	public NyARTrackerOut() throws NyARException
+	public NyARTrackerSnapshot() throws NyARException
 	{
 		//ステータスプール
 		this.newst_pool=new NyARNewTargetStatusPool(NUMBER_OF_NEW*2);
