@@ -57,7 +57,7 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 		return;		
 	}
 	/**
-	 * 例えば、64
+	 * コンストラクタです。サンプリングサイズを指定して、
 	 * @param i_width
 	 * 取得画像の解像度幅
 	 * @param i_height

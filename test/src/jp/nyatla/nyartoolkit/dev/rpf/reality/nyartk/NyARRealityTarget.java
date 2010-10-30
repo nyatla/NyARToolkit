@@ -1,5 +1,6 @@
 package jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk;
 
+import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.transmat.NyARRectOffset;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
@@ -74,10 +75,19 @@ public class NyARRealityTarget extends NyARManagedObject
 	 */
 	public Object detail;
 	
+
 	/**
 	 * ターゲットの情報アクセサ
 	 */
-	public void getPanelImage(){};
+	
+	public boolean getTargetPatt(int i_resolution_mag,INyARRgbRaster o_raster);
+	{
+		
+	};
+	
+	public boolean getPatt3d(int i_resolution_mag,INyARRgbRaster o_raster);
+	public boolean getPatt2d(int i_resolution_mag,INyARRgbRaster o_raster);
+	
 	public void getAreaImage(){};
 	public void getMetadata(){};
 	public void getSquare(){};
