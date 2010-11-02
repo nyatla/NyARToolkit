@@ -54,9 +54,11 @@ public class NyARTransportVectorSolver implements INyARTransportVectorSolver
 	}
 	private double _a00,_a01_10,_a02_20,_a11,_a12_21,_a22;
 	/**
-	 * 画面上の座標群を指定します。
+	 * 平行移動量計算のための、画面上の頂点群を指定します。
 	 * @param i_ref_vertex_2d
-	 * 歪み矯正済の画面上の頂点座標群への参照値を指定します。
+	 * 入力パラメータ。歪み矯正済の画面上の頂点座標群への参照値を指定します。
+	 * @param i_number_of_vertex
+	 * i_ref_vertex_2dのデータ数を指定します。
 	 * @throws NyARException
 	 * 
 	 */
@@ -99,10 +101,8 @@ public class NyARTransportVectorSolver implements INyARTransportVectorSolver
 	}
 	
 	/**
-	 * 画面座標群と3次元座標群から、平行移動量を計算します。
+	 * 先にセットした2次元座標群と3次元座標群から、平行移動量を計算します。
 	 * 2d座標系は、直前に実行したset2dVertexのものを使用します。
-	 * @param i_vertex_2d
-	 * 直前のset2dVertexコールで指定したものと同じものを指定してください。
 	 * @param i_vertex3d
 	 * 3次元空間の座標群を設定します。頂点の順番は、画面座標群と同じ順序で格納してください。
 	 * @param o_transfer

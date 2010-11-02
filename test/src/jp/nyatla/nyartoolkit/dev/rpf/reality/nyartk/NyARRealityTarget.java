@@ -77,14 +77,21 @@ public class NyARRealityTarget extends NyARManagedObject
 	
 
 	/**
-	 * ターゲットの情報アクセサ
+	 * ターゲットのパターンをラスタにコピーする。解像度は受け取り側ラスタに従う。
+	 * @param i_resolution_mag
+	 * @param o_raster
+	 * @return
 	 */
-	
-	public boolean getTargetPatt(int i_resolution_mag,INyARRgbRaster o_raster);
+	public boolean getPerspectiveTargetPatt(int i_resolution_mag,INyARRgbRaster o_raster)
 	{
-		
+		return false;
 	};
-	
+	//[OPT:]ターゲット座標系の平面上で任意の矩形を定義し、そのパターンをラスタにコピーする。解像度は受け取り側ラスタに従う。
+	//[OPT:]ターゲット座標系の平面上の任意の矩形を変換行列で移動した四角形から、パターンを取得する。解像度は受け取り側のラスタに従う。
+	//[OPT:]指定したターゲットとの直線距離をもとめる。
+	//[OPT:]指定したターゲットとの変換行列を求める。
+	//[OPT:]画面上の点に対応するターゲット座標上の点を求める。
+	//[OPT:]ターゲット座標上の点に対する、画面上の座標を求める。
 	public boolean getPatt3d(int i_resolution_mag,INyARRgbRaster o_raster);
 	public boolean getPatt2d(int i_resolution_mag,INyARRgbRaster o_raster);
 	

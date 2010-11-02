@@ -90,7 +90,7 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 	 * @return
 	 * @throws NyARException
 	 */
-	public void transMat(final NyARSquare i_square,NyARRectOffset i_offset, NyARTransMatResult o_result_conv) throws NyARException
+	public final void transMat(NyARSquare i_square,NyARRectOffset i_offset, NyARTransMatResult o_result_conv) throws NyARException
 	{
 		final NyARDoublePoint3d trans=this.__transMat_trans;
 		
@@ -119,7 +119,7 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 	 * (non-Javadoc)
 	 * @see jp.nyatla.nyartoolkit.core.transmat.INyARTransMat#transMatContinue(jp.nyatla.nyartoolkit.core.NyARSquare, int, double, jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult)
 	 */
-	public void transMatContinue(NyARSquare i_square,NyARRectOffset i_offset,NyARTransMatResult i_prev_result,NyARTransMatResult o_result) throws NyARException
+	public final void transMatContinue(NyARSquare i_square,NyARRectOffset i_offset,NyARTransMatResult i_prev_result,NyARTransMatResult o_result) throws NyARException
 	{
 		final NyARDoublePoint3d trans=this.__transMat_trans;
 

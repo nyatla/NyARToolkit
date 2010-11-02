@@ -82,5 +82,6 @@ public class NyARTrackerSnapshot
 		this.igtarget=new NyARIgnoreTargetList(NUMBER_OF_IGNORE);
 		this.coordtarget=new NyARCoordTargetList(NUMBER_OF_CONTURE);
 		this.recttarget=new NyARRectTargetList(NUMBER_OF_RECT);
-	}	
+	}
+	
 }

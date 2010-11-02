@@ -17,6 +17,7 @@ public class LowResolutionLabelingSamplerIn
 	public LrlsGsRaster _base_raster;
 	private LrlsGsRaster _rb_source;
 	public  LrlsGsRaster _rbraster;
+	
 	private NyARRasterFilter_Roberts _rfilter=new NyARRasterFilter_Roberts(NyARBufferType.INT1D_GRAY_8);
 	private NyARRasterFilter_Reverse _nfilter=new NyARRasterFilter_Reverse(NyARBufferType.INT1D_GRAY_8);
 
@@ -27,13 +28,16 @@ public class LowResolutionLabelingSamplerIn
 	 * ソース画像のサイズ
 	 * @param i_depth
 	 * 解像度の深さ(1/(2^n))倍の画像として処理する。
+	 * @param i_is_alloc
+	 * ベースラスタのバッファを内部確保外部参照にするかのフラグです。
+	 * trueの場合、バッファは内部に確保され、wrapBuffer関数が使用できなくなります。
 	 * @throws NyARException
 	 */
-	public LowResolutionLabelingSamplerIn(int i_width,int i_height,int i_depth) throws NyARException
+	public LowResolutionLabelingSamplerIn(int i_width,int i_height,int i_depth,boolean i_is_alloc) throws NyARException
 	{
 		assert(i_depth>0);
 		//主GSラスタ
-		this._base_raster=new LrlsGsRaster(i_width,i_height,null,1,false);
+		this._base_raster=new LrlsGsRaster(i_width,i_height,null,1,i_is_alloc);
 		int div=(int)Math.pow(2,i_depth);
 		//Roberts変換ラスタ
 		this._rb_source=new LrlsGsRaster(i_width/div,i_height/div,this._base_raster, div, true);

@@ -1,10 +1,14 @@
 package jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerIn;
+import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTrackerSnapshot;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARTargetStatus;
 
 public class NyARRealitySnapshot
 {
+	LowResolutionLabelingSamplerOut samplerout;
 	NyARTrackerSnapshot _trackout;
 	public NyARRealityTargetPool _pool;
 	public UnknowonTarget unknown_target;
@@ -32,8 +36,9 @@ public class NyARRealitySnapshot
 			return null;
 		}
 		r.transmat.has_value=false;
+//この操作はRECTステータスのものにしか適応できない。
 //directionに応じて、元矩形のrectを回転しておく。
-//マーカのサイズを決めておく。		
+//マーカのサイズを決めておく。
 		return r;
 	}
 	/**
@@ -60,6 +65,7 @@ public class NyARRealitySnapshot
 	 */
 	public final NyARRealityTarget knownToDead(int i_index) throws NyARException
 	{
+//強制的にステータスをignoreへ
 		return this.known_target.moveTarget(this.dead_target, i_index,NyARRealityTarget.RT_DEAD);
 	}
 	/**
@@ -86,6 +92,9 @@ public class NyARRealitySnapshot
 	 */
 	public final NyARRealityTarget unknownToDead(int i_index) throws NyARException
 	{
+		NyARTargetStatus st=this.unknown_target.getItem(i_index).ref_ttarget.ref_status;
+		
+		//強制的にステータスをignoreへ
 		return this.unknown_target.moveTarget(this.dead_target, i_index,NyARRealityTarget.RT_DEAD);
 	}
 

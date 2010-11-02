@@ -12,6 +12,7 @@ import java.util.Date;
 import javax.imageio.ImageIO;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_RGB;
@@ -46,7 +47,7 @@ class ImageSource implements InputSource
 	{
 		this._src_image = ImageIO.read(new File(i_filename));
 	}
-	public void UpdateInput(LowResolutionLabelingSamplerIn o_input) throws NyARException
+	public void UpdateInput(NyARRealityIn o_input) throws NyARException
 	{
 		INyARRgbRaster ra =new NyARRgbRaster_RGB(320,240);
 		NyARRasterImageIO.copy(this._src_image,ra);
@@ -55,7 +56,7 @@ class ImageSource implements InputSource
 		NyARRasterFilter_Rgb2Gs_RgbAve filter=new NyARRasterFilter_Rgb2Gs_RgbAve(ra.getBufferType());
 		filter.doFilter(ra,gs);
 		//samplerへ入力
-		o_input.wrapBuffer(gs);
+		o_input.wrapBuffer(ra);
 		
 	}
 }
@@ -163,12 +164,9 @@ class LiveSource implements InputSource,JmfCaptureListener
 public class TestTarget extends Frame
 {
 	NyARReality _reality;
-	LowResolutionLabelingSampler sampler;
-	LowResolutionLabelingSamplerIn samplerin;
-	LowResolutionLabelingSamplerOut samplerout;
 	
-	NyARTracker tracker;
-	NyARTrackerSnapshot trackerout;
+	
+	NyARParam _param;
 	
 	private final static String SAMPLE_FILES = "../Data/320x240ABGR.png";
 
@@ -181,21 +179,14 @@ public class TestTarget extends Frame
 	InputSource _input_source;
 	public TestTarget() throws NyARException, Exception
 	{
-		setTitle("Reality Platform test");
+		setTitle("NyARReality test");
 		Insets ins = this.getInsets();
 		this.setSize(1024 + ins.left + ins.right, 768 + ins.top + ins.bottom);
-		
+		this._param.changeScreenSize(W,H);
+		this._reality=new NyARReality(this._param.getPerspectiveProjectionMatrix());
 //	this._input_source=new ImageSource(SAMPLE_FILES);
 //		this._input_source=new MoveSource();
 		this._input_source=new LiveSource();
-		//create sampler
-		this.samplerin=new LowResolutionLabelingSamplerIn(W, H, 2);
-		this.samplerout=new LowResolutionLabelingSamplerOut(100);
-		this.sampler=new LowResolutionLabelingSampler(W, H,2);
-		
-		//create tracker
-		this.tracker=new NyARTracker();
-		this.trackerout=new NyARTrackerSnapshot();
 
 		return;
 	}
@@ -213,15 +204,8 @@ public class TestTarget extends Frame
     {
 		try {
 			// マーカーを検出
+			
 			this._input_source.UpdateInput(this.samplerin);
-			Date d2 = new Date();
-/*			for (int i = 0; i < 1; i++) {
-				//tracker更新
-				this.sampler.sampling(this.samplerin,this.samplerout);
-				this.tracker.progress(this.samplerout,this.trackerout);
-			}*/
-			Date d = new Date();
-			System.out.println(d.getTime() - d2.getTime());
 
 			Thread.sleep(30);
 			
