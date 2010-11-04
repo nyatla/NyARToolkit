@@ -54,7 +54,7 @@ public class NyARRealityTarget extends NyARManagedObject
 	/**
 	 * このターゲットが参照しているトラックターゲット
 	 */
-	public NyARTarget ref_ttarget;
+	public NyARTarget ref_tracktarget;
 	
 	public NyARSquare ideal_square;
 	
@@ -66,7 +66,6 @@ public class NyARRealityTarget extends NyARManagedObject
 	 */
 	public int target_type;
 	public final static int RT_UNKNOWN   =0;//思い出しまち
-	public final static int RT_RECALL    =1;//思い出し中
 	public final static int RT_KNOWN     =2;//知ってるターゲット
 	public final static int RT_DEAD      =4;//間もなく死ぬターゲット
 	
@@ -118,8 +117,9 @@ public class NyARRealityTarget extends NyARManagedObject
 		int ret=super.releaseObject();
 		if(ret==0)
 		{
-			//参照ターゲットのタグをクリア
-			this.ref_ttarget.tag=null;
+			//参照ターゲットのタグをクリアして、参照解除
+			this.ref_tracktarget.tag=null;
+			this.ref_tracktarget.refObject();
 		}
 		return ret;
 	}

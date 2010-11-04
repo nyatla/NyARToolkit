@@ -11,7 +11,6 @@ import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObject;
  */
 public class NyARTargetStatus extends NyARManagedObject
 {
-	public final static int ST_DEAD=-1;
 	public final static int ST_IGNORE=0;
 	public final static int ST_NEW=1;
 	public final static int ST_RECT=2;

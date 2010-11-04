@@ -215,8 +215,8 @@ public class TestTerget extends Frame
 		this.sampler=new LowResolutionLabelingSampler(W, H,2);
 		
 		//create tracker
-		this.tracker=new NyARTracker();
-		this.trackerout=new NyARTrackerSnapshot();
+		this.tracker=new NyARTracker(10,1,10);
+		this.trackerout=new NyARTrackerSnapshot(10,1,10);
 
 		return;
 	}

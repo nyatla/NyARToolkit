@@ -1,14 +1,8 @@
 package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status;
 
-import java.math.MathContext;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
-import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
-import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
-import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
-import jp.nyatla.nyartoolkit.core.types.NyARLinear;
-import jp.nyatla.nyartoolkit.core.types.NyARVecLinear2d;
+import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LrlsGsRaster;
@@ -452,7 +446,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
      * 頂点を左回転して、矩形を回転させます。
      * @param i_shift
      */
-    private final void rotateVertexL(NyARDoublePoint2d[] i_vertex,int i_shift)
+    private final static void rotateVertexL(NyARDoublePoint2d[] i_vertex,int i_shift)
     {
     	assert(i_shift<4);
     	NyARDoublePoint2d vertext;
@@ -474,5 +468,14 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	        t1=(i + ll) % 4;
 	        i_vertex[t1]=vertext;
 	    }
-    }    
+    }
+    /**
+     * ARToolKitのdirectionモデルに従って、頂点をシフトします。
+     * @param i_dir
+     */
+    public void shiftByArtkDirection(int i_dir)
+    {
+    	rotateVertexL(this.estimate_vertex,i_dir);
+    	rotateVertexL(this.vertex,i_dir);
+    }
 }

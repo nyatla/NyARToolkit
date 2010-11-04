@@ -183,7 +183,7 @@ public class TestTarget extends Frame
 		Insets ins = this.getInsets();
 		this.setSize(1024 + ins.left + ins.right, 768 + ins.top + ins.bottom);
 		this._param.changeScreenSize(W,H);
-		this._reality=new NyARReality(this._param.getPerspectiveProjectionMatrix());
+		this._reality=new NyARReality(320,240,2,this._param.getPerspectiveProjectionMatrix(), H, H);
 //	this._input_source=new ImageSource(SAMPLE_FILES);
 //		this._input_source=new MoveSource();
 		this._input_source=new LiveSource();

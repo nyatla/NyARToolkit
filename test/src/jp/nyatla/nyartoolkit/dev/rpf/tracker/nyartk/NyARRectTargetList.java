@@ -4,7 +4,7 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.*;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.*;
 
-public class NyARRectTargetList extends NyARTargetList<NyARTarget>
+public class NyARRectTargetList extends NyARTargetList
 {
 	public NyARRectTargetList(int iMaxTarget) throws NyARException
 	{
@@ -42,18 +42,6 @@ public class NyARRectTargetList extends NyARTargetList<NyARTarget>
 		}
 		return -1;
 	}
-	/**
-	 * リストから、tagがNULLのアイテムを探して返します。
-	 * @return
-	 */
-	public final NyARTarget getEmptyTagItem()
-	{
-		for(int i=this._length-1;i>=0;i--){
-			if(this._items[i].tag==null){
-				return this._items[i];
-			}
-		}
-		return null;
-	}
+
 	
 }

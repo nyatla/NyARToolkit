@@ -13,8 +13,10 @@ import jp.nyatla.nyartoolkit.utils.j2se.NyARRasterImageIO;
 /**
  * NyARRealityクラスの入力コンテナです。
  * NyARRealityへ入力する情報セットを定義します。
+ * 
+ * このクラスは、継承して使います。継承クラスで、sourceimageに実体を宣言して下さい。
  */
-public class NyARRealityIn
+public abstract class NyARRealityIn
 {
 	public INyARRgbRaster sourceimage;
 	public LowResolutionLabelingSamplerIn lrsamplerin;
@@ -26,7 +28,7 @@ public class NyARRealityIn
 
 class NyARReality_JavaImage extends NyARRealityIn
 {
-	NyARRasterFilter_Rgb2Gs_RgbAve _filter;
+	private NyARRasterFilter_Rgb2Gs_RgbAve _filter;
 	public NyARReality_JavaImage(int i_width,int i_height) throws NyARException
 	{
 		super(i_width,i_height);

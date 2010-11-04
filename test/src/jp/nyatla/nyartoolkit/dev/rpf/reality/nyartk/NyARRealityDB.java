@@ -45,7 +45,7 @@ public class NyARRealityDB
 		NyARRealityDB.RealityData data;
 		//Idマーカとして解析してみる。
 		NyIdMarkerParam idparam;
-		NyARDoublePoint2d[] vx=((NyARRectTargetStatus)(i_target.ref_ttarget.ref_status)).vertex;
+		NyARDoublePoint2d[] vx=((NyARRectTargetStatus)(i_target.ref_tracktarget.ref_status)).vertex;
 		if(this._id_pickup.pickFromRaster(raster,vx,data.nyid_info,idparam)){
 //id->サイズのライブラリ作れ。それまで暫定
 			i_target.offset.setSquare(1);

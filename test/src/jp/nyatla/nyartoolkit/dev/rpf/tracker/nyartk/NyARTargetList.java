@@ -6,11 +6,11 @@ import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.*;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARContourTargetStatus;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARRectTargetStatus;
 
-public class NyARTargetList<T extends NyARTarget> extends NyARPointerStack<T>
+public class NyARTargetList extends NyARPointerStack<NyARTarget>
 {
 	public NyARTargetList(int i_max_target) throws NyARException
 	{
-		super.initInstance(i_max_target,(Class<T>)NyARTarget.class);
+		super.initInstance(i_max_target,NyARTarget.class);
 	}
 	/**
 	 * Sampleの位置キーに一致する可能性の高い要素のインデクスを１つ返します。
@@ -43,5 +43,4 @@ public class NyARTargetList<T extends NyARTarget> extends NyARPointerStack<T>
 		}
 		return -1;
 	}
-
 }

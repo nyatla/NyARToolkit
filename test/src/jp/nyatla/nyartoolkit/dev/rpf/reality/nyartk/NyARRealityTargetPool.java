@@ -27,8 +27,7 @@ public class NyARRealityTargetPool extends NyARManagedObjectPool<NyARRealityTarg
 			return null;
 		}
 		ret.target_age=0;
-		ret.target_type=NyARRealityTarget.RT_UNKNOWN;
-		ret.ref_ttarget=tt;
+		ret.ref_tracktarget=(NyARTarget) tt.refObject();
 		tt.tag=ret;//タグに値設定しておく。
 		return ret;
 	}	
