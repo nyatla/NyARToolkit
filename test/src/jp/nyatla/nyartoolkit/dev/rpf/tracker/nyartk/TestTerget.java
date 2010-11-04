@@ -31,6 +31,7 @@ import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_RGB;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.*;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARContourTargetStatus;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARRectTargetStatus;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARTargetStatus;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDevice;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDeviceList;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
@@ -209,7 +210,7 @@ public class TestTerget extends Frame
 //		this._input_source=new MoveSource();
 		this._input_source=new LiveSource();
 		//create sampler
-		this.samplerin=new LowResolutionLabelingSamplerIn(W, H, 2);
+		this.samplerin=new LowResolutionLabelingSamplerIn(W, H, 2,false);
 		this.samplerout=new LowResolutionLabelingSamplerOut(100);
 		this.sampler=new LowResolutionLabelingSampler(W, H,2);
 		
@@ -263,10 +264,23 @@ public class TestTerget extends Frame
     	Graphics g=bmp.getGraphics();
     	NyARRasterImageIO.copy(this.samplerout.ref_base_raster,bmp);
     	//Ignore,Coord,New
-    	drawNewTarget(bmp,Color.green);
-    	drawIgnoreTarget(bmp,Color.red);
-    	drawContourTarget(bmp,Color.blue);
-    	drawRectTarget(bmp,Color.cyan);
+    	for(int i=this.trackerout.target_list.getLength()-1;i>=0;i--){
+    		switch(this.trackerout.target_list.getItem(i).st_type)
+    		{
+    		case NyARTargetStatus.ST_CONTURE:
+            	drawContourTarget(this.trackerout.target_list.getItem(i),bmp,Color.blue);
+    			break;
+    		case NyARTargetStatus.ST_IGNORE:
+            	drawIgnoreTarget(this.trackerout.target_list.getItem(i),bmp,Color.red);
+    			break;
+    		case NyARTargetStatus.ST_NEW:
+            	drawNewTarget(this.trackerout.target_list.getItem(i),bmp,Color.green);
+    			break;
+    		case NyARTargetStatus.ST_RECT:
+    			drawRectTarget(this.trackerout.target_list.getItem(i),bmp,Color.cyan);
+    			break;
+    		}
+    	}
     	//表示
     	ig.drawImage(bmp,ins.left,ins.top,null);
     	drawImage(ig,ins.left+320,ins.top,this.samplerin._rbraster);
@@ -283,13 +297,11 @@ public class TestTerget extends Frame
     /**
      * RectTargetを表示します。
      */
-    private void drawRectTarget(BufferedImage sink,Color c)
+    private void drawRectTarget(NyARTarget t,BufferedImage sink,Color c)
     {
     	//サンプリング結果の表示
     	Graphics g=sink.getGraphics();
-		for(int i=this.trackerout.recttarget.getLength()-1;i>=0;i--){
 	    	g.setColor(c);
-			NyARTarget t=this.trackerout.recttarget.getItem(i);
 			NyARRectTargetStatus s=(NyARRectTargetStatus)t.ref_status;
 			g.drawString("RT:"+t.serial+"("+s.detect_type+")",t.sample_area.x,t.sample_area.y);
 			g.drawRect((int)s.vertex[0].x-1,(int)s.vertex[0].y-1,2,2);
@@ -309,57 +321,47 @@ public class TestTerget extends Frame
 						(int)s.estimate_vertex[(i2+1)%4].x,
 						(int)s.estimate_vertex[(i2+1)%4].y);
 				}*/
-		}
     }
 
     /**
      * ContourTargetを表示します。
      */
-    private void drawContourTarget(BufferedImage sink,Color c)
+    private void drawContourTarget(NyARTarget t,BufferedImage sink,Color c)
     {
     	//サンプリング結果の表示
     	Graphics g=sink.getGraphics();
     	g.setColor(c);
-		for(int i=this.trackerout.coordtarget.getLength()-1;i>=0;i--){
-			NyARTarget t=this.trackerout.coordtarget.getItem(i);
-			g.drawString("CT",t.sample_area.x,t.sample_area.y);
-			g.drawRect(t.sample_area.x,t.sample_area.y,t.sample_area.w,t.sample_area.h);
-			NyARContourTargetStatus st=(NyARContourTargetStatus)t.ref_status;
-			for(int i2=0;i2<st.vecpos.length;i2++){
-				g.drawString(i2+":"/*+(int)st.vecpos.item[i2].sq_dist*/,(int)st.vecpos.items[i2].x-1, (int)st.vecpos.items[i2].y-1);
-				g.fillRect((int)st.vecpos.items[i2].x-1, (int)st.vecpos.items[i2].y-1,2,2);
-			}
+		g.drawString("CT",t.sample_area.x,t.sample_area.y);
+		g.drawRect(t.sample_area.x,t.sample_area.y,t.sample_area.w,t.sample_area.h);
+		NyARContourTargetStatus st=(NyARContourTargetStatus)t.ref_status;
+		for(int i2=0;i2<st.vecpos.length;i2++){
+			g.drawString(i2+":"/*+(int)st.vecpos.item[i2].sq_dist*/,(int)st.vecpos.items[i2].x-1, (int)st.vecpos.items[i2].y-1);
+			g.fillRect((int)st.vecpos.items[i2].x-1, (int)st.vecpos.items[i2].y-1,2,2);
 		}
     }
     
     /**
      * IgnoreTargetを表示します。
      */
-    private void drawIgnoreTarget(BufferedImage sink,Color c)
+    private void drawIgnoreTarget(NyARTarget t,BufferedImage sink,Color c)
     {
     	//サンプリング結果の表示
     	Graphics g=sink.getGraphics();
     	g.setColor(c);
-		for(int i=this.trackerout.igtarget.getLength()-1;i>=0;i--){
-			NyARTarget t=this.trackerout.igtarget.getItem(i);
-			g.drawString("IG",t.sample_area.x,t.sample_area.y);
-			g.drawRect(t.sample_area.x,t.sample_area.y,t.sample_area.w,t.sample_area.h);
-		}
+		g.drawString("IG",t.sample_area.x,t.sample_area.y);
+		g.drawRect(t.sample_area.x,t.sample_area.y,t.sample_area.w,t.sample_area.h);
     }
         
     /**
      * Newtargetを表示します。
      */
-    private void drawNewTarget(BufferedImage sink,Color c)
+    private void drawNewTarget(NyARTarget t,BufferedImage sink,Color c)
     {
     	//サンプリング結果の表示
     	Graphics g=sink.getGraphics();
     	g.setColor(c);
-		for(int i=this.trackerout.newtarget.getLength()-1;i>=0;i--){
-			NyARTarget t=this.trackerout.newtarget.getItem(i);
-			g.drawString("NW",t.sample_area.x,t.sample_area.y);
-			g.drawRect(t.sample_area.x,t.sample_area.y,t.sample_area.w,t.sample_area.h);
-		}
+		g.drawString("NW",t.sample_area.x,t.sample_area.y);
+		g.drawRect(t.sample_area.x,t.sample_area.y,t.sample_area.w,t.sample_area.h);
     }
     
     /**

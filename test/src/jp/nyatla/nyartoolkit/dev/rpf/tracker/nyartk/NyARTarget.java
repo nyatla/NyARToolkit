@@ -16,6 +16,7 @@ import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObject.INyARManagedObjectP
 public class NyARTarget extends NyARManagedObject
 {
 
+
 	private static Object _serial_lock=new Object();
 	private static long _serial=0;
 	/**
@@ -30,6 +31,10 @@ public class NyARTarget extends NyARManagedObject
 	}
 	////////////////////////
 	//targetの基本情報
+	/**
+	 * ステータスの型情報
+	 */
+	public int st_type;
 
 	/**
 	 * Targetを識別するID値
@@ -87,39 +92,4 @@ public class NyARTarget extends NyARManagedObject
 	{
 		this.sample_area.setValue(i_item.base_area);
 	}
-	/**
-	 * このターゲットのステータスを、IgnoreStatusへ変更します。
-	 */
-	public void setIgnoreStatus()
-	{
-		//遷移元のステータスを制限すること！
-		assert(
-				((this.ref_status instanceof NyARRectTargetStatus) == true) || 
-				((this.ref_status instanceof NyARContourTargetStatus) == true) || 
-				((this.ref_status instanceof NyARNewTargetStatus)== true)
-		);
-		this.ref_status.releaseObject();
-		this.status_age=0;
-		this.ref_status=null;
-	}
-	/**
-	 * このターゲットのステータスを、CntoureStatusへ遷移させます。
-	 * @param i_c
-	 */
-	public void setCntoureStatus(NyARContourTargetStatus i_c)
-	{
-		//遷移元のステータスを制限
-		assert((this.ref_status instanceof NyARNewTargetStatus) == true);
-		this.ref_status.releaseObject();
-		this.status_age=0;
-		this.ref_status=i_c;
-	}
-	public void setRectStatus(NyARRectTargetStatus i_c)
-	{
-		assert((this.ref_status instanceof NyARContourTargetStatus) == true);
-		this.ref_status.releaseObject();
-		this.status_age=0;
-		this.ref_status=i_c;		
-	}
-	
 }

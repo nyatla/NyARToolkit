@@ -4,46 +4,34 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARNewTargetStatus;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARNewTargetStatusPool;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARTargetStatus;
 import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObjectPool;
 
-public class NyARTargetPool extends NyARManagedObjectPool<NyARTarget>
+final public class NyARTargetPool extends NyARManagedObjectPool<NyARTarget>
 {
-	private NyARNewTargetStatusPool _ref_pool;
-	public NyARTargetPool(int i_size,NyARNewTargetStatusPool i_ref_status_pool) throws NyARException
+	public NyARTargetPool(int i_size) throws NyARException
 	{
 		this.initInstance(i_size,NyARTarget.class);
-		this._ref_pool=i_ref_status_pool;
 	}
 	protected NyARTarget createElement() throws NyARException
 	{
 		return new NyARTarget(this._op_interface);
 	}
 	/**
-	 * NyARTargetStatusを持つターゲットを新規に作成します。
+	 * 新しいターゲットを生成します。ターゲットのserial,tagのみ初期化します。
 	 * @param i_clock
-	 * システムクロック値
 	 * @param i_sample
-	 * 初期化元のサンプリングアイテム
 	 * @return
-	 * @throws NyARException 
+	 * @throws NyARException
 	 */
-	public NyARTarget newNewTarget(long i_clock,LowResolutionLabelingSamplerOut.Item i_sample) throws NyARException
+	public NyARTarget newNewTarget() throws NyARException
 	{
 		NyARTarget t=super.newObject();
 		if(t==null){
 			return null;
 		}
-		t.status_age=0;
-		t.last_update_tick=i_clock;
-		t.setSampleArea(i_sample);
 		t.serial=NyARTarget.getSerial();
 		t.tag=null;
-		t.ref_status=this._ref_pool.newObject();
-		if(t.ref_status==null){
-			t.releaseObject();
-			return null;
-		}
-		((NyARNewTargetStatus)t.ref_status).setValue(i_sample);
 		return t;
 	}	
 }
