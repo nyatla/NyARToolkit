@@ -119,21 +119,25 @@ public class TestTarget extends Frame implements MouseListener
 		System.out.println(x+":"+y);
 		synchronized(this._input_source.reality_in)
 		{
-			for(int i=this._reality_snapshot.target.getLength()-1;i>=0;i--)
+			for(int i=this._reality.target.getLength()-1;i>=0;i--)
 			{
-				NyARRealityTarget rt=this._reality_snapshot.target.getItem(i);
+				NyARRealityTarget rt=this._reality.target.getItem(i);
+				if(rt.target_type!=NyARRealityTarget.RT_UNKNOWN && rt.target_type!=NyARRealityTarget.RT_KNOWN){
+					continue;
+				}
 				if(rt.isInnerPoint2d(x, y))
 				{
 					if(e.getButton()==MouseEvent.BUTTON1){
 						//左ボタンはUNKNOWN→KNOWN
 						if(rt.target_type==NyARRealityTarget.RT_UNKNOWN){
-							this._reality_snapshot.changeTargetToKnown(rt,0,40);
+							this._reality.changeTargetToKnown(rt,0,40);
 							break;
 						}
 					}else if(e.getButton()==MouseEvent.BUTTON3){
 						//右ボタンはUNKNOWN　or KNOWN to dead
 						try {
-							this._reality_snapshot.changeTargetToDead(rt);
+							this._reality.changeTargetToDead(rt);
+							break;
 						} catch (NyARException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
@@ -151,7 +155,7 @@ public class TestTarget extends Frame implements MouseListener
 	
 	
 	private NyARReality _reality;
-	private NyARRealitySnapshot _reality_snapshot;
+//	private NyARRealitySnapshot _reality_snapshot;
 	
 	
 	NyARParam _param;
@@ -174,7 +178,7 @@ public class TestTarget extends Frame implements MouseListener
 		this._param.loadARParamFromFile(PARAM_FILE);
 		this._param.changeScreenSize(W,H);
 		this._reality=new NyARReality(320,240,2,this._param.getPerspectiveProjectionMatrix(),10,10);
-		this._reality_snapshot=new NyARRealitySnapshot(10,10);
+//		this._reality_snapshot=new NyARRealitySnapshot(10,10);
 //		this._input_source=new LiveSource();
 		this._input_source=new ImageSource(SAMPLE_FILES);
 		addMouseListener(this);
@@ -191,12 +195,12 @@ public class TestTarget extends Frame implements MouseListener
 			// マーカーを検出
 			Thread.sleep(30);
 			synchronized(this._input_source.reality_in){
-				Date d2 = new Date();
-				for (int i = 0; i < 1000; i++) {
-					this._reality.progress(this._input_source.reality_in,this._reality_snapshot);			
-				}
-				Date d = new Date();
-				System.out.println(d.getTime() - d2.getTime());
+//				Date d2 = new Date();
+//				for (int i = 0; i < 1000; i++) {
+					this._reality.progress(this._input_source.reality_in);			
+//				}
+//				Date d = new Date();
+//				System.out.println(d.getTime() - d2.getTime());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -217,9 +221,9 @@ public class TestTarget extends Frame implements MouseListener
 
     	//表示
     	g.setColor(Color.black);
-    	g.drawString("Unknown:"+this._reality_snapshot.number_of_unknown,200,200);
-    	g.drawString("Known:"+this._reality_snapshot.number_of_known,200,210);
-    	g.drawString("Dead:"+this._reality_snapshot.number_of_dead,200,220);
+    	g.drawString("Unknown:"+this._reality.getNumberOfUnknown(),200,200);
+    	g.drawString("Known:"+this._reality.getNumberOfKnown(),200,210);
+    	g.drawString("Dead:"+this._reality.getNumberOfDead(),200,220);
     	ig.drawImage(bmp,ins.left,ins.top,null);
 
     	drawImage(ig,ins.left+320,ins.top,this._input_source.reality_in.lrsamplerin._rbraster);

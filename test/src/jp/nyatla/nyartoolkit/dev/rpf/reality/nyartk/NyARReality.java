@@ -7,6 +7,7 @@ import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSampler;
+import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.*;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARRectTargetStatus;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARTargetStatus;
@@ -21,9 +22,43 @@ import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARTargetStatus;
  */
 public class NyARReality
 {
+	//Realityでーた
+	/**
+	 * Unknownターゲットの最大数です。
+	 */
+	private final int MAX_LIMIT_UNKNOWN;
+	/**
+	 * Knownターゲットの最大数です。
+	 */
+	private final int MAX_LIMIT_KNOWN;	
+	/**
+	 * samplerの出力値。この変数はNyARRealityからのみ使います。
+	 */
+	private LowResolutionLabelingSamplerOut _samplerout;
+	/**
+	 * samplerの出力値。この変数はNyARRealityからのみ使います。
+	 */
+	private NyARTrackerSnapshot _trackout;
+	/**
+	 * samplerの出力値。この変数はNyARRealityからのみ使います。
+	 */
+	private NyARRealityTargetPool _pool;
+
+	/**
+	 * ターゲットのリストです。
+	 */
+	public NyARRealityTargetList<NyARRealityTarget> target;
+	
+	
+	//種類ごとのターゲットの数
+	
+	private int _number_of_unknown;
+	private int _number_of_known;
+	private int _number_of_dead;	
+	//
 	private LowResolutionLabelingSampler _sampler;
 	private NyARTracker _tracker;
-	protected INyARTransMat _transmat;
+	private INyARTransMat _transmat;
 	
 	/**
 	 * コンストラクタ
@@ -44,10 +79,26 @@ public class NyARReality
 	public NyARReality(int i_width,int i_height,int i_depth,NyARPerspectiveProjectionMatrix i_ref_prjmat,
 			int i_max_known_target,int i_max_unknown_target) throws NyARException
 	{
+		int number_of_reality_target=i_max_known_target+i_max_unknown_target;
+		//演算インスタンス
 		this._transmat=new NyARTransMat(null,i_ref_prjmat);
-		//この数は、NyARRealitySnapshotの値と合せておくこと。
-		this._tracker=new NyARTracker(i_max_known_target+i_max_unknown_target,1,i_max_known_target);
+		this._tracker=new NyARTracker(number_of_reality_target,1,i_max_known_target);
 		this._sampler=new LowResolutionLabelingSampler(i_width,i_height,i_depth);
+
+		//データインスタンス
+		this._pool=new NyARRealityTargetPool(number_of_reality_target);
+		this.target=new NyARRealityTargetList<NyARRealityTarget>(number_of_reality_target);
+		//トラック数は、newがi_max_known_target+i_max_unknown_target,rectがi_max_known_targetと同じ数です。
+		this._samplerout=new LowResolutionLabelingSamplerOut(100+number_of_reality_target);
+		this._trackout=new NyARTrackerSnapshot(number_of_reality_target,1,i_max_known_target);
+		
+		//定数とかいろいろ
+		this.MAX_LIMIT_KNOWN=i_max_known_target;
+		this.MAX_LIMIT_UNKNOWN=i_max_unknown_target;
+
+		//初期化
+		this._number_of_dead=this._number_of_unknown=this._number_of_known=0;
+		
 		return;
 	}
 	/**
@@ -60,8 +111,7 @@ public class NyARReality
 		return i_target.ref_tracktarget.st_type==NyARTargetStatus.ST_RECT;
 	}
 	/**
-	 * o_outにあるRealitySnapshotの状態を、i_inのRealitySourceを元に進めます。
-	 * 関数を実行すると、RealitySnapshotのターゲットの状態は更新され、ターゲットの所属リストが書き換えられます。
+	 * Realityの状態を、i_inのRealitySourceを元に進めます。
 	 * 
 	 * 現在の更新ルールは以下の通りです。
 	 * 1.一定時間捕捉不能なターゲットはUnknownターゲットからdeadターゲットへ移動する。
@@ -71,43 +121,42 @@ public class NyARReality
 	 * Knownターゲットが捕捉不能になった時の動作は、以下の通りです。
 	 * 4.[未実装]捕捉不能なターゲットの予測と移動
 	 * @param i_in
-	 * @param o_out
 	 * @throws NyARException
 	 */
-	public void progress(NyARRealityIn i_in,NyARRealitySnapshot o_out) throws NyARException
+	public void progress(NyARRealityIn i_in) throws NyARException
 	{
 		//sampler進行
-		this._sampler.sampling(i_in.lrsamplerin,o_out._samplerout);
+		this._sampler.sampling(i_in.lrsamplerin,this._samplerout);
 		//tracker進行
-		this._tracker.progress(o_out._samplerout, o_out._trackout);
+		this._tracker.progress(this._samplerout, this._trackout);
 	
 		//トラックしてないrectターゲット1個探してunknownターゲットに入力
-		NyARTarget tt=findEmptyTagItem(o_out._trackout.target_list);
+		NyARTarget tt=findEmptyTagItem(this._trackout.target_list);
 		if(tt!=null){
-			o_out.addUnknownTarget(tt);
+			this.addUnknownTarget(tt);
 		}
 		//リストのアップデート
-		updateLists(o_out);
+		updateLists();
 		//リストのアップグレード
-		upgradeLists(o_out);
+		upgradeLists();
 		return;
 	}
-	private final void upgradeLists(NyARRealitySnapshot o_out) throws NyARException
+	private final void upgradeLists() throws NyARException
 	{
-		NyARRealityTarget[] rt_array=o_out.target.getArray();
-		for(int i=o_out.target.getLength()-1;i>=0;i--)
+		NyARRealityTarget[] rt_array=this.target.getArray();
+		for(int i=this.target.getLength()-1;i>=0;i--)
 		{
 			switch(rt_array[i].target_type)
 			{
 			case NyARRealityTarget.RT_DEAD:
 				//deadターゲットの削除
-				o_out.deleteTarget(i);
+				this.deleteTarget(i);
 				continue;
 			case NyARRealityTarget.RT_KNOWN:
 			case NyARRealityTarget.RT_UNKNOWN:
 				//KNOWNとUNKNOWNは、生存チェックして、死んでたらdeadターゲットへ。自動死んでたの復帰機能を作るときは、この辺いじくる。
 				if(!isTargetAlive(rt_array[i])){
-					o_out.changeTargetToDead(rt_array[i]);
+					this.changeTargetToDead(rt_array[i]);
 				}
 				continue;
 			default:
@@ -116,10 +165,10 @@ public class NyARReality
 		}
 	}
 
-	private final void updateLists(NyARRealitySnapshot o_out) throws NyARException
+	private final void updateLists() throws NyARException
 	{
-		NyARRealityTarget[] rt_array=o_out.target.getArray();
-		for(int i=o_out.target.getLength()-1;i>=0;i--){
+		NyARRealityTarget[] rt_array=this.target.getArray();
+		for(int i=this.target.getLength()-1;i>=0;i--){
 			NyARRealityTarget tar=rt_array[i];
 			switch(tar.target_type)
 			{
@@ -173,4 +222,150 @@ public class NyARReality
 		}
 		return null;
 	}
+	//RealityTarget操作系関数
+	
+	/**
+	 * Unknownリストへ新しいRealityTargetを追加する。
+	 * @param i_track_target
+	 * Unknowntargetの元にするTrackTarget
+	 */
+	private final NyARRealityTarget addUnknownTarget(NyARTarget i_track_target) throws NyARException
+	{
+		NyARRealityTarget rt=this._pool.newNewTarget(i_track_target);
+		if(rt==null){
+			return null;
+		}
+		//個数制限
+		if(this._number_of_unknown>=this.MAX_LIMIT_UNKNOWN)
+		{
+			return null;
+		}
+		rt.target_type=NyARRealityTarget.RT_UNKNOWN;
+		this.target.pushAssert(rt);
+		this._number_of_unknown++;
+		return rt;
+	}	
+	private final void deleteTarget(int i_index)
+	{
+		//削除できるのはdeadターゲットだけ
+		assert(this.target.getItem(i_index).target_type==NyARRealityTarget.RT_DEAD);
+		//poolから開放してリストから削除
+		this.target.getItem(i_index).releaseObject();
+		this.target.removeIgnoreOrder(i_index);
+		this._number_of_dead--;
+	}
+	/**
+	 * Unknownターゲットから、指定したインデクス番号のターゲットをKnownターゲットへ移動します。
+	 * @param i_index
+	 * @return
+	 * 成功すると、移動したターゲットを返します。
+	 * @throws NyARException 
+	 */
+	public final NyARRealityTarget changeTargetToKnown(NyARRealityTarget i_item,int i_dir,double i_marker_width)
+	{
+		//遷移元制限
+		if(i_item.target_type!=NyARRealityTarget.RT_UNKNOWN){
+			return null;
+		}
+		//ステータス制限
+		if(i_item.ref_tracktarget.st_type!=NyARTargetStatus.ST_RECT){
+			return null;
+		}
+		//個数制限
+		if(this._number_of_known>=this.MAX_LIMIT_KNOWN)
+		{
+			return null;
+		}
+		//ステータス制限
+		i_item.target_type=NyARRealityTarget.RT_KNOWN;
+		
+		//マーカのサイズを決めておく。
+		i_item.offset.setSquare(i_marker_width);
+		
+		//directionに応じて、元矩形のrectを回転しておく。
+		((NyARRectTargetStatus)(i_item.ref_tracktarget.ref_status)).shiftByArtkDirection(i_dir);		
+		
+		//数の調整
+		this._number_of_unknown--;
+		this._number_of_known++;
+		return i_item;
+	}
+	
+	/**
+	 * 指定したKnown,またはUnknownターゲットを、ターゲットをDeadターゲットにします。
+	 * @param i_item
+	 * @throws NyARException 
+	 */
+	public final void changeTargetToDead(NyARRealityTarget i_item) throws NyARException
+	{
+		assert(i_item.target_type==NyARRealityTarget.RT_UNKNOWN || i_item.target_type==NyARRealityTarget.RT_KNOWN);
+		assert(i_item.ref_tracktarget.st_type!=NyARTargetStatus.ST_IGNORE);
+		//所有するトラックターゲットがIGNOREに設定
+		this._trackout.changeStatusToIgnore(i_item.ref_tracktarget);
+		//数の調整
+		if(i_item.target_type==NyARRealityTarget.RT_UNKNOWN){
+			this._number_of_unknown--;
+		}else{
+			this._number_of_known--;
+		}
+		i_item.target_type=NyARRealityTarget.RT_DEAD;
+		this._number_of_dead++;
+		return;
+	}
+	/**
+	 * Unknownターゲットから、指定したシリアル番号のターゲットをKnownターゲットへ移動します。
+	 * @param i_index
+	 * @return
+	 * 成功すると、移動したターゲットを返します。
+	 * @throws NyARException 
+	 */
+	public final NyARRealityTarget changeTargetToKnownBySerial(int i_serial,int i_dir,double i_marker_width) throws NyARException
+	{
+		NyARRealityTarget item=this.target.getItemBySerial(i_serial);
+		if(item==null){
+			return null;
+		}
+		return changeTargetToKnown(item,i_dir,i_marker_width);
+	}
+	/**
+	 * Knownターゲットから、指定したシリアル番号のターゲットをDeadターゲットへ移動します。
+	 * @param i_index
+	 * @throws NyARException 
+	 */
+	public final NyARRealityTarget changeTargetToDeadBySerial(int i_serial) throws NyARException
+	{
+		NyARRealityTarget item=this.target.getItemBySerial(i_serial);
+		if(item==null){
+			return null;
+		}
+		changeTargetToDead(item);
+		return item;
+	}
+	//アクセサ
+	
+	/**
+	 * @return
+	 * 現在のUnKnownターゲットの数を返す。
+	 */
+	public final int getNumberOfUnknown()
+	{
+		return this._number_of_unknown;
+	}
+	/**
+	 * @return
+	 * 現在のKnownターゲットの数を返す。
+	 */
+	public final int getNumberOfKnown()
+	{
+		return this._number_of_known;
+	}
+	/**
+	 * @return
+	 * 現在のDeadターゲットの数を返す。
+	 */
+	public final int getNumberOfDead()
+	{
+		return this._number_of_dead;
+	}
+	
 }
