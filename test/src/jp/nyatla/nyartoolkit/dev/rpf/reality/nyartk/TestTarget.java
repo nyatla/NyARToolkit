@@ -4,12 +4,15 @@ import java.awt.Color;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Insets;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
 import javax.imageio.ImageIO;
+import javax.media.format.VideoFormat;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
@@ -17,6 +20,7 @@ import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_RGB;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve;
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSampler;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerIn;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
@@ -34,69 +38,26 @@ import jp.nyatla.nyartoolkit.utils.j2se.NyARRasterImageIO;
  * 出力ソース
  * @author nyatla
  */
-interface InputSource
+class InputSource
 {
-	public void UpdateInput(LowResolutionLabelingSamplerIn o_input) throws NyARException;
+	public NyARRealityIn reality_in;
 }
 
-class ImageSource implements InputSource
+class ImageSource extends InputSource
 {
-	private BufferedImage _src_image;
-
-	public ImageSource(String i_filename) throws IOException
+	public ImageSource(String i_filename) throws NyARException, IOException
 	{
-		this._src_image = ImageIO.read(new File(i_filename));
-	}
-	public void UpdateInput(NyARRealityIn o_input) throws NyARException
-	{
-		INyARRgbRaster ra =new NyARRgbRaster_RGB(320,240);
-		NyARRasterImageIO.copy(this._src_image,ra);
-		//GS値化
-		NyARGrayscaleRaster gs=new NyARGrayscaleRaster(320,240);
-		NyARRasterFilter_Rgb2Gs_RgbAve filter=new NyARRasterFilter_Rgb2Gs_RgbAve(ra.getBufferType());
-		filter.doFilter(ra,gs);
-		//samplerへ入力
-		o_input.wrapBuffer(ra);
-		
-	}
-}
-class MoveSource implements InputSource
-{
-	private BufferedImage _src_image=new BufferedImage(320,240,BufferedImage.TYPE_INT_RGB);
-	private int sx,sy,x,y;
-	private int sx2,sy2,x2,y2;
-
-	public MoveSource()
-	{
-		sx=1;sy=1;x=10;y=10;
-		sx2=-2;sy2=1;x2=100;y2=10;
-	}
-	public void UpdateInput(LowResolutionLabelingSamplerIn o_input) throws NyARException
-	{
-        Graphics s=_src_image.getGraphics();
-        s.setColor(Color.white);
-        s.fillRect(0,0,320,240);
-        s.setColor(Color.black);
-        //s.fillRect(x, y,50,50);
-        s.fillRect(x2, y2,50,50);
-        x+=sx;y+=sy;
-        if(x<0 || x>200){sx*=-1;}if(y<0 || y>200){sy*=-1;}
-        x2+=sx2;y2+=sy2;
-        if(x2<0 || x2>200){sx2*=-1;}if(y2<0 || y2>200){sy2*=-1;}
-        INyARRgbRaster ra =new NyARRgbRaster_RGB(320,240);
-        NyARRasterImageIO.copy(_src_image, ra);
-		//GS値化
-		NyARGrayscaleRaster gs=new NyARGrayscaleRaster(320,240);
-		NyARRasterFilter_Rgb2Gs_RgbAve filter=new NyARRasterFilter_Rgb2Gs_RgbAve(ra.getBufferType());
-		filter.doFilter(ra,gs);
-		//samplerへ入力
-		o_input.wrapBuffer(gs);
-		
+		BufferedImage _src_image;
+		_src_image = ImageIO.read(new File(i_filename));
+		NyARReality_JavaImage ri=new NyARReality_JavaImage(_src_image.getWidth(),_src_image.getHeight(),2);
+		ri.setImage(_src_image);
+		this.reality_in=ri;
 	}
 }
 
-class LiveSource implements InputSource,JmfCaptureListener
+class LiveSource extends InputSource implements JmfCaptureListener
 {
+	private JmfCaptureDevice _capture;
 	public LiveSource() throws NyARException
 	{
 		//キャプチャの準備
@@ -109,31 +70,18 @@ class LiveSource implements InputSource,JmfCaptureListener
 			}		
 		}
 		this._capture.setOnCapture(this);
-		this._raster = new JmfNyARRaster_RGB(320, 240,this._capture.getCaptureFormat());
-		this._filter	= new NyARRasterFilter_Rgb2Gs_RgbAve(_raster.getBufferType());
 		this._capture.start();
-		
+		this.reality_in=new NyARReality_JmfSource(320, 240,this._capture.getCaptureFormat());
 		return;
 		
 	}
-	public void UpdateInput(LowResolutionLabelingSamplerIn o_input) throws NyARException
-	{
-		synchronized(this._raster){
-			this._filter.doFilter(this._raster,this._bi);
-		}
-		o_input.wrapBuffer(this._bi);
-	}
-	private JmfCaptureDevice _capture;
-	private JmfNyARRaster_RGB _raster;
-	private NyARGrayscaleRaster _bi=new NyARGrayscaleRaster(320,240);
-	private NyARRasterFilter_Rgb2Gs_RgbAve _filter;
 	
 	public void onUpdateBuffer(javax.media.Buffer i_buffer)
 	{
 		try {
 			//キャプチャしたバッファをラスタにセット
-			synchronized(this._raster){
-				this._raster.setBuffer(i_buffer);
+			synchronized(this){
+				((NyARReality_JmfSource)(this.reality_in)).setImage(i_buffer);
 			}
 			//キャプチャしたイメージを表示用に加工
 		}catch(Exception e)
@@ -143,7 +91,7 @@ class LiveSource implements InputSource,JmfCaptureListener
 
 	}
 
-	private void startCapture()
+	public void startCapture()
 	{
 		try {
 			this._capture.start();
@@ -155,63 +103,101 @@ class LiveSource implements InputSource,JmfCaptureListener
 
 
 
+
 /**
  * @todo
  * 矩形の追跡は動いてるから、位置予測機能と組み合わせて試すこと。
  *
  */
 
-public class TestTarget extends Frame
+public class TestTarget extends Frame implements MouseListener
 {
-	NyARReality _reality;
+	public void mouseClicked(MouseEvent e)
+	{
+		int x=e.getX()-this.getInsets().left;
+		int y=e.getY()-this.getInsets().top;
+		System.out.println(x+":"+y);
+		synchronized(this._input_source.reality_in)
+		{
+			for(int i=this._reality_snapshot.target.getLength()-1;i>=0;i--)
+			{
+				NyARRealityTarget rt=this._reality_snapshot.target.getItem(i);
+				if(rt.isInnerPoint2d(x, y))
+				{
+					if(e.getButton()==MouseEvent.BUTTON1){
+						//左ボタンはUNKNOWN→KNOWN
+						if(rt.target_type==NyARRealityTarget.RT_UNKNOWN){
+							this._reality_snapshot.changeTargetToKnown(rt,0,40);
+							break;
+						}
+					}else if(e.getButton()==MouseEvent.BUTTON3){
+						//右ボタンはUNKNOWN　or KNOWN to dead
+						try {
+							this._reality_snapshot.changeTargetToDead(rt);
+						} catch (NyARException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
+				}
+			}
+		}
+	}
+	public void mouseEntered(MouseEvent e){}
+	public void mouseExited(MouseEvent e){}
+	public void mousePressed(MouseEvent e){}
+	public void mouseReleased(MouseEvent e){}
+	
+	
+	
+	private NyARReality _reality;
+	private NyARRealitySnapshot _reality_snapshot;
 	
 	
 	NyARParam _param;
 	
 	private final static String SAMPLE_FILES = "../Data/320x240ABGR.png";
+	private final static String PARAM_FILE = "../Data/camera_para.dat";
 
 	private static final long serialVersionUID = -2110888320986446576L;
 
 
 	private int W = 320;
 	private int H = 240;
-//	BufferedImage _src_image;
 	InputSource _input_source;
 	public TestTarget() throws NyARException, Exception
 	{
 		setTitle("NyARReality test");
 		Insets ins = this.getInsets();
 		this.setSize(1024 + ins.left + ins.right, 768 + ins.top + ins.bottom);
+		this._param=new NyARParam();
+		this._param.loadARParamFromFile(PARAM_FILE);
 		this._param.changeScreenSize(W,H);
-		this._reality=new NyARReality(320,240,2,this._param.getPerspectiveProjectionMatrix(), H, H);
-//	this._input_source=new ImageSource(SAMPLE_FILES);
-//		this._input_source=new MoveSource();
-		this._input_source=new LiveSource();
+		this._reality=new NyARReality(320,240,2,this._param.getPerspectiveProjectionMatrix(),10,10);
+		this._reality_snapshot=new NyARRealitySnapshot(10,10);
+//		this._input_source=new LiveSource();
+		this._input_source=new ImageSource(SAMPLE_FILES);
+		addMouseListener(this);
 
 		return;
-	}
-
-
-
-	
-	
+	}	
 	public void draw(INyARRgbRaster i_raster)
 	{
 		
 	}
-	static long tick;
     public void update()
     {
 		try {
 			// マーカーを検出
-			
-			this._input_source.UpdateInput(this.samplerin);
-
 			Thread.sleep(30);
-			
-			this.sampler.sampling(this.samplerin,this.samplerout);
-			//tracker更新
-			this.tracker.progress(this.samplerout,this.trackerout);
+			synchronized(this._input_source.reality_in){
+				Date d2 = new Date();
+				for (int i = 0; i < 1000; i++) {
+					this._reality.progress(this._input_source.reality_in,this._reality_snapshot);			
+				}
+				Date d = new Date();
+				System.out.println(d.getTime() - d2.getTime());
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -225,18 +211,28 @@ public class TestTarget extends Frame
     	//ワーク画面
     	BufferedImage bmp=this._tmp_bf;
     	Graphics g=bmp.getGraphics();
-    	NyARRasterImageIO.copy(this.samplerout.ref_base_raster,bmp);
+    	NyARRasterImageIO.copy(this._input_source.reality_in.sourceimage,bmp);
+    	
     	//Ignore,Coord,New
 
     	//表示
+    	g.setColor(Color.black);
+    	g.drawString("Unknown:"+this._reality_snapshot.number_of_unknown,200,200);
+    	g.drawString("Known:"+this._reality_snapshot.number_of_known,200,210);
+    	g.drawString("Dead:"+this._reality_snapshot.number_of_dead,200,220);
     	ig.drawImage(bmp,ins.left,ins.top,null);
-    	drawImage(ig,ins.left+320,ins.top,this.samplerin._rbraster);
+
+    	drawImage(ig,ins.left+320,ins.top,this._input_source.reality_in.lrsamplerin._rbraster);
+    	//
+
     }
     private void drawImage(Graphics g,int x,int y,NyARGrayscaleRaster r) throws NyARException
     {
         BufferedImage _tmp_bf=new BufferedImage(r.getWidth(),r.getHeight(),BufferedImage.TYPE_INT_RGB);
     	NyARRasterImageIO.copy(r, _tmp_bf);
+    	
     	g.drawImage(_tmp_bf, x,y, null);
+     	
     }
     //
     //描画関数

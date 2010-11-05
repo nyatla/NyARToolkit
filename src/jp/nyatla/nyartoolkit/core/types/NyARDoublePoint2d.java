@@ -73,9 +73,20 @@ public class NyARDoublePoint2d
 	 * @param p3
 	 * @return
 	 */
-	public static double exteriorProduct3Point(NyARDoublePoint2d p1,NyARDoublePoint2d p2,NyARDoublePoint2d p3)
+	public final static double crossProduct3Point(NyARDoublePoint2d p1,NyARDoublePoint2d p2,NyARDoublePoint2d p3)
 	{
 		return (p2.x-p1.x)*(p3.y-p2.y)-(p2.y-p1.y)*(p3.x-p2.x);
+	}
+	/**
+	 * p1->p2と、p2->p3の直線の外積を計算します。
+	 * @param p1
+	 * @param p2
+	 * @param p3
+	 * @return
+	 */
+	public final static double crossProduct3Point(NyARDoublePoint2d p1,NyARDoublePoint2d p2,double p3_x,double p3_y)
+	{
+		return (p2.x-p1.x)*(p3_y-p2.y)-(p2.y-p1.y)*(p3_x-p2.x);
 	}
 	/**
 	 * コンストラクタです。

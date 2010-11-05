@@ -45,7 +45,8 @@ public class LowResolutionLabelingSamplerIn
 		this._rbraster=new LrlsGsRaster(i_width/div,i_height/div,this._base_raster, div, true);
 	}
 	/**
-	 * GS画像をセットします。この関数を使ってセットした画像は、インスタンスから参照されます。
+	 * GS画像をセットし、syncSourceで内部画像を更新します。
+	 * この関数を使ってセットした画像は、インスタンスから参照されます。
 	 * @param i_ref_source
 	 * @throws NyARException 
 	 */
@@ -53,13 +54,23 @@ public class LowResolutionLabelingSamplerIn
 	{
 		//バッファのスイッチ
 		this._base_raster.wrapBuffer(i_ref_source.getBuffer());
+		syncSource();
+	}
+	/**
+	 * GS画像と他の内部画像を同期させます。this._base_rasterが内部参照の場合に、GS画像を更新した後に
+	 * 呼び出してください。
+	 * @param i_ref_source
+	 * @throws NyARException
+	 */
+	public final void syncSource() throws NyARException
+	{
 		//解像度を半分にしながらコピー
 		NyARGrayscaleRaster.copy(this._base_raster,0,0,this._rb_source.resolution,this._rb_source);
 
 		//最終解像度のエッジ検出画像を作成
 		this._rfilter.doFilter(this._rb_source,this._rbraster);
 		this._nfilter.doFilter(this._rbraster, this._rbraster);
-		
 	}
+	
 
 }

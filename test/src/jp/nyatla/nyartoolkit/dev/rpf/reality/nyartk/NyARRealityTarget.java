@@ -46,7 +46,7 @@ public class NyARRealityTarget extends NyARManagedObject
 	/**
 	 * このターゲットの位置と座標
 	 */
-	public NyARTransMatResult transmat;
+	public NyARTransMatResult transform_matrix=new NyARTransMatResult();
 	/**
 	 * このターゲットの大きさ。3次元座標を計算するときに使います。
 	 */
@@ -56,7 +56,7 @@ public class NyARRealityTarget extends NyARManagedObject
 	 */
 	public NyARTarget ref_tracktarget;
 	
-	public NyARSquare ideal_square;
+	public NyARSquare screen_square=new NyARSquare();
 	
 	/**
 	 * このターゲットの情報タイプ
@@ -91,14 +91,31 @@ public class NyARRealityTarget extends NyARManagedObject
 	//[OPT:]指定したターゲットとの変換行列を求める。
 	//[OPT:]画面上の点に対応するターゲット座標上の点を求める。
 	//[OPT:]ターゲット座標上の点に対する、画面上の座標を求める。
-	public boolean getPatt3d(int i_resolution_mag,INyARRgbRaster o_raster);
-	public boolean getPatt2d(int i_resolution_mag,INyARRgbRaster o_raster);
+//	public boolean getPatt3d(int i_resolution_mag,INyARRgbRaster o_raster);
+//	public boolean getPatt2d(int i_resolution_mag,INyARRgbRaster o_raster);
 	
 	public void getAreaImage(){};
 	public void getMetadata(){};
 	public void getSquare(){};
 	public void get(){};
-	
+	/**
+	 * 指定した点が、このターゲットの内側であるか判定します。この関数は、Known/Unknownターゲットに使用できます。
+	 * @param i_x
+	 * @param i_y
+	 * @return
+	 */
+	public boolean isInnerPoint2d(int i_x,int i_y)
+	{
+		assert(this.target_type==RT_UNKNOWN || this.target_type==RT_KNOWN);
+		NyARDoublePoint2d[] vx=((NyARRectTargetStatus)(this.ref_tracktarget.ref_status)).vertex;
+		for(int i=3;i>=0;i--){
+			if(NyARDoublePoint2d.crossProduct3Point(vx[i],vx[(i+1)%4],i_x,i_y)<0)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
 	
 	/**
 	 * ユーザオブジェクトを配置するポインタータグ

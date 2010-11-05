@@ -123,11 +123,21 @@ public class NyARLinear
 		return makeLinearWithNormalize(i_point1.x,i_point1.y,i_point2.x,i_point2.y);
 	}
 	/**
+	 * ２点を結ぶ直線の式を得る。この式は正規化されている。
+	 * @param i_point1
+	 * @param i_point2
+	 * @return
 	 */
 	public final boolean makeLinearWithNormalize(NyARDoublePoint2d i_point1,NyARDoublePoint2d i_point2)
 	{
 		return makeLinearWithNormalize(i_point1.x,i_point1.y,i_point2.x,i_point2.y);
 	}
+	/**
+	 * ２点を結ぶ直線の式を得る。この式は正規化されている。
+	 * @param i_point1
+	 * @param i_point2
+	 * @return
+	 */	
 	public final boolean makeLinearWithNormalize(double x1,double y1,double x2,double y2)
 	{
 		double dx=y2-y1;
@@ -178,16 +188,8 @@ public class NyARLinear
 		return true;
 	}
 	/**
-	 * i_x,i_yを通過する、直行する直線を求めます。
+	 * i_x,i_yを通過する、i_linearの法線を計算して、格納します。
 	 */
-	public final void normalLine(double i_x,double i_y)
-	{
-		double la=this.a;
-		double lb=this.b;
-		this.a=lb;
-		this.b=-la;
-		this.c=-(lb*i_x-la*i_y);
-	}
 	public final void normalLine(NyARLinear i_linear,double i_x,double i_y)
 	{
 		double la=i_linear.a;

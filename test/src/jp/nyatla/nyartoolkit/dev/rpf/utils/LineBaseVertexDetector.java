@@ -105,7 +105,7 @@ public class LineBaseVertexDetector
 	{
 		int ret=0;
 		for(int i=0;i<4;i++){
-			if(0<NyARDoublePoint2d.exteriorProduct3Point(p[order[i+0]],p[order[(i+1)%4]],p[order[(i+2)%4]])){
+			if(0<NyARDoublePoint2d.crossProduct3Point(p[order[i+0]],p[order[(i+1)%4]],p[order[(i+2)%4]])){
 				ret++;
 			}
 		}

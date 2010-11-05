@@ -50,10 +50,15 @@ public class NyARReality
 		this._sampler=new LowResolutionLabelingSampler(i_width,i_height,i_depth);
 		return;
 	}
-private boolean isTargetAlive(NyARRealityTarget i_target)
-{
-	return false;
-}
+	/**
+	 * Unknown/Knownを維持できる条件
+	 * @param i_target
+	 * @return
+	 */
+	private final boolean isTargetAlive(NyARRealityTarget i_target)
+	{
+		return i_target.ref_tracktarget.st_type==NyARTargetStatus.ST_RECT;
+	}
 	/**
 	 * o_outにあるRealitySnapshotの状態を、i_inのRealitySourceを元に進めます。
 	 * 関数を実行すると、RealitySnapshotのターゲットの状態は更新され、ターゲットの所属リストが書き換えられます。
@@ -71,7 +76,6 @@ private boolean isTargetAlive(NyARRealityTarget i_target)
 	 */
 	public void progress(NyARRealityIn i_in,NyARRealitySnapshot o_out) throws NyARException
 	{
-		long tick=0;
 		//sampler進行
 		this._sampler.sampling(i_in.lrsamplerin,o_out._samplerout);
 		//tracker進行
@@ -83,12 +87,12 @@ private boolean isTargetAlive(NyARRealityTarget i_target)
 			o_out.addUnknownTarget(tt);
 		}
 		//リストのアップデート
-		updateLists(tick,o_out);
+		updateLists(o_out);
 		//リストのアップグレード
-		upgradeLists(tick,o_out);
+		upgradeLists(o_out);
 		return;
 	}
-	private final void upgradeLists(long i_reality_tick,NyARRealitySnapshot o_out) throws NyARException
+	private final void upgradeLists(NyARRealitySnapshot o_out) throws NyARException
 	{
 		NyARRealityTarget[] rt_array=o_out.target.getArray();
 		for(int i=o_out.target.getLength()-1;i>=0;i--)
@@ -112,7 +116,7 @@ private boolean isTargetAlive(NyARRealityTarget i_target)
 		}
 	}
 
-	private final void updateLists(long i_reality_tick,NyARRealitySnapshot o_out) throws NyARException
+	private final void updateLists(NyARRealitySnapshot o_out) throws NyARException
 	{
 		NyARRealityTarget[] rt_array=o_out.target.getArray();
 		for(int i=o_out.target.getLength()-1;i>=0;i--){
@@ -125,9 +129,9 @@ private boolean isTargetAlive(NyARRealityTarget i_target)
 			case NyARRealityTarget.RT_KNOWN:
 
 				//矩形座標計算
-				setSquare(((NyARRectTargetStatus)(tar.ref_tracktarget.ref_status)).vertex,tar.ideal_square);
+				setSquare(((NyARRectTargetStatus)(tar.ref_tracktarget.ref_status)).vertex,tar.screen_square);
 				//3d座標計算
-				this._transmat.transMatContinue(tar.ideal_square,tar.offset,tar.transmat,tar.transmat);
+				this._transmat.transMatContinue(tar.screen_square,tar.offset,tar.transform_matrix,tar.transform_matrix);
 				continue;
 			case NyARRealityTarget.RT_UNKNOWN:
 				continue;

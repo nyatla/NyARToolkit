@@ -7,6 +7,10 @@ import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTrackerSnapshot;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARRectTargetStatus;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARTargetStatus;
 
+/**
+ * Realityのスナップショットを格納します。
+ *
+ */
 public class NyARRealitySnapshot
 {
 	/**
@@ -39,15 +43,16 @@ public class NyARRealitySnapshot
 	
 	//種類ごとのターゲットの数
 	
-	private int number_of_unknown;
-	private int number_of_known;
-	private int number_of_dead;
+	public int number_of_unknown;
+	public int number_of_known;
+	public int number_of_dead;
 
 	public NyARRealitySnapshot(int i_max_known_target,int i_max_unknown_target) throws NyARException
 	{
 		this._pool=new NyARRealityTargetPool(i_max_known_target+i_max_unknown_target);
 		this.target=new NyARRealityTargetList<NyARRealityTarget>(i_max_known_target+i_max_unknown_target);
 		//トラック数は、newがi_max_known_target+i_max_unknown_target,rectがi_max_known_targetと同じ数です。
+		this._samplerout=new LowResolutionLabelingSamplerOut(100+i_max_known_target+i_max_unknown_target);
 		this._trackout=new NyARTrackerSnapshot(i_max_known_target+i_max_unknown_target,1,i_max_known_target);
 		this.number_of_dead=this.number_of_unknown=this.number_of_known=0;
 		this.MAX_LIMIT_KNOWN=i_max_known_target;
@@ -67,7 +72,8 @@ public class NyARRealitySnapshot
 			return null;
 		}
 		rt.target_type=NyARRealityTarget.RT_UNKNOWN;
-		this.number_of_known++;
+		this.target.pushAssert(rt);
+		this.number_of_unknown++;
 		return rt;
 	}	
 	public void deleteTarget(int i_index)
@@ -87,7 +93,7 @@ public class NyARRealitySnapshot
 	 * 成功すると、移動したターゲットを返します。
 	 * @throws NyARException 
 	 */
-	public final NyARRealityTarget changeTargetToKnown(NyARRealityTarget i_item,int i_dir,double i_marker_width) throws NyARException
+	public final NyARRealityTarget changeTargetToKnown(NyARRealityTarget i_item,int i_dir,double i_marker_width)
 	{
 		//遷移元制限
 		if(i_item.target_type!=NyARRealityTarget.RT_UNKNOWN){
@@ -125,17 +131,16 @@ public class NyARRealitySnapshot
 	public final void changeTargetToDead(NyARRealityTarget i_item) throws NyARException
 	{
 		assert(i_item.target_type==NyARRealityTarget.RT_UNKNOWN || i_item.target_type==NyARRealityTarget.RT_KNOWN);
-		//所有するトラックターゲットがIGNOREでなければIGNOREへ遷移
-		if(i_item.ref_tracktarget.st_type!=NyARTargetStatus.ST_IGNORE){
-			this._trackout.changeStatusToIgnore(i_item.ref_tracktarget);
-		}
-		i_item.target_type=NyARRealityTarget.RT_DEAD;
+		assert(i_item.ref_tracktarget.st_type!=NyARTargetStatus.ST_IGNORE);
+		//所有するトラックターゲットがIGNOREに設定
+		this._trackout.changeStatusToIgnore(i_item.ref_tracktarget);
 		//数の調整
 		if(i_item.target_type==NyARRealityTarget.RT_UNKNOWN){
 			this.number_of_unknown--;
 		}else{
 			this.number_of_known--;
 		}
+		i_item.target_type=NyARRealityTarget.RT_DEAD;
 		this.number_of_dead++;
 		return;
 	}

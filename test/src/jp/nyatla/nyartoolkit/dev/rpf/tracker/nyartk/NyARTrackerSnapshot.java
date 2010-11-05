@@ -154,7 +154,7 @@ public class NyARTrackerSnapshot
 			this.number_of_contoure--;
 			break;
 		default:
-			throw new NyARException();
+			return;
 		}
 		i_target.st_type=NyARTargetStatus.ST_IGNORE;
 		i_target.ref_status.releaseObject();
