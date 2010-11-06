@@ -1,8 +1,6 @@
 package jp.nyatla.nyartoolkit.dev.rpf.utils;
 
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
-import jp.nyatla.nyartoolkit.core.utils.NyARMath;
-
 
 /**
  * 2つの点集合同士を比較して、集合の各点同士の距離が最も近くになる組み合わせを計算
