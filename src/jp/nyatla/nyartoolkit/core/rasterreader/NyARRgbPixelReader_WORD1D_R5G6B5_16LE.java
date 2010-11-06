@@ -35,7 +35,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
 /**
  * 主にWindowsMobileのRGB565フォーマット読み出し用
  */
-public class NyARRgbPixelReader_WORD1D_R5G6B5_16LE implements INyARRgbPixelReader
+final public class NyARRgbPixelReader_WORD1D_R5G6B5_16LE implements INyARRgbPixelReader
 {
 	protected short[] _ref_buf;
 

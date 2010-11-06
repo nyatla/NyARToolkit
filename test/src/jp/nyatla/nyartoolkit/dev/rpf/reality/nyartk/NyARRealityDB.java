@@ -9,6 +9,9 @@ public class NyARRealityDB
 {
 	public class RealityData
 	{
+		public int domain;
+		public int mask;
+		
 		final static int DT_ARTK16=0;
 		final static int DT_NYID=1;
 		public int data_type;

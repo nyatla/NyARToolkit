@@ -33,7 +33,7 @@ package jp.nyatla.nyartoolkit.core.rasterreader;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
-public class NyARRgbPixelReader_BYTE1D_B8G8R8X8_32 implements INyARRgbPixelReader
+final public class NyARRgbPixelReader_BYTE1D_B8G8R8X8_32 implements INyARRgbPixelReader
 {
 	protected byte[] _ref_buf;
 	private NyARIntSize _ref_size;

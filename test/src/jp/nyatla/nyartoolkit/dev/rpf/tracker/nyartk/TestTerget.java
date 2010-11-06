@@ -189,7 +189,7 @@ public class TestTerget extends Frame
 	LowResolutionLabelingSamplerOut samplerout;
 	
 	NyARTracker tracker;
-	NyARTrackerSnapshot trackerout;
+//	NyARTrackerSnapshot trackerout;
 	
 	private final static String SAMPLE_FILES = "../Data/320x240ABGR.png";
 
@@ -216,7 +216,6 @@ public class TestTerget extends Frame
 		
 		//create tracker
 		this.tracker=new NyARTracker(10,1,10);
-		this.trackerout=new NyARTrackerSnapshot(10,1,10);
 
 		return;
 	}
@@ -248,7 +247,7 @@ public class TestTerget extends Frame
 			
 			this.sampler.sampling(this.samplerin,this.samplerout);
 			//tracker更新
-			this.tracker.progress(this.samplerout,this.trackerout);
+			this.tracker.progress(this.samplerout);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -264,20 +263,20 @@ public class TestTerget extends Frame
     	Graphics g=bmp.getGraphics();
     	NyARRasterImageIO.copy(this.samplerout.ref_base_raster,bmp);
     	//Ignore,Coord,New
-    	for(int i=this.trackerout.target_list.getLength()-1;i>=0;i--){
-    		switch(this.trackerout.target_list.getItem(i).st_type)
+    	for(int i=this.tracker._targets.getLength()-1;i>=0;i--){
+    		switch(this.tracker._targets.getItem(i).st_type)
     		{
     		case NyARTargetStatus.ST_CONTURE:
-            	drawContourTarget(this.trackerout.target_list.getItem(i),bmp,Color.blue);
+            	drawContourTarget(this.tracker._targets.getItem(i),bmp,Color.blue);
     			break;
     		case NyARTargetStatus.ST_IGNORE:
-            	drawIgnoreTarget(this.trackerout.target_list.getItem(i),bmp,Color.red);
+            	drawIgnoreTarget(this.tracker._targets.getItem(i),bmp,Color.red);
     			break;
     		case NyARTargetStatus.ST_NEW:
-            	drawNewTarget(this.trackerout.target_list.getItem(i),bmp,Color.green);
+            	drawNewTarget(this.tracker._targets.getItem(i),bmp,Color.green);
     			break;
     		case NyARTargetStatus.ST_RECT:
-    			drawRectTarget(this.trackerout.target_list.getItem(i),bmp,Color.cyan);
+    			drawRectTarget(this.tracker._targets.getItem(i),bmp,Color.cyan);
     			break;
     		}
     	}

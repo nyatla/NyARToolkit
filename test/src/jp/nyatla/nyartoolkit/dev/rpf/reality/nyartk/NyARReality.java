@@ -38,10 +38,6 @@ public class NyARReality
 	/**
 	 * samplerの出力値。この変数はNyARRealityからのみ使います。
 	 */
-	private NyARTrackerSnapshot _trackout;
-	/**
-	 * samplerの出力値。この変数はNyARRealityからのみ使います。
-	 */
 	private NyARRealityTargetPool _pool;
 
 	/**
@@ -90,7 +86,6 @@ public class NyARReality
 		this.target=new NyARRealityTargetList<NyARRealityTarget>(number_of_reality_target);
 		//トラック数は、newがi_max_known_target+i_max_unknown_target,rectがi_max_known_targetと同じ数です。
 		this._samplerout=new LowResolutionLabelingSamplerOut(100+number_of_reality_target);
-		this._trackout=new NyARTrackerSnapshot(number_of_reality_target,1,i_max_known_target);
 		
 		//定数とかいろいろ
 		this.MAX_LIMIT_KNOWN=i_max_known_target;
@@ -128,10 +123,10 @@ public class NyARReality
 		//sampler進行
 		this._sampler.sampling(i_in.lrsamplerin,this._samplerout);
 		//tracker進行
-		this._tracker.progress(this._samplerout, this._trackout);
+		this._tracker.progress(this._samplerout);
 	
 		//トラックしてないrectターゲット1個探してunknownターゲットに入力
-		NyARTarget tt=findEmptyTagItem(this._trackout.target_list);
+		NyARTarget tt=findEmptyTagItem(this._tracker._targets);
 		if(tt!=null){
 			this.addUnknownTarget(tt);
 		}
@@ -301,7 +296,7 @@ public class NyARReality
 		assert(i_item.target_type==NyARRealityTarget.RT_UNKNOWN || i_item.target_type==NyARRealityTarget.RT_KNOWN);
 		assert(i_item.ref_tracktarget.st_type!=NyARTargetStatus.ST_IGNORE);
 		//所有するトラックターゲットがIGNOREに設定
-		this._trackout.changeStatusToIgnore(i_item.ref_tracktarget);
+		this._tracker.changeStatusToIgnore(i_item.ref_tracktarget);
 		//数の調整
 		if(i_item.target_type==NyARRealityTarget.RT_UNKNOWN){
 			this._number_of_unknown--;
