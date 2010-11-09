@@ -99,7 +99,8 @@ public class NyARObjectStack<T> extends NyARPointerStack<T>
 		return ret;
 	}
 	/**
-	 * このクラスは、オブジェクトをpushすることができない。
+	 * このクラスは、オブジェクトをpushすることはできません。
+	 * prePush()を使用してください。
 	 */
 	public T push(T i_object)
 	{

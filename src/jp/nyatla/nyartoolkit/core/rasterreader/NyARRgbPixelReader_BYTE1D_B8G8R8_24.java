@@ -33,17 +33,17 @@ package jp.nyatla.nyartoolkit.core.rasterreader;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
 /**
- * byte[]配列に、パディング無しの8bit画素値が、RGBRGBの順で並んでいる
+ * byte[]配列に、パディング無しの8bit画素値が、BGRBGRの順で並んでいる
  * バッファに使用できるピクセルリーダー
  *
  */
-final public class NyARRgbPixelReader_BYTE1D_R8G8B8_24 implements INyARRgbPixelReader
+final public class NyARRgbPixelReader_BYTE1D_B8G8R8_24 implements INyARRgbPixelReader
 {
 	protected byte[] _ref_buf;
 
 	private NyARIntSize _size;
 
-	public NyARRgbPixelReader_BYTE1D_R8G8B8_24(byte[] i_buf, NyARIntSize i_size)
+	public NyARRgbPixelReader_BYTE1D_B8G8R8_24(byte[] i_buf, NyARIntSize i_size)
 	{
 		this._ref_buf = i_buf;
 		this._size = i_size;
@@ -53,9 +53,9 @@ final public class NyARRgbPixelReader_BYTE1D_R8G8B8_24 implements INyARRgbPixelR
 	{
 		final byte[] ref_buf = this._ref_buf;
 		final int bp = (i_x + i_y * this._size.w) * 3;
-		o_rgb[0] = (ref_buf[bp + 0] & 0xff);// R
+		o_rgb[0] = (ref_buf[bp + 2] & 0xff);// R
 		o_rgb[1] = (ref_buf[bp + 1] & 0xff);// G
-		o_rgb[2] = (ref_buf[bp + 2] & 0xff);// B
+		o_rgb[2] = (ref_buf[bp + 0] & 0xff);// B
 		return;
 	}
 
@@ -66,9 +66,9 @@ final public class NyARRgbPixelReader_BYTE1D_R8G8B8_24 implements INyARRgbPixelR
 		final byte[] ref_buf = this._ref_buf;
 		for (int i = i_num - 1; i >= 0; i--) {
 			bp = (i_x[i] + i_y[i] * width) * 3;
-			o_rgb[i * 3 + 0] = (ref_buf[bp + 0] & 0xff);// R
+			o_rgb[i * 3 + 0] = (ref_buf[bp + 2] & 0xff);// R
 			o_rgb[i * 3 + 1] = (ref_buf[bp + 1] & 0xff);// G
-			o_rgb[i * 3 + 2] = (ref_buf[bp + 2] & 0xff);// B
+			o_rgb[i * 3 + 2] = (ref_buf[bp + 0] & 0xff);// B
 		}
 		return;
 	}
@@ -76,17 +76,17 @@ final public class NyARRgbPixelReader_BYTE1D_R8G8B8_24 implements INyARRgbPixelR
 	{
 		final byte[] ref_buf = this._ref_buf;
 		final int idx=(i_y*this._size.w+i_x)*3;
-		ref_buf[idx + 0] = (byte)i_rgb[0];// R
+		ref_buf[idx + 0] = (byte)i_rgb[2];// B
 		ref_buf[idx + 1] = (byte)i_rgb[1];// G
-		ref_buf[idx + 2] = (byte)i_rgb[2];// B
+		ref_buf[idx + 2] = (byte)i_rgb[0];// R
 	}
 	public void setPixel(int i_x, int i_y, int i_r,int i_g,int i_b) throws NyARException
 	{
 		final byte[] ref_buf = this._ref_buf;
 		final int idx=(i_y*this._size.w+i_x)*3;
-		ref_buf[idx + 0] = (byte)i_r;// R
+		ref_buf[idx + 0] = (byte)i_b;// B
 		ref_buf[idx + 1] = (byte)i_g;// G
-		ref_buf[idx + 2] = (byte)i_b;// B
+		ref_buf[idx + 2] = (byte)i_r;// R
 	}
 	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intrgb) throws NyARException
 	{

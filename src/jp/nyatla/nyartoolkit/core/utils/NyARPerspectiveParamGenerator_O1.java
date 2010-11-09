@@ -32,28 +32,26 @@ import jp.nyatla.nyartoolkit.core.types.*;
  */
 public class NyARPerspectiveParamGenerator_O1 extends NyARPerspectiveParamGenerator
 {
-	public NyARPerspectiveParamGenerator_O1(int i_local_x, int i_local_y, int i_width, int i_height)
+	/**
+	 * コンストラクタです。
+	 * @param i_local_x
+	 * パラメータ計算の基準点を指定します。
+	 * @param i_local_y
+	 * パラメータ計算の基準点を指定します。
+	 */
+	public NyARPerspectiveParamGenerator_O1(int i_local_x, int i_local_y)
 	{
-		super(i_local_x,i_local_y, i_width, i_height);
+		super(i_local_x,i_local_y);
 		return;
 	}
-	public final boolean getParam(NyARIntPoint2d[] i_vertex, double[] o_param) throws NyARException
-	{
-		return getParam(i_vertex[0].x,i_vertex[0].y,i_vertex[1].x,i_vertex[1].y,i_vertex[2].x,i_vertex[2].y,i_vertex[3].x,i_vertex[3].y,o_param);
-	}
-	public final boolean getParam(NyARDoublePoint2d[] i_vertex, double[] o_param) throws NyARException
-	{
-		return getParam(i_vertex[0].x,i_vertex[0].y,i_vertex[1].x,i_vertex[1].y,i_vertex[2].x,i_vertex[2].y,i_vertex[3].x,i_vertex[3].y,o_param);
-	}
 
-
-	private final boolean getParam(double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4, double[] o_param) throws NyARException
+	
+	protected final boolean getParam(int i_dest_w,int i_dest_h,double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4,double[] o_param)throws NyARException
 	{
-		final double ltx = this._local_x;
-		final double lty = this._local_y;
-		final double rbx = ltx + this._width;
-		final double rby = lty + this._height;
-
+		double ltx=this._local_x;
+		double lty=this._local_y;
+		double rbx=ltx+i_dest_w;
+		double rby=lty+i_dest_h;
 		double det_1;
 		double a13, a14, a23, a24, a33, a34, a43, a44;
 		double b11, b12, b13, b14, b21, b22, b23, b24, b31, b32, b33, b34, b41, b42, b43, b44;
@@ -230,4 +228,6 @@ public class NyARPerspectiveParamGenerator_O1 extends NyARPerspectiveParamGenera
 		o_param[4] = ky2 - F * ky3;
 		return true;
 	}
+
+
 }

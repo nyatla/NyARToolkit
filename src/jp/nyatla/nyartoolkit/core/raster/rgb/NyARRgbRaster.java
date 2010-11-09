@@ -13,6 +13,7 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 	 * バッファオブジェクトがアタッチされていればtrue
 	 */
 	protected boolean _is_attached_buffer;
+	
 	/**
 	 * 
 	 * @param i_width
@@ -44,6 +45,14 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 			throw new NyARException();
 		}
 	}
+	/**
+	 * Readerとbufferを初期化する関数です。コンストラクタから呼び出します。
+	 * 継承クラスでこの関数を拡張することで、対応するバッファタイプの種類を増やせます。
+	 * @param i_size
+	 * @param i_raster_type
+	 * @param i_is_alloc
+	 * @return
+	 */
 	protected boolean initInstance(NyARIntSize i_size,int i_raster_type,boolean i_is_alloc)
 	{
 		switch(i_raster_type)
@@ -59,6 +68,10 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 			case NyARBufferType.BYTE1D_R8G8B8_24:
 				this._buf=i_is_alloc?new byte[i_size.w*i_size.h*3]:null;
 				this._reader=new NyARRgbPixelReader_BYTE1D_R8G8B8_24((byte[])this._buf,i_size);
+				break;
+			case NyARBufferType.BYTE1D_B8G8R8_24:
+				this._buf=i_is_alloc?new byte[i_size.w*i_size.h*3]:null;
+				this._reader=new NyARRgbPixelReader_BYTE1D_B8G8R8_24((byte[])this._buf,i_size);
 				break;
 			case NyARBufferType.BYTE1D_X8R8G8B8_32:
 				this._buf=i_is_alloc?new byte[i_size.w*i_size.h*4]:null;

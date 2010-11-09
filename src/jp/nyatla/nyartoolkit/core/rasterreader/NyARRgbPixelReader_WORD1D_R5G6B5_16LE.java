@@ -80,6 +80,11 @@ final public class NyARRgbPixelReader_WORD1D_R5G6B5_16LE implements INyARRgbPixe
 	{
 		NyARException.notImplement();		
 	}
+	public void setPixel(int i_x, int i_y, int i_r,int i_g,int i_b) throws NyARException
+	{
+		NyARException.notImplement();		
+	}
+	
 	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intrgb) throws NyARException
 	{
 		NyARException.notImplement();		

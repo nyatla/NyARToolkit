@@ -59,6 +59,10 @@ public class NyARRgbRaster_Blank extends NyARRgbRaster_BasicClass
 				o_rgb[i * 3 + 2] = 0;// B
 			}
 		}
+		public void setPixel(int i_x, int i_y, int i_r,int i_g,int i_b) throws NyARException
+		{
+			NyARException.notImplement();			
+		}
 		public void setPixel(int i_x, int i_y, int[] i_rgb) throws NyARException
 		{
 			NyARException.notImplement();		

@@ -167,6 +167,11 @@ public class NyARDoublePoint2d
 		this.y=(double)i_src.y;
 		return;
 	}
-
+	public final void setValue(double x,double y)
+	{
+		this.x=x;
+		this.y=y;
+		return;
+	}
 	
 }

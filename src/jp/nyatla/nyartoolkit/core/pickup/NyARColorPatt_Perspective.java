@@ -40,6 +40,7 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 {
 	protected int[] _patdata;
 	protected NyARIntPoint2d _pickup_lt=new NyARIntPoint2d();	
+	protected NyARIntSize _pickup_wh=new NyARIntSize();	
 	protected int _resolution;
 	protected NyARIntSize _size;
 	protected NyARPerspectiveParamGenerator _perspective_gen;
@@ -103,13 +104,10 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 		assert(i_x_edge>=0);
 		assert(i_y_edge>=0);
 		//Perspectiveパラメタ計算器を作成
-		this._perspective_gen=new NyARPerspectiveParamGenerator_O1(
-			LOCAL_LT,LOCAL_LT,
-			(i_x_edge*2+this._size.w)*i_resolution,
-			(i_y_edge*2+this._size.h)*i_resolution);
+		this._perspective_gen=new NyARPerspectiveParamGenerator_O1(LOCAL_LT,LOCAL_LT);
 		//ピックアップ開始位置を計算
-		this._pickup_lt.x=i_x_edge*i_resolution+LOCAL_LT;
-		this._pickup_lt.y=i_y_edge*i_resolution+LOCAL_LT;
+		this._pickup_lt.setValue(i_x_edge*i_resolution+LOCAL_LT,i_y_edge*i_resolution+LOCAL_LT);
+		this._pickup_wh.setValue((i_x_edge*2+this._size.w)*i_resolution,(i_y_edge*2+this._size.h)*i_resolution);
 		return;
 	}
 	public void setEdgeSizeByPercent(int i_x_percent,int i_y_percent,int i_resolution)
@@ -167,7 +165,7 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 	{
 		//遠近法のパラメータを計算
 		final double[] cpara = this.__pickFromRaster_cpara;
-		if (!this._perspective_gen.getParam(i_vertexs, cpara)) {
+		if (!this._perspective_gen.getParam(this._pickup_wh,i_vertexs, cpara)) {
 			return false;
 		}
 		
