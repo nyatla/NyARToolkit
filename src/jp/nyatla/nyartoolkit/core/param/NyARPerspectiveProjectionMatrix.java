@@ -75,12 +75,6 @@ final public class NyARPerspectiveProjectionMatrix extends NyARDoubleMatrix44
 		double rem1, rem2, rem3;
 		double c00,c01,c02,c03,c10,c11,c12,c13,c20,c21,c22,c23;
 		if (this.m23>= 0) {// if( source[2][3] >= 0 ) {
-			// <Optimize>
-			// for(int r = 0; r < 3; r++ ){
-			// for(int c = 0; c < 4; c++ ){
-			// Cpara[r][c]=source[r][c];//Cpara[r][c] = source[r][c];
-			// }
-			// }
 			c00=this.m00;
 			c01=this.m01;
 			c02=this.m02;
@@ -180,32 +174,47 @@ final public class NyARPerspectiveProjectionMatrix extends NyARDoubleMatrix44
 		return;
 	}
 	/**
-	 * 現在の行列で３次元座標を射影変換します。
+	 * 3次元座標を2次元座標に変換します。
 	 * @param i_3dvertex
 	 * @param o_2d
 	 */
-	public void projectionConvert(NyARDoublePoint3d i_3dvertex,NyARDoublePoint2d o_2d)
+	public final void projectionConvert(NyARDoublePoint3d i_3dvertex,NyARDoublePoint2d o_2d)
 	{
 		double w=i_3dvertex.z*this.m22;
 		o_2d.x=(i_3dvertex.x*this.m00+i_3dvertex.y*this.m01+i_3dvertex.z*this.m02)/w;
 		o_2d.y=(i_3dvertex.y*this.m11+i_3dvertex.z*this.m12)/w;
 		return;
 	}
-	public void projectionConvert(double i_x,double i_y,double i_z,NyARDoublePoint2d o_2d)
+	/**
+	 * 3次元座標を2次元座標に変換します。
+	 * @param i_3dvertex
+	 * @param o_2d
+	 */
+	public final void projectionConvert(double i_x,double i_y,double i_z,NyARDoublePoint2d o_2d)
 	{
 		double w=i_z*this.m22;
 		o_2d.x=(i_x*this.m00+i_y*this.m01+i_z*this.m02)/w;
 		o_2d.y=(i_y*this.m11+i_z*this.m12)/w;
 		return;
 	}	
-	public void projectionConvert(NyARDoublePoint3d i_3dvertex,NyARIntPoint2d o_2d)
+	/**
+	 * 3次元座標を2次元座標に変換します。
+	 * @param i_3dvertex
+	 * @param o_2d
+	 */
+	public final void projectionConvert(NyARDoublePoint3d i_3dvertex,NyARIntPoint2d o_2d)
 	{
 		double w=i_3dvertex.z*this.m22;
 		o_2d.x=(int)((i_3dvertex.x*this.m00+i_3dvertex.y*this.m01+i_3dvertex.z*this.m02)/w);
 		o_2d.y=(int)((i_3dvertex.y*this.m11+i_3dvertex.z*this.m12)/w);
 		return;
 	}	
-	public void projectionConvert(double i_x,double i_y,double i_z,NyARIntPoint2d o_2d)
+	/**
+	 * 3次元座標を2次元座標に変換します。
+	 * @param i_3dvertex
+	 * @param o_2d
+	 */
+	public final void projectionConvert(double i_x,double i_y,double i_z,NyARIntPoint2d o_2d)
 	{
 		double w=i_z*this.m22;
 		o_2d.x=(int)((i_x*this.m00+i_y*this.m01+i_z*this.m02)/w);

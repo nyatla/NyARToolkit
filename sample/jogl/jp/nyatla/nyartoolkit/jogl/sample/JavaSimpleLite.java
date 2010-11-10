@@ -30,6 +30,8 @@ import java.awt.event.*;
 import java.awt.*;
 import javax.media.Buffer;
 import javax.media.opengl.*;
+import javax.media.opengl.glu.GLU;
+
 import com.sun.opengl.util.*;
 import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.*;
@@ -56,8 +58,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 	private JmfCaptureDevice _capture;
 
 	private GL _gl;
-
-	private NyARGLUtil _glnya;
+	private GLU _glu;
 
 	// NyARToolkit関係
 	private NyARSingleDetectMarker _nya;
@@ -126,7 +127,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 		}
 		this._capture.setOnCapture(this);
 		//JMFラスタオブジェクト
-		this._cap_image = new JmfNyARRaster_RGB(this._ar_param, this._capture.getCaptureFormat());
+		this._cap_image = new JmfNyARRaster_RGB(this._capture.getCaptureFormat());
 		
 		// NyARToolkitの準備
 		this._nya = new NyARSingleDetectMarker(this._ar_param, i_ar_code, 80.0,this._cap_image.getBufferType());
@@ -152,19 +153,18 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 	public void init(GLAutoDrawable drawable)
 	{
 		this._gl = drawable.getGL();
+		this._glu=new GLU();
 		this._gl.glEnable(GL.GL_DEPTH_TEST);
 		this._gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		// NyARToolkitの準備
 		try {
-			// NyARToolkit用の支援クラス
-			_glnya = new NyARGLUtil(_gl);
 			// キャプチャ開始
 			_capture.start();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		// カメラパラメータの計算
-		this._glnya.toCameraFrustumRH(this._ar_param,this._camera_projection);
+		NyARGLUtil.toCameraFrustumRH(this._ar_param,this._camera_projection);
 		this._animator = new Animator(drawable);
 		this._animator.start();
 		return;
@@ -198,7 +198,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 		this._gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
 		try{
 			synchronized(this._sync_object){
-				this._glnya.drawBackGround(this._cap_image, 1.0);			
+				NyARGLUtil.drawBackGround(this._glu,this._cap_image, 1.0);			
 				// マーカーがあれば、立方体を描画
 				if (this._is_marker_exist){
 					// マーカーの一致度を調査するならば、ここでnya.getConfidence()で一致度を調べて下さい。
@@ -211,7 +211,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 					// 変換行列を取得
 					_nya.getTransmationMatrix(transmat_result);
 					// 変換行列をOpenGL形式に変換
-					_glnya.toCameraViewRH(transmat_result, __display_wk);
+					NyARGLUtil.toCameraViewRH(transmat_result, __display_wk);
 					_gl.glLoadMatrixd(__display_wk, 0);
 		
 					// All other lighting and geometry goes here.

@@ -5,7 +5,7 @@ import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
-import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityIn;
+import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealitySource;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTarget;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARRectTargetStatus;
 import jp.nyatla.nyartoolkit.nyidmarker.*;
@@ -173,7 +173,7 @@ public class RawbitSerialIdTable
 	 * 特定に成功すると、trueを返します。
 	 * @throws NyARException 
 	 */
-	public boolean selectTarget(NyARRealityTarget i_target,NyARRealityIn i_rtsorce,SelectResult o_result) throws NyARException
+	public boolean selectTarget(NyARRealityTarget i_target,NyARRealitySource i_rtsorce,SelectResult o_result) throws NyARException
 	{
 		NyARDoublePoint2d[] vx=((NyARRectTargetStatus)(i_target.ref_tracktarget.ref_status)).vertex;
 		if(!this._id_pickup.pickFromRaster(i_rtsorce.sourceimage,vx,this._temp_nyid_info,this._temp_nyid_param))

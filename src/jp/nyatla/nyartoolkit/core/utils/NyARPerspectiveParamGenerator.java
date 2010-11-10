@@ -120,7 +120,7 @@ public abstract class NyARPerspectiveParamGenerator
 		return this.getParam(i_width,i_height,i_vertex[0].x,i_vertex[0].y,i_vertex[1].x,i_vertex[1].y,i_vertex[2].x,i_vertex[2].y,i_vertex[3].x,i_vertex[3].y, o_param);
 	}
 	/**
-	 * この関数に具体的なコードを実装します。
+	 * 遠近法のパラメータを計算します。継承クラスで実装してください。
 	 * @param i_dest_w
 	 * @param i_dest_h
 	 * @param x1
@@ -135,5 +135,5 @@ public abstract class NyARPerspectiveParamGenerator
 	 * @return
 	 * @throws NyARException
 	 */
-	protected abstract boolean getParam(int i_dest_w,int i_dest_h,double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4,double[] o_param)throws NyARException;
+	public abstract boolean getParam(int i_dest_w,int i_dest_h,double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4,double[] o_param)throws NyARException;
 }

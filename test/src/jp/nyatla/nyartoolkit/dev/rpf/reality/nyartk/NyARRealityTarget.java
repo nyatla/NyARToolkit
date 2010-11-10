@@ -1,10 +1,12 @@
 package jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk;
 
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.transmat.NyARRectOffset;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
@@ -18,7 +20,7 @@ import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObject.INyARManagedObjectP
 
 public class NyARRealityTarget extends NyARManagedObject
 {
-
+	
 	private static Object _serial_lock=new Object();
 	private static long _serial=0;
 	
@@ -33,6 +35,12 @@ public class NyARRealityTarget extends NyARManagedObject
 		}
 	}
 	////////////////////////
+	
+	/**
+	 * 親情報
+	 */
+	private NyARRealityTargetPool _ref_pool;
+	////////////////////////
 	//targetの基本情報
 
 	/**
@@ -44,9 +52,9 @@ public class NyARRealityTarget extends NyARManagedObject
 	 */
 	public long target_age;
 	/**
-	 * このターゲットの位置と座標
+	 * 内部向けの公開メンバ変数です。refTransformMatrix()関数で参照してください。
 	 */
-	public NyARTransMatResult transform_matrix=new NyARTransMatResult();
+	public NyARTransMatResult _transform_matrix=new NyARTransMatResult();
 	/**
 	 * このターゲットの大きさ。3次元座標を計算するときに使います。
 	 */
@@ -60,51 +68,130 @@ public class NyARRealityTarget extends NyARManagedObject
 	
 	/**
 	 * このターゲットの情報タイプ
-	 * 0=わからん2Dのみ。
-	 * 1=比率は判って相対3D
-	 * 2=大きさもわかって絶対3D
+	 * RT_UNKNOWN=未確定ターゲット。2次元座標利用可能
+	 * RT_KNOWN  =確定した既知のターゲット。3次元座標利用可能
+	 * RT_DEAD   =次のprogressで削除するターゲット
 	 */
 	public int target_type;
-	public final static int RT_UNKNOWN   =0;//思い出しまち
+	public final static int RT_UNKNOWN   =0;//よくわからないターゲット
 	public final static int RT_KNOWN     =2;//知ってるターゲット
 	public final static int RT_DEAD      =4;//間もなく死ぬターゲット
 	
 	/**
-	 * ライブラリから得たRealityパラメータ
+	 * カメラ座標系をターゲット座標系に変換する行列を返します。
+	 * @return
 	 */
-	public Object detail;
+	public final NyARTransMatResult refTransformMatrix()
+	{
+		assert(this.target_type==RT_KNOWN);
+		return this._transform_matrix;
+	}
 	
 
 	/**
-	 * ターゲットのパターンをラスタにコピーする。解像度は受け取り側ラスタに従う。
-	 * @param i_resolution_mag
+	 * ターゲットの2次元座標を元に、i_sourceからターゲットのパターン取得します。
+	 * @param i_source
+	 * 入力元のRealityInオブジェクト。
+	 * @param i_samle_per_pixel
+	 * 1ピクセルあたりのサンプリング数。1が最も高速。2なら、1ピクセルあたり、2*2=4ピクセルをサンプリング。
+	 * @param o_raster
+	 * 出力先のラスタ
+	 * @return
+	 * @throws NyARException 
+	 */
+	public boolean getPerspectiveTargetPatt(NyARRealitySource i_source,int i_sample_per_pixel,INyARRgbRaster o_raster) throws NyARException
+	{
+		assert(this.target_type==RT_UNKNOWN || this.target_type==RT_KNOWN);
+		//エッジサイズは0にする。
+		return i_source._source_perspective_reader.read4Point(
+			i_source.sourceimage,((NyARRectTargetStatus)(this.ref_tracktarget.ref_status)).vertex,0,0,i_sample_per_pixel,o_raster);
+	};
+	/**
+	 * エッジサイズを考慮して、ターゲットの2次元座標を元に、i_sourceからターゲットのパターン取得します。
+	 * @param i_source
+	 * 入力元のRealityInオブジェクト。
+	 * @param i_sample_per_pixel
+	 * 1ピクセルあたりのサンプリング数。1が最も高速。2なら、1ピクセルあたり、2*2=4ピクセルをサンプリング。
+	 * @param i_edge_percent_x
+	 * X方向のエッジサイズを0-99の割合で指定します。
+	 * @param i_edge_percent_y
+	 * Y方向のエッジサイズを0-99の割合で指定します。
+	 * @param o_raster
+	 * 出力先のラスタ
+	 * @return
+	 * @throws NyARException
+	 */
+	public boolean getPerspectiveTargetPattWithEdge(NyARRealitySource i_source,int i_sample_per_pixel,int i_edge_percent_x,int i_edge_percent_y,INyARRgbRaster o_raster) throws NyARException
+	{
+		assert(this.target_type==RT_UNKNOWN || this.target_type==RT_KNOWN);
+		return i_source._source_perspective_reader.read4Point(
+			i_source.sourceimage,((NyARRectTargetStatus)(this.ref_tracktarget.ref_status)).vertex,i_edge_percent_x,i_edge_percent_y,i_sample_per_pixel,o_raster);
+	}
+	/**
+	 * ターゲット座標平面上に定義した任意位置の矩形から、パターンを取得します。
+	 * マーカサイズを正しく設定しなかった場合は、任意矩形の座標が相対的にずれます。
+	 * @param i_source
+	 * @param i_x
+	 * ターゲット座標系上の左上X点。mm単位
+	 * @param i_y
+	 * ターゲット座標系上の左上Y点。mm単位
+	 * @param i_w
+	 * ターゲット座標系上の矩形幅。mm単位
+	 * @param i_h
+	 * ターゲット座標系上の矩形幅。mm単位
+	 * @param i_sample_per_pixel
+	 * 1ピクセルあたりのサンプリング数。1が最も高速。2なら、1ピクセルあたり、2*2=4ピクセルをサンプリング。
 	 * @param o_raster
 	 * @return
+	 * @throws NyARException 
 	 */
-	public boolean getPerspectiveTargetPatt(int i_resolution_mag,INyARRgbRaster o_raster)
+	public boolean getPerspectivePatt(NyARRealitySource i_source,double i_x,double i_y,double i_w,double i_h,int i_sample_per_pixel,INyARRgbRaster o_raster) throws NyARException
 	{
-		return false;
-	};
-	//[OPT:]ターゲット座標系の平面上で任意の矩形を定義し、そのパターンをラスタにコピーする。解像度は受け取り側ラスタに従う。
-	//[OPT:]ターゲット座標系の平面上の任意の矩形を変換行列で移動した四角形から、パターンを取得する。解像度は受け取り側のラスタに従う。
-	//[OPT:]指定したターゲットとの直線距離をもとめる。
+		assert(this.target_type==RT_KNOWN);
+		NyARDoublePoint2d[] da=this._ref_pool._wk_da4;
+		this._transform_matrix.transformParallelRect2d(i_x,i_y,i_w,i_h,this._ref_pool._ref_prj_mat,this._ref_pool._wk_da4);
+		
+		return i_source._source_perspective_reader.read4Point(i_source.sourceimage,da,0,0,i_sample_per_pixel,o_raster);
+	}
+	/**
+	 * カメラの撮像点に対応する、ターゲット座標平面上の点を求めます。
+	 * @param i_px
+	 * @param i_py
+	 * @param i_pz
+	 * @param o_pos
+	 * @return
+	 */
+	public boolean cameraPos2TargetPos(double i_px,double i_py,double i_pz,NyARDoublePoint3d o_pos)
+	{
+		double nx=this._transform_matrix.m02;
+		double ny=this._transform_matrix.m12;
+		double nz=this._transform_matrix.m22;
+		double mx=this._transform_matrix.m03;
+		double my=this._transform_matrix.m13;
+		double mz=this._transform_matrix.m23;
+		double t=(nx*mx+ny*my+nz*mz)/(nx*i_px+ny*i_py+nz*i_pz);
+NyARDoubleMatrix44 m=new NyARDoubleMatrix44();
+		double sx=t*i_px;
+		double sy=t*i_py;
+		double sz=t*i_pz;
+		if(!m.inverse(this._transform_matrix)){
+			return false;
+		}
+		o_pos.x=m.m00*sx+m.m01*sy+m.m02*sz+m.m03;
+		o_pos.y=m.m10*sx+m.m11*sy+m.m12*sz+m.m13;
+		o_pos.z=m.m20*sx+m.m21*sy+m.m22*sz+m.m23;
+		return true;
+	}
+
 	//[OPT:]指定したターゲットとの変換行列を求める。
-	//[OPT:]画面上の点に対応するターゲット座標上の点を求める。
-	//[OPT:]ターゲット座標上の点に対する、画面上の座標を求める。
-//	public boolean getPatt3d(int i_resolution_mag,INyARRgbRaster o_raster);
-//	public boolean getPatt2d(int i_resolution_mag,INyARRgbRaster o_raster);
-	
-	public void getAreaImage(){};
-	public void getMetadata(){};
-	public void getSquare(){};
-	public void get(){};
+	//[OPT:]ターゲット座標系の平面上の任意の矩形を変換行列で移動した四角形から、パターンを取得する。解像度は受け取り側のラスタに従う。
 	/**
 	 * 指定した点が、このターゲットの内側であるか判定します。この関数は、Known/Unknownターゲットに使用できます。
 	 * @param i_x
 	 * @param i_y
 	 * @return
 	 */
-	public boolean isInnerPoint2d(int i_x,int i_y)
+	public final boolean isInnerPoint2d(int i_x,int i_y)
 	{
 		assert(this.target_type==RT_UNKNOWN || this.target_type==RT_KNOWN);
 		NyARDoublePoint2d[] vx=((NyARRectTargetStatus)(this.ref_tracktarget.ref_status)).vertex;
@@ -122,9 +209,10 @@ public class NyARRealityTarget extends NyARManagedObject
 	 */
 	public Object tag;
 
-	public NyARRealityTarget(INyARManagedObjectPoolOperater iRefPoolOperator)
+	public NyARRealityTarget(NyARRealityTargetPool i_pool)
 	{
-		super(iRefPoolOperator);
+		super(i_pool._op_interface);
+		this._ref_pool=i_pool;
 	}
 	/**
 	 * @Override

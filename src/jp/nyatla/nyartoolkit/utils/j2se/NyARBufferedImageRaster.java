@@ -12,8 +12,8 @@ import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
- * バッファとしてBufferedImageを使用するNyARRgbRasterです。
- * ラップすbufferedImageの種類によっては、パフォーマンスが低下する事があるので注意してください。
+ * バッファにBufferedImageを使用するNyARRgbRasterです。
+ * ラップするbufferedImageの種類によっては、パフォーマンスが低下する事があるので注意してください。
  * @author nyatla
  *
  */

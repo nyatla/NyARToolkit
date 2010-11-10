@@ -36,6 +36,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
  */
 public class NyARColorPatt_Perspective_O2 implements INyARColorPatt
 {
+	private NyARIntPoint2d _edge=new NyARIntPoint2d();
 	protected int[] _patdata;
 	protected int _resolution;
 	protected NyARIntSize _size;
@@ -64,7 +65,7 @@ public class NyARColorPatt_Perspective_O2 implements INyARColorPatt
 	public NyARColorPatt_Perspective_O2(int i_width, int i_height,int i_point_per_pix)
 	{
 		initializeInstance(i_width,i_height,i_point_per_pix,NyARBufferType.NULL_ALLZERO);
-		this._perspective_reader.setEdgeSizeByPercent(0, 0);
+		this._edge.setValue(0,0);
 		return;
 	}
 	/**
@@ -81,14 +82,14 @@ public class NyARColorPatt_Perspective_O2 implements INyARColorPatt
 	public NyARColorPatt_Perspective_O2(int i_width, int i_height,int i_point_per_pix,int i_edge_percentage,int i_input_raster_type)
 	{
 		initializeInstance(i_width,i_height,i_point_per_pix,i_input_raster_type);
-		this._perspective_reader.setEdgeSizeByPercent(i_edge_percentage, i_edge_percentage);
+		this._edge.setValue(i_edge_percentage, i_edge_percentage);
 		return;
 	}	
 	public void setEdgeSizeByPercent(int i_x_percent,int i_y_percent,int i_resolution)
 	{
 		assert(i_x_percent>=0);
 		assert(i_y_percent>=0);
-		this._perspective_reader.setEdgeSizeByPercent(i_x_percent, i_y_percent);
+		this._edge.setValue(i_x_percent, i_y_percent);
 		return;
 	}
 
@@ -135,7 +136,7 @@ public class NyARColorPatt_Perspective_O2 implements INyARColorPatt
 	public boolean pickFromRaster(INyARRgbRaster image,NyARIntPoint2d[] i_vertexs)throws NyARException
 	{
 		//遠近法のパラメータを計算
-		return this._perspective_reader.read4Point(image, i_vertexs,this._resolution, this);
+		return this._perspective_reader.read4Point(image, i_vertexs,this._edge.x,this._edge.y,this._resolution, this);
 	}
 
 }

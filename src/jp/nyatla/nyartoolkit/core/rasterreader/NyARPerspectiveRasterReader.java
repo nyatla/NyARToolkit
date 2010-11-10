@@ -46,7 +46,6 @@ import jp.nyatla.nyartoolkit.core.utils.*;
  */
 public class NyARPerspectiveRasterReader
 {
-	protected NyARIntPoint2d _pickup_edge_percent=new NyARIntPoint2d();	
 	protected NyARPerspectiveParamGenerator _perspective_gen;
 	private static final int LOCAL_LT=1;
 	protected final double[] __pickFromRaster_cpara=new double[8];
@@ -81,7 +80,6 @@ public class NyARPerspectiveRasterReader
 	public NyARPerspectiveRasterReader()
 	{
 		initializeInstance(NyARBufferType.NULL_ALLZERO);
-		setEdgeSizeByPercent(0,0);
 		return;
 	}
 	/**
@@ -94,29 +92,19 @@ public class NyARPerspectiveRasterReader
 	{
 		//入力制限
 		this.initializeInstance(i_input_raster_type);
-		this.setEdgeSizeByPercent(0,0);
-		return;
-	}	
-	/**
-	 * 指定領域のうち、何％をエッジとして無視するかを指定します。
-	 * @param i_x_percent
-	 * @param i_y_percent
-	 * @param i_resolution
-	 */
-	public void setEdgeSizeByPercent(int i_x_percent,int i_y_percent)
-	{
-		assert(i_x_percent>=0);
-		assert(i_y_percent>=0);
-		this._pickup_edge_percent.setValue(i_x_percent, i_y_percent);
 		return;
 	}
-
 
 	/**
 	 * i_in_rasterから4頂点i_vertexsでかこまれた領域の画像を射影変換して、o_outへ格納します。
 	 * @param i_in_raster
 	 * このラスタの形式は、コンストラクタで制限したものと一致している必要があります。
-	 * @param i_vertexs
+	 * @param i_vertex
+	 * 4頂点を格納した配列です。
+	 * @param i_edge_x
+	 * X方向のエッジ割合です。0-99の数値を指定します。
+	 * @param i_edge_y
+	 * Y方向のエッジ割合です。0-99の数値を指定します。
 	 * @param i_resolution
 	 * 出力の1ピクセルあたりのサンプリング数を指定します。例えば2を指定すると、出力1ピクセルあたり4ピクセルをサンプリングします。
 	 * @param o_out
@@ -124,33 +112,72 @@ public class NyARPerspectiveRasterReader
 	 * @return
 	 * @throws NyARException
 	 */
-	public boolean read4Point(INyARRgbRaster i_in_raster,NyARIntPoint2d[] i_vertexs,int i_resolution,INyARRgbRaster o_out)throws NyARException
+	public boolean read4Point(INyARRgbRaster i_in_raster,NyARDoublePoint2d[] i_vertex,int i_edge_x,int i_edge_y,int i_resolution,INyARRgbRaster o_out)throws NyARException
 	{
 		NyARIntSize out_size=o_out.getSize();
-		int xe=out_size.w*this._pickup_edge_percent.x/50;
-		int ye=out_size.h*this._pickup_edge_percent.y/50;
-		//ピックアップ開始位置を計算
+		int xe=out_size.w*i_edge_x/50;
+		int ye=out_size.h*i_edge_y/50;
 
-
-		final double[] cpara = this.__pickFromRaster_cpara;
 		//サンプリング解像度で分岐
 		if(i_resolution==1){
-			if (!this._perspective_gen.getParam((xe*2+out_size.w),(xe*2+out_size.h),i_vertexs, cpara)) {
+			if (!this._perspective_gen.getParam((xe*2+out_size.w),(ye*2+out_size.h),i_vertex, this.__pickFromRaster_cpara)) {
 				return false;
 			}
-			this._picker.onePixel(
-					xe+LOCAL_LT,ye+LOCAL_LT,cpara,
-				i_in_raster,o_out);
+			this._picker.onePixel(xe+LOCAL_LT,ye+LOCAL_LT,this.__pickFromRaster_cpara,i_in_raster,o_out);
 		}else{
-			if (!this._perspective_gen.getParam((xe*2+out_size.w)*i_resolution,(ye*2+out_size.h)*i_resolution,i_vertexs, cpara)) {
+			if (!this._perspective_gen.getParam((xe*2+out_size.w)*i_resolution,(ye*2+out_size.h)*i_resolution,i_vertex, this.__pickFromRaster_cpara)) {
 				return false;
 			}
-			this._picker.multiPixel(
-				xe*i_resolution+LOCAL_LT,ye*i_resolution+LOCAL_LT,cpara,i_resolution,
-				i_in_raster,o_out);
+			this._picker.multiPixel(xe*i_resolution+LOCAL_LT,ye*i_resolution+LOCAL_LT,this.__pickFromRaster_cpara,i_resolution,i_in_raster,o_out);
 		}
 		return true;
 	}
+	/**
+	 * read4Pointの入力型違いです。
+	 */	
+	public boolean read4Point(INyARRgbRaster i_in_raster,NyARIntPoint2d[] i_vertex,int i_edge_x,int i_edge_y,int i_resolution,INyARRgbRaster o_out)throws NyARException
+	{
+		NyARIntSize out_size=o_out.getSize();
+		int xe=out_size.w*i_edge_x/50;
+		int ye=out_size.h*i_edge_y/50;
+
+		//サンプリング解像度で分岐
+		if(i_resolution==1){
+			if (!this._perspective_gen.getParam((xe*2+out_size.w),(ye*2+out_size.h),i_vertex, this.__pickFromRaster_cpara)) {
+				return false;
+			}
+			this._picker.onePixel(xe+LOCAL_LT,ye+LOCAL_LT,this.__pickFromRaster_cpara,i_in_raster,o_out);
+		}else{
+			if (!this._perspective_gen.getParam((xe*2+out_size.w)*i_resolution,(ye*2+out_size.h)*i_resolution,i_vertex, this.__pickFromRaster_cpara)) {
+				return false;
+			}
+			this._picker.multiPixel(xe*i_resolution+LOCAL_LT,ye*i_resolution+LOCAL_LT,this.__pickFromRaster_cpara,i_resolution,i_in_raster,o_out);
+		}
+		return true;
+	}
+	/**
+	 * read4Pointの入力型違いです。
+	 */	
+	public boolean read4Point(INyARRgbRaster i_in_raster,double i_x1,double i_y1,double i_x2,double i_y2,double i_x3,double i_y3,double i_x4,double i_y4,int i_edge_x,int i_edge_y,int i_resolution,INyARRgbRaster o_out)throws NyARException
+	{
+		NyARIntSize out_size=o_out.getSize();
+		int xe=out_size.w*i_edge_x/50;
+		int ye=out_size.h*i_edge_y/50;
+
+		//サンプリング解像度で分岐
+		if(i_resolution==1){
+			if (!this._perspective_gen.getParam((xe*2+out_size.w),(ye*2+out_size.h),i_x1,i_y1,i_x2,i_y2,i_x3,i_y3,i_x4,i_y4, this.__pickFromRaster_cpara)) {
+				return false;
+			}
+			this._picker.onePixel(xe+LOCAL_LT,ye+LOCAL_LT,this.__pickFromRaster_cpara,i_in_raster,o_out);
+		}else{
+			if (!this._perspective_gen.getParam((xe*2+out_size.w)*i_resolution,(ye*2+out_size.h)*i_resolution,i_x1,i_y1,i_x2,i_y2,i_x3,i_y3,i_x4,i_y4, this.__pickFromRaster_cpara)) {
+				return false;
+			}
+			this._picker.multiPixel(xe*i_resolution+LOCAL_LT,ye*i_resolution+LOCAL_LT,this.__pickFromRaster_cpara,i_resolution,i_in_raster,o_out);
+		}
+		return true;
+	}	
 }
 
 

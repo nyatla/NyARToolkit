@@ -50,42 +50,21 @@ public class JmfNyARRaster_RGB implements INyARRgbRaster
 {
 	private JmfRGB24RasterHolder _holder;
 	protected NyARIntSize _size;
-
-	public JmfNyARRaster_RGB(NyARParam i_param,VideoFormat i_fmt) throws NyARException
+	/**
+	 * コンストラクタ。i_fmtに合致するバッファを持つインスタンスを作成します。
+	 * このコンストラクタで作成したクラスは、hasBuffer()がfalseを返すことがあります。
+	 * @param i_fmt
+	 * @throws NyARException
+	 */
+	public JmfNyARRaster_RGB(VideoFormat i_fmt) throws NyARException
 	{
-		initMember(i_param.getScreenSize().w,i_param.getScreenSize().h,i_fmt);
+		initMember(i_fmt);
 	}	
-	/**
-	 * i_fmtに一致する画素フォーマットのRasterを作成します。
-	 * このコンストラクタで作成したクラスは、hasBuffer()がfalseを返すことがあります。
-	 * @param i_width
-	 * @param i_height
-	 * @param i_fmt
-	 * @throws NyARException
-	 */
-	public JmfNyARRaster_RGB(int i_width,int i_height,VideoFormat i_fmt) throws NyARException
+
+	private void initMember(VideoFormat i_fmt) throws NyARException
 	{
-		initMember(i_width,i_height,i_fmt);
-	}
-	/**
-	 * i_fmtに一致する画素フォーマットのRasterを作成します。
-	 * このコンストラクタで作成したクラスは、hasBuffer()がfalseを返すことがあります。
-	 * @param i_size
-	 * @param i_fmt
-	 * @throws NyARException
-	 */
-	public JmfNyARRaster_RGB(NyARIntSize i_size,VideoFormat i_fmt) throws NyARException
-	{
-		initMember(i_size.w,i_size.h,i_fmt);
-	}
-	private void initMember(int i_width,int i_height,VideoFormat i_fmt) throws NyARException
-	{
-		this._size= new NyARIntSize(i_width,i_height);
-		// データサイズの確認
 		final Dimension s = i_fmt.getSize();
-		if (!this._size.isEqualSize(s.width,s.height)) {
-			throw new NyARException();
-		}
+		this._size= new NyARIntSize(s.width,s.height);
 		// データ配列の確認
 		if(i_fmt instanceof YUVFormat){
 			//YUVフォーマット
@@ -145,15 +124,6 @@ public class JmfNyARRaster_RGB implements INyARRgbRaster
 	{
 		NyARException.notImplement();
 	}
-	/**
-	 *	@deprecated hasBuffer()関数を使ってください。
-	 * 
-	 */
-	final public boolean hasData()
-	{
-		return this.hasBuffer();
-	}
-
 }
 
 
@@ -270,6 +240,10 @@ class NyARGLPixelReader_RGB24 extends JmfRGB24RasterHolder
 	{
 		NyARException.notImplement();		
 	}
+	public void setPixel(int iX, int iY, int iR, int iG, int iB)throws NyARException
+	{
+		NyARException.notImplement();		
+	}	
 	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intrgb) throws NyARException
 	{
 		NyARException.notImplement();		
@@ -377,9 +351,14 @@ class NyARGLPixelReader_YUV extends JmfRGB24RasterHolder
 	{
 		NyARException.notImplement();		
 	}
-	public void switchBuffer(Object i_ref_object) throws NyARException
+	public void setPixel(int iX, int iY, int iR, int iG, int iB)throws NyARException
 	{
 		NyARException.notImplement();		
 	}	
+	public void switchBuffer(Object i_ref_object) throws NyARException
+	{
+		NyARException.notImplement();		
+	}
+
 }
 

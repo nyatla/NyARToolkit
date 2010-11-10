@@ -4,9 +4,23 @@ import java.awt.Color;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Insets;
+import java.awt.Transparency;
+import java.awt.color.ColorSpace;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.ComponentColorModel;
+import java.awt.image.ComponentSampleModel;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
+import java.awt.image.DataBufferInt;
+import java.awt.image.DirectColorModel;
+import java.awt.image.PackedColorModel;
+import java.awt.image.Raster;
+import java.awt.image.SampleModel;
+import java.awt.image.SinglePixelPackedSampleModel;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -14,24 +28,30 @@ import java.util.Date;
 import javax.imageio.ImageIO;
 import javax.media.format.VideoFormat;
 
+import com.sun.org.apache.xalan.internal.xsltc.runtime.Hashtable;
+
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
+import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_RGB;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve;
+import jp.nyatla.nyartoolkit.core.rasterreader.INyARRgbPixelReader;
+import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
+import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSampler;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerIn;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTracker;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTrackerSnapshot;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARContourTargetStatus;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARRectTargetStatus;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDevice;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDeviceList;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfNyARRaster_RGB;
+import jp.nyatla.nyartoolkit.utils.j2se.NyARBufferedImageRaster;
 import jp.nyatla.nyartoolkit.utils.j2se.NyARRasterImageIO;
 
 /**
@@ -40,7 +60,7 @@ import jp.nyatla.nyartoolkit.utils.j2se.NyARRasterImageIO;
  */
 class InputSource
 {
-	public NyARRealityIn reality_in;
+	public NyARRealitySource reality_in;
 }
 
 class ImageSource extends InputSource
@@ -49,7 +69,7 @@ class ImageSource extends InputSource
 	{
 		BufferedImage _src_image;
 		_src_image = ImageIO.read(new File(i_filename));
-		NyARReality_JavaImage ri=new NyARReality_JavaImage(_src_image.getWidth(),_src_image.getHeight(),2);
+		NyARRealitySource_JavaImage ri=new NyARRealitySource_JavaImage(_src_image.getWidth(),_src_image.getHeight(),2);
 		ri.setImage(_src_image);
 		this.reality_in=ri;
 	}
@@ -230,6 +250,8 @@ public class TestTarget extends Frame implements MouseListener
     	//
 
     }
+
+    
     private void drawImage(Graphics g,int x,int y,NyARGrayscaleRaster r) throws NyARException
     {
         BufferedImage _tmp_bf=new BufferedImage(r.getWidth(),r.getHeight(),BufferedImage.TYPE_INT_RGB);
@@ -251,7 +273,17 @@ public class TestTarget extends Frame implements MouseListener
     	for(;;){
 	    	//処理
 	    	this.update();
-			this.draw(this.getGraphics());
+
+
+	    	BufferedImage _src_image = ImageIO.read(new File(SAMPLE_FILES));
+			//this.draw(this.getGraphics());
+	    	NyARBufferedImageRaster a=new NyARBufferedImageRaster(100,100,NyARBufferType.OBJECT_Java_BufferedImage);
+//	    	NyARBufferedImageRaster a=new NyARBufferedImageRaster(_src_image);
+	    	a.getGraphics().drawImage(_src_image, 0,0, null);
+	    	a.getBufferedImage().setRGB(0,0,0xff0000);
+	    	a.getRgbPixelReader().setPixel(1,0,0,0,255);
+			this.getGraphics().drawImage(a.getBufferedImage(),100,100,null);
+
 //	    	Thread.sleep(30);
     	}
     }
@@ -269,3 +301,4 @@ public class TestTarget extends Frame implements MouseListener
 		}
 	}
 }
+

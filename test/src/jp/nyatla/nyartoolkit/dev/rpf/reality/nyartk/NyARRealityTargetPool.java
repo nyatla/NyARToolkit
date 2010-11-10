@@ -1,18 +1,26 @@
 package jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTarget;
 import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObjectPool;
 
 public class NyARRealityTargetPool extends NyARManagedObjectPool<NyARRealityTarget>
 {
-	public NyARRealityTargetPool(int i_size) throws NyARException
+	//targetでの共有オブジェクト
+	public NyARPerspectiveProjectionMatrix _ref_prj_mat;
+	public NyARDoublePoint2d[] _wk_da4=NyARDoublePoint2d.createArray(4);
+	
+	public NyARRealityTargetPool(int i_size,NyARPerspectiveProjectionMatrix i_ref_prj_mat) throws NyARException
 	{
 		this.initInstance(i_size,NyARRealityTarget.class);
+		this._ref_prj_mat=i_ref_prj_mat;
+		return;
 	}
 	protected NyARRealityTarget createElement() throws NyARException
 	{
-		return new NyARRealityTarget(this._op_interface);
+		return new NyARRealityTarget(this);
 	}
 	/**
 	 * 新しいRealityTargetを作って返します。

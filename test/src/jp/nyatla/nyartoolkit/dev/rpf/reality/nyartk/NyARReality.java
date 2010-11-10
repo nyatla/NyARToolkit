@@ -1,19 +1,42 @@
 package jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat;
-import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
+import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.types.matrix.*;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSampler;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.*;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARRectTargetStatus;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARTargetStatus;
 
-
-
+/**
+ * OpenGLに特化したNyARRealityクラスです。
+ * @author nyatla
+ */
+class NyARRealityGl extends NyARReality
+{
+	private NyARDoubleMatrix44 _frustum_rh;
+	private double[] _gl_frustum_rh=new double[16];
+	
+	public NyARRealityGl(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target) throws NyARException
+	{
+		super(
+			i_param.getPerspectiveProjectionMatrix(),
+			i_max_known_target,i_max_unknown_target);
+		//カメラパラメータを計算しておく
+		i_param.makeCameraFrustumRH(i_near, i_far,this._frustum_rh);
+		this._frustum_rh.getValueT(this._gl_frustum_rh);
+	}
+	public double[] refGlFrastumRH()
+	{
+		return this._gl_frustum_rh;
+	}
+}
 
 /**
  * NyARRealitySnapshotを更新するクラス。
@@ -39,11 +62,16 @@ public class NyARReality
 	 * samplerの出力値。この変数はNyARRealityからのみ使います。
 	 */
 	private NyARRealityTargetPool _pool;
+	/**
+	 * 最後に更新に使ったRalityInオブジェクト
+	 */
+	private NyARRealitySource _last_reality_in;
 
 	/**
 	 * ターゲットのリストです。
 	 */
 	public NyARRealityTargetList<NyARRealityTarget> target;
+
 	
 	
 	//種類ごとのターゲットの数
@@ -52,18 +80,11 @@ public class NyARReality
 	private int _number_of_known;
 	private int _number_of_dead;	
 	//
-	private LowResolutionLabelingSampler _sampler;
 	private NyARTracker _tracker;
 	private INyARTransMat _transmat;
 	
 	/**
 	 * コンストラクタ
-	 * @param i_width
-	 * 入力画像の幅を指定します。
-	 * @param i_height
-	 * 入力画像の高さを指定します。
-	 * @param i_depth
-	 * 解析画像の解像度を指定します。今使用できるのは、2のみです。
 	 * @param i_ref_prjmat
 	 * カメラパラメータを指定します。
 	 * @param i_max_known_target
@@ -72,17 +93,15 @@ public class NyARReality
 	 * UnKnownターゲットの最大数を指定します。
 	 * @throws NyARException
 	 */
-	public NyARReality(int i_width,int i_height,int i_depth,NyARPerspectiveProjectionMatrix i_ref_prjmat,
-			int i_max_known_target,int i_max_unknown_target) throws NyARException
+	public NyARReality(NyARPerspectiveProjectionMatrix i_ref_prjmat,int i_max_known_target,int i_max_unknown_target) throws NyARException
 	{
 		int number_of_reality_target=i_max_known_target+i_max_unknown_target;
 		//演算インスタンス
 		this._transmat=new NyARTransMat(null,i_ref_prjmat);
 		this._tracker=new NyARTracker(number_of_reality_target,1,i_max_known_target);
-		this._sampler=new LowResolutionLabelingSampler(i_width,i_height,i_depth);
 
 		//データインスタンス
-		this._pool=new NyARRealityTargetPool(number_of_reality_target);
+		this._pool=new NyARRealityTargetPool(number_of_reality_target,i_ref_prjmat);
 		this.target=new NyARRealityTargetList<NyARRealityTarget>(number_of_reality_target);
 		//トラック数は、newがi_max_known_target+i_max_unknown_target,rectがi_max_known_targetと同じ数です。
 		this._samplerout=new LowResolutionLabelingSamplerOut(100+number_of_reality_target);
@@ -118,10 +137,10 @@ public class NyARReality
 	 * @param i_in
 	 * @throws NyARException
 	 */
-	public void progress(NyARRealityIn i_in) throws NyARException
+	public void progress(NyARRealitySource i_in) throws NyARException
 	{
 		//sampler進行
-		this._sampler.sampling(i_in.lrsamplerin,this._samplerout);
+		i_in.getSampleOut(this._samplerout);
 		//tracker進行
 		this._tracker.progress(this._samplerout);
 	
@@ -134,6 +153,8 @@ public class NyARReality
 		updateLists();
 		//リストのアップグレード
 		upgradeLists();
+		//last reality inの更新
+		this._last_reality_in=i_in;
 		return;
 	}
 	private final void upgradeLists() throws NyARException
@@ -175,7 +196,7 @@ public class NyARReality
 				//矩形座標計算
 				setSquare(((NyARRectTargetStatus)(tar.ref_tracktarget.ref_status)).vertex,tar.screen_square);
 				//3d座標計算
-				this._transmat.transMatContinue(tar.screen_square,tar.offset,tar.transform_matrix,tar.transform_matrix);
+				this._transmat.transMatContinue(tar.screen_square,tar.offset,tar._transform_matrix,tar._transform_matrix);
 				continue;
 			case NyARRealityTarget.RT_UNKNOWN:
 				continue;

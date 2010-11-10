@@ -46,7 +46,7 @@ public class NyARPerspectiveParamGenerator_O1 extends NyARPerspectiveParamGenera
 	}
 
 	
-	protected final boolean getParam(int i_dest_w,int i_dest_h,double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4,double[] o_param)throws NyARException
+	public final boolean getParam(int i_dest_w,int i_dest_h,double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4,double[] o_param)throws NyARException
 	{
 		double ltx=this._local_x;
 		double lty=this._local_y;

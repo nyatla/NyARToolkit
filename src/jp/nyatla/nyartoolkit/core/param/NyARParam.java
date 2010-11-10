@@ -34,7 +34,9 @@ import java.io.*;
 import java.nio.*;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARMat;
 import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 
 /**
  * typedef struct { int xsize, ysize; double mat[3][4]; double dist_factor[4]; } ARParam;
@@ -109,6 +111,82 @@ public class NyARParam
 		this._screen_size.h = i_ysize;// newparam->ysize = ysize;
 		return;
 	}
+	/**
+	 * 右手系の視錐台を作ります。
+	 * 計算結果を多用するときは、キャッシュするようにして下さい。
+	 * @param i_dist_min
+	 * @param i_dist_max
+	 * @param o_frustum
+	 */
+	public void makeCameraFrustumRH(double i_dist_min,double i_dist_max,NyARDoubleMatrix44 o_frustum)
+	{
+		NyARMat trans_mat = new NyARMat(3, 4);
+		NyARMat icpara_mat = new NyARMat(3, 4);
+		double[][] p = new double[3][3];
+		int i;
+
+		final int width = this._screen_size.w;
+		final int height = this._screen_size.h;
+		
+		this._projection_matrix.decompMat(icpara_mat, trans_mat);
+
+		double[][] icpara = icpara_mat.getArray();
+		double[][] trans = trans_mat.getArray();
+		for (i = 0; i < 4; i++) {
+			icpara[1][i] = (height - 1) * (icpara[2][i]) - icpara[1][i];
+		}
+		p[0][0] = icpara[0][0] / icpara[2][2];
+		p[0][1] = icpara[0][1] / icpara[2][2];
+		p[0][2] = icpara[0][2] / icpara[2][2];
+
+		p[1][0] = icpara[1][0] / icpara[2][2];
+		p[1][1] = icpara[1][1] / icpara[2][2];
+		p[1][2] = icpara[1][2] / icpara[2][2];
+		
+		p[2][0] = icpara[2][0] / icpara[2][2];
+		p[2][1] = icpara[2][1] / icpara[2][2];
+		p[2][2] = icpara[2][2] / icpara[2][2];
+
+		double q00,q01,q02,q03,q10,q11,q12,q13,q20,q21,q22,q23,q30,q31,q32,q33;
+		
+		//視錐台への変換
+		q00 = (2.0 * p[0][0] / (width - 1));
+		q01 = (2.0 * p[0][1] / (width - 1));
+		q02 = -((2.0 * p[0][2] / (width - 1)) - 1.0);
+		q03 = 0.0;
+		o_frustum.m00 = q00 * trans[0][0] + q01 * trans[1][0] + q02 * trans[2][0];
+		o_frustum.m01 = q00 * trans[0][1] + q01 * trans[1][1] + q02 * trans[2][1];
+		o_frustum.m02 = q00 * trans[0][2] + q01 * trans[1][2] + q02 * trans[2][2];
+		o_frustum.m03 = q00 * trans[0][3] + q01 * trans[1][3] + q02 * trans[2][3] + q03;
+
+		q10 = 0.0;
+		q11 = -(2.0 * p[1][1] / (height - 1));
+		q12 = -((2.0 * p[1][2] / (height - 1)) - 1.0);
+		q13 = 0.0;
+		o_frustum.m10 = q10 * trans[0][0] + q11 * trans[1][0] + q12 * trans[2][0];
+		o_frustum.m11 = q10 * trans[0][1] + q11 * trans[1][1] + q12 * trans[2][1];
+		o_frustum.m12 = q10 * trans[0][2] + q11 * trans[1][2] + q12 * trans[2][2];
+		o_frustum.m13 = q10 * trans[0][3] + q11 * trans[1][3] + q12 * trans[2][3] + q13;
+
+		q20 = 0.0;
+		q21 = 0.0;
+		q22 = (i_dist_max + i_dist_min) / (i_dist_min - i_dist_max);
+		q23 = 2.0 * i_dist_max * i_dist_min / (i_dist_min - i_dist_max);
+		o_frustum.m20 = q20 * trans[0][0] + q21 * trans[1][0] + q22 * trans[2][0];
+		o_frustum.m21 = q20 * trans[0][1] + q21 * trans[1][1] + q22 * trans[2][1];
+		o_frustum.m22 = q20 * trans[0][2] + q21 * trans[1][2] + q22 * trans[2][2];
+		o_frustum.m23 = q20 * trans[0][3] + q21 * trans[1][3] + q22 * trans[2][3] + q23;
+
+		q30 = 0.0;
+		q31 = 0.0;
+		q32 = -1.0;
+		q33 = 0.0;
+		o_frustum.m30 = q30 * trans[0][0] + q31 * trans[1][0] + q32 * trans[2][0];
+		o_frustum.m31 = q30 * trans[0][1] + q31 * trans[1][1] + q32 * trans[2][1];
+		o_frustum.m32 = q30 * trans[0][2] + q31 * trans[1][2] + q32 * trans[2][2];
+		o_frustum.m33 = q30 * trans[0][3] + q31 * trans[1][3] + q32 * trans[2][3] + q33;
+		return;
+	}	
 
 
 	/**

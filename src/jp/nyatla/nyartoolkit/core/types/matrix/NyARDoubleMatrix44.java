@@ -76,7 +76,7 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		return;
 	}
 	/**
-	 * 遅いからあんまり使わないでね。
+	 * 行列の内容を配列に代入します。順番は、00,01,02,03,11...の順です。
 	 */
 	public void getValue(double[] o_value)
 	{
@@ -98,6 +98,31 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		o_value[15]=this.m33;
 		return;
 	}
+	/**
+	 * 行列の内容を転置してから配列に代入します。
+	 * 順番は、00,10,20,30,01...の順です。
+	 */	
+	public void getValueT(double[] o_value)
+	{
+		o_value[ 0]=this.m00;
+		o_value[ 1]=this.m10;
+		o_value[ 2]=this.m20;
+		o_value[ 3]=this.m30;
+		o_value[ 4]=this.m01;
+		o_value[ 5]=this.m11;
+		o_value[ 6]=this.m21;
+		o_value[ 7]=this.m31;
+		o_value[ 8]=this.m02;
+		o_value[ 9]=this.m12;
+		o_value[10]=this.m22;
+		o_value[11]=this.m32;
+		o_value[12]=this.m03;
+		o_value[13]=this.m13;
+		o_value[14]=this.m23;
+		o_value[15]=this.m33;
+		return;
+	}
+	
 	public boolean inverse(NyARDoubleMatrix44 i_src)
 	{
 		final double a11,a12,a13,a14,a21,a22,a23,a24,a31,a32,a33,a34,a41,a42,a43,a44;
@@ -183,5 +208,5 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		this.m33=b44*det_1;
 		
 		return true;
-	}	
+	}
 }
