@@ -3,8 +3,8 @@ package jp.nyatla.nyartoolkit.dev.rpf.mklib;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
-import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealitySource;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTarget;
+import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARRectTargetStatus;
 import jp.nyatla.nyartoolkit.nyidmarker.*;
 import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerDataEncoder_RawBit;
@@ -178,7 +178,7 @@ public class RawbitSerialIdTable
 	public boolean selectTarget(NyARRealityTarget i_target,NyARRealitySource i_rtsorce,SelectResult o_result) throws NyARException
 	{
 		NyARDoublePoint2d[] vx=((NyARRectTargetStatus)(i_target.ref_tracktarget.ref_status)).vertex;
-		if(!this._id_pickup.pickFromRaster(i_rtsorce.sourceimage,vx,this._temp_nyid_info,this._temp_nyid_param))
+		if(!this._id_pickup.pickFromRaster(i_rtsorce._rgb_source,vx,this._temp_nyid_info,this._temp_nyid_param))
 		{
 			return false;
 		}

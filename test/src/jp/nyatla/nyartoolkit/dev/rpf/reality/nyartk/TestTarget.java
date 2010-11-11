@@ -41,6 +41,8 @@ import jp.nyatla.nyartoolkit.core.rasterreader.INyARRgbPixelReader;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource;
+import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource_JavaImage;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSampler;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerIn;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
@@ -235,7 +237,7 @@ public class TestTarget extends Frame implements MouseListener
     	//ワーク画面
     	BufferedImage bmp=this._tmp_bf;
     	Graphics g=bmp.getGraphics();
-    	NyARRasterImageIO.copy(this._input_source.reality_in.sourceimage,bmp);
+    	NyARRasterImageIO.copy(this._input_source.reality_in._rgb_source,bmp);
     	
     	//Ignore,Coord,New
 

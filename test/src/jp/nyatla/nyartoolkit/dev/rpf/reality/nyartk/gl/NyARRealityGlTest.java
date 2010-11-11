@@ -15,8 +15,8 @@ import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
 import jp.nyatla.nyartoolkit.dev.rpf.mklib.RawbitSerialIdTable;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityGl;
-import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealitySource_Jmf;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTarget;
+import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource_Jmf;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDevice;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDeviceList;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
@@ -140,7 +140,7 @@ public class NyARRealityGlTest implements GLEventListener, JmfCaptureListener
 		try{
 			synchronized(this._sync_object){
 				
-				NyARGLUtil.drawBackGround(this._glu,this._src.sourceimage, 1.0);			
+				NyARGLUtil.drawBackGround(this._glu,this._src._rgb_source, 1.0);			
 				// マーカーがあれば、立方体を描画
 				if (this._is_marker_exist){
 					// マーカーの一致度を調査するならば、ここでnya.getConfidence()で一致度を調べて下さい。

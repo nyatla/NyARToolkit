@@ -9,6 +9,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
+import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTarget;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARContourTargetStatus;
@@ -114,7 +115,7 @@ public class NyARRealityTarget extends NyARManagedObject
 		assert(this.target_type==RT_UNKNOWN || this.target_type==RT_KNOWN);
 		//エッジサイズは0にする。
 		return i_source._source_perspective_reader.read4Point(
-			i_source.sourceimage,((NyARRectTargetStatus)(this.ref_tracktarget.ref_status)).vertex,0,0,i_sample_per_pixel,o_raster);
+			i_source._rgb_source,((NyARRectTargetStatus)(this.ref_tracktarget.ref_status)).vertex,0,0,i_sample_per_pixel,o_raster);
 	};
 	/**
 	 * エッジサイズを考慮して、ターゲットの2次元座標を元に、i_sourceからターゲットのパターン取得します。
@@ -135,7 +136,7 @@ public class NyARRealityTarget extends NyARManagedObject
 	{
 		assert(this.target_type==RT_UNKNOWN || this.target_type==RT_KNOWN);
 		return i_source._source_perspective_reader.read4Point(
-			i_source.sourceimage,((NyARRectTargetStatus)(this.ref_tracktarget.ref_status)).vertex,i_edge_percent_x,i_edge_percent_y,i_sample_per_pixel,o_raster);
+			i_source._rgb_source,((NyARRectTargetStatus)(this.ref_tracktarget.ref_status)).vertex,i_edge_percent_x,i_edge_percent_y,i_sample_per_pixel,o_raster);
 	}
 	/**
 	 * ターゲット座標平面上に定義した任意位置の矩形から、パターンを取得します。
@@ -161,7 +162,7 @@ public class NyARRealityTarget extends NyARManagedObject
 		NyARDoublePoint2d[] da=this._ref_pool._wk_da4;
 		this._transform_matrix.transformParallelRect2d(i_x,i_y,i_w,i_h,this._ref_pool._ref_prj_mat,this._ref_pool._wk_da4);
 		
-		return i_source._source_perspective_reader.read4Point(i_source.sourceimage,da,0,0,i_sample_per_pixel,o_raster);
+		return i_source._source_perspective_reader.read4Point(i_source._rgb_source,da,0,0,i_sample_per_pixel,o_raster);
 	}
 	/**
 	 * カメラの撮像点に対応する、ターゲット座標平面上の点を求めます。

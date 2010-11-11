@@ -8,35 +8,14 @@ import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
+import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSampler;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.*;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARRectTargetStatus;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARTargetStatus;
 
-/**
- * OpenGLに特化したNyARRealityクラスです。
- * @author nyatla
- */
-class NyARRealityGl extends NyARReality
-{
-	private NyARDoubleMatrix44 _frustum_rh;
-	private double[] _gl_frustum_rh=new double[16];
-	
-	public NyARRealityGl(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target) throws NyARException
-	{
-		super(
-			i_param.getPerspectiveProjectionMatrix(),
-			i_max_known_target,i_max_unknown_target);
-		//カメラパラメータを計算しておく
-		i_param.makeCameraFrustumRH(i_near, i_far,this._frustum_rh);
-		this._frustum_rh.getValueT(this._gl_frustum_rh);
-	}
-	public double[] refGlFrastumRH()
-	{
-		return this._gl_frustum_rh;
-	}
-}
+
 
 /**
  * NyARRealitySnapshotを更新するクラス。
