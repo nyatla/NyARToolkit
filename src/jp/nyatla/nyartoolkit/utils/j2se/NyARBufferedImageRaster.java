@@ -126,7 +126,7 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 	 * NyARToolKitと互換性が低いBufferedImageを指定すると、パフォーマンスが劣化することがあります。注意してください。
 	 * @throws NyARException
 	 */
-	protected NyARBufferedImageRaster(BufferedImage i_bfi) throws NyARException
+	public NyARBufferedImageRaster(BufferedImage i_bfi) throws NyARException
 	{
 		//ラスタタイプを確定させて、一旦外部参照で作る。
 		super(i_bfi.getWidth(),i_bfi.getHeight(),getRasterTypeFromBufferedImage(i_bfi),false);

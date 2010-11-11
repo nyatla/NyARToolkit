@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk;
+package jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.gl;
 
 import java.awt.Frame;
 import java.awt.Insets;
@@ -14,6 +14,9 @@ import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
 import jp.nyatla.nyartoolkit.dev.rpf.mklib.RawbitSerialIdTable;
+import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityGl;
+import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealitySource_Jmf;
+import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTarget;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDevice;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDeviceList;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
@@ -126,10 +129,12 @@ public class NyARRealityGlTest implements GLEventListener, JmfCaptureListener
 	public void display(GLAutoDrawable drawable)
 	{
 		NyARTransMatResult transmat_result = __display_transmat_result;
-//ここ要調整
-//		if (!_cap_image.hasBuffer()) {
-//			return;
-//		}
+		//RealitySourceにデータが処理する。
+		if(!this._src.isReady())
+		{
+			return;
+		}
+		
 		// 背景を書く
 		this._gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
 		try{
@@ -142,10 +147,10 @@ public class NyARRealityGlTest implements GLEventListener, JmfCaptureListener
 					// Projection transformation.
 					this._gl.glMatrixMode(GL.GL_PROJECTION);
 					this._gl.glLoadMatrixd(this._reality.refGlFrastumRH(), 0);
-
+					NyARRealityTarget[] t=new  NyARRealityTarget[10];
 					//補足している複数のターゲットから、KNOWNターゲットだけを抽出。3次元座標上に何かを表示。
-					for(int i=this._reality.target.getLength()-1;i>=0;i--){
-						NyARRealityTarget target=this._reality.target.getItem(i);
+					
+					for(int i=this._reality.selectKnownTargets(t)-1;i>=0;i--){
 						if(target.target_type!=NyARRealityTarget.RT_KNOWN){
 							continue;
 						}
@@ -177,7 +182,25 @@ public class NyARRealityGlTest implements GLEventListener, JmfCaptureListener
 			{
 				this._src.setImage(i_buffer);
 				this._reality.progress(this._src);
-				//ここでRealityTargetとマーカーライブラリを調べて、状態遷移処理
+				//UnknownTargetを1個取得して、遷移を試す。
+				NyARRealityTarget t=this._reality.selectSingleUnknownTarget();
+				if(t==null){
+					return;
+				}
+				//ターゲットに一致するデータを検索
+				RawbitSerialIdTable.SelectResult r=new RawbitSerialIdTable.SelectResult();
+				if(this._mklib.selectTarget(t,this._src,r)){
+					//テーブルにターゲットが見つかったので遷移する。
+					if(!this._reality.changeTargetToKnown(t,r.artk_direction,r.marker_width)){
+					//遷移の成功チェック
+						return;//失敗
+					}
+					//遷移に成功したので、tagにユーザ定義情報を書きこむ。
+					t.tag=new Long(r.serial);
+				}else{
+					//一致しないので、このターゲットは捨てる。
+					this._reality.changeTargetToDead(t);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

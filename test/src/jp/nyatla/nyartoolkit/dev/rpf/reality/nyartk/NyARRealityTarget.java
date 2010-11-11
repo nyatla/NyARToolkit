@@ -73,6 +73,15 @@ public class NyARRealityTarget extends NyARManagedObject
 	 * RT_DEAD   =次のprogressで削除するターゲット
 	 */
 	public int target_type;
+	
+	/**
+	 * このターゲットの遅延サイクル
+	 */
+	/**
+	 * このターゲットの最終更新クロック(track_tick準拠)
+	 */
+	
+	
 	public final static int RT_UNKNOWN   =0;//よくわからないターゲット
 	public final static int RT_KNOWN     =2;//知ってるターゲット
 	public final static int RT_DEAD      =4;//間もなく死ぬターゲット
@@ -87,6 +96,7 @@ public class NyARRealityTarget extends NyARManagedObject
 		return this._transform_matrix;
 	}
 	
+
 
 	/**
 	 * ターゲットの2次元座標を元に、i_sourceからターゲットのパターン取得します。

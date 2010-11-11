@@ -1,9 +1,7 @@
 package jp.nyatla.nyartoolkit.dev.rpf.mklib;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
-import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealitySource;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTarget;
@@ -46,6 +44,10 @@ public class RawbitSerialIdTable
 		 * 登録時に設定したメタデータです。適切にキャストしてください。
 		 */
 		public Object tag;
+		/**
+		 * ARToolKit準拠の、マーカの方位値
+		 */
+		public int artk_direction;
 	}
 	
 
@@ -215,6 +217,7 @@ public class RawbitSerialIdTable
 		//戻り値を設定
 		o_result.marker_width=d.marker_width;
 		o_result.serial=s;
+		o_result.artk_direction=this._temp_nyid_param.direction;
 		return true;
 	}
 }

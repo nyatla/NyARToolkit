@@ -62,17 +62,11 @@ public class NyARReality
 	 * samplerの出力値。この変数はNyARRealityからのみ使います。
 	 */
 	private NyARRealityTargetPool _pool;
-	/**
-	 * 最後に更新に使ったRalityInオブジェクト
-	 */
-	private NyARRealitySource _last_reality_in;
 
-	/**
-	 * ターゲットのリストです。
-	 */
-	public NyARRealityTargetList<NyARRealityTarget> target;
+	private NyARRealityTargetList target;
 
 	
+
 	
 	//種類ごとのターゲットの数
 	
@@ -102,7 +96,7 @@ public class NyARReality
 
 		//データインスタンス
 		this._pool=new NyARRealityTargetPool(number_of_reality_target,i_ref_prjmat);
-		this.target=new NyARRealityTargetList<NyARRealityTarget>(number_of_reality_target);
+		this.target=new NyARRealityTargetList(number_of_reality_target);
 		//トラック数は、newがi_max_known_target+i_max_unknown_target,rectがi_max_known_targetと同じ数です。
 		this._samplerout=new LowResolutionLabelingSamplerOut(100+number_of_reality_target);
 		
@@ -128,10 +122,10 @@ public class NyARReality
 	 * Realityの状態を、i_inのRealitySourceを元に進めます。
 	 * 
 	 * 現在の更新ルールは以下の通りです。
-	 * 1.一定時間捕捉不能なターゲットはUnknownターゲットからdeadターゲットへ移動する。
-	 * 2.knownターゲットは状態を確認して最新の状態を維持する。
-	 * 3.deadターゲットは捕捉対象から削除する。
-	 * 
+	 * 0.呼び出されるごとに、トラックターゲットからUnknownターゲットを生成する。
+	 * 1.一定時間捕捉不能なKnown,Unknownターゲットは、deadターゲットへ移動する。
+	 * 2.knownターゲットは最新の状態を維持する。
+	 * 3.deadターゲットは（次の呼び出しで）捕捉対象から削除する。
 	 * Knownターゲットが捕捉不能になった時の動作は、以下の通りです。
 	 * 4.[未実装]捕捉不能なターゲットの予測と移動
 	 * @param i_in
@@ -153,8 +147,6 @@ public class NyARReality
 		updateLists();
 		//リストのアップグレード
 		upgradeLists();
-		//last reality inの更新
-		this._last_reality_in=i_in;
 		return;
 	}
 	private final void upgradeLists() throws NyARException
@@ -274,23 +266,23 @@ public class NyARReality
 	 * Unknownターゲットから、指定したインデクス番号のターゲットをKnownターゲットへ移動します。
 	 * @param i_index
 	 * @return
-	 * 成功すると、移動したターゲットを返します。
+	 * 成功するとtrueを返します。
 	 * @throws NyARException 
 	 */
-	public final NyARRealityTarget changeTargetToKnown(NyARRealityTarget i_item,int i_dir,double i_marker_width)
+	public final boolean changeTargetToKnown(NyARRealityTarget i_item,int i_dir,double i_marker_width)
 	{
 		//遷移元制限
 		if(i_item.target_type!=NyARRealityTarget.RT_UNKNOWN){
-			return null;
+			return false;
 		}
 		//ステータス制限
 		if(i_item.ref_tracktarget.st_type!=NyARTargetStatus.ST_RECT){
-			return null;
+			return false;
 		}
 		//個数制限
 		if(this._number_of_known>=this.MAX_LIMIT_KNOWN)
 		{
-			return null;
+			return false;
 		}
 		//ステータス制限
 		i_item.target_type=NyARRealityTarget.RT_KNOWN;
@@ -304,11 +296,12 @@ public class NyARReality
 		//数の調整
 		this._number_of_unknown--;
 		this._number_of_known++;
-		return i_item;
+		return true;
 	}
 	
 	/**
 	 * 指定したKnown,またはUnknownターゲットを、ターゲットをDeadターゲットにします。
+	 * Deadターゲットは次回のサイクルでRealityTargetListから削除され、一定のサイクル期間の間システムから無視されます。
 	 * @param i_item
 	 * @throws NyARException 
 	 */
@@ -329,22 +322,24 @@ public class NyARReality
 		return;
 	}
 	/**
-	 * Unknownターゲットから、指定したシリアル番号のターゲットをKnownターゲットへ移動します。
-	 * @param i_index
+	 * 指定したシリアル番号のUnknownターゲットを、Knownターゲットへ移動します。
+	 * @param i_serial
+	 * @param i_dir
+	 * @param i_marker_width
 	 * @return
-	 * 成功すると、移動したターゲットを返します。
+	 * 成功すると、trueを返します。
 	 * @throws NyARException 
 	 */
-	public final NyARRealityTarget changeTargetToKnownBySerial(int i_serial,int i_dir,double i_marker_width) throws NyARException
+	public final boolean changeTargetToKnownBySerial(int i_serial,int i_dir,double i_marker_width) throws NyARException
 	{
 		NyARRealityTarget item=this.target.getItemBySerial(i_serial);
 		if(item==null){
-			return null;
+			return false;
 		}
 		return changeTargetToKnown(item,i_dir,i_marker_width);
 	}
 	/**
-	 * Knownターゲットから、指定したシリアル番号のターゲットをDeadターゲットへ移動します。
+	 * 指定したシリアル番号のKnown/UnknownターゲットをDeadターゲットへ移動します。
 	 * @param i_index
 	 * @throws NyARException 
 	 */
@@ -383,5 +378,46 @@ public class NyARReality
 	{
 		return this._number_of_dead;
 	}
-	
+	/**
+	 * ターゲットリストへの参照値を返す。このターゲットリストは、直接編集しないでください。
+	 * @return
+	 */
+	public NyARRealityTargetList refTargetList()
+	{
+		return this.target;
+	}
+
+	/**
+	 * Knownターゲットを検索して、配列に返します。
+	 * @param o_result
+	 * 結果を格納する配列です。格納されるターゲットの最大数は、コンストラクタの設定値と同じです。
+	 * 配列サイズが不足した場合は、発見した順に最大数を返します。
+	 * @return
+	 * 配列に格納したターゲットの数を返します。
+	 */
+	public int selectKnownTargets(NyARRealityTarget[] o_result)
+	{
+		return this.target.selectTargetsByType(NyARRealityTarget.RT_KNOWN, o_result);
+	}
+	/**
+	 * Unknownターゲットを検索して、配列に返します。
+	 * @param o_result
+	 * 結果を格納する配列です。格納されるターゲットの最大数は、コンストラクタの設定値と同じです。
+	 * 配列サイズが不足した場合は、発見した順に最大数を返します。
+	 * @return
+	 * 配列に格納したターゲットの数を返します。
+	 */
+	public int selectUnKnownTargets(NyARRealityTarget[] o_result)
+	{
+		return this.target.selectTargetsByType(NyARRealityTarget.RT_UNKNOWN, o_result);
+	}
+	/**
+	 * Unknownターゲットを1個検索して返します。
+	 * @return
+	 * 一番初めに発見したターゲットを返します。見つからないときはNULLです。
+	 */
+	public NyARRealityTarget selectSingleUnknownTarget()
+	{
+		return this.target.selectSingleTargetByType(NyARRealityTarget.RT_UNKNOWN);
+	}	
 }

@@ -55,6 +55,7 @@ public abstract class NyARRealitySource
 	public final void getSampleOut(LowResolutionLabelingSamplerOut o_samplerout) throws NyARException
 	{
 		this._filter.doFilter(this.sourceimage,this.lrsamplerin._base_raster);
+		this.lrsamplerin.syncSource();
 		this._sampler.sampling(this.lrsamplerin, o_samplerout);
 	}	
 	/**
@@ -82,6 +83,10 @@ public abstract class NyARRealitySource
 	{
 		return this._source_perspective_reader.read4Point(this.sourceimage,i_vertex,0,0,1, o_raster);
 	}
+	/**
+	 * このRealitySourceに対する読出し準備ができているかを返す。
+	 */
+	public abstract boolean isReady();
 }
 
 class NyARRealitySource_JavaImage extends NyARRealitySource
@@ -92,7 +97,11 @@ class NyARRealitySource_JavaImage extends NyARRealitySource
 		this.sourceimage=new NyARBufferedImageRaster(i_width,i_height,NyARBufferType.BYTE1D_X8R8G8B8_32);
 		return;
 	}
-	
+	public NyARRealitySource_JavaImage(BufferedImage i_bmp,int i_depth) throws NyARException
+	{
+		super(i_bmp.getWidth(),i_bmp.getHeight(),i_depth);
+		this.sourceimage=new NyARBufferedImageRaster(i_bmp);
+	}
 	/**
 	 * BufferedImageの内容を、ソース画像としてセットします。
 	 * @param i_image
@@ -104,6 +113,10 @@ class NyARRealitySource_JavaImage extends NyARRealitySource
 		this.lrsamplerin.syncSource();
 		return;
 	}
+	public final boolean isReady()
+	{
+		return true;
+	}
 }
 class NyARRealitySource_Jmf extends NyARRealitySource
 {
@@ -114,14 +127,17 @@ class NyARRealitySource_Jmf extends NyARRealitySource
 		return;
 	}
 	/**
-	 * 画像をセットします。
-	 * @param i_image
+	 * Jmfのバッファをセットします。
+	 * @param i_buffer
 	 * @throws NyARException
 	 */
 	public void setImage(javax.media.Buffer i_buffer) throws NyARException
 	{
 		((JmfNyARRaster_RGB)(this.sourceimage)).setBuffer(i_buffer);
-		this.lrsamplerin.syncSource();
 		return;
+	}
+	public final boolean isReady()
+	{
+		return ((JmfNyARRaster_RGB)this.sourceimage).hasBuffer();
 	}
 }
