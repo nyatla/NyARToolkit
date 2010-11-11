@@ -17,26 +17,19 @@ public class LrlsGsRaster extends NyARGrayscaleRaster
 	 */
 	public int resolution;
 	/**
-	 * このラスタの、元ラスターです。
-	 */
-	public LrlsGsRaster baseraster;
-	/**
 	 * 
 	 * @param i_width
 	 * @param i_height
-	 * @param i_baseraster
-	 * baserasterプロパティの値です。
 	 * @param i_pixelsize
 	 * pixelsizeプロパティの値です。
 	 * @param i_is_alloc
 	 * @throws NyARException
 	 */
-	public LrlsGsRaster(int i_width, int i_height,LrlsGsRaster i_baseraster,int i_resolution,boolean i_is_alloc) throws NyARException
+	public LrlsGsRaster(int i_width, int i_height,int i_resolution,boolean i_is_alloc) throws NyARException
 	{
 		super(i_width,i_height,i_is_alloc);
 		this._vr=new NyARVectorReader_INT1D_GRAY_8(this);
 		this.resolution=i_resolution;
-		this.baseraster=i_baseraster;
 	}
 	/**
 	 *　追加機能-無し。

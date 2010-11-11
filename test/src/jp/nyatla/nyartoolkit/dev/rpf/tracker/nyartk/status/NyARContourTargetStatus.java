@@ -47,9 +47,9 @@ public final class NyARContourTargetStatus extends NyARTargetStatus
 	 * @throws NyARException
 	 */
 
-	public boolean setValue(LowResolutionLabelingSamplerOut.Item i_sample) throws NyARException
+	public boolean setValue(LrlsGsRaster i_base_raster,LowResolutionLabelingSamplerOut.Item i_sample) throws NyARException
 	{
 		LrlsGsRaster r=(LrlsGsRaster)i_sample.ref_raster;
-		return r.baseraster.getVectorReader().traceConture(r, i_sample.lebeling_th, i_sample.entry_pos, vecpos);
+		return i_base_raster.getVectorReader().traceConture(r, i_sample.lebeling_th, i_sample.entry_pos, vecpos);
 	}	
 }

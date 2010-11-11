@@ -29,7 +29,7 @@ public class LowResolutionLabelingSamplerOut
 		/**
 		 * ラべリングした画像の解像度値です。
 		 */
-		public int resolution;
+//		public int resolution;
 		/**
 		 * ラべリング対象のエントリポイントです。
 		 */

@@ -95,7 +95,7 @@ public class NyARReality
 	 */
 	private final boolean isTargetAlive(NyARRealityTarget i_target)
 	{
-		return i_target.ref_tracktarget.st_type==NyARTargetStatus.ST_RECT;
+		return i_target._ref_tracktarget.st_type==NyARTargetStatus.ST_RECT;
 	}
 	/**
 	 * Realityの状態を、i_inのRealitySourceを元に進めます。
@@ -116,7 +116,7 @@ public class NyARReality
 		i_in.getSampleOut(this._samplerout);
 		//tracker進行
 		this._tracker.progress(this._samplerout);
-	
+		
 		//トラックしてないrectターゲット1個探してunknownターゲットに入力
 		NyARTarget tt=findEmptyTagItem(this._tracker._targets);
 		if(tt!=null){
@@ -133,7 +133,7 @@ public class NyARReality
 		NyARRealityTarget[] rt_array=this.target.getArray();
 		for(int i=this.target.getLength()-1;i>=0;i--)
 		{
-			switch(rt_array[i].target_type)
+			switch(rt_array[i]._target_type)
 			{
 			case NyARRealityTarget.RT_DEAD:
 				//deadターゲットの削除
@@ -155,25 +155,30 @@ public class NyARReality
 	private final void updateLists() throws NyARException
 	{
 		NyARRealityTarget[] rt_array=this.target.getArray();
+		
 		for(int i=this.target.getLength()-1;i>=0;i--){
 			NyARRealityTarget tar=rt_array[i];
-			switch(tar.target_type)
-			{
-			case NyARRealityTarget.RT_DEAD:
-				//何もしたくない。
-				continue;
-			case NyARRealityTarget.RT_KNOWN:
-
-				//矩形座標計算
-				setSquare(((NyARRectTargetStatus)(tar.ref_tracktarget.ref_status)).vertex,tar.screen_square);
-				//3d座標計算
-				this._transmat.transMatContinue(tar.screen_square,tar.offset,tar._transform_matrix,tar._transform_matrix);
-				continue;
-			case NyARRealityTarget.RT_UNKNOWN:
-				continue;
-			default:
+			if(tar._ref_tracktarget.delay_tick==0){
+				tar._grab_rate=(tar._grab_rate*5+(100)*3)>>3;
+				switch(tar._target_type)
+				{
+				case NyARRealityTarget.RT_DEAD:
+					//何もしたくない。
+					continue;
+				case NyARRealityTarget.RT_KNOWN:
+					//矩形座標計算
+					setSquare(((NyARRectTargetStatus)(tar._ref_tracktarget.ref_status)).vertex,tar._screen_square);
+					//3d座標計算
+					this._transmat.transMatContinue(tar._screen_square,tar._offset,tar._transform_matrix,tar._transform_matrix);
+					continue;
+				case NyARRealityTarget.RT_UNKNOWN:
+					continue;
+				default:
+				}
+			}else{
+				//更新をパスして補足レートの再計算(5:3で混ぜて8で割る)
+				tar._grab_rate=(tar._grab_rate*5+(100/tar._ref_tracktarget.delay_tick)*3)>>3;
 			}
-			tar.target_age++;
 		}
 	}
 
@@ -227,7 +232,7 @@ public class NyARReality
 		{
 			return null;
 		}
-		rt.target_type=NyARRealityTarget.RT_UNKNOWN;
+		rt._target_type=NyARRealityTarget.RT_UNKNOWN;
 		this.target.pushAssert(rt);
 		this._number_of_unknown++;
 		return rt;
@@ -235,7 +240,7 @@ public class NyARReality
 	private final void deleteTarget(int i_index)
 	{
 		//削除できるのはdeadターゲットだけ
-		assert(this.target.getItem(i_index).target_type==NyARRealityTarget.RT_DEAD);
+		assert(this.target.getItem(i_index)._target_type==NyARRealityTarget.RT_DEAD);
 		//poolから開放してリストから削除
 		this.target.getItem(i_index).releaseObject();
 		this.target.removeIgnoreOrder(i_index);
@@ -247,15 +252,16 @@ public class NyARReality
 	 * @return
 	 * 成功するとtrueを返します。
 	 * @throws NyARException 
+	 * @throws NyARException 
 	 */
-	public final boolean changeTargetToKnown(NyARRealityTarget i_item,int i_dir,double i_marker_width)
+	public final boolean changeTargetToKnown(NyARRealityTarget i_item,int i_dir,double i_marker_width) throws NyARException
 	{
 		//遷移元制限
-		if(i_item.target_type!=NyARRealityTarget.RT_UNKNOWN){
+		if(i_item._target_type!=NyARRealityTarget.RT_UNKNOWN){
 			return false;
 		}
 		//ステータス制限
-		if(i_item.ref_tracktarget.st_type!=NyARTargetStatus.ST_RECT){
+		if(i_item._ref_tracktarget.st_type!=NyARTargetStatus.ST_RECT){
 			return false;
 		}
 		//個数制限
@@ -264,13 +270,17 @@ public class NyARReality
 			return false;
 		}
 		//ステータス制限
-		i_item.target_type=NyARRealityTarget.RT_KNOWN;
+		i_item._target_type=NyARRealityTarget.RT_KNOWN;
 		
 		//マーカのサイズを決めておく。
-		i_item.offset.setSquare(i_marker_width);
+		i_item._offset.setSquare(i_marker_width);
 		
 		//directionに応じて、元矩形のrectを回転しておく。
-		((NyARRectTargetStatus)(i_item.ref_tracktarget.ref_status)).shiftByArtkDirection(i_dir);		
+		((NyARRectTargetStatus)(i_item._ref_tracktarget.ref_status)).shiftByArtkDirection(i_dir);		
+		//矩形座標計算
+		setSquare(((NyARRectTargetStatus)(i_item._ref_tracktarget.ref_status)).vertex,i_item._screen_square);
+		//3d座標計算
+		this._transmat.transMat(i_item._screen_square,i_item._offset,i_item._transform_matrix);
 		
 		//数の調整
 		this._number_of_unknown--;
@@ -286,17 +296,17 @@ public class NyARReality
 	 */
 	public final void changeTargetToDead(NyARRealityTarget i_item) throws NyARException
 	{
-		assert(i_item.target_type==NyARRealityTarget.RT_UNKNOWN || i_item.target_type==NyARRealityTarget.RT_KNOWN);
-		assert(i_item.ref_tracktarget.st_type!=NyARTargetStatus.ST_IGNORE);
+		assert(i_item._target_type==NyARRealityTarget.RT_UNKNOWN || i_item._target_type==NyARRealityTarget.RT_KNOWN);
+		assert(i_item._ref_tracktarget.st_type!=NyARTargetStatus.ST_IGNORE);
 		//所有するトラックターゲットがIGNOREに設定
-		this._tracker.changeStatusToIgnore(i_item.ref_tracktarget);
+		this._tracker.changeStatusToIgnore(i_item._ref_tracktarget);
 		//数の調整
-		if(i_item.target_type==NyARRealityTarget.RT_UNKNOWN){
+		if(i_item._target_type==NyARRealityTarget.RT_UNKNOWN){
 			this._number_of_unknown--;
 		}else{
 			this._number_of_known--;
 		}
-		i_item.target_type=NyARRealityTarget.RT_DEAD;
+		i_item._target_type=NyARRealityTarget.RT_DEAD;
 		this._number_of_dead++;
 		return;
 	}

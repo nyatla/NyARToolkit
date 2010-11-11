@@ -15,7 +15,7 @@ public class NyARRealityTargetList extends NyARPointerStack<NyARRealityTarget>
 		NyARRealityTarget[] items=this._items;
 		for(int i=items.length-1;i>=0;i--)
 		{
-			if(items[i].serial==i_serial){
+			if(items[i]._serial==i_serial){
 				return items[i];
 			}
 		}
@@ -32,7 +32,7 @@ public class NyARRealityTargetList extends NyARPointerStack<NyARRealityTarget>
 		NyARRealityTarget[] items=this._items;
 		for(int i=items.length-1;i>=0;i--)
 		{
-			if(items[i].serial==i_serial){
+			if(items[i]._serial==i_serial){
 				return i;
 			}
 		}
@@ -52,7 +52,7 @@ public class NyARRealityTargetList extends NyARPointerStack<NyARRealityTarget>
 		int num=0;
 		for(int i=this._length-1;i>=0 && num<o_result.length;i--)
 		{
-			if(this._items[i].target_type!=i_type){
+			if(this._items[i]._target_type!=i_type){
 				continue;
 			}
 			o_result[num]=this._items[i];
@@ -71,7 +71,7 @@ public class NyARRealityTargetList extends NyARPointerStack<NyARRealityTarget>
 	{
 		for(int i=this._length-1;i>=0;i--)
 		{
-			if(this._items[i].target_type!=i_type){
+			if(this._items[i]._target_type!=i_type){
 				continue;
 			}
 			return this._items[i];

@@ -185,8 +185,7 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve implements INyARRasterFilter_Rgb2Gs
 				//スキップ
 				pt_src+=skip_src_y;
 			}
-			return;	
-
+			return;
 		}
 		public void doFilter(INyARRaster i_input, int[] o_output,int l,int t,int w,int h)
 		{
@@ -196,13 +195,28 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve implements INyARRasterFilter_Rgb2Gs
 			byte[] in_buf = (byte[]) i_input.getBuffer();
 			int bp = (l+t*size.w)*3;
 			final int b=t+h;
-			final int row_padding=(size.w-w)*3;
+			final int row_padding_dst=(size.w-w);
+			final int row_padding_src=row_padding_dst*3;
+			final int pix_count=w;
+			final int pix_mod_part=pix_count-(pix_count%8);
+			int src_ptr=t*size.w+l;
 			for (int y = t; y < b; y++) {
-				for (int x = 0; x < w; x++) {
-					o_output[y*size.w+x+l] = ((in_buf[bp] & 0xff) + (in_buf[bp + 1] & 0xff) + (in_buf[bp + 2] & 0xff)) / 3;
-					bp += 3;
+				int x=0;
+				for (x = pix_count-1; x >=pix_mod_part; x--){
+					o_output[src_ptr++] = ((in_buf[bp++] & 0xff) + (in_buf[bp++] & 0xff) + (in_buf[bp++] & 0xff)) >>2;
 				}
-				bp+=row_padding;
+				for (;x>=0;x-=8){
+					o_output[src_ptr++] = ((in_buf[bp++] & 0xff) + (in_buf[bp++] & 0xff) + (in_buf[bp++] & 0xff)) >>2;
+					o_output[src_ptr++] = ((in_buf[bp++] & 0xff) + (in_buf[bp++] & 0xff) + (in_buf[bp++] & 0xff)) >>2;
+					o_output[src_ptr++] = ((in_buf[bp++] & 0xff) + (in_buf[bp++] & 0xff) + (in_buf[bp++] & 0xff)) >>2;
+					o_output[src_ptr++] = ((in_buf[bp++] & 0xff) + (in_buf[bp++] & 0xff) + (in_buf[bp++] & 0xff)) >>2;
+					o_output[src_ptr++] = ((in_buf[bp++] & 0xff) + (in_buf[bp++] & 0xff) + (in_buf[bp++] & 0xff)) >>2;
+					o_output[src_ptr++] = ((in_buf[bp++] & 0xff) + (in_buf[bp++] & 0xff) + (in_buf[bp++] & 0xff)) >>2;
+					o_output[src_ptr++] = ((in_buf[bp++] & 0xff) + (in_buf[bp++] & 0xff) + (in_buf[bp++] & 0xff)) >>2;
+					o_output[src_ptr++] = ((in_buf[bp++] & 0xff) + (in_buf[bp++] & 0xff) + (in_buf[bp++] & 0xff)) >>2;
+				}
+				bp+=row_padding_dst;
+				src_ptr+=row_padding_dst;
 			}
 			return;
 		}		

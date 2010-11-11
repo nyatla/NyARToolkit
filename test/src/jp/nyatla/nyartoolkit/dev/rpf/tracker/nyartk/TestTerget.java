@@ -21,6 +21,7 @@ import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve;
+import jp.nyatla.nyartoolkit.utils.j2se.NyARBufferedImageRaster;
 import jp.nyatla.nyartoolkit.utils.j2se.NyARRasterImageIO;
 import jp.nyatla.nyartoolkit.core.types.*;
 
@@ -62,20 +63,20 @@ interface InputSource
 
 class ImageSource implements InputSource
 {
-	private BufferedImage _src_image;
+	private NyARBufferedImageRaster _src_image;
+	NyARGrayscaleRaster gs;
+	NyARRasterFilter_Rgb2Gs_RgbAve filter;
 
-	public ImageSource(String i_filename) throws IOException
+	public ImageSource(String i_filename) throws IOException, NyARException
 	{
-		this._src_image = ImageIO.read(new File(i_filename));
+		this._src_image=new NyARBufferedImageRaster(ImageIO.read(new File(i_filename)));
+		this.gs=new NyARGrayscaleRaster(this._src_image.getWidth(),this._src_image.getHeight());
+		this.filter=new NyARRasterFilter_Rgb2Gs_RgbAve(this._src_image.getBufferType());
 	}
 	public void UpdateInput(LowResolutionLabelingSamplerIn o_input) throws NyARException
 	{
-		INyARRgbRaster ra =new NyARRgbRaster_RGB(320,240);
-		NyARRasterImageIO.copy(this._src_image,ra);
 		//GS値化
-		NyARGrayscaleRaster gs=new NyARGrayscaleRaster(320,240);
-		NyARRasterFilter_Rgb2Gs_RgbAve filter=new NyARRasterFilter_Rgb2Gs_RgbAve(ra.getBufferType());
-		filter.doFilter(ra,gs);
+		this.filter.doFilter(this._src_image,gs);
 		//samplerへ入力
 		o_input.wrapBuffer(gs);
 		
@@ -130,7 +131,7 @@ class LiveSource implements InputSource,JmfCaptureListener
 			}		
 		}
 		this._capture.setOnCapture(this);
-		this._raster = new JmfNyARRaster_RGB(320, 240,this._capture.getCaptureFormat());
+		this._raster = new JmfNyARRaster_RGB(this._capture.getCaptureFormat());
 		this._filter	= new NyARRasterFilter_Rgb2Gs_RgbAve(_raster.getBufferType());
 		this._capture.start();
 		
@@ -189,7 +190,6 @@ public class TestTerget extends Frame
 	LowResolutionLabelingSamplerOut samplerout;
 	
 	NyARTracker tracker;
-//	NyARTrackerSnapshot trackerout;
 	
 	private final static String SAMPLE_FILES = "../Data/320x240ABGR.png";
 
@@ -198,7 +198,6 @@ public class TestTerget extends Frame
 
 	private int W = 320;
 	private int H = 240;
-//	BufferedImage _src_image;
 	InputSource _input_source;
 	public TestTerget() throws NyARException, Exception
 	{
@@ -206,13 +205,13 @@ public class TestTerget extends Frame
 		Insets ins = this.getInsets();
 		this.setSize(1024 + ins.left + ins.right, 768 + ins.top + ins.bottom);
 		
-	this._input_source=new ImageSource(SAMPLE_FILES);
+//	this._input_source=new ImageSource(SAMPLE_FILES);
 //		this._input_source=new MoveSource();
-//		this._input_source=new LiveSource();
+		this._input_source=new LiveSource();
 		//create sampler
-		this.samplerin=new LowResolutionLabelingSamplerIn(W, H, 2,false);
+		this.samplerin=new LowResolutionLabelingSamplerIn(W, H, 1,false);
 		this.samplerout=new LowResolutionLabelingSamplerOut(100);
-		this.sampler=new LowResolutionLabelingSampler(W, H,2);
+		this.sampler=new LowResolutionLabelingSampler(W, H,(int)Math.pow(2,1));
 		
 		//create tracker
 		this.tracker=new NyARTracker(10,1,10);
@@ -233,21 +232,19 @@ public class TestTerget extends Frame
     {
 		try {
 			// マーカーを検出
-			this._input_source.UpdateInput(this.samplerin);
 			Date d2 = new Date();
-/*			for (int i = 0; i < 1; i++) {
+			for (int i = 0; i < 1; i++) {
 				//tracker更新
+				this._input_source.UpdateInput(this.samplerin);
 				this.sampler.sampling(this.samplerin,this.samplerout);
-				this.tracker.progress(this.samplerout,this.trackerout);
-			}*/
+				this.tracker.progress(this.samplerout);
+			}
 			Date d = new Date();
 			System.out.println(d.getTime() - d2.getTime());
 
 			Thread.sleep(30);
 			
-			this.sampler.sampling(this.samplerin,this.samplerout);
 			//tracker更新
-			this.tracker.progress(this.samplerout);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -302,7 +299,7 @@ public class TestTerget extends Frame
     	Graphics g=sink.getGraphics();
 	    	g.setColor(c);
 			NyARRectTargetStatus s=(NyARRectTargetStatus)t.ref_status;
-			g.drawString("RT:"+t.serial+"("+s.detect_type+")",t.sample_area.x,t.sample_area.y);
+			g.drawString("RT:"+t.serial+"("+s.detect_type+")"+"-"+t.delay_tick,t.sample_area.x,t.sample_area.y);
 			g.drawRect((int)s.vertex[0].x-1,(int)s.vertex[0].y-1,2,2);
 			for(int i2=0;i2<4;i2++){
 //				g.fillRect((int)st.vecpos[i2].x-1, (int)st.vecpos[i2].y-1,2,2);
@@ -334,7 +331,7 @@ public class TestTerget extends Frame
 		g.drawRect(t.sample_area.x,t.sample_area.y,t.sample_area.w,t.sample_area.h);
 		NyARContourTargetStatus st=(NyARContourTargetStatus)t.ref_status;
 		for(int i2=0;i2<st.vecpos.length;i2++){
-			g.drawString(i2+":"/*+(int)st.vecpos.item[i2].sq_dist*/,(int)st.vecpos.items[i2].x-1, (int)st.vecpos.items[i2].y-1);
+			g.drawString(i2+":"+"-"+t.delay_tick,(int)st.vecpos.items[i2].x-1, (int)st.vecpos.items[i2].y-1);
 			g.fillRect((int)st.vecpos.items[i2].x-1, (int)st.vecpos.items[i2].y-1,2,2);
 		}
     }
@@ -347,7 +344,7 @@ public class TestTerget extends Frame
     	//サンプリング結果の表示
     	Graphics g=sink.getGraphics();
     	g.setColor(c);
-		g.drawString("IG",t.sample_area.x,t.sample_area.y);
+		g.drawString("IG"+"-"+t.delay_tick,t.sample_area.x,t.sample_area.y);
 		g.drawRect(t.sample_area.x,t.sample_area.y,t.sample_area.w,t.sample_area.h);
     }
         
@@ -359,7 +356,7 @@ public class TestTerget extends Frame
     	//サンプリング結果の表示
     	Graphics g=sink.getGraphics();
     	g.setColor(c);
-		g.drawString("NW",t.sample_area.x,t.sample_area.y);
+		g.drawString("NW"+"-"+t.delay_tick,t.sample_area.x,t.sample_area.y);
 		g.drawRect(t.sample_area.x,t.sample_area.y,t.sample_area.w,t.sample_area.h);
     }
     
@@ -388,7 +385,7 @@ public class TestTerget extends Frame
 	    	//処理
 	    	this.update();
 			this.draw(this.getGraphics());
-//	    	Thread.sleep(30);
+	    	Thread.sleep(30);
     	}
     }
 

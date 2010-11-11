@@ -42,19 +42,25 @@ public class NyARTarget extends NyARManagedObject
 	 * ステータスのタイプを表します。この値はref_statusの型と同期しています。
 	 */
 	public int st_type;
-
 	/**
 	 * Targetを識別するID値
 	 */
 	public long serial;
 	/**
-	 * このターゲットが最後にアップデートされたtick
+	 * 認識サイクルの遅延値。更新ミスの回数と同じ。
 	 */
-	public long last_update_tick;
+	public int delay_tick;
+
 	/**
 	 * 現在のステータスになってからのターゲットの寿命値
 	 */
 	public int status_age;
+	/**
+	 * 検知率
+	 */
+	/**
+	 * 
+	 */
 	////////////////////////
 	//targetの情報
 	public NyARTargetStatus ref_status;

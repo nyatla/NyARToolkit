@@ -23,7 +23,7 @@ public class NyARRealityTarget extends NyARManagedObject
 {
 	
 	private static Object _serial_lock=new Object();
-	private static long _serial=0;
+	private static long _serial_counter=0;
 	
 	/**
 	 * システムの稼働範囲内で一意なIDを持つこと。
@@ -32,7 +32,7 @@ public class NyARRealityTarget extends NyARManagedObject
 	public static long getSerial()
 	{
 		synchronized(NyARRealityTarget._serial_lock){
-			return NyARRealityTarget._serial++;
+			return NyARRealityTarget._serial_counter++;
 		}
 	}
 	////////////////////////
@@ -45,47 +45,39 @@ public class NyARRealityTarget extends NyARManagedObject
 	//targetの基本情報
 
 	/**
-	 * Targetを識別するID値
+	 * 内部向けの公開メンバ変数です。getSerialを使ってください。
 	 */
-	public long serial;
-	/**
-	 * このターゲットの年齢
-	 */
-	public long target_age;
+	public long _serial;
 	/**
 	 * 内部向けの公開メンバ変数です。refTransformMatrix()関数で参照してください。
 	 */
 	public NyARTransMatResult _transform_matrix=new NyARTransMatResult();
+
+	public final static int RT_UNKNOWN   =0;//よくわからないターゲット
+	public final static int RT_KNOWN     =2;//知ってるターゲット
+	public final static int RT_DEAD      =4;//間もなく死ぬターゲット	
+	/**
+	 * 内部向けpublicメンバ。getTargetType関数を使ってください。
+	 */
+	public int _target_type;
+	
 	/**
 	 * このターゲットの大きさ。3次元座標を計算するときに使います。
 	 */
-	public NyARRectOffset offset=new NyARRectOffset();
+	public NyARRectOffset _offset=new NyARRectOffset();
 	/**
-	 * このターゲットが参照しているトラックターゲット
+	 * 内部向けpublicメンバ。このターゲットが参照しているトラックターゲット
 	 */
-	public NyARTarget ref_tracktarget;
+	public NyARTarget _ref_tracktarget;
 	
-	public NyARSquare screen_square=new NyARSquare();
-	
-	/**
-	 * このターゲットの情報タイプ
-	 * RT_UNKNOWN=未確定ターゲット。2次元座標利用可能
-	 * RT_KNOWN  =確定した既知のターゲット。3次元座標利用可能
-	 * RT_DEAD   =次のprogressで削除するターゲット
-	 */
-	public int target_type;
+	public NyARSquare _screen_square=new NyARSquare();
 	
 	/**
-	 * このターゲットの遅延サイクル
+	 * 内部向けpublicメンバ。getGrabbRateを使ってください。
 	 */
-	/**
-	 * このターゲットの最終更新クロック(track_tick準拠)
-	 */
+	public int _grab_rate;
 	
-	
-	public final static int RT_UNKNOWN   =0;//よくわからないターゲット
-	public final static int RT_KNOWN     =2;//知ってるターゲット
-	public final static int RT_DEAD      =4;//間もなく死ぬターゲット
+
 	
 	/**
 	 * カメラ座標系をターゲット座標系に変換する行列を返します。
@@ -93,10 +85,40 @@ public class NyARRealityTarget extends NyARManagedObject
 	 */
 	public final NyARTransMatResult refTransformMatrix()
 	{
-		assert(this.target_type==RT_KNOWN);
+		assert(this._target_type==RT_KNOWN);
 		return this._transform_matrix;
 	}
+	/**
+	 * このターゲットのタイプを返します。
+	 * RT_UNKNOWN=未確定ターゲット。2次元座標利用可能
+	 * RT_KNOWN  =確定した既知のターゲット。3次元座標利用可能
+	 * RT_DEAD   =次のprogressで削除するターゲット
+	 * @return
+	 */
+	public int getTargetType()
+	{
+		return this._target_type;
+	}
+	/**
+	 * Reality内で一意な、ターゲットのシリアルIDです。
+	 * @return
+	 */
+	public long getSerialId()
+	{
+		return this._serial;
+	}
+
+	/**
+	 * このターゲットの補足率を返します。0-100の数値です。
+	 * 20%切ると消失の可能性が高い？
+	 * @return
+	 */
+	public int getGrabbRate()
+	{
+		return this._grab_rate;
+	}
 	
+		
 
 
 	/**
@@ -112,10 +134,10 @@ public class NyARRealityTarget extends NyARManagedObject
 	 */
 	public boolean getPerspectiveTargetPatt(NyARRealitySource i_source,int i_sample_per_pixel,INyARRgbRaster o_raster) throws NyARException
 	{
-		assert(this.target_type==RT_UNKNOWN || this.target_type==RT_KNOWN);
+		assert(this._target_type==RT_UNKNOWN || this._target_type==RT_KNOWN);
 		//エッジサイズは0にする。
 		return i_source._source_perspective_reader.read4Point(
-			i_source._rgb_source,((NyARRectTargetStatus)(this.ref_tracktarget.ref_status)).vertex,0,0,i_sample_per_pixel,o_raster);
+			i_source._rgb_source,((NyARRectTargetStatus)(this._ref_tracktarget.ref_status)).vertex,0,0,i_sample_per_pixel,o_raster);
 	};
 	/**
 	 * エッジサイズを考慮して、ターゲットの2次元座標を元に、i_sourceからターゲットのパターン取得します。
@@ -134,9 +156,9 @@ public class NyARRealityTarget extends NyARManagedObject
 	 */
 	public boolean getPerspectiveTargetPattWithEdge(NyARRealitySource i_source,int i_sample_per_pixel,int i_edge_percent_x,int i_edge_percent_y,INyARRgbRaster o_raster) throws NyARException
 	{
-		assert(this.target_type==RT_UNKNOWN || this.target_type==RT_KNOWN);
+		assert(this._target_type==RT_UNKNOWN || this._target_type==RT_KNOWN);
 		return i_source._source_perspective_reader.read4Point(
-			i_source._rgb_source,((NyARRectTargetStatus)(this.ref_tracktarget.ref_status)).vertex,i_edge_percent_x,i_edge_percent_y,i_sample_per_pixel,o_raster);
+			i_source._rgb_source,((NyARRectTargetStatus)(this._ref_tracktarget.ref_status)).vertex,i_edge_percent_x,i_edge_percent_y,i_sample_per_pixel,o_raster);
 	}
 	/**
 	 * ターゲット座標平面上に定義した任意位置の矩形から、パターンを取得します。
@@ -158,7 +180,7 @@ public class NyARRealityTarget extends NyARManagedObject
 	 */
 	public boolean getPerspectivePatt(NyARRealitySource i_source,double i_x,double i_y,double i_w,double i_h,int i_sample_per_pixel,INyARRgbRaster o_raster) throws NyARException
 	{
-		assert(this.target_type==RT_KNOWN);
+		assert(this._target_type==RT_KNOWN);
 		NyARDoublePoint2d[] da=this._ref_pool._wk_da4;
 		this._transform_matrix.transformParallelRect2d(i_x,i_y,i_w,i_h,this._ref_pool._ref_prj_mat,this._ref_pool._wk_da4);
 		
@@ -204,8 +226,8 @@ NyARDoubleMatrix44 m=new NyARDoubleMatrix44();
 	 */
 	public final boolean isInnerPoint2d(int i_x,int i_y)
 	{
-		assert(this.target_type==RT_UNKNOWN || this.target_type==RT_KNOWN);
-		NyARDoublePoint2d[] vx=((NyARRectTargetStatus)(this.ref_tracktarget.ref_status)).vertex;
+		assert(this._target_type==RT_UNKNOWN || this._target_type==RT_KNOWN);
+		NyARDoublePoint2d[] vx=((NyARRectTargetStatus)(this._ref_tracktarget.ref_status)).vertex;
 		for(int i=3;i>=0;i--){
 			if(NyARDoublePoint2d.crossProduct3Point(vx[i],vx[(i+1)%4],i_x,i_y)<0)
 			{
@@ -234,8 +256,8 @@ NyARDoubleMatrix44 m=new NyARDoubleMatrix44();
 		if(ret==0)
 		{
 			//参照ターゲットのタグをクリアして、参照解除
-			this.ref_tracktarget.tag=null;
-			this.ref_tracktarget.refObject();
+			this._ref_tracktarget.tag=null;
+			this._ref_tracktarget.refObject();
 		}
 		return ret;
 	}

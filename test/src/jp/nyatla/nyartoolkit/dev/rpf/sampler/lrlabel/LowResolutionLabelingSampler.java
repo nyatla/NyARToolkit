@@ -26,12 +26,14 @@ public class LowResolutionLabelingSampler
 	 */
 	class Main_Labeling extends NyARLabeling_Rle
 	{
+		private int _pix;
 		public NyARGrayscaleRaster current_gs;
 		public int current_th;
 		public LowResolutionLabelingSamplerOut current_output;
-		public Main_Labeling(int i_width,int i_height) throws NyARException
+		public Main_Labeling(int i_width,int i_height,int i_pix_base) throws NyARException
 		{
 			super(i_width,i_height);
+			this._pix=i_pix_base;
 		}
 		/**
 		 * @Override
@@ -52,17 +54,17 @@ public class LowResolutionLabelingSampler
 			if(item==null){
 				return;
 			}
+			int pix=this._pix;
 			item.entry_pos.x=iRefLabel.entry_x;
 			item.entry_pos.y=iRefLabel.clip_t;
 			item.ref_raster=this.current_gs;
-			item.base_area.x=iRefLabel.clip_l*4;
-			item.base_area.y=iRefLabel.clip_t*4;
-			item.base_area.w=w*4;
-			item.base_area.h=h*4;
+			item.base_area.x=iRefLabel.clip_l*pix;
+			item.base_area.y=iRefLabel.clip_t*pix;
+			item.base_area.w=w*pix;
+			item.base_area.h=h*pix;
 			item.base_area_center.x=item.base_area.x+item.base_area.w/2;
 			item.base_area_center.y=item.base_area.y+item.base_area.h/2;
-			item.base_area_sq_diagonal=(w*w+h*h)*(4*4);
-			item.resolution=4;
+			item.base_area_sq_diagonal=(w*w+h*h)*(pix*pix);
 			item.lebeling_th=this.current_th;
 		}
 		
@@ -72,16 +74,19 @@ public class LowResolutionLabelingSampler
 	 * コンストラクタです。samplingするラスターのパラメタを指定して、インスタンスを初期化します。
 	 * @param i_width
 	 * サンプリングするLowResolutionLabelingSamplerInの基本解像度幅
+	 * この値は、samplingに渡すLowResolutionLabelingSamplerInに設定した値と同じである必要があります。
 	 * @param i_height
 	 * サンプリングするLowResolutionLabelingSamplerInの基本解像度高さ
-	 * @param i_depth
-	 * 最低解像度とするRasterのdepth。この値は、samplingに渡すLowResolutionLabelingSamplerInの最大値以下の値を指定してください。
+	 * この値は、samplingに渡すLowResolutionLabelingSamplerInに設定した値と同じである必要があります。
+	 * @param i_pix_size
+	 * 座標系の倍率係数を指定する。例えば1/2画像(面積1/4)のサンプリング結果を元画像サイズに戻すときは、4を指定する。
+	 * 最低解像度とするRasterのdepth。
+	 * この値は、samplingに渡すLowResolutionLabelingSamplerInに設定した値と同じである必要があります。
 	 * @throws NyARException
 	 */
-	public LowResolutionLabelingSampler(int i_width,int i_height,int i_depth) throws NyARException
+	public LowResolutionLabelingSampler(int i_width,int i_height,int i_pix_size) throws NyARException
 	{
-		int pix=(int)Math.pow(2,i_depth);
-		this._main_labeling=new Main_Labeling(i_width/pix,i_height/pix);
+		this._main_labeling=new Main_Labeling(i_width/i_pix_size,i_height/i_pix_size,i_pix_size);
 	}
 	/**
 	 * i_inのデータをサンプリングして、o_outにサンプル値を作成します。

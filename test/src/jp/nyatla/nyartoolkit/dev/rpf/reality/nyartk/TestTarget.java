@@ -1,14 +1,8 @@
 package jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk;
 
-import java.awt.Color;
-import java.awt.Frame;
-import java.awt.Graphics;
-import java.awt.Insets;
-import java.awt.Transparency;
-import java.awt.color.ColorSpace;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
+import java.awt.*;
+import java.awt.color.*;
+import java.awt.image.*;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.ComponentSampleModel;
@@ -27,9 +21,6 @@ import java.util.Date;
 
 import javax.imageio.ImageIO;
 import javax.media.format.VideoFormat;
-
-import com.sun.org.apache.xalan.internal.xsltc.runtime.Hashtable;
-
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
@@ -43,18 +34,12 @@ import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource;
 import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource_JavaImage;
-import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSampler;
-import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerIn;
-import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
+import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.*;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTracker;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARContourTargetStatus;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARRectTargetStatus;
-import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDevice;
-import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDeviceList;
-import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
-import jp.nyatla.nyartoolkit.jmf.utils.JmfNyARRaster_RGB;
-import jp.nyatla.nyartoolkit.utils.j2se.NyARBufferedImageRaster;
-import jp.nyatla.nyartoolkit.utils.j2se.NyARRasterImageIO;
+import jp.nyatla.nyartoolkit.jmf.utils.*;
+import jp.nyatla.nyartoolkit.utils.j2se.*;
 
 /**
  * 出力ソース
@@ -144,14 +129,14 @@ public class TestTarget extends Frame implements MouseListener
 			for(int i=this._reality.target.getLength()-1;i>=0;i--)
 			{
 				NyARRealityTarget rt=this._reality.target.getItem(i);
-				if(rt.target_type!=NyARRealityTarget.RT_UNKNOWN && rt.target_type!=NyARRealityTarget.RT_KNOWN){
+				if(rt._target_type!=NyARRealityTarget.RT_UNKNOWN && rt._target_type!=NyARRealityTarget.RT_KNOWN){
 					continue;
 				}
 				if(rt.isInnerPoint2d(x, y))
 				{
 					if(e.getButton()==MouseEvent.BUTTON1){
 						//左ボタンはUNKNOWN→KNOWN
-						if(rt.target_type==NyARRealityTarget.RT_UNKNOWN){
+						if(rt._target_type==NyARRealityTarget.RT_UNKNOWN){
 							this._reality.changeTargetToKnown(rt,0,40);
 							break;
 						}

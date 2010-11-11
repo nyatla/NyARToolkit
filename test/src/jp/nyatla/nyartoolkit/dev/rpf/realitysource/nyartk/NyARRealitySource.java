@@ -23,41 +23,41 @@ import jp.nyatla.nyartoolkit.utils.j2se.NyARRasterImageIO;
  * NyARRealityクラスの入力コンテナです。
  * NyARRealityへ入力する情報セットを定義します。
  * 
- * このクラスは、継承して使います。継承クラスで、sourceimageに実体を宣言して下さい。
- * <p>
- * データの同期タイミングについて-sourceimageにセットした情報とlrsamplerの同期は、getSampleOutの段階で実行します。
- * その為、lrsamplerの内容を参照する関数を実装するときには、注意が必要です。(当面実装を禁止します。)
- * </p>
+ * このクラスはAbstractクラスです。継承して、以下の項目を実装してください。
+ * <ul>
+ * <li>コンストラクタで_rgb_source,_source_perspective_readerに実体を割り当ててください。</li>
+ * <li>getSampleOutに、_rgb_sourceの内容からo_sampleroutを生成する実装を書いて下さい。</li>
+ * <li>getSampleOutに、_rgb_sourceの内容からo_sampleroutを生成する実装を書いて下さい。</li>
+ * <li>isReadyに、現在の準備状態を返す処理を書いてください。</li>
+ * </ul>
  */
 public abstract class NyARRealitySource
 {
-	private NyARRasterFilter_Rgb2Gs_RgbAve _filter;
-	private LowResolutionLabelingSampler _sampler;
 	/**
-	 * 内部向けの公開オブジェクト。
+	 * 内部向けの公開オブジェクト。RealitySourceの主ラスタ。継承先のコンストラクタで実体を割り当ててください。
+	 */
+	public INyARRgbRaster _rgb_source;
+	/**
+	 * 内部向けの公開オブジェクト。RealitySourceの主ラスタ要の、PerspectiveReader
 	 */
 	public NyARPerspectiveRasterReader _source_perspective_reader;
-	public INyARRgbRaster _rgb_source;
-	public LowResolutionLabelingSamplerIn lrsamplerin;
-	public NyARRealitySource(int i_width,int i_height,int i_depth) throws NyARException
-	{
-		this._sampler=new LowResolutionLabelingSampler(i_width,i_height,i_depth);
-		this.lrsamplerin=new LowResolutionLabelingSamplerIn(i_width,i_height,i_depth,true);
-		this._source_perspective_reader=new NyARPerspectiveRasterReader(_rgb_source.getBufferType());
-		this._filter=new NyARRasterFilter_Rgb2Gs_RgbAve(this._rgb_source.getBufferType());
-	}
+
+	
+	protected NyARRealitySource(){};
+	
 	/**
-	 * データソースのサンプリング結果を、o_sampleroutへ格納します。
+	 * 現在のRealitySourceからLowResolutionLabelingSamplerOutの内容を書きだす処理を実装します。
 	 * この関数は、NyARRealityがprogress処理を実行するときに呼び出します。
 	 * @param o_sampleout
 	 * @throws NyARException 
 	 */
-	public final void getSampleOut(LowResolutionLabelingSamplerOut o_samplerout) throws NyARException
-	{
-		this._filter.doFilter(this._rgb_source,this.lrsamplerin._base_raster);
-		this.lrsamplerin.syncSource();
-		this._sampler.sampling(this.lrsamplerin, o_samplerout);
-	}	
+	public abstract void getSampleOut(LowResolutionLabelingSamplerOut o_samplerout) throws NyARException;
+
+	/**
+	 * このRealitySourceに対する読出し準備ができているかを返す処理を実装します。
+	 */
+	public abstract boolean isReady();	
+
 	/**
 	 * RGB画像から、4頂点で囲まれた領域を遠近法で矩形に変換して、o_rasterへパターンを取得します。
 	 * この関数は、最後に
@@ -83,61 +83,7 @@ public abstract class NyARRealitySource
 	{
 		return this._source_perspective_reader.read4Point(this._rgb_source,i_vertex,0,0,1, o_raster);
 	}
-	/**
-	 * このRealitySourceに対する読出し準備ができているかを返す。
-	 */
-	public abstract boolean isReady();
+
 }
 
-class NyARRealitySource_JavaImage extends NyARRealitySource
-{
-	public NyARRealitySource_JavaImage(int i_width,int i_height,int i_depth) throws NyARException
-	{
-		super(i_width,i_height,i_depth);
-		this._rgb_source=new NyARBufferedImageRaster(i_width,i_height,NyARBufferType.BYTE1D_X8R8G8B8_32);
-		return;
-	}
-	public NyARRealitySource_JavaImage(BufferedImage i_bmp,int i_depth) throws NyARException
-	{
-		super(i_bmp.getWidth(),i_bmp.getHeight(),i_depth);
-		this._rgb_source=new NyARBufferedImageRaster(i_bmp);
-	}
-	/**
-	 * BufferedImageの内容を、ソース画像としてセットします。
-	 * @param i_image
-	 * @throws NyARException
-	 */
-	public void setImage(BufferedImage i_image) throws NyARException
-	{
-		NyARRasterImageIO.copy(i_image,this._rgb_source);
-		this.lrsamplerin.syncSource();
-		return;
-	}
-	public final boolean isReady()
-	{
-		return true;
-	}
-}
-class NyARRealitySource_Jmf extends NyARRealitySource
-{
-	public NyARRealitySource_Jmf(VideoFormat i_fmt) throws NyARException
-	{
-		super(i_fmt.getSize().width,i_fmt.getSize().height,2);
-		this._rgb_source=new JmfNyARRaster_RGB(i_fmt);
-		return;
-	}
-	/**
-	 * Jmfのバッファをセットします。
-	 * @param i_buffer
-	 * @throws NyARException
-	 */
-	public void setImage(javax.media.Buffer i_buffer) throws NyARException
-	{
-		((JmfNyARRaster_RGB)(this._rgb_source)).setBuffer(i_buffer);
-		return;
-	}
-	public final boolean isReady()
-	{
-		return ((JmfNyARRaster_RGB)this._rgb_source).hasBuffer();
-	}
-}
+

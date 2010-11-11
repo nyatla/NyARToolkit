@@ -14,8 +14,8 @@ import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
 import jp.nyatla.nyartoolkit.dev.rpf.mklib.RawbitSerialIdTable;
-import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityGl;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTarget;
+import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTargetList;
 import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource_Jmf;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDevice;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDeviceList;
@@ -32,7 +32,7 @@ import com.sun.opengl.util.Animator;
  * @author nyatla
  *
  */
-public class NyARRealityGlTest implements GLEventListener, JmfCaptureListener
+public class NyARRealityGlTest_CaptureImage implements GLEventListener, JmfCaptureListener
 {
 	private final static int SCREEN_X = 640;
 	private final static int SCREEN_Y = 480;
@@ -43,16 +43,13 @@ public class NyARRealityGlTest implements GLEventListener, JmfCaptureListener
 	private GL _gl;
 	private GLU _glu;
 
-	// NyARToolkit関係
-	private NyARSingleDetectMarker _nya;
-
 	private Object _sync_object=new Object();
 
 	NyARRealityGl _reality;
 	NyARRealitySource_Jmf _src;
 	RawbitSerialIdTable _mklib;
 
-	public NyARRealityGlTest(NyARParam i_param) throws NyARException
+	public NyARRealityGlTest_CaptureImage(NyARParam i_param) throws NyARException
 	{
 		Frame frame = new Frame("NyARReality on OpenGL");
 		
@@ -121,14 +118,10 @@ public class NyARRealityGlTest implements GLEventListener, JmfCaptureListener
 		_gl.glLoadIdentity();
 	}
 
-	private boolean _is_marker_exist=false;
-	private NyARTransMatResult __display_transmat_result = new NyARTransMatResult();
-
 	private double[] __display_wk = new double[16];
 
 	public void display(GLAutoDrawable drawable)
 	{
-		NyARTransMatResult transmat_result = __display_transmat_result;
 		//RealitySourceにデータが処理する。
 		if(!this._src.isReady())
 		{
@@ -141,30 +134,28 @@ public class NyARRealityGlTest implements GLEventListener, JmfCaptureListener
 			synchronized(this._sync_object){
 				
 				NyARGLUtil.drawBackGround(this._glu,this._src._rgb_source, 1.0);			
-				// マーカーがあれば、立方体を描画
-				if (this._is_marker_exist){
-					// マーカーの一致度を調査するならば、ここでnya.getConfidence()で一致度を調べて下さい。
-					// Projection transformation.
-					this._gl.glMatrixMode(GL.GL_PROJECTION);
-					this._gl.glLoadMatrixd(this._reality.refGlFrastumRH(), 0);
-					NyARRealityTarget[] t=new  NyARRealityTarget[10];
-					//補足している複数のターゲットから、KNOWNターゲットだけを抽出。3次元座標上に何かを表示。
-					
-					for(int i=this._reality.selectKnownTargets(t)-1;i>=0;i--){
-						if(target.target_type!=NyARRealityTarget.RT_KNOWN){
-							continue;
-						}
+				// Projection transformation.
+				this._gl.glMatrixMode(GL.GL_PROJECTION);
+				this._gl.glLoadMatrixd(this._reality.refGlFrastumRH(), 0);
+				//ターゲットリストを走査して、画面に内容を反映
+				NyARRealityTargetList tl=this._reality.refTargetList();
+				for(int i=tl.getLength()-1;i>=0;i--){
+					NyARRealityTarget t=tl.getItem(i);
+					switch(t.getTargetType())
+					{
+					case NyARRealityTarget.RT_KNOWN:
 						this._gl.glMatrixMode(GL.GL_MODELVIEW);
 						// Viewing transformation.
 						this._gl.glLoadIdentity();
-						// 変換行列を取得
-						this._nya.getTransmationMatrix(transmat_result);
 						// 変換行列をOpenGL形式に変換(ここ少し変えるかも)
-						NyARGLUtil.toCameraViewRH(target._transform_matrix, __display_wk);
+						NyARGLUtil.toCameraViewRH(t.refTransformMatrix(), __display_wk);
 						_gl.glLoadMatrixd(__display_wk, 0);
-			
 						// All other lighting and geometry goes here.
 						drawCube();
+						break;
+					case NyARRealityTarget.RT_UNKNOWN:
+						
+						break;
 					}
 				}
 			}
@@ -175,6 +166,10 @@ public class NyARRealityGlTest implements GLEventListener, JmfCaptureListener
 
 	}
 
+	/**
+	 * カメラのキャプチャした画像を非同期に受け取る関数。
+	 * 画像を受け取ると、同期を取ってRealityを1サイクル進めます。
+	 */
 	public void onUpdateBuffer(Buffer i_buffer)
 	{
 		try {
@@ -253,14 +248,14 @@ public class NyARRealityGlTest implements GLEventListener, JmfCaptureListener
 
 	}	
 	
-	private final static String PARAM_FILE = "../../Data/camera_para.dat";
+	private final static String PARAM_FILE = "../Data/camera_para.dat";
 
 	public static void main(String[] args)
 	{
 		try {
 			NyARParam param = new NyARParam();
 			param.loadARParamFromFile(PARAM_FILE);
-			new NyARRealityGlTest(param);
+			new NyARRealityGlTest_CaptureImage(param);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

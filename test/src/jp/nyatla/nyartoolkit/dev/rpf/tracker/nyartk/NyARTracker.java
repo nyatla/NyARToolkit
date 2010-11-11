@@ -1,37 +1,27 @@
 package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARPointerStack;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.*;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARContourTargetStatus;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARContourTargetStatusPool;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARNewTargetStatus;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARNewTargetStatusPool;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARRectTargetStatus;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARRectTargetStatusPool;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARTargetStatus;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.*;
 import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARDistMap;
 
 
 
-
-
-
-
-
-
-
+/**
+ * 四角形のトラッキングクラスです。
+ * @author nyatla
+ *
+ */
 public class NyARTracker
 {
 	private DistMap _map;
 	protected int[] _index;	
 	
-	private long _clock=0;
 
-	public NyARNewTargetStatusPool newst_pool;
-	public NyARContourTargetStatusPool contourst_pool;
-	public NyARRectTargetStatusPool rect_pool;
+	private NyARNewTargetStatusPool newst_pool;
+	private NyARContourTargetStatusPool contourst_pool;
+	private NyARRectTargetStatusPool rect_pool;
 
 	private NyARTargetPool target_pool;
 	/**
@@ -98,7 +88,6 @@ public class NyARTracker
 	{
 		return this._targets;
 	}
-
 	/**
 	 * コンストラクタです。パラメータには、処理するNyARTrackerSnapshotに設定した値よりも大きな値を設定して下さい。
 	 * @param i_max_new
@@ -174,28 +163,25 @@ public class NyARTracker
 		for(int i=this._targets.getLength()-1;i>=0;i--){
 			targets[target_array[i].st_type].pushAssert(target_array[i]);
 		}		
-		//クロック進行
-		this._clock++;
-		long clock=this._clock;
 		int[] index=this._index;
 		//サンプルをターゲット毎に振り分け
 		sampleMapper(
-			clock,i_source,
+			i_source,
 			newtr,igtr,cotr,retw,
 			this._newsource,this._igsource,this._coordsource,this._rectsource);
 		
 		//ターゲットの更新
 		this._map.makePairIndexes(this._igsource,igtr,index);
-		updateIgnoreStatus(clock, igtr,this._igsource.getArray(),index);
+		updateIgnoreStatus(igtr,this._igsource.getArray(),index);
 		
 		this._map.makePairIndexes(this._newsource,newtr,index);
-		updateNewStatus(clock,newtr,this.newst_pool, this._newsource.getArray(),index);
+		updateNewStatus(newtr,this.newst_pool, this._newsource.getArray(),index);
 
 		this._map.makePairIndexes(this._rectsource,retw,index);
-		updateRectStatus(clock, retw, i_source.ref_base_raster, this.rect_pool, this._rectsource.getArray(),index);
+		updateRectStatus(retw, i_source.ref_base_raster, this.rect_pool, this._rectsource.getArray(),index);
 		
 		this._map.makePairIndexes(this._coordsource,cotr,index);
-		updateContureStatus(clock, cotr, this.contourst_pool,this._coordsource.getArray(),index);
+		updateContureStatus(cotr, i_source.ref_base_raster,this.contourst_pool,this._coordsource.getArray(),index);
 
 		//ターゲットのアップグレード
 		for(int i=this._targets.getLength()-1;i>=0;i--){
@@ -207,7 +193,7 @@ public class NyARTracker
 				upgradeNewTarget(target_array[i],i_source.ref_base_raster);
 				continue;
 			case NyARTargetStatus.ST_RECT:
-				upgradeRectTarget(target_array[i], clock);
+				upgradeRectTarget(target_array[i]);
 				continue;
 			case NyARTargetStatus.ST_CONTURE:
 				upgradeContourTarget(target_array[i]);
@@ -261,7 +247,7 @@ public class NyARTracker
 			return;
 		}
 		//ステータスの値をセット
-		if(!c.setValue(st.current_sampleout))
+		if(!c.setValue(i_base_raster,st.current_sampleout))
 		{
 			//値のセットに失敗したので、Ignoreへ遷移(この対象は輪郭認識できない)
 			this.changeStatusToIgnore(i_new_target);
@@ -329,10 +315,10 @@ public class NyARTracker
 		}
 		return;
 	}	
-	private final void upgradeRectTarget(NyARTarget i_rect_target,long i_clock) throws NyARException
+	private final void upgradeRectTarget(NyARTarget i_rect_target) throws NyARException
 	{
 		assert(i_rect_target.st_type==NyARTargetStatus.ST_RECT);
-		if(i_clock-i_rect_target.last_update_tick>20)
+		if(i_rect_target.delay_tick>20)
 		{
 			this.changeStatusToIgnore(i_rect_target);
 			//一定の期間updateができなければ、ignoreへ遷移
@@ -342,7 +328,7 @@ public class NyARTracker
 	//
 	//update
 	//
-	private final static void updateIgnoreStatus(long clock,NyARTargetList i_igliet,LowResolutionLabelingSamplerOut.Item[] source,int[] index)
+	private final static void updateIgnoreStatus(NyARTargetList i_igliet,LowResolutionLabelingSamplerOut.Item[] source,int[] index)
 	{
 		NyARTarget d_ptr;
 		//マップする。
@@ -355,10 +341,11 @@ public class NyARTracker
 			d_ptr.status_age++;
 			if(sample_index<0){
 				//このターゲットに合致するアイテムは無い。
+				d_ptr.delay_tick++;
 				continue;
 			}
 			d_ptr.setSampleArea(source[sample_index]);
-			d_ptr.last_update_tick=clock;
+			d_ptr.delay_tick=0;
 		}
 	}	
 		
@@ -367,7 +354,7 @@ public class NyARTracker
 	 * @param i_sample
 	 * @throws NyARException 
 	 */
-	public final static void updateNewStatus(long clock,NyARTargetList i_list,NyARNewTargetStatusPool i_pool,LowResolutionLabelingSamplerOut.Item[] source,int[] index) throws NyARException
+	public final static void updateNewStatus(NyARTargetList i_list,NyARNewTargetStatusPool i_pool,LowResolutionLabelingSamplerOut.Item[] source,int[] index) throws NyARException
 	{
 		NyARTarget d_ptr;
 		NyARTarget[] i_nes=i_list.getArray();		
@@ -380,6 +367,7 @@ public class NyARTracker
 			if(sample_index<0){
 				//このターゲットに合致するアイテムは無い。
 				((NyARNewTargetStatus)d_ptr.ref_status).setValue(null);
+				d_ptr.delay_tick++;
 				continue;
 			}
 			LowResolutionLabelingSamplerOut.Item s=source[sample_index];
@@ -387,6 +375,7 @@ public class NyARTracker
 			NyARNewTargetStatus st=i_pool.newObject();
 			if(st==null){
 				//ステータスの生成に失敗
+				d_ptr.delay_tick++;
 //System.out.println("updateNewStatus:status pool full");
 				continue;
 			}
@@ -395,7 +384,7 @@ public class NyARTracker
 			
 			//ターゲットの更新
 			d_ptr.setSampleArea(s);
-			d_ptr.last_update_tick=clock;
+			d_ptr.delay_tick=0;
 
 			//ref_statusのセットと切り替え(失敗時の上書き防止のためにダブルバッファ化)
 			d_ptr.ref_status.releaseObject();
@@ -408,7 +397,7 @@ public class NyARTracker
 	 * @param i_trackdata
 	 * @throws NyARException
 	 */
-	public static void updateContureStatus(long clock,NyARTargetList i_list,NyARContourTargetStatusPool i_stpool,LowResolutionLabelingSamplerOut.Item[] source,int[] index) throws NyARException
+	public static void updateContureStatus(NyARTargetList i_list,LrlsGsRaster i_base_raster,NyARContourTargetStatusPool i_stpool,LowResolutionLabelingSamplerOut.Item[] source,int[] index) throws NyARException
 	{
 		NyARTarget[] crd=i_list.getArray();		
 		NyARTarget d_ptr;
@@ -420,6 +409,7 @@ public class NyARTracker
 			d_ptr.status_age++;
 			if(sample_index<0){
 				//このターゲットに合致するアイテムは無い。
+				d_ptr.delay_tick++;
 				continue;
 			}
 			LowResolutionLabelingSamplerOut.Item s=source[sample_index];
@@ -427,21 +417,23 @@ public class NyARTracker
 			NyARContourTargetStatus st=i_stpool.newObject();
 			if(st==null){
 				//失敗（作れなかった？）
+				d_ptr.delay_tick++;
 				continue;
 			}
-			if(!st.setValue(s)){
+			if(!st.setValue(i_base_raster,s)){
 				//新しいステータスのセットに失敗？
 				st.releaseObject();
+				d_ptr.delay_tick++;
 				continue;
 			}
 			d_ptr.setSampleArea(s);
-			d_ptr.last_update_tick=clock;
+			d_ptr.delay_tick=0;
 			//ref_statusの切り替え
 			d_ptr.ref_status.releaseObject();
 			d_ptr.ref_status=st;
 		}
 	}
-	public static void updateRectStatus(long clock,NyARTargetList i_list,LrlsGsRaster i_base_raster,NyARRectTargetStatusPool i_stpool,LowResolutionLabelingSamplerOut.Item[] source,int[] index) throws NyARException
+	public static void updateRectStatus(NyARTargetList i_list,LrlsGsRaster i_base_raster,NyARRectTargetStatusPool i_stpool,LowResolutionLabelingSamplerOut.Item[] source,int[] index) throws NyARException
 	{	
 		NyARTarget[] rct=i_list.getArray();
 		NyARTarget d_ptr;
@@ -454,12 +446,14 @@ public class NyARTracker
 			NyARRectTargetStatus st=i_stpool.newObject();
 			if(st==null){
 				//失敗（作れなかった？）
+				d_ptr.delay_tick++;
 				continue;
 			}
 			int sample_index=index[i];
 			LowResolutionLabelingSamplerOut.Item s=sample_index<0?null:source[sample_index];		
 			if(!st.setValueByAutoSelect(i_base_raster, s, (NyARRectTargetStatus)d_ptr.ref_status)){
 				st.releaseObject();
+				d_ptr.delay_tick++;
 				continue;
 			}else{
 				if(s!=null){
@@ -468,8 +462,7 @@ public class NyARTracker
 			}
 			d_ptr.ref_status.releaseObject();
 			d_ptr.ref_status=st;
-			d_ptr.last_update_tick=clock;
-
+			d_ptr.delay_tick=0;
 		}		
 	}
 
@@ -489,7 +482,7 @@ public class NyARTracker
 	 * @throws NyARException
 	 */
 	private final void sampleMapper(
-		long i_clock,LowResolutionLabelingSamplerOut i_source,
+		LowResolutionLabelingSamplerOut i_source,
 		NyARTargetList i_new,NyARTargetList i_ig,NyARTargetList i_cood,NyARTargetList i_rect,
 		SampleStack i_newsrc,SampleStack i_igsrc,SampleStack i_coodsrc,SampleStack i_rectsrc) throws NyARException
 	{
@@ -529,7 +522,7 @@ public class NyARTracker
 				continue;
 			}
 			//マップできなかったものは、NewTragetへ登録(種類別のListには反映しない)
-			NyARTarget t=this.addNewTarget(i_clock, sample_item);
+			NyARTarget t=this.addNewTarget(sample_item);
 			if(t==null){
 				continue;
 			}
@@ -553,7 +546,7 @@ public class NyARTracker
 	 * @return
 	 * @throws NyARException
 	 */
-	private final NyARTarget addNewTarget(long i_clock,LowResolutionLabelingSamplerOut.Item i_sample) throws NyARException
+	private final NyARTarget addNewTarget(LowResolutionLabelingSamplerOut.Item i_sample) throws NyARException
 	{
 		//個数制限
 		if(this._number_of_new>=this.MAX_NUMBER_OF_NEW){
@@ -566,7 +559,7 @@ public class NyARTracker
 		}
 		t.status_age=0;
 		t.st_type=NyARTargetStatus.ST_NEW;
-		t.last_update_tick=i_clock;
+		t.delay_tick=0;
 		t.setSampleArea(i_sample);
 		t.ref_status=this.newst_pool.newObject();
 		if(t.ref_status==null){
@@ -671,8 +664,8 @@ public class NyARTracker
 		this._number_of_contoure--;
 		this._number_of_rect++;
 		return i_target;
-	}		
-	
+	}
+
 	
 }
 

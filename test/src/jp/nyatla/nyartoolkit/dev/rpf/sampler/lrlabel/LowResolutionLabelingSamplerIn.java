@@ -14,10 +14,13 @@ import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
  */
 public class LowResolutionLabelingSamplerIn
 {
+	/**
+	 * 反転RobertsFilter画像のインスタンス
+	 */
+	public LrlsGsRaster _rbraster;
 	public LrlsGsRaster _base_raster;
+
 	private LrlsGsRaster _rb_source;
-	public  LrlsGsRaster _rbraster;
-	
 	private NyARRasterFilter_Roberts _rfilter=new NyARRasterFilter_Roberts(NyARBufferType.INT1D_GRAY_8);
 	private NyARRasterFilter_Reverse _nfilter=new NyARRasterFilter_Reverse(NyARBufferType.INT1D_GRAY_8);
 
@@ -37,12 +40,12 @@ public class LowResolutionLabelingSamplerIn
 	{
 		assert(i_depth>0);
 		//主GSラスタ
-		this._base_raster=new LrlsGsRaster(i_width,i_height,null,1,i_is_alloc);
+		this._base_raster=new LrlsGsRaster(i_width,i_height,1,i_is_alloc);
 		int div=(int)Math.pow(2,i_depth);
 		//Roberts変換ラスタ
-		this._rb_source=new LrlsGsRaster(i_width/div,i_height/div,this._base_raster, div, true);
+		this._rb_source=new LrlsGsRaster(i_width/div,i_height/div,div, true);
 		//Robertsラスタは最も解像度の低いラスタと同じ
-		this._rbraster=new LrlsGsRaster(i_width/div,i_height/div,this._base_raster, div, true);
+		this._rbraster=new LrlsGsRaster(i_width/div,i_height/div,div, true);
 	}
 	/**
 	 * GS画像をセットし、syncSourceで内部画像を更新します。
@@ -64,6 +67,7 @@ public class LowResolutionLabelingSamplerIn
 	 */
 	public final void syncSource() throws NyARException
 	{
+		//GS->1/(2^n)NRBF
 		//解像度を半分にしながらコピー
 		NyARGrayscaleRaster.copy(this._base_raster,0,0,this._rb_source.resolution,this._rb_source);
 
