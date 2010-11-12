@@ -15,7 +15,7 @@ import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.NyARVectorReader_INT1D_GRAY
  * プロパティには、解像度別のグレースケール画像があります。
  *
  */
-public class LrlsSource
+public class NyARTrackerSource
 {
 	public int _rob_resolution;
 	/**
@@ -43,7 +43,7 @@ public class LrlsSource
 	 * trueの場合、バッファは内部に確保され、wrapBuffer関数が使用できなくなります。
 	 * @throws NyARException
 	 */
-	public LrlsSource(int i_width,int i_height,int i_depth,boolean i_is_alloc) throws NyARException
+	public NyARTrackerSource(int i_width,int i_height,int i_depth,boolean i_is_alloc) throws NyARException
 	{
 		assert(i_depth>0);
 		int div=(int)Math.pow(2,i_depth);

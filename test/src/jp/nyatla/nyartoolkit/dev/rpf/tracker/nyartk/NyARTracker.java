@@ -146,7 +146,7 @@ public class NyARTracker
 	 * @param i_source
 	 * @throws NyARException
 	 */
-	public void progress(LrlsSource i_s) throws NyARException
+	public void progress(NyARTrackerSource i_s) throws NyARException
 	{
 		NyARTargetList[] targets=this._temp_targets;
 		NyARTargetList newtr=targets[NyARTargetStatus.ST_NEW];
@@ -223,7 +223,7 @@ public class NyARTracker
 	 * @return
 	 * @throws NyARException
 	 */
-	private final void upgradeNewTarget(NyARTarget i_new_target,LrlsSource i_sampler_in) throws NyARException
+	private final void upgradeNewTarget(NyARTarget i_new_target,NyARTrackerSource i_sampler_in) throws NyARException
 	{
 		assert(i_new_target.st_type==NyARTargetStatus.ST_NEW);
 
@@ -397,7 +397,7 @@ public class NyARTracker
 	 * @param i_trackdata
 	 * @throws NyARException
 	 */
-	public static void updateContureStatus(NyARTargetList i_list,LrlsSource i_sample_in,NyARContourTargetStatusPool i_stpool,LowResolutionLabelingSamplerOut.Item[] source,int[] index) throws NyARException
+	public static void updateContureStatus(NyARTargetList i_list,NyARTrackerSource i_sample_in,NyARContourTargetStatusPool i_stpool,LowResolutionLabelingSamplerOut.Item[] source,int[] index) throws NyARException
 	{
 		NyARTarget[] crd=i_list.getArray();		
 		NyARTarget d_ptr;
@@ -433,7 +433,7 @@ public class NyARTracker
 			d_ptr.ref_status=st;
 		}
 	}
-	public static void updateRectStatus(NyARTargetList i_list,LrlsSource i_sample_in,NyARRectTargetStatusPool i_stpool,LowResolutionLabelingSamplerOut.Item[] source,int[] index) throws NyARException
+	public static void updateRectStatus(NyARTargetList i_list,NyARTrackerSource i_sample_in,NyARRectTargetStatusPool i_stpool,LowResolutionLabelingSamplerOut.Item[] source,int[] index) throws NyARException
 	{	
 		NyARTarget[] rct=i_list.getArray();
 		NyARTarget d_ptr;

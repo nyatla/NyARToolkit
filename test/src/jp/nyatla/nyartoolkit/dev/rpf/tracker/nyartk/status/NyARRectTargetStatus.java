@@ -6,7 +6,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.NyARVectorReader_INT1D_GRAY_8;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.LrlsSource;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTrackerSource;
 import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinates;
 
 
@@ -148,7 +148,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	 * @return
 	 * @throws NyARException
 	 */
-	public boolean setValueWithDeilyCheck(LrlsSource i_sampler_in,LowResolutionLabelingSamplerOut.Item i_source,NyARRectTargetStatus i_prev_status) throws NyARException
+	public boolean setValueWithDeilyCheck(NyARTrackerSource i_sampler_in,LowResolutionLabelingSamplerOut.Item i_source,NyARRectTargetStatus i_prev_status) throws NyARException
 	{
 		VecLinearCoordinates vecpos=this._ref_my_pool._vecpos;
 		//輪郭線を取る
@@ -238,7 +238,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	 * @return
 	 * @throws NyARException
 	 */
-	public boolean setValueByAutoSelect(LrlsSource i_sample_in,LowResolutionLabelingSamplerOut.Item i_source,NyARRectTargetStatus i_prev_status) throws NyARException
+	public boolean setValueByAutoSelect(NyARTrackerSource i_sample_in,LowResolutionLabelingSamplerOut.Item i_source,NyARRectTargetStatus i_prev_status) throws NyARException
 	{
 		int current_detect_type=DT_SQDAILY;
 		//移動速度による手段の切り替え

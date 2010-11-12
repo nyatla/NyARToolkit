@@ -2,7 +2,7 @@ package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.LrlsSource;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTrackerSource;
 import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinates;
 
 /**
@@ -38,7 +38,7 @@ public final class NyARContourTargetStatus extends NyARTargetStatus
 	 * @throws NyARException
 	 */
 
-	public boolean setValue(LrlsSource i_sampler_in,LowResolutionLabelingSamplerOut.Item i_sample) throws NyARException
+	public boolean setValue(NyARTrackerSource i_sampler_in,LowResolutionLabelingSamplerOut.Item i_sample) throws NyARException
 	{
 		return i_sampler_in._vec_reader.traceConture(i_sampler_in._rbraster, i_sample.lebeling_th, i_sample.entry_pos, vecpos);
 	}	
