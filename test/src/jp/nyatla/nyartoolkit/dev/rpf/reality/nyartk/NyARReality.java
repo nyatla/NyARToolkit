@@ -248,7 +248,12 @@ public class NyARReality
 	}
 	/**
 	 * Unknownターゲットから、指定したインデクス番号のターゲットをKnownターゲットへ移動します。
-	 * @param i_index
+	 * @param i_item
+	 * 移動するターゲット
+	 * @param i_dir
+	 * ターゲットの予備知識。ARToolkitのdirectionでどの方位であるかを示す値
+	 * @param i_marker_width
+	 * ターゲットの予備知識。マーカーのサイズがいくらであるかを示す値[mm単位]
 	 * @return
 	 * 成功するとtrueを返します。
 	 * @throws NyARException 
@@ -313,8 +318,11 @@ public class NyARReality
 	/**
 	 * 指定したシリアル番号のUnknownターゲットを、Knownターゲットへ移動します。
 	 * @param i_serial
+	 * ターゲットのシリアル番号を示す値
 	 * @param i_dir
+	 * ターゲットの予備知識。ARToolkitのdirectionでどの方位であるかを示す値
 	 * @param i_marker_width
+	 * ターゲットの予備知識。マーカーのサイズがいくらであるかを示す値[mm単位]
 	 * @return
 	 * 成功すると、trueを返します。
 	 * @throws NyARException 
@@ -329,7 +337,7 @@ public class NyARReality
 	}
 	/**
 	 * 指定したシリアル番号のKnown/UnknownターゲットをDeadターゲットへ移動します。
-	 * @param i_index
+	 * @param i_serial
 	 * @throws NyARException 
 	 */
 	public final NyARRealityTarget changeTargetToDeadBySerial(int i_serial) throws NyARException
@@ -344,24 +352,24 @@ public class NyARReality
 	//アクセサ
 	
 	/**
-	 * @return
 	 * 現在のUnKnownターゲットの数を返す。
+	 * @return
 	 */
 	public final int getNumberOfUnknown()
 	{
 		return this._number_of_unknown;
 	}
 	/**
-	 * @return
 	 * 現在のKnownターゲットの数を返す。
+	 * @return
 	 */
 	public final int getNumberOfKnown()
 	{
 		return this._number_of_known;
 	}
 	/**
-	 * @return
 	 * 現在のDeadターゲットの数を返す。
+	 * @return
 	 */
 	public final int getNumberOfDead()
 	{
