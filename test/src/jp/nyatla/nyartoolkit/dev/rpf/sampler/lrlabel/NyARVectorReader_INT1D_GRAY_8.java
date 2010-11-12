@@ -46,7 +46,8 @@ public class NyARVectorReader_INT1D_GRAY_8
 	 * @param i_ref_rob_raster
 	 * エッジ探索用のROB画像
 	 */
-	public NyARVectorReader_INT1D_GRAY_8(LrlsGsRaster i_ref_raster,LrlsGsRaster i_ref_rob_raster) {
+	public NyARVectorReader_INT1D_GRAY_8(LrlsGsRaster i_ref_raster,LrlsGsRaster i_ref_rob_raster)
+	{
 		assert (i_ref_raster.getBufferType() == NyARBufferType.INT1D_GRAY_8);
 		this._rob_resolution=i_ref_raster.getWidth()/i_ref_rob_raster.getWidth();
 		this._ref_base_raster=i_ref_raster;
