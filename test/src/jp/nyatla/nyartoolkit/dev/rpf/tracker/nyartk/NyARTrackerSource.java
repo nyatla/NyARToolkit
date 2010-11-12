@@ -5,18 +5,14 @@ import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.rasterfilter.NyARRasterFilter_Reverse;
 import jp.nyatla.nyartoolkit.core.rasterfilter.NyARRasterFilter_Roberts;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
-import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSampler;
-import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
 
 /**
  * LowResolutionLabelingSamplerへの入力コンテナです。
- * このコンテナには、GS画像をセットできます。
- * プロパティには、解像度別のグレースケール画像があります。
- *
+ * 基本GS画像と、1/nサイズのエッジ検出画像を持ち、これらに対する同期APIとアクセサを定義します。
  */
 public class NyARTrackerSource
 {
-	public int _rob_resolution;
+	private int _rob_resolution;
 	/**
 	 * 反転RobertsFilter画像のインスタンス
 	 */

@@ -32,11 +32,7 @@ public class NyARReality
 	/**
 	 * Knownターゲットの最大数です。
 	 */
-	private final int MAX_LIMIT_KNOWN;	
-	/**
-	 * samplerの出力値。この変数はNyARRealityからのみ使います。
-	 */
-	private LowResolutionLabelingSamplerOut _samplerout;
+	private final int MAX_LIMIT_KNOWN;
 	/**
 	 * samplerの出力値。この変数はNyARRealityからのみ使います。
 	 */
@@ -68,10 +64,14 @@ public class NyARReality
 	 */
 	public NyARReality(NyARPerspectiveProjectionMatrix i_ref_prjmat,int i_max_known_target,int i_max_unknown_target) throws NyARException
 	{
+		int W,H;
 		int number_of_reality_target=i_max_known_target+i_max_unknown_target;
 		//演算インスタンス
 		this._transmat=new NyARTransMat(null,i_ref_prjmat);
-		this._tracker=new NyARTracker(number_of_reality_target,1,i_max_known_target);
+		this._tracker=new NyARTracker(
+			W,H,d,
+			number_of_reality_target+100,
+			i_max_known_target*2,number_of_reality_target*2,1,i_max_known_target);
 
 		//データインスタンス
 		this._pool=new NyARRealityTargetPool(number_of_reality_target,i_ref_prjmat);
@@ -115,7 +115,7 @@ public class NyARReality
 		//sampler進行
 		i_in.getSampleOut(this._samplerout);
 		//tracker進行
-		this._tracker.progress(this._samplerout);
+		this._tracker.progress(i_in.refTrackerSource());
 		
 		//トラックしてないrectターゲット1個探してunknownターゲットに入力
 		NyARTarget tt=findEmptyTagItem(this._tracker._targets);

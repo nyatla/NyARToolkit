@@ -15,6 +15,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.*;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTrackerSource;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfNyARRaster_RGB;
 import jp.nyatla.nyartoolkit.utils.j2se.NyARBufferedImageRaster;
 import jp.nyatla.nyartoolkit.utils.j2se.NyARRasterImageIO;
@@ -33,6 +34,12 @@ import jp.nyatla.nyartoolkit.utils.j2se.NyARRasterImageIO;
  */
 public abstract class NyARRealitySource
 {
+	private NyARTrackerSource _tracker_source;
+	public NyARTrackerSource refTrackerSource()
+	{
+		return this._tracker_source;
+	}
+
 	/**
 	 * 内部向けの公開オブジェクト。RealitySourceの主ラスタ。継承先のコンストラクタで実体を割り当ててください。
 	 */

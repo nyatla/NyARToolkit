@@ -211,7 +211,7 @@ public class TestTerget extends Frame
 
 		
 		//create tracker
-		this.tracker=new NyARTracker(W,H,2,10,1,10);
+		this.tracker=new NyARTracker(W,H,2,100,10,1,10);
 
 		return;
 	}

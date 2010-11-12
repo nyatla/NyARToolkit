@@ -103,6 +103,8 @@ public class NyARTracker
 	 * 入力するTrackerSourceの元画像サイズです。入力するTrackerSourceと一致させてください。
 	 * @param i_depth
 	 * エッジ検出画像の階層を1/(2^n)で指定します。入力するTrackerSourceと一致させてください。
+	 * @param i_max_sample
+	 * サンプラの最大検出数
 	 * @param i_max_new
 	 * NyARTrackerSnapshotコンストラクタのi_max_newに設定した値を指定してください。
 	 * @param i_max_cont
@@ -111,7 +113,7 @@ public class NyARTracker
 	 * NyARTrackerSnapshotコンストラクタのi_max_rectに設定した値を指定してください。
 	 * @throws NyARException
 	 */
-	public NyARTracker(int i_width,int i_height,int i_depth,int i_max_new,int i_max_cont,int i_max_rect) throws NyARException
+	public NyARTracker(int i_width,int i_height,int i_depth,int i_max_sample,int i_max_new,int i_max_cont,int i_max_rect) throws NyARException
 	{
 		//環境定数の設定
 		this.MAX_NUMBER_OF_NEW=i_max_new;
@@ -142,7 +144,7 @@ public class NyARTracker
 		//ターゲット
 		this._targets=new NyARTargetList(this.MAX_NUMBER_OF_TARGET);
 		//samplerとsampleout
-		this._samplerout=new LowResolutionLabelingSamplerOut(100);
+		this._samplerout=new LowResolutionLabelingSamplerOut(i_max_sample);
 		this._sampler=new LowResolutionLabelingSampler(i_width, i_height,(int)Math.pow(2,i_depth));
 	
 		
