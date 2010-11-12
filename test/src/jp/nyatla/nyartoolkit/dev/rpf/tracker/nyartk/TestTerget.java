@@ -237,7 +237,7 @@ public class TestTerget extends Frame
 				//tracker更新
 				this._input_source.UpdateInput(this.samplerin);
 				this.sampler.sampling(this.samplerin,this.samplerout);
-				this.tracker.progress(this.samplerout);
+				this.tracker.progress(this.samplerin,this.samplerout);
 			}
 			Date d = new Date();
 			System.out.println(d.getTime() - d2.getTime());
@@ -258,7 +258,7 @@ public class TestTerget extends Frame
     	//ワーク画面
     	BufferedImage bmp=this._tmp_bf;
     	Graphics g=bmp.getGraphics();
-    	NyARRasterImageIO.copy(this.samplerout.ref_base_in._base_raster,bmp);
+    	NyARRasterImageIO.copy(this.samplerin._base_raster,bmp);
     	//Ignore,Coord,New
     	for(int i=this.tracker._targets.getLength()-1;i>=0;i--){
     		switch(this.tracker._targets.getItem(i).st_type)

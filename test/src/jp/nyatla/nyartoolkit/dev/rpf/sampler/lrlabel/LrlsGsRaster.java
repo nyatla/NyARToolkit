@@ -14,7 +14,7 @@ public class LrlsGsRaster extends NyARGrayscaleRaster
 	/**
 	 * このラスタの、元画像に対する解像度値です。1/nの解像度である事を示します。
 	 */
-	public int resolution;
+//	public int resolution;
 	/**
 	 * 
 	 * @param i_width
@@ -27,7 +27,7 @@ public class LrlsGsRaster extends NyARGrayscaleRaster
 	public LrlsGsRaster(int i_width, int i_height,int i_resolution,boolean i_is_alloc) throws NyARException
 	{
 		super(i_width,i_height,i_is_alloc);
-		this.resolution=i_resolution;
+//		this.resolution=i_resolution;
 	}
 	/**
 	 *　追加機能-無し。

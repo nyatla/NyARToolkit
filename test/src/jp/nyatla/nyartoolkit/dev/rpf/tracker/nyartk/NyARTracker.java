@@ -146,7 +146,7 @@ public class NyARTracker
 	 * @param i_source
 	 * @throws NyARException
 	 */
-	public void progress(LowResolutionLabelingSamplerOut i_source) throws NyARException
+	public void progress(LrlsSource i_s,LowResolutionLabelingSamplerOut i_source) throws NyARException
 	{
 		NyARTargetList[] targets=this._temp_targets;
 		NyARTargetList newtr=targets[NyARTargetStatus.ST_NEW];
@@ -178,10 +178,10 @@ public class NyARTracker
 		updateNewStatus(newtr,this.newst_pool, this._newsource.getArray(),index);
 
 		this._map.makePairIndexes(this._rectsource,retw,index);
-		updateRectStatus(retw, i_source.ref_base_in, this.rect_pool, this._rectsource.getArray(),index);
+		updateRectStatus(retw, i_s, this.rect_pool, this._rectsource.getArray(),index);
 		
 		this._map.makePairIndexes(this._coordsource,cotr,index);
-		updateContureStatus(cotr, i_source.ref_base_in,this.contourst_pool,this._coordsource.getArray(),index);
+		updateContureStatus(cotr, i_s,this.contourst_pool,this._coordsource.getArray(),index);
 
 		//ターゲットのアップグレード
 		for(int i=this._targets.getLength()-1;i>=0;i--){
@@ -190,7 +190,7 @@ public class NyARTracker
 				upgradeIgnoreTarget(i);
 				continue;
 			case NyARTargetStatus.ST_NEW:
-				upgradeNewTarget(target_array[i],i_source.ref_base_in);
+				upgradeNewTarget(target_array[i],i_s);
 				continue;
 			case NyARTargetStatus.ST_RECT:
 				upgradeRectTarget(target_array[i]);

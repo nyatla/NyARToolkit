@@ -14,6 +14,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
  */
 public class LrlsSource
 {
+	public int _rob_resolution;
 	/**
 	 * 反転RobertsFilter画像のインスタンス
 	 */
@@ -39,9 +40,10 @@ public class LrlsSource
 	public LrlsSource(int i_width,int i_height,int i_depth,boolean i_is_alloc) throws NyARException
 	{
 		assert(i_depth>0);
+		int div=(int)Math.pow(2,i_depth);
+		this._rob_resolution=div;
 		//主GSラスタ
 		this._base_raster=new LrlsGsRaster(i_width,i_height,1,i_is_alloc);
-		int div=(int)Math.pow(2,i_depth);
 		//Roberts変換ラスタ
 		this._rb_source=new LrlsGsRaster(i_width/div,i_height/div,div, true);
 		//Robertsラスタは最も解像度の低いラスタと同じ
@@ -70,7 +72,7 @@ public class LrlsSource
 	{
 		//GS->1/(2^n)NRBF
 		//解像度を半分にしながらコピー
-		NyARGrayscaleRaster.copy(this._base_raster,0,0,this._rb_source.resolution,this._rb_source);
+		NyARGrayscaleRaster.copy(this._base_raster,0,0,this._rob_resolution,this._rb_source);
 
 		//最終解像度のエッジ検出画像を作成
 		this._rfilter.doFilter(this._rb_source,this._rbraster);

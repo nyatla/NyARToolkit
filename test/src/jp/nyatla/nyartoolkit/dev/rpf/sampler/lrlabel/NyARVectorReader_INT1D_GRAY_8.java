@@ -36,6 +36,7 @@ import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinates;
  */
 public class NyARVectorReader_INT1D_GRAY_8
 {
+	private int _rob_resolution;
 	private LrlsGsRaster _ref_base_raster;
 
 	/**
@@ -47,6 +48,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 	 */
 	public NyARVectorReader_INT1D_GRAY_8(LrlsGsRaster i_ref_raster,LrlsGsRaster i_ref_rob_raster) {
 		assert (i_ref_raster.getBufferType() == NyARBufferType.INT1D_GRAY_8);
+		this._rob_resolution=i_ref_raster.getWidth()/i_ref_rob_raster.getWidth();
 		this._ref_base_raster=i_ref_raster;
 		this._coord_buf = new NyARIntCoordinates((i_ref_raster.getWidth() + i_ref_raster.getHeight()) * 4);
 	}
@@ -186,8 +188,8 @@ public class NyARVectorReader_INT1D_GRAY_8
 
 		}
 		// 輪郭線のベクトル化
-		return traceConture(coord, i_rob_raster.resolution,
-				i_rob_raster.resolution * 2, o_coord);
+		return traceConture(coord, this._rob_resolution,
+				this._rob_resolution * 2, o_coord);
 	}
 
 

@@ -78,7 +78,6 @@ public class LowResolutionLabelingSamplerOut
 	 */
 	private AreaPool _pool;
 	private AreaStack _stack;
-	public LrlsSource ref_base_in;
 
 	public LowResolutionLabelingSamplerOut(int i_length) throws NyARException
 	{
@@ -94,7 +93,6 @@ public class LowResolutionLabelingSamplerOut
 	public void initializeParams(LrlsSource i_source)
 	{
 		//基準ラスタの設定
-		this.ref_base_in=i_source;
 		
 		Item[] items=this._stack.getArray();
 		//スタック内容の初期化
