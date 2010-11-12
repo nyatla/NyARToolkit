@@ -7,7 +7,6 @@ import jp.nyatla.nyartoolkit.core.rasterfilter.NyARRasterFilter_Roberts;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSampler;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
-import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.NyARVectorReader_INT1D_GRAY_8;
 
 /**
  * LowResolutionLabelingSamplerへの入力コンテナです。
