@@ -58,7 +58,7 @@ class IntRingBuffer
  */
 interface InputSource
 {
-	public void UpdateInput(NyARTrackerSource o_input) throws NyARException;
+	public void UpdateInput(NyARTrackerSource_Reference o_input) throws NyARException;
 }
 
 class ImageSource implements InputSource
@@ -73,7 +73,7 @@ class ImageSource implements InputSource
 		this.gs=new NyARGrayscaleRaster(this._src_image.getWidth(),this._src_image.getHeight());
 		this.filter=new NyARRasterFilter_Rgb2Gs_RgbAve(this._src_image.getBufferType());
 	}
-	public void UpdateInput(NyARTrackerSource o_input) throws NyARException
+	public void UpdateInput(NyARTrackerSource_Reference o_input) throws NyARException
 	{
 		//GS値化
 		this.filter.doFilter(this._src_image,gs);
@@ -93,7 +93,7 @@ class MoveSource implements InputSource
 		sx=1;sy=1;x=10;y=10;
 		sx2=-2;sy2=1;x2=100;y2=10;
 	}
-	public void UpdateInput(NyARTrackerSource o_input) throws NyARException
+	public void UpdateInput(NyARTrackerSource_Reference o_input) throws NyARException
 	{
         Graphics s=_src_image.getGraphics();
         s.setColor(Color.white);
@@ -138,7 +138,7 @@ class LiveSource implements InputSource,JmfCaptureListener
 		return;
 		
 	}
-	public void UpdateInput(NyARTrackerSource o_input) throws NyARException
+	public void UpdateInput(NyARTrackerSource_Reference o_input) throws NyARException
 	{
 		synchronized(this._raster){
 			this._filter.doFilter(this._raster,this._bi);
@@ -185,7 +185,7 @@ class LiveSource implements InputSource,JmfCaptureListener
 
 public class TestTerget extends Frame
 {
-	NyARTrackerSource tracksource;
+	NyARTrackerSource_Reference tracksource;
 	
 	NyARTracker tracker;
 	
@@ -207,7 +207,7 @@ public class TestTerget extends Frame
 //		this._input_source=new MoveSource();
 //		this._input_source=new LiveSource();
 		//create sampler
-		this.tracksource=new NyARTrackerSource(W, H, 2,false);
+		this.tracksource=new NyARTrackerSource_Reference(W, H, 2,false);
 
 		
 		//create tracker

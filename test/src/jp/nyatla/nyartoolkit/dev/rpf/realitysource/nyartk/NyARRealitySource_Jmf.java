@@ -9,6 +9,7 @@ import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSample
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTracker;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTrackerSource;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTrackerSource_Reference;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfNyARRaster_RGB;
 
 public class NyARRealitySource_Jmf extends NyARRealitySource
@@ -19,10 +20,11 @@ public class NyARRealitySource_Jmf extends NyARRealitySource
 	{
 		this._rgb_source=new JmfNyARRaster_RGB(i_fmt);
 		this._filter=new NyARRasterFilter_Rgb2Gs_RgbAve(this._rgb_source.getBufferType());
-		this._lrsamplerin=new NyARTrackerSource(i_fmt.getSize().width,i_fmt.getSize().height,i_depth,true);
+		this._lrsamplerin=new NyARTrackerSource_Reference(i_fmt.getSize().width,i_fmt.getSize().height,i_depth,true);
 		this._source_perspective_reader=new NyARPerspectiveRasterReader(_rgb_source.getBufferType());
 		return;
 	}
+	
 	/**
 	 * Jmfのバッファをセットします。
 	 * @param i_buffer
