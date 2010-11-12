@@ -56,7 +56,7 @@ public class NyARTrackerSource
 		this._vec_reader=new NyARVectorReader_INT1D_GRAY_8(this._base_raster,this._rb_source);
 		
 		this.samplerout=new LowResolutionLabelingSamplerOut(100);
-		this.sampler=new LowResolutionLabelingSampler(i_width, i_height,(int)Math.pow(2,2));
+		this.sampler=new LowResolutionLabelingSampler(i_width, i_height,div);
 
 	}
 	/**
