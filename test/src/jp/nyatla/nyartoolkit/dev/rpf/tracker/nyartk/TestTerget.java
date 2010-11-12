@@ -58,7 +58,7 @@ class IntRingBuffer
  */
 interface InputSource
 {
-	public void UpdateInput(LowResolutionLabelingSamplerIn o_input) throws NyARException;
+	public void UpdateInput(LrlsSource o_input) throws NyARException;
 }
 
 class ImageSource implements InputSource
@@ -73,7 +73,7 @@ class ImageSource implements InputSource
 		this.gs=new NyARGrayscaleRaster(this._src_image.getWidth(),this._src_image.getHeight());
 		this.filter=new NyARRasterFilter_Rgb2Gs_RgbAve(this._src_image.getBufferType());
 	}
-	public void UpdateInput(LowResolutionLabelingSamplerIn o_input) throws NyARException
+	public void UpdateInput(LrlsSource o_input) throws NyARException
 	{
 		//GS値化
 		this.filter.doFilter(this._src_image,gs);
@@ -93,7 +93,7 @@ class MoveSource implements InputSource
 		sx=1;sy=1;x=10;y=10;
 		sx2=-2;sy2=1;x2=100;y2=10;
 	}
-	public void UpdateInput(LowResolutionLabelingSamplerIn o_input) throws NyARException
+	public void UpdateInput(LrlsSource o_input) throws NyARException
 	{
         Graphics s=_src_image.getGraphics();
         s.setColor(Color.white);
@@ -138,7 +138,7 @@ class LiveSource implements InputSource,JmfCaptureListener
 		return;
 		
 	}
-	public void UpdateInput(LowResolutionLabelingSamplerIn o_input) throws NyARException
+	public void UpdateInput(LrlsSource o_input) throws NyARException
 	{
 		synchronized(this._raster){
 			this._filter.doFilter(this._raster,this._bi);
@@ -186,7 +186,7 @@ class LiveSource implements InputSource,JmfCaptureListener
 public class TestTerget extends Frame
 {
 	LowResolutionLabelingSampler sampler;
-	LowResolutionLabelingSamplerIn samplerin;
+	LrlsSource samplerin;
 	LowResolutionLabelingSamplerOut samplerout;
 	
 	NyARTracker tracker;
@@ -209,9 +209,9 @@ public class TestTerget extends Frame
 //		this._input_source=new MoveSource();
 		this._input_source=new LiveSource();
 		//create sampler
-		this.samplerin=new LowResolutionLabelingSamplerIn(W, H, 1,false);
+		this.samplerin=new LrlsSource(W, H, 2,false);
 		this.samplerout=new LowResolutionLabelingSamplerOut(100);
-		this.sampler=new LowResolutionLabelingSampler(W, H,(int)Math.pow(2,1));
+		this.sampler=new LowResolutionLabelingSampler(W, H,(int)Math.pow(2,2));
 		
 		//create tracker
 		this.tracker=new NyARTracker(10,1,10);
@@ -258,7 +258,7 @@ public class TestTerget extends Frame
     	//ワーク画面
     	BufferedImage bmp=this._tmp_bf;
     	Graphics g=bmp.getGraphics();
-    	NyARRasterImageIO.copy(this.samplerout.ref_base_raster,bmp);
+    	NyARRasterImageIO.copy(this.samplerout.ref_base_in._base_raster,bmp);
     	//Ignore,Coord,New
     	for(int i=this.tracker._targets.getLength()-1;i>=0;i--){
     		switch(this.tracker._targets.getItem(i).st_type)

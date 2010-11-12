@@ -36,15 +36,19 @@ import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinates;
  */
 public class NyARVectorReader_INT1D_GRAY_8
 {
-	private int[] _ref_buf;
-	private NyARIntSize _ref_size;
+	private LrlsGsRaster _ref_base_raster;
 
-	public NyARVectorReader_INT1D_GRAY_8(LrlsGsRaster i_ref_raster) {
+	/**
+	 * 
+	 * @param i_ref_raster
+	 * 基本画像
+	 * @param i_ref_rob_raster
+	 * エッジ探索用のROB画像
+	 */
+	public NyARVectorReader_INT1D_GRAY_8(LrlsGsRaster i_ref_raster,LrlsGsRaster i_ref_rob_raster) {
 		assert (i_ref_raster.getBufferType() == NyARBufferType.INT1D_GRAY_8);
-		this._ref_buf = (int[]) (i_ref_raster.getBuffer());
-		this._ref_size = i_ref_raster.getSize();
-		this._coord_buf = new NyARIntCoordinates(
-				(i_ref_raster.getWidth() + i_ref_raster.getHeight()) * 4);
+		this._ref_base_raster=i_ref_raster;
+		this._coord_buf = new NyARIntCoordinates((i_ref_raster.getWidth() + i_ref_raster.getHeight()) * 4);
 	}
 
 	/**
@@ -56,10 +60,11 @@ public class NyARVectorReader_INT1D_GRAY_8
 	 * @param y
 	 * @param o_v
 	 */
-	public void getPixelVector4(int x, int y, NyARIntPoint2d o_v) {
-		assert ((x > 0) && (y > 0) && (x) < this._ref_size.w && (y) < this._ref_size.h);
-		int[] buf = this._ref_buf;
-		int w = this._ref_size.w;
+	public void getPixelVector4(int x, int y, NyARIntPoint2d o_v)
+	{
+		assert ((x > 0) && (y > 0) && (x) < this._ref_base_raster.getWidth() && (y) < this._ref_base_raster.getHeight());
+		int[] buf = (int[])(this._ref_base_raster.getBuffer());
+		int w = this._ref_base_raster.getWidth();
 		int idx = w * y + x;
 		o_v.x = (buf[idx + 1] - buf[idx - 1]) >> 1;
 		o_v.y = (buf[idx + w] - buf[idx - w]) >> 1;
@@ -75,12 +80,12 @@ public class NyARVectorReader_INT1D_GRAY_8
 	 * @param o_v
 	 */
 	public void getPixelVector8(int x, int y, NyARIntPoint2d o_v) {
-		assert ((x > 0) && (y > 0) && (x) < this._ref_size.w && (y) < this._ref_size.h);
-		int[] buf = this._ref_buf;
-		NyARIntSize s = this._ref_size;
-		int idx_0 = s.w * y + x;
-		int idx_p1 = idx_0 + s.w;
-		int idx_m1 = idx_0 - s.w;
+		assert ((x > 0) && (y > 0) && (x) < this._ref_base_raster.getWidth() && (y) < this._ref_base_raster.getHeight());
+		int[] buf = (int[])this._ref_base_raster.getBuffer();
+		int sw = this._ref_base_raster.getWidth();
+		int idx_0 = sw * y + x;
+		int idx_p1 = idx_0 + sw;
+		int idx_m1 = idx_0 - sw;
 		int b = buf[idx_m1 - 1];
 		int d = buf[idx_m1 + 1];
 		int h = buf[idx_p1 - 1];
@@ -106,12 +111,11 @@ public class NyARVectorReader_INT1D_GRAY_8
 	 * @param o_posvec
 	 *            エッジ中心とベクトルを返します。
 	 */
-	public final void getAreaVector33(int ix, int iy, int iw, int ih,
-			NyARVecLinear2d o_posvec) {
+	public final void getAreaVector33(int ix, int iy, int iw, int ih,NyARVecLinear2d o_posvec) {
 		assert (ih >= 3 && iw >= 3);
-		assert ((ix >= 0) && (iy >= 0) && (ix + iw) <= this._ref_size.w && (iy + ih) <= this._ref_size.h);
-		int[] buf = this._ref_buf;
-		int stride = this._ref_size.w;
+		assert ((ix >= 0) && (iy >= 0) && (ix + iw) <= this._ref_base_raster.getWidth() && (iy + ih) <= this._ref_base_raster.getHeight());
+		int[] buf =(int[])this._ref_base_raster.getBuffer();
+		int stride =this._ref_base_raster.getWidth();
 		// x=(Σ|Vx|*Xn)/n,y=(Σ|Vy|*Yn)/n
 		// x=(ΣVx)^2/(ΣVx+ΣVy)^2,y=(ΣVy)^2/(ΣVx+ΣVy)^2
 		int sum_x, sum_y, sum_wx, sum_wy, sum_vx, sum_vy;
@@ -161,18 +165,6 @@ public class NyARVectorReader_INT1D_GRAY_8
 		return;
 	}
 
-	/**
-	 * 参照している画素バッファを、i_ref_bufferに切り替えます。この関数は、コンストラクタでセットしたラスタ
-	 * のバッファが切り替わった時に呼び出してください。
-	 * 
-	 * @param i_ref_buffer
-	 * @throws NyARException
-	 */
-	public void switchBuffer(Object i_ref_buffer) throws NyARException {
-		assert (((int[]) i_ref_buffer).length >= this._ref_size.w
-				* this._ref_size.h);
-		this._ref_buf = (int[]) i_ref_buffer;
-	}
 
 	/**
 	 * ワーク変数
@@ -183,7 +175,8 @@ public class NyARVectorReader_INT1D_GRAY_8
 
 	public boolean traceConture(LrlsGsRaster i_rob_raster, int i_th,
 			NyARIntPoint2d i_entry, VecLinearCoordinates o_coord)
-			throws NyARException {
+			throws NyARException
+	{
 		NyARIntCoordinates coord = this._coord_buf;
 		// Robertsラスタから輪郭抽出
 		if (!this._cpickup.getContour(i_rob_raster, i_th, i_entry.x, i_entry.y,
@@ -217,6 +210,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 	public boolean traceLine(NyARIntPoint2d i_pos1, NyARIntPoint2d i_pos2,int i_edge, VecLinearCoordinates o_coord)
 	{
 		NyARIntCoordinates coord = this._coord_buf;
+		NyARIntSize base_s=this._ref_base_raster.getSize();
 		// (i_area*2)の矩形が範囲内に収まるように線を引く
 		// 移動量
 
@@ -234,8 +228,8 @@ public class NyARVectorReader_INT1D_GRAY_8
 		int s = i_edge * 2 + 1;
 		int dx = (i_pos2.x - i_pos1.x);
 		int dy = (i_pos2.y - i_pos1.y);
-		int r = this._ref_size.w - s;
-		int b = this._ref_size.h - s;
+		int r = base_s.w - s;
+		int b = base_s.h - s;
 
 		// 最大14点を定義して、そのうち両端を除いた点を使用する。
 		for (int i = 3; i < dist - 1; i++) {
@@ -254,6 +248,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 	public boolean traceLine(NyARDoublePoint2d i_pos1,NyARDoublePoint2d i_pos2, int i_edge, VecLinearCoordinates o_coord)
 	{
 		NyARIntCoordinates coord = this._coord_buf;
+		NyARIntSize base_s=this._ref_base_raster.getSize();
 		// (i_area*2)の矩形が範囲内に収まるように線を引く
 		// 移動量
 
@@ -271,8 +266,8 @@ public class NyARVectorReader_INT1D_GRAY_8
 		int s = i_edge * 2 + 1;
 		int dx = (int) (i_pos2.x - i_pos1.x);
 		int dy = (int) (i_pos2.y - i_pos1.y);
-		int r = this._ref_size.w - s;
-		int b = this._ref_size.h - s;
+		int r = base_s.w - s;
+		int b = base_s.h - s;
 
 		// 最大14点を定義して、そのうち両端の2個を除いた点を使用する。
 		for (int i = 3; i < dist - 1; i++) {
@@ -288,8 +283,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 		return traceConture(coord, 1, s, o_coord);
 	}
 
-	private VecLinearCoordinates.NyARVecLinearPoint[] _tmp_cd = VecLinearCoordinates.NyARVecLinearPoint
-			.createArray(3);
+	private VecLinearCoordinates.NyARVecLinearPoint[] _tmp_cd = VecLinearCoordinates.NyARVecLinearPoint.createArray(3);
 
 	/**
 	 * 輪郭点の画像ベクトルを取得します。
@@ -415,14 +409,16 @@ public class NyARVectorReader_INT1D_GRAY_8
 	 * @throws NyARException
 	 */
 	public boolean traceLineWithClip(NyARDoublePoint2d i_pos1,
-			NyARDoublePoint2d i_pos2, int i_edge, VecLinearCoordinates o_coord)
-			throws NyARException {
+		NyARDoublePoint2d i_pos2, int i_edge, VecLinearCoordinates o_coord)
+		throws NyARException
+	{
+		NyARIntSize s=this._ref_base_raster.getSize();
 		boolean is_p1_inside_area, is_p2_inside_area;
 
 		NyARIntPoint2d[] pt = this.__pt;
 		// 線分が範囲内にあるかを確認
-		is_p1_inside_area = this._ref_size.isInnerPoint(i_pos1);
-		is_p2_inside_area = this._ref_size.isInnerPoint(i_pos2);
+		is_p1_inside_area = s.isInnerPoint(i_pos1);
+		is_p2_inside_area = s.isInnerPoint(i_pos2);
 		// 個数で分岐
 		if (is_p1_inside_area && is_p2_inside_area) {
 			// 2ならクリッピング必要なし。
@@ -436,8 +432,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 		if (!this.__temp_l.makeLinearWithNormalize(i_pos1, i_pos2)) {
 			return false;
 		}
-		if (!this.__temp_l.makeSegmentLine(this._ref_size.w, this._ref_size.h,
-				pt)) {
+		if (!this.__temp_l.makeSegmentLine(s.w,s.h,pt)) {
 			return false;
 		}
 		if (is_p1_inside_area != is_p2_inside_area) {
@@ -457,8 +452,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 			if (!this.__temp_l.makeLinearWithNormalize(i_pos1, i_pos2)) {
 				return false;
 			}
-			if (!this.__temp_l.makeSegmentLine(this._ref_size.w,
-					this._ref_size.h, pt)) {
+			if (!this.__temp_l.makeSegmentLine(s.w,s.h, pt)) {
 				return false;
 			}
 		}

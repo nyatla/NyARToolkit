@@ -9,6 +9,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
 import jp.nyatla.nyartoolkit.core.types.NyARVecLinear2d;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
+import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LrlsSource;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LrlsGsRaster;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.NyARVectorReader_INT1D_GRAY_8;
@@ -47,9 +48,8 @@ public final class NyARContourTargetStatus extends NyARTargetStatus
 	 * @throws NyARException
 	 */
 
-	public boolean setValue(LrlsGsRaster i_base_raster,LowResolutionLabelingSamplerOut.Item i_sample) throws NyARException
+	public boolean setValue(LrlsSource i_sampler_in,LowResolutionLabelingSamplerOut.Item i_sample) throws NyARException
 	{
-		LrlsGsRaster r=(LrlsGsRaster)i_sample.ref_raster;
-		return i_base_raster.getVectorReader().traceConture(r, i_sample.lebeling_th, i_sample.entry_pos, vecpos);
+		return i_sampler_in._vec_reader.traceConture(i_sampler_in._rbraster, i_sample.lebeling_th, i_sample.entry_pos, vecpos);
 	}	
 }

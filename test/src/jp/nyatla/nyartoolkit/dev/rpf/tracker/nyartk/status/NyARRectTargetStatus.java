@@ -4,6 +4,7 @@ package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
+import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LrlsSource;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LrlsGsRaster;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.NyARVectorReader_INT1D_GRAY_8;
@@ -142,15 +143,17 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	}
 	/**
 	 * 値をセットします。この関数は、処理の成功失敗に関わらず、内容変更を行います。
-	 * @param i_contour_status
+	 * @param i_sampler_in
+	 * @param i_source
+	 * @param i_prev_status
 	 * @return
 	 * @throws NyARException
 	 */
-	public boolean setValueWithDeilyCheck(LrlsGsRaster i_raster,LowResolutionLabelingSamplerOut.Item i_source,NyARRectTargetStatus i_prev_status) throws NyARException
+	public boolean setValueWithDeilyCheck(LrlsSource i_sampler_in,LowResolutionLabelingSamplerOut.Item i_source,NyARRectTargetStatus i_prev_status) throws NyARException
 	{
 		VecLinearCoordinates vecpos=this._ref_my_pool._vecpos;
 		//輪郭線を取る
-		if(!i_raster.getVectorReader().traceConture((LrlsGsRaster)i_source.ref_raster,i_source.lebeling_th,i_source.entry_pos,vecpos)){
+		if(!i_sampler_in._vec_reader.traceConture(i_sampler_in._rbraster,i_source.lebeling_th,i_source.entry_pos,vecpos)){
 			return false;
 		}
 		//3,4象限方向のベクトルは1,2象限のベクトルに変換する。
@@ -185,7 +188,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	 * @return
 	 * @throws NyARException
 	 */
-	public boolean setValueByLineLog(LrlsGsRaster i_raster,NyARRectTargetStatus i_prev_status) throws NyARException
+	public boolean setValueByLineLog(NyARVectorReader_INT1D_GRAY_8 i_vec_reader,NyARRectTargetStatus i_prev_status) throws NyARException
 	{
 		//検出範囲からカーネルサイズの2乗値を計算。検出領域の二乗距離の1/(40*40) (元距離の1/40)
 		int d=((int)i_prev_status.estimate_rect.getDiagonalSqDist()/(NyARMath.SQ_40));
@@ -209,7 +212,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		//ライントレースの試行
 
 		NyARLinear[] sh_l=this._ref_my_pool._line;
-		if(!traceSquareLine(i_raster.getVectorReader(),d,i_prev_status,sh_l)){
+		if(!traceSquareLine(i_vec_reader,d,i_prev_status,sh_l)){
 			//System.out.println(">>>>>>>>>>>>>"+v_ave_limit+","+d);
 			return false;
 		}else{
@@ -236,7 +239,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	 * @return
 	 * @throws NyARException
 	 */
-	public boolean setValueByAutoSelect(LrlsGsRaster i_raster,LowResolutionLabelingSamplerOut.Item i_source,NyARRectTargetStatus i_prev_status) throws NyARException
+	public boolean setValueByAutoSelect(LrlsSource i_sample_in,LowResolutionLabelingSamplerOut.Item i_source,NyARRectTargetStatus i_prev_status) throws NyARException
 	{
 		int current_detect_type=DT_SQDAILY;
 		//移動速度による手段の切り替え
@@ -251,14 +254,14 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		{
 		case DT_LIDAILY:
 			//LineLog->
-			if(setValueByLineLog(i_raster,i_prev_status))
+			if(setValueByLineLog(i_sample_in._vec_reader,i_prev_status))
 			{
 				//うまくいった。
 				this.detect_type=DT_LIDAILY;
 				return true;
 			}
 			if(i_source!=null){
-				if(setValueWithDeilyCheck(i_raster,i_source,i_prev_status))
+				if(setValueWithDeilyCheck(i_sample_in,i_source,i_prev_status))
 				{
 					//うまくいった
 					this.detect_type=DT_SQDAILY;
@@ -268,7 +271,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 			break;
 		case DT_SQDAILY:
 			if(i_source!=null){
-				if(setValueWithDeilyCheck(i_raster,i_source,i_prev_status))
+				if(setValueWithDeilyCheck(i_sample_in,i_source,i_prev_status))
 				{
 					this.detect_type=DT_SQDAILY;
 					return true;

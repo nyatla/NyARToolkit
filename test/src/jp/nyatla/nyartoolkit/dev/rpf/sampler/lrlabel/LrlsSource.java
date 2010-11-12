@@ -12,18 +12,18 @@ import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
  * プロパティには、解像度別のグレースケール画像があります。
  *
  */
-public class LowResolutionLabelingSamplerIn
+public class LrlsSource
 {
 	/**
 	 * 反転RobertsFilter画像のインスタンス
 	 */
 	public LrlsGsRaster _rbraster;
 	public LrlsGsRaster _base_raster;
+	public NyARVectorReader_INT1D_GRAY_8 _vec_reader;
 
 	private LrlsGsRaster _rb_source;
 	private NyARRasterFilter_Roberts _rfilter=new NyARRasterFilter_Roberts(NyARBufferType.INT1D_GRAY_8);
 	private NyARRasterFilter_Reverse _nfilter=new NyARRasterFilter_Reverse(NyARBufferType.INT1D_GRAY_8);
-
 	/**
 	 * @param i_width
 	 * ソース画像のサイズ
@@ -36,7 +36,7 @@ public class LowResolutionLabelingSamplerIn
 	 * trueの場合、バッファは内部に確保され、wrapBuffer関数が使用できなくなります。
 	 * @throws NyARException
 	 */
-	public LowResolutionLabelingSamplerIn(int i_width,int i_height,int i_depth,boolean i_is_alloc) throws NyARException
+	public LrlsSource(int i_width,int i_height,int i_depth,boolean i_is_alloc) throws NyARException
 	{
 		assert(i_depth>0);
 		//主GSラスタ
@@ -46,6 +46,7 @@ public class LowResolutionLabelingSamplerIn
 		this._rb_source=new LrlsGsRaster(i_width/div,i_height/div,div, true);
 		//Robertsラスタは最も解像度の低いラスタと同じ
 		this._rbraster=new LrlsGsRaster(i_width/div,i_height/div,div, true);
+		this._vec_reader=new NyARVectorReader_INT1D_GRAY_8(this._base_raster,this._rb_source);
 	}
 	/**
 	 * GS画像をセットし、syncSourceで内部画像を更新します。

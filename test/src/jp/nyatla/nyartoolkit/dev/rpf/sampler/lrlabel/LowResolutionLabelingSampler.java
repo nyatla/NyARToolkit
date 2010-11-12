@@ -18,16 +18,13 @@ import jp.nyatla.nyartoolkit.core.raster.*;
 public class LowResolutionLabelingSampler
 {
 	/**
-	 * 解像度を変換してラべリングするクラス。
-	 * 入力-Raw GrayScale
-	 * 出力-ピラミッド画像,輪郭エントリーポイント
-	 * @note
-	 * 将来的に最低解像度値(i_depth)をサポートする可能性あり。現在はi_depth=4で固定
+	 * 1/n画像のラべリングをするクラス。
+	 * @author nyatla
+	 *
 	 */
 	class Main_Labeling extends NyARLabeling_Rle
 	{
 		private int _pix;
-		public NyARGrayscaleRaster current_gs;
 		public int current_th;
 		public LowResolutionLabelingSamplerOut current_output;
 		public Main_Labeling(int i_width,int i_height,int i_pix_base) throws NyARException
@@ -57,7 +54,6 @@ public class LowResolutionLabelingSampler
 			int pix=this._pix;
 			item.entry_pos.x=iRefLabel.entry_x;
 			item.entry_pos.y=iRefLabel.clip_t;
-			item.ref_raster=this.current_gs;
 			item.base_area.x=iRefLabel.clip_l*pix;
 			item.base_area.y=iRefLabel.clip_t*pix;
 			item.base_area.w=w*pix;
@@ -97,14 +93,13 @@ public class LowResolutionLabelingSampler
 	 * 出力先のデータです。
 	 * @throws NyARException
 	 */
-	public void sampling(LowResolutionLabelingSamplerIn i_in,LowResolutionLabelingSamplerOut o_out) throws NyARException
+	public void sampling(LrlsSource i_in,LowResolutionLabelingSamplerOut o_out) throws NyARException
 	{
 		//ラスタを取得(Depth2=2^2解像度のデータ)
 		NyARGrayscaleRaster raster4=i_in._rbraster;
-		int th=220;
+		int th=240;
 		//クラスのパラメータ初期化
 		Main_Labeling lb=this._main_labeling;
-		lb.current_gs=raster4;
 		lb.current_output=o_out;
 		lb.current_th=th;
 

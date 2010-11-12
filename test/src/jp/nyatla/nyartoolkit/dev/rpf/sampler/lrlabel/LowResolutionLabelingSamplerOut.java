@@ -23,14 +23,6 @@ public class LowResolutionLabelingSamplerOut
 	public class Item extends NyARManagedObject
 	{
 		/**
-		 * ラべリング元の画像へのポインタです。
-		 */
-		public NyARGrayscaleRaster ref_raster;
-		/**
-		 * ラべリングした画像の解像度値です。
-		 */
-//		public int resolution;
-		/**
 		 * ラべリング対象のエントリポイントです。
 		 */
 		public NyARIntPoint2d entry_pos=new NyARIntPoint2d();
@@ -84,9 +76,9 @@ public class LowResolutionLabelingSamplerOut
 	/**
 	 * 元
 	 */
-	public LrlsGsRaster ref_base_raster;
 	private AreaPool _pool;
 	private AreaStack _stack;
+	public LrlsSource ref_base_in;
 
 	public LowResolutionLabelingSamplerOut(int i_length) throws NyARException
 	{
@@ -99,10 +91,10 @@ public class LowResolutionLabelingSamplerOut
 	 * SamplerOutの内容を初期状態にします。
 	 * @param i_source
 	 */
-	public void initializeParams(LowResolutionLabelingSamplerIn i_source)
+	public void initializeParams(LrlsSource i_source)
 	{
 		//基準ラスタの設定
-		this.ref_base_raster=i_source._base_raster;
+		this.ref_base_in=i_source;
 		
 		Item[] items=this._stack.getArray();
 		//スタック内容の初期化
