@@ -12,13 +12,11 @@ import jp.nyatla.nyartoolkit.jmf.utils.JmfNyARRaster_RGB;
 
 public class NyARRealitySource_Jmf extends NyARRealitySource
 {
-	private LowResolutionLabelingSampler _sampler;
 	protected NyARRasterFilter_Rgb2Gs_RgbAve _filter;
 	protected NyARTrackerSource _lrsamplerin;
 	public NyARRealitySource_Jmf(VideoFormat i_fmt,int i_depth) throws NyARException
 	{
 		this._rgb_source=new JmfNyARRaster_RGB(i_fmt);
-		this._sampler=new LowResolutionLabelingSampler(i_fmt.getSize().width,i_fmt.getSize().height,(int)Math.pow(2,i_depth));
 		this._filter=new NyARRasterFilter_Rgb2Gs_RgbAve(this._rgb_source.getBufferType());
 		this._lrsamplerin=new NyARTrackerSource(i_fmt.getSize().width,i_fmt.getSize().height,i_depth,true);
 		this._source_perspective_reader=new NyARPerspectiveRasterReader(_rgb_source.getBufferType());
@@ -42,6 +40,5 @@ public class NyARRealitySource_Jmf extends NyARRealitySource
 	{
 		this._filter.doFilter(this._rgb_source,this._lrsamplerin._base_raster);
 		this._lrsamplerin.syncSource();
-		this._sampler.sampling(this._lrsamplerin, o_samplerout);
 	}	
 }

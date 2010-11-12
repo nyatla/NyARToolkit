@@ -125,8 +125,8 @@ class LiveSource implements InputSource,JmfCaptureListener
 		JmfCaptureDeviceList devlist=new JmfCaptureDeviceList();
 		this._capture=devlist.getDevice(0);
 		//JmfNyARRaster_RGBはYUVよりもRGBで高速に動作します。
-		if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB,320, 240,15f)){
-			if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_YUV,320, 240,15f)){
+		if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB,320, 240,30f)){
+			if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_YUV,320, 240,30f)){
 				throw new NyARException("キャプチャフォーマットが見つかりません");
 			}		
 		}
@@ -186,8 +186,6 @@ class LiveSource implements InputSource,JmfCaptureListener
 public class TestTerget extends Frame
 {
 	NyARTrackerSource tracksource;
-//	LowResolutionLabelingSampler sampler;
-//	LowResolutionLabelingSamplerOut samplerout;
 	
 	NyARTracker tracker;
 	
@@ -210,11 +208,10 @@ public class TestTerget extends Frame
 		this._input_source=new LiveSource();
 		//create sampler
 		this.tracksource=new NyARTrackerSource(W, H, 2,false);
-//		this.samplerout=new LowResolutionLabelingSamplerOut(100);
-//		this.sampler=new LowResolutionLabelingSampler(W, H,(int)Math.pow(2,2));
+
 		
 		//create tracker
-		this.tracker=new NyARTracker(10,1,10);
+		this.tracker=new NyARTracker(W,H,2,10,1,10);
 
 		return;
 	}
@@ -257,7 +254,7 @@ public class TestTerget extends Frame
 
     	//ワーク画面
     	BufferedImage bmp=this._tmp_bf;
-    	NyARRasterImageIO.copy(this.tracksource._base_raster,bmp);
+    	NyARRasterImageIO.copy(this.tracksource.getBaseRaster(),bmp);
     	//Ignore,Coord,New
     	for(int i=this.tracker._targets.getLength()-1;i>=0;i--){
     		switch(this.tracker._targets.getItem(i).st_type)
@@ -278,7 +275,7 @@ public class TestTerget extends Frame
     	}
     	//表示
     	ig.drawImage(bmp,ins.left,ins.top,null);
-    	drawImage(ig,ins.left+320,ins.top,this.tracksource._rbraster);
+    	drawImage(ig,ins.left+320,ins.top,this.tracksource.getEdgeRaster());
     }
     private void drawImage(Graphics g,int x,int y,NyARGrayscaleRaster r) throws NyARException
     {
@@ -359,21 +356,7 @@ public class TestTerget extends Frame
 		g.drawRect(t.sample_area.x,t.sample_area.y,t.sample_area.w,t.sample_area.h);
     }
     
-    /**
-     * サンプリング結果を描画します。
-     * @param sink
-     * @param outg
-     */
-    private void drawSamplerResult(BufferedImage sink,Color c)
-    {
-    	//サンプリング結果の表示
-    	Graphics g=sink.getGraphics();
-    	g.setColor(c);
-		for(int i=this.tracksource.samplerout.getLength()-1;i>=0;i--){
-			LowResolutionLabelingSamplerOut.Item item=this.tracksource.samplerout.getArray()[i];
-			g.drawRect(item.base_area.x,item.base_area.y,item.base_area.w,item.base_area.h);
-		}
-    }
+
     
     
 

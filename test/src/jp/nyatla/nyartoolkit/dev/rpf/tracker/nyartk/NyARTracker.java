@@ -16,8 +16,7 @@ import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARDistMap;
 public class NyARTracker
 {
 	private DistMap _map;
-	protected int[] _index;	
-	
+	protected int[] _index;
 
 	private NyARNewTargetStatusPool newst_pool;
 	private NyARContourTargetStatusPool contourst_pool;
@@ -29,6 +28,14 @@ public class NyARTracker
 	 * refTrackTarget関数を介してアクセスしてください。
 	 */
 	public NyARTargetList _targets;
+	/**
+	 * 内部プロパティ
+	 */
+	public LowResolutionLabelingSamplerOut _samplerout;	
+	/**
+	 * 内部プロパティ
+	 */
+	public LowResolutionLabelingSampler _sampler;
 
 
 	//環境定数
@@ -89,17 +96,22 @@ public class NyARTracker
 		return this._targets;
 	}
 	/**
-	 * コンストラクタです。パラメータには、処理するNyARTrackerSnapshotに設定した値よりも大きな値を設定して下さい。
+	 * コンストラクタです。
+	 * @param i_width
+	 * 入力するTrackerSourceの元画像サイズです。入力するTrackerSourceと一致させてください。
+	 * @param i_height
+	 * 入力するTrackerSourceの元画像サイズです。入力するTrackerSourceと一致させてください。
+	 * @param i_depth
+	 * エッジ検出画像の階層を1/(2^n)で指定します。入力するTrackerSourceと一致させてください。
 	 * @param i_max_new
 	 * NyARTrackerSnapshotコンストラクタのi_max_newに設定した値を指定してください。
 	 * @param i_max_cont
 	 * NyARTrackerSnapshotコンストラクタのi_max_contに設定した値を指定してください。
 	 * @param i_max_rect
 	 * NyARTrackerSnapshotコンストラクタのi_max_rectに設定した値を指定してください。
-
 	 * @throws NyARException
 	 */
-	public NyARTracker(int i_max_new,int i_max_cont,int i_max_rect) throws NyARException
+	public NyARTracker(int i_width,int i_height,int i_depth,int i_max_new,int i_max_cont,int i_max_rect) throws NyARException
 	{
 		//環境定数の設定
 		this.MAX_NUMBER_OF_NEW=i_max_new;
@@ -129,8 +141,10 @@ public class NyARTracker
 		this.target_pool=new NyARTargetPool(this.MAX_NUMBER_OF_TARGET);
 		//ターゲット
 		this._targets=new NyARTargetList(this.MAX_NUMBER_OF_TARGET);
-		
-		
+		//samplerとsampleout
+		this._samplerout=new LowResolutionLabelingSamplerOut(100);
+		this._sampler=new LowResolutionLabelingSampler(i_width, i_height,(int)Math.pow(2,i_depth));
+	
 		
 		//ここ注意！マップの最大値は、ソースアイテムの個数よりおおきいこと！
 		this._map=new DistMap(this.MAX_NUMBER_OF_TARGET,this.MAX_NUMBER_OF_TARGET);
@@ -138,7 +152,6 @@ public class NyARTracker
 		
 		//定数初期化
 		this._number_of_new=this._number_of_ignore=this._number_of_contoure=this._number_of_rect=0;
-		
 	}
 
 	/**
@@ -148,12 +161,16 @@ public class NyARTracker
 	 */
 	public void progress(NyARTrackerSource i_s) throws NyARException
 	{
+		//エッジラスタをサンプリング
+		this._sampler.sampling(i_s.getEdgeRaster(),this._samplerout);
+		
 		NyARTargetList[] targets=this._temp_targets;
 		NyARTargetList newtr=targets[NyARTargetStatus.ST_NEW];
 		NyARTargetList igtr=targets[NyARTargetStatus.ST_IGNORE];
 		NyARTargetList cotr=targets[NyARTargetStatus.ST_CONTURE];
 		NyARTargetList retw=targets[NyARTargetStatus.ST_RECT];
 
+		NyARVectorReader_INT1D_GRAY_8 vecreader=i_s.getBaseVectorReader();
 		//ターゲットリストの振り分け
 		NyARTarget[] target_array=this._targets.getArray();
 		newtr.clear();
@@ -165,12 +182,9 @@ public class NyARTracker
 		}		
 		int[] index=this._index;
 		//サンプルをターゲット毎に振り分け
-		sampleMapper(
-			i_s.samplerout,
-			newtr,igtr,cotr,retw,
-			this._newsource,this._igsource,this._coordsource,this._rectsource);
+		sampleMapper(this._samplerout,newtr,igtr,cotr,retw,this._newsource,this._igsource,this._coordsource,this._rectsource);
 		
-		//ターゲットの更新
+		//ターゲットの更新		
 		this._map.makePairIndexes(this._igsource,igtr,index);
 		updateIgnoreStatus(igtr,this._igsource.getArray(),index);
 		
@@ -178,10 +192,10 @@ public class NyARTracker
 		updateNewStatus(newtr,this.newst_pool, this._newsource.getArray(),index);
 
 		this._map.makePairIndexes(this._rectsource,retw,index);
-		updateRectStatus(retw, i_s, this.rect_pool, this._rectsource.getArray(),index);
+		updateRectStatus(retw, vecreader, this.rect_pool, this._rectsource.getArray(),index);
 		
 		this._map.makePairIndexes(this._coordsource,cotr,index);
-		updateContureStatus(cotr, i_s,this.contourst_pool,this._coordsource.getArray(),index);
+		updateContureStatus(cotr, vecreader,this.contourst_pool,this._coordsource.getArray(),index);
 
 		//ターゲットのアップグレード
 		for(int i=this._targets.getLength()-1;i>=0;i--){
@@ -190,7 +204,7 @@ public class NyARTracker
 				upgradeIgnoreTarget(i);
 				continue;
 			case NyARTargetStatus.ST_NEW:
-				upgradeNewTarget(target_array[i],i_s);
+				upgradeNewTarget(target_array[i],vecreader);
 				continue;
 			case NyARTargetStatus.ST_RECT:
 				upgradeRectTarget(target_array[i]);
@@ -223,7 +237,7 @@ public class NyARTracker
 	 * @return
 	 * @throws NyARException
 	 */
-	private final void upgradeNewTarget(NyARTarget i_new_target,NyARTrackerSource i_sampler_in) throws NyARException
+	private final void upgradeNewTarget(NyARTarget i_new_target,NyARVectorReader_INT1D_GRAY_8 i_vecreader) throws NyARException
 	{
 		assert(i_new_target.st_type==NyARTargetStatus.ST_NEW);
 
@@ -247,7 +261,7 @@ public class NyARTracker
 			return;
 		}
 		//ステータスの値をセット
-		if(!c.setValue(i_sampler_in,st.current_sampleout))
+		if(!c.setValue(i_vecreader,st.current_sampleout))
 		{
 			//値のセットに失敗したので、Ignoreへ遷移(この対象は輪郭認識できない)
 			this.changeStatusToIgnore(i_new_target);
@@ -393,11 +407,14 @@ public class NyARTracker
 	}
 	/**
 	 * ContoureTargetのステータスを更新します。
-	 * @param i_base_raster
-	 * @param i_trackdata
+	 * @param i_list
+	 * @param i_vecreader
+	 * @param i_stpool
+	 * @param source
+	 * @param index
 	 * @throws NyARException
 	 */
-	public static void updateContureStatus(NyARTargetList i_list,NyARTrackerSource i_sample_in,NyARContourTargetStatusPool i_stpool,LowResolutionLabelingSamplerOut.Item[] source,int[] index) throws NyARException
+	public static void updateContureStatus(NyARTargetList i_list,NyARVectorReader_INT1D_GRAY_8 i_vecreader,NyARContourTargetStatusPool i_stpool,LowResolutionLabelingSamplerOut.Item[] source,int[] index) throws NyARException
 	{
 		NyARTarget[] crd=i_list.getArray();		
 		NyARTarget d_ptr;
@@ -420,7 +437,7 @@ public class NyARTracker
 				d_ptr.delay_tick++;
 				continue;
 			}
-			if(!st.setValue(i_sample_in,s)){
+			if(!st.setValue(i_vecreader,s)){
 				//新しいステータスのセットに失敗？
 				st.releaseObject();
 				d_ptr.delay_tick++;
@@ -433,7 +450,7 @@ public class NyARTracker
 			d_ptr.ref_status=st;
 		}
 	}
-	public static void updateRectStatus(NyARTargetList i_list,NyARTrackerSource i_sample_in,NyARRectTargetStatusPool i_stpool,LowResolutionLabelingSamplerOut.Item[] source,int[] index) throws NyARException
+	public static void updateRectStatus(NyARTargetList i_list,NyARVectorReader_INT1D_GRAY_8 i_vecreader,NyARRectTargetStatusPool i_stpool,LowResolutionLabelingSamplerOut.Item[] source,int[] index) throws NyARException
 	{	
 		NyARTarget[] rct=i_list.getArray();
 		NyARTarget d_ptr;
@@ -451,7 +468,7 @@ public class NyARTracker
 			}
 			int sample_index=index[i];
 			LowResolutionLabelingSamplerOut.Item s=sample_index<0?null:source[sample_index];		
-			if(!st.setValueByAutoSelect(i_sample_in, s, (NyARRectTargetStatus)d_ptr.ref_status)){
+			if(!st.setValueByAutoSelect(i_vecreader, s, (NyARRectTargetStatus)d_ptr.ref_status)){
 				st.releaseObject();
 				d_ptr.delay_tick++;
 				continue;

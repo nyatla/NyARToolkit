@@ -20,12 +20,9 @@ public class NyARTrackerSource
 	/**
 	 * 反転RobertsFilter画像のインスタンス
 	 */
-	public NyARGrayscaleRaster _rbraster;
-	public NyARGrayscaleRaster _base_raster;
-	public NyARVectorReader_INT1D_GRAY_8 _vec_reader;
-
-	LowResolutionLabelingSamplerOut samplerout;	
-	LowResolutionLabelingSampler sampler;
+	private NyARGrayscaleRaster _rbraster;
+	private NyARGrayscaleRaster _base_raster;
+	private NyARVectorReader_INT1D_GRAY_8 _vec_reader;
 	
 	private NyARGrayscaleRaster _rb_source;
 	private NyARRasterFilter_Roberts _rfilter=new NyARRasterFilter_Roberts(NyARBufferType.INT1D_GRAY_8);
@@ -53,11 +50,7 @@ public class NyARTrackerSource
 		this._rb_source=new NyARGrayscaleRaster(i_width/div,i_height/div,NyARBufferType.INT1D_GRAY_8, true);
 		//Robertsラスタは最も解像度の低いラスタと同じ
 		this._rbraster=new NyARGrayscaleRaster(i_width/div,i_height/div,NyARBufferType.INT1D_GRAY_8, true);
-		this._vec_reader=new NyARVectorReader_INT1D_GRAY_8(this._base_raster,this._rb_source);
-		
-		this.samplerout=new LowResolutionLabelingSamplerOut(100);
-		this.sampler=new LowResolutionLabelingSampler(i_width, i_height,div);
-
+		this._vec_reader=new NyARVectorReader_INT1D_GRAY_8(this._base_raster,this._rbraster);
 	}
 	/**
 	 * GS画像をセットし、syncSourceで内部画像を更新します。
@@ -71,9 +64,11 @@ public class NyARTrackerSource
 		this._base_raster.wrapBuffer(i_ref_source.getBuffer());
 		syncSource();
 	}
+	
 	/**
-	 * GS画像と他の内部画像を同期させます。this._base_rasterが内部参照の場合に、GS画像を更新した後に
-	 * 呼び出してください。
+	 * GS画像と他の内部画像を同期させます。
+	 * この関数は、NyARTrackerSourceへインスタンスを渡す前に、必ず一度実行してください。
+	 * 但し、wrapBufferを実行したときは不要です。
 	 * @param i_ref_source
 	 * @throws NyARException
 	 */
@@ -86,8 +81,32 @@ public class NyARTrackerSource
 		//最終解像度のエッジ検出画像を作成
 		this._rfilter.doFilter(this._rb_source,this._rbraster);
 		this._nfilter.doFilter(this._rbraster, this._rbraster);
-		this.sampler.sampling(this._rbraster,this.samplerout);
 
+	}
+	/**
+	 * 基本GS画像に対するVector読み取り機を返します。
+	 * @return
+	 */
+	public NyARVectorReader_INT1D_GRAY_8 getBaseVectorReader()
+	{
+		return this._vec_reader;
+	}
+
+	/**
+	 * エッジ画像を返します。
+	 * @return
+	 */
+	public NyARGrayscaleRaster getEdgeRaster()
+	{
+		return this._rbraster;
+	}
+	/**
+	 * 基準画像を返します。
+	 * @return
+	 */
+	public NyARGrayscaleRaster getBaseRaster()
+	{
+		return this._base_raster;
 	}
 	
 

@@ -39,6 +39,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 {
 	private int _rob_resolution;
 	private NyARGrayscaleRaster _ref_base_raster;
+	private NyARGrayscaleRaster _ref_rob_raster;
 
 	/**
 	 * 
@@ -51,6 +52,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 	{
 		assert (i_ref_raster.getBufferType() == NyARBufferType.INT1D_GRAY_8);
 		this._rob_resolution=i_ref_raster.getWidth()/i_ref_rob_raster.getWidth();
+		this._ref_rob_raster=i_ref_rob_raster;
 		this._ref_base_raster=i_ref_raster;
 		this._coord_buf = new NyARIntCoordinates((i_ref_raster.getWidth() + i_ref_raster.getHeight()) * 4);
 	}
@@ -177,13 +179,13 @@ public class NyARVectorReader_INT1D_GRAY_8
 	private final NyARContourPickup _cpickup = new NyARContourPickup();
 	private final double _MARGE_ANG_TH = NyARMath.COS_DEG_8;
 
-	public boolean traceConture(NyARGrayscaleRaster i_rob_raster, int i_th,
+	public boolean traceConture(int i_th,
 			NyARIntPoint2d i_entry, VecLinearCoordinates o_coord)
 			throws NyARException
 	{
 		NyARIntCoordinates coord = this._coord_buf;
 		// Robertsラスタから輪郭抽出
-		if (!this._cpickup.getContour(i_rob_raster, i_th, i_entry.x, i_entry.y,
+		if (!this._cpickup.getContour(this._ref_rob_raster, i_th, i_entry.x, i_entry.y,
 				coord)) {
 			// 輪郭線MAXならなにもできないね。
 			return false;

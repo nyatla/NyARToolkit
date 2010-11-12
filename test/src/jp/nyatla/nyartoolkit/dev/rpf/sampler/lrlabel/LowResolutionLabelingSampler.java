@@ -78,6 +78,7 @@ public class LowResolutionLabelingSampler
 	 * 座標系の倍率係数を指定する。例えば1/2画像(面積1/4)のサンプリング結果を元画像サイズに戻すときは、4を指定する。
 	 * 最低解像度とするRasterのdepth。
 	 * この値は、samplingに渡すLowResolutionLabelingSamplerInに設定した値と同じである必要があります。
+	 * <p>メモ:ラスタ形式の多値化を考えるならアレだ。Impl作成。</p>
 	 * @throws NyARException
 	 */
 	public LowResolutionLabelingSampler(int i_width,int i_height,int i_pix_size) throws NyARException
@@ -96,7 +97,7 @@ public class LowResolutionLabelingSampler
 	public void sampling(NyARGrayscaleRaster i_in,LowResolutionLabelingSamplerOut o_out) throws NyARException
 	{
 		//ラスタを取得(Depth2=2^2解像度のデータ)
-		int th=240;
+		int th=245;
 		//クラスのパラメータ初期化
 		Main_Labeling lb=this._main_labeling;
 		lb.current_output=o_out;

@@ -5,7 +5,6 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTrackerSource;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARVectorReader_INT1D_GRAY_8;
 import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinates;
 
@@ -148,11 +147,11 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	 * @return
 	 * @throws NyARException
 	 */
-	public boolean setValueWithDeilyCheck(NyARTrackerSource i_sampler_in,LowResolutionLabelingSamplerOut.Item i_source,NyARRectTargetStatus i_prev_status) throws NyARException
+	public boolean setValueWithDeilyCheck(NyARVectorReader_INT1D_GRAY_8 i_vec_reader,LowResolutionLabelingSamplerOut.Item i_source,NyARRectTargetStatus i_prev_status) throws NyARException
 	{
 		VecLinearCoordinates vecpos=this._ref_my_pool._vecpos;
 		//輪郭線を取る
-		if(!i_sampler_in._vec_reader.traceConture(i_sampler_in._rbraster,i_source.lebeling_th,i_source.entry_pos,vecpos)){
+		if(!i_vec_reader.traceConture(i_source.lebeling_th,i_source.entry_pos,vecpos)){
 			return false;
 		}
 		//3,4象限方向のベクトルは1,2象限のベクトルに変換する。
@@ -232,13 +231,16 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	}
 	/**
 	 * 状況に応じて矩形選択手法を切り替えます。
-	 * @param i_raster
+	 * @param i_vec_reader
+	 * サンプリングデータの基本画像にリンクしたVectorReader
 	 * @param i_source
+	 * サンプリングデータ
 	 * @param i_prev_status
+	 * 前回の状態を格納したオブジェクト
 	 * @return
 	 * @throws NyARException
 	 */
-	public boolean setValueByAutoSelect(NyARTrackerSource i_sample_in,LowResolutionLabelingSamplerOut.Item i_source,NyARRectTargetStatus i_prev_status) throws NyARException
+	public boolean setValueByAutoSelect(NyARVectorReader_INT1D_GRAY_8 i_vec_reader,LowResolutionLabelingSamplerOut.Item i_source,NyARRectTargetStatus i_prev_status) throws NyARException
 	{
 		int current_detect_type=DT_SQDAILY;
 		//移動速度による手段の切り替え
@@ -253,14 +255,14 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		{
 		case DT_LIDAILY:
 			//LineLog->
-			if(setValueByLineLog(i_sample_in._vec_reader,i_prev_status))
+			if(setValueByLineLog(i_vec_reader,i_prev_status))
 			{
 				//うまくいった。
 				this.detect_type=DT_LIDAILY;
 				return true;
 			}
 			if(i_source!=null){
-				if(setValueWithDeilyCheck(i_sample_in,i_source,i_prev_status))
+				if(setValueWithDeilyCheck(i_vec_reader,i_source,i_prev_status))
 				{
 					//うまくいった
 					this.detect_type=DT_SQDAILY;
@@ -270,7 +272,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 			break;
 		case DT_SQDAILY:
 			if(i_source!=null){
-				if(setValueWithDeilyCheck(i_sample_in,i_source,i_prev_status))
+				if(setValueWithDeilyCheck(i_vec_reader,i_source,i_prev_status))
 				{
 					this.detect_type=DT_SQDAILY;
 					return true;
