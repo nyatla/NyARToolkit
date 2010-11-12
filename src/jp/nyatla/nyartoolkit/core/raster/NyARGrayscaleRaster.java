@@ -145,19 +145,21 @@ public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 	}
 
 	/**
-	 * ラスタの異解像度間コピーをします。(このAPIは暫定実装です。)
+	 * ラスタの異解像度間コピーをします。
 	 * @param i_input
-	 * 入力画像
+	 * 入力ラスタ
 	 * @param i_top
+	 * 入力ラスタの左上点を指定します。
 	 * @param i_left
+	 * 入力ラスタの左上点を指定します。
 	 * @param i_skip
+	 * skip値。1なら等倍、2なら1/2倍、3なら1/3倍の偏重の画像を出力します。
 	 * @param o_output
 	 * 出力先ラスタ。このラスタの解像度は、w=(i_input.w-i_left)/i_skip,h=(i_input.h-i_height)/i_skipを満たす必要があります。
 	 */
 	public static void copy(NyARGrayscaleRaster i_input, int i_left,int i_top,int i_skip, NyARGrayscaleRaster o_output)
 	{
-		assert (i_input.getSize().isInnerSize(i_left + o_output.getWidth() * i_skip, i_top
-				+ o_output.getHeight() * i_skip));		
+		assert (i_input.getSize().isInnerSize(i_left + o_output.getWidth() * i_skip, i_top+ o_output.getHeight() * i_skip));		
 		final int[] input = (int[]) i_input.getBuffer();
 		final int[] output = (int[]) o_output.getBuffer();
 		int pt_src, pt_dst;

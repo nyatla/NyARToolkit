@@ -216,7 +216,7 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve implements INyARRasterFilter_Rgb2Gs
 					o_output[src_ptr++] = ((in_buf[bp++] & 0xff) + (in_buf[bp++] & 0xff) + (in_buf[bp++] & 0xff)) >>2;
 				}
 				bp+=row_padding_dst;
-				src_ptr+=row_padding_dst;
+				src_ptr+=row_padding_src;
 			}
 			return;
 		}		
