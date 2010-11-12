@@ -32,10 +32,6 @@ public class NyARTracker
 	 * 内部プロパティ
 	 */
 	public LowResolutionLabelingSamplerOut _samplerout;	
-	/**
-	 * 内部プロパティ
-	 */
-	public LowResolutionLabelingSampler _sampler;
 
 
 	//環境定数
@@ -113,7 +109,7 @@ public class NyARTracker
 	 * NyARTrackerSnapshotコンストラクタのi_max_rectに設定した値を指定してください。
 	 * @throws NyARException
 	 */
-	public NyARTracker(int i_width,int i_height,int i_depth,int i_max_sample,int i_max_new,int i_max_cont,int i_max_rect) throws NyARException
+	public NyARTracker(int i_max_sample,int i_max_new,int i_max_cont,int i_max_rect) throws NyARException
 	{
 		//環境定数の設定
 		this.MAX_NUMBER_OF_NEW=i_max_new;
@@ -145,8 +141,7 @@ public class NyARTracker
 		this._targets=new NyARTargetList(this.MAX_NUMBER_OF_TARGET);
 		//samplerとsampleout
 		this._samplerout=new LowResolutionLabelingSamplerOut(i_max_sample);
-		this._sampler=new LowResolutionLabelingSampler(i_width, i_height,(int)Math.pow(2,i_depth));
-	
+		
 		
 		//ここ注意！マップの最大値は、ソースアイテムの個数よりおおきいこと！
 		this._map=new DistMap(this.MAX_NUMBER_OF_TARGET,this.MAX_NUMBER_OF_TARGET);
@@ -164,7 +159,7 @@ public class NyARTracker
 	public void progress(NyARTrackerSource i_s) throws NyARException
 	{
 		//エッジラスタをサンプリング
-		this._sampler.sampling(i_s.getEdgeRaster(),this._samplerout);
+		i_s.getSampleOut(this._samplerout);
 		
 		NyARTargetList[] targets=this._temp_targets;
 		NyARTargetList newtr=targets[NyARTargetStatus.ST_NEW];

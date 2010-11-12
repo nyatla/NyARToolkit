@@ -7,6 +7,7 @@ import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_Rg
 import jp.nyatla.nyartoolkit.core.rasterreader.NyARPerspectiveRasterReader;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSampler;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTracker;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTrackerSource;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfNyARRaster_RGB;
 
@@ -38,7 +39,7 @@ public class NyARRealitySource_Jmf extends NyARRealitySource
 	}
 	public final void getSampleOut(LowResolutionLabelingSamplerOut o_samplerout) throws NyARException
 	{
-		this._filter.doFilter(this._rgb_source,this._lrsamplerin._base_raster);
-		this._lrsamplerin.syncSource();
+		this._filter.doFilter(this._rgb_source,this._lrsamplerin.getEdgeRaster());
+		this._lrsamplerin.getSampleOut(o_samplerout);
 	}	
 }

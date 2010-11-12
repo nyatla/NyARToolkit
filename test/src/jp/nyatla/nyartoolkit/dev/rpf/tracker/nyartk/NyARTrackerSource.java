@@ -5,6 +5,8 @@ import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.rasterfilter.NyARRasterFilter_Reverse;
 import jp.nyatla.nyartoolkit.core.rasterfilter.NyARRasterFilter_Roberts;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
+import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSampler;
+import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
 
 /**
  * LowResolutionLabelingSamplerへの入力コンテナです。
@@ -13,6 +15,8 @@ import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 public class NyARTrackerSource
 {
 	private int _rob_resolution;
+
+	private LowResolutionLabelingSampler _sampler;
 	/**
 	 * 反転RobertsFilter画像のインスタンス
 	 */
@@ -47,9 +51,12 @@ public class NyARTrackerSource
 		//Robertsラスタは最も解像度の低いラスタと同じ
 		this._rbraster=new NyARGrayscaleRaster(i_width/div,i_height/div,NyARBufferType.INT1D_GRAY_8, true);
 		this._vec_reader=new NyARVectorReader_INT1D_GRAY_8(this._base_raster,this._rbraster);
+		//samplerとsampleout
+		this._sampler=new LowResolutionLabelingSampler(i_width, i_height,(int)Math.pow(2,i_depth));
+		
 	}
 	/**
-	 * GS画像をセットし、syncSourceで内部画像を更新します。
+	 * GS画像をセットします。
 	 * この関数を使ってセットした画像は、インスタンスから参照されます。
 	 * @param i_ref_source
 	 * @throws NyARException 
@@ -58,29 +65,12 @@ public class NyARTrackerSource
 	{
 		//バッファのスイッチ
 		this._base_raster.wrapBuffer(i_ref_source.getBuffer());
-		syncSource();
 	}
-	
-	/**
-	 * GS画像と他の内部画像を同期させます。
-	 * この関数は、NyARTrackerSourceへインスタンスを渡す前に、必ず一度実行してください。
-	 * 但し、wrapBufferを実行したときは不要です。
-	 * @param i_ref_source
-	 * @throws NyARException
-	 */
-	public final void syncSource() throws NyARException
-	{
-		//GS->1/(2^n)NRBF
-		//解像度を半分にしながらコピー
-		NyARGrayscaleRaster.copy(this._base_raster,0,0,this._rob_resolution,this._rb_source);
 
-		//最終解像度のエッジ検出画像を作成
-		this._rfilter.doFilter(this._rb_source,this._rbraster);
-		this._nfilter.doFilter(this._rbraster, this._rbraster);
-
-	}
 	/**
 	 * 基本GS画像に対するVector読み取り機を返します。
+	 * このインスタンスは、基本GS画像と同期していないことがあります。
+	 * 基本GS画像に変更を加えた場合は、getSampleOut,またはsyncResource関数を実行して同期してから実行してください。
 	 * @return
 	 */
 	public NyARVectorReader_INT1D_GRAY_8 getBaseVectorReader()
@@ -90,6 +80,8 @@ public class NyARTrackerSource
 
 	/**
 	 * エッジ画像を返します。
+	 * このインスタンスは、基本GS画像と同期していないことがあります。
+	 * 基本GS画像に変更を加えた場合は、getSampleOut,またはsyncResource関数を実行して同期してから実行してください。
 	 * @return
 	 */
 	public NyARGrayscaleRaster getEdgeRaster()
@@ -103,6 +95,24 @@ public class NyARTrackerSource
 	public NyARGrayscaleRaster getBaseRaster()
 	{
 		return this._base_raster;
+	}
+	public void syncResource() throws NyARException
+	{
+		//内部状態の同期
+		NyARGrayscaleRaster.copy(this._base_raster,0,0,this._rob_resolution,this._rb_source);
+		this._rfilter.doFilter(this._rb_source,this._rbraster);
+		this._nfilter.doFilter(this._rbraster, this._rbraster);
+	}
+	/**
+	 * SampleOutを計算して返します。
+	 * この関数は、NyARTrackerが呼び出します。
+	 * @param samplerout
+	 * @throws NyARException
+	 */
+	public void getSampleOut(LowResolutionLabelingSamplerOut samplerout) throws NyARException
+	{
+		syncResource();
+		this._sampler.sampling(this._rbraster,samplerout);
 	}
 	
 

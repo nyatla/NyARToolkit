@@ -203,15 +203,15 @@ public class TestTerget extends Frame
 		Insets ins = this.getInsets();
 		this.setSize(1024 + ins.left + ins.right, 768 + ins.top + ins.bottom);
 		
-//	this._input_source=new ImageSource(SAMPLE_FILES);
+	this._input_source=new ImageSource(SAMPLE_FILES);
 //		this._input_source=new MoveSource();
-		this._input_source=new LiveSource();
+//		this._input_source=new LiveSource();
 		//create sampler
 		this.tracksource=new NyARTrackerSource(W, H, 2,false);
 
 		
 		//create tracker
-		this.tracker=new NyARTracker(W,H,2,100,10,1,10);
+		this.tracker=new NyARTracker(100,10,1,10);
 
 		return;
 	}
@@ -230,10 +230,9 @@ public class TestTerget extends Frame
 		try {
 			// マーカーを検出
 			Date d2 = new Date();
-			for (int i = 0; i < 1; i++) {
+			for (int i = 0; i < 1000; i++) {
 				//tracker更新
 				this._input_source.UpdateInput(this.tracksource);
-//				this.sampler.sampling(this.samplerin._rbraster,this.samplerout);
 				this.tracker.progress(this.tracksource);
 			}
 			Date d = new Date();
