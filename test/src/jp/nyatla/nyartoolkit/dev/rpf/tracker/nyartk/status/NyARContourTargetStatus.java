@@ -1,8 +1,8 @@
 package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LrlsSource;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.LrlsSource;
 import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinates;
 
 /**

@@ -1,10 +1,13 @@
-package jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel;
+package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.rasterfilter.NyARRasterFilter_Reverse;
 import jp.nyatla.nyartoolkit.core.rasterfilter.NyARRasterFilter_Roberts;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
+import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSampler;
+import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
+import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.NyARVectorReader_INT1D_GRAY_8;
 
 /**
  * LowResolutionLabelingSamplerへの入力コンテナです。
@@ -22,6 +25,9 @@ public class LrlsSource
 	public NyARGrayscaleRaster _base_raster;
 	public NyARVectorReader_INT1D_GRAY_8 _vec_reader;
 
+	LowResolutionLabelingSamplerOut samplerout;	
+	LowResolutionLabelingSampler sampler;
+	
 	private NyARGrayscaleRaster _rb_source;
 	private NyARRasterFilter_Roberts _rfilter=new NyARRasterFilter_Roberts(NyARBufferType.INT1D_GRAY_8);
 	private NyARRasterFilter_Reverse _nfilter=new NyARRasterFilter_Reverse(NyARBufferType.INT1D_GRAY_8);
@@ -49,6 +55,10 @@ public class LrlsSource
 		//Robertsラスタは最も解像度の低いラスタと同じ
 		this._rbraster=new NyARGrayscaleRaster(i_width/div,i_height/div,NyARBufferType.INT1D_GRAY_8, true);
 		this._vec_reader=new NyARVectorReader_INT1D_GRAY_8(this._base_raster,this._rb_source);
+		
+		this.samplerout=new LowResolutionLabelingSamplerOut(100);
+		this.sampler=new LowResolutionLabelingSampler(i_width, i_height,(int)Math.pow(2,2));
+
 	}
 	/**
 	 * GS画像をセットし、syncSourceで内部画像を更新します。
@@ -77,6 +87,8 @@ public class LrlsSource
 		//最終解像度のエッジ検出画像を作成
 		this._rfilter.doFilter(this._rb_source,this._rbraster);
 		this._nfilter.doFilter(this._rbraster, this._rbraster);
+		this.sampler.sampling(this._rbraster,this.samplerout);
+
 	}
 	
 

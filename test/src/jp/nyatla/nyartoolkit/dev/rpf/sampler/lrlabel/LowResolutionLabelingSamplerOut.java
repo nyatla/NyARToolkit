@@ -1,13 +1,11 @@
 package jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.stack.*;
 import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObject;
 import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObjectPool;
-import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObject.INyARManagedObjectPoolOperater;
 
 /**
  * LowResolutionLabelingSampler用の出力コンテナです。サンプリング結果を受け取ります。

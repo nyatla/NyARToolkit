@@ -185,9 +185,9 @@ class LiveSource implements InputSource,JmfCaptureListener
 
 public class TestTerget extends Frame
 {
-	LowResolutionLabelingSampler sampler;
 	LrlsSource samplerin;
-	LowResolutionLabelingSamplerOut samplerout;
+//	LowResolutionLabelingSampler sampler;
+//	LowResolutionLabelingSamplerOut samplerout;
 	
 	NyARTracker tracker;
 	
@@ -210,8 +210,8 @@ public class TestTerget extends Frame
 		this._input_source=new LiveSource();
 		//create sampler
 		this.samplerin=new LrlsSource(W, H, 2,false);
-		this.samplerout=new LowResolutionLabelingSamplerOut(100);
-		this.sampler=new LowResolutionLabelingSampler(W, H,(int)Math.pow(2,2));
+//		this.samplerout=new LowResolutionLabelingSamplerOut(100);
+//		this.sampler=new LowResolutionLabelingSampler(W, H,(int)Math.pow(2,2));
 		
 		//create tracker
 		this.tracker=new NyARTracker(10,1,10);
@@ -236,8 +236,8 @@ public class TestTerget extends Frame
 			for (int i = 0; i < 1; i++) {
 				//tracker更新
 				this._input_source.UpdateInput(this.samplerin);
-				this.sampler.sampling(this.samplerin._rbraster,this.samplerout);
-				this.tracker.progress(this.samplerin,this.samplerout);
+//				this.sampler.sampling(this.samplerin._rbraster,this.samplerout);
+				this.tracker.progress(this.samplerin);
 			}
 			Date d = new Date();
 			System.out.println(d.getTime() - d2.getTime());
@@ -370,8 +370,8 @@ public class TestTerget extends Frame
     	//サンプリング結果の表示
     	Graphics g=sink.getGraphics();
     	g.setColor(c);
-		for(int i=this.samplerout.getLength()-1;i>=0;i--){
-			LowResolutionLabelingSamplerOut.Item item=this.samplerout.getArray()[i];
+		for(int i=this.samplerin.samplerout.getLength()-1;i>=0;i--){
+			LowResolutionLabelingSamplerOut.Item item=this.samplerin.samplerout.getArray()[i];
 			g.drawRect(item.base_area.x,item.base_area.y,item.base_area.w,item.base_area.h);
 		}
     }

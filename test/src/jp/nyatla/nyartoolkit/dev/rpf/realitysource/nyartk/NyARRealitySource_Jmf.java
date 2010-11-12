@@ -6,8 +6,8 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve;
 import jp.nyatla.nyartoolkit.core.rasterreader.NyARPerspectiveRasterReader;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSampler;
-import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LrlsSource;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.LrlsSource;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfNyARRaster_RGB;
 
 public class NyARRealitySource_Jmf extends NyARRealitySource

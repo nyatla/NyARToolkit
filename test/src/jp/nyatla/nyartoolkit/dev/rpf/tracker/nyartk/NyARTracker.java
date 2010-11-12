@@ -146,7 +146,7 @@ public class NyARTracker
 	 * @param i_source
 	 * @throws NyARException
 	 */
-	public void progress(LrlsSource i_s,LowResolutionLabelingSamplerOut i_source) throws NyARException
+	public void progress(LrlsSource i_s) throws NyARException
 	{
 		NyARTargetList[] targets=this._temp_targets;
 		NyARTargetList newtr=targets[NyARTargetStatus.ST_NEW];
@@ -166,7 +166,7 @@ public class NyARTracker
 		int[] index=this._index;
 		//サンプルをターゲット毎に振り分け
 		sampleMapper(
-			i_source,
+			i_s.samplerout,
 			newtr,igtr,cotr,retw,
 			this._newsource,this._igsource,this._coordsource,this._rectsource);
 		
