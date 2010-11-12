@@ -93,10 +93,9 @@ public class LowResolutionLabelingSampler
 	 * 出力先のデータです。
 	 * @throws NyARException
 	 */
-	public void sampling(LrlsSource i_in,LowResolutionLabelingSamplerOut o_out) throws NyARException
+	public void sampling(NyARGrayscaleRaster i_in,LowResolutionLabelingSamplerOut o_out) throws NyARException
 	{
 		//ラスタを取得(Depth2=2^2解像度のデータ)
-		NyARGrayscaleRaster raster4=i_in._rbraster;
 		int th=240;
 		//クラスのパラメータ初期化
 		Main_Labeling lb=this._main_labeling;
@@ -105,9 +104,9 @@ public class LowResolutionLabelingSampler
 
 
 		//パラメータの設定
-		o_out.initializeParams(i_in);
+		o_out.initializeParams();
 		//ラべリング
 		lb.setAreaRange(10000,1);
-		lb.labeling(raster4,th);
+		lb.labeling(i_in,th);
 	}
 }

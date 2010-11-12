@@ -236,7 +236,7 @@ public class TestTerget extends Frame
 			for (int i = 0; i < 1; i++) {
 				//tracker更新
 				this._input_source.UpdateInput(this.samplerin);
-				this.sampler.sampling(this.samplerin,this.samplerout);
+				this.sampler.sampling(this.samplerin._rbraster,this.samplerout);
 				this.tracker.progress(this.samplerin,this.samplerout);
 			}
 			Date d = new Date();

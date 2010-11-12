@@ -18,11 +18,11 @@ public class LrlsSource
 	/**
 	 * 反転RobertsFilter画像のインスタンス
 	 */
-	public LrlsGsRaster _rbraster;
-	public LrlsGsRaster _base_raster;
+	public NyARGrayscaleRaster _rbraster;
+	public NyARGrayscaleRaster _base_raster;
 	public NyARVectorReader_INT1D_GRAY_8 _vec_reader;
 
-	private LrlsGsRaster _rb_source;
+	private NyARGrayscaleRaster _rb_source;
 	private NyARRasterFilter_Roberts _rfilter=new NyARRasterFilter_Roberts(NyARBufferType.INT1D_GRAY_8);
 	private NyARRasterFilter_Reverse _nfilter=new NyARRasterFilter_Reverse(NyARBufferType.INT1D_GRAY_8);
 	/**
@@ -43,11 +43,11 @@ public class LrlsSource
 		int div=(int)Math.pow(2,i_depth);
 		this._rob_resolution=div;
 		//主GSラスタ
-		this._base_raster=new LrlsGsRaster(i_width,i_height,1,i_is_alloc);
+		this._base_raster=new NyARGrayscaleRaster(i_width,i_height,NyARBufferType.INT1D_GRAY_8,i_is_alloc);
 		//Roberts変換ラスタ
-		this._rb_source=new LrlsGsRaster(i_width/div,i_height/div,div, true);
+		this._rb_source=new NyARGrayscaleRaster(i_width/div,i_height/div,NyARBufferType.INT1D_GRAY_8, true);
 		//Robertsラスタは最も解像度の低いラスタと同じ
-		this._rbraster=new LrlsGsRaster(i_width/div,i_height/div,div, true);
+		this._rbraster=new NyARGrayscaleRaster(i_width/div,i_height/div,NyARBufferType.INT1D_GRAY_8, true);
 		this._vec_reader=new NyARVectorReader_INT1D_GRAY_8(this._base_raster,this._rb_source);
 	}
 	/**

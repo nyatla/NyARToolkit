@@ -25,6 +25,7 @@
 package jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARContourPickup;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
@@ -37,7 +38,7 @@ import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinates;
 public class NyARVectorReader_INT1D_GRAY_8
 {
 	private int _rob_resolution;
-	private LrlsGsRaster _ref_base_raster;
+	private NyARGrayscaleRaster _ref_base_raster;
 
 	/**
 	 * 
@@ -46,7 +47,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 	 * @param i_ref_rob_raster
 	 * エッジ探索用のROB画像
 	 */
-	public NyARVectorReader_INT1D_GRAY_8(LrlsGsRaster i_ref_raster,LrlsGsRaster i_ref_rob_raster)
+	public NyARVectorReader_INT1D_GRAY_8(NyARGrayscaleRaster i_ref_raster,NyARGrayscaleRaster i_ref_rob_raster)
 	{
 		assert (i_ref_raster.getBufferType() == NyARBufferType.INT1D_GRAY_8);
 		this._rob_resolution=i_ref_raster.getWidth()/i_ref_rob_raster.getWidth();
@@ -176,7 +177,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 	private final NyARContourPickup _cpickup = new NyARContourPickup();
 	private final double _MARGE_ANG_TH = NyARMath.COS_DEG_8;
 
-	public boolean traceConture(LrlsGsRaster i_rob_raster, int i_th,
+	public boolean traceConture(NyARGrayscaleRaster i_rob_raster, int i_th,
 			NyARIntPoint2d i_entry, VecLinearCoordinates o_coord)
 			throws NyARException
 	{

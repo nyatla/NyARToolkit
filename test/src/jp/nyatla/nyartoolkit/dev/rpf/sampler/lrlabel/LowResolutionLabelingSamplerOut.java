@@ -90,7 +90,7 @@ public class LowResolutionLabelingSamplerOut
 	 * SamplerOutの内容を初期状態にします。
 	 * @param i_source
 	 */
-	public void initializeParams(LrlsSource i_source)
+	public void initializeParams()
 	{
 		//基準ラスタの設定
 		
