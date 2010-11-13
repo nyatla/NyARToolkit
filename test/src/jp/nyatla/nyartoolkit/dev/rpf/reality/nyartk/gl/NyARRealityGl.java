@@ -11,7 +11,7 @@ import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARReality;
  */
 public class NyARRealityGl extends NyARReality
 {
-	private NyARDoubleMatrix44 _frustum_rh;
+	private NyARDoubleMatrix44 _frustum_rh=new NyARDoubleMatrix44();
 	private double[] _gl_frustum_rh=new double[16];
 	
 	public NyARRealityGl(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target) throws NyARException
@@ -23,6 +23,10 @@ public class NyARRealityGl extends NyARReality
 		i_param.makeCameraFrustumRH(i_near, i_far,this._frustum_rh);
 		this._frustum_rh.getValueT(this._gl_frustum_rh);
 	}
+	/**
+	 * OpenGLスタイルのProjection行列の参照値を返します。
+	 * @return
+	 */
 	public double[] refGlFrastumRH()
 	{
 		return this._gl_frustum_rh;

@@ -132,18 +132,17 @@ public class NyARRealityTarget extends NyARManagedObject
 	 * @return
 	 * @throws NyARException 
 	 */
-	public boolean getPerspectiveTargetPatt(NyARRealitySource i_source,int i_sample_per_pixel,INyARRgbRaster o_raster) throws NyARException
+	public boolean getPerspectiveTargetPatt(NyARRealitySource i_source,int i_resolution,INyARRgbRaster o_raster) throws NyARException
 	{
 		assert(this._target_type==RT_UNKNOWN || this._target_type==RT_KNOWN);
 		//エッジサイズは0にする。
-		return i_source._source_perspective_reader.read4Point(
-			i_source._rgb_source,((NyARRectTargetStatus)(this._ref_tracktarget.ref_status)).vertex,0,0,i_sample_per_pixel,o_raster);
+		return i_source.getRgbPerspectivePatt(((NyARRectTargetStatus)(this._ref_tracktarget.ref_status)).vertex, i_resolution, o_raster);
 	};
 	/**
 	 * エッジサイズを考慮して、ターゲットの2次元座標を元に、i_sourceからターゲットのパターン取得します。
 	 * @param i_source
 	 * 入力元のRealityInオブジェクト。
-	 * @param i_sample_per_pixel
+	 * @param i_resolution
 	 * 1ピクセルあたりのサンプリング数。1が最も高速。2なら、1ピクセルあたり、2*2=4ピクセルをサンプリング。
 	 * @param i_edge_percent_x
 	 * X方向のエッジサイズを0-99の割合で指定します。
@@ -154,37 +153,10 @@ public class NyARRealityTarget extends NyARManagedObject
 	 * @return
 	 * @throws NyARException
 	 */
-	public boolean getPerspectiveTargetPattWithEdge(NyARRealitySource i_source,int i_sample_per_pixel,int i_edge_percent_x,int i_edge_percent_y,INyARRgbRaster o_raster) throws NyARException
+	public boolean getPerspectiveTargetPattWithEdge(NyARRealitySource i_source,int i_resolution,int i_edge_percent_x,int i_edge_percent_y,INyARRgbRaster o_raster) throws NyARException
 	{
 		assert(this._target_type==RT_UNKNOWN || this._target_type==RT_KNOWN);
-		return i_source._source_perspective_reader.read4Point(
-			i_source._rgb_source,((NyARRectTargetStatus)(this._ref_tracktarget.ref_status)).vertex,i_edge_percent_x,i_edge_percent_y,i_sample_per_pixel,o_raster);
-	}
-	/**
-	 * ターゲット座標平面上に定義した任意位置の矩形から、パターンを取得します。
-	 * マーカサイズを正しく設定しなかった場合は、任意矩形の座標が相対的にずれます。
-	 * @param i_source
-	 * @param i_x
-	 * ターゲット座標系上の左上X点。mm単位
-	 * @param i_y
-	 * ターゲット座標系上の左上Y点。mm単位
-	 * @param i_w
-	 * ターゲット座標系上の矩形幅。mm単位
-	 * @param i_h
-	 * ターゲット座標系上の矩形幅。mm単位
-	 * @param i_sample_per_pixel
-	 * 1ピクセルあたりのサンプリング数。1が最も高速。2なら、1ピクセルあたり、2*2=4ピクセルをサンプリング。
-	 * @param o_raster
-	 * @return
-	 * @throws NyARException 
-	 */
-	public boolean getPerspectivePatt(NyARRealitySource i_source,double i_x,double i_y,double i_w,double i_h,int i_sample_per_pixel,INyARRgbRaster o_raster) throws NyARException
-	{
-		assert(this._target_type==RT_KNOWN);
-		NyARDoublePoint2d[] da=this._ref_pool._wk_da4;
-		this._transform_matrix.transformParallelRect2d(i_x,i_y,i_w,i_h,this._ref_pool._ref_prj_mat,this._ref_pool._wk_da4);
-		
-		return i_source._source_perspective_reader.read4Point(i_source._rgb_source,da,0,0,i_sample_per_pixel,o_raster);
+		return i_source.getRgbPerspectivePatt(((NyARRectTargetStatus)(this._ref_tracktarget.ref_status)).vertex,i_resolution, i_edge_percent_x, i_edge_percent_y, o_raster);
 	}
 	/**
 	 * カメラの撮像点に対応する、ターゲット座標平面上の点を求めます。
@@ -257,7 +229,7 @@ NyARDoubleMatrix44 m=new NyARDoubleMatrix44();
 		{
 			//参照ターゲットのタグをクリアして、参照解除
 			this._ref_tracktarget.tag=null;
-			this._ref_tracktarget.refObject();
+			this._ref_tracktarget.releaseObject();
 		}
 		return ret;
 	}

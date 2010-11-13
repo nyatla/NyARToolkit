@@ -35,12 +35,119 @@ import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.nyidmarker.*;
 import jp.nyatla.nyartoolkit.nyidmarker.data.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.*;
+import jp.nyatla.nyartoolkit.detector.NyARCustomSingleDetectMarker;
 
 public abstract class SingleNyIdMarkerProcesser
 {
 	/**
-	 * detectMarkerのコールバック関数
+	 * Rleラ矩形Detectorのブリッジ
+	 *
 	 */
+	private class RleDetector extends NyARSquareContourDetector_Rle
+	{
+		//公開プロパティ
+		public final NyARSquare square=new NyARSquare();
+		public INyIdMarkerData marker_data;
+		public int threshold;
+
+		
+		//参照
+		private INyARRgbRaster _ref_raster;
+		//所有インスタンス
+		private INyIdMarkerData _current_data;
+		private final NyIdMarkerPickup _id_pickup = new NyIdMarkerPickup();
+		private NyARCoord2Linear _coordline;
+		private INyIdMarkerDataEncoder _encoder;
+
+		
+		private INyIdMarkerData _data_temp;
+		private INyIdMarkerData _prev_data;
+		
+		public RleDetector(NyARParam i_param,INyIdMarkerDataEncoder i_encoder) throws NyARException
+		{
+			super(i_param.getScreenSize());
+			this._coordline=new NyARCoord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
+			this._data_temp=i_encoder.createDataInstance();
+			this._current_data=i_encoder.createDataInstance();
+			this._encoder=i_encoder;
+			return;
+		}
+		private NyARIntPoint2d[] __tmp_vertex=NyARIntPoint2d.createArray(4);
+		/**
+		 * Initialize call back handler.
+		 */
+		public void init(INyARRgbRaster i_raster,INyIdMarkerData i_prev_data)
+		{
+			this.marker_data=null;
+			this._prev_data=i_prev_data;
+			this._ref_raster=i_raster;
+		}
+		private final NyIdMarkerParam _marker_param=new NyIdMarkerParam();
+		private final NyIdMarkerPattern _marker_data=new NyIdMarkerPattern();
+
+		/**
+		 * 矩形が見付かるたびに呼び出されます。
+		 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
+		 */
+		protected void onSquareDetect(NyARIntCoordinates i_coord,int[] i_vertex_index)  throws NyARException
+		{
+			//既に発見済なら終了
+			if(this.marker_data!=null){
+				return;
+			}
+			//輪郭座標から頂点リストに変換
+			NyARIntPoint2d[] vertex=this.__tmp_vertex;
+			vertex[0].x=i_coord.items[i_vertex_index[0]].x;
+			vertex[0].y=i_coord.items[i_vertex_index[0]].y;
+			vertex[1].x=i_coord.items[i_vertex_index[1]].x;
+			vertex[1].y=i_coord.items[i_vertex_index[1]].y;
+			vertex[2].x=i_coord.items[i_vertex_index[2]].x;
+			vertex[2].y=i_coord.items[i_vertex_index[2]].y;
+			vertex[3].x=i_coord.items[i_vertex_index[3]].x;
+			vertex[3].y=i_coord.items[i_vertex_index[3]].y;
+		
+			NyIdMarkerParam param=this._marker_param;
+			NyIdMarkerPattern patt_data  =this._marker_data;			
+			// 評価基準になるパターンをイメージから切り出す
+			if (!this._id_pickup.pickFromRaster(this._ref_raster,vertex, patt_data, param)){
+				return;
+			}
+			//エンコード
+			if(!this._encoder.encode(patt_data,this._data_temp)){
+				return;
+			}
+
+			//継続認識要求されている？
+			if (this._prev_data==null){
+				//継続認識要求なし
+				this._current_data.copyFrom(this._data_temp);
+			}else{
+				//継続認識要求あり
+				if(!this._prev_data.isEqual((this._data_temp))){
+					return;//認識請求のあったIDと違う。
+				}
+			}
+			//新しく認識、または継続認識中に更新があったときだけ、Square情報を更新する。
+			//ココから先はこの条件でしか実行されない。
+			NyARSquare sq=this.square;
+			//directionを考慮して、squareを更新する。
+			for(int i=0;i<4;i++){
+				int idx=(i+4 - param.direction) % 4;
+				this._coordline.coord2Line(i_vertex_index[idx],i_vertex_index[(idx+1)%4],i_coord,sq.line[i]);
+			}
+			for (int i = 0; i < 4; i++) {
+				//直線同士の交点計算
+				if(!sq.line[i].crossPos(sq.line[(i + 3) % 4],sq.sqvertex[i])){
+					throw new NyARException();//ここのエラー復帰するならダブルバッファにすればOK
+				}
+			}
+			this.threshold=param.threshold;
+			this.marker_data=this._current_data;//みつかった。
+		}	
+	}	
+	/**
+	 * detectMarkerのコールバック関数
+	 *//*
 	private class DetectSquareCB implements NyARSquareContourDetector.IDetectMarkerCallback
 	{
 		//公開プロパティ
@@ -72,7 +179,7 @@ public abstract class SingleNyIdMarkerProcesser
 		private NyARIntPoint2d[] __tmp_vertex=NyARIntPoint2d.createArray(4);
 		/**
 		 * Initialize call back handler.
-		 */
+		 *//*
 		public void init(INyARRgbRaster i_raster,INyIdMarkerData i_prev_data)
 		{
 			this.marker_data=null;
@@ -85,8 +192,8 @@ public abstract class SingleNyIdMarkerProcesser
 		/**
 		 * 矩形が見付かるたびに呼び出されます。
 		 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
-		 */
-		public void onSquareDetect(NyARSquareContourDetector i_sender,int[] i_coordx,int[] i_coordy,int i_coor_num,int[] i_vertex_index) throws NyARException
+		 *//*
+		protected void onSquareDetect(NyARIntCoordinates i_coord,int[] i_vertex_index)  throws NyARException
 		{
 			//既に発見済なら終了
 			if(this.marker_data!=null){
@@ -94,14 +201,14 @@ public abstract class SingleNyIdMarkerProcesser
 			}
 			//輪郭座標から頂点リストに変換
 			NyARIntPoint2d[] vertex=this.__tmp_vertex;
-			vertex[0].x=i_coordx[i_vertex_index[0]];
-			vertex[0].y=i_coordy[i_vertex_index[0]];
-			vertex[1].x=i_coordx[i_vertex_index[1]];
-			vertex[1].y=i_coordy[i_vertex_index[1]];
-			vertex[2].x=i_coordx[i_vertex_index[2]];
-			vertex[2].y=i_coordy[i_vertex_index[2]];
-			vertex[3].x=i_coordx[i_vertex_index[3]];
-			vertex[3].y=i_coordy[i_vertex_index[3]];
+			vertex[0].x=i_coord.items[i_vertex_index[0]].x;
+			vertex[0].y=i_coord.items[i_vertex_index[0]].y;
+			vertex[1].x=i_coord.items[i_vertex_index[1]].x;
+			vertex[1].y=i_coord.items[i_vertex_index[1]].y;
+			vertex[2].x=i_coord.items[i_vertex_index[2]].x;
+			vertex[2].y=i_coord.items[i_vertex_index[2]].y;
+			vertex[3].x=i_coord.items[i_vertex_index[3]].x;
+			vertex[3].y=i_coord.items[i_vertex_index[3]].y;
 		
 			NyIdMarkerParam param=this._marker_param;
 			NyIdMarkerPattern patt_data  =this._marker_data;			
@@ -130,18 +237,19 @@ public abstract class SingleNyIdMarkerProcesser
 			//directionを考慮して、squareを更新する。
 			for(int i=0;i<4;i++){
 				int idx=(i+4 - param.direction) % 4;
-				this._coordline.coord2Line(i_vertex_index[idx],i_vertex_index[(idx+1)%4],i_coordx,i_coordy,i_coor_num,sq.line[i]);
+				this._coordline.coord2Line(i_vertex_index[idx],i_vertex_index[(idx+1)%4],i_coord,sq.line[i]);
 			}
 			for (int i = 0; i < 4; i++) {
 				//直線同士の交点計算
-				if(!NyARLinear.crossPos(sq.line[i],sq.line[(i + 3) % 4],sq.sqvertex[i])){
+				if(!sq.line[i].crossPos(sq.line[(i + 3) % 4],sq.sqvertex[i])){
 					throw new NyARException();//ここのエラー復帰するならダブルバッファにすればOK
 				}
 			}
 			this.threshold=param.threshold;
 			this.marker_data=this._current_data;//みつかった。
 		}
-	}	
+	}*/
+	
 	/**
 	 * オーナーが自由に使えるタグ変数です。
 	 */
@@ -153,7 +261,7 @@ public abstract class SingleNyIdMarkerProcesser
 	private int _lost_delay_count = 0;
 	private int _lost_delay = 5;
 
-	private NyARSquareContourDetector_Rle _square_detect;
+	private RleDetector _square_detect;
 	protected INyARTransMat _transmat;
 	private NyARRectOffset _offset; 
 	private boolean _is_active;
@@ -161,7 +269,7 @@ public abstract class SingleNyIdMarkerProcesser
 	// [AR]検出結果の保存用
 	private NyARBinRaster _bin_raster;
 	private NyARRasterFilter_ARToolkitThreshold _tobin_filter;
-	private DetectSquareCB _callback;
+//	private DetectSquareCB _callback;
 	private INyIdMarkerData _data_current;
 
 
@@ -177,9 +285,9 @@ public abstract class SingleNyIdMarkerProcesser
 		
 		NyARIntSize scr_size = i_param.getScreenSize();
 		// 解析オブジェクトを作る
-		this._square_detect = new NyARSquareContourDetector_Rle(scr_size);
+		this._square_detect = new RleDetector(i_param,i_encoder);
 		this._transmat = new NyARTransMat(i_param);
-		this._callback=new DetectSquareCB(i_param,i_encoder);
+//		this._callback=new DetectSquareCB(i_param,i_encoder);
 
 		// ２値画像バッファを作る
 		this._bin_raster = new NyARBinRaster(scr_size.w, scr_size.h);
@@ -223,16 +331,16 @@ public abstract class SingleNyIdMarkerProcesser
 		this._tobin_filter.doFilter(i_raster, this._bin_raster);
 
 		// スクエアコードを探す(第二引数に指定したマーカ、もしくは新しいマーカを探す。)
-		this._callback.init(i_raster,this._is_active?this._data_current:null);
-		this._square_detect.detectMarkerCB(this._bin_raster, this._callback);
+		this._square_detect.init(i_raster,this._is_active?this._data_current:null);
+		this._square_detect.detectMarker(this._bin_raster);
 
 		// 認識状態を更新(マーカを発見したなら、current_dataを渡すかんじ)
-		final boolean is_id_found=updateStatus(this._callback.square,this._callback.marker_data);
+		final boolean is_id_found=updateStatus(this._square_detect.square,this._square_detect.marker_data);
 
 		//閾値フィードバック(detectExistMarkerにもあるよ)
 		if(is_id_found){
 			//マーカがあれば、マーカの周辺閾値を反映
-			this._current_threshold=(this._current_threshold+this._callback.threshold)/2;
+			this._current_threshold=(this._current_threshold+this._square_detect.threshold)/2;
 		}else{
 			//マーカがなければ、探索+DualPTailで基準輝度検索
 			int th=this._threshold_detect.analyzeRaster(i_raster);
@@ -279,7 +387,7 @@ public abstract class SingleNyIdMarkerProcesser
 				}
 			} else if(this._data_current.isEqual(i_marker_data)) {
 				//同じidの再認識
-				this._transmat.transMatContinue(i_square, this._offset, result);
+				this._transmat.transMatContinue(i_square, this._offset, result,result);
 				// OnUpdate
 				this.onUpdateHandler(i_square, result);
 				this._lost_delay_count = 0;

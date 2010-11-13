@@ -22,6 +22,10 @@ public class NyARTrackerSource_Reference extends NyARTrackerSource
 	private NyARRasterFilter_Roberts _rfilter=new NyARRasterFilter_Roberts(NyARBufferType.INT1D_GRAY_8);
 	private NyARRasterFilter_Reverse _nfilter=new NyARRasterFilter_Reverse(NyARBufferType.INT1D_GRAY_8);
 	/**
+	 * @param i_number_of_sample
+	 * サンプラが検出する最大数。
+	 *　通常100~200以上を指定します。(QVGA画像あたり、100個を基準にします。)
+	 * 数が少なすぎると、検出率が低下します。最低でも、NyARTrackerに設定するターゲット数の合計*2以上を指定してください。
 	 * @param i_width
 	 * ソース画像のサイズ
 	 * @param i_height
@@ -33,7 +37,7 @@ public class NyARTrackerSource_Reference extends NyARTrackerSource
 	 * trueの場合、バッファは内部に確保され、wrapBuffer関数が使用できなくなります。
 	 * @throws NyARException
 	 */
-	public NyARTrackerSource_Reference(int i_width,int i_height,int i_depth,boolean i_is_alloc) throws NyARException
+	public NyARTrackerSource_Reference(int i_number_of_sample,int i_width,int i_height,int i_depth,boolean i_is_alloc) throws NyARException
 	{
 		super((int)Math.pow(2,i_depth));
 		assert(i_depth>0);
@@ -47,7 +51,7 @@ public class NyARTrackerSource_Reference extends NyARTrackerSource
 		this._vec_reader=new NyARVectorReader_INT1D_GRAY_8(this._base_raster,this._rbraster);
 		//samplerとsampleout
 		this._sampler=new LowResolutionLabelingSampler(i_width, i_height,(int)Math.pow(2,i_depth));
-		
+		this._sample_out=new LowResolutionLabelingSamplerOut(i_number_of_sample);
 	}
 	/**
 	 * GS画像をセットします。
@@ -75,10 +79,11 @@ public class NyARTrackerSource_Reference extends NyARTrackerSource
 	 * @param samplerout
 	 * @throws NyARException
 	 */
-	public void getSampleOut(LowResolutionLabelingSamplerOut samplerout) throws NyARException
+	public LowResolutionLabelingSamplerOut makeSampleOut() throws NyARException
 	{
 		syncResource();
-		this._sampler.sampling(this._rbraster,samplerout);
+		this._sampler.sampling(this._rbraster,this._sample_out);
+		return this._sample_out;
 	}
 	
 

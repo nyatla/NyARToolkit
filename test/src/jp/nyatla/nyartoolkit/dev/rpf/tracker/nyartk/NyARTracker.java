@@ -28,10 +28,6 @@ public class NyARTracker
 	 * refTrackTarget関数を介してアクセスしてください。
 	 */
 	public NyARTargetList _targets;
-	/**
-	 * 内部プロパティ
-	 */
-	public LowResolutionLabelingSamplerOut _samplerout;	
 
 
 	//環境定数
@@ -93,14 +89,6 @@ public class NyARTracker
 	}
 	/**
 	 * コンストラクタです。
-	 * @param i_width
-	 * 入力するTrackerSourceの元画像サイズです。入力するTrackerSourceと一致させてください。
-	 * @param i_height
-	 * 入力するTrackerSourceの元画像サイズです。入力するTrackerSourceと一致させてください。
-	 * @param i_depth
-	 * エッジ検出画像の階層を1/(2^n)で指定します。入力するTrackerSourceと一致させてください。
-	 * @param i_max_sample
-	 * サンプラの最大検出数
 	 * @param i_max_new
 	 * NyARTrackerSnapshotコンストラクタのi_max_newに設定した値を指定してください。
 	 * @param i_max_cont
@@ -109,7 +97,7 @@ public class NyARTracker
 	 * NyARTrackerSnapshotコンストラクタのi_max_rectに設定した値を指定してください。
 	 * @throws NyARException
 	 */
-	public NyARTracker(int i_max_sample,int i_max_new,int i_max_cont,int i_max_rect) throws NyARException
+	public NyARTracker(int i_max_new,int i_max_cont,int i_max_rect) throws NyARException
 	{
 		//環境定数の設定
 		this.MAX_NUMBER_OF_NEW=i_max_new;
@@ -138,10 +126,7 @@ public class NyARTracker
 		//ターゲットプール
 		this.target_pool=new NyARTargetPool(this.MAX_NUMBER_OF_TARGET);
 		//ターゲット
-		this._targets=new NyARTargetList(this.MAX_NUMBER_OF_TARGET);
-		//samplerとsampleout
-		this._samplerout=new LowResolutionLabelingSamplerOut(i_max_sample);
-		
+		this._targets=new NyARTargetList(this.MAX_NUMBER_OF_TARGET);		
 		
 		//ここ注意！マップの最大値は、ソースアイテムの個数よりおおきいこと！
 		this._map=new DistMap(this.MAX_NUMBER_OF_TARGET,this.MAX_NUMBER_OF_TARGET);
@@ -158,8 +143,8 @@ public class NyARTracker
 	 */
 	public void progress(NyARTrackerSource i_s) throws NyARException
 	{
-		//エッジラスタをサンプリング
-		i_s.getSampleOut(this._samplerout);
+		//SampleOutを回収
+		LowResolutionLabelingSamplerOut sample_out=i_s.makeSampleOut();
 		
 		NyARTargetList[] targets=this._temp_targets;
 		NyARTargetList newtr=targets[NyARTargetStatus.ST_NEW];
@@ -179,7 +164,7 @@ public class NyARTracker
 		}		
 		int[] index=this._index;
 		//サンプルをターゲット毎に振り分け
-		sampleMapper(this._samplerout,newtr,igtr,cotr,retw,this._newsource,this._igsource,this._coordsource,this._rectsource);
+		sampleMapper(sample_out,newtr,igtr,cotr,retw,this._newsource,this._igsource,this._coordsource,this._rectsource);
 		
 		//ターゲットの更新		
 		this._map.makePairIndexes(this._igsource,igtr,index);
@@ -217,13 +202,13 @@ public class NyARTracker
 	/**
 	 * アップグレードパラメータ。NewからIgnoreへ遷移させるまでの待ち期間です。
 	 */
-	private static int UPGPARAM_NEW_TO_IGNORE_EXPIRE=50;
+	private static int UPGPARAM_NEW_TO_IGNORE_EXPIRE=10;
 	/**
 	 * アップグレードパラメータ。Ignoreを消失させるまでの待ち期間です。
 	 */
-	private static int IGNPARAM_EXPIRE_COUNT=5;
+	private static int IGNPARAM_EXPIRE_COUNT=10;
 	
-	private final static int UPGPARAM_CONTOUR_TO_RECT_EXPIRE=10;
+	private final static int UPGPARAM_CONTOUR_TO_RECT_EXPIRE=1;
 	
 	
 	/**

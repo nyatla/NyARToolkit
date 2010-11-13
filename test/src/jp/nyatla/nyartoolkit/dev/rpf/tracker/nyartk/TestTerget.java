@@ -119,14 +119,14 @@ class MoveSource implements InputSource
 
 class LiveSource implements InputSource,JmfCaptureListener
 {
-	public LiveSource() throws NyARException
+	public LiveSource(int W,int H) throws NyARException
 	{
 		//キャプチャの準備
 		JmfCaptureDeviceList devlist=new JmfCaptureDeviceList();
 		this._capture=devlist.getDevice(0);
 		//JmfNyARRaster_RGBはYUVよりもRGBで高速に動作します。
-		if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB,320, 240,30f)){
-			if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_YUV,320, 240,30f)){
+		if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB,W, H,30f)){
+			if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_YUV,W,H,30f)){
 				throw new NyARException("キャプチャフォーマットが見つかりません");
 			}		
 		}
@@ -134,7 +134,7 @@ class LiveSource implements InputSource,JmfCaptureListener
 		this._raster = new JmfNyARRaster_RGB(this._capture.getCaptureFormat());
 		this._filter	= new NyARRasterFilter_Rgb2Gs_RgbAve(_raster.getBufferType());
 		this._capture.start();
-		
+		_bi=new NyARGrayscaleRaster(W, H);
 		return;
 		
 	}
@@ -147,7 +147,7 @@ class LiveSource implements InputSource,JmfCaptureListener
 	}
 	private JmfCaptureDevice _capture;
 	private JmfNyARRaster_RGB _raster;
-	private NyARGrayscaleRaster _bi=new NyARGrayscaleRaster(320,240);
+	private NyARGrayscaleRaster _bi;
 	private NyARRasterFilter_Rgb2Gs_RgbAve _filter;
 	
 	public void onUpdateBuffer(javax.media.Buffer i_buffer)
@@ -203,15 +203,15 @@ public class TestTerget extends Frame
 		Insets ins = this.getInsets();
 		this.setSize(1024 + ins.left + ins.right, 768 + ins.top + ins.bottom);
 		
-	this._input_source=new ImageSource(SAMPLE_FILES);
+//	this._input_source=new ImageSource(SAMPLE_FILES);
 //		this._input_source=new MoveSource();
-//		this._input_source=new LiveSource();
+		this._input_source=new LiveSource(W,H);
 		//create sampler
-		this.tracksource=new NyARTrackerSource_Reference(W, H, 2,false);
-
+		this.tracksource=new NyARTrackerSource_Reference(100,W, H, 1,false);
+		_tmp_bf=new BufferedImage(W, H,BufferedImage.TYPE_INT_RGB);
 		
 		//create tracker
-		this.tracker=new NyARTracker(100,10,1,10);
+		this.tracker=new NyARTracker(10,1,10);
 
 		return;
 	}
@@ -230,7 +230,7 @@ public class TestTerget extends Frame
 		try {
 			// マーカーを検出
 			Date d2 = new Date();
-			for (int i = 0; i < 1000; i++) {
+			for (int i = 0; i < 1; i++) {
 				//tracker更新
 				this._input_source.UpdateInput(this.tracksource);
 				this.tracker.progress(this.tracksource);
@@ -245,7 +245,7 @@ public class TestTerget extends Frame
 			e.printStackTrace();
 		}
     }
-    BufferedImage _tmp_bf=new BufferedImage(320,240,BufferedImage.TYPE_INT_RGB);
+    BufferedImage _tmp_bf;
     private void draw(Graphics ig) throws NyARException
     {
     	//ウインドウの情報
@@ -274,7 +274,7 @@ public class TestTerget extends Frame
     	}
     	//表示
     	ig.drawImage(bmp,ins.left,ins.top,null);
-    	drawImage(ig,ins.left+320,ins.top,this.tracksource.getEdgeRaster());
+    	drawImage(ig,ins.left+640,ins.top,this.tracksource.getEdgeRaster());
     }
     private void drawImage(Graphics g,int x,int y,NyARGrayscaleRaster r) throws NyARException
     {

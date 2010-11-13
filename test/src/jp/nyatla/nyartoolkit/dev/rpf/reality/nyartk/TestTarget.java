@@ -2,19 +2,9 @@ package jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk;
 
 import java.awt.*;
 import java.awt.color.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.*;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.ComponentSampleModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.DataBufferInt;
-import java.awt.image.DirectColorModel;
-import java.awt.image.PackedColorModel;
-import java.awt.image.Raster;
-import java.awt.image.SampleModel;
-import java.awt.image.SinglePixelPackedSampleModel;
-import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -34,6 +24,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource;
 import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource_JavaImage;
+import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource_Jmf;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.*;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTracker;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARContourTargetStatus;
@@ -57,7 +48,7 @@ class ImageSource extends InputSource
 		BufferedImage _src_image;
 		_src_image = ImageIO.read(new File(i_filename));
 		NyARRealitySource_JavaImage ri=new NyARRealitySource_JavaImage(_src_image.getWidth(),_src_image.getHeight(),2);
-		ri.setImage(_src_image);
+	//	ri.setImage(_src_image);
 		this.reality_in=ri;
 	}
 }
@@ -78,7 +69,7 @@ class LiveSource extends InputSource implements JmfCaptureListener
 		}
 		this._capture.setOnCapture(this);
 		this._capture.start();
-		this.reality_in=new NyARReality_JmfSource(320, 240,this._capture.getCaptureFormat());
+		this.reality_in=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),1,100);
 		return;
 		
 	}
@@ -88,7 +79,7 @@ class LiveSource extends InputSource implements JmfCaptureListener
 		try {
 			//キャプチャしたバッファをラスタにセット
 			synchronized(this){
-				((NyARReality_JmfSource)(this.reality_in)).setImage(i_buffer);
+				((NyARRealitySource_Jmf)(this.reality_in)).setImage(i_buffer);
 			}
 			//キャプチャしたイメージを表示用に加工
 		}catch(Exception e)
@@ -126,9 +117,9 @@ public class TestTarget extends Frame implements MouseListener
 		System.out.println(x+":"+y);
 		synchronized(this._input_source.reality_in)
 		{
-			for(int i=this._reality.target.getLength()-1;i>=0;i--)
+			for(int i=this._reality.refTargetList().getLength()-1;i>=0;i--)
 			{
-				NyARRealityTarget rt=this._reality.target.getItem(i);
+				NyARRealityTarget rt=this._reality.refTargetList().getItem(i);
 				if(rt._target_type!=NyARRealityTarget.RT_UNKNOWN && rt._target_type!=NyARRealityTarget.RT_KNOWN){
 					continue;
 				}
@@ -137,7 +128,12 @@ public class TestTarget extends Frame implements MouseListener
 					if(e.getButton()==MouseEvent.BUTTON1){
 						//左ボタンはUNKNOWN→KNOWN
 						if(rt._target_type==NyARRealityTarget.RT_UNKNOWN){
-							this._reality.changeTargetToKnown(rt,0,40);
+							try {
+								this._reality.changeTargetToKnown(rt,0,40);
+							} catch (NyARException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
 							break;
 						}
 					}else if(e.getButton()==MouseEvent.BUTTON3){
@@ -184,9 +180,7 @@ public class TestTarget extends Frame implements MouseListener
 		this._param=new NyARParam();
 		this._param.loadARParamFromFile(PARAM_FILE);
 		this._param.changeScreenSize(W,H);
-		this._reality=new NyARReality(320,240,2,this._param.getPerspectiveProjectionMatrix(),10,10);
-//		this._reality_snapshot=new NyARRealitySnapshot(10,10);
-//		this._input_source=new LiveSource();
+		this._reality=new NyARReality(this._param.getPerspectiveProjectionMatrix(),10,10);
 		this._input_source=new ImageSource(SAMPLE_FILES);
 		addMouseListener(this);
 
@@ -222,7 +216,7 @@ public class TestTarget extends Frame implements MouseListener
     	//ワーク画面
     	BufferedImage bmp=this._tmp_bf;
     	Graphics g=bmp.getGraphics();
-    	NyARRasterImageIO.copy(this._input_source.reality_in._rgb_source,bmp);
+    	NyARRasterImageIO.copy(this._input_source.reality_in.refRgbSource(),bmp);
     	
     	//Ignore,Coord,New
 
@@ -233,7 +227,7 @@ public class TestTarget extends Frame implements MouseListener
     	g.drawString("Dead:"+this._reality.getNumberOfDead(),200,220);
     	ig.drawImage(bmp,ins.left,ins.top,null);
 
-    	drawImage(ig,ins.left+320,ins.top,this._input_source.reality_in.lrsamplerin._rbraster);
+    	drawImage(ig,ins.left+320,ins.top,this._input_source.reality_in.refLastTrackSource().getEdgeRaster());
     	//
 
     }

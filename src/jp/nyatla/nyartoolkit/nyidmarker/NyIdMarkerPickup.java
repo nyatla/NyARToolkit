@@ -43,7 +43,8 @@ import jp.nyatla.nyartoolkit.core.utils.*;
  */
 final class PerspectivePixelReader
 {
-	private NyARPerspectiveParamGenerator _param_gen=new NyARPerspectiveParamGenerator_O1(1,1,100,100);
+	private static int READ_RESOLUTION=100;
+	private NyARPerspectiveParamGenerator _param_gen=new NyARPerspectiveParamGenerator_O1(1,1);
 	private double[] _cparam=new double[8];
 
 
@@ -54,11 +55,11 @@ final class PerspectivePixelReader
 
 	public boolean setSourceSquare(NyARIntPoint2d[] i_vertex)throws NyARException
 	{
-		return this._param_gen.getParam(i_vertex, this._cparam);
+		return this._param_gen.getParam(READ_RESOLUTION,READ_RESOLUTION,i_vertex, this._cparam);
 	}
 	public boolean setSourceSquare(NyARDoublePoint2d[] i_vertex)throws NyARException
 	{
-		return this._param_gen.getParam(i_vertex, this._cparam);
+		return this._param_gen.getParam(READ_RESOLUTION,READ_RESOLUTION,i_vertex, this._cparam);
 	}
 	/**
 	 * 矩形からピクセルを切り出します
@@ -758,7 +759,7 @@ final class PerspectivePixelReader
 	}
 	public boolean setSquare(NyARIntPoint2d[] i_vertex) throws NyARException
 	{
-		if (!this._param_gen.getParam(i_vertex,this._cparam)) {
+		if (!this._param_gen.getParam(READ_RESOLUTION,READ_RESOLUTION,i_vertex,this._cparam)) {
 			return false;
 		}
 		return true;

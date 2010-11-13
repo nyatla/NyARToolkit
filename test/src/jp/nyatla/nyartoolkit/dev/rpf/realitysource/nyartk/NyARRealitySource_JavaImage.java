@@ -4,14 +4,15 @@ import java.awt.image.BufferedImage;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTrackerSource;
 import jp.nyatla.nyartoolkit.utils.j2se.NyARBufferedImageRaster;
 
 public class NyARRealitySource_JavaImage extends NyARRealitySource
 {
 	public NyARRealitySource_JavaImage(int i_width,int i_height,int i_depth) throws NyARException
 	{
-		super(i_width,i_height,i_depth);
 		this._rgb_source=new NyARBufferedImageRaster(i_width,i_height,NyARBufferType.BYTE1D_X8R8G8B8_32);
+		this._source_perspective_reader=new 
 		return;
 	}
 	public NyARRealitySource_JavaImage(BufferedImage i_bmp,int i_depth) throws NyARException
@@ -30,5 +31,10 @@ public class NyARRealitySource_JavaImage extends NyARRealitySource
 	public final boolean isReady()
 	{
 		return true;
+	}
+	@Override
+	public NyARTrackerSource makeTrackSource() throws NyARException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

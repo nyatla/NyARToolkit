@@ -38,7 +38,7 @@ public class NyARTargetList extends NyARPointerStack<NyARTarget>
 		}
 		//許容距離誤差の2乗を計算(対角線の20%以内)
 		//(Math.sqrt((i_item.area.w*i_item.area.w+i_item.area.h*i_item.area.h))/5)^2
-		if(min_d<(2*(i_item.base_area_sq_diagonal)/25)){
+		if(min_d<(2*(i_item.base_area_sq_diagonal)/9)){
 			return ret;
 		}
 		return -1;

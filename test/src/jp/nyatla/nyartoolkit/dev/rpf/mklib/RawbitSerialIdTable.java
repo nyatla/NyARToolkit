@@ -178,7 +178,7 @@ public class RawbitSerialIdTable
 	public boolean selectTarget(NyARRealityTarget i_target,NyARRealitySource i_rtsorce,SelectResult o_result) throws NyARException
 	{
 		NyARDoublePoint2d[] vx=((NyARRectTargetStatus)(i_target._ref_tracktarget.ref_status)).vertex;
-		if(!this._id_pickup.pickFromRaster(i_rtsorce._rgb_source,vx,this._temp_nyid_info,this._temp_nyid_param))
+		if(!this._id_pickup.pickFromRaster(i_rtsorce.refRgbSource(),vx,this._temp_nyid_info,this._temp_nyid_param))
 		{
 			return false;
 		}

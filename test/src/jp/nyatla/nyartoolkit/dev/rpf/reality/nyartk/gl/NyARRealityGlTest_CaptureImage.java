@@ -64,7 +64,7 @@ public class NyARRealityGlTest_CaptureImage implements GLEventListener, JmfCaptu
 		//Realityの構築
 		i_param.changeScreenSize(SCREEN_X, SCREEN_Y);	
 		//キャプチャ画像と互換性のあるRealitySourceを構築
-		this._src=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),1);
+		this._src=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),2,100);
 		//OpenGL互換のRealityを構築
 		this._reality=new NyARRealityGl(i_param,0.1,100,3,3);
 		//マーカライブラリ(NyId)の構築
@@ -92,6 +92,7 @@ public class NyARRealityGlTest_CaptureImage implements GLEventListener, JmfCaptu
 	public void init(GLAutoDrawable drawable)
 	{
 		this._gl = drawable.getGL();
+		this._glu=new GLU();
 		this._gl.glEnable(GL.GL_DEPTH_TEST);
 		this._gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		// NyARToolkitの準備
@@ -134,7 +135,7 @@ public class NyARRealityGlTest_CaptureImage implements GLEventListener, JmfCaptu
 		try{
 			synchronized(this._sync_object){
 				
-				NyARGLUtil.drawBackGround(this._glu,this._src._rgb_source, 1.0);			
+				NyARGLUtil.drawBackGround(this._glu,this._src.refRgbSource(), 1.0);			
 				// Projection transformation.
 				this._gl.glMatrixMode(GL.GL_PROJECTION);
 				this._gl.glLoadMatrixd(this._reality.refGlFrastumRH(), 0);
@@ -183,6 +184,8 @@ public class NyARRealityGlTest_CaptureImage implements GLEventListener, JmfCaptu
 				if(t==null){
 					return;
 				}
+//				this._reality.changeTargetToKnown(t,1,80);
+
 				//ターゲットに一致するデータを検索
 				RawbitSerialIdTable.SelectResult r=new RawbitSerialIdTable.SelectResult();
 				if(this._mklib.selectTarget(t,this._src,r)){

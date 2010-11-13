@@ -82,9 +82,7 @@ public class NyARCoord2Linear
 	 * 輪郭点集合からay+bx+c=0の直線式を計算します。
 	 * @param i_st
 	 * @param i_ed
-	 * @param i_xcoord
-	 * @param i_ycoord
-	 * @param i_cood_num
+	 * @param i_coord
 	 * @param o_line
 	 * @return
 	 * @throws NyARException

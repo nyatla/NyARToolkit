@@ -34,6 +34,7 @@ import java.util.Date;
 
 import javax.media.Buffer;
 import javax.media.opengl.*;
+import javax.media.opengl.glu.GLU;
 
 import com.sun.opengl.util.*;
 import com.sun.opengl.util.j2d.*;
@@ -72,16 +73,14 @@ class TextPanel
  */
 class MarkerProcessor extends SingleNyIdMarkerProcesser
 {	
-	private NyARGLUtil _glnya;	
 	public double[] gltransmat=new double[16];
 	public int current_id=-1;
 
-	public MarkerProcessor(NyARParam i_cparam,int i_width,int i_raster_format,NyARGLUtil i_glutil) throws NyARException
+	public MarkerProcessor(NyARParam i_cparam,int i_width,int i_raster_format) throws NyARException
 	{
 		//アプリケーションフレームワークの初期化
 		super();
 		initInstance(i_cparam,new NyIdMarkerDataEncoder_RawBit(),100.0,i_raster_format);
-		this._glnya=i_glutil;
 		return;
 	}
 	/**
@@ -116,7 +115,7 @@ class MarkerProcessor extends SingleNyIdMarkerProcesser
 	protected void onUpdateHandler(NyARSquare i_square, NyARTransMatResult result)
 	{
 		try{
-			this._glnya.toCameraViewRH(result, this.gltransmat);
+			NyARGLUtil.toCameraViewRH(result, this.gltransmat);
 		}catch(Exception e){
 			e.printStackTrace();
 		}		
@@ -131,6 +130,7 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 	private JmfCaptureDevice _capture;
 
 	private GL _gl;
+	private GLU _glu;
 	private NyARGLUtil _glnya;
 	private TextPanel _panel;
 
@@ -154,7 +154,7 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 			throw new NyARException();
 		}
 		this._capture.setOnCapture(this);
-		this._cap_image = new JmfNyARRaster_RGB(i_cparam,this._capture.getCaptureFormat());	
+		this._cap_image = new JmfNyARRaster_RGB(this._capture.getCaptureFormat());	
 		
 		//OpenGLフレームの準備（OpenGLリソースの初期化、カメラの撮影開始は、initコールバック関数内で実行）
 		Frame frame = new Frame("Java simpleLite with NyARToolkit");
@@ -181,16 +181,16 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 
 
 		this._gl = drawable.getGL();
+		this._glu=new GLU();
 		this._gl.glEnable(GL.GL_DEPTH_TEST);
 
 		this._gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		//NyARToolkitの準備
 		try {
-			this._glnya = new NyARGLUtil(this._gl);
 			//カメラパラメータの計算
-			this._glnya.toCameraFrustumRH(this._ar_param,this._camera_projection);
+			NyARGLUtil.toCameraFrustumRH(this._ar_param,this._camera_projection);
 			//プロセッサの準備
-			this._processor=new MarkerProcessor(this._ar_param,100,this._cap_image.getBufferType(),this._glnya);
+			this._processor=new MarkerProcessor(this._ar_param,100,this._cap_image.getBufferType());
 			
 			//キャプチャ開始
 			this._capture.start();
@@ -225,7 +225,7 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 		// 背景を書く
 		this._gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
 		try{
-			this._glnya.drawBackGround(this._cap_image, 1.0);			
+			NyARGLUtil.drawBackGround(this._glu,this._cap_image, 1.0);			
 			synchronized(this._sync_object)
 			{
 				if(this._processor.current_id<0){

@@ -131,7 +131,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 		
 		// NyARToolkitの準備
 		this._nya = new NyARSingleDetectMarker(this._ar_param, i_ar_code, 80.0,this._cap_image.getBufferType());
-		this._nya.setContinueMode(false);// ここをtrueにすると、transMatContinueモード（History計算）になります。
+		this._nya.setContinueMode(true);// ここをtrueにすると、transMatContinueモード（History計算）になります。
 		
 		// 3Dを描画するコンポーネント
 		GLCanvas canvas = new GLCanvas();

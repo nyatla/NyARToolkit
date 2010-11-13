@@ -33,10 +33,7 @@ public class NyARReality
 	 * Knownターゲットの最大数です。
 	 */
 	private final int MAX_LIMIT_KNOWN;	
-	/**
-	 * samplerの出力値。この変数はNyARRealityからのみ使います。
-	 */
-	private LowResolutionLabelingSamplerOut _samplerout;
+
 	/**
 	 * samplerの出力値。この変数はNyARRealityからのみ使います。
 	 */
@@ -44,9 +41,6 @@ public class NyARReality
 
 	private NyARRealityTargetList target;
 
-	
-
-	
 	//種類ごとのターゲットの数
 	
 	private int _number_of_unknown;
@@ -71,13 +65,16 @@ public class NyARReality
 		int number_of_reality_target=i_max_known_target+i_max_unknown_target;
 		//演算インスタンス
 		this._transmat=new NyARTransMat(null,i_ref_prjmat);
-		this._tracker=new NyARTracker(i_max_known_target*2,number_of_reality_target*2,1,i_max_known_target);
 
 		//データインスタンス
 		this._pool=new NyARRealityTargetPool(number_of_reality_target,i_ref_prjmat);
 		this.target=new NyARRealityTargetList(number_of_reality_target);
+		//Trackerの特性値
+		this._tracker=new NyARTracker(
+			(i_max_known_target+i_max_unknown_target)*2,
+			1,
+			i_max_known_target*2);
 		//トラック数は、newがi_max_known_target+i_max_unknown_target,rectがi_max_known_targetと同じ数です。
-		this._samplerout=new LowResolutionLabelingSamplerOut(100+number_of_reality_target);
 		
 		//定数とかいろいろ
 		this.MAX_LIMIT_KNOWN=i_max_known_target;
@@ -112,10 +109,8 @@ public class NyARReality
 	 */
 	public void progress(NyARRealitySource i_in) throws NyARException
 	{
-		//sampler進行
-		i_in.getSampleOut(this._samplerout);
 		//tracker進行
-		this._tracker.progress(i_in.refTrackerSource());
+		this._tracker.progress(i_in.makeTrackSource());
 		
 		//トラックしてないrectターゲット1個探してunknownターゲットに入力
 		NyARTarget tt=findEmptyTagItem(this._tracker._targets);
@@ -169,6 +164,7 @@ public class NyARReality
 					//矩形座標計算
 					setSquare(((NyARRectTargetStatus)(tar._ref_tracktarget.ref_status)).vertex,tar._screen_square);
 					//3d座標計算
+//					this._transmat.transMat(tar._screen_square,tar._offset,tar._transform_matrix);
 					this._transmat.transMatContinue(tar._screen_square,tar._offset,tar._transform_matrix,tar._transform_matrix);
 					continue;
 				case NyARRealityTarget.RT_UNKNOWN:
@@ -302,9 +298,11 @@ public class NyARReality
 	public final void changeTargetToDead(NyARRealityTarget i_item) throws NyARException
 	{
 		assert(i_item._target_type==NyARRealityTarget.RT_UNKNOWN || i_item._target_type==NyARRealityTarget.RT_KNOWN);
-		assert(i_item._ref_tracktarget.st_type!=NyARTargetStatus.ST_IGNORE);
-		//所有するトラックターゲットがIGNOREに設定
-		this._tracker.changeStatusToIgnore(i_item._ref_tracktarget);
+		//IG検出して遷移した場合
+		if(i_item._ref_tracktarget.st_type!=NyARTargetStatus.ST_IGNORE){
+			//所有するトラックターゲットがIGNOREに設定
+			this._tracker.changeStatusToIgnore(i_item._ref_tracktarget);
+		}
 		//数の調整
 		if(i_item._target_type==NyARRealityTarget.RT_UNKNOWN){
 			this._number_of_unknown--;
@@ -416,5 +414,5 @@ public class NyARReality
 	public NyARRealityTarget selectSingleUnknownTarget()
 	{
 		return this.target.selectSingleTargetByType(NyARRealityTarget.RT_UNKNOWN);
-	}	
+	}
 }
