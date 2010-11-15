@@ -190,7 +190,7 @@ public class NyARLinear
 	/**
 	 * i_x,i_yを通過する、i_linearの法線を計算して、格納します。
 	 */
-	public final void normalLine(NyARLinear i_linear,double i_x,double i_y)
+	public final void normalLine(double i_x,double i_y,NyARLinear i_linear)
 	{
 		double la=i_linear.a;
 		double lb=i_linear.b;
@@ -200,13 +200,13 @@ public class NyARLinear
 	}
 	/**
 	 * i_x,i_yを通るこの直線の法線と、i_linearが交わる点を返します。
-	 * @param i_linear
 	 * @param i_x
 	 * @param i_y
+	 * @param i_linear
 	 * @param o_point
 	 * @return
 	 */
-	public final boolean normalLineCrossPos(NyARLinear i_linear, double i_x,double i_y,NyARDoublePoint2d o_point)
+	public final boolean normalLineCrossPos(double i_x,double i_y,NyARLinear i_linear,NyARDoublePoint2d o_point)
 	{
 		//thisを法線に変換
 		double la=this.b;
@@ -342,8 +342,8 @@ public class NyARLinear
 		return false;
 	}
 	/**
-	 * 直線と、i_sp1とi_sp2の作る線分との二乗距離値の合計を返します。
-	 * 線分と直線の類似度を
+	 * 直線と、i_sp1とi_sp2の作る線分との二乗距離値の合計を返します。計算方法は、線分の２端点を通過する直線の法線上での、２端点と直線の距離の合計です。
+	 * 線分と直線の類似度を判定する数値になります。
 	 * @param i_sp1
 	 * @param i_sp2
 	 * @param o_point
@@ -375,5 +375,28 @@ public class NyARLinear
 
 		return sqdist+x*x+y*y;
 	}	
-	
+	/**
+	 * 最小二乗法を使用して直線を計算します。
+	 * @param i_points
+	 * @param i_number_of_data
+	 * @return
+	 */
+	public boolean leastSquares(NyARDoublePoint2d[] i_points,int i_number_of_data)
+	{
+		assert(i_number_of_data>1);
+		int i;
+		double sum_xy = 0, sum_x = 0, sum_y = 0, sum_x2 = 0;
+		for (i=0; i<i_number_of_data; i++){
+			NyARDoublePoint2d ptr=i_points[i];
+			double xw=ptr.x;
+			sum_xy += xw * ptr.y;
+			sum_x += xw;
+			sum_y += ptr.y;
+			sum_x2 += xw*xw;
+		}
+		this.b =-(i_number_of_data * sum_x2 - sum_x*sum_x);
+		this.a = (i_number_of_data * sum_xy - sum_x * sum_y);
+		this.c = (sum_x2 * sum_y - sum_xy * sum_x);
+		return true;
+	}
 }

@@ -48,7 +48,11 @@ public class NyARTarget extends NyARManagedObject
 	/**
 	 * 現在のステータスになってからのターゲットの寿命値
 	 */
-	public int status_age;
+//	public int status_age;
+	/**
+	 * 現在のステータスの最大寿命。
+	 */
+	public int status_life;
 	/**
 	 * 検知率
 	 */

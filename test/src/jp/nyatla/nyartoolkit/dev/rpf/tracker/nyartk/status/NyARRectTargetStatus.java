@@ -116,7 +116,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	{
 		//ベクトルのマージ(マージするときに、3,4象限方向のベクトルは1,2象限のベクトルに変換する。)
 		i_contour_status.vecpos.limitQuadrantTo12();
-		this._ref_my_pool._vecpos_op.margeResembleCoords(i_contour_status.vecpos);
+		this._ref_my_pool._vecpos_op.margeResembleCoordsSimpleAve(i_contour_status.vecpos);
 		if(i_contour_status.vecpos.length<4){
 			return false;
 		}
@@ -157,7 +157,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		//3,4象限方向のベクトルは1,2象限のベクトルに変換する。
 		vecpos.limitQuadrantTo12();
 		//ベクトルのマージ
-		this._ref_my_pool._vecpos_op.margeResembleCoords(vecpos);
+		this._ref_my_pool._vecpos_op.margeResembleCoordsSimpleAve(vecpos);
 		if(vecpos.length<4){
 			return false;
 		}
@@ -246,8 +246,8 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		//移動速度による手段の切り替え
 		int sq_v_ave_limit=i_prev_status.estimate_sum_sq_vertex_velocity_ave/4;
 		//速度が小さい時か、前回LineLogが成功したときはDT_LIDAILY
-		if(((sq_v_ave_limit<3) && (i_prev_status.detect_type==DT_SQDAILY)) || (i_prev_status.detect_type==DT_LIDAILY)){
-			current_detect_type=DT_LIDAILY;
+		if(((sq_v_ave_limit<10) && (i_prev_status.detect_type==DT_SQDAILY)) || (i_prev_status.detect_type==DT_LIDAILY)){
+//			current_detect_type=DT_LIDAILY;
 		}
 		
 		//前回の動作ログによる手段の切り替え
@@ -384,7 +384,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 			i_reader.traceLineWithClip(p1,p2,i_edge_size,vecpos);
 
 			//クラスタリングして、傾きの近いベクトルを探す。(限界は10度)
-			this._ref_my_pool._vecpos_op.margeResembleCoords(vecpos);
+			this._ref_my_pool._vecpos_op.margeResembleCoordsSimpleAve(vecpos);
 			//基本的には1番でかいベクトルだよね。だって、直線状に取るんだもの。
 
 			int vid=vecpos.getMaxCoordIndex();

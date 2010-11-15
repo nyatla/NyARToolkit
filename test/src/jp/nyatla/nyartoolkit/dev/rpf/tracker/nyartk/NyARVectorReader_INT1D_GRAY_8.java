@@ -105,19 +105,20 @@ public class NyARVectorReader_INT1D_GRAY_8
 	 * RECT範囲内の画素ベクトルの合計値と、ベクトルのエッジ中心を取得します。 320*240の場合、RECTの範囲は(x>=0 && x<319
 	 * x+w>=0 && x+w<319),(y>=0 && y<239 x+w>=0 && x+w<319)となります。
 	 * 
-	 * @param i_gs
 	 * @param ix
-	 *            ピクセル取得を行う位置を設定します。
+	 * ピクセル取得を行う位置を設定します。
 	 * @param iy
-	 *            ピクセル取得を行う位置を設定します。
+	 * ピクセル取得を行う位置を設定します。
 	 * @param iw
-	 *            ピクセル取得を行う範囲を設定します。
+	 * ピクセル取得を行う範囲を設定します。
 	 * @param ih
-	 *            ピクセル取得を行う範囲を設定します。
+	 * ピクセル取得を行う範囲を設定します。
 	 * @param o_posvec
-	 *            エッジ中心とベクトルを返します。
+	 * エッジ中心とベクトルを返します。
+	 * @return
+	 * ベクトルの強度を返します。強度値は、差分値の二乗の合計です。
 	 */
-	public final void getAreaVector33(int ix, int iy, int iw, int ih,NyARVecLinear2d o_posvec) {
+	public final double getAreaVector33(int ix, int iy, int iw, int ih,NyARVecLinear2d o_posvec) {
 		assert (ih >= 3 && iw >= 3);
 		assert ((ix >= 0) && (iy >= 0) && (ix + iw) <= this._ref_base_raster.getWidth() && (iy + ih) <= this._ref_base_raster.getHeight());
 		int[] buf =(int[])this._ref_base_raster.getBuffer();
@@ -168,7 +169,8 @@ public class NyARVectorReader_INT1D_GRAY_8
 			o_posvec.y = (double) sum_y / sum_wy;
 			o_posvec.dy = (double) sum_vy / sum_wy;
 		}
-		return;
+		//加重平均の分母を返却
+		return sum_wx+sum_wy;
 	}
 
 
@@ -177,7 +179,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 	 */
 	private NyARIntCoordinates _coord_buf;
 	private final NyARContourPickup _cpickup = new NyARContourPickup();
-	private final double _MARGE_ANG_TH = NyARMath.COS_DEG_8;
+	protected final double _MARGE_ANG_TH = NyARMath.COS_DEG_8;
 
 	public boolean traceConture(int i_th,
 			NyARIntPoint2d i_entry, VecLinearCoordinates o_coord)
@@ -292,16 +294,14 @@ public class NyARVectorReader_INT1D_GRAY_8
 	private VecLinearCoordinates.NyARVecLinearPoint[] _tmp_cd = VecLinearCoordinates.NyARVecLinearPoint.createArray(3);
 
 	/**
-	 * 輪郭点の画像ベクトルを取得します。
-	 * 
+	 * 輪郭をベクトル化します。アルゴリズムは、以下の通りです。
+	 * 1.輪郭座標(n)の画素周辺の画素ベクトルを取得。
+	 * 2.輪郭座標(n+1)周辺の画素ベクトルと比較。
+	 * 3.差分が一定以下なら、座標と強度を保存
+	 * 4.画素ベクトルの和を返却。
 	 * @param i_coord
-	 *            輪郭点の配列
-	 * @param i_coordlen
-	 *            輪郭点配列の長さ
 	 * @param i_pos_mag
-	 *            座標系の倍率です。
 	 * @param i_cell_size
-	 *            ベクトル解析を行う正方形のカーネルサイズです。3以上を指定してください。
 	 * @param o_coord
 	 * @return
 	 */
@@ -322,23 +322,47 @@ public class NyARVectorReader_INT1D_GRAY_8
 		int number_of_data = 1;
 		int sum = 1;
 		// 0個目のベクトル
-		this.getAreaVector33(coord[0].x * i_pos_mag, coord[0].y * i_pos_mag,
-				i_cell_size, i_cell_size, current_vec_ptr);
+		this.getAreaVector33(coord[0].x * i_pos_mag, coord[0].y * i_pos_mag,i_cell_size, i_cell_size, current_vec_ptr);
 		array_of_vec[0].setValue(current_vec_ptr);
 		// [2]に0番目のバックアップを取る。
 		tmp_cd[2].setValue(current_vec_ptr);
 
-		// ベクトル化1:vecposに線分と直行するベクトルを格納。隣接成分と似ている場合は、連結する。
+		//後方探索
 		int cdx = 1;
-		for (int i = 1; i < i_coordlen; i++) {
+		int coord_edge=i_coordlen;
+		tmp_ptr = array_of_vec[0];
+		for (int i = i_coordlen-1;i>0; i--){
+		// ベクトル化1:vecposに線分と直行するベクトルを格納。隣接成分と似ている場合は、連結する。
+			prev_vec_ptr = current_vec_ptr;
+			current_vec_ptr = tmp_cd[cdx % 2];
+			cdx++;
+			// ベクトル取得
+			this.getAreaVector33(coord[i].x * i_pos_mag,coord[i].y * i_pos_mag, i_cell_size, i_cell_size,current_vec_ptr);
+
+			// 類似度判定
+			if (prev_vec_ptr.getVecCos(current_vec_ptr) < _MARGE_ANG_TH)
+			{
+				//相関なし->後方探索を確定して、前方探索へ。
+				coord_edge=i;
+				break;
+			} else {
+				// 相関あり(ベクトルの統合)
+				tmp_ptr.x += current_vec_ptr.x;
+				tmp_ptr.y += current_vec_ptr.y;
+				tmp_ptr.dx += current_vec_ptr.dx;
+				tmp_ptr.dy += current_vec_ptr.dy;
+				sum++;
+			}
+		}
+		//前方探索
+		current_vec_ptr = tmp_cd[2];
+		for (int i = 1;i<coord_edge; i++){
 			prev_vec_ptr = current_vec_ptr;
 			current_vec_ptr = tmp_cd[cdx % 2];
 			cdx++;
 
 			// ベクトル取得
-			this.getAreaVector33(coord[i].x * i_pos_mag,
-					coord[i].y * i_pos_mag, i_cell_size, i_cell_size,
-					current_vec_ptr);
+			this.getAreaVector33(coord[i].x * i_pos_mag,coord[i].y * i_pos_mag, i_cell_size, i_cell_size,current_vec_ptr);
 
 			// 類似度判定
 			tmp_ptr = array_of_vec[number_of_data - 1];
@@ -366,26 +390,10 @@ public class NyARVectorReader_INT1D_GRAY_8
 				return false;
 			}
 		}
-		// ベクトル化2:最後尾と先頭の要素が似ていれば連結する。
-		// current_vec_ptrには最後のベクトルが入ってる。temp_cdには開始のベクトルが入ってる。
-		if (current_vec_ptr.getVecCos(tmp_cd[2]) < _MARGE_ANG_TH
-				|| number_of_data == 1) {
-			// 相関なし->最後尾のクローズのみ
-			tmp_ptr = array_of_vec[number_of_data - 1];
-			tmp_ptr.x /= sum;
-			tmp_ptr.y /= sum;
-		} else {
-			// 相関あり(ベクトルの統合)
-			sum++;
-			prev_vec_ptr = array_of_vec[0];
-			current_vec_ptr = array_of_vec[number_of_data - 1];
-			prev_vec_ptr.x = (prev_vec_ptr.x + current_vec_ptr.x) / sum;
-			prev_vec_ptr.y = (prev_vec_ptr.y + current_vec_ptr.y) / sum;
-			prev_vec_ptr.dx = prev_vec_ptr.dx + current_vec_ptr.dx;
-			prev_vec_ptr.dy = prev_vec_ptr.dy + current_vec_ptr.dy;
-			number_of_data--;
-		}
-		// 輪郭中心位置の保存
+		//閉じる。
+		tmp_ptr = array_of_vec[number_of_data - 1];
+		tmp_ptr.x /= sum;
+		tmp_ptr.y /= sum;
 		// vectorのsq_distを必要なだけ計算
 		double d = 0;
 		for (int i = number_of_data - 1; i >= 0; i--) {
@@ -393,8 +401,8 @@ public class NyARVectorReader_INT1D_GRAY_8
 			// ベクトルの法線を取る。
 			current_vec_ptr.normalVec(current_vec_ptr);
 			// sqdistを計算
-			current_vec_ptr.sq_dist = current_vec_ptr.dx * current_vec_ptr.dx+ current_vec_ptr.dy * current_vec_ptr.dy;
-			d += current_vec_ptr.sq_dist;
+			current_vec_ptr.scalar = current_vec_ptr.dx * current_vec_ptr.dx+ current_vec_ptr.dy * current_vec_ptr.dy;
+			d += current_vec_ptr.scalar;
 		}
 		// sq_distの合計を計算
 		o_coord.length = number_of_data;

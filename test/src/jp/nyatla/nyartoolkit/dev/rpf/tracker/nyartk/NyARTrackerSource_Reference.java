@@ -19,8 +19,7 @@ public class NyARTrackerSource_Reference extends NyARTrackerSource
 	 */
 	private LowResolutionLabelingSampler _sampler;
 	private NyARGrayscaleRaster _rb_source;
-	private NyARRasterFilter_Roberts _rfilter=new NyARRasterFilter_Roberts(NyARBufferType.INT1D_GRAY_8);
-	private NyARRasterFilter_Reverse _nfilter=new NyARRasterFilter_Reverse(NyARBufferType.INT1D_GRAY_8);
+	private NegativeSqRoberts _rfilter=new NegativeSqRoberts(NyARBufferType.INT1D_GRAY_8);
 	/**
 	 * @param i_number_of_sample
 	 * サンプラが検出する最大数。
@@ -48,7 +47,7 @@ public class NyARTrackerSource_Reference extends NyARTrackerSource
 		this._rb_source=new NyARGrayscaleRaster(i_width/div,i_height/div,NyARBufferType.INT1D_GRAY_8, true);
 		//Robertsラスタは最も解像度の低いラスタと同じ
 		this._rbraster=new NyARGrayscaleRaster(i_width/div,i_height/div,NyARBufferType.INT1D_GRAY_8, true);
-		this._vec_reader=new NyARVectorReader_INT1D_GRAY_8(this._base_raster,this._rbraster);
+		this._vec_reader=new CopyOfNyARVectorReader_INT1D_GRAY_8(this._base_raster,this._rbraster);
 		//samplerとsampleout
 		this._sampler=new LowResolutionLabelingSampler(i_width, i_height,(int)Math.pow(2,i_depth));
 		this._sample_out=new LowResolutionLabelingSamplerOut(i_number_of_sample);
@@ -70,8 +69,10 @@ public class NyARTrackerSource_Reference extends NyARTrackerSource
 	{
 		//内部状態の同期
 		NyARGrayscaleRaster.copy(this._base_raster,0,0,this._rob_resolution,this._rb_source);
+//		CopyOfNyARRasterFilter_Shapeness f=new CopyOfNyARRasterFilter_Shapeness(NyARBufferType.INT1D_GRAY_8);
+//		f.doFilter(this._rb_source, this._rbraster);
 		this._rfilter.doFilter(this._rb_source,this._rbraster);
-		this._nfilter.doFilter(this._rbraster, this._rbraster);
+//		this._nfilter.doFilter(this._rbraster, this._rbraster);
 	}
 	/**
 	 * SampleOutを計算して返します。

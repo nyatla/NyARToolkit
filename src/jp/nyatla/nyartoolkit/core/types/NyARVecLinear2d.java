@@ -143,6 +143,77 @@ public class NyARVecLinear2d
 		y = ((sb * sc - sa * lc) / w1)-i_sp2.y;
 
 		return sqdist+x*x+y*y;
-	}	
+	}
+
+	/**
+	 * i_lineの直線をセットします。x,yの値は、(i_x,i_y)を通過するi_lineの法線とi_lineの交点をセットします。
+	 * @param i_line
+	 * @param i_x
+	 * @param i_y
+	 */
+	public boolean setLinear(NyARLinear i_line,double i_x,double i_y)
+	{
+		double la=i_line.b;
+		double lb=-i_line.a;
+		double lc=-(la*i_x+lb*i_y);
+		//交点を計算
+		final double w1 = -lb * lb - la * la;
+		if (w1 == 0.0) {
+			return false;
+		}		
+		this.x=((la * lc - lb * i_line.c) / w1);
+		this.y= ((la * i_line.c +lb * lc) / w1);
+		this.dy=-lb;
+		this.dx=-la;
+		return true;
+	}
+	/**
+	 * 点群から最小二乗法で直線を計算してセットします。
+	 * 通過点x,yは、点群の中央値を通過する、算出された直線の法線との交点です。
+	 * @param i_points
+	 * @param i_number_of_data
+	 * @return
+	 */
+	public final boolean leastSquares(NyARDoublePoint2d[] i_points,int i_number_of_data)
+	{
+		int i;
+		double sum_xy = 0, sum_x = 0, sum_y = 0, sum_x2 = 0;
+		for (i=0; i<i_number_of_data; i++){
+			NyARDoublePoint2d ptr=i_points[i];
+			double xw=ptr.x;
+			sum_xy += xw * ptr.y;
+			sum_x += xw;
+			sum_y += ptr.y;
+			sum_x2 += xw*xw;
+		}
+		double la=-(i_number_of_data * sum_x2 - sum_x*sum_x);
+		double lb=-(i_number_of_data * sum_xy - sum_x * sum_y);
+		double cc=(sum_x2 * sum_y - sum_xy * sum_x);
+		double lc=-(la*sum_x+lb*sum_y)/i_number_of_data;
+		//交点を計算
+		final double w1 = -lb * lb - la * la;
+		if (w1 == 0.0) {
+			return false;
+		}		
+		this.x=((la * lc - lb * cc) / w1);
+		this.y= ((la * cc +lb * lc) / w1);
+		this.dy=-lb;
+		this.dx=-la;
+		return true;
+	}
+	/**
+	 * 正規化したベクトルを出力する{@link #leastSquares}です。
+	 * @param i_points
+	 * @param i_number_of_data
+	 * @return
+	 */
+	public boolean leastSquaresWithNormalize(NyARDoublePoint2d[] i_points,int i_number_of_data)
+	{
+		boolean ret=this.leastSquares(i_points, i_number_of_data);
+		double sq=1/Math.sqrt(this.dx*this.dx+this.dy*this.dy);
+		this.dx*=sq;
+		this.dy*=sq;
+		return ret;
+	}
 
 }

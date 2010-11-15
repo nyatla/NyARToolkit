@@ -43,7 +43,7 @@ public class LowResolutionLabelingSampler
 			//1*1(1bitPixelの5*5)以下の場合は、検出不能
 			//未実装部分:2*2(1bitPixelの8*8)以下の場合は、解像度1で再検出
 			//未実装部分:3*3,4*4(1bitPixelの12*12,16*16)以下の場合は、解像度2で再検出
-			if(w<4 || h<4){
+			if(w<10 || h<10){
 				//今のところは再検出機構なし。
 				return;
 			}
@@ -97,7 +97,7 @@ public class LowResolutionLabelingSampler
 	public void sampling(NyARGrayscaleRaster i_in,LowResolutionLabelingSamplerOut o_out) throws NyARException
 	{
 		//ラスタを取得(Depth2=2^2解像度のデータ)
-		int th=245;
+		int th=100;
 		//クラスのパラメータ初期化
 		Main_Labeling lb=this._main_labeling;
 		lb.current_output=o_out;

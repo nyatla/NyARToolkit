@@ -301,7 +301,7 @@ public class NyARReality
 		//IG検出して遷移した場合
 		if(i_item._ref_tracktarget.st_type!=NyARTargetStatus.ST_IGNORE){
 			//所有するトラックターゲットがIGNOREに設定
-			this._tracker.changeStatusToIgnore(i_item._ref_tracktarget);
+			this._tracker.changeStatusToIgnore(i_item._ref_tracktarget,50);
 		}
 		//数の調整
 		if(i_item._target_type==NyARRealityTarget.RT_UNKNOWN){

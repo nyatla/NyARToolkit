@@ -64,7 +64,7 @@ public class NyARRealityGlTest_CaptureImage implements GLEventListener, JmfCaptu
 		//Realityの構築
 		i_param.changeScreenSize(SCREEN_X, SCREEN_Y);	
 		//キャプチャ画像と互換性のあるRealitySourceを構築
-		this._src=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),2,100);
+		this._src=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),1,100);
 		//OpenGL互換のRealityを構築
 		this._reality=new NyARRealityGl(i_param,0.1,100,3,3);
 		//マーカライブラリ(NyId)の構築

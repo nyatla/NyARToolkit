@@ -33,6 +33,7 @@ import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.*;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARContourTargetStatus;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARRectTargetStatus;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARTargetStatus;
+import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinates.NyARVecLinearPoint;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDevice;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDeviceList;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
@@ -40,6 +41,140 @@ import jp.nyatla.nyartoolkit.jmf.utils.JmfNyARRaster_RGB;
 
 
 
+class IntRingBuffer
+{
+	public int max;
+	public int[] data;
+	public int ptr=0;
+	public void addData(int i_v)
+	{
+		this.data[this.ptr]=i_v;
+		this.ptr=(this.ptr+1)%this.data.length;
+	}
+}
+
+/**
+ * 出力ソース
+ * @author nyatla
+ */
+interface InputSource
+{
+	public void UpdateInput(NyARTrackerSource_Reference o_input) throws NyARException;
+}
+
+class ImageSource implements InputSource
+{
+	private NyARBufferedImageRaster _src_image;
+	NyARGrayscaleRaster gs;
+	NyARRasterFilter_Rgb2Gs_RgbAve filter;
+
+	public ImageSource(String i_filename) throws IOException, NyARException
+	{
+		this._src_image=new NyARBufferedImageRaster(ImageIO.read(new File(i_filename)));
+		this.gs=new NyARGrayscaleRaster(this._src_image.getWidth(),this._src_image.getHeight());
+		this.filter=new NyARRasterFilter_Rgb2Gs_RgbAve(this._src_image.getBufferType());
+	}
+	public void UpdateInput(NyARTrackerSource_Reference o_input) throws NyARException
+	{
+		//GS値化
+		this.filter.doFilter(this._src_image,gs);
+		//samplerへ入力
+		o_input.wrapBuffer(gs);
+		
+	}
+}
+class MoveSource implements InputSource
+{
+	private BufferedImage _src_image=new BufferedImage(320,240,BufferedImage.TYPE_INT_RGB);
+	private int sx,sy,x,y;
+	private int sx2,sy2,x2,y2;
+
+	public MoveSource()
+	{
+		sx=1;sy=1;x=10;y=10;
+		sx2=-2;sy2=1;x2=100;y2=10;
+	}
+	public void UpdateInput(NyARTrackerSource_Reference o_input) throws NyARException
+	{
+        Graphics s=_src_image.getGraphics();
+        s.setColor(Color.white);
+        s.fillRect(0,0,320,240);
+        s.setColor(Color.black);
+        //s.fillRect(x, y,50,50);
+        s.fillRect(x2, y2,50,50);
+        x+=sx;y+=sy;
+        if(x<0 || x>200){sx*=-1;}if(y<0 || y>200){sy*=-1;}
+        x2+=sx2;y2+=sy2;
+        if(x2<0 || x2>200){sx2*=-1;}if(y2<0 || y2>200){sy2*=-1;}
+        INyARRgbRaster ra =new NyARRgbRaster_RGB(320,240);
+        NyARRasterImageIO.copy(_src_image, ra);
+		//GS値化
+		NyARGrayscaleRaster gs=new NyARGrayscaleRaster(320,240);
+		NyARRasterFilter_Rgb2Gs_RgbAve filter=new NyARRasterFilter_Rgb2Gs_RgbAve(ra.getBufferType());
+		filter.doFilter(ra,gs);
+		//samplerへ入力
+		o_input.wrapBuffer(gs);
+		
+	}
+}
+
+class LiveSource implements InputSource,JmfCaptureListener
+{
+	public LiveSource(int W,int H) throws NyARException
+	{
+		//キャプチャの準備
+		JmfCaptureDeviceList devlist=new JmfCaptureDeviceList();
+		this._capture=devlist.getDevice(0);
+		//JmfNyARRaster_RGBはYUVよりもRGBで高速に動作します。
+		if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB,W, H,30f)){
+			if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_YUV,W,H,30f)){
+				throw new NyARException("キャプチャフォーマットが見つかりません");
+			}		
+		}
+		this._capture.setOnCapture(this);
+		this._raster = new JmfNyARRaster_RGB(this._capture.getCaptureFormat());
+		this._filter	= new NyARRasterFilter_Rgb2Gs_RgbAve(_raster.getBufferType());
+		this._capture.start();
+		_bi=new NyARGrayscaleRaster(W, H);
+		return;
+		
+	}
+	public void UpdateInput(NyARTrackerSource_Reference o_input) throws NyARException
+	{
+		synchronized(this._raster){
+			this._filter.doFilter(this._raster,this._bi);
+		}
+		o_input.wrapBuffer(this._bi);
+	}
+	private JmfCaptureDevice _capture;
+	private JmfNyARRaster_RGB _raster;
+	private NyARGrayscaleRaster _bi;
+	private NyARRasterFilter_Rgb2Gs_RgbAve _filter;
+	
+	public void onUpdateBuffer(javax.media.Buffer i_buffer)
+	{
+		try {
+			//キャプチャしたバッファをラスタにセット
+			synchronized(this._raster){
+				this._raster.setBuffer(i_buffer);
+			}
+			//キャプチャしたイメージを表示用に加工
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+
+	}
+
+	private void startCapture()
+	{
+		try {
+			this._capture.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+}
 
 
 
@@ -49,131 +184,8 @@ import jp.nyatla.nyartoolkit.jmf.utils.JmfNyARRaster_RGB;
  *
  */
 
-public class TestTerget extends Frame
+public class TestTerget_VectorCoord extends Frame
 {
-	/**
-	 * 出力ソース
-	 * @author nyatla
-	 */
-	interface InputSource
-	{
-		public void UpdateInput(NyARTrackerSource_Reference o_input) throws NyARException;
-	}
-
-	class ImageSource implements InputSource
-	{
-		private NyARBufferedImageRaster _src_image;
-		NyARGrayscaleRaster gs;
-		NyARRasterFilter_Rgb2Gs_RgbAve filter;
-
-		public ImageSource(String i_filename) throws IOException, NyARException
-		{
-			this._src_image=new NyARBufferedImageRaster(ImageIO.read(new File(i_filename)));
-			this.gs=new NyARGrayscaleRaster(this._src_image.getWidth(),this._src_image.getHeight());
-			this.filter=new NyARRasterFilter_Rgb2Gs_RgbAve(this._src_image.getBufferType());
-		}
-		public void UpdateInput(NyARTrackerSource_Reference o_input) throws NyARException
-		{
-			//GS値化
-			this.filter.doFilter(this._src_image,gs);
-			//samplerへ入力
-			o_input.wrapBuffer(gs);
-			
-		}
-	}
-	class MoveSource implements InputSource
-	{
-		private BufferedImage _src_image=new BufferedImage(320,240,BufferedImage.TYPE_INT_RGB);
-		private int sx,sy,x,y;
-		private int sx2,sy2,x2,y2;
-
-		public MoveSource()
-		{
-			sx=1;sy=1;x=10;y=10;
-			sx2=-2;sy2=1;x2=100;y2=10;
-		}
-		public void UpdateInput(NyARTrackerSource_Reference o_input) throws NyARException
-		{
-	        Graphics s=_src_image.getGraphics();
-	        s.setColor(Color.white);
-	        s.fillRect(0,0,320,240);
-	        s.setColor(Color.black);
-	        //s.fillRect(x, y,50,50);
-	        s.fillRect(x2, y2,50,50);
-	        x+=sx;y+=sy;
-	        if(x<0 || x>200){sx*=-1;}if(y<0 || y>200){sy*=-1;}
-	        x2+=sx2;y2+=sy2;
-	        if(x2<0 || x2>200){sx2*=-1;}if(y2<0 || y2>200){sy2*=-1;}
-	        INyARRgbRaster ra =new NyARRgbRaster_RGB(320,240);
-	        NyARRasterImageIO.copy(_src_image, ra);
-			//GS値化
-			NyARGrayscaleRaster gs=new NyARGrayscaleRaster(320,240);
-			NyARRasterFilter_Rgb2Gs_RgbAve filter=new NyARRasterFilter_Rgb2Gs_RgbAve(ra.getBufferType());
-			filter.doFilter(ra,gs);
-			//samplerへ入力
-			o_input.wrapBuffer(gs);
-			
-		}
-	}
-
-	class LiveSource implements InputSource,JmfCaptureListener
-	{
-		public LiveSource(int W,int H) throws NyARException
-		{
-			//キャプチャの準備
-			JmfCaptureDeviceList devlist=new JmfCaptureDeviceList();
-			this._capture=devlist.getDevice(0);
-			//JmfNyARRaster_RGBはYUVよりもRGBで高速に動作します。
-			if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB,W, H,30f)){
-				if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_YUV,W,H,30f)){
-					throw new NyARException("キャプチャフォーマットが見つかりません");
-				}		
-			}
-			this._capture.setOnCapture(this);
-			this._raster = new JmfNyARRaster_RGB(this._capture.getCaptureFormat());
-			this._filter	= new NyARRasterFilter_Rgb2Gs_RgbAve(_raster.getBufferType());
-			this._capture.start();
-			_bi=new NyARGrayscaleRaster(W, H);
-			return;
-			
-		}
-		public void UpdateInput(NyARTrackerSource_Reference o_input) throws NyARException
-		{
-			synchronized(this._raster){
-				this._filter.doFilter(this._raster,this._bi);
-			}
-			o_input.wrapBuffer(this._bi);
-		}
-		private JmfCaptureDevice _capture;
-		private JmfNyARRaster_RGB _raster;
-		private NyARGrayscaleRaster _bi;
-		private NyARRasterFilter_Rgb2Gs_RgbAve _filter;
-		
-		public void onUpdateBuffer(javax.media.Buffer i_buffer)
-		{
-			try {
-				//キャプチャしたバッファをラスタにセット
-				synchronized(this._raster){
-					this._raster.setBuffer(i_buffer);
-				}
-				//キャプチャしたイメージを表示用に加工
-			}catch(Exception e)
-			{
-				e.printStackTrace();
-			}
-
-		}
-
-		private void startCapture()
-		{
-			try {
-				this._capture.start();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
 	NyARTrackerSource_Reference tracksource;
 	
 	NyARTracker tracker;
@@ -186,17 +198,17 @@ public class TestTerget extends Frame
 	private int W = 320;
 	private int H = 240;
 	InputSource _input_source;
-	public TestTerget() throws NyARException, Exception
+	public TestTerget_VectorCoord() throws NyARException, Exception
 	{
 		setTitle("Reality Platform test");
 		Insets ins = this.getInsets();
 		this.setSize(1024 + ins.left + ins.right, 768 + ins.top + ins.bottom);
 		
-	this._input_source=new ImageSource(SAMPLE_FILES);
-//		this._input_source=new MoveSource();
-//		this._input_source=new LiveSource(W,H);
+//	this._input_source=new ImageSource(SAMPLE_FILES);
+//	0	this._input_source=new MoveSource();
+		this._input_source=new LiveSource(W,H);
 		//create sampler
-		this.tracksource=new NyARTrackerSource_Reference(100,W, H, 1,false);
+		this.tracksource=new NyARTrackerSource_Reference(100,W, H, 2,false);
 		_tmp_bf=new BufferedImage(W, H,BufferedImage.TYPE_INT_RGB);
 		
 		//create tracker
@@ -315,7 +327,10 @@ public class TestTerget extends Frame
 		g.drawRect(t.sample_area.x,t.sample_area.y,t.sample_area.w,t.sample_area.h);
 		NyARContourTargetStatus st=(NyARContourTargetStatus)t.ref_status;
 		for(int i2=0;i2<st.vecpos.length;i2++){
-			g.drawString(i2+":"+"-"+t.delay_tick,(int)st.vecpos.items[i2].x-1, (int)st.vecpos.items[i2].y-1);
+			NyARVecLinearPoint vp=st.vecpos.items[i2];
+			g.drawString(i2+":"+"-"+t.delay_tick,(int)vp.x-1, (int)vp.y-1);
+			double q=Math.sqrt((vp.dx*vp.dx)+(vp.dy*vp.dy));
+			g.drawLine((int)vp.x, (int)vp.y,(int)(vp.x+(vp.dx/q)*100), (int)(vp.y+(vp.dy/q)*100));
 			g.fillRect((int)st.vecpos.items[i2].x-1, (int)st.vecpos.items[i2].y-1,2,2);
 		}
     }
@@ -363,7 +378,7 @@ public class TestTerget extends Frame
 	{
 
 		try {
-			TestTerget mainwin = new TestTerget();
+			TestTerget_VectorCoord mainwin = new TestTerget_VectorCoord();
 			mainwin.setVisible(true);
 			mainwin.mainloop();
 			// mainwin.startImage();

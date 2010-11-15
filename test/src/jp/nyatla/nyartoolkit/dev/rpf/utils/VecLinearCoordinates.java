@@ -15,7 +15,7 @@ public class VecLinearCoordinates
 		/**
 		 * ベクトルの2乗値です。輪郭の強度値にもなります。
 		 */
-		public double sq_dist;
+		public double scalar;
 		public static NyARVecLinearPoint[] createArray(int i_length)
 		{
 			NyARVecLinearPoint[] r=new NyARVecLinearPoint[i_length];
@@ -86,7 +86,7 @@ public class VecLinearCoordinates
 		}
 		// sqdistでソートする(B->S)
 		for (i = 0; i < out_len_1;) {
-			if (vp[o_index[i]].sq_dist < vp[o_index[i + 1]].sq_dist) {
+			if (vp[o_index[i]].scalar < vp[o_index[i + 1]].scalar) {
 				int t = o_index[i];
 				o_index[i] = o_index[i + 1];
 				o_index[i + 1] = t;
@@ -99,7 +99,7 @@ public class VecLinearCoordinates
 		for (i = out_len; i < this.length; i++) {
 			// 配列の値と比較
 			for (int i2 = 0; i2 < out_len; i2++) {
-				if (vp[i].sq_dist > vp[o_index[i2]].sq_dist) {
+				if (vp[i].scalar > vp[o_index[i2]].scalar) {
 					// 値挿入の為のシフト
 					for (int i3 = out_len - 1; i3 > i2; i3--) {
 						o_index[i3] = o_index[i3 - 1];
@@ -124,7 +124,7 @@ public class VecLinearCoordinates
 		}
 		// sqdistでソートする(B->S)
 		for (i = 0; i < out_len_1;) {
-			if (o_index[i].sq_dist < o_index[i + 1].sq_dist) {
+			if (o_index[i].scalar < o_index[i + 1].scalar) {
 				NyARVecLinearPoint t = o_index[i];
 				o_index[i] = o_index[i + 1];
 				o_index[i + 1] = t;
@@ -137,7 +137,7 @@ public class VecLinearCoordinates
 		for (i = out_len; i < this.length; i++) {
 			// 配列の値と比較
 			for (int i2 = 0; i2 < out_len; i2++) {
-				if (vp[i].sq_dist > o_index[i2].sq_dist) {
+				if (vp[i].scalar > o_index[i2].scalar) {
 					// 値挿入の為のシフト
 					for (int i3 = out_len - 1; i3 > i2; i3--) {
 						o_index[i3] = o_index[i3 - 1];
@@ -160,10 +160,10 @@ public class VecLinearCoordinates
 	{
 		NyARVecLinearPoint[] vp = this.items;
 		int index = 0;
-		double max_dist = vp[0].sq_dist;
+		double max_dist = vp[0].scalar;
 		for (int i = this.length - 1; i > 0; i--) {
-			if (max_dist < vp[i].sq_dist) {
-				max_dist = vp[i].sq_dist;
+			if (max_dist < vp[i].scalar) {
+				max_dist = vp[i].scalar;
 				index = i;
 			}
 		}
@@ -183,12 +183,12 @@ public class VecLinearCoordinates
 		int idx=0;
 		final int len=this.length;
 		for(int i=0;i<len;i++){
-			if(this.items[i].sq_dist!=0){
+			if(this.items[i].scalar!=0){
 				idx++;
 				continue;
 			}
 			for(i=i+1;i<len;i++){
-				if(this.items[i].sq_dist!=0){
+				if(this.items[i].scalar!=0){
 					NyARVecLinearPoint temp = this.items[i];
 					this.items[i]=this.items[idx];
 					this.items[idx]=temp;
