@@ -35,8 +35,8 @@ import com.sun.opengl.util.Animator;
 public class NyARRealityGlTest_CaptureImage implements GLEventListener, JmfCaptureListener
 {
 
-	private final static int SCREEN_X = 640;
-	private final static int SCREEN_Y = 480;
+	private final static int SCREEN_X = 320;
+	private final static int SCREEN_Y = 240;
 
 	private Animator _animator;
 	private JmfCaptureDevice _capture;
@@ -66,11 +66,11 @@ public class NyARRealityGlTest_CaptureImage implements GLEventListener, JmfCaptu
 		//キャプチャ画像と互換性のあるRealitySourceを構築
 		this._src=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),i_param.getDistortionFactor(),2,100);
 		//OpenGL互換のRealityを構築
-		this._reality=new NyARRealityGl(i_param,0.1,100,3,3);
+		this._reality=new NyARRealityGl(i_param.getPerspectiveProjectionMatrix(),SCREEN_X, SCREEN_Y,0.1,100,3,3);
 		//マーカライブラリ(NyId)の構築
 		this._mklib= new RawbitSerialIdTable(10);
 		//マーカサイズテーブルの作成(とりあえず全部4cm)
-		this._mklib.addAnyItem(40);
+		this._mklib.addAnyItem(80);
 				
 		// 3Dを描画するコンポーネント
 		GLCanvas canvas = new GLCanvas();

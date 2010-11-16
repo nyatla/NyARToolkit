@@ -1,6 +1,7 @@
 package jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
@@ -63,28 +64,38 @@ public class NyARReality
 	 */
 	public NyARReality(NyARParam i_param,int i_max_known_target,int i_max_unknown_target) throws NyARException
 	{
-		int number_of_reality_target=i_max_known_target+i_max_unknown_target;
-		//演算インスタンス
-		this._transmat=new NyARTransMat(i_param);
-
-		//データインスタンス
-		this._pool=new NyARRealityTargetPool(number_of_reality_target,i_param.getPerspectiveProjectionMatrix());
-		this.target=new NyARRealityTargetList(number_of_reality_target);
-		//Trackerの特性値
-		this._tracker=new NyARTracker(
-			(i_max_known_target+i_max_unknown_target)*2,
-			1,
-			i_max_known_target*2);
-		//トラック数は、newがi_max_known_target+i_max_unknown_target,rectがi_max_known_targetと同じ数です。
-		
 		//定数とかいろいろ
 		this.MAX_LIMIT_KNOWN=i_max_known_target;
 		this.MAX_LIMIT_UNKNOWN=i_max_unknown_target;
+		this.initInstance(i_param.getDistortionFactor(),i_param.getPerspectiveProjectionMatrix());
+		return;
+	}
+	public NyARReality(NyARCameraDistortionFactor i_dist_factor,NyARPerspectiveProjectionMatrix i_prjmat,int i_max_known_target,int i_max_unknown_target) throws NyARException
+	{
+		this.MAX_LIMIT_KNOWN=i_max_known_target;
+		this.MAX_LIMIT_UNKNOWN=i_max_unknown_target;
+		this.initInstance(i_dist_factor,i_prjmat);
+	}
+	protected void initInstance(NyARCameraDistortionFactor i_dist_factor,NyARPerspectiveProjectionMatrix i_prjmat) throws NyARException
+	{
+		int number_of_reality_target=this.MAX_LIMIT_KNOWN+this.MAX_LIMIT_UNKNOWN;
+		//演算インスタンス
+		this._transmat=new NyARTransMat(i_dist_factor,i_prjmat);
+
+		//データインスタンス
+		this._pool=new NyARRealityTargetPool(number_of_reality_target,i_prjmat);
+		this.target=new NyARRealityTargetList(number_of_reality_target);
+		//Trackerの特性値
+		this._tracker=new NyARTracker(
+			(this.MAX_LIMIT_KNOWN+this.MAX_LIMIT_UNKNOWN)*2,
+			1,
+			this.MAX_LIMIT_KNOWN*2);
+		//トラック数は、newがi_max_known_target+i_max_unknown_target,rectがi_max_known_targetと同じ数です。
 
 		//初期化
 		this._number_of_dead=this._number_of_unknown=this._number_of_known=0;
 		
-		return;
+		return;		
 	}
 	/**
 	 * Unknown/Knownを維持できる条件
@@ -159,7 +170,7 @@ public class NyARReality
 				switch(tar._target_type)
 				{
 				case NyARRealityTarget.RT_DEAD:
-					//何もしたくない。
+					//何もしない
 					continue;
 				case NyARRealityTarget.RT_KNOWN:
 					//矩形座標計算
@@ -178,6 +189,7 @@ public class NyARReality
 			}
 		}
 	}
+	private NyARLinear __tmp_l=new NyARLinear();
 
 
 	/**
@@ -185,13 +197,21 @@ public class NyARReality
 	 * @param i_vx
 	 * @param i_s
 	 */
-	private final static void setSquare(NyARDoublePoint2d[] i_vx,NyARSquare i_s)
-	{
-		//点から直線を再計算
+	private final void setSquare(NyARDoublePoint2d[] i_vx,NyARSquare i_s)
+	{		
+		NyARLinear l=this.__tmp_l;
+		//線分を平滑化。（ノイズが多いソースを使う時は線分の平滑化。ほんとは使いたくない。）
 		for(int i=3;i>=0;i--){
 			i_s.sqvertex[i].setValue(i_vx[i]);
-			i_s.line[i].makeLinearWithNormalize(i_vx[i],i_vx[(i+1)%4]);
+			l.makeLinearWithNormalize(i_vx[i], i_vx[(i+1)%4]);
+			i_s.line[i].a=i_s.line[i].a*0.6+l.a*0.4;
+			i_s.line[i].b=i_s.line[i].b*0.6+l.b*0.4;
+			i_s.line[i].c=i_s.line[i].c*0.6+l.c*0.4;
 		}
+		
+		for(int i=3;i>=0;i--){
+			i_s.line[i].crossPos(i_s.line[(i+3)%4],i_s.sqvertex[i]);
+		}	
 	}
 	/**
 	 * リストから、tagがNULLのアイテムを探して返します。
@@ -278,9 +298,13 @@ public class NyARReality
 		i_item._offset.setSquare(i_marker_width);
 		
 		//directionに応じて、元矩形のrectを回転しておく。
-		((NyARRectTargetStatus)(i_item._ref_tracktarget.ref_status)).shiftByArtkDirection(i_dir);		
-		//矩形座標計算
-		setSquare(((NyARRectTargetStatus)(i_item._ref_tracktarget.ref_status)).vertex,i_item._screen_square);
+		((NyARRectTargetStatus)(i_item._ref_tracktarget.ref_status)).shiftByArtkDirection(3-i_dir);		
+		//矩形セット
+		NyARDoublePoint2d[] vx=((NyARRectTargetStatus)(i_item._ref_tracktarget.ref_status)).vertex;
+		for(int i=3;i>=0;i--){
+			i_item._screen_square.sqvertex[i].setValue(vx[i]);
+			i_item._screen_square.line[i].makeLinearWithNormalize(vx[i],vx[(i+1)%4]);
+		}
 		//3d座標計算
 		this._transmat.transMat(i_item._screen_square,i_item._offset,i_item._transform_matrix);
 		

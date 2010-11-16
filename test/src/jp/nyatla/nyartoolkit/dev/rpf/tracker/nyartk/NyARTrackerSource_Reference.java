@@ -26,6 +26,8 @@ public class NyARTrackerSource_Reference extends NyARTrackerSource
 	 * サンプラが検出する最大数。
 	 *　通常100~200以上を指定します。(QVGA画像あたり、100個を基準にします。)
 	 * 数が少なすぎると、検出率が低下します。最低でも、NyARTrackerに設定するターゲット数の合計*2以上を指定してください。
+	 * @param i_ref_raster_distortion
+	 * 歪み矯正の為のオブジェクトを指定します。歪み矯正が必要ない時は、NULLを指定します。
 	 * @param i_width
 	 * ソース画像のサイズ
 	 * @param i_height
@@ -34,7 +36,7 @@ public class NyARTrackerSource_Reference extends NyARTrackerSource
 	 * 解像度の深さ(1/(2^n))倍の画像として処理する。
 	 * @param i_is_alloc
 	 * ベースラスタのバッファを内部確保外部参照にするかのフラグです。
-	 * trueの場合、バッファは内部に確保され、wrapBuffer関数が使用できなくなります。
+	 * trueの場合、バッファは内部に確保され、{@link #wrapBuffer}関数が使用できなくなります。
 	 * @throws NyARException
 	 */
 	public NyARTrackerSource_Reference(int i_number_of_sample,NyARCameraDistortionFactor i_ref_raster_distortion,int i_width,int i_height,int i_depth,boolean i_is_alloc) throws NyARException
@@ -48,7 +50,7 @@ public class NyARTrackerSource_Reference extends NyARTrackerSource
 		this._rb_source=new NyARGrayscaleRaster(i_width/div,i_height/div,NyARBufferType.INT1D_GRAY_8, true);
 		//Robertsラスタは最も解像度の低いラスタと同じ
 		this._rbraster=new NyARGrayscaleRaster(i_width/div,i_height/div,NyARBufferType.INT1D_GRAY_8, true);
-		this._vec_reader=new NyARVectorReader_INT1D_GRAY_8(this._base_raster,i_ref_raster_distortion,this._rbraster);
+		this._vec_reader=new CopyOfNyARVectorReader_INT1D_GRAY_8(this._base_raster,i_ref_raster_distortion,this._rbraster);
 		//samplerとsampleout
 		this._sampler=new LowResolutionLabelingSampler(i_width, i_height,(int)Math.pow(2,i_depth));
 		this._sample_out=new LowResolutionLabelingSamplerOut(i_number_of_sample);
@@ -70,10 +72,7 @@ public class NyARTrackerSource_Reference extends NyARTrackerSource
 	{
 		//内部状態の同期
 		NyARGrayscaleRaster.copy(this._base_raster,0,0,this._rob_resolution,this._rb_source);
-//		CopyOfNyARRasterFilter_Shapeness f=new CopyOfNyARRasterFilter_Shapeness(NyARBufferType.INT1D_GRAY_8);
-//		f.doFilter(this._rb_source, this._rbraster);
 		this._rfilter.doFilter(this._rb_source,this._rbraster);
-//		this._nfilter.doFilter(this._rbraster, this._rbraster);
 	}
 	/**
 	 * SampleOutを計算して返します。

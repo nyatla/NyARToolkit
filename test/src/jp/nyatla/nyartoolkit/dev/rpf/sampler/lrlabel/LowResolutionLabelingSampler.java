@@ -97,7 +97,7 @@ public class LowResolutionLabelingSampler
 	public void sampling(NyARGrayscaleRaster i_in,LowResolutionLabelingSamplerOut o_out) throws NyARException
 	{
 		//ラスタを取得(Depth2=2^2解像度のデータ)
-		int th=100;
+		int th=240;
 		//クラスのパラメータ初期化
 		Main_Labeling lb=this._main_labeling;
 		lb.current_output=o_out;

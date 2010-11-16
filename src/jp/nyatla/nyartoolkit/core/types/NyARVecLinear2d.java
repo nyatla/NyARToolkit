@@ -207,7 +207,7 @@ public class NyARVecLinear2d
 	 * @param i_number_of_data
 	 * @return
 	 */
-	public boolean leastSquaresWithNormalize(NyARDoublePoint2d[] i_points,int i_number_of_data)
+	public final boolean leastSquaresWithNormalize(NyARDoublePoint2d[] i_points,int i_number_of_data)
 	{
 		boolean ret=this.leastSquares(i_points, i_number_of_data);
 		double sq=1/Math.sqrt(this.dx*this.dx+this.dy*this.dy);

@@ -36,21 +36,25 @@ import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinates;
  */
 public class CopyOfNyARVectorReader_INT1D_GRAY_8 extends NyARVectorReader_INT1D_GRAY_8
 {
+	private NyARDoublePoint2d[] _tmp_coord_pos;
 	
 	/**
 	 * 
 	 * @param i_ref_raster
 	 * 基本画像
+	 * @param i_ref_raster_distortion
+	 * 元画像のゆがみ矯正パラメータ。不要な時はnullを指定。
 	 * @param i_ref_rob_raster
 	 * エッジ探索用のROB画像
 	 */
-	public CopyOfNyARVectorReader_INT1D_GRAY_8(NyARGrayscaleRaster i_ref_raster,NyARGrayscaleRaster i_ref_rob_raster)
+	public CopyOfNyARVectorReader_INT1D_GRAY_8(NyARGrayscaleRaster i_ref_raster,NyARCameraDistortionFactor i_ref_raster_distortion,NyARGrayscaleRaster i_ref_rob_raster)
 	{
-		super(i_ref_raster,i_ref_rob_raster);
+		super(i_ref_raster,i_ref_raster_distortion,i_ref_rob_raster);
 		assert (i_ref_raster.getBufferType() == NyARBufferType.INT1D_GRAY_8);
+		//座標バッファ
+		this._tmp_coord_pos=NyARDoublePoint2d.createArray(this._coord_buf.items.length);
+
 	}
-
-
 	private VecLinearCoordinates.NyARVecLinearPoint[] _tmp_cd = VecLinearCoordinates.NyARVecLinearPoint.createArray(3);
 
 	/**
@@ -64,7 +68,7 @@ public class CopyOfNyARVectorReader_INT1D_GRAY_8 extends NyARVectorReader_INT1D_
 	 */
 	public boolean traceConture(NyARIntCoordinates i_coord, int i_pos_mag,int i_cell_size, VecLinearCoordinates o_coord)
 	{
-NyARDoublePoint2d[] pos=NyARDoublePoint2d.createArray(i_coord.items.length);
+		NyARDoublePoint2d[] pos=this._tmp_coord_pos;
 		// ベクトル化
 		int MAX_COORD = o_coord.items.length;
 		// 検出RECTは、x,yと(x+w),(y+h)の間にあるものになる。

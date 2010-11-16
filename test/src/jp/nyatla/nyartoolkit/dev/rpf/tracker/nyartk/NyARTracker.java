@@ -121,7 +121,7 @@ public class NyARTracker
 
 		//ステータスプール
 		this.newst_pool=new NyARNewTargetStatusPool(i_max_new*2);
-		this.contourst_pool=new NyARContourTargetStatusPool(i_max_rect+i_max_cont*2,160+120);
+		this.contourst_pool=new NyARContourTargetStatusPool(i_max_rect+i_max_cont*2);
 		this.rect_pool=new NyARRectTargetStatusPool(i_max_rect*2);
 		//ターゲットプール
 		this.target_pool=new NyARTargetPool(this.MAX_NUMBER_OF_TARGET);

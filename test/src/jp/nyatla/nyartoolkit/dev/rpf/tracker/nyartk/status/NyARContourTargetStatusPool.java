@@ -15,11 +15,9 @@ public final class NyARContourTargetStatusPool extends NyARManagedObjectPool<NyA
 	/**
 	 * @param i_size
 	 * スタックの最大サイズ
-	 * @param i_cood_max
-	 * 輪郭ベクトルの最大数
 	 * @throws NyARException
 	 */
-	public NyARContourTargetStatusPool(int i_size,int i_cood_max) throws NyARException
+	public NyARContourTargetStatusPool(int i_size) throws NyARException
 	{
 		super.initInstance(i_size,NyARContourTargetStatus.class);
 	}

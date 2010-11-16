@@ -17,6 +17,7 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARLabeling_Rle;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfo;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfoPtrStack;
+import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
@@ -186,17 +187,17 @@ public class TestTerget extends Frame
 	private int W = 320;
 	private int H = 240;
 	InputSource _input_source;
-	public TestTerget(NyARParam p) throws NyARException, Exception
+	public TestTerget(NyARCameraDistortionFactor p) throws NyARException, Exception
 	{
 		setTitle("Reality Platform test");
 		Insets ins = this.getInsets();
 		this.setSize(1024 + ins.left + ins.right, 768 + ins.top + ins.bottom);
 		
-	this._input_source=new ImageSource(SAMPLE_FILES);
+//	this._input_source=new ImageSource(SAMPLE_FILES);
 //		this._input_source=new MoveSource();
-//		this._input_source=new LiveSource(W,H);
+		this._input_source=new LiveSource(W,H);
 		//create sampler
-		this.tracksource=new NyARTrackerSource_Reference(100,p.getDistortionFactor(),W, H, 1,false);
+		this.tracksource=new NyARTrackerSource_Reference(100,p,W, H, 1,false);
 		_tmp_bf=new BufferedImage(W, H,BufferedImage.TYPE_INT_RGB);
 		
 		//create tracker
@@ -363,7 +364,7 @@ public class TestTerget extends Frame
 	{
 
 		try {
-			TestTerget mainwin = new TestTerget();
+			TestTerget mainwin = new TestTerget(null);
 			mainwin.setVisible(true);
 			mainwin.mainloop();
 			// mainwin.startImage();

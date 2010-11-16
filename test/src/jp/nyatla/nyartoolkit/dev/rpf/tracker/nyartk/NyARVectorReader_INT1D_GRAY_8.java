@@ -213,7 +213,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 	/**
 	 * ワーク変数
 	 */
-	private NyARIntCoordinates _coord_buf;
+	protected NyARIntCoordinates _coord_buf;
 	private final NyARContourPickup _cpickup = new NyARContourPickup();
 	protected final double _MARGE_ANG_TH = NyARMath.COS_DEG_8;
 
@@ -313,7 +313,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 		int r = base_s.w - s;
 		int b = base_s.h - s;
 
-		// 最大14点を定義して、そのうち両端の2個を除いた点を使用する。
+		// 最大24点を定義して、そのうち両端の2個を除いた点を使用する。
 		for (int i = 3; i < dist - 1; i++) {
 			int x = (int) (i * dx / dist + i_pos1.x - i_edge);
 			int y = (int) (i * dy / dist + i_pos1.y - i_edge);
