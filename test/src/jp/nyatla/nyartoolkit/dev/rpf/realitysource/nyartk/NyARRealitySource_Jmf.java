@@ -3,6 +3,7 @@ package jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk;
 import javax.media.format.VideoFormat;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve;
 import jp.nyatla.nyartoolkit.core.rasterreader.NyARPerspectiveRasterReader;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSampler;
@@ -30,12 +31,12 @@ public class NyARRealitySource_Jmf extends NyARRealitySource
 	 * サンプリングするターゲット数を指定します。大体100以上をしておけばOKです。具体的な計算式は、{@link NyARTrackerSource_Reference#NyARTrackerSource_Reference}を参考にして下さい。
 	 * @throws NyARException
 	 */
-	public NyARRealitySource_Jmf(VideoFormat i_fmt,int i_depth,int i_number_of_sample) throws NyARException
+	public NyARRealitySource_Jmf(VideoFormat i_fmt,NyARCameraDistortionFactor i_ref_raster_distortion,int i_depth,int i_number_of_sample) throws NyARException
 	{
 		this._rgb_source=new JmfNyARRaster_RGB(i_fmt);
 		this._filter=new NyARRasterFilter_Rgb2Gs_RgbAve(this._rgb_source.getBufferType());
 		this._source_perspective_reader=new NyARPerspectiveRasterReader(_rgb_source.getBufferType());
-		this._tracksource=new NyARTrackerSource_Reference(i_number_of_sample,i_fmt.getSize().width,i_fmt.getSize().height,i_depth,true);
+		this._tracksource=new NyARTrackerSource_Reference(i_number_of_sample,i_ref_raster_distortion,i_fmt.getSize().width,i_fmt.getSize().height,i_depth,true);
 		return;
 	}
 	

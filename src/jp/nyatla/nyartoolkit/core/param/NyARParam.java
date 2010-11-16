@@ -55,10 +55,18 @@ public class NyARParam
 		return this._screen_size;
 	}
 
+	/**
+	 * ARToolKit形式の透視変換行列を返します。
+	 * @return
+	 */
 	public NyARPerspectiveProjectionMatrix getPerspectiveProjectionMatrix()
 	{
 		return this._projection_matrix;
 	}
+	/**
+	 * ARToolKit形式の歪み補正パラメータを返します。
+	 * @return
+	 */
 	public NyARCameraDistortionFactor getDistortionFactor()
 	{
 		return this._dist;

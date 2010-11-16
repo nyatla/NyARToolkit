@@ -6,6 +6,7 @@ import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat;
+import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat_ARToolKit;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource;
@@ -60,14 +61,14 @@ public class NyARReality
 	 * UnKnownターゲットの最大数を指定します。
 	 * @throws NyARException
 	 */
-	public NyARReality(NyARPerspectiveProjectionMatrix i_ref_prjmat,int i_max_known_target,int i_max_unknown_target) throws NyARException
+	public NyARReality(NyARParam i_param,int i_max_known_target,int i_max_unknown_target) throws NyARException
 	{
 		int number_of_reality_target=i_max_known_target+i_max_unknown_target;
 		//演算インスタンス
-		this._transmat=new NyARTransMat(null,i_ref_prjmat);
+		this._transmat=new NyARTransMat(i_param);
 
 		//データインスタンス
-		this._pool=new NyARRealityTargetPool(number_of_reality_target,i_ref_prjmat);
+		this._pool=new NyARRealityTargetPool(number_of_reality_target,i_param.getPerspectiveProjectionMatrix());
 		this.target=new NyARRealityTargetList(number_of_reality_target);
 		//Trackerの特性値
 		this._tracker=new NyARTracker(

@@ -66,10 +66,19 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 		//作成して割り当ててください。
 		return;
 	}
+	public NyARTransMat_ARToolKit(NyARCameraDistortionFactor i_ref_distfactor,NyARPerspectiveProjectionMatrix i_ref_projmat) throws NyARException
+	{
+		initInstance(i_ref_distfactor,i_ref_projmat);
+		return;
+	}	
 	public NyARTransMat_ARToolKit(NyARParam i_param) throws NyARException
 	{
-		final NyARCameraDistortionFactor dist=i_param.getDistortionFactor();
-		final NyARPerspectiveProjectionMatrix pmat=i_param.getPerspectiveProjectionMatrix();
+		initInstance(i_param.getDistortionFactor(),i_param.getPerspectiveProjectionMatrix());
+	}
+	private void initInstance(NyARCameraDistortionFactor i_ref_distfactor,NyARPerspectiveProjectionMatrix i_ref_projmat) throws NyARException
+	{
+		final NyARCameraDistortionFactor dist=i_ref_distfactor;
+		final NyARPerspectiveProjectionMatrix pmat=i_ref_projmat;
 		this._transsolver=new NyARTransportVectorSolver_ARToolKit(pmat);
 		//互換性が重要な時は、NyARRotMatrix_ARToolKitを使うこと。
 		//理屈はNyARRotMatrix_NyARToolKitもNyARRotMatrix_ARToolKitも同じだけど、少しだけ値がずれる。
@@ -95,15 +104,21 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 		final NyARDoublePoint3d trans=this.__transMat_trans;
 		
 		//平行移動量計算機に、2D座標系をセット
-		NyARDoublePoint2d[] vertex_2d=this.__transMat_vertex_2d;
-		NyARDoublePoint3d[] vertex_3d=this.__transMat_vertex_3d;
-		this._ref_dist_factor.ideal2ObservBatch(i_square.sqvertex, vertex_2d,4);		
+		NyARDoublePoint2d[] vertex_2d;
+		if(this._ref_dist_factor!=null){
+			//歪み復元必要
+			vertex_2d=this.__transMat_vertex_2d;
+			this._ref_dist_factor.ideal2ObservBatch(i_square.sqvertex, vertex_2d,4);
+		}else{
+			//歪み復元は不要
+			vertex_2d=i_square.sqvertex;
+		}
 		this._transsolver.set2dVertex(vertex_2d,4);
-
 		//回転行列を計算
 		this._rotmatrix.initRotBySquare(i_square.line,i_square.sqvertex);
 		
 		//回転後の3D座標系から、平行移動量を計算
+		NyARDoublePoint3d[] vertex_3d=this.__transMat_vertex_3d;
 		this._rotmatrix.getPoint3dBatch(i_offset.vertex,vertex_3d,4);
 		this._transsolver.solveTransportVector(vertex_3d,trans);
 		
@@ -130,11 +145,18 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 		}
 		
 		//平行移動量計算機に、2D座標系をセット
-		NyARDoublePoint2d[] vertex_2d=this.__transMat_vertex_2d;
-		NyARDoublePoint3d[] vertex_3d=this.__transMat_vertex_3d;
-		this._ref_dist_factor.ideal2ObservBatch(i_square.sqvertex, vertex_2d,4);		
+		NyARDoublePoint2d[] vertex_2d;
+		if(this._ref_dist_factor!=null){
+			//歪み復元必要
+			vertex_2d=this.__transMat_vertex_2d;
+			this._ref_dist_factor.ideal2ObservBatch(i_square.sqvertex, vertex_2d,4);
+		}else{
+			//歪み復元は不要
+			vertex_2d=i_square.sqvertex;
+		}
 		this._transsolver.set2dVertex(vertex_2d,4);
-		
+
+		NyARDoublePoint3d[] vertex_3d=this.__transMat_vertex_3d;
 		//回転行列を計算
 		this._rotmatrix.initRotByPrevResult(i_prev_result);
 		

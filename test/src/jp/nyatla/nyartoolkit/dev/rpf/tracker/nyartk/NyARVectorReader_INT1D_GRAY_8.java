@@ -25,6 +25,7 @@
 package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARContourPickup;
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -40,21 +41,25 @@ public class NyARVectorReader_INT1D_GRAY_8
 	private int _rob_resolution;
 	private NyARGrayscaleRaster _ref_base_raster;
 	private NyARGrayscaleRaster _ref_rob_raster;
-
+	NyARCameraDistortionFactor _factor;
 	/**
 	 * 
 	 * @param i_ref_raster
 	 * 基本画像
+	 * @param i_ref_raster_distortion
+	 * 歪み解除オブジェクト(nullの場合歪み解除を省略)
 	 * @param i_ref_rob_raster
 	 * エッジ探索用のROB画像
+	 * @param 
 	 */
-	public NyARVectorReader_INT1D_GRAY_8(NyARGrayscaleRaster i_ref_raster,NyARGrayscaleRaster i_ref_rob_raster)
+	public NyARVectorReader_INT1D_GRAY_8(NyARGrayscaleRaster i_ref_raster,NyARCameraDistortionFactor i_ref_raster_distortion,NyARGrayscaleRaster i_ref_rob_raster)
 	{
 		assert (i_ref_raster.getBufferType() == NyARBufferType.INT1D_GRAY_8);
 		this._rob_resolution=i_ref_raster.getWidth()/i_ref_rob_raster.getWidth();
 		this._ref_rob_raster=i_ref_rob_raster;
 		this._ref_base_raster=i_ref_raster;
 		this._coord_buf = new NyARIntCoordinates((i_ref_raster.getWidth() + i_ref_raster.getHeight()) * 4);
+		this._factor=i_ref_raster_distortion;
 	}
 
 	/**
@@ -66,6 +71,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 	 * @param y
 	 * @param o_v
 	 */
+/*	未使用につきコメントアウト
 	public void getPixelVector4(int x, int y, NyARIntPoint2d o_v)
 	{
 		assert ((x > 0) && (y > 0) && (x) < this._ref_base_raster.getWidth() && (y) < this._ref_base_raster.getHeight());
@@ -74,17 +80,21 @@ public class NyARVectorReader_INT1D_GRAY_8
 		int idx = w * y + x;
 		o_v.x = (buf[idx + 1] - buf[idx - 1]) >> 1;
 		o_v.y = (buf[idx + w] - buf[idx - w]) >> 1;
+		//歪み補正どうすんの
 	}
-
+*/
 	/**
-	 * 画素の8近傍画素ベクトルを取得します。 取得可能な範囲は、Rasterの1ドット内側です。 -1,-2,-1 -1, 0,+1 0, y, 0 +
-	 * -2, x,+2 +1,+2,+1 -1, 0,+1
+	 * 画素の8近傍画素ベクトルを取得します。 取得可能な範囲は、Rasterの1ドット内側です。
+	 *  -1,-2,-1　　　　-1,　0,+1
+	 *   0, y,　0 +　　-2, x,+2
+	 *  +1,+2,+1 　　　　-1, 0,+1
 	 * 
 	 * @param i_raster
 	 * @param x
 	 * @param y
 	 * @param o_v
 	 */
+/*  未使用につきコメントアウト
 	public void getPixelVector8(int x, int y, NyARIntPoint2d o_v) {
 		assert ((x > 0) && (y > 0) && (x) < this._ref_base_raster.getWidth() && (y) < this._ref_base_raster.getHeight());
 		int[] buf = (int[])this._ref_base_raster.getBuffer();
@@ -99,8 +109,9 @@ public class NyARVectorReader_INT1D_GRAY_8
 		o_v.x = ((buf[idx_0 + 1] - buf[idx_0 - 1]) >> 1)
 				+ ((d - b + f - h) >> 2);
 		o_v.y = ((buf[idx_p1] - buf[idx_m1]) >> 1) + ((f - d + h - b) >> 2);
+		//歪み補正どうするの？
 	}
-
+*/
 	/**
 	 * RECT範囲内の画素ベクトルの合計値と、ベクトルのエッジ中心を取得します。 320*240の場合、RECTの範囲は(x>=0 && x<319
 	 * x+w>=0 && x+w<319),(y>=0 && y<239 x+w>=0 && x+w<319)となります。
@@ -118,7 +129,8 @@ public class NyARVectorReader_INT1D_GRAY_8
 	 * @return
 	 * ベクトルの強度を返します。強度値は、差分値の二乗の合計です。
 	 */
-	public final double getAreaVector33(int ix, int iy, int iw, int ih,NyARVecLinear2d o_posvec) {
+	public final double getAreaVector33(int ix, int iy, int iw, int ih,NyARVecLinear2d o_posvec)
+	{
 		assert (ih >= 3 && iw >= 3);
 		assert ((ix >= 0) && (iy >= 0) && (ix + iw) <= this._ref_base_raster.getWidth() && (iy + ih) <= this._ref_base_raster.getHeight());
 		int[] buf =(int[])this._ref_base_raster.getBuffer();
@@ -138,37 +150,61 @@ public class NyARVectorReader_INT1D_GRAY_8
 				int d = buf[idx_m1 + 1];
 				int h = buf[idx_p1 - 1];
 				int f = buf[idx_p1 + 1];
-				vx = ((buf[idx_0 + 1] - buf[idx_0 - 1]) >> 1)
-						+ ((d - b + f - h) >> 2);
-				vy = ((buf[idx_p1] - buf[idx_m1]) >> 1)
-						+ ((f - d + h - b) >> 2);
+				vx = ((buf[idx_0 + 1] - buf[idx_0 - 1]) >> 1)+ ((d - b + f - h) >> 2);
+				vy = ((buf[idx_p1] - buf[idx_m1]) >> 1)+ ((f - d + h - b) >> 2);
 
 				// 加重はvectorの絶対値
 				int wx = vx * vx;
 				int wy = vy * vy;
-				sum_wx += wx;
-				sum_wy += wy;
-				sum_vx += wx * vx;
-				sum_vy += wy * vy;
-				sum_x += wx * (i2 + 1 + ix);
-				sum_y += wy * (i + 1 + iy);
+				sum_wx += wx; //加重値
+				sum_wy += wy; //加重値
+				sum_vx += wx * vx; //加重*ベクトルの積
+				sum_vy += wy * vy; //加重*ベクトルの積
+				sum_x += wx * (i2 + 1);//位置
+				sum_y += wy * (i + 1); //
 			}
 		}
-		// 加重平均(posが0の場合の位置は中心)
-		if (sum_x == 0) {
-			o_posvec.x = ix + (iw >> 1);
+		//x,dx,y,dyの計算
+		double xx,yy;
+		if (sum_wx == 0) {
+			xx = ix + (iw >> 1);
 			o_posvec.dx = 0;
 		} else {
-			o_posvec.x = (double) sum_x / sum_wx;
+			xx = ix+(double) sum_x / sum_wx;
+			o_posvec.dx = (double) sum_vx / sum_wx;
+		}
+		if (sum_wy == 0) {
+			yy = iy + (ih >> 1);
+			o_posvec.dy = 0;
+		} else {
+			yy = iy+(double) sum_y / sum_wy;
+			o_posvec.dy = (double) sum_vy / sum_wy;
+		}
+		//必要なら歪みを解除
+		if(this._factor!=null){
+			this._factor.observ2Ideal(xx, yy, o_posvec);
+		}else{
+			o_posvec.x=xx;
+			o_posvec.y=yy;
+		}
+		/*
+		
+		// 加重平均(posが0の場合の位置は中心)
+		double xx,yy;
+		if (sum_x == 0) {
+			xx = ix + (iw >> 1);
+			o_posvec.dx = 0;
+		} else {
+			xx = (double) sum_x / sum_wx;
 			o_posvec.dx = (double) sum_vx / sum_wx;
 		}
 		if (sum_y == 0) {
-			o_posvec.y = iy + (ih >> 1);
+			yy = iy + (ih >> 1);
 			o_posvec.dy = 0;
 		} else {
-			o_posvec.y = (double) sum_y / sum_wy;
+			yy = (double) sum_y / sum_wy;
 			o_posvec.dy = (double) sum_vy / sum_wy;
-		}
+		}*/
 		//加重平均の分母を返却
 		return sum_wx+sum_wy;
 	}

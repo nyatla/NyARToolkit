@@ -24,6 +24,7 @@
  */
 package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
 
+import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.pca2d.NyARPca2d_MatrixPCA_O2;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -48,7 +49,6 @@ public class CopyOfNyARVectorReader_INT1D_GRAY_8 extends NyARVectorReader_INT1D_
 		super(i_ref_raster,i_ref_rob_raster);
 		assert (i_ref_raster.getBufferType() == NyARBufferType.INT1D_GRAY_8);
 	}
-
 
 
 	private VecLinearCoordinates.NyARVecLinearPoint[] _tmp_cd = VecLinearCoordinates.NyARVecLinearPoint.createArray(3);
@@ -153,5 +153,5 @@ NyARDoublePoint2d[] pos=NyARDoublePoint2d.createArray(i_coord.items.length);
 		o_coord.length = number_of_data;
 		return true;
 	}
-
+	
 }

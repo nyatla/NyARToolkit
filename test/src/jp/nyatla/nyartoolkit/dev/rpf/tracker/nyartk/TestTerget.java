@@ -186,7 +186,7 @@ public class TestTerget extends Frame
 	private int W = 320;
 	private int H = 240;
 	InputSource _input_source;
-	public TestTerget() throws NyARException, Exception
+	public TestTerget(NyARParam p) throws NyARException, Exception
 	{
 		setTitle("Reality Platform test");
 		Insets ins = this.getInsets();
@@ -196,7 +196,7 @@ public class TestTerget extends Frame
 //		this._input_source=new MoveSource();
 //		this._input_source=new LiveSource(W,H);
 		//create sampler
-		this.tracksource=new NyARTrackerSource_Reference(100,W, H, 1,false);
+		this.tracksource=new NyARTrackerSource_Reference(100,p.getDistortionFactor(),W, H, 1,false);
 		_tmp_bf=new BufferedImage(W, H,BufferedImage.TYPE_INT_RGB);
 		
 		//create tracker

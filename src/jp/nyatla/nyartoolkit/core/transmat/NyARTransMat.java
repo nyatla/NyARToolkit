@@ -136,7 +136,6 @@ public class NyARTransMat implements INyARTransMat
 			//歪み復元必要
 			vertex_2d=this.__transMat_vertex_2d;
 			this._ref_dist_factor.ideal2ObservBatch(i_square.sqvertex, vertex_2d,4);
-			this._transsolver.set2dVertex(vertex_2d,4);
 		}else{
 			//歪み復元は不要
 			vertex_2d=i_square.sqvertex;

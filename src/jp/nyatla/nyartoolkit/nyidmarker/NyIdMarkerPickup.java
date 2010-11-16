@@ -729,6 +729,7 @@ final class PerspectivePixelReader
 				ref_y[pt]=(int)((cpx3_1+cpy1_45)/d);
 				pt++;
 			}
+//ここ、値チェックしてないけど？			
 			//1行分のピクセルを取得(場合によっては専用アクセサを書いた方がいい)
 			i_reader.getPixelSet(ref_x,ref_y,resolution*4,pixcel_temp);
 			//グレースケールにしながら、line→mapへの転写

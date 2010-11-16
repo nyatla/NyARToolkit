@@ -17,7 +17,7 @@ public class NyARRealityGl extends NyARReality
 	public NyARRealityGl(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target) throws NyARException
 	{
 		super(
-			i_param.getPerspectiveProjectionMatrix(),
+			i_param,
 			i_max_known_target,i_max_unknown_target);
 		//カメラパラメータを計算しておく
 		i_param.makeCameraFrustumRH(i_near, i_far,this._frustum_rh);

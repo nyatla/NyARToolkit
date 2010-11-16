@@ -221,7 +221,8 @@ public class NyARCameraDistortionFactor
 	}
 	
 	/**
-	 * 観察座標から、理想座標系へ変換します。
+	 * ARToolKitの観察座標から、理想座標系への変換です。
+	 * 樽型歪みを解除します。
 	 * @param ix
 	 * @param iy
 	 * @param o_point
@@ -258,6 +259,47 @@ public class NyARCameraDistortionFactor
 		}
 		o_point.x = px / this._f3 + d0;
 		o_point.y = py / this._f3 + d1;
+		return;
+	}
+
+	/**
+	 * {@link #observ2Ideal(double, double, NyARDoublePoint2d)}の出力型違い。o_veclinearのx,yフィールドに値を出力する。
+	 * @param ix
+	 * @param iy
+	 * @param o_point
+	 */
+	public void observ2Ideal(double ix, double iy, NyARVecLinear2d o_veclinear)
+	{
+		double z02, z0, p, q, z, px, py, opttmp_1;
+		final double d0 = this._f0;
+		final double d1 = this._f1;
+
+		px = ix - d0;
+		py = iy - d1;
+		p = this._f2 / 100000000.0;
+		z02 = px * px + py * py;
+		q = z0 = Math.sqrt(z02);// Optimize//q = z0 = Math.sqrt(px*px+ py*py);
+
+		for (int i = 1;; i++) {
+			if (z0 != 0.0) {
+				// Optimize opttmp_1
+				opttmp_1 = p * z02;
+				z = z0 - ((1.0 - opttmp_1) * z0 - q) / (1.0 - 3.0 * opttmp_1);
+				px = px * z / z0;
+				py = py * z / z0;
+			} else {
+				px = 0.0;
+				py = 0.0;
+				break;
+			}
+			if (i == PD_LOOP) {
+				break;
+			}
+			z02 = px * px + py * py;
+			z0 = Math.sqrt(z02);// Optimize//z0 = Math.sqrt(px*px+ py*py);
+		}
+		o_veclinear.x = px / this._f3 + d0;
+		o_veclinear.y = py / this._f3 + d1;
 		return;
 	}
 }
