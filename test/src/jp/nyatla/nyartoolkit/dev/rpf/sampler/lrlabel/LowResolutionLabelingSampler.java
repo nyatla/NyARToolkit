@@ -90,24 +90,24 @@ public class LowResolutionLabelingSampler
 	 * この関数は、o_outにi_inのサンプリング結果を出力します。既にo_outにあるデータは初期化されます。
 	 * @param i_in
 	 * 入力元のデータです。
+	 * @param i_th
+	 * ラべリングの敷居値です。
 	 * @param o_out
 	 * 出力先のデータです。
 	 * @throws NyARException
 	 */
-	public void sampling(NyARGrayscaleRaster i_in,LowResolutionLabelingSamplerOut o_out) throws NyARException
+	public void sampling(NyARGrayscaleRaster i_in,int i_th,LowResolutionLabelingSamplerOut o_out) throws NyARException
 	{
-		//ラスタを取得(Depth2=2^2解像度のデータ)
-		int th=240;
 		//クラスのパラメータ初期化
 		Main_Labeling lb=this._main_labeling;
 		lb.current_output=o_out;
-		lb.current_th=th;
+		lb.current_th=i_th;
 
 
 		//パラメータの設定
 		o_out.initializeParams();
 		//ラべリング
 		lb.setAreaRange(10000,1);
-		lb.labeling(i_in,th);
+		lb.labeling(i_in,i_th);
 	}
 }

@@ -50,7 +50,7 @@ import jp.nyatla.nyartoolkit.jmf.utils.JmfNyARRaster_RGB;
  *
  */
 
-public class TestTerget extends Frame
+public class Test_TrackTerget extends Frame
 {
 	/**
 	 * 出力ソース
@@ -187,7 +187,7 @@ public class TestTerget extends Frame
 	private int W = 320;
 	private int H = 240;
 	InputSource _input_source;
-	public TestTerget(NyARCameraDistortionFactor p) throws NyARException, Exception
+	public Test_TrackTerget(NyARCameraDistortionFactor p) throws NyARException, Exception
 	{
 		setTitle("Reality Platform test");
 		Insets ins = this.getInsets();
@@ -364,7 +364,7 @@ public class TestTerget extends Frame
 	{
 
 		try {
-			TestTerget mainwin = new TestTerget(null);
+			Test_TrackTerget mainwin = new Test_TrackTerget(null);
 			mainwin.setVisible(true);
 			mainwin.mainloop();
 			// mainwin.startImage();

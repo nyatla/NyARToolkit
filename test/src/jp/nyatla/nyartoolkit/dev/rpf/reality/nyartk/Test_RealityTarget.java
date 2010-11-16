@@ -108,7 +108,7 @@ class LiveSource extends InputSource implements JmfCaptureListener
  *
  */
 
-public class TestTarget extends Frame implements MouseListener
+public class Test_RealityTarget extends Frame implements MouseListener
 {
 	public void mouseClicked(MouseEvent e)
 	{
@@ -172,7 +172,7 @@ public class TestTarget extends Frame implements MouseListener
 	private int W = 320;
 	private int H = 240;
 	InputSource _input_source;
-	public TestTarget() throws NyARException, Exception
+	public Test_RealityTarget() throws NyARException, Exception
 	{
 		setTitle("NyARReality test");
 		Insets ins = this.getInsets();
@@ -273,7 +273,7 @@ public class TestTarget extends Frame implements MouseListener
 	{
 
 		try {
-			TestTarget mainwin = new TestTarget();
+			Test_RealityTarget mainwin = new Test_RealityTarget();
 			mainwin.setVisible(true);
 			mainwin.mainloop();
 			// mainwin.startImage();

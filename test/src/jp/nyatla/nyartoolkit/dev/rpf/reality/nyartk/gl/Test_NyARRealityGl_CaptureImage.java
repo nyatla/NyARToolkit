@@ -28,11 +28,10 @@ import com.sun.opengl.util.Animator;
  * NyARRealityシステムのサンプル。
  * 複数のIDマーカを同時に区別するサンプルです。同一画面内に同じIDが複数あってもOK
  *
- * サンプル実装なのでまだ全然動かないよ。
  * @author nyatla
  *
  */
-public class NyARRealityGlTest_CaptureImage implements GLEventListener, JmfCaptureListener
+public class Test_NyARRealityGl_CaptureImage implements GLEventListener, JmfCaptureListener
 {
 
 	private final static int SCREEN_X = 320;
@@ -50,7 +49,7 @@ public class NyARRealityGlTest_CaptureImage implements GLEventListener, JmfCaptu
 	NyARRealitySource_Jmf _src;
 	RawbitSerialIdTable _mklib;
 
-	public NyARRealityGlTest_CaptureImage(NyARParam i_param) throws NyARException
+	public Test_NyARRealityGl_CaptureImage(NyARParam i_param) throws NyARException
 	{
 		Frame frame = new Frame("NyARReality on OpenGL");
 		
@@ -259,7 +258,7 @@ public class NyARRealityGlTest_CaptureImage implements GLEventListener, JmfCaptu
 		try {
 			NyARParam param = new NyARParam();
 			param.loadARParamFromFile(PARAM_FILE);
-			new NyARRealityGlTest_CaptureImage(param);
+			new Test_NyARRealityGl_CaptureImage(param);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

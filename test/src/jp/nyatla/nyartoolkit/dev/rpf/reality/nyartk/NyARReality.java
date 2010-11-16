@@ -20,7 +20,27 @@ import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARTargetStatus;
 
 
 /**
- * NyARRealitySnapshotを更新するクラス。
+ * NyARRealityモデルの駆動クラスです。
+ * Realityデータの保持と、更新を担当します。
+ * <p>NyARRealityModel</p>
+ * NyARRealityモデルは、ARToolKitのマーカー認識処理系をReality化します。
+ * NyARRealityモデルでは、空間に存在する複数のマーカをターゲットとして取り扱います。
+ * マーカは初め、Unknownターゲットとして、Realityの中に現れます。
+ * Realityは、Unknownターゲットの存在を可能な限り維持し、そのリストと内容を公開します。
+ * 
+ * UnknownターゲットはKnownターゲットへ昇格させることができます。
+ * その方法は、Unknownターゲットの具体化に必要な情報(マーカ方位と大きさ)を入力することです。
+ * 大きさと方位を調べるために、Unknownターゲットはマーカに関するいくつかのアクセス関数を提供します。
+ * ユーザは、それらの関数から得られる情報を元に値を推定し、UnknownターゲットをKnownターゲットに
+ * 昇格させる処理を行います。
+ * 
+ * 昇格したKnownターゲットからは、マーカに関するさらに詳細な情報にアクセスする関数を提供します。
+ * 
+ * ユーザが不要なUnknown/Knownターゲットは、Deadターゲットへ降格させることもできます。
+ * このターゲットは、次の処理サイクルで既知の不要ターゲットになり、しばらくの間Realityの
+ * 管理から外されます。しばらくすると、またUnknownターゲットに現れます。Deadターゲットは意図的に
+ * 発生させる場合以外に、自動的に発生してしまうことがあります。これは、マーカが視界から消えてしまったときです。
+ * 
  * 
  *
  */
@@ -53,8 +73,8 @@ public class NyARReality
 	private INyARTransMat _transmat;
 	
 	/**
-	 * コンストラクタ
-	 * @param i_ref_prjmat
+	 * コンストラクタ。
+	 * @param i_param
 	 * カメラパラメータを指定します。
 	 * @param i_max_known_target
 	 * Knownターゲットの最大数を指定します。
@@ -70,12 +90,30 @@ public class NyARReality
 		this.initInstance(i_param.getDistortionFactor(),i_param.getPerspectiveProjectionMatrix());
 		return;
 	}
+	/**
+	 * コンストラクタ。
+	 * @param i_dist_factor
+	 * カメラ歪み矯正オブジェクトを指定します。歪み矯正が不要な時は、nullを指定します。
+	 * @param i_prjmat
+	 * ARToolKit形式の射影変換パラメータを指定します。
+	 * @param i_max_known_target
+	 * Knownターゲットの最大数を指定します。
+	 * @param i_max_unknown_target
+	 * UnKnownターゲットの最大数を指定します。
+	 * @throws NyARException
+	 */
 	public NyARReality(NyARCameraDistortionFactor i_dist_factor,NyARPerspectiveProjectionMatrix i_prjmat,int i_max_known_target,int i_max_unknown_target) throws NyARException
 	{
 		this.MAX_LIMIT_KNOWN=i_max_known_target;
 		this.MAX_LIMIT_UNKNOWN=i_max_unknown_target;
 		this.initInstance(i_dist_factor,i_prjmat);
 	}
+	/**
+	 * コンストラクタから呼び出す共通な初期化部分です。
+	 * @param i_dist_factor
+	 * @param i_prjmat
+	 * @throws NyARException
+	 */
 	protected void initInstance(NyARCameraDistortionFactor i_dist_factor,NyARPerspectiveProjectionMatrix i_prjmat) throws NyARException
 	{
 		int number_of_reality_target=this.MAX_LIMIT_KNOWN+this.MAX_LIMIT_UNKNOWN;
@@ -98,17 +136,7 @@ public class NyARReality
 		return;		
 	}
 	/**
-	 * Unknown/Knownを維持できる条件
-	 * @param i_target
-	 * @return
-	 */
-	private final boolean isTargetAlive(NyARRealityTarget i_target)
-	{
-		return i_target._ref_tracktarget.st_type==NyARTargetStatus.ST_RECT;
-	}
-	/**
-	 * Realityの状態を、i_inのRealitySourceを元に進めます。
-	 * 
+	 * Realityの状態を、i_inの{@link NyARRealitySource}を元に、１サイクル進めます。
 	 * 現在の更新ルールは以下の通りです。
 	 * 0.呼び出されるごとに、トラックターゲットからUnknownターゲットを生成する。
 	 * 1.一定時間捕捉不能なKnown,Unknownターゲットは、deadターゲットへ移動する。
@@ -135,6 +163,11 @@ public class NyARReality
 		upgradeLists();
 		return;
 	}
+	/**
+	 * Realityターゲットリストの全ての項目を更新します。この関数内では、リスト要素の増減はありません。
+	 * {@link #progress}のサブ関数です。
+	 * @throws NyARException
+	 */
 	private final void upgradeLists() throws NyARException
 	{
 		NyARRealityTarget[] rt_array=this.target.getArray();
@@ -158,7 +191,11 @@ public class NyARReality
 			}
 		}
 	}
-
+	/**
+	 * Realityターゲットリストの全ての項目のアップグレード処理を行います。この関数内でリスト要素の加算/減算/種別変更処理を行います。
+	 * {@link #progress}のサブ関数です。
+	 * @throws NyARException
+	 */
 	private final void updateLists() throws NyARException
 	{
 		NyARRealityTarget[] rt_array=this.target.getArray();
@@ -193,7 +230,8 @@ public class NyARReality
 
 
 	/**
-	 * 頂点データをNyARSquareにセットする関数
+	 * 頂点データをNyARSquareにセットする関数です。
+	 * 初期位置セットには使わないこと。
 	 * @param i_vx
 	 * @param i_s
 	 */
@@ -214,7 +252,17 @@ public class NyARReality
 		}	
 	}
 	/**
-	 * リストから、tagがNULLのアイテムを探して返します。
+	 * Unknown/Knownを維持できる条件を書きます。
+	 * @param i_target
+	 * @return
+	 */
+	private final boolean isTargetAlive(NyARRealityTarget i_target)
+	{
+		return i_target._ref_tracktarget.st_type==NyARTargetStatus.ST_RECT;
+	}
+	
+	/**
+	 * トラックターゲットリストから、tagがNULLの{@link NyARTargetStatus#ST_RECT}アイテムを探して返します。
 	 * @return
 	 */
 	private final static NyARTarget findEmptyTagItem(NyARTargetList i_list)
@@ -234,12 +282,13 @@ public class NyARReality
 	//RealityTarget操作系関数
 	
 	/**
-	 * Unknownリストへ新しいRealityTargetを追加する。
+	 * Realityターゲットリストへ新しい{@link NyARRealityTarget}を追加する。
 	 * @param i_track_target
-	 * Unknowntargetの元にするTrackTarget
+	 * UnknownTargetに関連付ける{@link NyARTarget}.このターゲットは、{@link NyARTargetStatus#ST_RECT}であること？
 	 */
 	private final NyARRealityTarget addUnknownTarget(NyARTarget i_track_target) throws NyARException
 	{
+		assert(i_track_target.st_type==NyARTargetStatus.ST_RECT);
 		NyARRealityTarget rt=this._pool.newNewTarget(i_track_target);
 		if(rt==null){
 			return null;
@@ -253,7 +302,11 @@ public class NyARReality
 		this.target.pushAssert(rt);
 		this._number_of_unknown++;
 		return rt;
-	}	
+	}
+	/**
+	 * Realityターゲットリストから指定したインデクス番号のターゲットを削除します。
+	 * @param i_index
+	 */
 	private final void deleteTarget(int i_index)
 	{
 		//削除できるのはdeadターゲットだけ
@@ -264,7 +317,7 @@ public class NyARReality
 		this._number_of_dead--;
 	}
 	/**
-	 * Unknownターゲットから、指定したインデクス番号のターゲットをKnownターゲットへ移動します。
+	 * 指定したターゲットを、UnknownターゲットからKnownターゲットへ遷移させます。
 	 * @param i_item
 	 * 移動するターゲット
 	 * @param i_dir
@@ -273,7 +326,6 @@ public class NyARReality
 	 * ターゲットの予備知識。マーカーのサイズがいくらであるかを示す値[mm単位]
 	 * @return
 	 * 成功するとtrueを返します。
-	 * @throws NyARException 
 	 * @throws NyARException 
 	 */
 	public final boolean changeTargetToKnown(NyARRealityTarget i_item,int i_dir,double i_marker_width) throws NyARException
@@ -316,7 +368,7 @@ public class NyARReality
 	
 	/**
 	 * 指定したKnown,またはUnknownターゲットを、ターゲットをDeadターゲットにします。
-	 * Deadターゲットは次回のサイクルでRealityTargetListから削除され、一定のサイクル期間の間システムから無視されます。
+	 * Deadターゲットは次回のサイクルでRealityターゲットリストから削除され、一定のサイクル期間の間システムから無視されます。
 	 * @param i_item
 	 * @throws NyARException 
 	 */
@@ -359,7 +411,7 @@ public class NyARReality
 		return changeTargetToKnown(item,i_dir,i_marker_width);
 	}
 	/**
-	 * 指定したシリアル番号のKnown/UnknownターゲットをDeadターゲットへ移動します。
+	 * 指定したシリアル番号のKnown/UnknownターゲットをDeadターゲットへ遷移します。
 	 * @param i_serial
 	 * @throws NyARException 
 	 */
@@ -375,7 +427,7 @@ public class NyARReality
 	//アクセサ
 	
 	/**
-	 * 現在のUnKnownターゲットの数を返す。
+	 * 現在のUnKnownターゲットの数を返します。
 	 * @return
 	 */
 	public final int getNumberOfUnknown()
@@ -383,7 +435,7 @@ public class NyARReality
 		return this._number_of_unknown;
 	}
 	/**
-	 * 現在のKnownターゲットの数を返す。
+	 * 現在のKnownターゲットの数を返します。
 	 * @return
 	 */
 	public final int getNumberOfKnown()
@@ -391,7 +443,7 @@ public class NyARReality
 		return this._number_of_known;
 	}
 	/**
-	 * 現在のDeadターゲットの数を返す。
+	 * 現在のDeadターゲットの数を返します。
 	 * @return
 	 */
 	public final int getNumberOfDead()
@@ -399,7 +451,8 @@ public class NyARReality
 		return this._number_of_dead;
 	}
 	/**
-	 * ターゲットリストへの参照値を返す。このターゲットリストは、直接編集しないでください。
+	 * Realityターゲットリストへの参照値を返します。
+	 * このリストは編集関数を持ちますが、直接編集してはいけません。
 	 * @return
 	 */
 	public NyARRealityTargetList refTargetList()

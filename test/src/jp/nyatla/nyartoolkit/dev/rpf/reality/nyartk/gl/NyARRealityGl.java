@@ -45,6 +45,7 @@ public class NyARRealityGl extends NyARReality
 
 	/**
 	 * OpenGLスタイルのProjection行列の参照値を返します。
+	 * この値は、直接OpenGLの処理系へセットできます。
 	 * @return
 	 */
 	public double[] refGlFrastumRH()
