@@ -11,6 +11,8 @@ import java.util.Date;
 
 import javax.imageio.ImageIO;
 import javax.media.format.VideoFormat;
+import javax.media.opengl.GL;
+
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
@@ -21,6 +23,8 @@ import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_Rg
 import jp.nyatla.nyartoolkit.core.rasterreader.INyARRgbPixelReader;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
+import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
+import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource;
 import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource_JavaImage;
@@ -29,7 +33,9 @@ import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.*;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTracker;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARContourTargetStatus;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARRectTargetStatus;
+import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARTargetStatus;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
+import jp.nyatla.nyartoolkit.jogl.utils.NyARGLUtil;
 import jp.nyatla.nyartoolkit.utils.j2se.*;
 
 /**
@@ -69,7 +75,7 @@ class LiveSource extends InputSource implements JmfCaptureListener
 		}
 		this._capture.setOnCapture(this);
 		this._capture.start();
-		this.reality_in=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),1,100);
+		this.reality_in=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),null,1,100);
 		return;
 		
 	}
@@ -180,16 +186,13 @@ public class Test_RealityTarget extends Frame implements MouseListener
 		this._param=new NyARParam();
 		this._param.loadARParamFromFile(PARAM_FILE);
 		this._param.changeScreenSize(W,H);
-		this._reality=new NyARReality(this._param.getPerspectiveProjectionMatrix(),10,10);
-		this._input_source=new ImageSource(SAMPLE_FILES);
+		this._reality=new NyARReality(null,this._param.getPerspectiveProjectionMatrix(),10,10);
+		this._input_source=new LiveSource();
 		addMouseListener(this);
 
 		return;
 	}	
-	public void draw(INyARRgbRaster i_raster)
-	{
-		
-	}
+
     public void update()
     {
 		try {
@@ -225,7 +228,24 @@ public class Test_RealityTarget extends Frame implements MouseListener
     	g.drawString("Unknown:"+this._reality.getNumberOfUnknown(),200,200);
     	g.drawString("Known:"+this._reality.getNumberOfKnown(),200,210);
     	g.drawString("Dead:"+this._reality.getNumberOfDead(),200,220);
+		NyARRealityTargetList tl=this._reality.refTargetList();
+		for(int i=tl.getLength()-1;i>=0;i--){
+			NyARRealityTarget t=tl.getItem(i);
+			switch(t.getTargetType())
+			{
+			case NyARRealityTarget.RT_KNOWN:
+				drawKnownRT(g,t);
+				break;
+			case NyARRealityTarget.RT_UNKNOWN:				
+				drawUnKnownRT(g,t);
+				break;
+			default:
+				drawDeadRT(g,t);
+				break;
+			}
+		}    	
     	ig.drawImage(bmp,ins.left,ins.top,null);
+    	
 
     	drawImage(ig,ins.left+320,ins.top,this._input_source.reality_in.refLastTrackSource().getEdgeRaster());
     	//
@@ -237,14 +257,40 @@ public class Test_RealityTarget extends Frame implements MouseListener
     {
         BufferedImage _tmp_bf=new BufferedImage(r.getWidth(),r.getHeight(),BufferedImage.TYPE_INT_RGB);
     	NyARRasterImageIO.copy(r, _tmp_bf);
-    	
     	g.drawImage(_tmp_bf, x,y, null);
      	
     }
     //
     //描画関数
     //
-
+    private void drawKnownRT(Graphics g,NyARRealityTarget t)
+    {
+    	g.setColor(Color.GREEN);
+    	NyARIntPoint2d b=new NyARIntPoint2d();
+    	t.getTargetCenter(b);
+    	NyARIntRect r=t._ref_tracktarget.sample_area;
+    	g.drawString("[K]("+t._grab_rate+")",b.x,b.y);
+		g.drawRect(r.x,r.y, r.w,r.h);
+    	if(t._ref_tracktarget.st_type==NyARTargetStatus.ST_RECT){
+        	g.drawString(">"+((NyARRectTargetStatus)(t._ref_tracktarget.ref_status)).detect_type,r.x,r.y+10);
+    	}else{
+     	}
+    }
+    private void drawUnKnownRT(Graphics g,NyARRealityTarget t)
+    {
+    	g.setColor(Color.YELLOW);
+    	NyARIntPoint2d b=new NyARIntPoint2d();
+    	t.getTargetCenter(b);
+    	NyARIntRect r=t._ref_tracktarget.sample_area;
+    	g.drawString("[U]("+t._grab_rate+")",b.x,b.y);
+		g.drawRect(r.x,r.y, r.w,r.h);
+	}
+    private void drawDeadRT(Graphics g,NyARRealityTarget t)
+    {
+    	g.setColor(Color.RED);
+    	NyARIntRect r=t._ref_tracktarget.sample_area;
+    	g.drawString("[D]("+t._grab_rate+")",r.x,r.y);
+    }
     
     
 
@@ -254,18 +300,7 @@ public class Test_RealityTarget extends Frame implements MouseListener
     	for(;;){
 	    	//処理
 	    	this.update();
-
-
-	    	BufferedImage _src_image = ImageIO.read(new File(SAMPLE_FILES));
-			//this.draw(this.getGraphics());
-	    	NyARBufferedImageRaster a=new NyARBufferedImageRaster(100,100,NyARBufferType.OBJECT_Java_BufferedImage);
-//	    	NyARBufferedImageRaster a=new NyARBufferedImageRaster(_src_image);
-	    	a.getGraphics().drawImage(_src_image, 0,0, null);
-	    	a.getBufferedImage().setRGB(0,0,0xff0000);
-	    	a.getRgbPixelReader().setPixel(1,0,0,0,255);
-			this.getGraphics().drawImage(a.getBufferedImage(),100,100,null);
-
-//	    	Thread.sleep(30);
+	    	this.draw(this.getGraphics());
     	}
     }
 

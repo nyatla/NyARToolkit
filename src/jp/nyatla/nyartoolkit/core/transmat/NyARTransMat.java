@@ -198,9 +198,9 @@ public class NyARTransMat implements INyARTransMat
 		double min_err=errRate(this._rotmatrix,trans,i_offset.vertex, vertex_2d,4,vertex_3d);
 		//結果をストア
 		o_result.setValue(rot,trans,min_err);
-		//エラーレートが前回のエラー値より閾値分大きかったらアゲイン
+		//エラーレートの判定
 		if(min_err<last_error+err_threshold){
-			System.out.println("TR:ok");
+//			System.out.println("TR:ok");
 			//最適化してみる。
 			for (int i = 0;i<5; i++) {
 				//変換行列の最適化
@@ -216,7 +216,7 @@ public class NyARTransMat implements INyARTransMat
 				min_err=err;
 			}
 		}else{
-			System.out.println("TR:again");
+//			System.out.println("TR:again");
 			//回転行列を計算
 			rot.initRotBySquare(i_square.line,i_square.sqvertex);
 			

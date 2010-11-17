@@ -25,6 +25,8 @@ public class NyARRealitySource_Jmf extends NyARRealitySource
 	 * コンストラクタです。
 	 * @param i_fmt
 	 * JMFの入力フォーマットを指定します。
+	 * @param i_ref_raster_distortion
+	 * 歪み矯正の為のオブジェクトを指定します。歪み矯正が必要ない時は、NULLを指定します。
 	 * @param i_depth
 	 * エッジ画像のサイズを1(1^n)で指定します。
 	 * @param i_number_of_sample

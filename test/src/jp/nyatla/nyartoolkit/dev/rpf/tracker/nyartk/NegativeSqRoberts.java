@@ -32,7 +32,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
  * NyARReality用のエッジ検出フィルタ。
- * Roberts勾配の2乗値の1/2に最大値制限をかけ、反転した値です。
+ * Roberts勾配の2乗値16倍に最大値制限をかけ、反転した値です。
  * 右端と左端の1ピクセルは、常に0が入ります。
  * X=|-1, 0|  Y=|0,-1|
  *   | 0, 1|    |1, 0|
@@ -60,6 +60,7 @@ public class NegativeSqRoberts implements INyARRasterFilter
 	{
 		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException;
 	}
+	final static int SH=4;
 	class IdoFilterImpl_GRAY_8 implements IdoFilterImpl
 	{
 		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException
@@ -82,7 +83,7 @@ public class NegativeSqRoberts implements INyARRasterFilter
 					p01=in_ptr[idx++];p11=in_ptr[idx2++];
 					fx=p11-p00;fy=p10-p01;
 //					out_ptr[idx-2]=255-(((fx<0?-fx:fx)+(fy<0?-fy:fy))>>1);
-					fx=(fx*fx+fy*fy)>>4;out_ptr[idx-2]=(fx>255?0:255-fx);
+					fx=(fx*fx+fy*fy)>>SH;out_ptr[idx-2]=(fx>255?0:255-fx);
 					p00=p01;
 					p10=p11;
 				}
@@ -91,28 +92,28 @@ public class NegativeSqRoberts implements INyARRasterFilter
 					fx=p11-p00;
 					fy=p10-p01;
 //					out_ptr[idx-2]=255-(((fx<0?-fx:fx)+(fy<0?-fy:fy))>>1);
-					fx=(fx*fx+fy*fy)>>4;out_ptr[idx-2]=(fx>255?0:255-fx);
+					fx=(fx*fx+fy*fy)>>SH;out_ptr[idx-2]=(fx>255?0:255-fx);
 					p00=p01;p10=p11;
 
 					p01=in_ptr[idx++];p11=in_ptr[idx2++];
 					fx=p11-p00;
 					fy=p10-p01;
 //					out_ptr[idx-2]=255-(((fx<0?-fx:fx)+(fy<0?-fy:fy))>>1);
-					fx=(fx*fx+fy*fy)>>4;out_ptr[idx-2]=(fx>255?0:255-fx);
+					fx=(fx*fx+fy*fy)>>SH;out_ptr[idx-2]=(fx>255?0:255-fx);
 					p00=p01;p10=p11;
 					p01=in_ptr[idx++];p11=in_ptr[idx2++];
 					
 					fx=p11-p00;
 					fy=p10-p01;
 //					out_ptr[idx-2]=255-(((fx<0?-fx:fx)+(fy<0?-fy:fy))>>1);
-					fx=(fx*fx+fy*fy)>>4;out_ptr[idx-2]=(fx>255?0:255-fx);
+					fx=(fx*fx+fy*fy)>>SH;out_ptr[idx-2]=(fx>255?0:255-fx);
 					p00=p01;p10=p11;
 
 					p01=in_ptr[idx++];p11=in_ptr[idx2++];
 					fx=p11-p00;
 					fy=p10-p01;
 //					out_ptr[idx-2]=255-(((fx<0?-fx:fx)+(fy<0?-fy:fy))>>1);
-					fx=(fx*fx+fy*fy)>>4;out_ptr[idx-2]=(fx>255?0:255-fx);
+					fx=(fx*fx+fy*fy)>>SH;out_ptr[idx-2]=(fx>255?0:255-fx);
 					p00=p01;p10=p11;
 
 				}

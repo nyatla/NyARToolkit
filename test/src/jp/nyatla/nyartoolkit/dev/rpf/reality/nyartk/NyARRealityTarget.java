@@ -7,6 +7,7 @@ import jp.nyatla.nyartoolkit.core.transmat.NyARRectOffset;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
+import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource;
@@ -49,7 +50,7 @@ public class NyARRealityTarget extends NyARManagedObject
 	 */
 	public long _serial;
 	/**
-	 * 内部向けの公開メンバ変数です。refTransformMatrix()関数で参照してください。
+	 * 内部向けの公開メンバ変数です。{@link #refTransformMatrix}で参照してください。
 	 */
 	public NyARTransMatResult _transform_matrix=new NyARTransMatResult();
 
@@ -57,7 +58,7 @@ public class NyARRealityTarget extends NyARManagedObject
 	public final static int RT_KNOWN     =2;//知ってるターゲット
 	public final static int RT_DEAD      =4;//間もなく死ぬターゲット	
 	/**
-	 * 内部向けpublicメンバ。getTargetType関数を使ってください。
+	 * 内部向けpublicメンバ。{@link #getTargetType()}を使ってください。
 	 */
 	public int _target_type;
 	
@@ -208,7 +209,48 @@ NyARDoubleMatrix44 m=new NyARDoubleMatrix44();
 		}
 		return true;
 	}
-	
+	/**
+	 * 対象矩形の頂点配列への参照値を返します。
+	 * 値が有効なのは、次のサイクルを実行するまでの間です。
+	 * @return
+	 */
+	public final NyARDoublePoint2d[] refTargetVertex()
+	{
+		assert(this._target_type==RT_UNKNOWN || this._target_type==RT_KNOWN);
+		return ((NyARRectTargetStatus)(this._ref_tracktarget.ref_status)).vertex;
+	}
+	/**
+	 * 対象矩形の頂点配列をコピーして返します。
+	 * 樽型歪みの逆矯正は行いません。
+	 * @param o_vertex
+	 */
+	public final void getTargetVertex(NyARDoublePoint2d[] o_vertex)
+	{
+		assert(this._target_type==RT_UNKNOWN || this._target_type==RT_KNOWN);
+		NyARDoublePoint2d[] v=((NyARRectTargetStatus)(this._ref_tracktarget.ref_status)).vertex;
+		for(int i=3;i>=0;i--){
+			o_vertex[i].setValue(v[i]);
+		}
+	}
+	/**
+	 * 対象矩形の中央点を返します。
+	 * 樽型歪みの逆矯正は行いません。
+	 * @param o_center
+	 */
+	public final void getTargetCenter(NyARDoublePoint2d o_center)
+	{
+		assert(this._target_type==RT_UNKNOWN || this._target_type==RT_KNOWN);
+		NyARDoublePoint2d.makeCenter(((NyARRectTargetStatus)(this._ref_tracktarget.ref_status)).vertex,4,o_center);
+	}
+	/**
+	 * {@link #getTargetCenter}の出力型違いの関数です。
+	 * @param o_center
+	 */
+	public final void getTargetCenter(NyARIntPoint2d o_center)
+	{
+		assert(this._target_type==RT_UNKNOWN || this._target_type==RT_KNOWN);
+		NyARDoublePoint2d.makeCenter(((NyARRectTargetStatus)(this._ref_tracktarget.ref_status)).vertex,4,o_center);
+	}	
 	/**
 	 * ユーザオブジェクトを配置するポインタータグ
 	 */

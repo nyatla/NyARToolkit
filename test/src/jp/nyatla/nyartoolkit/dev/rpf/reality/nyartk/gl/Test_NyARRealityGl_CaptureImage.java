@@ -152,6 +152,7 @@ public class Test_NyARRealityGl_CaptureImage implements GLEventListener, JmfCapt
 						NyARGLUtil.toCameraViewRH(t.refTransformMatrix(), __display_wk);
 						_gl.glLoadMatrixd(__display_wk, 0);
 						// All other lighting and geometry goes here.
+						System.out.println(t._transform_matrix.last_error);
 						drawCube();
 						break;
 					case NyARRealityTarget.RT_UNKNOWN:

@@ -129,7 +129,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 	 * @return
 	 * ベクトルの強度を返します。強度値は、差分値の二乗の合計です。
 	 */
-	public final double getAreaVector33(int ix, int iy, int iw, int ih,NyARVecLinear2d o_posvec)
+	public final int getAreaVector33(int ix, int iy, int iw, int ih,NyARVecLinear2d o_posvec)
 	{
 		assert (ih >= 3 && iw >= 3);
 		assert ((ix >= 0) && (iy >= 0) && (ix + iw) <= this._ref_base_raster.getWidth() && (iy + ih) <= this._ref_base_raster.getHeight());
@@ -187,24 +187,6 @@ public class NyARVectorReader_INT1D_GRAY_8
 			o_posvec.x=xx;
 			o_posvec.y=yy;
 		}
-		/*
-		
-		// 加重平均(posが0の場合の位置は中心)
-		double xx,yy;
-		if (sum_x == 0) {
-			xx = ix + (iw >> 1);
-			o_posvec.dx = 0;
-		} else {
-			xx = (double) sum_x / sum_wx;
-			o_posvec.dx = (double) sum_vx / sum_wx;
-		}
-		if (sum_y == 0) {
-			yy = iy + (ih >> 1);
-			o_posvec.dy = 0;
-		} else {
-			yy = (double) sum_y / sum_wy;
-			o_posvec.dy = (double) sum_vy / sum_wy;
-		}*/
 		//加重平均の分母を返却
 		return sum_wx+sum_wy;
 	}
@@ -215,7 +197,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 	 */
 	protected NyARIntCoordinates _coord_buf;
 	private final NyARContourPickup _cpickup = new NyARContourPickup();
-	protected final double _MARGE_ANG_TH = NyARMath.COS_DEG_8;
+	protected final double _MARGE_ANG_TH = NyARMath.COS_DEG_10;
 
 	public boolean traceConture(int i_th,
 			NyARIntPoint2d i_entry, VecLinearCoordinates o_coord)

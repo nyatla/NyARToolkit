@@ -2,7 +2,7 @@ package jp.nyatla.nyartoolkit.core.types;
 
 
 /**
- * 点の座標と、そのベクトルで定義する直線を格納します。
+ * 定点と傾きのパラメータで、直線を表現します。
  *
  */
 public class NyARVecLinear2d

@@ -197,11 +197,11 @@ public class Test_TrackTerget extends Frame
 //		this._input_source=new MoveSource();
 		this._input_source=new LiveSource(W,H);
 		//create sampler
-		this.tracksource=new NyARTrackerSource_Reference(100,p,W, H, 1,false);
+		this.tracksource=new NyARTrackerSource_Reference(100,p,W, H, 2,false);
 		_tmp_bf=new BufferedImage(W, H,BufferedImage.TYPE_INT_RGB);
 		
 		//create tracker
-		this.tracker=new NyARTracker(10,1,10);
+		this.tracker=new NyARTracker(10,10,10);
 
 		return;
 	}

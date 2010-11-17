@@ -89,6 +89,44 @@ public class NyARDoublePoint2d
 		return (p2.x-p1.x)*(p3_y-p2.y)-(p2.y-p1.y)*(p3_x-p2.x);
 	}
 	/**
+	 * 頂点配列の中央値を求めます。
+	 * @param i_points
+	 * @param i_number_of_data
+	 * 配列中の有効な頂点数です。
+	 * @param o_out
+	 */
+	public final static void makeCenter(NyARDoublePoint2d[] i_points,int i_number_of_data,NyARDoublePoint2d o_out)
+	{
+		double x,y;
+		x=y=0;
+		for(int i=i_number_of_data-1;i>=0;i--)
+		{
+			x+=i_points[i].x;
+			y+=i_points[i].y;
+		}
+		o_out.x=x/i_number_of_data;
+		o_out.x=y/i_number_of_data;
+	}
+	/**
+	 * {@link #makeCenter}の出力型違いの関数です。
+	 * @param i_points
+	 * @param i_number_of_data
+	 * @param o_out
+	 */
+	public final static void makeCenter(NyARDoublePoint2d[] i_points,int i_number_of_data,NyARIntPoint2d o_out)
+	{
+		double lx,ly;
+		lx=ly=0;
+		for(int i=i_number_of_data-1;i>=0;i--)
+		{
+			lx+=i_points[i].x;
+			ly+=i_points[i].y;
+		}
+		o_out.x=(int)(lx/i_number_of_data);
+		o_out.y=(int)(ly/i_number_of_data);
+	}
+	
+	/**
 	 * コンストラクタです。
 	 */
 	public NyARDoublePoint2d()

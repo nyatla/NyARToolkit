@@ -52,7 +52,7 @@ public class NyARTransMatResult extends NyARDoubleMatrix44
 	public boolean has_value = false;
 	/**
 	 * 観測値とのずれを示すエラーレート値です。SetValueにより更新されます。
-	 * has_valueがtrueの時に使用可能です。
+	 * {@link #has_value}がtrueの時に使用可能です。
 	 */
 	public double last_error;
 	/**
