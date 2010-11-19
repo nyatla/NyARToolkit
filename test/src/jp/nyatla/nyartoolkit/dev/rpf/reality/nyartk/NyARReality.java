@@ -46,6 +46,17 @@ import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARTargetStatus;
  */
 public class NyARReality
 {
+	//視野関係のデータ
+	public final static double FRASTRAM_ARTK_NEAR=10;
+	public final static double FRASTRAM_ARTK_FAR=10000;
+	//flastramのデータは同期させること。
+	
+	/**flastum行列*/
+	protected NyARDoubleMatrix44 _frustum_rh=new NyARDoubleMatrix44();
+	/**flastumの逆行列 この値は{@link #_frustum_rh}と同期しています。*/
+	protected NyARDoubleMatrix44 _inv_frustum_rh=new NyARDoubleMatrix44();
+	protected NyARIntSize _screen_size=new NyARIntSize();
+	
 	//Realityでーた
 	/**
 	 * Unknownターゲットの最大数です。
@@ -76,37 +87,51 @@ public class NyARReality
 	 * コンストラクタ。
 	 * @param i_param
 	 * カメラパラメータを指定します。
+	 * @param i_near
+	 * 視錐体のnear-pointをmm単位で指定します。
+	 * default値は{@link #FRASTRAM_ARTK_NEAR}です。
+	 * @param i_far
+	 * 視錐体のfar-pointをmm単位で指定します。
+	 * default値は{@link #FRASTRAM_ARTK_FAR}です。
 	 * @param i_max_known_target
 	 * Knownターゲットの最大数を指定します。
 	 * @param i_max_unknown_target
 	 * UnKnownターゲットの最大数を指定します。
 	 * @throws NyARException
 	 */
-	public NyARReality(NyARParam i_param,int i_max_known_target,int i_max_unknown_target) throws NyARException
+	public NyARReality(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target) throws NyARException
 	{
 		//定数とかいろいろ
 		this.MAX_LIMIT_KNOWN=i_max_known_target;
 		this.MAX_LIMIT_UNKNOWN=i_max_unknown_target;
-		this.initInstance(i_param.getDistortionFactor(),i_param.getPerspectiveProjectionMatrix());
+		this.initInstance(i_param.getScreenSize(),i_near,i_far,i_param.getPerspectiveProjectionMatrix(),i_param.getDistortionFactor());
 		return;
 	}
 	/**
 	 * コンストラクタ。
-	 * @param i_dist_factor
-	 * カメラ歪み矯正オブジェクトを指定します。歪み矯正が不要な時は、nullを指定します。
+	 * @param i_screen
+	 * スクリーン(入力画像)のサイズを指定します。
+	 * @param i_near
+	 * 視錐体のnear-pointをmm単位で指定します。
+	 * default値は{@link #FRASTRAM_ARTK_NEAR}です。
+	 * @param i_far
+	 * 視錐体のfar-pointをmm単位で指定します。
+	 * default値は{@link #FRASTRAM_ARTK_FAR}です。
 	 * @param i_prjmat
 	 * ARToolKit形式の射影変換パラメータを指定します。
+	 * @param i_dist_factor
+	 * カメラ歪み矯正オブジェクトを指定します。歪み矯正が不要な時は、nullを指定します。
 	 * @param i_max_known_target
 	 * Knownターゲットの最大数を指定します。
 	 * @param i_max_unknown_target
 	 * UnKnownターゲットの最大数を指定します。
 	 * @throws NyARException
 	 */
-	public NyARReality(NyARCameraDistortionFactor i_dist_factor,NyARPerspectiveProjectionMatrix i_prjmat,int i_max_known_target,int i_max_unknown_target) throws NyARException
+	public NyARReality(NyARIntSize i_screen,double i_near,double i_far,NyARPerspectiveProjectionMatrix i_prjmat,NyARCameraDistortionFactor i_dist_factor,int i_max_known_target,int i_max_unknown_target) throws NyARException
 	{
 		this.MAX_LIMIT_KNOWN=i_max_known_target;
 		this.MAX_LIMIT_UNKNOWN=i_max_unknown_target;
-		this.initInstance(i_dist_factor,i_prjmat);
+		this.initInstance(i_screen,i_near,i_far,i_prjmat,i_dist_factor);
 	}
 	/**
 	 * コンストラクタから呼び出す共通な初期化部分です。
@@ -114,7 +139,7 @@ public class NyARReality
 	 * @param i_prjmat
 	 * @throws NyARException
 	 */
-	protected void initInstance(NyARCameraDistortionFactor i_dist_factor,NyARPerspectiveProjectionMatrix i_prjmat) throws NyARException
+	protected void initInstance(NyARIntSize i_screen,double i_near,double i_far,NyARPerspectiveProjectionMatrix i_prjmat,NyARCameraDistortionFactor i_dist_factor) throws NyARException
 	{
 		int number_of_reality_target=this.MAX_LIMIT_KNOWN+this.MAX_LIMIT_UNKNOWN;
 		//演算インスタンス
@@ -125,14 +150,15 @@ public class NyARReality
 		this.target=new NyARRealityTargetList(number_of_reality_target);
 		//Trackerの特性値
 		this._tracker=new NyARTracker(
-			(this.MAX_LIMIT_KNOWN+this.MAX_LIMIT_UNKNOWN)*2,
-			1,
-			this.MAX_LIMIT_KNOWN*2);
+			(this.MAX_LIMIT_KNOWN+this.MAX_LIMIT_UNKNOWN)*2,1,this.MAX_LIMIT_KNOWN*2);
 		//トラック数は、newがi_max_known_target+i_max_unknown_target,rectがi_max_known_targetと同じ数です。
 
 		//初期化
 		this._number_of_dead=this._number_of_unknown=this._number_of_known=0;
-		
+		//フラスタムの計算とスクリーンサイズの保存
+		i_prjmat.makeCameraFrustumRH(i_screen.w,i_screen.h, i_near, i_far, this._frustum_rh);
+		this._inv_frustum_rh.inverse(this._frustum_rh);
+		this._screen_size.setValue(i_screen.w,i_screen.h);
 		return;		
 	}
 	/**
@@ -279,8 +305,8 @@ public class NyARReality
 		}
 		return null;
 	}
-	//RealityTarget操作系関数
-	
+	//RealityTargetの編集関数
+
 	/**
 	 * Realityターゲットリストへ新しい{@link NyARRealityTarget}を追加する。
 	 * @param i_track_target
@@ -316,6 +342,15 @@ public class NyARReality
 		this.target.removeIgnoreOrder(i_index);
 		this._number_of_dead--;
 	}
+	
+	////////////////////////////////////////////////////////////////////////////////
+	//Public:
+	//RealityTargetの操作関数
+	//
+	////////////////////////////////////////////////////////////////////////////////
+	
+	
+
 	/**
 	 * 指定したターゲットを、UnknownターゲットからKnownターゲットへ遷移させます。
 	 * @param i_item
@@ -424,7 +459,6 @@ public class NyARReality
 		changeTargetToDead(item);
 		return item;
 	}
-	//アクセサ
 	
 	/**
 	 * 現在のUnKnownターゲットの数を返します。
@@ -492,5 +526,84 @@ public class NyARReality
 	public NyARRealityTarget selectSingleUnknownTarget()
 	{
 		return this.target.selectSingleTargetByType(NyARRealityTarget.RT_UNKNOWN);
+	}
+	////////////////////////////////////////////////////////////////////////////////
+	//Public:
+	//RealityAccesser
+	////////////////////////////////////////////////////////////////////////////////
+	
+	
+	
+	/**
+	 * 画像上の座標を、撮像点座標に変換します。
+	 * gluUnprojectのビューポートとモデルビュー行列を固定したものです。
+	 * 公式は、以下の物使用。
+	 * http://www.opengl.org/sdk/docs/man/xhtml/gluUnProject.xml
+	 * @param ix
+	 * 画像上の座標
+	 * @param iy
+	 * 画像上の座標
+	 * @param o_point_on_screen
+	 * 撮像点座標
+	 */
+	public void unProject(double ix,double iy,NyARDoublePoint3d o_point_on_screen)
+	{
+		double n=(this._frustum_rh.m23/(this._frustum_rh.m22-1));
+		NyARDoubleMatrix44 m44=this._inv_frustum_rh;
+		double v1=ix*2/this._screen_size.w-1.0;
+		double v2=iy*2/this._screen_size.h-1.0;
+		double v3=2*n-1.0;
+		double b=1/(o_point_on_screen.z=m44.m30*v1+m44.m31*v2+m44.m32*v3+m44.m33);
+		o_point_on_screen.x=(m44.m00*v1+m44.m01*v2+m44.m02*v3+m44.m03)*b;
+		o_point_on_screen.y=(m44.m10*v1+m44.m11*v2+m44.m12*v3+m44.m13)*b;
+		o_point_on_screen.z=(m44.m20*v1+m44.m21*v2+m44.m22*v3+m44.m23)*b;
+		return;
+	}	
+	/**
+	 * 画面上（入力画像）の点と原点を結ぶ直線と、任意姿勢の平面の交差点を、カメラ座標系で取得します。
+	 * @param i_screen_x
+	 * @param i_screen_y
+	 * @param i_mat
+	 * 平面の姿勢を示す行列
+	 * @param o_pos
+	 * @return
+	 */
+	public void getSurfacePosFromScreenPosInCamera(int ix,int iy,NyARDoubleMatrix44 i_mat,NyARDoublePoint3d o_pos)
+	{
+		//画面→撮像点
+		this.unProject(this._screen_size.w-ix-1,this._screen_size.h-iy-1,o_pos);
+		//撮像点→カメラ座標系
+		double nx=i_mat.m02;
+		double ny=i_mat.m12;
+		double nz=i_mat.m22;
+		double mx=i_mat.m03;
+		double my=i_mat.m13;
+		double mz=i_mat.m23;
+		double t=(nx*mx+ny*my+nz*mz)/(nx*o_pos.x+ny*o_pos.y+nz*o_pos.z);
+		o_pos.x=t*o_pos.x;
+		o_pos.y=t*o_pos.y;
+		o_pos.z=t*o_pos.z;
+	}
+	/**
+	 * 画面上の点と原点を結ぶ直線と、任意姿勢の平面の交差点を、平面の座標系で取得します。
+	 * ARToolKitの本P175周辺の実装と同じです。
+	 * @param ix
+	 * @param iy
+	 * @param i_mat
+	 * @param o_pos
+	 * @return
+	 * <p>
+	 * このAPIは繰り返し使用には最適化されていません。同一なi_matに繰り返しアクセスするときは、展開してください。
+	 * </p>
+	 */
+	public boolean getSurfacePosFromScreenPos(int ix,int iy,NyARDoubleMatrix44 i_mat,NyARDoublePoint3d o_pos)
+	{
+		getSurfacePosFromScreenPosInCamera(ix,iy,i_mat,o_pos);
+		NyARDoubleMatrix44 m=new NyARDoubleMatrix44();
+		if(!m.inverse(i_mat)){
+			return false;
+		}
+		m.transform3d(o_pos, o_pos);
+		return true;
 	}
 }

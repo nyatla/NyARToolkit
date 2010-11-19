@@ -71,8 +71,6 @@ public class CopyOfNyARVectorReader_INT1D_GRAY_8 extends NyARVectorReader_INT1D_
 		NyARVecLinearPoint[] pos=this._tmp_coord_pos;
 		// ベクトル化
 		int MAX_COORD = o_coord.items.length;
-		// 検出RECTは、x,yと(x+w),(y+h)の間にあるものになる。
-
 		int i_coordlen = i_coord.length;
 		NyARIntPoint2d[] coord = i_coord.items;
 
@@ -139,6 +137,14 @@ public class CopyOfNyARVectorReader_INT1D_GRAY_8 extends NyARVectorReader_INT1D_
 		return true;
 	}
 
+	/**
+	 * ノイズらしいベクトルを無視しながら最小二乗法でベクトルを統合する関数
+	 * @param i_points
+	 * @param i_number_of_data
+	 * @param o_dest
+	 * @param i_scale_th
+	 * @return
+	 */
 	private final boolean leastSquaresWithNormalize(NyARVecLinearPoint[] i_points,int i_number_of_data,NyARVecLinearPoint o_dest,double i_scale_th)
 	{
 		int i;

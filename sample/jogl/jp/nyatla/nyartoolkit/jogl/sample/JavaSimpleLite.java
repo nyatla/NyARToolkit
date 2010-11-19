@@ -72,11 +72,11 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 	 * 立方体を書く
 	 * 
 	 */
-	void drawCube()
+	void drawCube(double i_size_per_mm)
 	{
 		// Colour cube data.
 		int polyList = 0;
-		float fSize = 0.5f;// マーカーサイズに対して0.5倍なので、4cmの立方体
+		float fSize =(float)i_size_per_mm/2;
 		int f, i;
 		float[][] cube_vertices = new float[][] { { 1.0f, 1.0f, 1.0f }, { 1.0f, -1.0f, 1.0f }, { -1.0f, -1.0f, 1.0f }, { -1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, -1.0f }, { 1.0f, -1.0f, -1.0f }, { -1.0f, -1.0f, -1.0f }, { -1.0f, 1.0f, -1.0f } };
 		float[][] cube_vertex_colors = new float[][] { { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 1.0f }, { 1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } };
@@ -104,7 +104,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 		}
 
 		_gl.glPushMatrix(); // Save world coordinate system.
-		_gl.glTranslatef(0.0f, 0.0f, 0.5f); // Place base of cube on marker surface.
+		_gl.glTranslatef(0.0f, 0.0f, fSize); // Place base of cube on marker surface.
 		_gl.glRotatef(0.0f, 0.0f, 0.0f, 1.0f); // Rotate about z axis.
 		_gl.glDisable(GL.GL_LIGHTING); // Just use colours.
 		_gl.glCallList(polyList); // Draw the cube.
@@ -132,6 +132,8 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 		// NyARToolkitの準備
 		this._nya = new NyARSingleDetectMarker(this._ar_param, i_ar_code, 80.0,this._cap_image.getBufferType());
 		this._nya.setContinueMode(true);// ここをtrueにすると、transMatContinueモード（History計算）になります。
+		//スケールファクタ。1mm=1.0
+
 		
 		// 3Dを描画するコンポーネント
 		GLCanvas canvas = new GLCanvas();
@@ -164,7 +166,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 			e.printStackTrace();
 		}
 		// カメラパラメータの計算
-		NyARGLUtil.toCameraFrustumRH(this._ar_param,this._camera_projection);
+		NyARGLUtil.toCameraFrustumRH(this._ar_param,1,10,10000,this._camera_projection);
 		this._animator = new Animator(drawable);
 		this._animator.start();
 		return;
@@ -211,11 +213,11 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 					// 変換行列を取得
 					_nya.getTransmationMatrix(transmat_result);
 					// 変換行列をOpenGL形式に変換
-					NyARGLUtil.toCameraViewRH(transmat_result, __display_wk);
+					NyARGLUtil.toCameraViewRH(transmat_result,1, __display_wk);
 					_gl.glLoadMatrixd(__display_wk, 0);
 		
-					// All other lighting and geometry goes here.
-					drawCube();
+					//
+					drawCube(80);
 				}
 			}
 			Thread.sleep(1);// タスク実行権限を一旦渡す

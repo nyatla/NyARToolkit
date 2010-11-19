@@ -201,7 +201,7 @@ public class Test_TrackTerget extends Frame
 		_tmp_bf=new BufferedImage(W, H,BufferedImage.TYPE_INT_RGB);
 		
 		//create tracker
-		this.tracker=new NyARTracker(10,10,10);
+		this.tracker=new NyARTracker(10,1,10);
 
 		return;
 	}

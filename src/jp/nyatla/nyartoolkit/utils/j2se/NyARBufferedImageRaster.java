@@ -59,7 +59,7 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 		switch(i_raster_type)
 		{
 		case NyARBufferType.BYTE1D_R8G8B8_24:{
-			byte[] b=(byte[])this.getBuffer();
+			byte[] b=new byte[3*i_width*i_height];
 			DataBufferByte d=new DataBufferByte(b,b.length);
 			int[] bof={0,1,2};
 			ret=new BufferedImage(
@@ -69,7 +69,7 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 			}
 			break;
 		case NyARBufferType.BYTE1D_B8G8R8_24:{
-			byte[] b=(byte[])this.getBuffer();
+			byte[] b=new byte[3*i_width*i_height];
 			DataBufferByte d=new DataBufferByte(b,b.length);
 			int[] bof={2,1,0};
 			ret=new BufferedImage(
@@ -79,7 +79,7 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 			}
 			break;
 		case NyARBufferType.INT1D_X8R8G8B8_32:{
-			int[] b=(int[])this.getBuffer();
+			int[] b=new int[i_width*i_height];
 			DataBufferInt d=new DataBufferInt(b,b.length);
 			int[] msk={0xff0000,0x00ff00,0x0000ff};
 			ret=new BufferedImage(

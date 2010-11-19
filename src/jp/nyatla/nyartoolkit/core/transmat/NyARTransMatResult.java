@@ -91,51 +91,8 @@ public class NyARTransMatResult extends NyARDoubleMatrix44
 		this.last_error=i_error;
 		return;
 	}	
-	/**
-	 * ZXY系の角度値を返します。
-	 * この関数は、0-PIの間で値を返します。
-	 * @param o_out
-	 */
-	public final void getZXYAngle(NyARDoublePoint3d o_out)
-	{
-		double sina = this.m21;
-		if (sina >= 1.0) {
-			o_out.x = Math.PI / 2;
-			o_out.y = 0;
-			o_out.z = Math.atan2(-this.m10, this.m00);
-		} else if (sina <= -1.0) {
-			o_out.x = -Math.PI / 2;
-			o_out.y = 0;
-			o_out.z = Math.atan2(-this.m10, this.m00);
-		} else {
-			o_out.x = Math.asin(sina);
-			o_out.z = Math.atan2(-this.m01, this.m11);
-			o_out.y = Math.atan2(-this.m20, this.m22);
-		}
-	}
-	/**
-	 * 点を座標変換します。3行目の拡大率は無視します。
-	 * @param i_x
-	 * @param i_y
-	 * @param i_z
-	 * @param o_out
-	 */
-	public final void transformVertex(double i_x,double i_y,double i_z,NyARDoublePoint3d o_out)
-	{
-		o_out.x=this.m00*i_x+this.m01*i_y+this.m02*i_z+this.m03;
-		o_out.y=this.m10*i_x+this.m11*i_y+this.m12*i_z+this.m13;
-		o_out.z=this.m20*i_x+this.m21*i_y+this.m22*i_z+this.m23;
-		return;
-	}
-	/**
-	 * 点を座標変換します。3行目の拡大率は無視します。
-	 * @param i_in
-	 * @param o_out
-	 */	
-	public final void transformVertex(NyARDoublePoint3d i_in,NyARDoublePoint3d o_out)
-	{
-		transformVertex(i_in.x,i_in.y,i_in.z,o_out);
-	}	
+
+
 	
 	/**
 	 * 座標変換した3次元頂点をi_perspectiveで2次元座標(画面上の点)に変換して返します。

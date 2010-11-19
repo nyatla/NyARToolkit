@@ -159,36 +159,6 @@ public class NyARRealityTarget extends NyARManagedObject
 		assert(this._target_type==RT_UNKNOWN || this._target_type==RT_KNOWN);
 		return i_source.getRgbPerspectivePatt(((NyARRectTargetStatus)(this._ref_tracktarget.ref_status)).vertex,i_resolution, i_edge_percent_x, i_edge_percent_y, o_raster);
 	}
-	/**
-	 * カメラの撮像点に対応する、ターゲット座標平面上の点を求めます。
-	 * @param i_px
-	 * @param i_py
-	 * @param i_pz
-	 * @param o_pos
-	 * @return
-	 */
-	public boolean cameraPos2TargetPos(double i_px,double i_py,double i_pz,NyARDoublePoint3d o_pos)
-	{
-		double nx=this._transform_matrix.m02;
-		double ny=this._transform_matrix.m12;
-		double nz=this._transform_matrix.m22;
-		double mx=this._transform_matrix.m03;
-		double my=this._transform_matrix.m13;
-		double mz=this._transform_matrix.m23;
-		double t=(nx*mx+ny*my+nz*mz)/(nx*i_px+ny*i_py+nz*i_pz);
-NyARDoubleMatrix44 m=new NyARDoubleMatrix44();
-		double sx=t*i_px;
-		double sy=t*i_py;
-		double sz=t*i_pz;
-		if(!m.inverse(this._transform_matrix)){
-			return false;
-		}
-		o_pos.x=m.m00*sx+m.m01*sy+m.m02*sz+m.m03;
-		o_pos.y=m.m10*sx+m.m11*sy+m.m12*sz+m.m13;
-		o_pos.z=m.m20*sx+m.m21*sy+m.m22*sz+m.m23;
-		return true;
-	}
-
 	//[OPT:]指定したターゲットとの変換行列を求める。
 	//[OPT:]ターゲット座標系の平面上の任意の矩形を変換行列で移動した四角形から、パターンを取得する。解像度は受け取り側のラスタに従う。
 	/**

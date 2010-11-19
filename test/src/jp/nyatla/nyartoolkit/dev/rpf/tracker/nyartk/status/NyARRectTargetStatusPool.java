@@ -51,7 +51,7 @@ public class NyARRectTargetStatusPool extends NyARManagedObjectPool<NyARRectTarg
 		int[] sq_tbl=this.__sq_table;
 		int all=0;
 		for(int i=3;i>=0;i--){
-			sq_tbl[i]=(int)i_point1[i].sqNorm(i_point2[i]);
+			sq_tbl[i]=(int)i_point1[i].sqDist(i_point2[i]);
 			all+=sq_tbl[i];
 		}
 		//移動距離の2乗の平均値

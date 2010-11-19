@@ -241,7 +241,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 		// 移動量
 
 		// 点間距離を計算
-		int dist = (int) Math.sqrt(i_pos1.sqNorm(i_pos2));
+		int dist = (int) Math.sqrt(i_pos1.sqDist(i_pos2));
 		// 最低AREA*2以上の大きさが無いなら、ラインのトレースは不可能。
 		if (dist < 4) {
 			return false;
@@ -279,7 +279,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 		// 移動量
 
 		// 点間距離を計算
-		int dist = (int) Math.sqrt(i_pos1.sqNorm(i_pos2));
+		int dist = (int) Math.sqrt(i_pos1.sqDist(i_pos2));
 		// 最低AREA*2以上の大きさが無いなら、ラインのトレースは不可能。
 		if (dist < 4) {
 			return false;
@@ -472,11 +472,11 @@ public class NyARVectorReader_INT1D_GRAY_8
 
 			if (is_p1_inside_area) {
 				// p2が範囲外
-				pt[(i_pos2.sqNorm(pt[0]) < i_pos2.sqNorm(pt[1])) ? 1 : 0]
+				pt[(i_pos2.sqDist(pt[0]) < i_pos2.sqDist(pt[1])) ? 1 : 0]
 						.setValue(i_pos1);
 			} else {
 				// p1が範囲外
-				pt[(i_pos1.sqNorm(pt[0]) < i_pos2.sqNorm(pt[1])) ? 1 : 0]
+				pt[(i_pos1.sqDist(pt[0]) < i_pos2.sqDist(pt[1])) ? 1 : 0]
 						.setValue(i_pos2);
 			}
 		} else {

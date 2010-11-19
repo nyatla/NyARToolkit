@@ -15,6 +15,9 @@ import javax.media.opengl.GL;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
+import jp.nyatla.nyartoolkit.core.pickup.NyARColorPatt_O3;
+import jp.nyatla.nyartoolkit.core.pickup.NyARColorPatt_Perspective;
+import jp.nyatla.nyartoolkit.core.pickup.NyARColorPatt_Perspective_O2;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
@@ -118,11 +121,17 @@ public class Test_RealityTarget extends Frame implements MouseListener
 {
 	public void mouseClicked(MouseEvent e)
 	{
+		try {
 		int x=e.getX()-this.getInsets().left;
 		int y=e.getY()-this.getInsets().top;
 		System.out.println(x+":"+y);
 		synchronized(this._input_source.reality_in)
 		{
+			NyARBufferedImageRaster bmp= new NyARBufferedImageRaster(64,64,NyARBufferType.BYTE1D_B8G8R8_24);
+			NyARColorPatt_Perspective_O2 patt=new NyARColorPatt_Perspective_O2(64,64,1);
+			NyARColorPatt_Perspective patt2=new NyARColorPatt_Perspective(64,64,1);
+//			patt.setEdgeSizeByPercent(25,25,1);
+//			patt2.setEdgeSizeByPercent(25,25,1);
 			for(int i=this._reality.refTargetList().getLength()-1;i>=0;i--)
 			{
 				NyARRealityTarget rt=this._reality.refTargetList().getItem(i);
@@ -134,12 +143,20 @@ public class Test_RealityTarget extends Frame implements MouseListener
 					if(e.getButton()==MouseEvent.BUTTON1){
 						//左ボタンはUNKNOWN→KNOWN
 						if(rt._target_type==NyARRealityTarget.RT_UNKNOWN){
-							try {
 								this._reality.changeTargetToKnown(rt,0,40);
-							} catch (NyARException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
+								//イメージピックアップの実験
+//								this._input_source.reality_in.getRgbPerspectivePatt(rt.refTargetVertex(),1,25,25,bmp);
+								NyARIntPoint2d[] iv=NyARIntPoint2d.createArray(4);
+								for(int i2=0;i2<4;i2++){
+									iv[i2].x=(int)rt.refTargetVertex()[i2].x;
+									iv[i2].y=(int)rt.refTargetVertex()[i2].y;
+								}
+								patt.pickFromRaster(this._input_source.reality_in.refRgbSource(),iv);
+								patt2.pickFromRaster(this._input_source.reality_in.refRgbSource(),iv);
+								NyARRasterImageIO.copy(patt2, bmp.getBufferedImage());
+								this.getGraphics().drawImage(bmp.getBufferedImage(),this.getInsets().left,this.getInsets().top+240,null);
+								NyARRasterImageIO.copy(patt, bmp.getBufferedImage());
+								this.getGraphics().drawImage(bmp.getBufferedImage(),this.getInsets().left+64,this.getInsets().top+240,null);
 							break;
 						}
 					}else if(e.getButton()==MouseEvent.BUTTON3){
@@ -154,6 +171,10 @@ public class Test_RealityTarget extends Frame implements MouseListener
 					}
 				}
 			}
+		}
+		} catch (NyARException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 	}
 	public void mouseEntered(MouseEvent e){}
@@ -186,7 +207,7 @@ public class Test_RealityTarget extends Frame implements MouseListener
 		this._param=new NyARParam();
 		this._param.loadARParamFromFile(PARAM_FILE);
 		this._param.changeScreenSize(W,H);
-		this._reality=new NyARReality(null,this._param.getPerspectiveProjectionMatrix(),10,10);
+		this._reality=new NyARReality(this._param.getScreenSize(),10,1000,this._param.getPerspectiveProjectionMatrix(),null,10,10);
 		this._input_source=new LiveSource();
 		addMouseListener(this);
 

@@ -171,14 +171,14 @@ public class NyARDoublePoint2d
 	 * @param i_p2
 	 * @return
 	 */	
-	public final double sqNorm(NyARDoublePoint2d i_p1)
+	public final double sqDist(NyARDoublePoint2d i_p1)
 	{
 		double x,y;
 		x=this.x-i_p1.x;
 		y=this.y-i_p1.y;
 		return x*x+y*y;
 	}
-	public final double sqNorm(NyARIntPoint2d i_p1)
+	public final double sqDist(NyARIntPoint2d i_p1)
 	{
 		double x,y;
 		x=this.x-i_p1.x;

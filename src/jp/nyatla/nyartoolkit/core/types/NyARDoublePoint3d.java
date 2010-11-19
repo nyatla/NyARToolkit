@@ -59,16 +59,14 @@ public class NyARDoublePoint3d
 	/**
 	 * p2-p1間の距離の二乗値を計算します。
 	 * @param i_p1
-	 * @param i_p2
 	 * @return
 	 */	
-	public static final double sqNorm(NyARDoublePoint3d i_p1,NyARDoublePoint3d i_p2)
+	public final double sqDist(NyARDoublePoint3d i_p1)
 	{
 		double x,y,z;
-		x=i_p2.x-i_p1.x;
-		y=i_p2.y-i_p1.y;
-		z=i_p2.z-i_p1.z;
+		x=this.x-i_p1.x;
+		y=this.y-i_p1.y;
+		z=this.z-i_p1.z;
 		return x*x+y*y+z*z;
 	}	
-	
 }

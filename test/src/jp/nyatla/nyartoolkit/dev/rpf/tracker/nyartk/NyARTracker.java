@@ -8,8 +8,9 @@ import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARDistMap;
 
 
 
+
 /**
- * 四角形のトラッキングクラスです。
+ * このクラスは、四角形のトラッキングクラスです。画面内にある複数の矩形を、ターゲットとして識別して、追跡します。
  * @author nyatla
  *
  */
@@ -90,11 +91,11 @@ public class NyARTracker
 	/**
 	 * コンストラクタです。
 	 * @param i_max_new
-	 * NyARTrackerSnapshotコンストラクタのi_max_newに設定した値を指定してください。
+	 * Newトラックターゲットの最大数を指定します。
 	 * @param i_max_cont
-	 * NyARTrackerSnapshotコンストラクタのi_max_contに設定した値を指定してください。
+	 * Contourトラックターゲットの最大数を指定します。
 	 * @param i_max_rect
-	 * NyARTrackerSnapshotコンストラクタのi_max_rectに設定した値を指定してください。
+	 * Rectトラックターゲットの最大数を指定します。
 	 * @throws NyARException
 	 */
 	public NyARTracker(int i_max_new,int i_max_cont,int i_max_rect) throws NyARException

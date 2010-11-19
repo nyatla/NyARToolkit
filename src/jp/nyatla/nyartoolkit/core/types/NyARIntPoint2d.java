@@ -73,7 +73,7 @@ public class NyARIntPoint2d
 	 * @param i_p2
 	 * @return
 	 */	
-	public final int sqNorm(NyARIntPoint2d i_p1)
+	public final int sqDist(NyARIntPoint2d i_p1)
 	{
 		int x=this.x-i_p1.x;
 		int y=this.y-i_p1.y;

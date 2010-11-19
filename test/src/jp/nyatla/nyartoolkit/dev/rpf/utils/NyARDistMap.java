@@ -84,7 +84,7 @@ public class NyARDistMap
 			for(int c=0;c<i_col_len;c++){
 				map[idx].col=c;
 				map[idx].row=r;
-				int d=i_vertex_r[r].sqNorm(i_vertex_c[c]);
+				int d=i_vertex_r[r].sqDist(i_vertex_c[c]);
 				map[idx].dist=d;
 				if(min_dist>d){
 					min_index=idx;

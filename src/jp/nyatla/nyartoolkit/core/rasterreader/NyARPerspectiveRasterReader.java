@@ -55,19 +55,19 @@ public class NyARPerspectiveRasterReader
 	{
 		//新しいモードに対応したら書いてね。
 		switch(i_buffer_type){
-		case NyARBufferType.BYTE1D_B8G8R8X8_32:
-			this._picker=new PPickup_Impl_BYTE1D_B8G8R8X8_32();
-			break;
-		case NyARBufferType.BYTE1D_B8G8R8_24:
-			this._picker=new PPickup_Impl_BYTE1D_B8G8R8_24();
-			break;
-		case NyARBufferType.BYTE1D_R8G8B8_24:
-			this._picker=new PPickup_Impl_BYTE1D_R8G8B8_24();
-			break;
+//		case NyARBufferType.BYTE1D_B8G8R8X8_32:
+//			this._picker=new PPickup_Impl_BYTE1D_B8G8R8X8_32();
+//			break;
+//		case NyARBufferType.BYTE1D_B8G8R8_24:
+//			this._picker=new PPickup_Impl_BYTE1D_B8G8R8_24();
+//			break;
+//		case NyARBufferType.BYTE1D_R8G8B8_24:
+//			this._picker=new PPickup_Impl_BYTE1D_R8G8B8_24();
+//			break;
 		default:
 			this._picker=new PPickup_Impl_AnyRaster();
 			//低速インタフェイス警告。必要に応じて、高速取得系を実装してね
-			System.out.println("NyARToolKit Warning:"+this.getClass().getName()+":Low speed interface.");
+//			System.out.println("NyARToolKit Warning:"+this.getClass().getName()+":Low speed interface.");
 			break;
 		}
 		this._perspective_gen=new NyARPerspectiveParamGenerator_O1(LOCAL_LT,LOCAL_LT);
@@ -190,7 +190,7 @@ interface IPickupRasterImpl
 	public void onePixel(int pk_l,int pk_t,double[] cpara,INyARRgbRaster i_in_raster,INyARRgbRaster o_out)throws NyARException;
 	public void multiPixel(int pk_l,int pk_t,double[] cpara,int i_resolution,INyARRgbRaster i_in_raster,INyARRgbRaster o_out)throws NyARException;
 }
-
+/*
 final class PPickup_Impl_BYTE1D_R8G8B8_24 implements IPickupRasterImpl
 {
 	public void onePixel(int pk_l,int pk_t,double[] cpara,INyARRgbRaster i_in_raster,INyARRgbRaster o_out)throws NyARException
@@ -807,7 +807,7 @@ final class PPickup_Impl_BYTE1D_B8G8R8X8_32 implements IPickupRasterImpl
 		return;
 	}	
 }
-
+*/
 /**
  * 全種類のNyARRasterを入力できるクラス
  */
@@ -848,21 +848,26 @@ final class PPickup_Impl_AnyRaster implements IPickupRasterImpl
 		assert(o_out.isEqualBufferType(NyARBufferType.INT1D_X8R8G8B8_32));
 		double d0,m0;
 		int x,y;
+		int[] pat_data=(int[])o_out.getBuffer();
+		
+		final int img_x = in_w;
+		final int img_y = in_h;
 
 		final int[] rgb_tmp = this.__pickFromRaster_rgb_tmp;
-		int[] pat_data=(int[])o_out.getBuffer();
 
-		//ピクセルリーダーを取得
-		double cp0=cpara[0];
-		double cp3=cpara[3];
-		double cp6=cpara[6];
-		double cp1=cpara[1];
-		double cp4=cpara[4];
-		double cp7=cpara[7];
 
+		
+
+		final double cp0=cpara[0];
+		final double cp3=cpara[3];
+		final double cp6=cpara[6];
+		final double cp1=cpara[1];
+		final double cp4=cpara[4];
+		final double cp7=cpara[7];
+		
 		//ピクセルリーダーを取得
 		int p=0;
-		final int o_w=o_out.getWidth();
+
 		
 		double cp0cx0,cp3cx0;
 		double cp1cy_cp20=cp1*pk_t+cpara[2]+cp0*pk_l;
@@ -881,29 +886,27 @@ final class PPickup_Impl_AnyRaster implements IPickupRasterImpl
 			
 			//0番目のピクセル(検査対象)をピックアップ
 
-
-			for(int ix=o_w-1;ix>=0;ix--){
+			for(int ix=o_out.getWidth()-1;ix>=0;ix--){
 				//1ピクセルを作成
 				x=(int)(cp0cx0*m0);
 				y=(int)(cp3cx0*m0);
-				if(x<0||x>=in_w||y<0||y>=in_h){
-					if(x<0){x=0;}else if(x>=in_w){x=in_w-1;}
-					if(y<0){y=0;}else if(y>=in_h){y=in_h-1;}			
+				if(x<0||x>=img_x||y<0||y>=img_y){
+					if(x<0){x=0;}else if(x>=img_x){x=img_x-1;}
+					if(y<0){y=0;}else if(y>=img_y){y=img_y-1;}			
 				}
-				i_in_reader.getPixel(x, y, rgb_tmp);
-				pat_data[p]=((rgb_tmp[0]&0xff)<<16)|((rgb_tmp[1]&0xff)<<8)|((rgb_tmp[2]&0xff));
+				i_in_reader.getPixel(x, y,rgb_tmp);
+				pat_data[p]=(rgb_tmp[0]<<16)|(rgb_tmp[1]<<8)|((rgb_tmp[2]&0xff));
 				p++;
 				cp0cx0+=cp0;
 				cp3cx0+=cp3;
 				m0+=d0;
-
 			}
 			
 			cp1cy_cp20+=cp1;
 			cp4cy_cp50+=cp4;
 			cp7cy_10+=cp7;
-			
-		}
+			}
+
 		return;
 	}
 	private void onePixel_ANY(int pk_l,int pk_t,int in_w,int in_h,double[] cpara,INyARRgbPixelReader i_in_reader,INyARRgbRaster o_out)throws NyARException

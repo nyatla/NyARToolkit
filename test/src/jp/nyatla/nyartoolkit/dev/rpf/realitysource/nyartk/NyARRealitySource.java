@@ -93,7 +93,7 @@ public abstract class NyARRealitySource
 	}
 	
 	/**
-	 * RGB画像から、4頂点で囲まれた領域を遠近法で矩形に変換して、o_rasterへパターンを取得します。
+	 * 4頂点で囲まれた領域を遠近法で矩形に変換して、RGB画像からo_rasterへパターンを取得します。
 	 * この関数は、最後に
 	 * @param i_vertex
 	 * @param i_resolution
@@ -107,7 +107,7 @@ public abstract class NyARRealitySource
 		return this._source_perspective_reader.read4Point(this._rgb_source,i_vertex,0,0,i_resolution, o_raster);
 	}
 	/**
-	 * RGB画像から、4頂点で囲まれた領域を遠近法で矩形に変換して、o_rasterへパターンを取得します。
+	 *　4頂点で囲まれた領域を遠近法で矩形に変換して、RGB画像からo_rasterへパターンを取得します。
 	 * @param i_vertex
 	 * @param i_resolution
 	 * @param o_raster
@@ -119,7 +119,7 @@ public abstract class NyARRealitySource
 		return this._source_perspective_reader.read4Point(this._rgb_source,i_vertex,0,0,1, o_raster);
 	}
 	/**
-	 * RGB画像から、4頂点で囲まれたエッジ付きの領域を遠近法で矩形に変換して、o_rasterへパターンを取得します。
+	 * 4頂点で囲まれたエッジ付きの領域を遠近法で矩形に変換して、RGB画像からo_rasterへパターンを取得します。
 	 * @param i_vertex
 	 * @param i_edge_x
 	 * @param i_edge_y
@@ -135,7 +135,7 @@ public abstract class NyARRealitySource
 	public final boolean getRgbPerspectivePatt(NyARIntPoint2d[] i_vertex,int i_resolution,int i_edge_x,int i_edge_y,INyARRgbRaster o_raster) throws NyARException
 	{
 		return this._source_perspective_reader.read4Point(this._rgb_source,i_vertex,i_edge_x,i_edge_y,1, o_raster);
-	}	
+	}
 
 
 }

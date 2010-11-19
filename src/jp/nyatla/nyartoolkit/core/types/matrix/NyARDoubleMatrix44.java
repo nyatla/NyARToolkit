@@ -24,6 +24,8 @@
  */
 package jp.nyatla.nyartoolkit.core.types.matrix;
 
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
+
 
 public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 {
@@ -122,7 +124,11 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		o_value[15]=this.m33;
 		return;
 	}
-	
+	/**
+	 * 逆行列を計算して、i_srcのthisへ格納します。i_srcにはthisも指定可能です。
+	 * @param i_src
+	 * @return
+	 */
 	public boolean inverse(NyARDoubleMatrix44 i_src)
 	{
 		final double a11,a12,a13,a14,a21,a22,a23,a24,a31,a32,a33,a34,a41,a42,a43,a44;
@@ -208,5 +214,52 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		this.m33=b44*det_1;
 		
 		return true;
+	}
+	
+	/**
+	 * 行列を姿勢変換行列として、3次元座標を座標変換します。4列目は1で仮定します。
+	 * @param i_x
+	 * @param i_y
+	 * @param i_z
+	 * @param o_out
+	 */
+	public final void transform3d(double i_x,double i_y,double i_z,NyARDoublePoint3d o_out)
+	{
+		o_out.x=this.m00*i_x+this.m01*i_y+this.m02*i_z+this.m03;
+		o_out.y=this.m10*i_x+this.m11*i_y+this.m12*i_z+this.m13;
+		o_out.z=this.m20*i_x+this.m21*i_y+this.m22*i_z+this.m23;
+		return;
+	}
+	
+	/**
+	 * 行列を姿勢変換行列として、3次元座標を座標変換します。
+	 * @param i_in
+	 * @param o_out
+	 */
+	public final void transform3d(NyARDoublePoint3d i_in,NyARDoublePoint3d o_out)
+	{
+		transform3d(i_in.x,i_in.y,i_in.z,o_out);
+	}
+	/**
+	 * 行列を姿勢行列として、ZXY系の角度値を返します。
+	 * この関数は、0-PIの間で値を返します。
+	 * @param o_out
+	 */
+	public final void getZXYAngle(NyARDoublePoint3d o_out)
+	{
+		double sina = this.m21;
+		if (sina >= 1.0) {
+			o_out.x = Math.PI / 2;
+			o_out.y = 0;
+			o_out.z = Math.atan2(-this.m10, this.m00);
+		} else if (sina <= -1.0) {
+			o_out.x = -Math.PI / 2;
+			o_out.y = 0;
+			o_out.z = Math.atan2(-this.m10, this.m00);
+		} else {
+			o_out.x = Math.asin(sina);
+			o_out.z = Math.atan2(-this.m01, this.m11);
+			o_out.y = Math.atan2(-this.m20, this.m22);
+		}
 	}
 }

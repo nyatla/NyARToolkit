@@ -46,6 +46,16 @@ import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 public class NyARGLUtil
 {
 	/**
+	 * NyARToolKit 2.53以前のコードと互換性を持たせるためのスケール値。{@link #toCameraFrustumRH}のi_scaleに設定することで、
+	 * 以前のバージョンの数値系と互換性を保ちます。
+	 */
+	final static double SCALE_FACTOR_toCameraFrustumRH_NYAR2=1.0;
+	/**
+	 * NyARToolKit 2.53以前のコードと互換性を持たせるためのスケール値。{@link #toCameraViewRH}のi_scaleに設定することで、
+	 * 以前のバージョンの数値系と互換性を保ちます。
+	 */
+	final static double SCALE_FACTOR_toCameraViewRH_NYAR2=0.025;
+	/**
 	 * BufferType値から、OpenGLのピクセルタイプ値を計算します。
 	 * @param i_buffer_type
 	 * BufferType値を指定します。
@@ -139,76 +149,58 @@ public class NyARGLUtil
 		gl_.glDrawPixels(rsize.w,rsize.h,getGlPixelFormat(i_raster.getBufferType()), GL.GL_UNSIGNED_BYTE, buf);
 	}
 	
-	private static double view_scale_factor = 0.025;
-	private static double view_distance_min = 0.1;//#define VIEW_DISTANCE_MIN		0.1			// Objects closer to the camera than this will not be displayed.
-	private static double view_distance_max = 100.0;//#define VIEW_DISTANCE_MAX		100.0		// Objects further away from the camera than this will not be displayed.
-
-	public static void setScaleFactor(double i_new_value)
-	{
-		NyARGLUtil.view_scale_factor = i_new_value;
-	}
-
-	public static void setViewDistanceMin(double i_new_value)
-	{
-		NyARGLUtil.view_distance_min = i_new_value;
-	}
-
-	public static void setViewDistanceMax(double i_new_value)
-	{
-		NyARGLUtil.view_distance_max = i_new_value;
-	}
-
-
-	
 	
 	/**
-	 * void arglCameraFrustumRH(const ARParam *cparam, const double focalmin, const double focalmax, GLdouble m_projection[16])
-	 * 関数の置き換え
-	 * NyARParamからOpenGLのProjectionを作成します。
+	 * CameraFrustramを計算します。
 	 * @param i_arparam
+	 * @param i_scale
+	 * スケール値を指定します。1=1mmです。10ならば1=1cm,1000ならば1=1mです。
+	 * 2.53以前のNyARToolkitと互換性を持たせるときは、{@link #SCALE_FACTOR_toCameraFrustumRH_NYAR2}を指定してください。
+	 * @param i_near
+	 * 視錐体のnearPointを指定します。単位は、i_scaleに設定した値で決まります。
+	 * @param i_far
+	 * 視錐体のfarPointを指定します。単位は、i_scaleに設定した値で決まります。
 	 * @param o_gl_projection
-	 * double[16]を指定して下さい。
 	 */
-	public static void toCameraFrustumRH(NyARParam i_arparam,double[] o_gl_projection)
+	public static void toCameraFrustumRH(NyARParam i_arparam,double i_scale,double i_near,double i_far,double[] o_gl_projection)
 	{
 		NyARDoubleMatrix44 m=new NyARDoubleMatrix44();
-		i_arparam.makeCameraFrustumRH(view_distance_min,view_distance_max,m);
+		i_arparam.makeCameraFrustumRH(i_near*i_scale,i_far*i_scale,m);
 		//OpenGLの並びに直してセット。
 		m.getValueT(o_gl_projection);
 		return;
 	}
 	
-	
-	
 	/**
 	 * NyARTransMatResultをOpenGLの行列へ変換します。
 	 * @param i_ny_result
+	 * 変換元の行列
+	 * @param i_scale
+	 * 座標系のスケール値を指定します。1=1mmです。10ならば1=1cm,1000ならば1=1mです。
+	 * 2.53以前のNyARToolkitと互換性を持たせるときは、{@link #SCALE_FACTOR_toCameraViewRH_NYAR2}を指定してください。
 	 * @param o_gl_result
 	 * @throws NyARException
 	 */
-	public static void toCameraViewRH(NyARTransMatResult i_ny_result, double[] o_gl_result) throws NyARException
+	public static void toCameraViewRH(NyARTransMatResult i_ny_result,double i_scale, double[] o_gl_result) throws NyARException
 	{
 		o_gl_result[0 + 0 * 4] = i_ny_result.m00; 
-		o_gl_result[0 + 1 * 4] = i_ny_result.m01;
-		o_gl_result[0 + 2 * 4] = i_ny_result.m02;
-		o_gl_result[0 + 3 * 4] = i_ny_result.m03;
 		o_gl_result[1 + 0 * 4] = -i_ny_result.m10;
-		o_gl_result[1 + 1 * 4] = -i_ny_result.m11;
-		o_gl_result[1 + 2 * 4] = -i_ny_result.m12;
-		o_gl_result[1 + 3 * 4] = -i_ny_result.m13;
 		o_gl_result[2 + 0 * 4] = -i_ny_result.m20;
-		o_gl_result[2 + 1 * 4] = -i_ny_result.m21;
-		o_gl_result[2 + 2 * 4] = -i_ny_result.m22;
-		o_gl_result[2 + 3 * 4] = -i_ny_result.m23;
 		o_gl_result[3 + 0 * 4] = 0.0;
+		o_gl_result[0 + 1 * 4] = i_ny_result.m01;
+		o_gl_result[1 + 1 * 4] = -i_ny_result.m11;
+		o_gl_result[2 + 1 * 4] = -i_ny_result.m21;
 		o_gl_result[3 + 1 * 4] = 0.0;
+		o_gl_result[0 + 2 * 4] = i_ny_result.m02;
+		o_gl_result[1 + 2 * 4] = -i_ny_result.m12;
+		o_gl_result[2 + 2 * 4] = -i_ny_result.m22;
 		o_gl_result[3 + 2 * 4] = 0.0;
+		
+		double scale=1/i_scale;
+		o_gl_result[0 + 3 * 4] = i_ny_result.m03*scale;
+		o_gl_result[1 + 3 * 4] = -i_ny_result.m13*scale;
+		o_gl_result[2 + 3 * 4] = -i_ny_result.m23*scale;
 		o_gl_result[3 + 3 * 4] = 1.0;
-		if (view_scale_factor != 0.0) {
-			o_gl_result[12] *= view_scale_factor;
-			o_gl_result[13] *= view_scale_factor;
-			o_gl_result[14] *= view_scale_factor;
-		}
 		return;
 	}	
 	

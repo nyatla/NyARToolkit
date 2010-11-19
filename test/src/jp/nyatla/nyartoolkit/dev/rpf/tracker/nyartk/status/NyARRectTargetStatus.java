@@ -312,7 +312,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		int max=Integer.MIN_VALUE;
 		int min=Integer.MAX_VALUE;
 		for(int i=0;i<4;i++){
-			int t=(int)this_vx[i].sqNorm(this_vx[(i+1)%4]);
+			int t=(int)this_vx[i].sqDist(this_vx[(i+1)%4]);
 			if(t>max){max=t;}
 			if(t<min){min=t;}
 		}
@@ -343,7 +343,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		int max=Integer.MIN_VALUE;
 		int min=Integer.MAX_VALUE;
 		for(int i=0;i<4;i++){
-			int t=(int)this_vx[i].sqNorm(this_vx[(i+1)%4]);
+			int t=(int)this_vx[i].sqDist(this_vx[(i+1)%4]);
 			if(t>max){max=t;}
 			if(t<min){min=t;}
 		}
