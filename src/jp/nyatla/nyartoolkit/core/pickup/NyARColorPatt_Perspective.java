@@ -51,7 +51,6 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 	private void initializeInstance(int i_width, int i_height,int i_point_per_pix)
 	{
 		assert i_width>2 && i_height>2;
-		this._resolution=i_point_per_pix;	
 		this._size=new NyARIntSize(i_width,i_height);
 		this._patdata = new int[i_height*i_width];
 		this._pixelreader=new NyARRgbPixelReader_INT1D_X8R8G8B8_32(this._patdata,this._size);
@@ -108,6 +107,7 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 		//ピックアップ開始位置を計算
 		this._pickup_lt.setValue(i_x_edge*i_resolution+LOCAL_LT,i_y_edge*i_resolution+LOCAL_LT);
 		this._pickup_wh.setValue((i_x_edge*2+this._size.w)*i_resolution,(i_y_edge*2+this._size.h)*i_resolution);
+		this._resolution=i_resolution;	
 		return;
 	}
 	public void setEdgeSizeByPercent(int i_x_percent,int i_y_percent,int i_resolution)

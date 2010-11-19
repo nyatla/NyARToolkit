@@ -90,6 +90,7 @@ public class NyARColorPatt_Perspective_O2 implements INyARColorPatt
 		assert(i_x_percent>=0);
 		assert(i_y_percent>=0);
 		this._edge.setValue(i_x_percent, i_y_percent);
+		this._resolution=i_resolution;
 		return;
 	}
 
