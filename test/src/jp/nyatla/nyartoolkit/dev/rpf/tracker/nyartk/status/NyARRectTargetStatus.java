@@ -159,7 +159,6 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		//ベクトルのマージ
 		this._ref_my_pool._vecpos_op.margeResembleCoords(vecpos);
 		if(vecpos.length<4){
-			System.out.println("AAAAA");
 			return false;
 		}
 		//キーベクトルを取得
@@ -212,7 +211,6 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 
 		NyARLinear[] sh_l=this._ref_my_pool._line;
 		if(!traceSquareLine(i_vec_reader,d,i_prev_status,sh_l)){
-			//System.out.println(">>>>>>>>>>>>>"+v_ave_limit+","+d);
 			return false;
 		}else{
 		}
@@ -248,7 +246,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		int sq_v_ave_limit=i_prev_status.estimate_sum_sq_vertex_velocity_ave/4;
 		//速度が小さい時か、前回LineLogが成功したときはDT_LIDAILY
 		if(((sq_v_ave_limit<10) && (i_prev_status.detect_type==DT_SQDAILY)) || (i_prev_status.detect_type==DT_LIDAILY)){
-		//	current_detect_type=DT_LIDAILY;
+			current_detect_type=DT_LIDAILY;
 		}
 		
 		//前回の動作ログによる手段の切り替え

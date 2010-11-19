@@ -247,8 +247,8 @@ public class NyARVectorReader_INT1D_GRAY_8
 			return false;
 		}
 		// dist最大数の決定
-		if (dist > 14) {
-			dist = 14;
+		if (dist > 22) {
+			dist = 22;
 		}
 		// サンプリングサイズを決定(移動速度とサイズから)
 		int s = i_edge * 2 + 1;
@@ -258,12 +258,12 @@ public class NyARVectorReader_INT1D_GRAY_8
 		int b = base_s.h - s;
 
 		// 最大14点を定義して、そのうち両端を除いた点を使用する。
-		for (int i = 3; i < dist - 1; i++) {
+		for (int i = 1; i < dist - 1; i++) {
 			int x = i * dx / dist + i_pos1.x - i_edge;
 			int y = i * dy / dist + i_pos1.y - i_edge;
 			// limit
-			coord.items[i - 3].x = x < 0 ? 0 : (x >= r ? r : x);
-			coord.items[i - 3].y = y < 0 ? 0 : (y >= b ? b : y);
+			coord.items[i - 1].x = x < 0 ? 0 : (x >= r ? r : x);
+			coord.items[i - 1].y = y < 0 ? 0 : (y >= b ? b : y);
 		}
 
 		coord.length = dist - 4;

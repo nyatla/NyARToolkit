@@ -83,6 +83,7 @@ public class NyARTrackerSource_Reference extends NyARTrackerSource
 	public LowResolutionLabelingSamplerOut makeSampleOut() throws NyARException
 	{
 		syncResource();
+		//敷居値自動調整はそのうちね。
 		this._sampler.sampling(this._rbraster,230,this._sample_out);
 		return this._sample_out;
 	}
