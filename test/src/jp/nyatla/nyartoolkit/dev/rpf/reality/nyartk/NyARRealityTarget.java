@@ -162,12 +162,14 @@ public class NyARRealityTarget extends NyARManagedObject
 	//[OPT:]指定したターゲットとの変換行列を求める。
 	//[OPT:]ターゲット座標系の平面上の任意の矩形を変換行列で移動した四角形から、パターンを取得する。解像度は受け取り側のラスタに従う。
 	/**
-	 * 指定した点が、このターゲットの内側であるか判定します。この関数は、Known/Unknownターゲットに使用できます。
+	 * 画面上の点が、このターゲットを構成する頂点の内側にあるか判定します。
+	 * (範囲ではなく、頂点の内側であることに注意してください。)
+	 * この関数は、Known/Unknownターゲットに使用できます。
 	 * @param i_x
 	 * @param i_y
 	 * @return
 	 */
-	public final boolean isInnerPoint2d(int i_x,int i_y)
+	public final boolean isInnerVertexPoint2d(int i_x,int i_y)
 	{
 		assert(this._target_type==RT_UNKNOWN || this._target_type==RT_KNOWN);
 		NyARDoublePoint2d[] vx=((NyARRectTargetStatus)(this._ref_tracktarget.ref_status)).vertex;
@@ -178,6 +180,21 @@ public class NyARRealityTarget extends NyARManagedObject
 			}
 		}
 		return true;
+	}
+	/**
+	 * 画面上の点が、このターゲットを包括する矩形の内側にあるかを判定します。
+	 * この関数は、Known/Unknownターゲットに使用できます。
+	 * @param i_x
+	 * @param i_y
+	 * @return
+	 */
+	public final boolean isInnerRectPoint2d(int i_x,int i_y)
+	{
+		assert(this._target_type==RT_UNKNOWN || this._target_type==RT_KNOWN);
+		NyARIntRect rect=new NyARIntRect();
+		NyARDoublePoint2d[] vx=((NyARRectTargetStatus)(this._ref_tracktarget.ref_status)).vertex;
+		rect.setAreaRect(vx,4);
+		return rect.isInnerPoint(i_x, i_y);
 	}
 	/**
 	 * 対象矩形の頂点配列への参照値を返します。

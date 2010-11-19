@@ -44,7 +44,7 @@ public class NyARIntRect
 
 	public int h;
 	/**
-	 * 頂点を包括するRECTを計算する。
+	 * 頂点を包括するRECTを計算します。
 	 * @param i_vertex
 	 * @param i_num_of_vertex
 	 * @param o_rect

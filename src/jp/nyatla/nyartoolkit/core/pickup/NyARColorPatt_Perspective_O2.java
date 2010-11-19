@@ -74,6 +74,8 @@ public class NyARColorPatt_Perspective_O2 implements INyARColorPatt
 	 * 取得画像の解像度幅
 	 * @param i_height
 	 * 取得画像の解像度高さ
+	 * @param i_point_per_pix
+	 * 1ピクセルあたりの解像度
 	 * @param i_edge_percentage
 	 * エッジ幅の割合(ARToolKit標準と同じなら、25)
 	 * @param i_input_raster_type

@@ -30,6 +30,8 @@
  */
 package jp.nyatla.nyartoolkit.core.raster.rgb;
 
+import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.rasterreader.INyARRgbPixelReader;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
@@ -66,5 +68,28 @@ public abstract class NyARRgbRaster_BasicClass implements INyARRgbRaster
 	final public boolean isEqualBufferType(int i_type_value)
 	{
 		return this._buffer_type==i_type_value;
-	}	
+	}
+	/**
+	 * ラスタのコピーを実行します。
+	 * この関数は暫定です。低速なので注意してください。
+	 * @param i_input
+	 * @param o_output
+	 * @throws NyARException 
+	 */
+	public static void copy(INyARRgbRaster i_input,INyARRgbRaster o_output) throws NyARException
+	{
+		assert(i_input.getSize().isEqualSize(o_output.getSize()));
+		int width=i_input.getWidth();
+		int height=i_input.getHeight();
+		int[] rgb=new int[3];
+		INyARRgbPixelReader inr=i_input.getRgbPixelReader();
+		INyARRgbPixelReader outr=o_output.getRgbPixelReader();
+		for(int i=height-1;i>=0;i--){
+			for(int i2=width-1;i2>=0;i2--){
+				inr.getPixel(i2,i,rgb);
+				outr.setPixel(i2,i,rgb);
+			}
+		}
+	}
+	
 }

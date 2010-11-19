@@ -78,7 +78,7 @@ class LiveSource extends InputSource implements JmfCaptureListener
 		}
 		this._capture.setOnCapture(this);
 		this._capture.start();
-		this.reality_in=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),null,1,100);
+		this.reality_in=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),null,2,100);
 		return;
 		
 	}
@@ -87,7 +87,7 @@ class LiveSource extends InputSource implements JmfCaptureListener
 	{
 		try {
 			//キャプチャしたバッファをラスタにセット
-			synchronized(this){
+			synchronized(this.reality_in){
 				((NyARRealitySource_Jmf)(this.reality_in)).setImage(i_buffer);
 			}
 			//キャプチャしたイメージを表示用に加工
@@ -127,22 +127,22 @@ public class Test_RealityTarget extends Frame implements MouseListener
 		System.out.println(x+":"+y);
 		synchronized(this._input_source.reality_in)
 		{
-			NyARBufferedImageRaster bmp= new NyARBufferedImageRaster(64,64,NyARBufferType.BYTE1D_B8G8R8_24);
-			NyARColorPatt_Perspective_O2 patt=new NyARColorPatt_Perspective_O2(64,64,1);
-			NyARColorPatt_Perspective patt2=new NyARColorPatt_Perspective(64,64,1);
-//			patt.setEdgeSizeByPercent(25,25,1);
-//			patt2.setEdgeSizeByPercent(25,25,1);
+			NyARBufferedImageRaster bmp= new NyARBufferedImageRaster(64,64,NyARBufferType.BYTE1D_R8G8B8_24);
 			for(int i=this._reality.refTargetList().getLength()-1;i>=0;i--)
 			{
 				NyARRealityTarget rt=this._reality.refTargetList().getItem(i);
 				if(rt._target_type!=NyARRealityTarget.RT_UNKNOWN && rt._target_type!=NyARRealityTarget.RT_KNOWN){
 					continue;
 				}
-				if(rt.isInnerPoint2d(x, y))
+				if(rt.isInnerVertexPoint2d(x, y))
 				{
 					if(e.getButton()==MouseEvent.BUTTON1){
 						//左ボタンはUNKNOWN→KNOWN
 						if(rt._target_type==NyARRealityTarget.RT_UNKNOWN){
+							NyARColorPatt_Perspective_O2 patt=new NyARColorPatt_Perspective_O2(64,64,25,2,NyARBufferType.BYTE1D_R8G8B8_24);
+							NyARColorPatt_Perspective patt2=new NyARColorPatt_Perspective(64,64,2,25);
+							patt.setEdgeSizeByPercent(25,25,1);
+							patt2.setEdgeSizeByPercent(25,25,1);
 								this._reality.changeTargetToKnown(rt,0,40);
 								//イメージピックアップの実験
 //								this._input_source.reality_in.getRgbPerspectivePatt(rt.refTargetVertex(),1,25,25,bmp);
@@ -151,12 +151,20 @@ public class Test_RealityTarget extends Frame implements MouseListener
 									iv[i2].x=(int)rt.refTargetVertex()[i2].x;
 									iv[i2].y=(int)rt.refTargetVertex()[i2].y;
 								}
-								patt.pickFromRaster(this._input_source.reality_in.refRgbSource(),iv);
-								patt2.pickFromRaster(this._input_source.reality_in.refRgbSource(),iv);
+								System.out.println(">>");
+								NyARRgbRaster rgb=new NyARRgbRaster(320,240,NyARBufferType.BYTE1D_R8G8B8_24);
+								NyARRgbRaster.copy(this._input_source.reality_in.refRgbSource(), rgb);
+								long s=System.currentTimeMillis();
+								for(int i2=0;i2<1000;i2++)patt.pickFromRaster(rgb,iv);
+								System.out.println(System.currentTimeMillis()-s);
+								s=System.currentTimeMillis();
+								for(int i2=0;i2<1000;i2++)patt2.pickFromRaster(rgb,iv);
+								System.out.println(System.currentTimeMillis()-s);
+
 								NyARRasterImageIO.copy(patt2, bmp.getBufferedImage());
-								this.getGraphics().drawImage(bmp.getBufferedImage(),this.getInsets().left,this.getInsets().top+240,null);
-								NyARRasterImageIO.copy(patt, bmp.getBufferedImage());
 								this.getGraphics().drawImage(bmp.getBufferedImage(),this.getInsets().left+64,this.getInsets().top+240,null);
+								NyARRasterImageIO.copy(patt, bmp.getBufferedImage());
+								this.getGraphics().drawImage(bmp.getBufferedImage(),this.getInsets().left+0,this.getInsets().top+240,null);
 							break;
 						}
 					}else if(e.getButton()==MouseEvent.BUTTON3){
