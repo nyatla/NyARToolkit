@@ -820,8 +820,8 @@ final class PPickup_Impl_AnyRaster implements IPickupRasterImpl
 		switch(o_out.getBufferType())
 		{
 		case NyARBufferType.INT1D_X8R8G8B8_32:
-			onePixel_INT1D_X8R8G8B8_32(pk_l,pk_t,i_in_raster.getWidth(),i_in_raster.getHeight(),cpara,i_in_raster.getRgbPixelReader(),o_out);
-			break;
+//			onePixel_INT1D_X8R8G8B8_32(pk_l,pk_t,i_in_raster.getWidth(),i_in_raster.getHeight(),cpara,i_in_raster.getRgbPixelReader(),o_out);
+//			break;
 		default:
 			onePixel_ANY(pk_l,pk_t,i_in_raster.getWidth(),i_in_raster.getHeight(),cpara,i_in_raster.getRgbPixelReader(),o_out);
 			break;
@@ -988,49 +988,63 @@ final class PPickup_Impl_AnyRaster implements IPickupRasterImpl
 		double cp7=cpara[7];
 		double cp2=cpara[2];
 		double cp5=cpara[5];
-	
+		
+		int out_w=o_out.getWidth();
 		int p=0;
 		int cy=pk_t;
-		final int o_w=o_out.getWidth();
 		for(int iy=o_out.getHeight()-1;iy>=0;iy--){
 			//解像度分の点を取る。
 			int cx=pk_l;
-			for(int ix=o_w-1;ix>=0;ix--){
+			double cp7_cy_1_b=cp7*cy+1.0;
+			double cp1_cy_cp2_b=cp1*cy+cp2;
+			double cp4_cy_cp5_b=cp4*cy+cp5;
+			for(int ix=out_w-1;ix>=0;ix--){
 				int r,g,b;
 				r=g=b=0;
-				double xss=cp1*cy+cp2;
-				double yss=cp4*cy+cp5;
-				double dss=cp7*cy+1.0;
+				double cp7_cy_1=cp7_cy_1_b;
+				double cp1_cy_cp2=cp1_cy_cp2_b;
+				double cp4_cy_cp5=cp4_cy_cp5_b;
+				double cp6_cx=cp6*cx;
+				double cp0_cx=cp0*cx;
+				double cp3_cx=cp3*cx;
 				for(int i2y=i_resolution-1;i2y>=0;i2y--){
-					double xxx=xss+cp0*cx;
-					double yyy=yss+cp3*cx;
-					double d=dss+cp6*cx;
-					xss+=cp1;
-					yss+=cp4;
-					dss+=cp7;
+					double cp7_cy_1_cp6_cx=cp7_cy_1+ cp6_cx;
+					double cp1_cy_cp2_cp0_cx=cp1_cy_cp2+ cp0_cx;
+					double cp4_cy_cp5_cp3_cx=cp4_cy_cp5+ cp3_cx;
+					cp1_cy_cp2+=cp1;
+					cp4_cy_cp5+=cp4;
+					cp7_cy_1+=cp7;
 					for(int i2x=i_resolution-1;i2x>=0;i2x--){
 						//1ピクセルを作成
-						int x=(int)(xxx/d);
-						int y=(int)(yyy/d);
-						xxx+=cp0;
-						yyy+=cp3;
-						d+=cp6;
-						if(x<0||x>=in_w||y<0||y>=in_h){
-							if(x<0){x=0;}else if(x>=in_w){x=in_w-1;}
-							if(y<0){y=0;}else if(y>=in_h){y=in_h-1;}
-						}
+						final double d=1/(cp7_cy_1_cp6_cx);
+						int x=(int)(cp1_cy_cp2_cp0_cx*d);
+						int y=(int)(cp4_cy_cp5_cp3_cx*d);
+						cp1_cy_cp2_cp0_cx+=cp0;
+						cp4_cy_cp5_cp3_cx+=cp3;
+						cp7_cy_1_cp6_cx+=cp6;
+						
+						if(x<0){x=0;}else if(x>=in_w){x=in_w-1;}
+						if(y<0){y=0;}else if(y>=in_h){y=in_h-1;}
+						
 						i_in_reader.getPixel(x, y, rgb_tmp);
 						r+=rgb_tmp[0];
 						g+=rgb_tmp[1];
 						b+=rgb_tmp[2];
+
 					}
 				}
 				cx+=i_resolution;
-				pat_data[p]=(((r/res_pix)&0xff)<<16)|(((g/res_pix)&0xff)<<8)|(((b/res_pix)&0xff));
+				
+				r/=res_pix;
+				g/=res_pix;
+				b/=res_pix;
+				pat_data[p]=((r&0xff)<<16)|((g&0xff)<<8)|((b&0xff));
 				p++;
 			}
 			cy+=i_resolution;
+			
 		}
+//		System.out.println("AAAAA");
 		return;
 	}
 	private void multiPixel_ANY(int pk_l,int pk_t,int in_w,int in_h,int i_resolution,double[] cpara,INyARRgbPixelReader i_in_reader,INyARRgbRaster o_out)throws NyARException
