@@ -51,7 +51,7 @@ public class NyARRealityGl extends NyARReality
 	 * この値は、直接OpenGLの処理系へセットできます。
 	 * @return
 	 */
-	public double[] refGlFrastumRH()
+	public double[] refGLFrustumRhMatrix()
 	{
 		return this._gl_frustum_rh;
 	}
