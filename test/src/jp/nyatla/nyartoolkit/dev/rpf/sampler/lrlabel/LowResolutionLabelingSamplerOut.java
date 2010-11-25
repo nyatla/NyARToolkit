@@ -4,8 +4,8 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.stack.*;
-import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObject;
-import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObjectPool;
+import jp.nyatla.nyartoolkit.core.utils.NyARManagedObject;
+import jp.nyatla.nyartoolkit.core.utils.NyARManagedObjectPool;
 
 /**
  * LowResolutionLabelingSampler用の出力コンテナです。サンプリング結果を受け取ります。

@@ -25,7 +25,7 @@
 package jp.nyatla.nyartoolkit.core.utils;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.types.*;
+
 
 /**
  * NyARPerspectiveParamGeneratorを最適化したクラスです。

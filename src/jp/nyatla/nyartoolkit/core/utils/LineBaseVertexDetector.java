@@ -1,7 +1,8 @@
-package jp.nyatla.nyartoolkit.dev.rpf.utils;
+package jp.nyatla.nyartoolkit.core.utils;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
+import jp.nyatla.nyartoolkit.core.types.*;
+
 /**
  * このクラスは、直線式の集合から頂点集合を計算する関数を提供します。
  */

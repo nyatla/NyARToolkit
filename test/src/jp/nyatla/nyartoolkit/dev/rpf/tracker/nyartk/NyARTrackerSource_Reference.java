@@ -84,7 +84,7 @@ public class NyARTrackerSource_Reference extends NyARTrackerSource
 	{
 		syncResource();
 		//敷居値自動調整はそのうちね。
-		this._sampler.sampling(this._rbraster,230,this._sample_out);
+		this._sampler.sampling(this._rbraster,220,this._sample_out);
 		return this._sample_out;
 	}
 	

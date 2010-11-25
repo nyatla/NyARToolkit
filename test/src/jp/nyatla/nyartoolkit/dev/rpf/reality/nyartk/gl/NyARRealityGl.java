@@ -1,12 +1,18 @@
 package jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.gl;
 
+import javax.media.opengl.GL;
+
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.param.NyARFrustum;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
+import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
+import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARReality;
+import jp.nyatla.nyartoolkit.jogl.utils.NyARGLUtil;
 
 /**
  * OpenGLに特化したNyARRealityクラスです。
@@ -15,12 +21,19 @@ import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARReality;
 public class NyARRealityGl extends NyARReality
 {
 	private double[] _gl_frustum_rh=new double[16];
+	/**
+	 * ARToolKitスタイルのModelView行列を、OpenGLスタイルのモデルビュー行列に変換します。
+	 * @param i_ny_style_mat
+	 * @param o_gl_style_mat
+	 */
+	public static void toGLViewMat(NyARDoubleMatrix44 i_ny_style_mat,double[] o_gl_style_mat)
+	{
+		NyARGLUtil.toCameraViewRH(i_ny_style_mat, 1, o_gl_style_mat);
+	}
 	
 	public NyARRealityGl(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target) throws NyARException
 	{
 		super(i_param,i_near,i_far,i_max_known_target,i_max_unknown_target);
-		//カメラパラメータを計算しておく
-		this._frustum_rh.getValueT(this._gl_frustum_rh);
 	}
 	/**
 	 * 透視投影行列と視錐体パラメータを元に、インスタンスを作成します。
@@ -43,17 +56,39 @@ public class NyARRealityGl extends NyARReality
 	{
 		super(i_screen_size,i_near,i_far,i_prjmat,null,i_max_known_target,i_max_unknown_target);
 		//カメラパラメータを取得しておく。
-		this._frustum_rh.getValueT(this._gl_frustum_rh);
+		this._frustum.refMatrix().getValueT(this._gl_frustum_rh);
 	}
-
+	
+	private double[] _temp=new double[16];
 	/**
-	 * OpenGLスタイルのProjection行列の参照値を返します。
-	 * この値は、直接OpenGLの処理系へセットできます。
-	 * @return
+	 * NyARToolKitの姿勢変換行列をOpenGLスタックへロードします。
+	 * @throws NyARException 
 	 */
-	public double[] refGLFrustumRhMatrix()
+	public void glLoadModelViewMatrix(GL i_gl,NyARDoubleMatrix44 i_mat) throws NyARException
 	{
-		return this._gl_frustum_rh;
+		NyARGLUtil.toCameraViewRH(i_mat,1,this._temp);
+		i_gl.glLoadMatrixd(this._temp,0);
+		return;
 	}
-
+	
+	/**
+	 * projection行列をOpenGLの行列スタックへロードします。
+	 */
+	public void glLoadCameraFrustum(GL i_gl)
+	{
+		i_gl.glLoadMatrixd(this._gl_frustum_rh,0);
+		return;
+	}
+	/**
+	 * 現在のViewPortに、i_rasterの内容を描画します。
+	 * @param i_gl
+	 * OpenGLインスタンスを指定します。
+	 * @param i_raster
+	 * @throws NyARException
+	 */
+	public void glDrawRealitySource(GL i_gl,INyARRaster i_raster) throws NyARException
+	{
+		NyARGLUtil.drawBackGround(i_gl,i_raster,1.0);
+		return;
+	}
 }

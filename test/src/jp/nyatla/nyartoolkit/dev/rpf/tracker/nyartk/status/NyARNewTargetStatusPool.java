@@ -1,7 +1,7 @@
 package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObjectPool;
+import jp.nyatla.nyartoolkit.core.utils.NyARManagedObjectPool;
 
 
 public class NyARNewTargetStatusPool extends NyARManagedObjectPool<NyARNewTargetStatus>

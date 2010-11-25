@@ -2,12 +2,13 @@ package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
 
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
+import jp.nyatla.nyartoolkit.core.utils.NyARManagedObject;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARTargetStatus;
-import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObject;
 
 /**
  * トラッキングターゲットのクラスです。
+ * {@link #tag}以外の要素については、ユーザからの直接アクセスを推奨しません。
  *
  */
 public class NyARTarget extends NyARManagedObject
@@ -19,15 +20,15 @@ public class NyARTarget extends NyARManagedObject
 	/**
 	 * システム動作中に一意なシリアル番号
 	 */
-	private static long _serial=0;
+	private static long _serial_counter=0;
 	/**
 	 * 新しいシリアルIDを返します。この値は、NyARTargetを新規に作成したときに、Poolクラスがserialプロパティに設定します。
 	 * @return
 	 */
-	public static long getSerial()
+	public static long createSerialId()
 	{
 		synchronized(NyARTarget._serial_lock){
-			return NyARTarget._serial++;
+			return NyARTarget._serial_counter++;
 		}
 	}
 	////////////////////////
@@ -35,33 +36,24 @@ public class NyARTarget extends NyARManagedObject
 	/**
 	 * ステータスのタイプを表します。この値はref_statusの型と同期しています。
 	 */
-	public int st_type;
+	public int _st_type;
 	/**
 	 * Targetを識別するID値
 	 */
-	public long serial;
+	public long _serial;
 	/**
 	 * 認識サイクルの遅延値。更新ミスの回数と同じ。
 	 */
-	public int delay_tick;
+	public int _delay_tick;
 
-	/**
-	 * 現在のステータスになってからのターゲットの寿命値
-	 */
-//	public int status_age;
 	/**
 	 * 現在のステータスの最大寿命。
 	 */
-	public int status_life;
-	/**
-	 * 検知率
-	 */
-	/**
-	 * 
-	 */
+	public int _status_life;
+
 	////////////////////////
 	//targetの情報
-	public NyARTargetStatus ref_status;
+	public NyARTargetStatus _ref_status;
 	
 	/**
 	 * ユーザオブジェクトを配置するポインタータグです。リリース時にNULL初期化されます。
@@ -72,7 +64,7 @@ public class NyARTarget extends NyARManagedObject
 	/**
 	 * サンプリングエリアを格納する変数です。
 	 */
-	public NyARIntRect sample_area=new NyARIntRect();
+	public NyARIntRect _sample_area=new NyARIntRect();
 	//アクセス用関数
 	
 	/**
@@ -89,10 +81,10 @@ public class NyARTarget extends NyARManagedObject
 	public int releaseObject()
 	{
 		int ret=super.releaseObject();
-		if(ret==0 && this.ref_status!=null)
+		if(ret==0 && this._ref_status!=null)
 		{
-			this.ref_status.releaseObject();
-			this.ref_status=null;
+			this._ref_status.releaseObject();
+			this._ref_status=null;
 			this.tag=null;
 		}
 		return ret;
@@ -104,7 +96,7 @@ public class NyARTarget extends NyARManagedObject
 	 */
 	public void setSampleArea(NyARDoublePoint2d[] i_vertex)
 	{
-		this.sample_area.setAreaRect(i_vertex,4);
+		this._sample_area.setAreaRect(i_vertex,4);
 	}	
 
 	/**
@@ -114,6 +106,6 @@ public class NyARTarget extends NyARManagedObject
 	 */
 	public void setSampleArea(LowResolutionLabelingSamplerOut.Item i_item)
 	{
-		this.sample_area.setValue(i_item.base_area);
+		this._sample_area.setValue(i_item.base_area);
 	}
 }

@@ -243,10 +243,10 @@ public class Test_TrackTerget extends Frame
 
     	//ワーク画面
     	BufferedImage bmp=this._tmp_bf;
-    	NyARRasterImageIO.copy(this.tracksource.getBaseRaster(),bmp);
+    	NyARRasterImageIO.copy(this.tracksource.refBaseRaster(),bmp);
     	//Ignore,Coord,New
     	for(int i=this.tracker._targets.getLength()-1;i>=0;i--){
-    		switch(this.tracker._targets.getItem(i).st_type)
+    		switch(this.tracker._targets.getItem(i)._st_type)
     		{
     		case NyARTargetStatus.ST_CONTURE:
             	drawContourTarget(this.tracker._targets.getItem(i),bmp,Color.blue);
@@ -264,7 +264,7 @@ public class Test_TrackTerget extends Frame
     	}
     	//表示
     	ig.drawImage(bmp,ins.left,ins.top,null);
-    	drawImage(ig,ins.left+640,ins.top,this.tracksource.getEdgeRaster());
+    	drawImage(ig,ins.left+640,ins.top,this.tracksource.refEdgeRaster());
     }
     private void drawImage(Graphics g,int x,int y,NyARGrayscaleRaster r) throws NyARException
     {
@@ -283,8 +283,8 @@ public class Test_TrackTerget extends Frame
     	//サンプリング結果の表示
     	Graphics g=sink.getGraphics();
 	    	g.setColor(c);
-			NyARRectTargetStatus s=(NyARRectTargetStatus)t.ref_status;
-			g.drawString("RT:"+t.serial+"("+s.detect_type+")"+"-"+t.delay_tick,t.sample_area.x,t.sample_area.y);
+			NyARRectTargetStatus s=(NyARRectTargetStatus)t._ref_status;
+			g.drawString("RT:"+t._serial+"("+s.detect_type+")"+"-"+t._delay_tick,t._sample_area.x,t._sample_area.y);
 			g.drawRect((int)s.vertex[0].x-1,(int)s.vertex[0].y-1,2,2);
 			for(int i2=0;i2<4;i2++){
 //				g.fillRect((int)st.vecpos[i2].x-1, (int)st.vecpos[i2].y-1,2,2);
@@ -312,11 +312,11 @@ public class Test_TrackTerget extends Frame
     	//サンプリング結果の表示
     	Graphics g=sink.getGraphics();
     	g.setColor(c);
-		g.drawString("CT",t.sample_area.x,t.sample_area.y);
-		g.drawRect(t.sample_area.x,t.sample_area.y,t.sample_area.w,t.sample_area.h);
-		NyARContourTargetStatus st=(NyARContourTargetStatus)t.ref_status;
+		g.drawString("CT",t._sample_area.x,t._sample_area.y);
+		g.drawRect(t._sample_area.x,t._sample_area.y,t._sample_area.w,t._sample_area.h);
+		NyARContourTargetStatus st=(NyARContourTargetStatus)t._ref_status;
 		for(int i2=0;i2<st.vecpos.length;i2++){
-			g.drawString(i2+":"+"-"+t.delay_tick,(int)st.vecpos.items[i2].x-1, (int)st.vecpos.items[i2].y-1);
+			g.drawString(i2+":"+"-"+t._delay_tick,(int)st.vecpos.items[i2].x-1, (int)st.vecpos.items[i2].y-1);
 			g.fillRect((int)st.vecpos.items[i2].x-1, (int)st.vecpos.items[i2].y-1,2,2);
 		}
     }
@@ -329,8 +329,8 @@ public class Test_TrackTerget extends Frame
     	//サンプリング結果の表示
     	Graphics g=sink.getGraphics();
     	g.setColor(c);
-		g.drawString("IG"+"-"+t.delay_tick,t.sample_area.x,t.sample_area.y);
-		g.drawRect(t.sample_area.x,t.sample_area.y,t.sample_area.w,t.sample_area.h);
+		g.drawString("IG"+"-"+t._delay_tick,t._sample_area.x,t._sample_area.y);
+		g.drawRect(t._sample_area.x,t._sample_area.y,t._sample_area.w,t._sample_area.h);
     }
         
     /**
@@ -341,8 +341,8 @@ public class Test_TrackTerget extends Frame
     	//サンプリング結果の表示
     	Graphics g=sink.getGraphics();
     	g.setColor(c);
-		g.drawString("NW"+"-"+t.delay_tick,t.sample_area.x,t.sample_area.y);
-		g.drawRect(t.sample_area.x,t.sample_area.y,t.sample_area.w,t.sample_area.h);
+		g.drawString("NW"+"-"+t._delay_tick,t._sample_area.x,t._sample_area.y);
+		g.drawRect(t._sample_area.x,t._sample_area.y,t._sample_area.w,t._sample_area.h);
     }
     
 

@@ -1,12 +1,12 @@
-package jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk;
+package jp.nyatla.nyartoolkit.core.param;
 
-import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 
 /**
- * 視錐台とこれを使った演算関数を定義します。
+ * 視錐台と、これを使った演算関数を定義します。
  * @author nyatla
  *
  */
@@ -33,11 +33,20 @@ public class NyARFrustum
 	{
 		this.setValue(i_projection, i_width, i_height, i_near, i_far);
 	}
-	
+	/**
+	 * ARToolKitスタイルの射影変換行列から、視錐台をセットします。
+	 * @param i_projection
+	 * @param i_width
+	 * @param i_height
+	 * @param i_near
+	 * nearポイントをmm単位で指定します。
+	 * @param i_far
+	 * farポイントをmm単位で指定します。
+	 */
 	public void setValue(NyARPerspectiveProjectionMatrix i_projection,int i_width,int i_height,double i_near,double i_far)
 	{
 		i_projection.makeCameraFrustumRH(i_width, i_height, i_near, i_far,this._frustum_rh);
-		this._frustum_rh.inverse(this._inv_frustum_rh);
+		this._inv_frustum_rh.inverse(this._frustum_rh);
 		this._screen_size.setValue(i_width,i_height);
 	}
 	/**
@@ -56,14 +65,14 @@ public class NyARFrustum
 	 * ARToolKitの座標系に合せて計算するため、OpenGLのunProjectとはix,iyの与え方が違います。画面上の座標をそのまま与えてください。
 	 * </p>
 	 */
-	public void unProject(double ix,double iy,NyARDoublePoint3d o_point_on_screen)
+	public final void unProject(double ix,double iy,NyARDoublePoint3d o_point_on_screen)
 	{
 		double n=(this._frustum_rh.m23/(this._frustum_rh.m22-1));
 		NyARDoubleMatrix44 m44=this._inv_frustum_rh;
 		double v1=(this._screen_size.w-ix-1)*2/this._screen_size.w-1.0;//ARToolKitのFrustramに合せてる。
 		double v2=(this._screen_size.h-iy-1)*2/this._screen_size.h-1.0;
 		double v3=2*n-1.0;
-		double b=1/(o_point_on_screen.z=m44.m30*v1+m44.m31*v2+m44.m32*v3+m44.m33);
+		double b=1/(m44.m30*v1+m44.m31*v2+m44.m32*v3+m44.m33);
 		o_point_on_screen.x=(m44.m00*v1+m44.m01*v2+m44.m02*v3+m44.m03)*b;
 		o_point_on_screen.y=(m44.m10*v1+m44.m11*v2+m44.m12*v3+m44.m13)*b;
 		o_point_on_screen.z=(m44.m20*v1+m44.m21*v2+m44.m22*v3+m44.m23)*b;
@@ -78,7 +87,7 @@ public class NyARFrustum
 	 * 平面の姿勢行列です。
 	 * @param o_pos
 	 */
-	public void unProjectOnCamera(int ix,int iy,NyARDoubleMatrix44 i_mat,NyARDoublePoint3d o_pos)
+	public final void unProjectOnCamera(double ix,double iy,NyARDoubleMatrix44 i_mat,NyARDoublePoint3d o_pos)
 	{
 		//画面→撮像点
 		this.unProject(ix,iy,o_pos);
@@ -107,7 +116,7 @@ public class NyARFrustum
 	 * このAPIは繰り返し使用には最適化されていません。同一なi_matに繰り返しアクセスするときは、展開してください。
 	 * </p>
 	 */
-	public boolean unProjectOnMatrix(int ix,int iy,NyARDoubleMatrix44 i_mat,NyARDoublePoint3d o_pos)
+	public final boolean unProjectOnMatrix(double ix,double iy,NyARDoubleMatrix44 i_mat,NyARDoublePoint3d o_pos)
 	{
 		//交点をカメラ座標系で計算
 		unProjectOnCamera(ix,iy,i_mat,o_pos);
@@ -120,7 +129,25 @@ public class NyARFrustum
 		return true;
 	}
 	/**
-	 * 透視変換行列を返します。
+	 * カメラ座標系を、画面座標へ変換します。
+	 * @param i_x
+	 * @param i_y
+	 * @param i_z
+	 * @param o_pos2d
+	 */
+	public final void project(double i_x,double i_y,double i_z,NyARDoublePoint2d o_pos2d)
+	{
+		NyARDoubleMatrix44 m=this._frustum_rh;
+		double v3_1=1/i_z*m.m32;
+		double w=this._screen_size.w;
+		double h=this._screen_size.h;
+		o_pos2d.x=w-(1+(i_x*m.m00+i_z*m.m02)*v3_1)*w/2;
+		o_pos2d.y=h-(1+(i_y*m.m11+i_z*m.m12)*v3_1)*h/2;
+		return;
+	}
+	/**
+	 * 透視変換行列の参照値を返します。
+	 * この値は読出し専用です。変更しないでください。
 	 * @return
 	 */
 	public final NyARDoubleMatrix44 refMatrix()
@@ -129,6 +156,7 @@ public class NyARFrustum
 	}
 	/**
 	 * 透視変換行列の逆行列を返します。
+	 * この値は読出し専用です。変更しないでください。
 	 * @return
 	 */
 	public final NyARDoubleMatrix44 refInvMatrix()

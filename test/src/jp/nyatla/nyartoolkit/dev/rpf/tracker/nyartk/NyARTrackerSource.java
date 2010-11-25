@@ -46,7 +46,7 @@ public abstract class NyARTrackerSource
 	 * 継承クラスでは、エッジ画像を返却してください。
 	 * @return
 	 */
-	public final NyARGrayscaleRaster getEdgeRaster()
+	public final NyARGrayscaleRaster refEdgeRaster()
 	{
 		return this._rbraster;
 	}
@@ -55,7 +55,7 @@ public abstract class NyARTrackerSource
 	 * 継承クラスでは、基本画像を返却してください。
 	 * @return
 	 */
-	public final NyARGrayscaleRaster getBaseRaster()
+	public final NyARGrayscaleRaster refBaseRaster()
 	{
 		return this._base_raster;
 	}

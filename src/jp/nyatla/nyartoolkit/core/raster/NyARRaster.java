@@ -39,7 +39,6 @@ import jp.nyatla.nyartoolkit.core.types.*;
 public class NyARRaster extends NyARRaster_BasicClass
 {
 	protected Object _buf;
-	protected int _buf_type;
 	/**
 	 * バッファオブジェクトがアタッチされていればtrue
 	 */

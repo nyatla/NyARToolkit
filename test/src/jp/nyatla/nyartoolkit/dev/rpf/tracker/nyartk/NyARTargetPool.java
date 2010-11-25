@@ -1,11 +1,11 @@
 package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.utils.NyARManagedObjectPool;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARNewTargetStatus;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARNewTargetStatusPool;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARTargetStatus;
-import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObjectPool;
 
 final public class NyARTargetPool extends NyARManagedObjectPool<NyARTarget>
 {
@@ -30,7 +30,7 @@ final public class NyARTargetPool extends NyARManagedObjectPool<NyARTarget>
 		if(t==null){
 			return null;
 		}
-		t.serial=NyARTarget.getSerial();
+		t._serial=NyARTarget.createSerialId();
 		t.tag=null;
 		return t;
 	}	

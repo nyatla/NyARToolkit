@@ -33,8 +33,6 @@ package jp.nyatla.nyartoolkit.core.labeling.artoolkit;
 
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.labeling.NyARLabelInfo;
-import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfo;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
 /**

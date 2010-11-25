@@ -2,8 +2,10 @@ package jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
+import jp.nyatla.nyartoolkit.core.param.NyARFrustum;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
+import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat;
@@ -51,6 +53,7 @@ public class NyARReality
 	public final static double FRASTRAM_ARTK_FAR=10000;
 	/**frastum*/
 	protected NyARFrustum _frustum;
+	protected NyARPerspectiveProjectionMatrix _ref_prjmat;
 
 	
 	//Realityでーた
@@ -81,6 +84,8 @@ public class NyARReality
 	
 	/**
 	 * コンストラクタ。
+	 * 樽型歪みが少ない、または補正済みの画像を入力するときには、{@link #NyARReality(NyARIntSize, double, double, NyARPerspectiveProjectionMatrix, NyARCameraDistortionFactor, int, int)}
+	 * のi_dist_factorにnullを指定すると、より高速な動作が期待できます。
 	 * @param i_param
 	 * カメラパラメータを指定します。
 	 * @param i_near
@@ -108,19 +113,17 @@ public class NyARReality
 	 * @param i_screen
 	 * スクリーン(入力画像)のサイズを指定します。
 	 * @param i_near
-	 * 視錐体のnear-pointをmm単位で指定します。
-	 * default値は{@link #FRASTRAM_ARTK_NEAR}です。
+	 * {@link #NyARReality(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target)}を参照
 	 * @param i_far
-	 * 視錐体のfar-pointをmm単位で指定します。
-	 * default値は{@link #FRASTRAM_ARTK_FAR}です。
+	 * {@link #NyARReality(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target)}を参照
 	 * @param i_prjmat
 	 * ARToolKit形式の射影変換パラメータを指定します。
 	 * @param i_dist_factor
 	 * カメラ歪み矯正オブジェクトを指定します。歪み矯正が不要な時は、nullを指定します。
 	 * @param i_max_known_target
-	 * Knownターゲットの最大数を指定します。
+	 * {@link #NyARReality(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target)}を参照
 	 * @param i_max_unknown_target
-	 * UnKnownターゲットの最大数を指定します。
+	 * {@link #NyARReality(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target)}を参照
 	 * @throws NyARException
 	 */
 	public NyARReality(NyARIntSize i_screen,double i_near,double i_far,NyARPerspectiveProjectionMatrix i_prjmat,NyARCameraDistortionFactor i_dist_factor,int i_max_known_target,int i_max_unknown_target) throws NyARException
@@ -145,14 +148,13 @@ public class NyARReality
 		this._pool=new NyARRealityTargetPool(number_of_reality_target,i_prjmat);
 		this.target=new NyARRealityTargetList(number_of_reality_target);
 		//Trackerの特性値
-		this._tracker=new NyARTracker(
-			(this.MAX_LIMIT_KNOWN+this.MAX_LIMIT_UNKNOWN)*2,1,this.MAX_LIMIT_KNOWN*2);
-		//トラック数は、newがi_max_known_target+i_max_unknown_target,rectがi_max_known_targetと同じ数です。
+		this._tracker=new NyARTracker((this.MAX_LIMIT_KNOWN+this.MAX_LIMIT_UNKNOWN)*2,1,this.MAX_LIMIT_KNOWN*2);
+		//フラスタムの計算とスクリーンサイズの保存
+		this._ref_prjmat=i_prjmat;
+		this._frustum=new NyARFrustum(i_prjmat,i_screen.w,i_screen.h, i_near, i_far);
 
 		//初期化
 		this._number_of_dead=this._number_of_unknown=this._number_of_known=0;
-		//フラスタムの計算とスクリーンサイズの保存
-		this._frustum=new NyARFrustum(i_prjmat,i_screen.w,i_screen.h, i_near, i_far);
 		return;
 	}
 	/**
@@ -222,8 +224,8 @@ public class NyARReality
 		
 		for(int i=this.target.getLength()-1;i>=0;i--){
 			NyARRealityTarget tar=rt_array[i];
-			if(tar._ref_tracktarget.delay_tick==0){
-				tar._grab_rate=(tar._grab_rate*5+(100)*3)>>3;
+			if(tar._ref_tracktarget._delay_tick==0){
+				tar.grab_rate=(tar.grab_rate*5+(100)*3)>>3;
 				switch(tar._target_type)
 				{
 				case NyARRealityTarget.RT_DEAD:
@@ -231,7 +233,7 @@ public class NyARReality
 					continue;
 				case NyARRealityTarget.RT_KNOWN:
 					//矩形座標計算
-					setSquare(((NyARRectTargetStatus)(tar._ref_tracktarget.ref_status)).vertex,tar._screen_square);
+					setSquare(((NyARRectTargetStatus)(tar._ref_tracktarget._ref_status)).vertex,tar._screen_square);
 					//3d座標計算
 //					this._transmat.transMat(tar._screen_square,tar._offset,tar._transform_matrix);
 					this._transmat.transMatContinue(tar._screen_square,tar._offset,tar._transform_matrix,tar._transform_matrix);
@@ -242,7 +244,7 @@ public class NyARReality
 				}
 			}else{
 				//更新をパスして補足レートの再計算(5:3で混ぜて8で割る)
-				tar._grab_rate=(tar._grab_rate*5+(100/tar._ref_tracktarget.delay_tick)*3)>>3;
+				tar.grab_rate=(tar.grab_rate*5+(100/tar._ref_tracktarget._delay_tick)*3)>>3;
 			}
 		}
 	}
@@ -278,7 +280,7 @@ public class NyARReality
 	 */
 	private final boolean isTargetAlive(NyARRealityTarget i_target)
 	{
-		return i_target._ref_tracktarget.st_type==NyARTargetStatus.ST_RECT;
+		return i_target._ref_tracktarget._st_type==NyARTargetStatus.ST_RECT;
 	}
 	
 	/**
@@ -289,7 +291,7 @@ public class NyARReality
 	{
 		NyARTarget[] items=i_list.getArray();
 		for(int i=i_list.getLength()-1;i>=0;i--){
-			if(items[i].st_type!=NyARTargetStatus.ST_RECT){
+			if(items[i]._st_type!=NyARTargetStatus.ST_RECT){
 				continue;
 			}
 			if(items[i].tag!=null){
@@ -308,7 +310,7 @@ public class NyARReality
 	 */
 	private final NyARRealityTarget addUnknownTarget(NyARTarget i_track_target) throws NyARException
 	{
-		assert(i_track_target.st_type==NyARTargetStatus.ST_RECT);
+		assert(i_track_target._st_type==NyARTargetStatus.ST_RECT);
 		NyARRealityTarget rt=this._pool.newNewTarget(i_track_target);
 		if(rt==null){
 			return null;
@@ -364,7 +366,7 @@ public class NyARReality
 			return false;
 		}
 		//ステータス制限
-		if(i_item._ref_tracktarget.st_type!=NyARTargetStatus.ST_RECT){
+		if(i_item._ref_tracktarget._st_type!=NyARTargetStatus.ST_RECT){
 			return false;
 		}
 		//個数制限
@@ -379,9 +381,9 @@ public class NyARReality
 		i_item._offset.setSquare(i_marker_width);
 		
 		//directionに応じて、元矩形のrectを回転しておく。
-		((NyARRectTargetStatus)(i_item._ref_tracktarget.ref_status)).shiftByArtkDirection(3-i_dir);		
+		((NyARRectTargetStatus)(i_item._ref_tracktarget._ref_status)).shiftByArtkDirection(3-i_dir);		
 		//矩形セット
-		NyARDoublePoint2d[] vx=((NyARRectTargetStatus)(i_item._ref_tracktarget.ref_status)).vertex;
+		NyARDoublePoint2d[] vx=((NyARRectTargetStatus)(i_item._ref_tracktarget._ref_status)).vertex;
 		for(int i=3;i>=0;i--){
 			i_item._screen_square.sqvertex[i].setValue(vx[i]);
 			i_item._screen_square.line[i].makeLinearWithNormalize(vx[i],vx[(i+1)%4]);
@@ -405,7 +407,7 @@ public class NyARReality
 	{
 		assert(i_item._target_type==NyARRealityTarget.RT_UNKNOWN || i_item._target_type==NyARRealityTarget.RT_KNOWN);
 		//IG検出して遷移した場合
-		if(i_item._ref_tracktarget.st_type!=NyARTargetStatus.ST_IGNORE){
+		if(i_item._ref_tracktarget._st_type!=NyARTargetStatus.ST_IGNORE){
 			//所有するトラックターゲットがIGNOREに設定
 			this._tracker.changeStatusToIgnore(i_item._ref_tracktarget,50);
 		}
@@ -528,5 +530,69 @@ public class NyARReality
 	public NyARFrustum refFrustum()
 	{
 		return this._frustum;
+	}
+	/**
+	 * ARToolKitスタイルの射影変換行列を返します。
+	 * @return
+	 */
+	public NyARPerspectiveProjectionMatrix refPerspectiveProjectionMatrix()
+	{
+		return this._ref_prjmat;
+	}
+	/**
+	 * 画面座標系の4頂点でかこまれる領域から、RGB画像をo_rasterに取得します。
+	 * @param i_vertex
+	 * @param i_resolution
+	 * 1ピクセルあたりのサンプル数です。二乗した値が実際のサンプル数になります。
+	 * @param o_raster
+	 * @return
+	 * @throws NyARException
+	 */
+	public final boolean getRgbPatt2d(NyARRealitySource i_src,NyARIntPoint2d[] i_vertex,int i_resolution,INyARRgbRaster o_raster) throws NyARException
+	{
+		return i_src.refPerspectiveRasterReader().read4Point(i_src.refRgbSource(),i_vertex,0,0,i_resolution, o_raster);
+	}
+	/**
+	 * 画面座標系の4頂点でかこまれる領域から、RGB画像をo_rasterに取得します。
+	 * @param i_vertex
+	 * @param i_resolution
+	 * 1ピクセルあたりのサンプル数です。二乗した値が実際のサンプル数になります。
+	 * @param o_raster
+	 * @return
+	 * @throws NyARException
+	 */
+	public final boolean getRgbPatt2d(NyARRealitySource i_src,NyARDoublePoint2d[] i_vertex,int i_resolution,INyARRgbRaster o_raster) throws NyARException
+	{
+		return i_src.refPerspectiveRasterReader().read4Point(i_src.refRgbSource(),i_vertex,0,0,i_resolution, o_raster);
 	}	
+	/**
+	 * カメラ座標系の4頂点でかこまれる領域から、RGB画像をo_rasterに取得します。
+	 * @param i_vertex
+	 * @param i_matrix
+	 * i_vertexに適応する変換行列。
+	 * ターゲットの姿勢行列を指定すると、ターゲット座標系になります。不要ならばnullを設定してください。
+	 * @param i_resolution
+	 * @param o_raster
+	 * @return
+	 * @throws NyARException
+	 */
+	public final boolean getRgbPatt3d(NyARRealitySource i_src,NyARDoublePoint3d[] i_vertex,NyARDoubleMatrix44 i_matrix,int i_resolution,INyARRgbRaster o_raster) throws NyARException
+	{
+		NyARDoublePoint2d[] vx=NyARDoublePoint2d.createArray(4);
+		if(i_matrix!=null){
+			//姿勢変換してから射影変換
+			NyARDoublePoint3d v3d=new NyARDoublePoint3d();
+			for(int i=3;i>=0;i--){
+				i_matrix.transform3d(i_vertex[i],v3d);
+				this._ref_prjmat.project(v3d,vx[i]);
+			}
+		}else{
+			//射影変換のみ
+			for(int i=3;i>=0;i--){
+				this._ref_prjmat.project(i_vertex[i],vx[i]);
+			}
+		}
+		//パターンの取得
+		return i_src.refPerspectiveRasterReader().read4Point(i_src.refRgbSource(),vx,0,0,i_resolution, o_raster);
+	}
 }

@@ -151,23 +151,4 @@ public class NyARPointerStack<T>
 	{
 		this._length = 0;
 	}
-	public void remove2(int i_index)
-	{
-		assert(this._length>i_index && i_index>=0);
-		
-		if(i_index!=this._length-1){
-			int i;
-			final int len=this._length-1;
-			T[] items=this._items;
-			for(i=i_index;i<len;i++)
-			{
-				items[i]=items[i+1];
-			}
-		}
-		this._length--;
-	}
-	void main()
-	{
-		
-	}
 }

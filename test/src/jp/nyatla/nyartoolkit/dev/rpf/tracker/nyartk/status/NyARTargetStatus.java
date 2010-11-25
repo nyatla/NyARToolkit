@@ -1,6 +1,6 @@
 package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status;
 
-import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObject;
+import jp.nyatla.nyartoolkit.core.utils.NyARManagedObject;
 
 
 /**

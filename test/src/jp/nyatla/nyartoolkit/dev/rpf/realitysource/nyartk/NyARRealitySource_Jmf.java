@@ -28,7 +28,7 @@ public class NyARRealitySource_Jmf extends NyARRealitySource
 	 * @param i_ref_raster_distortion
 	 * 歪み矯正の為のオブジェクトを指定します。歪み矯正が必要ない時は、NULLを指定します。
 	 * @param i_depth
-	 * エッジ画像のサイズを1(1^n)で指定します。
+	 * エッジ画像のサイズを1/(1^n)で指定します。
 	 * @param i_number_of_sample
 	 * サンプリングするターゲット数を指定します。大体100以上をしておけばOKです。具体的な計算式は、{@link NyARTrackerSource_Reference#NyARTrackerSource_Reference}を参考にして下さい。
 	 * @throws NyARException
@@ -58,12 +58,12 @@ public class NyARRealitySource_Jmf extends NyARRealitySource
 	}
 	public final void syncResource() throws NyARException
 	{
-		this._filter.doFilter(this._rgb_source,this._tracksource.getBaseRaster());
+		this._filter.doFilter(this._rgb_source,this._tracksource.refBaseRaster());
 		super.syncResource();
 	}
 	public final NyARTrackerSource makeTrackSource() throws NyARException
 	{
-		this._filter.doFilter(this._rgb_source,this._tracksource.getBaseRaster());		
+		this._filter.doFilter(this._rgb_source,this._tracksource.refBaseRaster());		
 		return this._tracksource;
 	}
 }

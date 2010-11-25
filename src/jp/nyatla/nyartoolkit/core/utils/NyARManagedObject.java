@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.dev.rpf.utils;
+package jp.nyatla.nyartoolkit.core.utils;
 
 /**
  * NyARManagedObjectPoolの要素クラスです。

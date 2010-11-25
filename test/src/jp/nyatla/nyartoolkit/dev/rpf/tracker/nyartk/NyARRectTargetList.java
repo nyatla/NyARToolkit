@@ -27,7 +27,7 @@ public class NyARRectTargetList extends NyARTargetList
 		//対角範囲の距離が、対角距離の1/2以下で、最も小さいこと。
 		for(int i=this._length-1;i>=0;i--)
 		{
-			iitem=(NyARRectTargetStatus)this._items[i].ref_status;
+			iitem=(NyARRectTargetStatus)this._items[i]._ref_status;
 			int d;
 			d=i_item.base_area.sqDiagonalPointDiff(iitem.estimate_rect);	
 			if(d<min_d){

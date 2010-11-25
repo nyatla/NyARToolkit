@@ -7,13 +7,16 @@ import javax.media.format.VideoFormat;
 
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_RGB;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve;
 import jp.nyatla.nyartoolkit.core.rasterreader.NyARPerspectiveRasterReader;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.*;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTrackerSource;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfNyARRaster_RGB;
@@ -72,6 +75,14 @@ public abstract class NyARRealitySource
 		//下位の同期
 		this._tracksource.syncResource();
 	}
+	/**
+	 * {@link #_rgb_source}を参照するPerspectiveRasterReaderを返します。
+	 * @return
+	 */
+	public NyARPerspectiveRasterReader refPerspectiveRasterReader()
+	{
+		return this._source_perspective_reader;
+	}
 	
 	/**
 	 * 元画像への参照値を返します。
@@ -91,53 +102,6 @@ public abstract class NyARRealitySource
 	{
 		return this._tracksource;
 	}
-	
-	/**
-	 * 4頂点で囲まれた領域を遠近法で矩形に変換して、RGB画像からo_rasterへパターンを取得します。
-	 * この関数は、最後に
-	 * @param i_vertex
-	 * @param i_resolution
-	 * 1ピクセルあたりのサンプル数です。二乗した値が実際のサンプル数になります。
-	 * @param o_raster
-	 * @return
-	 * @throws NyARException
-	 */
-	public final boolean getRgbPerspectivePatt(NyARIntPoint2d[] i_vertex,int i_resolution,INyARRgbRaster o_raster) throws NyARException
-	{
-		return this._source_perspective_reader.read4Point(this._rgb_source,i_vertex,0,0,i_resolution, o_raster);
-	}
-	/**
-	 *　4頂点で囲まれた領域を遠近法で矩形に変換して、RGB画像からo_rasterへパターンを取得します。
-	 * @param i_vertex
-	 * @param i_resolution
-	 * @param o_raster
-	 * @return
-	 * @throws NyARException
-	 */
-	public final boolean getRgbPerspectivePatt(NyARDoublePoint2d[] i_vertex,int i_resolution,INyARRgbRaster o_raster) throws NyARException
-	{
-		return this._source_perspective_reader.read4Point(this._rgb_source,i_vertex,0,0,1, o_raster);
-	}
-	/**
-	 * 4頂点で囲まれたエッジ付きの領域を遠近法で矩形に変換して、RGB画像からo_rasterへパターンを取得します。
-	 * @param i_vertex
-	 * @param i_edge_x
-	 * @param i_edge_y
-	 * @param i_resolution
-	 * @param o_raster
-	 * @return
-	 * @throws NyARException
-	 */
-	public final boolean getRgbPerspectivePatt(NyARDoublePoint2d[] i_vertex,int i_resolution,int i_edge_x,int i_edge_y,INyARRgbRaster o_raster) throws NyARException
-	{
-		return this._source_perspective_reader.read4Point(this._rgb_source,i_vertex,i_edge_x,i_edge_y,1, o_raster);
-	}
-	public final boolean getRgbPerspectivePatt(NyARIntPoint2d[] i_vertex,int i_resolution,int i_edge_x,int i_edge_y,INyARRgbRaster o_raster) throws NyARException
-	{
-		return this._source_perspective_reader.read4Point(this._rgb_source,i_vertex,i_edge_x,i_edge_y,1, o_raster);
-	}
-
-
 }
 
 

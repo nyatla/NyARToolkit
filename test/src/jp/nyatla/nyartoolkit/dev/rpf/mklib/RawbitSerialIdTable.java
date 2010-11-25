@@ -1,6 +1,7 @@
 package jp.nyatla.nyartoolkit.dev.rpf.mklib;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTarget;
@@ -11,7 +12,7 @@ import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerDataEncoder_RawBit;
 import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerData_RawBit;
 
 /**
- * 簡易なNyIdマーカIDテーブルです。
+ * 簡易な同期型NyIdマーカIDテーブルです。
  * このクラスは、RawBitフォーマットドメインのNyIdマーカのIdとメタデータセットテーブルを定義します。
  * SerialIDは、RawBitマーカのデータパケットを、[0][1]...[n]の順に並べて、64bitの整数値に変換した値です。
  * 判別できるIdマーカは、domain=0(rawbit),model&lt;5,mask=0のもののみです。
@@ -32,21 +33,13 @@ public class RawbitSerialIdTable
 	 */
 	public static class SelectResult
 	{
-		/**
-		 * シリアルIDです。
-		 */
-		public long serial;
-		/**
-		 * 登録時に設定したマーカサイズです。
-		 */
+		/** ID番号です。*/
+		public long id;
+		/** 名前です。*/
+		public String name;
+		/** 登録時に設定したマーカサイズです。*/
 		public double marker_width;
-		/**
-		 * 登録時に設定したメタデータです。適切にキャストしてください。
-		 */
-		public Object tag;
-		/**
-		 * ARToolKit準拠の、マーカの方位値
-		 */
+		/** ARToolKit準拠の、マーカの方位値です。*/
 		public int artk_direction;
 	}
 	
@@ -55,14 +48,16 @@ public class RawbitSerialIdTable
 	{
 		public class SerialTableRow
 		{
-			public long serial_st;
-			public long serial_ed;
+			public long id_st;
+			public long id_ed;
 			public double marker_width;
-			public final void setValue(long i_st,long i_ed,double i_width)
+			public String name;
+			public final void setValue(String i_name,long i_st,long i_ed,double i_width)
 			{
-				this.serial_ed=i_ed;
-				this.serial_st=i_st;
+				this.id_ed=i_ed;
+				this.id_st=i_st;
 				this.marker_width=i_width;
+				this.name=i_name;
 			}
 		}		
 		public SerialTable(int i_length) throws NyARException
@@ -78,7 +73,7 @@ public class RawbitSerialIdTable
 			for(int i=this._length-1;i>=0;i--)
 			{
 				SerialTableRow s=this._items[i];
-				if(i_serial<s.serial_st || i_serial>s.serial_ed){
+				if(i_serial<s.id_st || i_serial>s.id_ed){
 					continue;
 				}
 				return s;
@@ -106,8 +101,10 @@ public class RawbitSerialIdTable
 		this._table=new SerialTable(i_max);
 	}
 	/**
-	 * SerialIDの範囲に対するメタデータセットを、テーブルに追加します。
+	 * IDの範囲に対するメタデータセットを、テーブルに追加します。
 	 * この要素にヒットする範囲は,i_st&lt;=n&lt;=i_edになります。
+	 * @param i_name
+	 * このID範囲の名前を指定します。不要な場合はnullを指定します。
 	 * @param i_st
 	 * ヒット範囲の開始値です。
 	 * @param i_ed
@@ -115,13 +112,13 @@ public class RawbitSerialIdTable
 	 * @param　i_width
 	 * ヒットしたマーカのサイズ値を指定します。
 	 */
-	public boolean addSerialIdRangeItem(long i_st,long i_ed,double i_width)
+	public boolean addSerialIdRangeItem(String i_name,long i_st,long i_ed,double i_width)
 	{
 		SerialTable.SerialTableRow d=this._table.prePush();
 		if(d==null){
 			return false;
 		}
-		d.setValue(i_st,i_ed,i_width);
+		d.setValue(i_name,i_st,i_ed,i_width);
 		return true;
 	}
 	/**
@@ -133,13 +130,13 @@ public class RawbitSerialIdTable
 	 * @return
 	 * 登録に成功するとtrueを返します。
 	 */
-	public boolean addSerialIdItem(long i_serial,double i_width)
+	public boolean addSerialIdItem(String i_name,long i_serial,double i_width)
 	{
 		SerialTable.SerialTableRow d=this._table.prePush();
 		if(d==null){
 			return false;
 		}
-		d.setValue(i_serial,i_serial,i_width);
+		d.setValue(i_name,i_serial,i_serial,i_width);
 		return true;
 	}
 	/**
@@ -149,36 +146,27 @@ public class RawbitSerialIdTable
 	 * @return
 	 * 登録に成功するとtrueです。
 	 */
-	public boolean addAnyItem(double i_width)
+	public boolean addAnyItem(String i_name,double i_width)
 	{
 		SerialTable.SerialTableRow d=this._table.prePush();
 		if(d==null){
 			return false;
 		}
-		d.setValue(0,Long.MAX_VALUE,i_width);
+		d.setValue(i_name,0,Long.MAX_VALUE,i_width);
 		return true;
 	}	
-	
 	/**
-	 * RealityTargetを特定します。
-	 * i_targetの画像パターンをi_rtsorceから取得して、登録されているIdの中から、合致するメタデータを返します。
-	 * 複数のパターンにヒットしたときは、一番初めにヒットした項目を返します。
-	 * @param i_target
-	 * Realityが検出したターゲット。
-	 * Unknownターゲットを指定すること。
-	 * @param i_rtsorce
-	 * i_targetを検出したRealitySourceインスタンス。
+	 * i_raster上にあるi_vertexの頂点で定義される四角形のパターンから、一致するID値を特定します。
+	 * @param i_vertex
+	 * 4頂点の座標
+	 * @param i_raster
 	 * @param o_result
-	 * 返却値を格納するインスタンスを設定します。
-	 * 返却値がtrueの場合のみ有効です。
 	 * @return
-	 * 特定に成功すると、trueを返します。
-	 * @throws NyARException 
+	 * @throws NyARException
 	 */
-	public boolean selectTarget(NyARRealityTarget i_target,NyARRealitySource i_rtsorce,SelectResult o_result) throws NyARException
+	public final boolean identifyId(NyARDoublePoint2d[] i_vertex,INyARRgbRaster i_raster,SelectResult o_result) throws NyARException
 	{
-		NyARDoublePoint2d[] vx=((NyARRectTargetStatus)(i_target._ref_tracktarget.ref_status)).vertex;
-		if(!this._id_pickup.pickFromRaster(i_rtsorce.refRgbSource(),vx,this._temp_nyid_info,this._temp_nyid_param))
+		if(!this._id_pickup.pickFromRaster(i_raster,i_vertex,this._temp_nyid_info,this._temp_nyid_param))
 		{
 			return false;
 		}
@@ -216,8 +204,33 @@ public class RawbitSerialIdTable
 		}
 		//戻り値を設定
 		o_result.marker_width=d.marker_width;
-		o_result.serial=s;
+		o_result.id=s;
 		o_result.artk_direction=this._temp_nyid_param.direction;
-		return true;
+		o_result.name=d.name;
+		return true;		
 	}
+	/**
+	 * RealityTargetに一致するID値を特定します。
+	 * 複数のパターンにヒットしたときは、一番初めにヒットした項目を返します。
+	 * @param i_target
+	 * Realityが検出したターゲット。
+	 * Unknownターゲットを指定すること。
+	 * @param i_rtsorce
+	 * i_targetを検出したRealitySourceインスタンス。
+	 * @param o_result
+	 * 返却値を格納するインスタンスを設定します。
+	 * 返却値がtrueの場合のみ、内容が更新されています。
+	 * @return
+	 * 特定に成功すると、trueを返します。
+	 * @throws NyARException 
+	 */
+	public boolean identifyId(NyARRealityTarget i_target,NyARRealitySource i_rtsorce,SelectResult o_result) throws NyARException
+	{
+		//NyARDoublePoint2d[] i_vertex,NyARRgbRaster i_raster,SelectResult o_result
+		return this.identifyId(
+			((NyARRectTargetStatus)(i_target._ref_tracktarget._ref_status)).vertex,
+			i_rtsorce.refRgbSource(),
+			o_result);
+	}
+	//指定したIDとパターンが一致するか確認するAPIも用意するか？
 }

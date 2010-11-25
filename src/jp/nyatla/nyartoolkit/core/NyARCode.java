@@ -38,6 +38,7 @@ import java.io.StreamTokenizer;
 import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.match.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 
 /**
@@ -84,7 +85,7 @@ class NyARCodeFileReader
 	{
 		int width=o_code.getWidth();
 		int height=o_code.getHeight();
-		NyARRaster tmp_raster=new NyARRaster(width,height, NyARBufferType.INT1D_X8R8G8B8_32);
+		NyARRgbRaster tmp_raster=new NyARRgbRaster(width,height, NyARBufferType.INT1D_X8R8G8B8_32);
 		//4個の要素をラスタにセットする。
 		try {
 			StreamTokenizer st = new StreamTokenizer(new InputStreamReader(i_stream));
@@ -219,18 +220,34 @@ public class NyARCode
 	 * 4枚のラスタから、マーカーパターンを生成して格納します。
 	 * @param i_raster
 	 * direction毎のパターンを格納したラスタ配列を指定します。
-	 * ラスタは同一なサイズかつマーカーパターンと同じサイズである必要があります。
+	 * ラスタは同一なサイズ、かつマーカーパターンと同じサイズである必要があります。
+	 * 格納順は、パターンの右上が、1,2,3,4象限になる順番です。
 	 * @throws NyARException
 	 */
-	public void setRaster(NyARRaster[] i_raster) throws NyARException
+	public void setRaster(NyARRgbRaster[] i_raster) throws NyARException
 	{
-		assert i_raster.length!=4;
+		assert(i_raster.length!=4);
 		//ラスタにパターンをロードする。
 		for(int i=0;i<4;i++){
-			this._color_pat[i].setRaster(i_raster[i]);				
+			this._color_pat[i].setRaster(i_raster[i]);
 		}
 		return;
 	}
+	/**
+	 * 1枚のラスタから、マーカーパターンを生成して格納します。
+	 * @param i_raster
+	 * 基準となるラスタを指定します。ラスタの解像度は、ARマーカコードと同じである必要があります。
+	 * @throws NyARException
+	 */	
+	public void setRaster(NyARRgbRaster i_raster) throws NyARException
+	{
+		//ラスタにパターンをロードする。
+		for(int i=0;i<4;i++){
+			this._color_pat[i].setRaster(i_raster,i);
+		}
+		return;
+	}
+	
 	/**
 	 * inputStreamから、パターンデータをロードします。
 	 * ロードするパターンのサイズは、現在の値と同じである必要があります。

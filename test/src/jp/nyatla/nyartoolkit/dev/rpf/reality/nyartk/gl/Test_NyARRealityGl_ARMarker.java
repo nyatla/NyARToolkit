@@ -1,5 +1,7 @@
 package jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.gl;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Insets;
 import java.awt.event.WindowAdapter;
@@ -11,8 +13,12 @@ import javax.media.opengl.glu.GLU;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
+import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
+import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
+import jp.nyatla.nyartoolkit.dev.rpf.mklib.ARTKMarkerTable;
 import jp.nyatla.nyartoolkit.dev.rpf.mklib.RawbitSerialIdTable;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTarget;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTargetList;
@@ -20,18 +26,19 @@ import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource_Jmf;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDevice;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDeviceList;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
+import jp.nyatla.nyartoolkit.jogl.utils.NyARGLDrawUtil;
 import jp.nyatla.nyartoolkit.jogl.utils.NyARGLUtil;
 
 import com.sun.opengl.util.Animator;
 
 /**
  * NyARRealityシステムのサンプル。
- * 複数のIDマーカを同時に区別するサンプルです。同一画面内に同じIDが複数あってもOK
+ * IDマーカの上に立方体を表示します。
  *
  * @author nyatla
  *
  */
-public class Test_NyARRealityGl_CaptureImage implements GLEventListener, JmfCaptureListener
+public class Test_NyARRealityGl_ARMarker implements GLEventListener, JmfCaptureListener
 {
 
 	private final static int SCREEN_X = 320;
@@ -41,15 +48,14 @@ public class Test_NyARRealityGl_CaptureImage implements GLEventListener, JmfCapt
 	private JmfCaptureDevice _capture;
 
 	private GL _gl;
-	private GLU _glu;
 
 	private Object _sync_object=new Object();
 
 	NyARRealityGl _reality;
 	NyARRealitySource_Jmf _src;
-	RawbitSerialIdTable _mklib;
+	ARTKMarkerTable _mklib;
 
-	public Test_NyARRealityGl_CaptureImage(NyARParam i_param) throws NyARException
+	public Test_NyARRealityGl_ARMarker(NyARParam i_param) throws NyARException
 	{
 		Frame frame = new Frame("NyARReality on OpenGL");
 		
@@ -63,13 +69,14 @@ public class Test_NyARRealityGl_CaptureImage implements GLEventListener, JmfCapt
 		//Realityの構築
 		i_param.changeScreenSize(SCREEN_X, SCREEN_Y);	
 		//キャプチャ画像と互換性のあるRealitySourceを構築
-		this._src=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),i_param.getDistortionFactor(),2,100);
-		//OpenGL互換のRealityを構築
-		this._reality=new NyARRealityGl(i_param.getPerspectiveProjectionMatrix(),SCREEN_X, SCREEN_Y,0.1,100,3,3);
-		//マーカライブラリ(NyId)の構築
-		this._mklib= new RawbitSerialIdTable(10);
-		//マーカサイズテーブルの作成(とりあえず全部4cm)
-		this._mklib.addAnyItem(80);
+		this._src=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),i_param.getDistortionFactor(),1,100);
+		//OpenGL互換のRealityを構築		
+		this._reality=new NyARRealityGl(i_param.getPerspectiveProjectionMatrix(),i_param.getScreenSize(),10,10000,3,3);
+		//マーカライブラリ(ARTKId)の構築
+		this._mklib= new ARTKMarkerTable(10,16,16,25,25,4);
+		//マーカテーブルの作成
+		this._mklib.addMarkerFromARPattFile(PATT_HIRO,0,"HIRO",80,80);
+		this._mklib.addMarkerFromARPattFile(PATT_KANJI,1,"KANJI",80,80);
 				
 		// 3Dを描画するコンポーネント
 		GLCanvas canvas = new GLCanvas();
@@ -91,9 +98,9 @@ public class Test_NyARRealityGl_CaptureImage implements GLEventListener, JmfCapt
 	public void init(GLAutoDrawable drawable)
 	{
 		this._gl = drawable.getGL();
-		this._glu=new GLU();
 		this._gl.glEnable(GL.GL_DEPTH_TEST);
 		this._gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		NyARGLDrawUtil.setFontStyle("SansSerif",Font.BOLD,24);
 		// NyARToolkitの準備
 		try {
 			// キャプチャ開始
@@ -119,8 +126,6 @@ public class Test_NyARRealityGl_CaptureImage implements GLEventListener, JmfCapt
 		_gl.glLoadIdentity();
 	}
 
-	private double[] __display_wk = new double[16];
-
 	public void display(GLAutoDrawable drawable)
 	{
 		//RealitySourceにデータが処理する。
@@ -134,10 +139,10 @@ public class Test_NyARRealityGl_CaptureImage implements GLEventListener, JmfCapt
 		try{
 			synchronized(this._sync_object){
 				
-				NyARGLUtil.drawBackGround(this._glu,this._src.refRgbSource(), 1.0);			
+				this._reality.glDrawRealitySource(this._gl,this._src.refRgbSource());
 				// Projection transformation.
 				this._gl.glMatrixMode(GL.GL_PROJECTION);
-				this._gl.glLoadMatrixd(this._reality.refGlFrastumRH(), 0);
+				this._reality.glLoadCameraFrustum(this._gl);
 				//ターゲットリストを走査して、画面に内容を反映
 				NyARRealityTargetList tl=this._reality.refTargetList();
 				for(int i=tl.getLength()-1;i>=0;i--){
@@ -145,15 +150,25 @@ public class Test_NyARRealityGl_CaptureImage implements GLEventListener, JmfCapt
 					switch(t.getTargetType())
 					{
 					case NyARRealityTarget.RT_KNOWN:
+						//立方体の描画
 						this._gl.glMatrixMode(GL.GL_MODELVIEW);
-						// Viewing transformation.
 						this._gl.glLoadIdentity();
-						// 変換行列をOpenGL形式に変換(ここ少し変えるかも)
-						NyARGLUtil.toCameraViewRH(t.refTransformMatrix(), __display_wk);
-						_gl.glLoadMatrixd(__display_wk, 0);
-						// All other lighting and geometry goes here.
-						System.out.println(t._transform_matrix.last_error);
-						drawCube();
+						NyARDoubleMatrix44 m=t.refTransformMatrix();
+						this._reality.glLoadModelViewMatrix(this._gl,m);
+						_gl.glPushMatrix(); // Save world coordinate system.
+						_gl.glTranslatef(0,0,40f); // Place base of cube on marker surface.
+						_gl.glDisable(GL.GL_LIGHTING); // Just use colours.
+						NyARGLDrawUtil.drawColorCube(this._gl,80f);
+						_gl.glPopMatrix(); // Restore world coordinate system.
+						//マーカ情報の描画
+						_gl.glPushMatrix(); // Save world coordinate system.
+						this._reality.glLoadModelViewMatrix(this._gl,m);
+						_gl.glTranslatef(-30,0,90f); // Place base of cube on marker surface.
+						_gl.glRotatef(90,1.0f,0.0f,0.0f); // Place base of cube on marker surface.
+						NyARGLDrawUtil.setFontColor(t.getGrabbRate()<50?Color.RED:Color.BLUE);
+						NyARGLDrawUtil.drawText("ID:"+(Long)(t.tag)+" GRUB:"+t.grab_rate+"%",0.5f);
+						_gl.glPopMatrix();
+						
 						break;
 					case NyARRealityTarget.RT_UNKNOWN:
 						
@@ -184,18 +199,16 @@ public class Test_NyARRealityGl_CaptureImage implements GLEventListener, JmfCapt
 				if(t==null){
 					return;
 				}
-//				this._reality.changeTargetToKnown(t,1,80);
-
 				//ターゲットに一致するデータを検索
 				RawbitSerialIdTable.SelectResult r=new RawbitSerialIdTable.SelectResult();
-				if(this._mklib.selectTarget(t,this._src,r)){
+				if(this._mklib..identifyId(t,this._src,r)){
 					//テーブルにターゲットが見つかったので遷移する。
 					if(!this._reality.changeTargetToKnown(t,r.artk_direction,r.marker_width)){
 					//遷移の成功チェック
 						return;//失敗
 					}
 					//遷移に成功したので、tagにユーザ定義情報を書きこむ。
-					t.tag=new Long(r.serial);
+					t.tag=new Long(r.id);
 				}else{
 					//一致しないので、このターゲットは捨てる。
 					this._reality.changeTargetToDead(t);
@@ -209,57 +222,17 @@ public class Test_NyARRealityGl_CaptureImage implements GLEventListener, JmfCapt
 	public void displayChanged(GLAutoDrawable drawable, boolean modeChanged, boolean deviceChanged)
 	{
 	}
-	/**
-	 * 現在の位置に立方体を書く関数です。
-	 */
-	void drawCube()
-	{
-		// Colour cube data.
-		int polyList = 0;
-		float fSize = 0.5f;// マーカーサイズに対して0.5倍なので、4cmの立方体
-		int f, i;
-		float[][] cube_vertices = new float[][] { { 1.0f, 1.0f, 1.0f }, { 1.0f, -1.0f, 1.0f }, { -1.0f, -1.0f, 1.0f }, { -1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, -1.0f }, { 1.0f, -1.0f, -1.0f }, { -1.0f, -1.0f, -1.0f }, { -1.0f, 1.0f, -1.0f } };
-		float[][] cube_vertex_colors = new float[][] { { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 1.0f }, { 1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } };
-		int cube_num_faces = 6;
-		short[][] cube_faces = new short[][] { { 3, 2, 1, 0 }, { 2, 3, 7, 6 }, { 0, 1, 5, 4 }, { 3, 0, 4, 7 }, { 1, 2, 6, 5 }, { 4, 5, 6, 7 } };
-
-		if (polyList == 0) {
-			polyList = _gl.glGenLists(1);
-			_gl.glNewList(polyList, GL.GL_COMPILE);
-			_gl.glBegin(GL.GL_QUADS);
-			for (f = 0; f < cube_num_faces; f++)
-				for (i = 0; i < 4; i++) {
-					_gl.glColor3f(cube_vertex_colors[cube_faces[f][i]][0], cube_vertex_colors[cube_faces[f][i]][1], cube_vertex_colors[cube_faces[f][i]][2]);
-					_gl.glVertex3f(cube_vertices[cube_faces[f][i]][0] * fSize, cube_vertices[cube_faces[f][i]][1] * fSize, cube_vertices[cube_faces[f][i]][2] * fSize);
-				}
-			_gl.glEnd();
-			_gl.glColor3f(0.0f, 0.0f, 0.0f);
-			for (f = 0; f < cube_num_faces; f++) {
-				_gl.glBegin(GL.GL_LINE_LOOP);
-				for (i = 0; i < 4; i++)
-					_gl.glVertex3f(cube_vertices[cube_faces[f][i]][0] * fSize, cube_vertices[cube_faces[f][i]][1] * fSize, cube_vertices[cube_faces[f][i]][2] * fSize);
-				_gl.glEnd();
-			}
-			_gl.glEndList();
-		}
-
-		_gl.glPushMatrix(); // Save world coordinate system.
-		_gl.glTranslatef(0.0f, 0.0f, 0.5f); // Place base of cube on marker surface.
-		_gl.glRotatef(0.0f, 0.0f, 0.0f, 1.0f); // Rotate about z axis.
-		_gl.glDisable(GL.GL_LIGHTING); // Just use colours.
-		_gl.glCallList(polyList); // Draw the cube.
-		_gl.glPopMatrix(); // Restore world coordinate system.
-
-	}	
 	
 	private final static String PARAM_FILE = "../Data/camera_para.dat";
+	private final static String PATT_HIRO = "../Data/camera_para.dat";
+	private final static String PATT_KANJI = "../Data/camera_para.dat";
 
 	public static void main(String[] args)
 	{
 		try {
 			NyARParam param = new NyARParam();
 			param.loadARParamFromFile(PARAM_FILE);
-			new Test_NyARRealityGl_CaptureImage(param);
+			new Test_NyARRealityGl_ARMarker(param);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

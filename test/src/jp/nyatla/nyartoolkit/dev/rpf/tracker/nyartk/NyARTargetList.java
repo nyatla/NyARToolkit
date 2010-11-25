@@ -30,7 +30,7 @@ public class NyARTargetList extends NyARPointerStack<NyARTarget>
 		{
 			iitem=this._items[i];
 			int d;
-			d=i_item.base_area.sqDiagonalPointDiff(iitem.sample_area);	
+			d=i_item.base_area.sqDiagonalPointDiff(iitem._sample_area);	
 			if(d<min_d){
 				min_d=d;
 				ret=i;

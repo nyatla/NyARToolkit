@@ -139,11 +139,7 @@ public class Test_RealityTarget extends Frame implements MouseListener
 					if(e.getButton()==MouseEvent.BUTTON1){
 						//左ボタンはUNKNOWN→KNOWN
 						if(rt._target_type==NyARRealityTarget.RT_UNKNOWN){
-							NyARColorPatt_Perspective_O2 patt=new NyARColorPatt_Perspective_O2(64,64,25,2,NyARBufferType.BYTE1D_R8G8B8_24);
-							NyARColorPatt_Perspective patt2=new NyARColorPatt_Perspective(64,64,2,25);
-							patt.setEdgeSizeByPercent(25,25,1);
-							patt2.setEdgeSizeByPercent(25,25,1);
-								this._reality.changeTargetToKnown(rt,0,40);
+								this._reality.changeTargetToKnown(rt,0,80);
 								//イメージピックアップの実験
 //								this._input_source.reality_in.getRgbPerspectivePatt(rt.refTargetVertex(),1,25,25,bmp);
 								NyARIntPoint2d[] iv=NyARIntPoint2d.createArray(4);
@@ -153,18 +149,36 @@ public class Test_RealityTarget extends Frame implements MouseListener
 								}
 								System.out.println(">>");
 								NyARRgbRaster rgb=new NyARRgbRaster(320,240,NyARBufferType.BYTE1D_R8G8B8_24);
-								NyARRgbRaster.copy(this._input_source.reality_in.refRgbSource(), rgb);
-								long s=System.currentTimeMillis();
-								for(int i2=0;i2<1000;i2++)patt.pickFromRaster(rgb,iv);
-								System.out.println(System.currentTimeMillis()-s);
-								s=System.currentTimeMillis();
-								for(int i2=0;i2<1000;i2++)patt2.pickFromRaster(rgb,iv);
-								System.out.println(System.currentTimeMillis()-s);
-
-								NyARRasterImageIO.copy(patt2, bmp.getBufferedImage());
-								this.getGraphics().drawImage(bmp.getBufferedImage(),this.getInsets().left+64,this.getInsets().top+240,null);
-								NyARRasterImageIO.copy(patt, bmp.getBufferedImage());
-								this.getGraphics().drawImage(bmp.getBufferedImage(),this.getInsets().left+0,this.getInsets().top+240,null);
+								//2d座標系
+								{
+									this._reality.getRgbPatt2d(this._input_source.reality_in,rt.refTargetVertex(),1,bmp);
+									this.getGraphics().drawImage(bmp.getBufferedImage(),this.getInsets().left,this.getInsets().top+240,null);
+								}
+								//3d（カメラ）
+								{
+									NyARDoublePoint3d[] p=NyARDoublePoint3d.createArray(4);
+									p[0].x=-40;p[0].y=-40;p[0].z=0;
+									p[1].x=40; p[1].y=-40;p[1].z=0;
+									p[2].x=40; p[2].y=40 ;p[2].z=0;
+									p[3].x=-40;p[3].y=40 ;p[3].z=0;
+									this._reality.getRgbPatt3d(this._input_source.reality_in,p, rt.refTransformMatrix(), 1, bmp);
+									this.getGraphics().drawImage(bmp.getBufferedImage(),this.getInsets().left+64,this.getInsets().top+240,null);
+								}
+								//3d（Target）
+								{
+									NyARDoublePoint3d[] p=NyARDoublePoint3d.createArray(4);
+									p[0].x=-40;p[0].y=-40;p[0].z=0;
+									p[1].x=40; p[1].y=-40;p[1].z=0;
+									p[2].x=40; p[2].y=40 ;p[2].z=0;
+									p[3].x=-40;p[3].y=40 ;p[3].z=0;
+									rt.getRgbPatt3d(this._input_source.reality_in,p,null, 1, bmp);
+									this.getGraphics().drawImage(bmp.getBufferedImage(),this.getInsets().left+128,this.getInsets().top+240,null);
+								}
+								//3d（Target）
+								{
+									rt.getRgbRectPatt3d(this._input_source.reality_in,-80,-80,80,80,1, bmp);
+									this.getGraphics().drawImage(bmp.getBufferedImage(),this.getInsets().left+192,this.getInsets().top+240,null);
+								}
 							break;
 						}
 					}else if(e.getButton()==MouseEvent.BUTTON3){
@@ -276,7 +290,7 @@ public class Test_RealityTarget extends Frame implements MouseListener
     	ig.drawImage(bmp,ins.left,ins.top,null);
     	
 
-    	drawImage(ig,ins.left+320,ins.top,this._input_source.reality_in.refLastTrackSource().getEdgeRaster());
+    	drawImage(ig,ins.left+320,ins.top,this._input_source.reality_in.refLastTrackSource().refEdgeRaster());
     	//
 
     }
@@ -297,11 +311,11 @@ public class Test_RealityTarget extends Frame implements MouseListener
     	g.setColor(Color.GREEN);
     	NyARIntPoint2d b=new NyARIntPoint2d();
     	t.getTargetCenter(b);
-    	NyARIntRect r=t._ref_tracktarget.sample_area;
-    	g.drawString("[K]("+t._grab_rate+")",b.x,b.y);
+    	NyARIntRect r=t._ref_tracktarget._sample_area;
+    	g.drawString("[K]("+t.grab_rate+")",b.x,b.y);
 		g.drawRect(r.x,r.y, r.w,r.h);
-    	if(t._ref_tracktarget.st_type==NyARTargetStatus.ST_RECT){
-        	g.drawString(">"+((NyARRectTargetStatus)(t._ref_tracktarget.ref_status)).detect_type,r.x,r.y+10);
+    	if(t._ref_tracktarget._st_type==NyARTargetStatus.ST_RECT){
+        	g.drawString(">"+((NyARRectTargetStatus)(t._ref_tracktarget._ref_status)).detect_type,r.x,r.y+10);
     	}else{
      	}
     }
@@ -310,15 +324,15 @@ public class Test_RealityTarget extends Frame implements MouseListener
     	g.setColor(Color.YELLOW);
     	NyARIntPoint2d b=new NyARIntPoint2d();
     	t.getTargetCenter(b);
-    	NyARIntRect r=t._ref_tracktarget.sample_area;
-    	g.drawString("[U]("+t._grab_rate+")",b.x,b.y);
+    	NyARIntRect r=t._ref_tracktarget._sample_area;
+    	g.drawString("[U]("+t.grab_rate+")",b.x,b.y);
 		g.drawRect(r.x,r.y, r.w,r.h);
 	}
     private void drawDeadRT(Graphics g,NyARRealityTarget t)
     {
     	g.setColor(Color.RED);
-    	NyARIntRect r=t._ref_tracktarget.sample_area;
-    	g.drawString("[D]("+t._grab_rate+")",r.x,r.y);
+    	NyARIntRect r=t._ref_tracktarget._sample_area;
+    	g.drawString("[D]("+t.grab_rate+")",r.x,r.y);
     }
     
     

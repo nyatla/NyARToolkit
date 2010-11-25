@@ -30,16 +30,18 @@
  */
 package jp.nyatla.nyartoolkit.jogl.utils;
 
+import java.awt.Font;
 import java.nio.*;
 import javax.media.opengl.GL;
-import javax.media.opengl.glu.GLU;
+
+import com.sun.opengl.util.j2d.TextRenderer;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.rgb.*;
+import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
-import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
+import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
+import jp.nyatla.nyartoolkit.core.types.matrix.*;
 /**
  * OpenGLの支援機能を提供するクラスです。
  */
@@ -55,78 +57,57 @@ public class NyARGLUtil
 	 * 以前のバージョンの数値系と互換性を保ちます。
 	 */
 	final static double SCALE_FACTOR_toCameraViewRH_NYAR2=0.025;
-	/**
-	 * BufferType値から、OpenGLのピクセルタイプ値を計算します。
-	 * @param i_buffer_type
-	 * BufferType値を指定します。
-	 * @return
-	 * OpenGLのピクセルタイプ値
-	 * @throws NyARException
-	 */
-	final static private int getGlPixelFormat(int i_buffer_type) throws NyARException
-	{
-		switch(i_buffer_type){
-		case NyARBufferType.BYTE1D_B8G8R8_24:
-			return GL.GL_BGR;
-		case NyARBufferType.BYTE1D_R8G8B8_24:
-			return GL.GL_RGB;
-		default:
-			throw new NyARException();
-		}
-	}
 	
 	/**
-	 * 
+	 * OpenGLにおける背景描画を支援します。i_rasterを現在のビューポートへ描画します。
 	 * @param glu
 	 * @param i_raster
 	 * @param i_zoom
 	 * @throws NyARException
 	 */
-	public static void drawBackGround(GLU glu,INyARRgbRaster i_raster, double i_zoom) throws NyARException
+	public static void drawBackGround(javax.media.opengl.GL i_gl,INyARRaster i_raster, double i_zoom) throws NyARException
 	{
 		IntBuffer texEnvModeSave = IntBuffer.allocate(1);
 		boolean lightingSave;
 		boolean depthTestSave;
-		javax.media.opengl.GL gl = GLU.getCurrentGL();
 		final NyARIntSize rsize=i_raster.getSize();
-
 		// Prepare an orthographic projection, set camera position for 2D drawing, and save GL state.
-		gl.glGetTexEnviv(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, texEnvModeSave); // Save GL texture environment mode.
+		i_gl.glGetTexEnviv(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, texEnvModeSave); // Save GL texture environment mode.
 		if (texEnvModeSave.array()[0] != GL.GL_REPLACE) {
-			gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_REPLACE);
+			i_gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_REPLACE);
 		}
-		lightingSave = gl.glIsEnabled(GL.GL_LIGHTING); // Save enabled state of lighting.
+		lightingSave = i_gl.glIsEnabled(GL.GL_LIGHTING); // Save enabled state of lighting.
 		if (lightingSave == true) {
-			gl.glDisable(GL.GL_LIGHTING);
+			i_gl.glDisable(GL.GL_LIGHTING);
 		}
-		depthTestSave = gl.glIsEnabled(GL.GL_DEPTH_TEST); // Save enabled state of depth test.
+		depthTestSave = i_gl.glIsEnabled(GL.GL_DEPTH_TEST); // Save enabled state of depth test.
 		if (depthTestSave == true) {
-			gl.glDisable(GL.GL_DEPTH_TEST);
+			i_gl.glDisable(GL.GL_DEPTH_TEST);
 		}
-		gl.glMatrixMode(GL.GL_PROJECTION);
-		gl.glPushMatrix();
-		gl.glLoadIdentity();
-		glu.gluOrtho2D(0.0,rsize.w, 0.0,rsize.h);
-		gl.glMatrixMode(GL.GL_MODELVIEW);
-		gl.glPushMatrix();
-		gl.glLoadIdentity();
-		arglDispImageStateful(gl,i_raster, i_zoom);
+		i_gl.glMatrixMode(GL.GL_PROJECTION);
+		i_gl.glPushMatrix();
+		i_gl.glLoadIdentity();
+		i_gl.glOrtho(0.0,rsize.w, 0.0,rsize.h,0,1);
+		i_gl.glMatrixMode(GL.GL_MODELVIEW);
+		i_gl.glPushMatrix();
+		i_gl.glLoadIdentity();
+		arglDispImageStateful(i_gl,rsize,i_raster.getBuffer(),i_raster.getBufferType(),i_zoom);
 
 		// Restore previous projection, camera position, and GL state.
-		gl.glMatrixMode(GL.GL_PROJECTION);
-		gl.glPopMatrix();
-		gl.glMatrixMode(GL.GL_MODELVIEW);
-		gl.glPopMatrix();
+		i_gl.glMatrixMode(GL.GL_PROJECTION);
+		i_gl.glPopMatrix();
+		i_gl.glMatrixMode(GL.GL_MODELVIEW);
+		i_gl.glPopMatrix();
 		if (depthTestSave) {
-			gl.glEnable(GL.GL_DEPTH_TEST); // Restore enabled state of depth test.
+			i_gl.glEnable(GL.GL_DEPTH_TEST); // Restore enabled state of depth test.
 		}
 		if (lightingSave) {
-			gl.glEnable(GL.GL_LIGHTING); // Restore enabled state of lighting.
+			i_gl.glEnable(GL.GL_LIGHTING); // Restore enabled state of lighting.
 		}
 		if (texEnvModeSave.get(0) != GL.GL_REPLACE) {
-			gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, texEnvModeSave.get(0)); // Restore GL texture environment mode.
+			i_gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, texEnvModeSave.get(0)); // Restore GL texture environment mode.
 		}
-		gl.glEnd();
+		i_gl.glEnd();
 	}
 
 	/**
@@ -134,24 +115,39 @@ public class NyARGLUtil
 	 * @param image
 	 * @param zoom
 	 */
-	private static void arglDispImageStateful(GL gl_,INyARRgbRaster i_raster, double zoom) throws NyARException
+	private static void arglDispImageStateful(GL gl,NyARIntSize i_size,Object i_buffer,int i_buffer_type, double zoom) throws NyARException
 	{
-		final NyARIntSize rsize = i_raster.getSize();
 		float zoomf;
 		IntBuffer params = IntBuffer.allocate(4);
 		zoomf = (float) zoom;
-		gl_.glDisable(GL.GL_TEXTURE_2D);
-		gl_.glGetIntegerv(GL.GL_VIEWPORT, params);
-		gl_.glPixelZoom(zoomf * ((float) (params.get(2)) / (float) rsize.w), -zoomf * ((float) (params.get(3)) / (float) rsize.h));
-		gl_.glWindowPos2f(0.0f, (float) rsize.h);
-		gl_.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
-		ByteBuffer buf = ByteBuffer.wrap((byte[])i_raster.getBuffer());
-		gl_.glDrawPixels(rsize.w,rsize.h,getGlPixelFormat(i_raster.getBufferType()), GL.GL_UNSIGNED_BYTE, buf);
+		gl.glDisable(GL.GL_TEXTURE_2D);
+		gl.glGetIntegerv(GL.GL_VIEWPORT, params);
+		gl.glPixelZoom(zoomf * ((float) (params.get(2)) / (float) i_size.w), -zoomf * ((float) (params.get(3)) / (float) i_size.h));
+		gl.glWindowPos2f(0.0f, (float) i_size.h);
+		gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
+		//BufferTypeの変換
+		switch(i_buffer_type)
+		{
+		case NyARBufferType.BYTE1D_B8G8R8_24:
+			gl.glDrawPixels(i_size.w,i_size.h,GL.GL_BGR, GL.GL_UNSIGNED_BYTE, ByteBuffer.wrap((byte[])i_buffer));
+			break;
+		case NyARBufferType.BYTE1D_R8G8B8_24:
+			gl.glDrawPixels(i_size.w,i_size.h,GL.GL_RGB, GL.GL_UNSIGNED_BYTE, ByteBuffer.wrap((byte[])i_buffer));
+			break;
+		case NyARBufferType.BYTE1D_B8G8R8X8_32:
+			gl.glDrawPixels(i_size.w,i_size.h,GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, ByteBuffer.wrap((byte[])i_buffer));
+			break;
+		case NyARBufferType.INT1D_GRAY_8:
+			gl.glDrawPixels(i_size.w,i_size.h,GL.GL_LUMINANCE, GL.GL_UNSIGNED_INT, IntBuffer.wrap((int[])i_buffer));
+			break;
+		default:
+			throw new NyARException();
+		}
 	}
 	
 	
 	/**
-	 * CameraFrustramを計算します。
+	 * ARToolKitスタイルのカメラパラメータから、 CameraFrustamを計算します。
 	 * @param i_arparam
 	 * @param i_scale
 	 * スケール値を指定します。1=1mmです。10ならば1=1cm,1000ならば1=1mです。
@@ -164,44 +160,61 @@ public class NyARGLUtil
 	 */
 	public static void toCameraFrustumRH(NyARParam i_arparam,double i_scale,double i_near,double i_far,double[] o_gl_projection)
 	{
+		toCameraFrustumRH(i_arparam.getPerspectiveProjectionMatrix(),i_arparam.getScreenSize(),i_scale,i_near,i_far,o_gl_projection);
+		return;
+	}
+	/**
+	 * ARToolKitスタイルのProjectionMatrixから、 CameraFrustamを計算します。
+	 * @param i_promat
+	 * @param i_size
+	 * スクリーンサイズを指定します。
+	 * @param i_scale
+	 * {@link #toCameraFrustumRH(NyARParam i_arparam,double i_scale,double i_near,double i_far,double[] o_gl_projection)}を参照。
+	 * @param i_near
+	 * {@link #toCameraFrustumRH(NyARParam i_arparam,double i_scale,double i_near,double i_far,double[] o_gl_projection)}を参照。
+	 * @param i_far
+	 * {@link #toCameraFrustumRH(NyARParam i_arparam,double i_scale,double i_near,double i_far,double[] o_gl_projection)}を参照。
+	 * @param o_gl_projection
+	 * {@link #toCameraFrustumRH(NyARParam i_arparam,double i_scale,double i_near,double i_far,double[] o_gl_projection)}を参照。
+	 */
+	public static void toCameraFrustumRH(NyARPerspectiveProjectionMatrix i_promat,NyARIntSize i_size,double i_scale,double i_near,double i_far,double[] o_gl_projection)
+	{
 		NyARDoubleMatrix44 m=new NyARDoubleMatrix44();
-		i_arparam.makeCameraFrustumRH(i_near*i_scale,i_far*i_scale,m);
-		//OpenGLの並びに直してセット。
+		i_promat.makeCameraFrustumRH(i_size.w,i_size.h,i_near*i_scale,i_far*i_scale,m);
 		m.getValueT(o_gl_projection);
 		return;
 	}
-	
 	/**
 	 * NyARTransMatResultをOpenGLの行列へ変換します。
-	 * @param i_ny_result
+	 * @param mat
 	 * 変換元の行列
 	 * @param i_scale
 	 * 座標系のスケール値を指定します。1=1mmです。10ならば1=1cm,1000ならば1=1mです。
 	 * 2.53以前のNyARToolkitと互換性を持たせるときは、{@link #SCALE_FACTOR_toCameraViewRH_NYAR2}を指定してください。
 	 * @param o_gl_result
-	 * @throws NyARException
 	 */
-	public static void toCameraViewRH(NyARTransMatResult i_ny_result,double i_scale, double[] o_gl_result) throws NyARException
+	public static void toCameraViewRH(NyARDoubleMatrix44 mat,double i_scale, double[] o_gl_result)
 	{
-		o_gl_result[0 + 0 * 4] = i_ny_result.m00; 
-		o_gl_result[1 + 0 * 4] = -i_ny_result.m10;
-		o_gl_result[2 + 0 * 4] = -i_ny_result.m20;
+		o_gl_result[0 + 0 * 4] = mat.m00; 
+		o_gl_result[1 + 0 * 4] = -mat.m10;
+		o_gl_result[2 + 0 * 4] = -mat.m20;
 		o_gl_result[3 + 0 * 4] = 0.0;
-		o_gl_result[0 + 1 * 4] = i_ny_result.m01;
-		o_gl_result[1 + 1 * 4] = -i_ny_result.m11;
-		o_gl_result[2 + 1 * 4] = -i_ny_result.m21;
+		o_gl_result[0 + 1 * 4] = mat.m01;
+		o_gl_result[1 + 1 * 4] = -mat.m11;
+		o_gl_result[2 + 1 * 4] = -mat.m21;
 		o_gl_result[3 + 1 * 4] = 0.0;
-		o_gl_result[0 + 2 * 4] = i_ny_result.m02;
-		o_gl_result[1 + 2 * 4] = -i_ny_result.m12;
-		o_gl_result[2 + 2 * 4] = -i_ny_result.m22;
+		o_gl_result[0 + 2 * 4] = mat.m02;
+		o_gl_result[1 + 2 * 4] = -mat.m12;
+		o_gl_result[2 + 2 * 4] = -mat.m22;
 		o_gl_result[3 + 2 * 4] = 0.0;
 		
 		double scale=1/i_scale;
-		o_gl_result[0 + 3 * 4] = i_ny_result.m03*scale;
-		o_gl_result[1 + 3 * 4] = -i_ny_result.m13*scale;
-		o_gl_result[2 + 3 * 4] = -i_ny_result.m23*scale;
+		o_gl_result[0 + 3 * 4] = mat.m03*scale;
+		o_gl_result[1 + 3 * 4] = -mat.m13*scale;
+		o_gl_result[2 + 3 * 4] = -mat.m23*scale;
 		o_gl_result[3 + 3 * 4] = 1.0;
 		return;
-	}	
+	}
+
 	
 }

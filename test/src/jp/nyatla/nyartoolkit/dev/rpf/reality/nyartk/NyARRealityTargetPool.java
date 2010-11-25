@@ -3,14 +3,17 @@ package jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
+import jp.nyatla.nyartoolkit.core.utils.NyARManagedObjectPool;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTarget;
-import jp.nyatla.nyartoolkit.dev.rpf.utils.NyARManagedObjectPool;
 
 public class NyARRealityTargetPool extends NyARManagedObjectPool<NyARRealityTarget>
 {
 	//targetでの共有オブジェクト
 	public NyARPerspectiveProjectionMatrix _ref_prj_mat;
-	public NyARDoublePoint2d[] _wk_da4=NyARDoublePoint2d.createArray(4);
+	/** Target間での共有ワーク変数。*/
+	public NyARDoublePoint3d[] _wk_da3_4=NyARDoublePoint3d.createArray(4);
+	public NyARDoublePoint2d[] _wk_da2_4=NyARDoublePoint2d.createArray(4);
 	
 	public NyARRealityTargetPool(int i_size,NyARPerspectiveProjectionMatrix i_ref_prj_mat) throws NyARException
 	{
@@ -34,7 +37,7 @@ public class NyARRealityTargetPool extends NyARManagedObjectPool<NyARRealityTarg
 		if(ret==null){
 			return null;
 		}
-		ret._grab_rate=50;//開始時の補足レートは50%
+		ret.grab_rate=50;//開始時の補足レートは50%
 		ret._ref_tracktarget=(NyARTarget) tt.refObject();
 		tt.tag=ret;//タグに値設定しておく。
 		return ret;
