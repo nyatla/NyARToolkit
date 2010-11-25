@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.core.utils;
+package jp.nyatla.nyartoolkit.dev.rpf.utils;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
