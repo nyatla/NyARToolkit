@@ -2,13 +2,12 @@ package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
-import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
 import jp.nyatla.nyartoolkit.core.utils.NyARManagedObjectPool;
-import jp.nyatla.nyartoolkit.core.utils.NyARManagedObject.INyARManagedObjectPoolOperater;
+import jp.nyatla.nyartoolkit.dev.rpf.utils.LineBaseVertexDetector;
 import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinates;
 import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinatesOperator;
-import jp.nyatla.nyartoolkit.java3d.utils.LineBaseVertexDetector;
+
 
 public class NyARRectTargetStatusPool extends NyARManagedObjectPool<NyARRectTargetStatus>
 {
