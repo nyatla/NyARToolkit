@@ -29,9 +29,9 @@ public class RawbitSerialIdTable
 {
 	/**
 	 * selectTarget関数の戻り値を格納します。
-	 * 入れ子クラスの作れない処理系では、RawbitSerialIdTable_SelectResultとして宣言してください。
+	 * 入れ子クラスの作れない処理系では、RawbitSerialIdTable_IdentifyIdResultとして宣言してください。
 	 */
-	public static class SelectResult
+	public static class IdentifyIdResult
 	{
 		/** ID番号です。*/
 		public long id;
@@ -164,7 +164,7 @@ public class RawbitSerialIdTable
 	 * @return
 	 * @throws NyARException
 	 */
-	public final boolean identifyId(NyARDoublePoint2d[] i_vertex,INyARRgbRaster i_raster,SelectResult o_result) throws NyARException
+	public final boolean identifyId(NyARDoublePoint2d[] i_vertex,INyARRgbRaster i_raster,IdentifyIdResult o_result) throws NyARException
 	{
 		if(!this._id_pickup.pickFromRaster(i_raster,i_vertex,this._temp_nyid_info,this._temp_nyid_param))
 		{
@@ -224,7 +224,7 @@ public class RawbitSerialIdTable
 	 * 特定に成功すると、trueを返します。
 	 * @throws NyARException 
 	 */
-	public boolean identifyId(NyARRealityTarget i_target,NyARRealitySource i_rtsorce,SelectResult o_result) throws NyARException
+	public boolean identifyId(NyARRealityTarget i_target,NyARRealitySource i_rtsorce,IdentifyIdResult o_result) throws NyARException
 	{
 		//NyARDoublePoint2d[] i_vertex,NyARRgbRaster i_raster,SelectResult o_result
 		return this.identifyId(

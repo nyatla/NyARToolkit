@@ -25,9 +25,9 @@ public class ARTKMarkerTable
 {
 	/**
 	 * selectTarget関数の戻り値を格納します。
-	 * 入れ子クラスの作れない処理系では、ARTKMarkerTable_SelectResultとして宣言してください。
+	 * 入れ子クラスの作れない処理系では、ARTKMarkerTable_GetBestMatchTargetResultとして宣言してください。
 	 */
-	public static class SelectResult
+	public static class GetBestMatchTargetResult
 	{
 		/** 登録時に設定したIDです。*/
 		public int idtag;
@@ -203,7 +203,7 @@ public class ARTKMarkerTable
 	 * 特定に成功すると、trueを返します。
 	 * @throws NyARException 
 	 */
-	public boolean selectBestTarget(NyARRealityTarget i_target,NyARRealitySource i_rtsorce,SelectResult o_result) throws NyARException
+	public boolean getBestMatchTarget(NyARRealityTarget i_target,NyARRealitySource i_rtsorce,GetBestMatchTargetResult o_result) throws NyARException
 	{
 		//パターン抽出
 		NyARMatchPattResult tmp_patt_result=this.__tmp_patt_result;

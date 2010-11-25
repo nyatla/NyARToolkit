@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk;
+package jp.nyatla.nyartoolkit.dev.rpf.sample;
 
 import java.awt.*;
 import java.awt.color.*;
@@ -29,6 +29,9 @@ import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARReality;
+import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTarget;
+import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTargetList;
 import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource;
 import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource_JavaImage;
 import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource_Jmf;
@@ -41,72 +44,6 @@ import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.utils.NyARGLUtil;
 import jp.nyatla.nyartoolkit.utils.j2se.*;
 
-/**
- * 出力ソース
- * @author nyatla
- */
-class InputSource
-{
-	public NyARRealitySource reality_in;
-}
-
-class ImageSource extends InputSource
-{
-	public ImageSource(String i_filename) throws NyARException, IOException
-	{
-		BufferedImage _src_image;
-		_src_image = ImageIO.read(new File(i_filename));
-		NyARRealitySource_JavaImage ri=new NyARRealitySource_JavaImage(_src_image.getWidth(),_src_image.getHeight(),2);
-	//	ri.setImage(_src_image);
-		this.reality_in=ri;
-	}
-}
-
-class LiveSource extends InputSource implements JmfCaptureListener
-{
-	private JmfCaptureDevice _capture;
-	public LiveSource() throws NyARException
-	{
-		//キャプチャの準備
-		JmfCaptureDeviceList devlist=new JmfCaptureDeviceList();
-		this._capture=devlist.getDevice(0);
-		//JmfNyARRaster_RGBはYUVよりもRGBで高速に動作します。
-		if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB,320, 240,15f)){
-			if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_YUV,320, 240,15f)){
-				throw new NyARException("キャプチャフォーマットが見つかりません");
-			}		
-		}
-		this._capture.setOnCapture(this);
-		this._capture.start();
-		this.reality_in=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),null,2,100);
-		return;
-		
-	}
-	
-	public void onUpdateBuffer(javax.media.Buffer i_buffer)
-	{
-		try {
-			//キャプチャしたバッファをラスタにセット
-			synchronized(this.reality_in){
-				((NyARRealitySource_Jmf)(this.reality_in)).setImage(i_buffer);
-			}
-			//キャプチャしたイメージを表示用に加工
-		}catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-
-	}
-
-	public void startCapture()
-	{
-		try {
-			this._capture.start();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-}
 
 
 
@@ -119,6 +56,73 @@ class LiveSource extends InputSource implements JmfCaptureListener
 
 public class Test_RealityTarget extends Frame implements MouseListener
 {
+	/**
+	 * 出力ソース
+	 * @author nyatla
+	 */
+	class InputSource
+	{
+		public NyARRealitySource reality_in;
+	}
+
+	class ImageSource extends InputSource
+	{
+		public ImageSource(String i_filename) throws NyARException, IOException
+		{
+			BufferedImage _src_image;
+			_src_image = ImageIO.read(new File(i_filename));
+			NyARRealitySource_JavaImage ri=new NyARRealitySource_JavaImage(_src_image.getWidth(),_src_image.getHeight(),2);
+		//	ri.setImage(_src_image);
+			this.reality_in=ri;
+		}
+	}
+
+	class LiveSource extends InputSource implements JmfCaptureListener
+	{
+		private JmfCaptureDevice _capture;
+		public LiveSource() throws NyARException
+		{
+			//キャプチャの準備
+			JmfCaptureDeviceList devlist=new JmfCaptureDeviceList();
+			this._capture=devlist.getDevice(0);
+			//JmfNyARRaster_RGBはYUVよりもRGBで高速に動作します。
+			if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB,320, 240,15f)){
+				if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_YUV,320, 240,15f)){
+					throw new NyARException("キャプチャフォーマットが見つかりません");
+				}		
+			}
+			this._capture.setOnCapture(this);
+			this._capture.start();
+			this.reality_in=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),null,2,100);
+			return;
+			
+		}
+		
+		public void onUpdateBuffer(javax.media.Buffer i_buffer)
+		{
+			try {
+				//キャプチャしたバッファをラスタにセット
+				synchronized(this.reality_in){
+					((NyARRealitySource_Jmf)(this.reality_in)).setImage(i_buffer);
+				}
+				//キャプチャしたイメージを表示用に加工
+			}catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+
+		}
+
+		public void startCapture()
+		{
+			try {
+				this._capture.start();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	public void mouseClicked(MouseEvent e)
 	{
 		try {

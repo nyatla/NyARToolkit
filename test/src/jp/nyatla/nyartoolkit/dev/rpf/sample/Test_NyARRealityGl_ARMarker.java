@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.gl;
+package jp.nyatla.nyartoolkit.dev.rpf.sample;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -22,6 +22,7 @@ import jp.nyatla.nyartoolkit.dev.rpf.mklib.ARTKMarkerTable;
 import jp.nyatla.nyartoolkit.dev.rpf.mklib.RawbitSerialIdTable;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTarget;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTargetList;
+import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.gl.NyARRealityGl;
 import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource_Jmf;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDevice;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDeviceList;
@@ -200,8 +201,8 @@ public class Test_NyARRealityGl_ARMarker implements GLEventListener, JmfCaptureL
 					return;
 				}
 				//ターゲットに一致するデータを検索
-				RawbitSerialIdTable.SelectResult r=new RawbitSerialIdTable.SelectResult();
-				if(this._mklib..identifyId(t,this._src,r)){
+				ARTKMarkerTable.SelectResult r=new RawbitSerialIdTable.IdentifyIdResult();
+				if(this._mklib.selectBestTarget(t,this._src,r)){
 					//テーブルにターゲットが見つかったので遷移する。
 					if(!this._reality.changeTargetToKnown(t,r.artk_direction,r.marker_width)){
 					//遷移の成功チェック
