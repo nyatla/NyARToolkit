@@ -107,7 +107,7 @@ public class ARTKMarkerTable
 		this._edge_x=i_edge_x;
 		this._edge_y=i_edge_y;
 		this._sample_per_pix=i_sample_per_pix;
-		this._tmp_raster=new NyARRgbRaster(i_resolution_x,i_resolution_y,NyARBufferType.BYTE1D_X8R8G8B8_32);
+		this._tmp_raster=new NyARRgbRaster(i_resolution_x,i_resolution_y,NyARBufferType.INT1D_X8R8G8B8_32);
 		this._table=new MarkerTable(i_max);
 		this._deviation_data=new NyARMatchPattDeviationColorData(i_resolution_x,i_resolution_y);		
 		this._match_patt=new NyARMatchPatt_Color_WITHOUT_PCA(i_resolution_x,i_resolution_y);
@@ -220,6 +220,7 @@ public class ARTKMarkerTable
 			if(cf<tmp_patt_result.confidence){
 				ret=i;
 				cf=tmp_patt_result.confidence;
+				dir=tmp_patt_result.direction;
 			}
 		}
 		if(ret<0){

@@ -34,16 +34,16 @@ import com.sun.opengl.util.Animator;
 
 /**
  * NyARRealityシステムのサンプル。
- * IDマーカの上に立方体を表示します。
- *
+ * ARToolkitスタイルのマーカの上に、立方体を表示します。
+ * 取り扱うマーカの種類は２種類(Hiro,Kanji)です。
  * @author nyatla
  *
  */
 public class Test_NyARRealityGl_ARMarker implements GLEventListener, JmfCaptureListener
 {
 
-	private final static int SCREEN_X = 320;
-	private final static int SCREEN_Y = 240;
+	private final static int SCREEN_X = 640;
+	private final static int SCREEN_Y = 480;
 
 	private Animator _animator;
 	private JmfCaptureDevice _capture;
@@ -75,7 +75,7 @@ public class Test_NyARRealityGl_ARMarker implements GLEventListener, JmfCaptureL
 		this._reality=new NyARRealityGl(i_param.getPerspectiveProjectionMatrix(),i_param.getScreenSize(),10,10000,3,3);
 		//マーカライブラリ(ARTKId)の構築
 		this._mklib= new ARTKMarkerTable(10,16,16,25,25,4);
-		//マーカテーブルの作成
+		//マーカテーブルの作成（２種類）
 		this._mklib.addMarkerFromARPattFile(PATT_HIRO,0,"HIRO",80,80);
 		this._mklib.addMarkerFromARPattFile(PATT_KANJI,1,"KANJI",80,80);
 				
@@ -164,10 +164,12 @@ public class Test_NyARRealityGl_ARMarker implements GLEventListener, JmfCaptureL
 						//マーカ情報の描画
 						_gl.glPushMatrix(); // Save world coordinate system.
 						this._reality.glLoadModelViewMatrix(this._gl,m);
-						_gl.glTranslatef(-30,0,90f); // Place base of cube on marker surface.
+						_gl.glTranslatef(0,0,90f); // Place base of cube on marker surface.
 						_gl.glRotatef(90,1.0f,0.0f,0.0f); // Place base of cube on marker surface.
+						_gl.glRotatef(90,0.0f,-1.0f,0.0f); // Place base of cube on marker surface.
 						NyARGLDrawUtil.setFontColor(t.getGrabbRate()<50?Color.RED:Color.BLUE);
-						NyARGLDrawUtil.drawText("ID:"+(Long)(t.tag)+" GRUB:"+t.grab_rate+"%",0.5f);
+						ARTKMarkerTable.GetBestMatchTargetResult d=((ARTKMarkerTable.GetBestMatchTargetResult)(t.tag));
+						NyARGLDrawUtil.drawText("Name:"+d.name+" GRUB:"+t.grab_rate+"%",0.5f);
 						_gl.glPopMatrix();
 						
 						break;
@@ -201,15 +203,19 @@ public class Test_NyARRealityGl_ARMarker implements GLEventListener, JmfCaptureL
 					return;
 				}
 				//ターゲットに一致するデータを検索
-				ARTKMarkerTable.SelectResult r=new RawbitSerialIdTable.IdentifyIdResult();
-				if(this._mklib.selectBestTarget(t,this._src,r)){
-					//テーブルにターゲットが見つかったので遷移する。
+				ARTKMarkerTable.GetBestMatchTargetResult r=new ARTKMarkerTable.GetBestMatchTargetResult();
+				if(this._mklib.getBestMatchTarget(t,this._src,r)){
+					if(r.confidence<0.7)
+					{	//一致率が低すぎる。
+						return;
+					}
+					//一致度を確認して、80%以上ならKnownターゲットへ遷移
 					if(!this._reality.changeTargetToKnown(t,r.artk_direction,r.marker_width)){
 					//遷移の成功チェック
 						return;//失敗
 					}
-					//遷移に成功したので、tagにユーザ定義情報を書きこむ。
-					t.tag=new Long(r.id);
+					//遷移に成功したので、tagにResult情報をコピーしておく。（後で表示に使う）
+					t.tag=r;
 				}else{
 					//一致しないので、このターゲットは捨てる。
 					this._reality.changeTargetToDead(t);
@@ -225,8 +231,8 @@ public class Test_NyARRealityGl_ARMarker implements GLEventListener, JmfCaptureL
 	}
 	
 	private final static String PARAM_FILE = "../Data/camera_para.dat";
-	private final static String PATT_HIRO = "../Data/camera_para.dat";
-	private final static String PATT_KANJI = "../Data/camera_para.dat";
+	private final static String PATT_HIRO = "../Data/patt.hiro";
+	private final static String PATT_KANJI = "../Data/patt.kanji";
 
 	public static void main(String[] args)
 	{

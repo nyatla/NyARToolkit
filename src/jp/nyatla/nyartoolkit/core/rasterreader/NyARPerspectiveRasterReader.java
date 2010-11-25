@@ -84,8 +84,6 @@ public class NyARPerspectiveRasterReader
 	}
 	/**
 	 * コンストラクタです。入力ラスタの形式を制限してインスタンスを作成します。
-	 * @param i_edge_percentage
-	 * エッジ幅の割合(ARToolKit標準と同じなら、25)
 	 * @param i_input_raster_type
 	 */
 	public NyARPerspectiveRasterReader(int i_input_raster_type)

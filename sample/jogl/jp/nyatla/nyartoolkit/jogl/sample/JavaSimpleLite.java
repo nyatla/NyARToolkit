@@ -58,7 +58,6 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 	private JmfCaptureDevice _capture;
 
 	private GL _gl;
-	private GLU _glu;
 
 	// NyARToolkit関係
 	private NyARSingleDetectMarker _nya;
@@ -155,7 +154,6 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 	public void init(GLAutoDrawable drawable)
 	{
 		this._gl = drawable.getGL();
-		this._glu=new GLU();
 		this._gl.glEnable(GL.GL_DEPTH_TEST);
 		this._gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		// NyARToolkitの準備
@@ -200,7 +198,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 		this._gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
 		try{
 			synchronized(this._sync_object){
-				NyARGLUtil.drawBackGround(this._glu,this._cap_image, 1.0);			
+				NyARGLUtil.drawBackGround(this._gl,this._cap_image, 1.0);			
 				// マーカーがあれば、立方体を描画
 				if (this._is_marker_exist){
 					// マーカーの一致度を調査するならば、ここでnya.getConfidence()で一致度を調べて下さい。

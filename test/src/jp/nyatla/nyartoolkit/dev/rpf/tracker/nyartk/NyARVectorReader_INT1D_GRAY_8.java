@@ -31,6 +31,7 @@ import jp.nyatla.nyartoolkit.core.squaredetect.NyARContourPickup;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinates;
+import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinates.NyARVecLinearPoint;
 
 /**
  * グレイスケールラスタに対する、特殊な画素アクセス手段を提供します。
@@ -38,6 +39,7 @@ import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinates;
  */
 public class NyARVectorReader_INT1D_GRAY_8
 {
+	private NyARVecLinearPoint[] _tmp_coord_pos;
 	private int _rob_resolution;
 	private NyARGrayscaleRaster _ref_base_raster;
 	private NyARGrayscaleRaster _ref_rob_raster;
@@ -60,6 +62,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 		this._ref_base_raster=i_ref_raster;
 		this._coord_buf = new NyARIntCoordinates((i_ref_raster.getWidth() + i_ref_raster.getHeight()) * 4);
 		this._factor=i_ref_raster_distortion;
+		this._tmp_coord_pos=NyARVecLinearPoint.createArray(this._coord_buf.items.length);
 	}
 
 	/**
@@ -267,7 +270,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 		}
 
 		coord.length = dist - 4;
-		// 点数は10点程度を得る。
+		// 点数は20点程度を得る。
 		return traceConture(coord, 1, s, o_coord);
 	}
 
@@ -309,97 +312,69 @@ public class NyARVectorReader_INT1D_GRAY_8
 		return traceConture(coord, 1, s, o_coord);
 	}
 
-	private VecLinearCoordinates.NyARVecLinearPoint[] _tmp_cd = VecLinearCoordinates.NyARVecLinearPoint.createArray(3);
-
 	/**
-	 * 輪郭をベクトル化します。アルゴリズムは、以下の通りです。
+	 * 輪郭線を取得します。
+	 * 取得アルゴリズムは、以下の通りです。
 	 * 1.輪郭座標(n)の画素周辺の画素ベクトルを取得。
 	 * 2.輪郭座標(n+1)周辺の画素ベクトルと比較。
 	 * 3.差分が一定以下なら、座標と強度を保存
-	 * 4.画素ベクトルの和を返却。
-	 * @param i_coord
-	 * @param i_pos_mag
-	 * @param i_cell_size
-	 * @param o_coord
-	 * @return
+	 * 4.3点以上の集合になったら、最小二乗法で直線を計算。
+	 * 5.直線の加重値を個々の画素ベクトルの和として返却。
 	 */
-	public boolean traceConture(NyARIntCoordinates i_coord, int i_pos_mag,
-			int i_cell_size, VecLinearCoordinates o_coord) {
+	public boolean traceConture(NyARIntCoordinates i_coord, int i_pos_mag,int i_cell_size, VecLinearCoordinates o_coord)
+	{
+		NyARVecLinearPoint[] pos=this._tmp_coord_pos;
 		// ベクトル化
-		VecLinearCoordinates.NyARVecLinearPoint[] array_of_vec = o_coord.items;
 		int MAX_COORD = o_coord.items.length;
-		// 検出RECTは、x,yと(x+w),(y+h)の間にあるものになる。
-
-		VecLinearCoordinates.NyARVecLinearPoint prev_vec_ptr, current_vec_ptr, tmp_ptr;
-		VecLinearCoordinates.NyARVecLinearPoint[] tmp_cd = _tmp_cd;
-		current_vec_ptr = tmp_cd[0];
-
 		int i_coordlen = i_coord.length;
 		NyARIntPoint2d[] coord = i_coord.items;
 
-		int number_of_data = 1;
-		int sum = 1;
-		// 0個目のベクトル
-		this.getAreaVector33(coord[0].x * i_pos_mag, coord[0].y * i_pos_mag,i_cell_size, i_cell_size, current_vec_ptr);
-		array_of_vec[0].setValue(current_vec_ptr);
-		// [2]に0番目のバックアップを取る。
-		tmp_cd[2].setValue(current_vec_ptr);
+		//0個目のライン探索
+		int number_of_data = 0;
+		double sq;
+		long sq_sum=0;
+		//0番目のピクセル
+		pos[0].scalar=sq=this.getAreaVector33(coord[0].x * i_pos_mag, coord[0].y * i_pos_mag,i_cell_size, i_cell_size,pos[0]);
+		sq_sum+=sq;
+		//[2]に0を保管
 
+		//1点目だけは前方と後方、両方に探索をかける。
+		//前方探索の終点
+		int coord_last_edge=i_coordlen;
 		//後方探索
-		int cdx = 1;
-		int coord_edge=i_coordlen;
-		tmp_ptr = array_of_vec[0];
-		for (int i = i_coordlen-1;i>0; i--){
-		// ベクトル化1:vecposに線分と直行するベクトルを格納。隣接成分と似ている場合は、連結する。
-			prev_vec_ptr = current_vec_ptr;
-			current_vec_ptr = tmp_cd[cdx % 2];
-			cdx++;
+		int sum=1;
+		for (int i = i_coordlen-1; i >0; i--)
+		{
 			// ベクトル取得
-			this.getAreaVector33(coord[i].x * i_pos_mag,coord[i].y * i_pos_mag, i_cell_size, i_cell_size,current_vec_ptr);
-
+			pos[sum].scalar=sq=this.getAreaVector33(coord[i].x * i_pos_mag,coord[i].y * i_pos_mag, i_cell_size, i_cell_size,pos[sum]);
+			sq_sum+=sq;
 			// 類似度判定
-			if (prev_vec_ptr.getVecCos(current_vec_ptr) < _MARGE_ANG_TH)
-			{
-				//相関なし->後方探索を確定して、前方探索へ。
-				coord_edge=i;
+			if (pos[sum-1].getVecCos(pos[sum]) < NyARMath.COS_DEG_10) {
+				//相関なし->前方探索へ。
+				coord_last_edge=i;
 				break;
 			} else {
-				// 相関あり(ベクトルの統合)
-				tmp_ptr.x += current_vec_ptr.x;
-				tmp_ptr.y += current_vec_ptr.y;
-				tmp_ptr.dx += current_vec_ptr.dx;
-				tmp_ptr.dy += current_vec_ptr.dy;
+				//相関あり- 点の蓄積
 				sum++;
 			}
 		}
 		//前方探索
-		current_vec_ptr = tmp_cd[2];
-		for (int i = 1;i<coord_edge; i++){
-			prev_vec_ptr = current_vec_ptr;
-			current_vec_ptr = tmp_cd[cdx % 2];
-			cdx++;
-
+		for (int i = 1; i<coord_last_edge; i++)
+		{
 			// ベクトル取得
-			this.getAreaVector33(coord[i].x * i_pos_mag,coord[i].y * i_pos_mag, i_cell_size, i_cell_size,current_vec_ptr);
-
+			sq_sum+=this.getAreaVector33(coord[i].x * i_pos_mag,coord[i].y * i_pos_mag, i_cell_size, i_cell_size,pos[sum]);
 			// 類似度判定
-			tmp_ptr = array_of_vec[number_of_data - 1];
-			if (prev_vec_ptr.getVecCos(current_vec_ptr) < _MARGE_ANG_TH) {
-				// 相関なし
-				// 前回までのベクトル和の調整
-				tmp_ptr.x /= sum;
-				tmp_ptr.y /= sum;
-				// 新しいベクトル値として保管
-				array_of_vec[number_of_data].setValue(current_vec_ptr);
-				// 確定したので個数を+1
-				number_of_data++;
-				sum = 1;
+			if (pos[sum-1].getVecCos(pos[sum]) < NyARMath.COS_DEG_10) {
+				//相関なし->新しい要素を作る。
+				if(this.leastSquaresWithNormalize(pos,sum,o_coord.items[number_of_data],sq_sum/(sum*20))){
+					number_of_data++;
+				}
+				//獲得した値を0へ移動
+				pos[0].setValue(pos[sum]);
+				sq_sum=0;
+				sum=1;
 			} else {
-				// 相関あり(ベクトルの統合)
-				tmp_ptr.x += current_vec_ptr.x;
-				tmp_ptr.y += current_vec_ptr.y;
-				tmp_ptr.dx += current_vec_ptr.dx;
-				tmp_ptr.dy += current_vec_ptr.dy;
+				//相関あり- 点の蓄積
 				sum++;
 			}
 			// 輪郭中心を出すための計算
@@ -408,24 +383,60 @@ public class NyARVectorReader_INT1D_GRAY_8
 				return false;
 			}
 		}
-		//閉じる。
-		tmp_ptr = array_of_vec[number_of_data - 1];
-		tmp_ptr.x /= sum;
-		tmp_ptr.y /= sum;
-		// vectorのsq_distを必要なだけ計算
-		double d = 0;
-		for (int i = number_of_data - 1; i >= 0; i--) {
-			current_vec_ptr = array_of_vec[i];
-			// ベクトルの法線を取る。
-			current_vec_ptr.normalVec(current_vec_ptr);
-			// sqdistを計算
-			current_vec_ptr.scalar = current_vec_ptr.dx * current_vec_ptr.dx+ current_vec_ptr.dy * current_vec_ptr.dy;
-			d += current_vec_ptr.scalar;
-		}
+		if(this.leastSquaresWithNormalize(pos,sum,o_coord.items[number_of_data],sq_sum/(sum*20))){
+			number_of_data++;
+		}		
+		// ベクトル化2:最後尾と先頭の要素が似ていれば連結する。
 		// sq_distの合計を計算
 		o_coord.length = number_of_data;
 		return true;
 	}
+	/**
+	 * ノイズらしいベクトルを無視しながら最小二乗法でベクトルを統合する関数
+	 * @param i_points
+	 * @param i_number_of_data
+	 * @param o_dest
+	 * @param i_scale_th
+	 * @return
+	 */
+	private final boolean leastSquaresWithNormalize(NyARVecLinearPoint[] i_points,int i_number_of_data,NyARVecLinearPoint o_dest,double i_scale_th)
+	{
+		int i;
+		int num=0;
+		double sum_xy = 0, sum_x = 0, sum_y = 0, sum_x2 = 0;
+		for (i=i_number_of_data-1; i>=0; i--){
+			NyARVecLinearPoint ptr=i_points[i];
+			//規定より小さいスケールは除外なう
+			if(ptr.scalar<i_scale_th)
+			{
+				continue;
+			}
+			double xw=ptr.x;
+			sum_xy += xw * ptr.y;
+			sum_x += xw;
+			sum_y += ptr.y;
+			sum_x2 += xw*xw;
+			num++;
+		}
+		if(num<3){
+			return false;
+		}
+		double la=-(num * sum_x2 - sum_x*sum_x);
+		double lb=-(num * sum_xy - sum_x * sum_y);
+		double cc=(sum_x2 * sum_y - sum_xy * sum_x);
+		double lc=-(la*sum_x+lb*sum_y)/num;
+		//交点を計算
+		final double w1 = -lb * lb - la * la;
+		if (w1 == 0.0) {
+			return false;
+		}		
+		o_dest.x=((la * lc - lb * cc) / w1);
+		o_dest.y= ((la * cc +lb * lc) / w1);
+		o_dest.dy=-lb;
+		o_dest.dx=-la;
+		o_dest.scalar=num;
+		return true;
+	}	
 
 	private NyARIntPoint2d[] __pt = NyARIntPoint2d.createArray(2);
 	private NyARLinear __temp_l = new NyARLinear();
@@ -472,12 +483,10 @@ public class NyARVectorReader_INT1D_GRAY_8
 
 			if (is_p1_inside_area) {
 				// p2が範囲外
-				pt[(i_pos2.sqDist(pt[0]) < i_pos2.sqDist(pt[1])) ? 1 : 0]
-						.setValue(i_pos1);
+				pt[(i_pos2.sqDist(pt[0]) < i_pos2.sqDist(pt[1])) ? 1 : 0].setValue(i_pos1);
 			} else {
 				// p1が範囲外
-				pt[(i_pos1.sqDist(pt[0]) < i_pos2.sqDist(pt[1])) ? 1 : 0]
-						.setValue(i_pos2);
+				pt[(i_pos1.sqDist(pt[0]) < i_pos2.sqDist(pt[1])) ? 1 : 0].setValue(i_pos2);
 			}
 		} else {
 			// 0ならクリッピングして得られた２点を使う。

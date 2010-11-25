@@ -48,8 +48,7 @@ import jp.nyatla.nyartoolkit.jmf.utils.JmfNyARRaster_RGB;
 
 
 /**
- * @todo
- * 矩形の追跡は動いてるから、位置予測機能と組み合わせて試すこと。
+ * Trackerの実験プログラム。未保証。
  *
  */
 
@@ -187,8 +186,8 @@ public class Test_TrackTerget extends Frame
 	private static final long serialVersionUID = -2110888320986446576L;
 
 
-	private int W = 320;
-	private int H = 240;
+	private int W = 640;
+	private int H = 480;
 	InputSource _input_source;
 	public Test_TrackTerget(NyARCameraDistortionFactor p) throws NyARException, Exception
 	{
