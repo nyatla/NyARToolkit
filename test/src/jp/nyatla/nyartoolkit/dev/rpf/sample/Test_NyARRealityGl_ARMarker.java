@@ -9,17 +9,14 @@ import java.awt.event.WindowEvent;
 
 import javax.media.Buffer;
 import javax.media.opengl.*;
-import javax.media.opengl.glu.GLU;
+
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
-import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
-import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
-import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
-import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
 import jp.nyatla.nyartoolkit.dev.rpf.mklib.ARTKMarkerTable;
-import jp.nyatla.nyartoolkit.dev.rpf.mklib.RawbitSerialIdTable;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTarget;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTargetList;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.gl.NyARRealityGl;
@@ -28,14 +25,13 @@ import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDevice;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDeviceList;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
 import jp.nyatla.nyartoolkit.jogl.utils.NyARGLDrawUtil;
-import jp.nyatla.nyartoolkit.jogl.utils.NyARGLUtil;
-
 import com.sun.opengl.util.Animator;
 
 /**
  * NyARRealityシステムのサンプル。
  * ARToolkitスタイルのマーカの上に、立方体を表示します。
  * 取り扱うマーカの種類は２種類(Hiro,Kanji)です。
+ * パターンの種類によっては、内側のパターンを誤認識する場合があります。
  * @author nyatla
  *
  */
@@ -140,7 +136,7 @@ public class Test_NyARRealityGl_ARMarker implements GLEventListener, JmfCaptureL
 		try{
 			synchronized(this._sync_object){
 				
-				this._reality.glDrawRealitySource(this._gl,this._src.refRgbSource());
+				this._reality.glDrawRealitySource(this._gl,this._src);
 				// Projection transformation.
 				this._gl.glMatrixMode(GL.GL_PROJECTION);
 				this._reality.glLoadCameraFrustum(this._gl);
@@ -157,7 +153,7 @@ public class Test_NyARRealityGl_ARMarker implements GLEventListener, JmfCaptureL
 						NyARDoubleMatrix44 m=t.refTransformMatrix();
 						this._reality.glLoadModelViewMatrix(this._gl,m);
 						_gl.glPushMatrix(); // Save world coordinate system.
-						_gl.glTranslatef(0,0,40f); // Place base of cube on marker surface.
+						_gl.glTranslatef(0f,0,40f); // Place base of cube on marker surface.
 						_gl.glDisable(GL.GL_LIGHTING); // Just use colours.
 						NyARGLDrawUtil.drawColorCube(this._gl,80f);
 						_gl.glPopMatrix(); // Restore world coordinate system.
@@ -166,7 +162,6 @@ public class Test_NyARRealityGl_ARMarker implements GLEventListener, JmfCaptureL
 						this._reality.glLoadModelViewMatrix(this._gl,m);
 						_gl.glTranslatef(0,0,90f); // Place base of cube on marker surface.
 						_gl.glRotatef(90,1.0f,0.0f,0.0f); // Place base of cube on marker surface.
-						_gl.glRotatef(90,0.0f,-1.0f,0.0f); // Place base of cube on marker surface.
 						NyARGLDrawUtil.setFontColor(t.getGrabbRate()<50?Color.RED:Color.BLUE);
 						ARTKMarkerTable.GetBestMatchTargetResult d=((ARTKMarkerTable.GetBestMatchTargetResult)(t.tag));
 						NyARGLDrawUtil.drawText("Name:"+d.name+" GRUB:"+t.grab_rate+"%",0.5f);
@@ -174,6 +169,17 @@ public class Test_NyARRealityGl_ARMarker implements GLEventListener, JmfCaptureL
 						
 						break;
 					case NyARRealityTarget.RT_UNKNOWN:
+						NyARDoublePoint2d[] p=t.refTargetVertex();						
+						NyARGLDrawUtil.beginScreenCoordinateSystem(this._gl,SCREEN_X,SCREEN_Y,true);
+						_gl.glLineWidth(2);
+						_gl.glColor3f(1.0f,0.0f,0.0f);
+						_gl.glBegin(GL.GL_LINE_LOOP);
+						_gl.glVertex2d(p[0].x,p[0].y);
+						_gl.glVertex2d(p[1].x,p[1].y);
+						_gl.glVertex2d(p[2].x,p[2].y);
+						_gl.glVertex2d(p[3].x,p[3].y);
+						_gl.glEnd();
+						NyARGLDrawUtil.endScreenCoordinateSystem(this._gl);
 						
 						break;
 					}
@@ -209,6 +215,8 @@ public class Test_NyARRealityGl_ARMarker implements GLEventListener, JmfCaptureL
 					{	//一致率が低すぎる。
 						return;
 					}
+					//既に認識しているターゲットの内側のものでないか確認する？(この処理をすれば、二重認識は無くなる。)
+					
 					//一致度を確認して、80%以上ならKnownターゲットへ遷移
 					if(!this._reality.changeTargetToKnown(t,r.artk_direction,r.marker_width)){
 					//遷移の成功チェック

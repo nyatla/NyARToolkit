@@ -9,10 +9,19 @@ import java.awt.event.WindowEvent;
 
 import javax.media.Buffer;
 import javax.media.opengl.*;
+import javax.media.opengl.glu.GLU;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
+import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
+import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
+import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
+import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
+import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
+import jp.nyatla.nyartoolkit.dev.rpf.mklib.ARTKMarkerTable;
+import jp.nyatla.nyartoolkit.dev.rpf.mklib.CardDetect;
 import jp.nyatla.nyartoolkit.dev.rpf.mklib.RawbitSerialIdTable;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTarget;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTargetList;
@@ -22,21 +31,30 @@ import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDevice;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDeviceList;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
 import jp.nyatla.nyartoolkit.jogl.utils.NyARGLDrawUtil;
+import jp.nyatla.nyartoolkit.jogl.utils.NyARGLUtil;
 
 import com.sun.opengl.util.Animator;
 
 /**
  * NyARRealityシステムのサンプル。
- * IDマーカの上に立方体を表示するサンプルプログラムです。
- * RealitySourceにはJMFを使用し、RealityにはRealityGLを使います。
- * @author nyatla
+ * このサンプルは、定型以外のマーカを認識する実験プログラムです。
  *
+ * 未知の四角形の比率推定をして、立方体を表示します。
+ * このプログラムでは、未知の四角形を正面から撮影したときに比率を推定して、それがクレジットカードの比率に近ければ、
+ * クレジットカードと判定して、その上に立方体を表示します。
+ * 
+ * マーカーには適当なクレジットカードを使ってください。
+ * 
+ * エッジ検出の性能が十分でないため、カード検出には十分なコントラストが必要です。
+ * （白色のカードの場合は黒色の背景、黒色のカードなら白色の背景など。）
+ * 
+ * @author nyatla
  */
-public class Test_NyARRealityGl_IdMarker implements GLEventListener, JmfCaptureListener
+public class Test_NyARRealityGl_CreditCardDetect implements GLEventListener, JmfCaptureListener
 {
-
-	private final static int SCREEN_X = 320;
-	private final static int SCREEN_Y = 240;
+	long clock;
+	private final static int SCREEN_X = 640;
+	private final static int SCREEN_Y = 480;
 
 	private Animator _animator;
 	private JmfCaptureDevice _capture;
@@ -47,16 +65,17 @@ public class Test_NyARRealityGl_IdMarker implements GLEventListener, JmfCaptureL
 
 	NyARRealityGl _reality;
 	NyARRealitySource_Jmf _src;
-	RawbitSerialIdTable _mklib;
+	CardDetect _mklib;
 
-	public Test_NyARRealityGl_IdMarker(NyARParam i_param) throws NyARException
+	public Test_NyARRealityGl_CreditCardDetect(NyARParam i_param) throws NyARException
 	{
-		Frame frame = new Frame("NyARReality on OpenGL");
+		clock=0;
+		Frame frame = new Frame("CreditCard sample on OpenGL");
 		
 		// キャプチャの準備
 		JmfCaptureDeviceList devlist = new JmfCaptureDeviceList();
 		this._capture = devlist.getDevice(0);
-		if (!this._capture.setCaptureFormat(SCREEN_X, SCREEN_Y, 30.0f)) {
+		if (!this._capture.setCaptureFormat(SCREEN_X, SCREEN_Y, 15.0f)) {
 			throw new NyARException();
 		}
 		this._capture.setOnCapture(this);
@@ -66,10 +85,9 @@ public class Test_NyARRealityGl_IdMarker implements GLEventListener, JmfCaptureL
 		this._src=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),i_param.getDistortionFactor(),1,100);
 		//OpenGL互換のRealityを構築		
 		this._reality=new NyARRealityGl(i_param.getPerspectiveProjectionMatrix(),i_param.getScreenSize(),10,10000,3,3);
-		//マーカライブラリ(NyId)の構築
-		this._mklib= new RawbitSerialIdTable(10);
-		//マーカサイズテーブルの作成(とりあえず全部8cm)
-		this._mklib.addAnyItem("any id",80);
+		//マーカライブラリ(比率推定)の構築
+		this._mklib= new CardDetect();
+
 				
 		// 3Dを描画するコンポーネント
 		GLCanvas canvas = new GLCanvas();
@@ -119,6 +137,7 @@ public class Test_NyARRealityGl_IdMarker implements GLEventListener, JmfCaptureL
 		_gl.glLoadIdentity();
 	}
 
+	
 	public void display(GLAutoDrawable drawable)
 	{
 		//RealitySourceにデータが処理する。
@@ -131,7 +150,7 @@ public class Test_NyARRealityGl_IdMarker implements GLEventListener, JmfCaptureL
 		this._gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
 		try{
 			synchronized(this._sync_object){
-				
+				//背景を描画
 				this._reality.glDrawRealitySource(this._gl,this._src);
 				// Projection transformation.
 				this._gl.glMatrixMode(GL.GL_PROJECTION);
@@ -140,6 +159,7 @@ public class Test_NyARRealityGl_IdMarker implements GLEventListener, JmfCaptureL
 				NyARRealityTargetList tl=this._reality.refTargetList();
 				for(int i=tl.getLength()-1;i>=0;i--){
 					NyARRealityTarget t=tl.getItem(i);
+					CardDetect.UnknownRectInfo tag=((CardDetect.UnknownRectInfo)(t.tag));
 					switch(t.getTargetType())
 					{
 					case NyARRealityTarget.RT_KNOWN:
@@ -148,24 +168,54 @@ public class Test_NyARRealityGl_IdMarker implements GLEventListener, JmfCaptureL
 						this._gl.glLoadIdentity();
 						NyARDoubleMatrix44 m=t.refTransformMatrix();
 						this._reality.glLoadModelViewMatrix(this._gl,m);
-						_gl.glPushMatrix(); // Save world coordinate system.
-						_gl.glTranslatef(0,0,40f); // Place base of cube on marker surface.
-						_gl.glDisable(GL.GL_LIGHTING); // Just use colours.
-						NyARGLDrawUtil.drawColorCube(this._gl,80f);
-						_gl.glPopMatrix(); // Restore world coordinate system.
-						//マーカ情報の描画
-						_gl.glPushMatrix(); // Save world coordinate system.
-						this._reality.glLoadModelViewMatrix(this._gl,m);
-						_gl.glTranslatef(-30,0,90f); // Place base of cube on marker surface.
-						_gl.glRotatef(90,1.0f,0.0f,0.0f); // Place base of cube on marker surface.
-						//マーカ情報の表示
-						NyARGLDrawUtil.setFontColor(t.getGrabbRate()<50?Color.RED:Color.BLUE);
-						NyARGLDrawUtil.drawText("ID:"+(Long)(t.tag)+" GRUB:"+t.grab_rate+"%",0.5f);
-						_gl.glPopMatrix();
+						//カード番号を消す。
+						_gl.glColor3d(0.0,0.0, 0.0);
+						_gl.glBegin(GL.GL_POLYGON);
+						_gl.glVertex2d(-35,-20);
+						_gl.glVertex2d(35,-20);
+						_gl.glVertex2d(35,20);
+						_gl.glVertex2d(-35,20);
+						_gl.glEnd();
 						
+						_gl.glPushMatrix(); // Save world coordinate system.
+						_gl.glTranslatef(0,0,20f); // Place base of cube on marker surface.
+						_gl.glDisable(GL.GL_LIGHTING); // Just use colours.
+						_gl.glLineWidth(1);
+						NyARGLDrawUtil.drawColorCube(this._gl,40f);
+						_gl.glPopMatrix(); // Restore world coordinate system.
 						break;
 					case NyARRealityTarget.RT_UNKNOWN:
-						
+						if(tag==null){
+							break;
+						}
+						if(t.getGrabbRate()<50){
+							break;
+						}
+						if(tag.last_status==CardDetect.MORE_FRONT_CENTER)
+						{
+							NyARDoublePoint2d[] p=t.refTargetVertex();
+							//もっと真ん中から写せメッセージ
+							double c=Math.sin((clock%45*4)*Math.PI/180);
+							_gl.glColor3d(c,c, 0.0);
+							_gl.glLineWidth(2);
+							NyARGLDrawUtil.beginScreenCoordinateSystem(this._gl,SCREEN_X,SCREEN_Y,true);
+//							NyARGLDrawUtil.drawText("moreCenter",1.0f);
+							_gl.glBegin(GL.GL_LINE_LOOP);
+							_gl.glVertex2d(p[0].x,p[0].y);
+							_gl.glVertex2d(p[1].x,p[1].y);
+							_gl.glVertex2d(p[2].x,p[2].y);
+							_gl.glVertex2d(p[3].x,p[3].y);
+							_gl.glEnd();
+							NyARGLDrawUtil.endScreenCoordinateSystem(this._gl);
+							NyARGLDrawUtil.beginScreenCoordinateSystem(this._gl,SCREEN_X,SCREEN_Y,false);
+							NyARGLDrawUtil.setFontColor(t.getGrabbRate()<50?Color.RED:Color.BLUE);
+							NyARIntPoint2d cp=new NyARIntPoint2d();
+							t.getTargetCenter(cp);
+							_gl.glTranslated(cp.x,SCREEN_Y-cp.y,1);
+							NyARGLDrawUtil.drawText("Please view the card from the front. "+t.getGrabbRate(),1f);
+							NyARGLDrawUtil.endScreenCoordinateSystem(this._gl);
+							
+						}
 						break;
 					}
 				}
@@ -176,36 +226,53 @@ public class Test_NyARRealityGl_IdMarker implements GLEventListener, JmfCaptureL
 		}
 
 	}
-
 	/**
 	 * カメラのキャプチャした画像を非同期に受け取る関数。
 	 * 画像を受け取ると、同期を取ってRealityを1サイクル進めます。
 	 */
 	public void onUpdateBuffer(Buffer i_buffer)
 	{
+		//クロック進行
+		clock++;
 		try {
 			synchronized (this._sync_object)
 			{
 				this._src.setImage(i_buffer);
 				this._reality.progress(this._src);
-				//UnknownTargetを1個取得して、遷移を試す。
-				NyARRealityTarget t=this._reality.selectSingleUnknownTarget();
-				if(t==null){
-					return;
-				}
-				//ターゲットに一致するデータを検索
-				RawbitSerialIdTable.IdentifyIdResult r=new RawbitSerialIdTable.IdentifyIdResult();
-				if(this._mklib.identifyId(t,this._src,r)){
-					//テーブルにターゲットが見つかったので遷移する。
-					if(!this._reality.changeTargetToKnown(t,r.artk_direction,r.marker_width)){
-					//遷移の成功チェック
-						return;//失敗
+				for(int i=this._reality.refTargetList().getLength()-1;i>=0;i--)
+				{
+					NyARRealityTarget t=this._reality.refTargetList().getItem(i);
+					switch(t.getTargetType())
+					{
+					case NyARRealityTarget.RT_UNKNOWN:
+						//tagに推定用オブジェクトが割り当てられていなければ割り当てる。
+						if(t.tag==null){
+							t.tag=new CardDetect.UnknownRectInfo();
+						}
+						CardDetect.UnknownRectInfo r=(CardDetect.UnknownRectInfo)t.tag;
+						//推定
+						this._mklib.detectCardDirection(t, r);
+						switch(r.last_status){
+						case CardDetect.ESTIMATE_COMPLETE:
+							//レートチェック(17/11(1.54)くらいならクレジットカードサイズ。)
+							if(1.45<r.rate && r.rate<1.65){
+								//クレジットカードサイズをセット
+								if(!this._reality.changeTargetToKnown(t,r.artk_direction,85,55)){
+									//遷移の成功チェック
+									break;//失敗
+								}
+							}else{
+								//サイズ違う？
+								this._reality.changeTargetToDead(t);
+							}
+							break;
+						case CardDetect.FAILED_ESTIMATE:
+							this._reality.changeTargetToDead(t);
+							break;
+						}
+					default:
+						//他の種類は特にやることは無い。
 					}
-					//遷移に成功したので、tagにユーザ定義情報を書きこむ。
-					t.tag=new Long(r.id);
-				}else{
-					//一致しないので、このターゲットは捨てる。
-					this._reality.changeTargetToDead(t);
 				}
 			}
 		} catch (Exception e) {
@@ -224,7 +291,7 @@ public class Test_NyARRealityGl_IdMarker implements GLEventListener, JmfCaptureL
 		try {
 			NyARParam param = new NyARParam();
 			param.loadARParamFromFile(PARAM_FILE);
-			new Test_NyARRealityGl_IdMarker(param);
+			new Test_NyARRealityGl_CreditCardDetect(param);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

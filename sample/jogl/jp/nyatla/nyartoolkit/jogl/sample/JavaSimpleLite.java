@@ -103,8 +103,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 		}
 
 		_gl.glPushMatrix(); // Save world coordinate system.
-		_gl.glTranslatef(0.0f, 0.0f, fSize); // Place base of cube on marker surface.
-		_gl.glRotatef(0.0f, 0.0f, 0.0f, 1.0f); // Rotate about z axis.
+		_gl.glTranslatef(0.0f, 0.1f, fSize); // Place base of cube on marker surface.
 		_gl.glDisable(GL.GL_LIGHTING); // Just use colours.
 		_gl.glCallList(polyList); // Draw the cube.
 		_gl.glPopMatrix(); // Restore world coordinate system.
@@ -198,7 +197,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 		this._gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
 		try{
 			synchronized(this._sync_object){
-				NyARGLUtil.drawBackGround(this._gl,this._cap_image, 1.0);			
+				NyARGLDrawUtil.drawBackGround(this._gl,this._cap_image, 1.0);			
 				// マーカーがあれば、立方体を描画
 				if (this._is_marker_exist){
 					// マーカーの一致度を調査するならば、ここでnya.getConfidence()で一致度を調べて下さい。

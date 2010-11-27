@@ -84,8 +84,6 @@ public class NyARTarget extends NyARManagedObject
 		if(ret==0 && this._ref_status!=null)
 		{
 			this._ref_status.releaseObject();
-			this._ref_status=null;
-			this.tag=null;
 		}
 		return ret;
 	}

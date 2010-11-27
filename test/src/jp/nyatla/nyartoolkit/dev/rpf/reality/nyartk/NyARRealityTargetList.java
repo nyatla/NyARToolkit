@@ -2,7 +2,6 @@ package jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.stack.*;
-import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.*;
 
 public class NyARRealityTargetList extends NyARPointerStack<NyARRealityTarget>
 {
@@ -10,10 +9,15 @@ public class NyARRealityTargetList extends NyARPointerStack<NyARRealityTarget>
 	{
 		super.initInstance(i_max_target,(Class<NyARRealityTarget>)NyARRealityTarget.class);
 	}
-	public final NyARRealityTarget getItemBySerial(int i_serial)
+	/**
+	 * RealityTargetのシリアル番号をキーに、ターゲットを探索します。
+	 * @param i_serial
+	 * @return
+	 */
+	public final NyARRealityTarget getItemBySerial(long i_serial)
 	{
 		NyARRealityTarget[] items=this._items;
-		for(int i=items.length-1;i>=0;i--)
+		for(int i=this._length-1;i>=0;i--)
 		{
 			if(items[i]._serial==i_serial){
 				return items[i];
@@ -30,7 +34,7 @@ public class NyARRealityTargetList extends NyARPointerStack<NyARRealityTarget>
 	public final int getIndexBySerial(int i_serial)
 	{
 		NyARRealityTarget[] items=this._items;
-		for(int i=items.length-1;i>=0;i--)
+		for(int i=this._length-1;i>=0;i--)
 		{
 			if(items[i]._serial==i_serial){
 				return i;

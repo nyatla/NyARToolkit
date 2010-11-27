@@ -1,47 +1,32 @@
 package jp.nyatla.nyartoolkit.dev.rpf.sample;
 
 import java.awt.*;
-import java.awt.color.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 
 import javax.imageio.ImageIO;
-import javax.media.format.VideoFormat;
-import javax.media.opengl.GL;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
-import jp.nyatla.nyartoolkit.core.pickup.NyARColorPatt_O3;
-import jp.nyatla.nyartoolkit.core.pickup.NyARColorPatt_Perspective;
-import jp.nyatla.nyartoolkit.core.pickup.NyARColorPatt_Perspective_O2;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
-import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
-import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_RGB;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve;
-import jp.nyatla.nyartoolkit.core.rasterreader.INyARRgbPixelReader;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
-import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+import jp.nyatla.nyartoolkit.dev.rpf.mklib.ARTKMarkerTable;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARReality;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTarget;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTargetList;
 import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource;
 import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource_JavaImage;
 import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource_Jmf;
-import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.*;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTracker;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARContourTargetStatus;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARRectTargetStatus;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARTargetStatus;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
-import jp.nyatla.nyartoolkit.jogl.utils.NyARGLUtil;
 import jp.nyatla.nyartoolkit.utils.j2se.*;
 
 
@@ -49,8 +34,7 @@ import jp.nyatla.nyartoolkit.utils.j2se.*;
 
 
 /**
- * @todo
- * 矩形の追跡は動いてるから、位置予測機能と組み合わせて試すこと。
+ * NyARRealityのテストプログラム。動作保証なし。
  *
  */
 
@@ -71,8 +55,8 @@ public class Test_RealityTarget extends Frame implements MouseListener
 		{
 			BufferedImage _src_image;
 			_src_image = ImageIO.read(new File(i_filename));
-			NyARRealitySource_JavaImage ri=new NyARRealitySource_JavaImage(_src_image.getWidth(),_src_image.getHeight(),2);
-		//	ri.setImage(_src_image);
+			NyARRealitySource_JavaImage ri=new NyARRealitySource_JavaImage(_src_image.getWidth(),_src_image.getHeight(),null,2,100);
+			ri.getBufferedImage().getGraphics().drawImage(_src_image,0,0,null);
 			this.reality_in=ri;
 		}
 	}
@@ -131,7 +115,7 @@ public class Test_RealityTarget extends Frame implements MouseListener
 		System.out.println(x+":"+y);
 		synchronized(this._input_source.reality_in)
 		{
-			NyARBufferedImageRaster bmp= new NyARBufferedImageRaster(64,64,NyARBufferType.BYTE1D_R8G8B8_24);
+			NyARBufferedImageRaster bmp= new NyARBufferedImageRaster(100,100,NyARBufferType.BYTE1D_R8G8B8_24);
 			for(int i=this._reality.refTargetList().getLength()-1;i>=0;i--)
 			{
 				NyARRealityTarget rt=this._reality.refTargetList().getItem(i);
@@ -143,9 +127,11 @@ public class Test_RealityTarget extends Frame implements MouseListener
 					if(e.getButton()==MouseEvent.BUTTON1){
 						//左ボタンはUNKNOWN→KNOWN
 						if(rt._target_type==NyARRealityTarget.RT_UNKNOWN){
-								this._reality.changeTargetToKnown(rt,0,80);
+							ARTKMarkerTable.GetBestMatchTargetResult r=new ARTKMarkerTable.GetBestMatchTargetResult();
+							if(this._mklib.getBestMatchTarget(rt,this._input_source.reality_in,r)){
+								this._reality.changeTargetToKnown(rt,r.artk_direction,80);
+							}
 								//イメージピックアップの実験
-//								this._input_source.reality_in.getRgbPerspectivePatt(rt.refTargetVertex(),1,25,25,bmp);
 								NyARIntPoint2d[] iv=NyARIntPoint2d.createArray(4);
 								for(int i2=0;i2<4;i2++){
 									iv[i2].x=(int)rt.refTargetVertex()[i2].x;
@@ -161,27 +147,27 @@ public class Test_RealityTarget extends Frame implements MouseListener
 								//3d（カメラ）
 								{
 									NyARDoublePoint3d[] p=NyARDoublePoint3d.createArray(4);
-									p[0].x=-40;p[0].y=-40;p[0].z=0;
-									p[1].x=40; p[1].y=-40;p[1].z=0;
-									p[2].x=40; p[2].y=40 ;p[2].z=0;
-									p[3].x=-40;p[3].y=40 ;p[3].z=0;
+									p[3].x=-40;p[3].y=-40;p[3].z=0;
+									p[2].x=40; p[2].y=-40;p[2].z=0;
+									p[1].x=40; p[1].y=40 ;p[1].z=0;
+									p[0].x=-40;p[0].y=40 ;p[0].z=0;
 									this._reality.getRgbPatt3d(this._input_source.reality_in,p, rt.refTransformMatrix(), 1, bmp);
-									this.getGraphics().drawImage(bmp.getBufferedImage(),this.getInsets().left+64,this.getInsets().top+240,null);
+									this.getGraphics().drawImage(bmp.getBufferedImage(),this.getInsets().left+100,this.getInsets().top+240,null);
 								}
 								//3d（Target）
 								{
 									NyARDoublePoint3d[] p=NyARDoublePoint3d.createArray(4);
-									p[0].x=-40;p[0].y=-40;p[0].z=0;
-									p[1].x=40; p[1].y=-40;p[1].z=0;
-									p[2].x=40; p[2].y=40 ;p[2].z=0;
-									p[3].x=-40;p[3].y=40 ;p[3].z=0;
+									p[3].x=-40;p[3].y=-40;p[3].z=0;
+									p[2].x=40; p[2].y=-40;p[2].z=0;
+									p[1].x=40; p[1].y=40 ;p[1].z=0;
+									p[0].x=-80;p[0].y=40 ;p[0].z=0;
 									rt.getRgbPatt3d(this._input_source.reality_in,p,null, 1, bmp);
-									this.getGraphics().drawImage(bmp.getBufferedImage(),this.getInsets().left+128,this.getInsets().top+240,null);
+									this.getGraphics().drawImage(bmp.getBufferedImage(),this.getInsets().left+200,this.getInsets().top+240,null);
 								}
 								//3d（Target）
 								{
 									rt.getRgbRectPatt3d(this._input_source.reality_in,-80,-80,80,80,1, bmp);
-									this.getGraphics().drawImage(bmp.getBufferedImage(),this.getInsets().left+192,this.getInsets().top+240,null);
+									this.getGraphics().drawImage(bmp.getBufferedImage(),this.getInsets().left+300,this.getInsets().top+240,null);
 								}
 							break;
 						}
@@ -207,11 +193,11 @@ public class Test_RealityTarget extends Frame implements MouseListener
 	public void mouseExited(MouseEvent e){}
 	public void mousePressed(MouseEvent e){}
 	public void mouseReleased(MouseEvent e){}
-	
+	ARTKMarkerTable _mklib;	
 	
 	
 	private NyARReality _reality;
-//	private NyARRealitySnapshot _reality_snapshot;
+
 	
 	
 	NyARParam _param;
@@ -234,9 +220,11 @@ public class Test_RealityTarget extends Frame implements MouseListener
 		this._param.loadARParamFromFile(PARAM_FILE);
 		this._param.changeScreenSize(W,H);
 		this._reality=new NyARReality(this._param.getScreenSize(),10,1000,this._param.getPerspectiveProjectionMatrix(),null,10,10);
-		this._input_source=new LiveSource();
+//		this._input_source=new LiveSource();
+		this._input_source=new ImageSource(SAMPLE_FILES);
 		addMouseListener(this);
-
+		this._mklib= new ARTKMarkerTable(10,16,16,25,25,4);
+		this._mklib.addMarkerFromARPattFile(PATT_HIRO,0,"HIRO",80,80);
 		return;
 	}	
 
@@ -339,6 +327,7 @@ public class Test_RealityTarget extends Frame implements MouseListener
     	g.drawString("[D]("+t.grab_rate+")",r.x,r.y);
     }
     
+	private final static String PATT_HIRO = "../Data/patt.hiro";
     
 
 

@@ -43,7 +43,8 @@ import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 /**
- * OpenGLの支援機能を提供するクラスです。
+ * OpenGL向けの形式変換変換関数を提供します。
+ * 描画系関数は{@link NyARGLDrawUtil}を参照してください。
  */
 public class NyARGLUtil
 {
@@ -57,94 +58,9 @@ public class NyARGLUtil
 	 * 以前のバージョンの数値系と互換性を保ちます。
 	 */
 	final static double SCALE_FACTOR_toCameraViewRH_NYAR2=0.025;
-	
-	/**
-	 * OpenGLにおける背景描画を支援します。i_rasterを現在のビューポートへ描画します。
-	 * @param glu
-	 * @param i_raster
-	 * @param i_zoom
-	 * @throws NyARException
-	 */
-	public static void drawBackGround(javax.media.opengl.GL i_gl,INyARRaster i_raster, double i_zoom) throws NyARException
-	{
-		IntBuffer texEnvModeSave = IntBuffer.allocate(1);
-		boolean lightingSave;
-		boolean depthTestSave;
-		final NyARIntSize rsize=i_raster.getSize();
-		// Prepare an orthographic projection, set camera position for 2D drawing, and save GL state.
-		i_gl.glGetTexEnviv(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, texEnvModeSave); // Save GL texture environment mode.
-		if (texEnvModeSave.array()[0] != GL.GL_REPLACE) {
-			i_gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_REPLACE);
-		}
-		lightingSave = i_gl.glIsEnabled(GL.GL_LIGHTING); // Save enabled state of lighting.
-		if (lightingSave == true) {
-			i_gl.glDisable(GL.GL_LIGHTING);
-		}
-		depthTestSave = i_gl.glIsEnabled(GL.GL_DEPTH_TEST); // Save enabled state of depth test.
-		if (depthTestSave == true) {
-			i_gl.glDisable(GL.GL_DEPTH_TEST);
-		}
-		i_gl.glMatrixMode(GL.GL_PROJECTION);
-		i_gl.glPushMatrix();
-		i_gl.glLoadIdentity();
-		i_gl.glOrtho(0.0,rsize.w, 0.0,rsize.h,0,1);
-		i_gl.glMatrixMode(GL.GL_MODELVIEW);
-		i_gl.glPushMatrix();
-		i_gl.glLoadIdentity();
-		arglDispImageStateful(i_gl,rsize,i_raster.getBuffer(),i_raster.getBufferType(),i_zoom);
 
-		// Restore previous projection, camera position, and GL state.
-		i_gl.glMatrixMode(GL.GL_PROJECTION);
-		i_gl.glPopMatrix();
-		i_gl.glMatrixMode(GL.GL_MODELVIEW);
-		i_gl.glPopMatrix();
-		if (depthTestSave) {
-			i_gl.glEnable(GL.GL_DEPTH_TEST); // Restore enabled state of depth test.
-		}
-		if (lightingSave) {
-			i_gl.glEnable(GL.GL_LIGHTING); // Restore enabled state of lighting.
-		}
-		if (texEnvModeSave.get(0) != GL.GL_REPLACE) {
-			i_gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, texEnvModeSave.get(0)); // Restore GL texture environment mode.
-		}
-		i_gl.glEnd();
-	}
-
-	/**
-	 * arglDispImageStateful関数モドキ
-	 * @param image
-	 * @param zoom
-	 */
-	private static void arglDispImageStateful(GL gl,NyARIntSize i_size,Object i_buffer,int i_buffer_type, double zoom) throws NyARException
-	{
-		float zoomf;
-		IntBuffer params = IntBuffer.allocate(4);
-		zoomf = (float) zoom;
-		gl.glDisable(GL.GL_TEXTURE_2D);
-		gl.glGetIntegerv(GL.GL_VIEWPORT, params);
-		gl.glPixelZoom(zoomf * ((float) (params.get(2)) / (float) i_size.w), -zoomf * ((float) (params.get(3)) / (float) i_size.h));
-		gl.glWindowPos2f(0.0f, (float) i_size.h);
-		gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
-		//BufferTypeの変換
-		switch(i_buffer_type)
-		{
-		case NyARBufferType.BYTE1D_B8G8R8_24:
-			gl.glDrawPixels(i_size.w,i_size.h,GL.GL_BGR, GL.GL_UNSIGNED_BYTE, ByteBuffer.wrap((byte[])i_buffer));
-			break;
-		case NyARBufferType.BYTE1D_R8G8B8_24:
-			gl.glDrawPixels(i_size.w,i_size.h,GL.GL_RGB, GL.GL_UNSIGNED_BYTE, ByteBuffer.wrap((byte[])i_buffer));
-			break;
-		case NyARBufferType.BYTE1D_B8G8R8X8_32:
-			gl.glDrawPixels(i_size.w,i_size.h,GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, ByteBuffer.wrap((byte[])i_buffer));
-			break;
-		case NyARBufferType.INT1D_GRAY_8:
-			gl.glDrawPixels(i_size.w,i_size.h,GL.GL_LUMINANCE, GL.GL_UNSIGNED_INT, IntBuffer.wrap((int[])i_buffer));
-			break;
-		default:
-			throw new NyARException();
-		}
-	}
 	
+
 	
 	/**
 	 * ARToolKitスタイルのカメラパラメータから、 CameraFrustamを計算します。
@@ -215,6 +131,7 @@ public class NyARGLUtil
 		o_gl_result[3 + 3 * 4] = 1.0;
 		return;
 	}
+
 
 	
 }

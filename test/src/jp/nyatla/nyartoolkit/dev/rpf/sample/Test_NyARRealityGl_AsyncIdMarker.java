@@ -1,9 +1,9 @@
 package jp.nyatla.nyartoolkit.dev.rpf.sample;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Insets;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -12,8 +12,11 @@ import javax.media.opengl.*;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
-import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
+import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
+import jp.nyatla.nyartoolkit.dev.rpf.mklib.ASyncIdMarkerTable;
 import jp.nyatla.nyartoolkit.dev.rpf.mklib.RawbitSerialIdTable;
+import jp.nyatla.nyartoolkit.dev.rpf.mklib.ASyncIdMarkerTable.IResultListener;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTarget;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTargetList;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.gl.NyARRealityGl;
@@ -26,62 +29,34 @@ import jp.nyatla.nyartoolkit.jogl.utils.NyARGLDrawUtil;
 import com.sun.opengl.util.Animator;
 
 /**
- * このプログラムは、NyARRealityシステムのデバックプログラムです。
- * ピッキングの実験ができます。
- * 画面上のクリックした位置に、立方体を移動することができます。
- * マーカは、idマーカを使います。
+ * NyARRealityシステムのサンプル。
+ * このプログラムは、非同期マーカー認識の実験プログラムです。
+ * リアルタイムにマーカ一致を行わずに、外部プログラムやサーバなどで非同期にマーカ認識処理を行うテンプレートになります。
+ * 
+ * このプログラムでは、IDマーカの非同期認識（別スレッドで認識）を行い、認識が成功したらその上に立方体を表示します。
+ * 
+ * マーカには、IDマーカを使ってください。
  * @author nyatla
  *
  */
-public class Test_NyARRealityGl_ScreenPos implements GLEventListener, JmfCaptureListener,MouseListener
+public class Test_NyARRealityGl_AsyncIdMarker implements GLEventListener, JmfCaptureListener,IResultListener
 {
 
-	private final static int SCREEN_X = 640;
-	private final static int SCREEN_Y = 480;
+	private final static int SCREEN_X = 320;
+	private final static int SCREEN_Y = 240;
 
 	private Animator _animator;
 	private JmfCaptureDevice _capture;
 
 	private GL _gl;
 
-
 	private Object _sync_object=new Object();
 
 	NyARRealityGl _reality;
 	NyARRealitySource_Jmf _src;
-	RawbitSerialIdTable _mklib;
-	public void mouseClicked(MouseEvent e)
-	{
-		int x=e.getX();
-		int y=e.getY();
-//		System.out.println(x+":"+y);
-		
-		synchronized(this._sync_object)
-		{
-			for(int i=this._reality.refTargetList().getLength()-1;i>=0;i--)
-			{
-				NyARRealityTarget rt=this._reality.refTargetList().getItem(i);
-				if(rt._target_type!=NyARRealityTarget.RT_KNOWN){
-					continue;
-				}
-				//ヒットするKnownターゲットを探す
+	ASyncIdMarkerTable _mklib;
 
-					if(e.getButton()==MouseEvent.BUTTON1){
-						NyARDoublePoint3d p=new NyARDoublePoint3d();
-						this._reality.refFrustum().unProjectOnMatrix(x,y,rt._transform_matrix,p);
-						NyARDoublePoint3d tag=(NyARDoublePoint3d)rt.tag;
-						tag.setValue(p);						
-						//タグの現在位置を変えてみる。
-
-					}
-			}
-		}
-	}
-	public void mouseEntered(MouseEvent e){}
-	public void mouseExited(MouseEvent e){}
-	public void mousePressed(MouseEvent e){}
-	public void mouseReleased(MouseEvent e){}
-	public Test_NyARRealityGl_ScreenPos(NyARParam i_param) throws NyARException
+	public Test_NyARRealityGl_AsyncIdMarker(NyARParam i_param) throws NyARException
 	{
 		Frame frame = new Frame("NyARReality on OpenGL");
 		
@@ -95,13 +70,11 @@ public class Test_NyARRealityGl_ScreenPos implements GLEventListener, JmfCapture
 		//Realityの構築
 		i_param.changeScreenSize(SCREEN_X, SCREEN_Y);	
 		//キャプチャ画像と互換性のあるRealitySourceを構築
-		this._src=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),i_param.getDistortionFactor(),2,100);
-		//OpenGL互換のRealityを構築
+		this._src=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),i_param.getDistortionFactor(),1,100);
+		//OpenGL互換のRealityを構築		
 		this._reality=new NyARRealityGl(i_param.getPerspectiveProjectionMatrix(),i_param.getScreenSize(),10,10000,3,3);
-		//マーカライブラリ(NyId)の構築
-		this._mklib= new RawbitSerialIdTable(10);
-		//マーカサイズテーブルの作成(とりあえず全部4cm)
-		this._mklib.addAnyItem("ANY_ITEM",80);
+		//非同期マーカライブラリ(NyId)の構築
+		this._mklib= new ASyncIdMarkerTable(this);
 				
 		// 3Dを描画するコンポーネント
 		GLCanvas canvas = new GLCanvas();
@@ -113,7 +86,6 @@ public class Test_NyARRealityGl_ScreenPos implements GLEventListener, JmfCapture
 				System.exit(0);
 			}
 		});
-		canvas.addMouseListener(this);
 
 		frame.setVisible(true);
 		Insets ins = frame.getInsets();
@@ -126,6 +98,7 @@ public class Test_NyARRealityGl_ScreenPos implements GLEventListener, JmfCapture
 		this._gl = drawable.getGL();
 		this._gl.glEnable(GL.GL_DEPTH_TEST);
 		this._gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		NyARGLDrawUtil.setFontStyle("SansSerif",Font.BOLD,24);
 		// NyARToolkitの準備
 		try {
 			// キャプチャ開始
@@ -150,10 +123,9 @@ public class Test_NyARRealityGl_ScreenPos implements GLEventListener, JmfCapture
 		_gl.glMatrixMode(GL.GL_MODELVIEW);
 		_gl.glLoadIdentity();
 	}
-	private static float TICK=0;
+
 	public void display(GLAutoDrawable drawable)
 	{
-		TICK+=0.1;
 		//RealitySourceにデータが処理する。
 		if(!this._src.isReady())
 		{
@@ -163,10 +135,9 @@ public class Test_NyARRealityGl_ScreenPos implements GLEventListener, JmfCapture
 		// 背景を書く
 		this._gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
 		try{
-			synchronized(this._sync_object)
-			{
-				//背景描画
-				this._reality.glDrawRealitySource(this._gl,this._src);			
+			synchronized(this._sync_object){
+				
+				this._reality.glDrawRealitySource(this._gl,this._src);
 				// Projection transformation.
 				this._gl.glMatrixMode(GL.GL_PROJECTION);
 				this._reality.glLoadCameraFrustum(this._gl);
@@ -177,22 +148,37 @@ public class Test_NyARRealityGl_ScreenPos implements GLEventListener, JmfCapture
 					switch(t.getTargetType())
 					{
 					case NyARRealityTarget.RT_KNOWN:
+						//立方体の描画
 						this._gl.glMatrixMode(GL.GL_MODELVIEW);
-						// 変換行列をOpenGL形式に変換(ここ少し変えるかも)
-						this._reality.glLoadModelViewMatrix(this._gl,t.refTransformMatrix());
-
-						NyARDoublePoint3d tag=(NyARDoublePoint3d)t.tag;						
-						// All other lighting and geometry goes here.
+						this._gl.glLoadIdentity();
+						NyARDoubleMatrix44 m=t.refTransformMatrix();
+						this._reality.glLoadModelViewMatrix(this._gl,m);
 						_gl.glPushMatrix(); // Save world coordinate system.
-						_gl.glTranslatef((float)tag.x,(float)tag.y,(float)tag.z+20f);
+						//_gl.glRotatef(90,0.0f,0.0f,1.0f); // Place base of cube on marker surface.
+						
+						_gl.glTranslatef(0,0,10f); // Place base of cube on marker surface.
 						_gl.glDisable(GL.GL_LIGHTING); // Just use colours.
-						NyARGLDrawUtil.drawColorCube(this._gl,40f);
+						NyARGLDrawUtil.drawColorCube(this._gl,20f);
 						_gl.glPopMatrix(); // Restore world coordinate system.
-
+						//マーカ情報の描画
+						_gl.glPushMatrix(); // Save world coordinate system.
+						this._reality.glLoadModelViewMatrix(this._gl,m);
+						_gl.glTranslatef(-30,0,40f); // Place base of cube on marker surface.
+						_gl.glRotatef(90,1.0f,0.0f,0.0f); // Place base of cube on marker surface.
+						//マーカ情報の表示
+						NyARGLDrawUtil.setFontColor(t.getGrabbRate()<50?Color.RED:Color.BLUE);
+						NyARGLDrawUtil.drawText("ID:"+(Long)(t.tag)+" GRUB:"+t.grab_rate+"%",0.5f);
+						_gl.glPopMatrix();
 						
 						break;
 					case NyARRealityTarget.RT_UNKNOWN:
-						
+						NyARGLDrawUtil.beginScreenCoordinateSystem(this._gl,SCREEN_X,SCREEN_Y,false);
+						NyARGLDrawUtil.setFontColor(t.getGrabbRate()<50?Color.RED:Color.BLUE);
+						NyARIntPoint2d cp=new NyARIntPoint2d();
+						t.getTargetCenter(cp);
+						_gl.glTranslated(cp.x,SCREEN_Y-cp.y,1);
+						NyARGLDrawUtil.drawText("now matching marker.",1f);
+						NyARGLDrawUtil.endScreenCoordinateSystem(this._gl);						
 						break;
 					}
 				}
@@ -202,6 +188,31 @@ public class Test_NyARRealityGl_ScreenPos implements GLEventListener, JmfCapture
 			e.printStackTrace();
 		}
 
+	}
+	public void OnDetect(boolean i_result,long i_serial,int i_dir,double i_width,long i_id)
+	{
+		try{
+		//Realityを触るのでロック
+		synchronized (this._sync_object)
+		{
+			NyARRealityTarget t=this._reality.refTargetList().getItemBySerial(i_serial);
+			if(t==null){
+				return;
+			}
+			if(t.getTargetType()!=NyARRealityTarget.RT_UNKNOWN){
+				return;
+			}
+			if(i_result){
+				this._reality.changeTargetToKnown(t, i_dir, i_width);
+				t.tag=new Long(i_id);
+			}else{
+				this._reality.changeTargetToDead(t);
+			}
+		}
+		}catch(Exception e){
+			//握りつぶす
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -215,34 +226,17 @@ public class Test_NyARRealityGl_ScreenPos implements GLEventListener, JmfCapture
 			{
 				this._src.setImage(i_buffer);
 				this._reality.progress(this._src);
-				//Deadターゲットの後片付け
-				//省略
-				
-				//Knownターゲットは1個だけね。
-				if(this._reality.getNumberOfKnown()>0){
-					return;
-				}
 				//UnknownTargetを1個取得して、遷移を試す。
 				NyARRealityTarget t=this._reality.selectSingleUnknownTarget();
 				if(t==null){
 					return;
 				}
-
-
-				//ターゲットに一致するデータを検索
-				RawbitSerialIdTable.IdentifyIdResult r=new RawbitSerialIdTable.IdentifyIdResult();
-				if(this._mklib.identifyId(t,this._src,r)){
-					//テーブルにターゲットが見つかったので遷移する。
-					if(!this._reality.changeTargetToKnown(t,r.artk_direction,r.marker_width)){
-					//遷移の成功チェック
-						return;//失敗
-					}
-					//遷移に成功したので、tagにユーザ定義情報を書きこむ。
-					t.tag=new NyARDoublePoint3d();
-				}else{
-					//一致しないので、このターゲットは捨てる。
-					this._reality.changeTargetToDead(t);
+				//tagに何か入ってたらなにかやっている。
+				if(t.tag!=null){
+					return;
 				}
+				this._mklib.requestAsyncMarkerDetect(this._reality,this._src,t);
+				t.tag=new Long(-1);//-1は認識中ということで。
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -260,7 +254,7 @@ public class Test_NyARRealityGl_ScreenPos implements GLEventListener, JmfCapture
 		try {
 			NyARParam param = new NyARParam();
 			param.loadARParamFromFile(PARAM_FILE);
-			new Test_NyARRealityGl_ScreenPos(param);
+			new Test_NyARRealityGl_AsyncIdMarker(param);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

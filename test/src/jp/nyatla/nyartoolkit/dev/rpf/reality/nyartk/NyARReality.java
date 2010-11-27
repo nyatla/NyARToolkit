@@ -225,7 +225,9 @@ public class NyARReality
 		for(int i=this.target.getLength()-1;i>=0;i--){
 			NyARRealityTarget tar=rt_array[i];
 			if(tar._ref_tracktarget._delay_tick==0){
-				tar.grab_rate=(tar.grab_rate*5+(100)*3)>>3;
+				//30fps前後で1秒間の認識率とする。
+				tar.grab_rate+=3;
+				if(tar.grab_rate>100){tar.grab_rate=100;}
 				switch(tar._target_type)
 				{
 				case NyARRealityTarget.RT_DEAD:
@@ -243,8 +245,9 @@ public class NyARReality
 				default:
 				}
 			}else{
-				//更新をパスして補足レートの再計算(5:3で混ぜて8で割る)
-				tar.grab_rate=(tar.grab_rate*5+(100/tar._ref_tracktarget._delay_tick)*3)>>3;
+				//更新をパスして補足レートの再計算(混ぜて8で割る)
+				tar.grab_rate=tar.grab_rate-(3*tar._ref_tracktarget._delay_tick);
+				if(tar.grab_rate<0){tar.grab_rate=0;}
 			}
 		}
 	}
@@ -344,7 +347,23 @@ public class NyARReality
 	//RealityTargetの操作関数
 	//
 	////////////////////////////////////////////////////////////////////////////////
-	
+
+	/**
+	 * 指定したターゲットを、UnknownターゲットからKnownターゲットへ遷移させます。
+	 * @param i_item
+	 * 移動するターゲット
+	 * @param i_dir
+	 * ターゲットの予備知識。ARToolkitのdirectionでどの方位であるかを示す値
+	 * @param i_marker_size
+	 * ターゲットの予備知識。マーカーの高さ/幅がいくらであるかを示す値[mm単位]
+	 * @return
+	 * 成功するとtrueを返します。
+	 * @throws NyARException 
+	 */
+	public final boolean changeTargetToKnown(NyARRealityTarget i_item,int i_dir,double i_marker_size) throws NyARException
+	{
+		return changeTargetToKnown(i_item,i_dir,i_marker_size,i_marker_size);
+	}
 	
 
 	/**
@@ -354,12 +373,14 @@ public class NyARReality
 	 * @param i_dir
 	 * ターゲットの予備知識。ARToolkitのdirectionでどの方位であるかを示す値
 	 * @param i_marker_width
-	 * ターゲットの予備知識。マーカーのサイズがいくらであるかを示す値[mm単位]
+	 * ターゲットの予備知識。マーカーの高さがいくらであるかを示す値[mm単位]
+	 * @param i_marker_height
+	 * ターゲットの予備知識。マーカーの幅がいくらであるかを示す値[mm単位]
 	 * @return
 	 * 成功するとtrueを返します。
 	 * @throws NyARException 
 	 */
-	public final boolean changeTargetToKnown(NyARRealityTarget i_item,int i_dir,double i_marker_width) throws NyARException
+	public final boolean changeTargetToKnown(NyARRealityTarget i_item,int i_dir,double i_marker_width,double i_marker_height) throws NyARException
 	{
 		//遷移元制限
 		if(i_item._target_type!=NyARRealityTarget.RT_UNKNOWN){
@@ -378,10 +399,10 @@ public class NyARReality
 		i_item._target_type=NyARRealityTarget.RT_KNOWN;
 		
 		//マーカのサイズを決めておく。
-		i_item._offset.setSquare(i_marker_width);
+		i_item._offset.setSquare(i_marker_width,i_marker_height);
 		
 		//directionに応じて、元矩形のrectを回転しておく。
-		((NyARRectTargetStatus)(i_item._ref_tracktarget._ref_status)).shiftByArtkDirection(3-i_dir);		
+		((NyARRectTargetStatus)(i_item._ref_tracktarget._ref_status)).shiftByArtkDirection((4-i_dir)%4);		
 		//矩形セット
 		NyARDoublePoint2d[] vx=((NyARRectTargetStatus)(i_item._ref_tracktarget._ref_status)).vertex;
 		for(int i=3;i>=0;i--){

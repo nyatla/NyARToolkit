@@ -31,6 +31,7 @@ final public class NyARTargetPool extends NyARManagedObjectPool<NyARTarget>
 			return null;
 		}
 		t._serial=NyARTarget.createSerialId();
+		t._ref_status=null;
 		t.tag=null;
 		return t;
 	}	

@@ -88,6 +88,9 @@ public class NyARDoublePoint2d
 	{
 		return (p2.x-p1.x)*(p3_y-p2.y)-(p2.y-p1.y)*(p3_x-p2.x);
 	}
+
+	
+	
 	/**
 	 * 頂点配列の中央値を求めます。
 	 * @param i_points

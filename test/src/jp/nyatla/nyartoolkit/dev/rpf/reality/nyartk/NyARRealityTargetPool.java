@@ -37,9 +37,11 @@ public class NyARRealityTargetPool extends NyARManagedObjectPool<NyARRealityTarg
 		if(ret==null){
 			return null;
 		}
-		ret.grab_rate=50;//開始時の補足レートは50%
+		ret.grab_rate=50;//開始時の捕捉レートは10%
 		ret._ref_tracktarget=(NyARTarget) tt.refObject();
-		tt.tag=ret;//タグに値設定しておく。
+		ret._serial=NyARRealityTarget.createSerialId();
+		ret.tag=null;
+		tt.tag=ret;//トラックターゲットのタグに自分の値設定しておく。
 		return ret;
 	}	
 }

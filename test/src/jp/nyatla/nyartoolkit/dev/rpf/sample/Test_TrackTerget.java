@@ -48,7 +48,7 @@ import jp.nyatla.nyartoolkit.jmf.utils.JmfNyARRaster_RGB;
 
 
 /**
- * Trackerの実験プログラム。未保証。
+ * Trackerの実験用プログラム。未保証。
  *
  */
 
@@ -186,8 +186,8 @@ public class Test_TrackTerget extends Frame
 	private static final long serialVersionUID = -2110888320986446576L;
 
 
-	private int W = 640;
-	private int H = 480;
+	private int W = 320;
+	private int H = 240;
 	InputSource _input_source;
 	public Test_TrackTerget(NyARCameraDistortionFactor p) throws NyARException, Exception
 	{
@@ -195,9 +195,9 @@ public class Test_TrackTerget extends Frame
 		Insets ins = this.getInsets();
 		this.setSize(1024 + ins.left + ins.right, 768 + ins.top + ins.bottom);
 		
-//	this._input_source=new ImageSource(SAMPLE_FILES);
+	this._input_source=new ImageSource(SAMPLE_FILES);
 //		this._input_source=new MoveSource();
-		this._input_source=new LiveSource(W,H);
+//		this._input_source=new LiveSource(W,H);
 		//create sampler
 		this.tracksource=new NyARTrackerSource_Reference(100,p,W, H, 2,false);
 		_tmp_bf=new BufferedImage(W, H,BufferedImage.TYPE_INT_RGB);

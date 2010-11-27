@@ -12,6 +12,8 @@ import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARReality;
+import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource;
+import jp.nyatla.nyartoolkit.jogl.utils.NyARGLDrawUtil;
 import jp.nyatla.nyartoolkit.jogl.utils.NyARGLUtil;
 
 /**
@@ -80,15 +82,15 @@ public class NyARRealityGl extends NyARReality
 		return;
 	}
 	/**
-	 * 現在のViewPortに、i_rasterの内容を描画します。
+	 * 現在のViewPortに、i_rtsourceの内容を描画します。
 	 * @param i_gl
 	 * OpenGLインスタンスを指定します。
 	 * @param i_raster
 	 * @throws NyARException
 	 */
-	public void glDrawRealitySource(GL i_gl,INyARRaster i_raster) throws NyARException
+	public void glDrawRealitySource(GL i_gl,NyARRealitySource i_rtsource) throws NyARException
 	{
-		NyARGLUtil.drawBackGround(i_gl,i_raster,1.0);
+		NyARGLDrawUtil.drawBackGround(i_gl,i_rtsource.refRgbSource(),1.0);
 		return;
 	}
 }

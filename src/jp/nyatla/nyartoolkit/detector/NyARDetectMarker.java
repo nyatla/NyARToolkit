@@ -59,7 +59,8 @@ class NyARDetectMarkerResultStack extends NyARObjectStack<NyARDetectMarkerResult
 {
 	public NyARDetectMarkerResultStack(int i_length) throws NyARException
 	{
-		super(i_length,NyARDetectMarkerResult.class);
+		super();
+		this.initInstance(i_length,NyARDetectMarkerResult.class);
 		return;
 	}
 	protected NyARDetectMarkerResult createElement()
@@ -292,7 +293,7 @@ public class NyARDetectMarker
 		final NyARDetectMarkerResult result = this._detect_cb.result_stack.getItem(i_index);
 		// 一番一致したマーカーの位置とかその辺を計算
 		if (_is_continue) {
-			_transmat.transMatContinue(result.square, this._offset[result.arcode_id], o_result);
+			_transmat.transMatContinue(result.square, this._offset[result.arcode_id], o_result,o_result);
 		} else {
 			_transmat.transMat(result.square, this._offset[result.arcode_id], o_result);
 		}
