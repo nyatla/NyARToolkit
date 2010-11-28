@@ -55,10 +55,7 @@ import jp.nyatla.nyartoolkit.core.squaredetect.*;
  */
 public class NyARCustomSingleDetectMarker
 {
-	/**
-	 * detectMarkerのコールバック関数
-	 */
-	//公開プロパティ
+	/** 一致率*/
 	private double _confidence;
 	private NyARSquare _square=new NyARSquare();
 	
@@ -110,14 +107,6 @@ public class NyARCustomSingleDetectMarker
 			this._coordline.coord2Line(i_vertex_index[idx],i_vertex_index[(idx+1)%4],i_coord,sq.line[i]);
 		}
 		//ちょっと、ひっくり返してみようか。
-/*		NyARLinear l1 =sq.line[0];
-		NyARLinear l2 =sq.line[1];
-		NyARLinear l3 =sq.line[2];
-		NyARLinear l4 =sq.line[3];
-		sq.line[0]=l4;
-		sq.line[1]=l3;
-		sq.line[2]=l2;
-		sq.line[3]=l1;*/
 		for (int i = 0; i < 4; i++) {
 			//直線同士の交点計算
 			if(!sq.line[i].crossPos(sq.line[(i + 3) % 4],sq.sqvertex[i])){

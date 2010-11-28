@@ -30,7 +30,6 @@ import java.awt.event.*;
 import java.awt.*;
 import javax.media.Buffer;
 import javax.media.opengl.*;
-import javax.media.opengl.glu.GLU;
 
 import com.sun.opengl.util.*;
 import jp.nyatla.nyartoolkit.*;
@@ -42,7 +41,8 @@ import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
 
 /**
- * simpleLiteと同じようなテストプログラム 出来る限りARToolKitのサンプルと似せて作ってあります。 最も一致する"Hiro"マーカーを一つ選択して、その上に立方体を表示します。
+ * simpleLiteと同じようなテストプログラム 出来る限りARToolKitのサンプルと似せて作ってあります。 
+ * 最も一致する"Hiro"マーカーを一つ選択して、その上に立方体を表示します。
  * 
  */
 public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
@@ -67,54 +67,11 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 	private Object _sync_object=new Object();
 	private double[] _camera_projection = new double[16];
 
-	/**
-	 * 立方体を書く
-	 * 
-	 */
-	void drawCube(double i_size_per_mm)
-	{
-		// Colour cube data.
-		int polyList = 0;
-		float fSize =(float)i_size_per_mm/2;
-		int f, i;
-		float[][] cube_vertices = new float[][] { { 1.0f, 1.0f, 1.0f }, { 1.0f, -1.0f, 1.0f }, { -1.0f, -1.0f, 1.0f }, { -1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, -1.0f }, { 1.0f, -1.0f, -1.0f }, { -1.0f, -1.0f, -1.0f }, { -1.0f, 1.0f, -1.0f } };
-		float[][] cube_vertex_colors = new float[][] { { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 1.0f }, { 1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } };
-		int cube_num_faces = 6;
-		short[][] cube_faces = new short[][] { { 3, 2, 1, 0 }, { 2, 3, 7, 6 }, { 0, 1, 5, 4 }, { 3, 0, 4, 7 }, { 1, 2, 6, 5 }, { 4, 5, 6, 7 } };
-
-		if (polyList == 0) {
-			polyList = _gl.glGenLists(1);
-			_gl.glNewList(polyList, GL.GL_COMPILE);
-			_gl.glBegin(GL.GL_QUADS);
-			for (f = 0; f < cube_num_faces; f++)
-				for (i = 0; i < 4; i++) {
-					_gl.glColor3f(cube_vertex_colors[cube_faces[f][i]][0], cube_vertex_colors[cube_faces[f][i]][1], cube_vertex_colors[cube_faces[f][i]][2]);
-					_gl.glVertex3f(cube_vertices[cube_faces[f][i]][0] * fSize, cube_vertices[cube_faces[f][i]][1] * fSize, cube_vertices[cube_faces[f][i]][2] * fSize);
-				}
-			_gl.glEnd();
-			_gl.glColor3f(0.0f, 0.0f, 0.0f);
-			for (f = 0; f < cube_num_faces; f++) {
-				_gl.glBegin(GL.GL_LINE_LOOP);
-				for (i = 0; i < 4; i++)
-					_gl.glVertex3f(cube_vertices[cube_faces[f][i]][0] * fSize, cube_vertices[cube_faces[f][i]][1] * fSize, cube_vertices[cube_faces[f][i]][2] * fSize);
-				_gl.glEnd();
-			}
-			_gl.glEndList();
-		}
-
-		_gl.glPushMatrix(); // Save world coordinate system.
-		_gl.glTranslatef(0.0f, 0.1f, fSize); // Place base of cube on marker surface.
-		_gl.glDisable(GL.GL_LIGHTING); // Just use colours.
-		_gl.glCallList(polyList); // Draw the cube.
-		_gl.glPopMatrix(); // Restore world coordinate system.
-
-	}
-
 	public JavaSimpleLite(NyARParam i_param, NyARCode i_ar_code) throws NyARException
 	{
 		this._ar_param = i_param;
 
-		Frame frame = new Frame("Java simpleLite with NyARToolkit");
+		Frame frame = new Frame("NyARToolkit["+this.getClass().getName()+"]");
 
 		
 		// キャプチャの準備
@@ -130,8 +87,6 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 		// NyARToolkitの準備
 		this._nya = new NyARSingleDetectMarker(this._ar_param, i_ar_code, 80.0,this._cap_image.getBufferType());
 		this._nya.setContinueMode(true);// ここをtrueにすると、transMatContinueモード（History計算）になります。
-		//スケールファクタ。1mm=1.0
-
 		
 		// 3Dを描画するコンポーネント
 		GLCanvas canvas = new GLCanvas();
@@ -162,7 +117,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		// カメラパラメータの計算
+		// カメラパラメータの計算(1mm=1.0)
 		NyARGLUtil.toCameraFrustumRH(this._ar_param,1,10,10000,this._camera_projection);
 		this._animator = new Animator(drawable);
 		this._animator.start();
@@ -202,19 +157,22 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 				if (this._is_marker_exist){
 					// マーカーの一致度を調査するならば、ここでnya.getConfidence()で一致度を調べて下さい。
 					// Projection transformation.
-					_gl.glMatrixMode(GL.GL_PROJECTION);
-					_gl.glLoadMatrixd(_camera_projection, 0);
-					_gl.glMatrixMode(GL.GL_MODELVIEW);
+					this._gl.glMatrixMode(GL.GL_PROJECTION);
+					this._gl.glLoadMatrixd(_camera_projection, 0);
+					this._gl.glMatrixMode(GL.GL_MODELVIEW);
 					// Viewing transformation.
-					_gl.glLoadIdentity();
+					this._gl.glLoadIdentity();
 					// 変換行列を取得
-					_nya.getTransmationMatrix(transmat_result);
+					this._nya.getTransmationMatrix(transmat_result);
 					// 変換行列をOpenGL形式に変換
-					NyARGLUtil.toCameraViewRH(transmat_result,1, __display_wk);
-					_gl.glLoadMatrixd(__display_wk, 0);
-		
-					//
-					drawCube(80);
+					NyARGLUtil.toCameraViewRH(transmat_result,1, this.__display_wk);
+					this._gl.glLoadMatrixd(this.__display_wk, 0);		
+					//立方体を描画
+					this._gl.glPushMatrix(); // Save world coordinate system.
+					this._gl.glTranslatef(0.0f, 0.1f,20); // Place base of cube on marker surface.
+					this._gl.glDisable(GL.GL_LIGHTING); // Just use colours.
+					NyARGLDrawUtil.drawColorCube(this._gl,40);
+					this._gl.glPopMatrix(); // Restore world coordinate system.
 				}
 			}
 			Thread.sleep(1);// タスク実行権限を一旦渡す

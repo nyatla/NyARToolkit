@@ -35,7 +35,6 @@ import javax.media.Buffer;
 import javax.media.opengl.*;
 
 import com.sun.opengl.util.*;
-import com.sun.opengl.util.j2d.*;
 import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.param.*;
@@ -45,31 +44,15 @@ import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
 import jp.nyatla.nyartoolkit.processor.*;
 
-/*
 
-
-*/
-
-
+/**
+ * SingleARMarkerProcesserを使ったサンプルです。
+ * 登録した複数種類マーカのうちから、同時に１個を認識するサンプルプログラムです。
+ * @author nyatla
+ *
+ */
 public class SingleARMarker implements GLEventListener, JmfCaptureListener
-{
-	class TextPanel
-	{
-		private TextRenderer _tr;
-		public TextPanel(int i_size)
-		{
-			this._tr=new TextRenderer(new Font("SansSerif", Font.BOLD, 36));
-
-		}
-		public void draw(String i_str,float i_scale)
-		{
-			this._tr.begin3DRendering();
-		    this._tr.setColor(1.0f, 0.2f, 0.2f, 0.8f);
-		    this._tr.draw3D(i_str, 0f,0f,0f,i_scale);
-			this._tr.end3DRendering();
-			return;
-		}
-	}	
+{	
 	/**
 	 * １個のRawBit-Idマーカを認識するロジッククラス。
 	 * detectMarker関数の呼び出しに同期して、transmatとcurrent_idパラメタを更新します。
@@ -78,7 +61,6 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 	 */
 	class MarkerProcessor extends SingleARMarkerProcesser
 	{
-		private NyARGLUtil _glnya;
 		public double[] gltransmat=new double[16];
 		
 		public int current_code=-1;
@@ -88,7 +70,6 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 			//アプリケーションフレームワークの初期化
 			super();
 			initInstance(i_cparam,i_raster_format);
-			this._glnya=i_glutil;
 			return;
 		}
 		protected void onEnterHandler(int i_code)
@@ -106,7 +87,7 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 		protected void onUpdateHandler(NyARSquare i_square, NyARTransMatResult result)
 		{
 			try{
-				this._glnya.toCameraViewRH(result, this.gltransmat);
+				NyARGLUtil.toCameraViewRH(result,1.0, this.gltransmat);
 			}catch(Exception e){
 				e.printStackTrace();
 			}
@@ -123,7 +104,6 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 
 	private GL _gl;
 	private NyARGLUtil _glnya;
-	private TextPanel _panel;
 
 
 	//NyARToolkit関係
@@ -146,7 +126,7 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 			throw new NyARException();
 		}
 		this._capture.setOnCapture(this);
-		this._cap_image = new JmfNyARRaster_RGB(i_cparam,this._capture.getCaptureFormat());	
+		this._cap_image = new JmfNyARRaster_RGB(this._capture.getCaptureFormat());	
 
 		this._code_table[0]=new NyARCode(16,16);
 		this._code_table[0].loadARPattFromFile(CARCODE_FILE1);
@@ -154,7 +134,7 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 		this._code_table[1].loadARPattFromFile(CARCODE_FILE2);
 		
 		//OpenGLフレームの準備（OpenGLリソースの初期化、カメラの撮影開始は、initコールバック関数内で実行）
-		Frame frame = new Frame("Java simpleLite with NyARToolkit");
+		Frame frame = new Frame("NyARToolkit["+this.getClass().getName()+"]");
 		GLCanvas canvas = new GLCanvas();
 		frame.add(canvas);
 		canvas.addGLEventListener(this);
@@ -174,22 +154,19 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 	}
 	public void init(GLAutoDrawable drawable)
 	{
-		this._panel = new TextPanel(100);
-
-
 		this._gl = drawable.getGL();
 		this._gl.glEnable(GL.GL_DEPTH_TEST);
-
+		NyARGLDrawUtil.setFontStyle("SansSerif",Font.BOLD,36);
+		NyARGLDrawUtil.setFontColor(Color.RED);
 		this._gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		//NyARToolkitの準備
 		try {
-			this._glnya = new NyARGLUtil(this._gl);
 			//プロセッサの準備
 			this._processor=new MarkerProcessor(this._ar_param,this._cap_image.getBufferType(),this._glnya);
 			this._processor.setARCodeTable(_code_table,16,80.0);
 
 			//カメラパラメータの計算
-			this._glnya.toCameraFrustumRH(this._ar_param,this._camera_projection);
+			NyARGLUtil.toCameraFrustumRH(this._ar_param,1.0,10,10000,this._camera_projection);
 			//キャプチャ開始
 			this._capture.start();
 		} catch (Exception e) {
@@ -224,7 +201,7 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 		this._gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
 		//OnEnter,OnUpdateの間に、transmatに初回行列がストアされる実行されることを防ぎます。
 		try{
-			this._glnya.drawBackGround(this._cap_image, 1.0);
+			NyARGLDrawUtil.drawBackGround(this._gl,this._cap_image, 1.0);
 			synchronized(this._sync_object)
 			{
 				if(this._processor.current_code<0){
@@ -247,9 +224,9 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 					Date d = new Date();
 					float r=(d.getTime()/50)%360;
 					this._gl.glRotatef(r,0f,0f,1.0f);
-					this._gl.glTranslatef(-1.0f,0f,1.0f);
+					this._gl.glTranslatef(-70f,0f,1.0f);
 					this._gl.glRotatef(90,1.0f,0f,0f);
-					this._panel.draw("MarkerId:"+this._processor.current_code,0.01f);
+					NyARGLDrawUtil.drawText("MarkerId:"+this._processor.current_code,1f);
 					this._gl.glPopMatrix();
 					Thread.sleep(1);// タスク実行権限を一旦渡す
 				}

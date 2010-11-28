@@ -103,9 +103,9 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 	
 	private final NyARIntCoordinates _coord;
 	/**
-	 * 最大i_squre_max個のマーカーを検出するクラスを作成する。
-	 * 
-	 * @param i_param
+	 * コンストラクタ
+	 * @param i_size
+	 * 入力画像のサイズ
 	 */
 	public NyARSquareContourDetector_Rle(NyARIntSize i_size) throws NyARException
 	{

@@ -34,10 +34,8 @@ import java.util.Date;
 
 import javax.media.Buffer;
 import javax.media.opengl.*;
-import javax.media.opengl.glu.GLU;
 
 import com.sun.opengl.util.*;
-import com.sun.opengl.util.j2d.*;
 import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
@@ -47,26 +45,9 @@ import jp.nyatla.nyartoolkit.jogl.utils.*;
 import jp.nyatla.nyartoolkit.processor.*;
 
 
-class TextPanel
-{
-	private TextRenderer _tr;
-	public TextPanel(int i_size)
-	{
-		this._tr=new TextRenderer(new Font("SansSerif", Font.BOLD, 36));
-
-	}
-	public void draw(String i_str,float i_scale)
-	{
-		this._tr.begin3DRendering();
-	    this._tr.setColor(1.0f, 0.2f, 0.2f, 0.8f);
-	    this._tr.draw3D(i_str, 0f,0f,0f,i_scale);
-		this._tr.end3DRendering();
-		return;
-	}
-}
 
 /**
- * １個のRawBit-Idマーカを認識するロジッククラス。
+ * SingleNyIdMarkerProcesserを使ったサンプルです。
  * detectMarker関数の呼び出しに同期して、transmatとcurrent_idパラメタを更新します。
  * 
  *
@@ -115,7 +96,7 @@ class MarkerProcessor extends SingleNyIdMarkerProcesser
 	protected void onUpdateHandler(NyARSquare i_square, NyARTransMatResult result)
 	{
 		try{
-			NyARGLUtil.toCameraViewRH(result, this.gltransmat);
+			NyARGLUtil.toCameraViewRH(result,1.0, this.gltransmat);
 		}catch(Exception e){
 			e.printStackTrace();
 		}		
@@ -130,11 +111,6 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 	private JmfCaptureDevice _capture;
 
 	private GL _gl;
-	private GLU _glu;
-	private NyARGLUtil _glnya;
-	private TextPanel _panel;
-
-
 	//NyARToolkit関係
 	private NyARParam _ar_param;
 
@@ -157,7 +133,7 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 		this._cap_image = new JmfNyARRaster_RGB(this._capture.getCaptureFormat());	
 		
 		//OpenGLフレームの準備（OpenGLリソースの初期化、カメラの撮影開始は、initコールバック関数内で実行）
-		Frame frame = new Frame("Java simpleLite with NyARToolkit");
+		Frame frame = new Frame("NyARToolkit["+this.getClass().getName()+"]");
 		GLCanvas canvas = new GLCanvas();
 		frame.add(canvas);
 		canvas.addGLEventListener(this);
@@ -177,18 +153,15 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 	}
 	public void init(GLAutoDrawable drawable)
 	{
-		this._panel = new TextPanel(100);
-
-
 		this._gl = drawable.getGL();
-		this._glu=new GLU();
 		this._gl.glEnable(GL.GL_DEPTH_TEST);
+		NyARGLDrawUtil.setFontStyle("SansSerif",Font.BOLD,36);
 
 		this._gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		//NyARToolkitの準備
 		try {
 			//カメラパラメータの計算
-			NyARGLUtil.toCameraFrustumRH(this._ar_param,this._camera_projection);
+			NyARGLUtil.toCameraFrustumRH(this._ar_param,1.0,10,10000,this._camera_projection);
 			//プロセッサの準備
 			this._processor=new MarkerProcessor(this._ar_param,100,this._cap_image.getBufferType());
 			
@@ -225,7 +198,7 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 		// 背景を書く
 		this._gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
 		try{
-			NyARGLUtil.drawBackGround(this._glu,this._cap_image, 1.0);			
+			NyARGLDrawUtil.drawBackGround(this._gl,this._cap_image, 1.0);			
 			synchronized(this._sync_object)
 			{
 				if(this._processor.current_id<0){
@@ -249,9 +222,9 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 					Date d = new Date();
 					float r=(d.getTime()/50)%360;
 					this._gl.glRotatef(r,0f,0f,1.0f);
-					this._gl.glTranslatef(-1.0f,0f,1.0f);
+					this._gl.glTranslatef(-70f,0f,1.0f);
 					this._gl.glRotatef(90,1.0f,0f,0f);
-					this._panel.draw("MarkerId:"+this._processor.current_id,0.01f);
+					NyARGLDrawUtil.drawText("MarkerId:"+this._processor.current_id, 1.0f);
 					this._gl.glPopMatrix();
 					Thread.sleep(1);// タスク実行権限を一旦渡す
 				}

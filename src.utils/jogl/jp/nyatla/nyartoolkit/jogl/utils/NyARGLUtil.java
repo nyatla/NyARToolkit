@@ -52,12 +52,12 @@ public class NyARGLUtil
 	 * NyARToolKit 2.53以前のコードと互換性を持たせるためのスケール値。{@link #toCameraFrustumRH}のi_scaleに設定することで、
 	 * 以前のバージョンの数値系と互換性を保ちます。
 	 */
-	final static double SCALE_FACTOR_toCameraFrustumRH_NYAR2=1.0;
+	public final static double SCALE_FACTOR_toCameraFrustumRH_NYAR2=1.0;
 	/**
 	 * NyARToolKit 2.53以前のコードと互換性を持たせるためのスケール値。{@link #toCameraViewRH}のi_scaleに設定することで、
 	 * 以前のバージョンの数値系と互換性を保ちます。
 	 */
-	final static double SCALE_FACTOR_toCameraViewRH_NYAR2=0.025;
+	public final static double SCALE_FACTOR_toCameraViewRH_NYAR2=1/0.025;
 
 	
 
