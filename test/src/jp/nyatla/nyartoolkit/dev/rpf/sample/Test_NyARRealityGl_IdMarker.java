@@ -35,8 +35,8 @@ import com.sun.opengl.util.Animator;
 public class Test_NyARRealityGl_IdMarker implements GLEventListener, JmfCaptureListener
 {
 
-	private final static int SCREEN_X = 320;
-	private final static int SCREEN_Y = 240;
+	private final static int SCREEN_X = 640;
+	private final static int SCREEN_Y = 480;
 
 	private Animator _animator;
 	private JmfCaptureDevice _capture;
@@ -63,7 +63,7 @@ public class Test_NyARRealityGl_IdMarker implements GLEventListener, JmfCaptureL
 		//Realityの構築
 		i_param.changeScreenSize(SCREEN_X, SCREEN_Y);	
 		//キャプチャ画像と互換性のあるRealitySourceを構築
-		this._src=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),i_param.getDistortionFactor(),1,100);
+		this._src=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),i_param.getDistortionFactor(),2,100);
 		//OpenGL互換のRealityを構築		
 		this._reality=new NyARRealityGl(i_param.getPerspectiveProjectionMatrix(),i_param.getScreenSize(),10,10000,3,3);
 		//マーカライブラリ(NyId)の構築

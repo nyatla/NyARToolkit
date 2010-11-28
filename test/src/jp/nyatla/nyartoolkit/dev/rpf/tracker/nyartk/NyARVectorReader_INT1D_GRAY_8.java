@@ -448,7 +448,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 				return false;
 			}
 		}
-		if(this.leastSquaresWithNormalize(pos,sum,o_coord.items[number_of_data],sq_sum/(sum*20))){
+		if(this.leastSquaresWithNormalize(pos,sum,o_coord.items[number_of_data],sq_sum/(sum*10))){
 			number_of_data++;
 		}
 		// ベクトル化2:最後尾と先頭の要素が似ていれば連結する。
@@ -498,8 +498,8 @@ public class NyARVectorReader_INT1D_GRAY_8
 		}		
 		o_dest.x=((la * lc - lb * cc) / w1);
 		o_dest.y= ((la * cc +lb * lc) / w1);
-		o_dest.dy=-lb;
-		o_dest.dx=-la;
+		o_dest.dy=-lb/Math.sqrt(lb*lb+la*la);
+		o_dest.dx=-la/Math.sqrt(lb*lb+la*la);
 		o_dest.scalar=num;
 		return true;
 	}	
