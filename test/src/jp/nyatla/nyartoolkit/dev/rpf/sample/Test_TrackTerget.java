@@ -223,7 +223,7 @@ public class Test_TrackTerget extends Frame
 		try {
 			// マーカーを検出
 			Date d2 = new Date();
-			for (int i = 0; i < 1000; i++) {
+			for (int i = 0; i < 1; i++) {
 				//tracker更新
 				this._input_source.UpdateInput(this.tracksource);
 				this.tracker.progress(this.tracksource);
@@ -318,8 +318,8 @@ public class Test_TrackTerget extends Frame
 		g.drawString("CT",t._sample_area.x,t._sample_area.y);
 		g.drawRect(t._sample_area.x,t._sample_area.y,t._sample_area.w,t._sample_area.h);
 		NyARContourTargetStatus st=(NyARContourTargetStatus)t._ref_status;
-		VecLinearCoordinatesOperator vp=new VecLinearCoordinatesOperator();
-		vp.margeResembleCoords(st.vecpos);
+//		VecLinearCoordinatesOperator vp=new VecLinearCoordinatesOperator();
+//		vp.margeResembleCoords(st.vecpos);
 		for(int i2=0;i2<st.vecpos.length;i2++){
 //		for(int i2=43;i2<44;i2++){
 //			g.drawString(i2+":"+"-"+t._delay_tick,(int)st.vecpos.items[i2].x-1, (int)st.vecpos.items[i2].y-1);

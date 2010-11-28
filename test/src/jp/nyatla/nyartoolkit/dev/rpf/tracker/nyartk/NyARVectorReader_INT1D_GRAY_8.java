@@ -194,7 +194,70 @@ public class NyARVectorReader_INT1D_GRAY_8
 		//加重平均の分母を返却
 		return sum_wx+sum_wy;
 	}
+	public final int getAreaVector22(int ix, int iy, int iw, int ih,NyARVecLinear2d o_posvec)
+	{
+		assert (ih >= 3 && iw >= 3);
+		assert ((ix >= 0) && (iy >= 0) && (ix + iw) <= this._ref_base_raster.getWidth() && (iy + ih) <= this._ref_base_raster.getHeight());
+		int[] buf =(int[])this._ref_base_raster.getBuffer();
+		int stride =this._ref_base_raster.getWidth();
+		int sum_x, sum_y, sum_wx, sum_wy, sum_vx, sum_vy;
+		sum_x = sum_y = sum_wx = sum_wy = sum_vx = sum_vy = 0;
+		int vx, vy;
+		int ll=iw-1;
+		for (int i = 0; i<ih-1; i++) {
+			int idx_0 = stride * (i+iy) + ix+1;
+			int a=buf[idx_0-1];
+			int b=buf[idx_0];
+			int c=buf[idx_0+stride-1];
+			int d=buf[idx_0+stride];
+			for (int i2 = 0; i2<ll; i2++){
+				// 1ビット分のベクトルを計算
+				vx=(b-a+d-c)>>2;
+				vy=(c-a+d-b)>>2;
+				idx_0++;
+				a=b;
+				c=d;
+				b=buf[idx_0];
+				d=buf[idx_0+stride];
 
+				// 加重はvectorの絶対値
+				int wx = vx * vx;
+				sum_wx += wx; //加重値
+				sum_vx += wx * vx; //加重*ベクトルの積
+				sum_x += wx * i2;//位置
+
+				int wy = vy * vy;
+				sum_wy += wy; //加重値
+				sum_vy += wy * vy; //加重*ベクトルの積
+				sum_y += wy * i; //
+			}
+		}
+		//x,dx,y,dyの計算
+		double xx,yy;
+		if (sum_wx == 0) {
+			xx = ix + (iw >> 1);
+			o_posvec.dx = 0;
+		} else {
+			xx = ix+(double) sum_x / sum_wx;
+			o_posvec.dx = (double) sum_vx / sum_wx;
+		}
+		if (sum_wy == 0) {
+			yy = iy + (ih >> 1);
+			o_posvec.dy = 0;
+		} else {
+			yy = iy+(double) sum_y / sum_wy;
+			o_posvec.dy = (double) sum_vy / sum_wy;
+		}
+		//必要なら歪みを解除
+		if(this._factor!=null){
+			this._factor.observ2Ideal(xx, yy, o_posvec);
+		}else{
+			o_posvec.x=xx;
+			o_posvec.y=yy;
+		}
+		//加重平均の分母を返却
+		return sum_wx+sum_wy;
+	}
 
 	/**
 	 * ワーク変数
@@ -323,8 +386,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 	 * 5.直線の加重値を個々の画素ベクトルの和として返却。
 	 */
 	public boolean traceConture(NyARIntCoordinates i_coord, int i_pos_mag,int i_cell_size, VecLinearCoordinates o_coord)
-	{
-		
+	{		
 		NyARVecLinearPoint[] pos=this._tmp_coord_pos;
 		// ベクトル化
 		int MAX_COORD = o_coord.items.length;
