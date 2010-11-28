@@ -37,6 +37,7 @@ import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTrackerSource_Reference;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARContourTargetStatus;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARRectTargetStatus;
 import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARTargetStatus;
+import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinatesOperator;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDevice;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDeviceList;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
@@ -222,7 +223,7 @@ public class Test_TrackTerget extends Frame
 		try {
 			// マーカーを検出
 			Date d2 = new Date();
-			for (int i = 0; i < 1; i++) {
+			for (int i = 0; i < 1000; i++) {
 				//tracker更新
 				this._input_source.UpdateInput(this.tracksource);
 				this.tracker.progress(this.tracksource);
@@ -317,9 +318,26 @@ public class Test_TrackTerget extends Frame
 		g.drawString("CT",t._sample_area.x,t._sample_area.y);
 		g.drawRect(t._sample_area.x,t._sample_area.y,t._sample_area.w,t._sample_area.h);
 		NyARContourTargetStatus st=(NyARContourTargetStatus)t._ref_status;
+		VecLinearCoordinatesOperator vp=new VecLinearCoordinatesOperator();
+		vp.margeResembleCoords(st.vecpos);
 		for(int i2=0;i2<st.vecpos.length;i2++){
-			g.drawString(i2+":"+"-"+t._delay_tick,(int)st.vecpos.items[i2].x-1, (int)st.vecpos.items[i2].y-1);
-			g.fillRect((int)st.vecpos.items[i2].x-1, (int)st.vecpos.items[i2].y-1,2,2);
+//		for(int i2=43;i2<44;i2++){
+//			g.drawString(i2+":"+"-"+t._delay_tick,(int)st.vecpos.items[i2].x-1, (int)st.vecpos.items[i2].y-1);
+			g.fillRect((int)st.vecpos.items[i2].x, (int)st.vecpos.items[i2].y,1,1);
+			double co,si;
+			co=st.vecpos.items[i2].dx;
+			si=st.vecpos.items[i2].dy;
+			co/=Math.sqrt(co*co+si*si);
+			si/=Math.sqrt(co*co+si*si);
+			double ss=st.vecpos.items[i2].scalar*3;
+			g.drawLine(
+				(int)st.vecpos.items[i2].x,
+				(int)st.vecpos.items[i2].y,
+				(int)(co*ss)+(int)st.vecpos.items[i2].x,(int)(si*ss)+(int)st.vecpos.items[i2].y);
+			int xx=(int)st.vecpos.items[i2].x;
+			int yy=(int)st.vecpos.items[i2].y;
+//			g.drawRect(xx/8*8,yy/8*8,16,16);
+			
 		}
     }
     

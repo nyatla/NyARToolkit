@@ -116,9 +116,8 @@ public class NyARVectorReader_INT1D_GRAY_8
 	}
 */
 	/**
-	 * RECT範囲内の画素ベクトルの合計値と、ベクトルのエッジ中心を取得します。 320*240の場合、RECTの範囲は(x>=0 && x<319
-	 * x+w>=0 && x+w<319),(y>=0 && y<239 x+w>=0 && x+w<319)となります。
-	 * 
+	 * RECT範囲内の画素ベクトルの合計値と、ベクトルのエッジ中心を取得します。 320*240の場合、
+	 * RECTの範囲は(x>=0 && x<319 x+w>=0 && x+w<319),(y>=0 && y<239 x+w>=0 && x+w<319)となります。
 	 * @param ix
 	 * ピクセル取得を行う位置を設定します。
 	 * @param iy
@@ -142,11 +141,12 @@ public class NyARVectorReader_INT1D_GRAY_8
 		// x=(ΣVx)^2/(ΣVx+ΣVy)^2,y=(ΣVy)^2/(ΣVx+ΣVy)^2
 		int sum_x, sum_y, sum_wx, sum_wy, sum_vx, sum_vy;
 		sum_x = sum_y = sum_wx = sum_wy = sum_vx = sum_vy = 0;
+		int lw=iw - 3;
 		int vx, vy;
 		for (int i = ih - 3; i >= 0; i--) {
-			for (int i2 = iw - 3; i2 >= 0; i2--) {
+			int idx_0 = stride * (i + 1 + iy) + (iw - 3 + 1 + ix);
+			for (int i2 = lw; i2 >= 0; i2--){
 				// 1ビット分のベクトルを計算
-				int idx_0 = stride * (i + 1 + iy) + (i2 + 1 + ix);
 				int idx_p1 = idx_0 + stride;
 				int idx_m1 = idx_0 - stride;
 				int b = buf[idx_m1 - 1];
@@ -155,6 +155,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 				int f = buf[idx_p1 + 1];
 				vx = ((buf[idx_0 + 1] - buf[idx_0 - 1]) >> 1)+ ((d - b + f - h) >> 2);
 				vy = ((buf[idx_p1] - buf[idx_m1]) >> 1)+ ((f - d + h - b) >> 2);
+				idx_0--;
 
 				// 加重はvectorの絶対値
 				int wx = vx * vx;
@@ -323,6 +324,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 	 */
 	public boolean traceConture(NyARIntCoordinates i_coord, int i_pos_mag,int i_cell_size, VecLinearCoordinates o_coord)
 	{
+		
 		NyARVecLinearPoint[] pos=this._tmp_coord_pos;
 		// ベクトル化
 		int MAX_COORD = o_coord.items.length;
@@ -349,7 +351,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 			pos[sum].scalar=sq=this.getAreaVector33(coord[i].x * i_pos_mag,coord[i].y * i_pos_mag, i_cell_size, i_cell_size,pos[sum]);
 			sq_sum+=sq;
 			// 類似度判定
-			if (pos[sum-1].getVecCos(pos[sum]) < NyARMath.COS_DEG_10) {
+			if (pos[sum-1].getVecCos(pos[sum]) < NyARMath.COS_DEG_8) {
 				//相関なし->前方探索へ。
 				coord_last_edge=i;
 				break;
@@ -362,9 +364,10 @@ public class NyARVectorReader_INT1D_GRAY_8
 		for (int i = 1; i<coord_last_edge; i++)
 		{
 			// ベクトル取得
-			sq_sum+=this.getAreaVector33(coord[i].x * i_pos_mag,coord[i].y * i_pos_mag, i_cell_size, i_cell_size,pos[sum]);
+			pos[sum].scalar=sq=this.getAreaVector33(coord[i].x * i_pos_mag,coord[i].y * i_pos_mag, i_cell_size, i_cell_size,pos[sum]);
+			sq_sum+=sq;
 			// 類似度判定
-			if (pos[sum-1].getVecCos(pos[sum]) < NyARMath.COS_DEG_10) {
+			if (pos[sum-1].getVecCos(pos[sum]) < NyARMath.COS_DEG_8) {
 				//相関なし->新しい要素を作る。
 				if(this.leastSquaresWithNormalize(pos,sum,o_coord.items[number_of_data],sq_sum/(sum*20))){
 					number_of_data++;
@@ -385,10 +388,11 @@ public class NyARVectorReader_INT1D_GRAY_8
 		}
 		if(this.leastSquaresWithNormalize(pos,sum,o_coord.items[number_of_data],sq_sum/(sum*20))){
 			number_of_data++;
-		}		
+		}
 		// ベクトル化2:最後尾と先頭の要素が似ていれば連結する。
 		// sq_distの合計を計算
 		o_coord.length = number_of_data;
+		
 		return true;
 	}
 	/**

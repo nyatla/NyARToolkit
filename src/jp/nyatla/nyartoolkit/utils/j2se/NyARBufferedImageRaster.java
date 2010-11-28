@@ -200,7 +200,14 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 				{
 					return NyARBufferType.BYTE1D_B8G8R8_24;
 				}
+			}else if(data_type==DataBuffer.TYPE_BYTE && band_num==4&& scan_stride==w*4 && pix_stride==4 && indices[0]==0 && indices[1]==0 && indices[2]==0)
+			{
+				if(band_offset[0]==3 && band_offset[1]==2 && band_offset[2]==1)
+				{
+					return NyARBufferType.BYTE1D_B8G8R8X8_32;
+				}
 			}
+			
 		}else if(sp instanceof SinglePixelPackedSampleModel)
 		{
 			SinglePixelPackedSampleModel ssp=(SinglePixelPackedSampleModel)sp;
