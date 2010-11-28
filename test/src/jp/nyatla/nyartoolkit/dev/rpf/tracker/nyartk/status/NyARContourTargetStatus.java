@@ -15,7 +15,7 @@ public final class NyARContourTargetStatus extends NyARTargetStatus
 	/**
 	 * ベクトル要素を格納する配列です。
 	 */
-	public VecLinearCoordinates vecpos=new VecLinearCoordinates(1000);
+	public VecLinearCoordinates vecpos=new VecLinearCoordinates(100);
 
 	
 	
