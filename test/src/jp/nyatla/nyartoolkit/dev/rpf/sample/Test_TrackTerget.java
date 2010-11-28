@@ -187,8 +187,8 @@ public class Test_TrackTerget extends Frame
 	private static final long serialVersionUID = -2110888320986446576L;
 
 
-	private int W = 320;
-	private int H = 240;
+	private int W = 640;
+	private int H = 480;
 	InputSource _input_source;
 	public Test_TrackTerget(NyARCameraDistortionFactor p) throws NyARException, Exception
 	{
@@ -198,9 +198,9 @@ public class Test_TrackTerget extends Frame
 		
 	this._input_source=new ImageSource(SAMPLE_FILES);
 //		this._input_source=new MoveSource();
-//		this._input_source=new LiveSource(W,H);
+		this._input_source=new LiveSource(W,H);
 		//create sampler
-		this.tracksource=new NyARTrackerSource_Reference(100,p,W, H, 2,false);
+		this.tracksource=new NyARTrackerSource_Reference(100,p,W, H, 1,false);
 		_tmp_bf=new BufferedImage(W, H,BufferedImage.TYPE_INT_RGB);
 		
 		//create tracker
