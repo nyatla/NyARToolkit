@@ -32,17 +32,19 @@ package jp.nyatla.nyartoolkit.core;
 
 import jp.nyatla.nyartoolkit.NyARException;
 
-
-
 /**
- * ARMat構造体に対応するクラス typedef struct { double *m; int row; int clm; }ARMat;
- * 
+ * ARToolKit由来の、可変サイズの行列計算クラスです。
+ * ARToolKitのARMat構造体と、その処理関数に相当する機能があります。
+ * 2x2,3x3,4x4行列については、NyAToolKitの行列計算クラスの方が高速な場合がありますので、必要に応じて選択して下さい。
+ * @note
+ * このクラスは、今後統合・削除する可能性があります。
  */
 public class NyARMat
 {
 	/**
-	 * 配列サイズと行列サイズは必ずしも一致しないことに注意 返された配列のサイズを行列の大きさとして使わないこと！
-	 * 
+	 * 配列値を格納するバッファ
+	 * 配列サイズと行列サイズは必ずしも一致しないことに注意。
+	 * 配列のサイズを行列の大きさとして使わないこと！
 	 */
 	protected double[][] _m;
 	private int[] __matrixSelfInv_nos;
@@ -52,14 +54,17 @@ public class NyARMat
 
 	/**
 	 * デフォルトコンストラクタは機能しません。
-	 * 
 	 * @throws NyARException
 	 */
 	protected NyARMat() throws NyARException
 	{
 		throw new NyARException();
 	}
-
+	/**
+	 * コンストラクタです。サイズを指定して、NyARMatオブジェクトを作成します。
+	 * @param i_row
+	 * @param i_clm
+	 */
 	public NyARMat(int i_row, int i_clm)
 	{
 		this._m = new double[i_row][i_clm];
@@ -109,9 +114,12 @@ public class NyARMat
 	
 	
 	/**
+	 * 行列同士の掛け算を実行します。
 	 * i_mat_aとi_mat_bの積を計算して、thisへ格納します。
 	 * @param i_mat_a
+	 * 計算元の行列A
 	 * @param i_mat_b
+	 * 計算元の行列B
 	 * @throws NyARException
 	 */
 	public void matrixMul(NyARMat i_mat_a, NyARMat i_mat_b) throws NyARException
@@ -136,6 +144,8 @@ public class NyARMat
 	
 	/**
 	 * 逆行列を計算して、thisへ格納します。
+	 * @return
+	 *　逆行列が計算できたかの、真偽値を返します。trueなら、逆行列が存在します。falseなら、逆行列はありません。
 	 * @throws NyARException
 	 */
 	public boolean matrixSelfInv() throws NyARException
@@ -229,7 +239,7 @@ public class NyARMat
 	}
 
 	/**
-	 * 行列をゼロクリアする。
+	 * 行列の要素を、全て0にします。
 	 */
 	public void zeroClear()
 	{
@@ -243,9 +253,10 @@ public class NyARMat
 	}
 
 	/**
-	 * i_copy_fromの内容を自分自身にコピーします。 高さ・幅は同一で無いと失敗します。
-	 * 
+	 * i_copy_fromの内容を、thisへコピーします。 
 	 * @param i_copy_from
+	 * コピー元の行列です。
+	 * この行列のサイズは、thisと同じでなければなりません。
 	 */
 	public void copyFrom(NyARMat i_copy_from) throws NyARException
 	{
@@ -260,7 +271,10 @@ public class NyARMat
 			}
 		}
 	}
-
+	/**
+	 * 行列のバッファを返します。
+	 * @return
+	 */
 	public double[][] getArray()
 	{
 		return _m;
@@ -268,10 +282,12 @@ public class NyARMat
 
 
 	/**
-	 * sourceの転置行列をdestに得る。arMatrixTrans()の代替品
-	 * 
+	 * ARToolKitのarMatrixTrans関数と同等な関数です。
+	 * sourceの転置行列をdestに得ます。
 	 * @param dest
+	 * 出力先のオブジェクト
 	 * @param source
+	 * 入力元のオブジェクト
 	 * @return
 	 */
 	public static void matrixTrans(NyARMat dest, NyARMat source) throws NyARException
@@ -289,8 +305,8 @@ public class NyARMat
 	}
 
 	/**
-	 * unitを単位行列に初期化する。arMatrixUnitの代替品
-	 * 
+	 * ARToolKitの、arMatrixUnit関数と同等な関数です。
+	 * unitを単位行列に初期化します。
 	 * @param unit
 	 */
 	public static void matrixUnit(NyARMat unit) throws NyARException
@@ -312,8 +328,7 @@ public class NyARMat
 	}
 
 	/**
-	 * sourceの内容を自身に複製する。 Optimized 2008.04.19
-	 * 
+	 * i_sourceの内容を、thisへコピーします。
 	 * @param i_source
 	 * @return
 	 */
@@ -333,7 +348,11 @@ public class NyARMat
 			}
 		}
 	}
-
+	/**
+	 * オブジェクトを複製します。
+	 * @return
+	 * @throws NyARException
+	 */
 	public NyARMat matrixAllocDup() throws NyARException
 	{
 		NyARMat result = new NyARMat(this.row, this.clm);
@@ -359,8 +378,8 @@ public class NyARMat
 	private static final double PCA_VZERO = 1e-16; // #define VZERO 1e-16
 
 	/**
-	 * static int EX( ARMat *input, ARVec *mean )の代替関数 Optimize:STEP:[144->110]
-	 * 
+	 * ARToolKitのEX関数と同等な関数です。
+	 * 詳細は不明です。
 	 * @param input
 	 * @param mean
 	 * @return
@@ -396,8 +415,8 @@ public class NyARMat
 	}
 
 	/**
-	 * static int CENTER( ARMat *inout, ARVec *mean )の代替関数
-	 * 
+	 * ARToolKitのCENTER関数と同等な関数です。
+	 * 詳細は不明です。
 	 * @param inout
 	 * @param mean
 	 * @return
@@ -447,8 +466,7 @@ public class NyARMat
 	}
 
 	/**
-	 * int x_by_xt( ARMat *input, ARMat *output )の代替関数
-	 * 
+	 * ARToolKitのx_by_xtと同等な関数です。詳細は不明です。
 	 * @param input
 	 * @param output
 	 * @throws NyARException
@@ -491,9 +509,8 @@ public class NyARMat
 	}
 
 	/**
-	 * static int xt_by_x( ARMat *input, ARMat *output )の代替関数
-	 * Optimize:2008.04.19
-	 * 
+	 * ARToolKitのxt_by_x関数と同等な関数です。
+	 * 詳細は不明です。
 	 * @param input
 	 * @param i_output
 	 * @throws NyARException
@@ -531,8 +548,7 @@ public class NyARMat
 	private final NyARVec wk_PCA_QRM_ev = new NyARVec(1);
 
 	/**
-	 * static int QRM( ARMat *a, ARVec *dv )の代替関数
-	 * 
+	 * ARToolKitのQRM関数と同等な関数です。
 	 * @param a
 	 * @param dv
 	 * @throws NyARException
@@ -645,10 +661,11 @@ public class NyARMat
 	}
 
 	/**
-	 * i_row_1番目の行と、i_row_2番目の行を入れ替える。
-	 * 
+	 *　行列のうち、指定した２列の値を入れ替えます。
 	 * @param i_row_1
+	 * 入れ替える行番号1
 	 * @param i_row_2
+	 * 入れ替える行番号2
 	 */
 	private void flipRow(int i_row_1, int i_row_2)
 	{
@@ -664,9 +681,8 @@ public class NyARMat
 	}
 
 	/**
-	 * static int EV_create( ARMat *input, ARMat *u, ARMat *output, ARVec *ev
-	 * )の代替関数
-	 * 
+	 * ARToolKitのEV_create関数と同等な関数です。
+	 * 詳細は不明です。
 	 * @param input
 	 * @param u
 	 * @param output
@@ -740,8 +756,8 @@ public class NyARMat
 	private NyARMat wk_PCA_PCA_u = null;
 
 	/**
-	 * static int PCA( ARMat *input, ARMat *output, ARVec *ev )
-	 * 
+	 * ARToolKitのPCA関数と同等な関数です。
+	 * 詳細は不明です。
 	 * @param output
 	 * @param o_ev
 	 * @throws NyARException
@@ -811,7 +827,8 @@ public class NyARMat
 		}
 	}
 	/**
-	 * 主成分分析を実行して、結果をthisと引数へ格納します。
+	 * 現在の行列に主成分分析を実行して、結果をthisと引数へ格納します。
+	 * 詳細は不明です。
 	 * @param o_evec
 	 * @param o_ev
 	 * @param o_mean
@@ -864,13 +881,12 @@ public class NyARMat
 	private final NyARVec wk_vecTridiagonalize_vec2 = new NyARVec(0);
 
 	/**
-	 * arVecTridiagonalize関数の代替品 a,d,e間で演算をしてる。何をどうしているかはさっぱりさっぱり
-	 * 
-	 * @param a
+	 * ARToolKitの、arVecTridiagonalize関数と同等な関数です。
+	 * 詳細は不明です。
 	 * @param d
 	 * @param e
 	 * @param i_e_start
-	 *            演算開始列(よくわからないけどarVecTridiagonalizeの呼び出し元でなんかしてる)
+	 * 演算開始列(よくわからないけどarVecTridiagonalizeの呼び出し元でなんかしてる)
 	 * @return
 	 * @throws NyARException
 	 */

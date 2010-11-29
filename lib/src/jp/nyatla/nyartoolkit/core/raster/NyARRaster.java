@@ -39,7 +39,6 @@ import jp.nyatla.nyartoolkit.core.types.*;
 public class NyARRaster extends NyARRaster_BasicClass
 {
 	protected Object _buf;
-	protected int _buf_type;
 	/**
 	 * バッファオブジェクトがアタッチされていればtrue
 	 */
@@ -74,9 +73,11 @@ public class NyARRaster extends NyARRaster_BasicClass
 	{
 		switch(i_buf_type)
 		{
+			case NyARBufferType.INT1D:
 			case NyARBufferType.INT1D_X8R8G8B8_32:
 				this._buf=i_is_alloc?new int[i_size.w*i_size.h]:null;
 				break;
+				
 			default:
 				return false;
 		}

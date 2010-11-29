@@ -39,10 +39,12 @@ import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
-import jp.nyatla.nyartoolkit.core.types.NyARLinear;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.*;
+
+
+
 
 /**
  * 画像からARCodeに最も一致するマーカーを1個検出し、その変換行列を計算するクラスです。
@@ -53,86 +55,66 @@ import jp.nyatla.nyartoolkit.core.squaredetect.*;
  */
 public class NyARCustomSingleDetectMarker
 {
+	/** 一致率*/
+	private double _confidence;
+	private NyARSquare _square=new NyARSquare();
+	
+	//参照インスタンス
+	private INyARRgbRaster _ref_raster;
+	//所有インスタンス
+	private INyARColorPatt _inst_patt;
+	private NyARMatchPattDeviationColorData _deviation_data;
+	private NyARMatchPatt_Color_WITHOUT_PCA _match_patt;
+	private final NyARMatchPattResult __detectMarkerLite_mr=new NyARMatchPattResult();
+	private NyARCoord2Linear _coordline;
+	
+
+	private NyARIntPoint2d[] __ref_vertex=new NyARIntPoint2d[4];
+
 	/**
-	 * detectMarkerのコールバック関数
+	 * 矩形が見付かるたびに呼び出されます。
+	 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
 	 */
-	private class DetectSquareCB implements NyARSquareContourDetector.IDetectMarkerCallback
+	protected void updateSquareInfo(NyARIntCoordinates i_coord,int[] i_vertex_index) throws NyARException
 	{
-		//公開プロパティ
-		public double confidence;
-		public NyARSquare square=new NyARSquare();
-		
-		//参照インスタンス
-		private INyARRgbRaster _ref_raster;
-		//所有インスタンス
-		private INyARColorPatt _inst_patt;
-		private NyARMatchPattDeviationColorData _deviation_data;
-		private NyARMatchPatt_Color_WITHOUT_PCA _match_patt;
-		private final NyARMatchPattResult __detectMarkerLite_mr=new NyARMatchPattResult();
-		private NyARCoord2Linear _coordline;
-		
-		public DetectSquareCB(INyARColorPatt i_inst_patt,NyARCode i_ref_code,NyARParam i_param)
-		{
-			this._inst_patt=i_inst_patt;
-			this._deviation_data=new NyARMatchPattDeviationColorData(i_ref_code.getWidth(),i_ref_code.getHeight());
-			this._coordline=new NyARCoord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
-			this._match_patt=new NyARMatchPatt_Color_WITHOUT_PCA(i_ref_code);
+		NyARMatchPattResult mr=this.__detectMarkerLite_mr;
+		//輪郭座標から頂点リストに変換
+		NyARIntPoint2d[] vertex=this.__ref_vertex;	//C言語ならポインタ扱いで実装
+		vertex[0]=i_coord.items[i_vertex_index[0]];
+		vertex[1]=i_coord.items[i_vertex_index[1]];
+		vertex[2]=i_coord.items[i_vertex_index[2]];
+		vertex[3]=i_coord.items[i_vertex_index[3]];
+	
+		//画像を取得
+		if (!this._inst_patt.pickFromRaster(this._ref_raster,vertex)){
 			return;
 		}
-		private NyARIntPoint2d[] __tmp_vertex=NyARIntPoint2d.createArray(4);
-		/**
-		 * 矩形が見付かるたびに呼び出されます。
-		 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
-		 */
-		public void onSquareDetect(NyARSquareContourDetector i_sender,int[] i_coordx,int[] i_coordy,int i_coor_num,int[] i_vertex_index) throws NyARException
-		{
-			NyARMatchPattResult mr=this.__detectMarkerLite_mr;
-			//輪郭座標から頂点リストに変換
-			NyARIntPoint2d[] vertex=this.__tmp_vertex;
-			vertex[0].x=i_coordx[i_vertex_index[0]];
-			vertex[0].y=i_coordy[i_vertex_index[0]];
-			vertex[1].x=i_coordx[i_vertex_index[1]];
-			vertex[1].y=i_coordy[i_vertex_index[1]];
-			vertex[2].x=i_coordx[i_vertex_index[2]];
-			vertex[2].y=i_coordy[i_vertex_index[2]];
-			vertex[3].x=i_coordx[i_vertex_index[3]];
-			vertex[3].y=i_coordy[i_vertex_index[3]];
-		
-			//画像を取得
-			if (!this._inst_patt.pickFromRaster(this._ref_raster,vertex)){
-				return;
-			}
-			//取得パターンをカラー差分データに変換して評価する。
-			this._deviation_data.setRaster(this._inst_patt);
-			if(!this._match_patt.evaluate(this._deviation_data,mr)){
-				return;
-			}
-			//現在の一致率より低ければ終了
-			if (this.confidence > mr.confidence){
-				return;
-			}
-			//一致率の高い矩形があれば、方位を考慮して頂点情報を作成
-			NyARSquare sq=this.square;
-			this.confidence = mr.confidence;
-			//directionを考慮して、squareを更新する。
-			for(int i=0;i<4;i++){
-				int idx=(i+4 - mr.direction) % 4;
-				this._coordline.coord2Line(i_vertex_index[idx],i_vertex_index[(idx+1)%4],i_coordx,i_coordy,i_coor_num,sq.line[i]);
-			}
-			for (int i = 0; i < 4; i++) {
-				//直線同士の交点計算
-				if(!NyARLinear.crossPos(sq.line[i],sq.line[(i + 3) % 4],sq.sqvertex[i])){
-					throw new NyARException();//ここのエラー復帰するならダブルバッファにすればOK
-				}
-			}
+		//取得パターンをカラー差分データに変換して評価する。
+		this._deviation_data.setRaster(this._inst_patt);
+		if(!this._match_patt.evaluate(this._deviation_data,mr)){
+			return;
 		}
-		public final void init(INyARRgbRaster i_raster)
-		{
-			this.confidence=0;
-			this._ref_raster=i_raster;
-			
+		//現在の一致率より低ければ終了
+		if (this._confidence > mr.confidence){
+			return;
+		}
+		//一致率の高い矩形があれば、方位を考慮して頂点情報を作成
+		NyARSquare sq=this._square;
+		this._confidence = mr.confidence;
+		//directionを考慮して、squareを更新する。
+		for(int i=0;i<4;i++){
+			int idx=(i+4 - mr.direction) % 4;
+			this._coordline.coord2Line(i_vertex_index[idx],i_vertex_index[(idx+1)%4],i_coord,sq.line[i]);
+		}
+		//ちょっと、ひっくり返してみようか。
+		for (int i = 0; i < 4; i++) {
+			//直線同士の交点計算
+			if(!sq.line[i].crossPos(sq.line[(i + 3) % 4],sq.sqvertex[i])){
+				throw new NyARException();//ここのエラー復帰するならダブルバッファにすればOK
+			}
 		}
 	}
+
 	
 	private boolean _is_continue = false;
 	private NyARSquareContourDetector _square_detect;
@@ -140,7 +122,7 @@ public class NyARCustomSingleDetectMarker
 	//画処理用
 	private NyARBinRaster _bin_raster;
 	protected INyARRasterFilter_Rgb2Bin _tobin_filter;
-	private DetectSquareCB _detect_cb;
+
 	private NyARRectOffset _offset; 
 
 
@@ -164,8 +146,11 @@ public class NyARCustomSingleDetectMarker
 		this._tobin_filter=i_filter;
 		//２値画像バッファを作る
 		this._bin_raster=new NyARBinRaster(scr_size.w,scr_size.h);
-		//_detect_cb
-		this._detect_cb=new DetectSquareCB(i_patt_inst,i_ref_code,i_ref_param);
+		//パターンの一致検索処理用
+		this._inst_patt=i_patt_inst;
+		this._deviation_data=new NyARMatchPattDeviationColorData(i_ref_code.getWidth(),i_ref_code.getHeight());
+		this._coordline=new NyARCoord2Linear(i_ref_param.getScreenSize(),i_ref_param.getDistortionFactor());
+		this._match_patt=new NyARMatchPatt_Color_WITHOUT_PCA(i_ref_code);
 		//オフセットを作成
 		this._offset=new NyARRectOffset();
 		this._offset.setSquare(i_marker_width);
@@ -196,10 +181,12 @@ public class NyARCustomSingleDetectMarker
 		this._tobin_filter.doFilter(i_raster,this._bin_raster);
 
 		//コールバックハンドラの準備
-		this._detect_cb.init(i_raster);
+		this._confidence=0;
+		this._ref_raster=i_raster;
+
 		//矩形を探す(戻り値はコールバック関数で受け取る。)
-		this._square_detect.detectMarkerCB(this._bin_raster,_detect_cb);
-		if(this._detect_cb.confidence==0){
+		this._square_detect.detectMarker(this._bin_raster);
+		if(this._confidence==0){
 			return false;
 		}
 		return true;
@@ -216,9 +203,9 @@ public class NyARCustomSingleDetectMarker
 	{
 		// 一番一致したマーカーの位置とかその辺を計算
 		if (this._is_continue) {
-			this._transmat.transMatContinue(this._detect_cb.square,this._offset, o_result);
+			this._transmat.transMatContinue(this._square,this._offset,o_result, o_result);
 		} else {
-			this._transmat.transMat(this._detect_cb.square,this._offset, o_result);
+			this._transmat.transMat(this._square,this._offset, o_result);
 		}
 		return;
 	}
@@ -228,7 +215,7 @@ public class NyARCustomSingleDetectMarker
 	 */
 	public NyARSquare refSquare()
 	{
-		return this._detect_cb.square;
+		return this._square;
 	}
 	/**
 	 * 検出したマーカーの一致度を返します。
@@ -238,7 +225,7 @@ public class NyARCustomSingleDetectMarker
 	 */
 	public double getConfidence()
 	{
-		return this._detect_cb.confidence;
+		return this._confidence;
 	}
 	/**
 	 * getTransmationMatrixの計算モードを設定します。 初期値はTRUEです。
@@ -257,7 +244,7 @@ public class NyARCustomSingleDetectMarker
 	public Object[] _getProbe()
 	{
 		Object[] r=new Object[1];
-		r[0]=this._detect_cb._inst_patt;
+		r[0]=this._inst_patt;
 		return r;
 	}	
 	

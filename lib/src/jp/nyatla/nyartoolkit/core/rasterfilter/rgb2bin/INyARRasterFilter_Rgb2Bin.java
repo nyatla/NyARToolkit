@@ -35,6 +35,9 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 
+/**
+ * RGB画像からBin画像に変換するフィルタを定義します。
+ */
 public interface INyARRasterFilter_Rgb2Bin
 {
 	public void doFilter(INyARRgbRaster i_input, NyARBinRaster i_output) throws NyARException;

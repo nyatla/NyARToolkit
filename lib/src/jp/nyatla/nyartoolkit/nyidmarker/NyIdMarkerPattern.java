@@ -31,9 +31,24 @@ package jp.nyatla.nyartoolkit.nyidmarker;
  */
 public class NyIdMarkerPattern
 {
+	/**
+	 * マーカのModel番号
+	 */
 	public int model;
+	/**
+	 * コントロールビットのDoamin番号
+	 */
 	public int ctrl_domain;
+	/**
+	 * コントロールビットのマスク番号
+	 */
 	public int ctrl_mask;
+	/**
+	 * コントロールビットのチェック値
+	 */
 	public int check;
+	/**
+	 * データパケットの値
+	 */
 	public final int[] data=new int[32];
 }

@@ -45,7 +45,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
 public class NyARRasterImageIO
 {
 	/**
-	 * i_inの内容を、このイメージにコピーします。
+	 * i_inの内容を、o_outへコピーします。2つのイメージは同じサイズでなければなりません。
 	 * @param i_in
 	 * @throws NyARException
 	 */
@@ -66,7 +66,7 @@ public class NyARRasterImageIO
 		return;
 	}
 	/**
-	 * GrayScale用
+	 * i_inの内容を、o_outへコピーします。2つのイメージは同じサイズでなければなりません。
 	 * @param i_in
 	 * @throws NyARException
 	 */
@@ -86,9 +86,9 @@ public class NyARRasterImageIO
 			}
 		}
 		return;
-	}	
+	}
 	/**
-	 * BIN_8用
+	 * i_inの内容を、o_outへコピーします。2つのイメージは同じサイズでなければなりません。
 	 * @param i_in
 	 * @throws NyARException
 	 */

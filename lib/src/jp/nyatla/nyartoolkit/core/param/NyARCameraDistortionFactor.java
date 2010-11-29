@@ -30,25 +30,34 @@
  */
 package jp.nyatla.nyartoolkit.core.param;
 
-import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
+import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
- * カメラの歪み成分を格納するクラスと、補正関数群
+ * ARToolKitの樽型歪みパラメータを使う、歪み設定/解除クラスです。
+ * パラメータと理論については、以下の資料、11pageを参照。
  * http://www.hitl.washington.edu/artoolkit/Papers/ART02-Tutorial.pdf
- * 11ページを読むといいよ。
+ * 
+ * このクラスでは、歪み矯正前の座標を観察座標系、歪み矯正後の座標を理想座標系とします。
  * 
  * x=x(xi-x0),y=s(yi-y0)
  * d^2=x^2+y^2
  * p=(1-fd^2)
  * xd=px+x0,yd=py+y0
  */
-public class NyARCameraDistortionFactor implements INyARCameraDistortionFactor
+public class NyARCameraDistortionFactor
 {
+	
 	private static final int PD_LOOP = 3;
 	private double _f0;//x0
 	private double _f1;//y0
 	private double _f2;//100000000.0*ｆ
 	private double _f3;//s
+	
+	
+	/**
+	 * 参照元から値をコピーします。
+	 * @param i_ref
+	 */
 	public void copyFrom(NyARCameraDistortionFactor i_ref)
 	{
 		this._f0=i_ref._f0;
@@ -57,8 +66,9 @@ public class NyARCameraDistortionFactor implements INyARCameraDistortionFactor
 		this._f3=i_ref._f3;
 		return;
 	}
+
 	/**
-	 * 配列の値をファクタ値としてセットする。
+	 * 配列の値をファクタ値としてセットします。
 	 * @param i_factor
 	 * 4要素以上の配列
 	 */
@@ -70,6 +80,11 @@ public class NyARCameraDistortionFactor implements INyARCameraDistortionFactor
 		this._f3=i_factor[3];
 		return;
 	}
+	
+	/**
+	 * ファクタ値を配列に返します。
+	 * @param o_factor
+	 */
 	public void getValue(double[] o_factor)
 	{
 		o_factor[0]=this._f0;
@@ -77,7 +92,12 @@ public class NyARCameraDistortionFactor implements INyARCameraDistortionFactor
 		o_factor[2]=this._f2;
 		o_factor[3]=this._f3;
 		return;
-	}	
+	}
+	
+	/**
+	 * 歪みパラメータのスケールを変更します。
+	 * @param i_scale
+	 */
 	public void changeScale(double i_scale)
 	{
 		this._f0=this._f0*i_scale;// newparam->dist_factor[0] =source->dist_factor[0] *scale;
@@ -86,13 +106,16 @@ public class NyARCameraDistortionFactor implements INyARCameraDistortionFactor
 		//this.f3=this.f3;// newparam->dist_factor[3] =source->dist_factor[3];
 		return;
 	}
+	/*********
+	 * override
+	 *********/
+	
 	/**
-	 * int arParamIdeal2Observ( const double dist_factor[4], const double ix,const double iy,double *ox, double *oy ) 関数の代替関数
-	 * 
+	 * 理想座標から、観察座標系へ変換します。
 	 * @param i_in
 	 * @param o_out
 	 */
-	public void ideal2Observ(final NyARDoublePoint2d i_in, NyARDoublePoint2d o_out)
+	public final void ideal2Observ(NyARDoublePoint2d i_in, NyARDoublePoint2d o_out)
 	{
 		final double x = (i_in.x - this._f0) * this._f3;
 		final double y = (i_in.y - this._f1) * this._f3;
@@ -106,13 +129,48 @@ public class NyARCameraDistortionFactor implements INyARCameraDistortionFactor
 		}
 		return;
 	}
+	
 
 	/**
-	 * ideal2Observをまとめて実行します。
+	 * 理想座標から、観察座標系へ変換します。
 	 * @param i_in
 	 * @param o_out
 	 */
-	public void ideal2ObservBatch(final NyARDoublePoint2d[] i_in, NyARDoublePoint2d[] o_out, int i_size)
+	public final void ideal2Observ(NyARDoublePoint2d i_in, NyARIntPoint2d o_out)
+	{
+		this.ideal2Observ(i_in.x,i_in.y,o_out);
+		return;
+	}
+	
+	/**
+	 * 理想座標から、観察座標系へ変換します。
+	 * @param i_x
+	 * @param i_y
+	 * @param o_out
+	 */
+	public final void ideal2Observ(double i_x,double i_y, NyARIntPoint2d o_out)
+	{
+		final double x = (i_x - this._f0) * this._f3;
+		final double y = (i_y - this._f1) * this._f3;
+		if (x == 0.0 && y == 0.0) {
+			o_out.x = (int)(this._f0);
+			o_out.y = (int)(this._f1);
+		} else {
+			final double d = 1.0 - this._f2 / 100000000.0 * (x * x + y * y);
+			o_out.x = (int)(x * d + this._f0);
+			o_out.y = (int)(y * d + this._f1);
+		}
+		return;
+	}
+	
+
+	/**
+	 * 理想座標から、観察座標系へ変換します。
+	 * @param i_in
+	 * @param o_out
+	 * @param i_size
+	 */
+	public final void ideal2ObservBatch(NyARDoublePoint2d[] i_in, NyARDoublePoint2d[] o_out, int i_size)
 	{
 		double x, y;
 		final double d0 = this._f0;
@@ -135,15 +193,41 @@ public class NyARCameraDistortionFactor implements INyARCameraDistortionFactor
 	}
 
 	/**
-	 * int arParamObserv2Ideal( const double dist_factor[4], const double ox,const double oy,double *ix, double *iy );
-	 * 
-	 * @param ix
-	 * @param iy
-	 * @param ix
-	 * @param iy
-	 * @return
+	 * 複数の座標点について、観察座標から、理想座標系へ変換します。
+	 * @param i_in
+	 * @param o_out
+	 * @param i_size
 	 */
-	public void observ2Ideal(double ix, double iy, NyARDoublePoint2d o_point)
+	public final void ideal2ObservBatch(NyARDoublePoint2d[] i_in, NyARIntPoint2d[] o_out, int i_size)
+	{
+		double x, y;
+		final double d0 = this._f0;
+		final double d1 = this._f1;
+		final double d3 = this._f3;
+		final double d2_w = this._f2 / 100000000.0;
+		for (int i = 0; i < i_size; i++) {
+			x = (i_in[i].x - d0) * d3;
+			y = (i_in[i].y - d1) * d3;
+			if (x == 0.0 && y == 0.0) {
+				o_out[i].x = (int)d0;
+				o_out[i].y = (int)d1;
+			} else {
+				final double d = 1.0 - d2_w * (x * x + y * y);
+				o_out[i].x = (int)(x * d + d0);
+				o_out[i].y = (int)(y * d + d1);
+			}
+		}
+		return;
+	}
+	
+	/**
+	 * ARToolKitの観察座標から、理想座標系への変換です。
+	 * 樽型歪みを解除します。
+	 * @param ix
+	 * @param iy
+	 * @param o_point
+	 */
+	public final void observ2Ideal(double ix, double iy, NyARDoublePoint2d o_point)
 	{
 		double z02, z0, p, q, z, px, py, opttmp_1;
 		final double d0 = this._f0;
@@ -179,52 +263,43 @@ public class NyARCameraDistortionFactor implements INyARCameraDistortionFactor
 	}
 
 	/**
-	 * 指定範囲のobserv2Idealをまとめて実行して、結果をo_idealに格納します。
-	 * @param i_x_coord
-	 * @param i_y_coord
-	 * @param i_start
-	 *            coord開始点
-	 * @param i_num
-	 *            計算数
-	 * @param o_ideal
-	 *            出力バッファ[i_num][2]であること。
+	 * {@link #observ2Ideal(double, double, NyARDoublePoint2d)}の出力型違い。o_veclinearのx,yフィールドに値を出力する。
+	 * @param ix
+	 * @param iy
+	 * @param o_point
 	 */
-	public void observ2IdealBatch(int[] i_x_coord, int[] i_y_coord,int i_start, int i_num, double[] o_x_coord,double[] o_y_coord)
+	public void observ2Ideal(double ix, double iy, NyARVecLinear2d o_veclinear)
 	{
-		double z02, z0, q, z, px, py, opttmp_1;
+		double z02, z0, p, q, z, px, py, opttmp_1;
 		final double d0 = this._f0;
 		final double d1 = this._f1;
-		final double d3 = this._f3;
-		final double p = this._f2 / 100000000.0;
-		for (int j = 0; j < i_num; j++) {
 
-			px = i_x_coord[i_start + j] - d0;
-			py = i_y_coord[i_start + j] - d1;
+		px = ix - d0;
+		py = iy - d1;
+		p = this._f2 / 100000000.0;
+		z02 = px * px + py * py;
+		q = z0 = Math.sqrt(z02);// Optimize//q = z0 = Math.sqrt(px*px+ py*py);
 
-			z02 = px * px + py * py;
-			q = z0 = Math.sqrt(z02);// Optimize//q = z0 = Math.sqrt(px*px+py*py);
-
-			for (int i = 1;; i++) {
-				if (z0 != 0.0) {
-					// Optimize opttmp_1
-					opttmp_1 = p * z02;
-					z = z0 - ((1.0 - opttmp_1) * z0 - q)/ (1.0 - 3.0 * opttmp_1);
-					px = px * z / z0;
-					py = py * z / z0;
-				} else {
-					px = 0.0;
-					py = 0.0;
-					break;
-				}
-				if (i == PD_LOOP) {
-					break;
-				}
-				z02 = px * px + py * py;
-				z0 = Math.sqrt(z02);// Optimize//z0 = Math.sqrt(px*px+ py*py);
+		for (int i = 1;; i++) {
+			if (z0 != 0.0) {
+				// Optimize opttmp_1
+				opttmp_1 = p * z02;
+				z = z0 - ((1.0 - opttmp_1) * z0 - q) / (1.0 - 3.0 * opttmp_1);
+				px = px * z / z0;
+				py = py * z / z0;
+			} else {
+				px = 0.0;
+				py = 0.0;
+				break;
 			}
-			o_x_coord[j] = px / d3 + d0;
-			o_y_coord[j] = py / d3 + d1;
+			if (i == PD_LOOP) {
+				break;
+			}
+			z02 = px * px + py * py;
+			z0 = Math.sqrt(z02);// Optimize//z0 = Math.sqrt(px*px+ py*py);
 		}
+		o_veclinear.x = px / this._f3 + d0;
+		o_veclinear.y = py / this._f3 + d1;
 		return;
-	}	
+	}
 }

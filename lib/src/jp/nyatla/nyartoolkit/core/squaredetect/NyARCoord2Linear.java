@@ -35,7 +35,7 @@ import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.param.NyARObserv2IdealMap;
 import jp.nyatla.nyartoolkit.core.pca2d.INyARPca2d;
 import jp.nyatla.nyartoolkit.core.pca2d.NyARPca2d_MatrixPCA_O2;
-import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
+import jp.nyatla.nyartoolkit.core.types.NyARIntCoordinates;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
@@ -57,13 +57,19 @@ public class NyARCoord2Linear
 	private final double[] __getSquareLine_mean=new double[2];
 	private final double[] __getSquareLine_ev=new double[2];
 	private final NyARObserv2IdealMap _dist_factor;
-	public NyARCoord2Linear(NyARIntSize i_size,NyARCameraDistortionFactor i_distfactor_ref)
+	/**
+	 * @param i_size
+	 * @param i_distfactor_ref
+	 * カメラ歪みを補正する場合のパラメータを指定します。
+	 * nullの場合、補正マップを使用しません。
+	 */
+	public NyARCoord2Linear(NyARIntSize i_size,NyARCameraDistortionFactor i_distfactor)
 	{
-		//歪み計算テーブルを作ると、8*width/height*2の領域を消費します。
-		//領域を取りたくない場合は、i_dist_factor_refの値をそのまま使ってください。
-		this._dist_factor = new NyARObserv2IdealMap(i_distfactor_ref,i_size);
-
-
+		if(i_distfactor!=null){
+			this._dist_factor = new NyARObserv2IdealMap(i_distfactor,i_size);
+		}else{
+			this._dist_factor=null;
+		}
 		// 輪郭バッファ
 		this._pca=new NyARPca2d_MatrixPCA_O2();
 		this._xpos=new double[i_size.w+i_size.h];//最大辺長はthis._width+this._height
@@ -76,18 +82,17 @@ public class NyARCoord2Linear
 	 * 輪郭点集合からay+bx+c=0の直線式を計算します。
 	 * @param i_st
 	 * @param i_ed
-	 * @param i_xcoord
-	 * @param i_ycoord
-	 * @param i_cood_num
+	 * @param i_coord
 	 * @param o_line
 	 * @return
 	 * @throws NyARException
 	 */
-	public boolean coord2Line(int i_st,int i_ed,int[] i_xcoord, int[] i_ycoord,int i_cood_num, NyARLinear o_line) throws NyARException
+	public boolean coord2Line(int i_st,int i_ed,NyARIntCoordinates i_coord, NyARLinear o_line) throws NyARException
 	{
 		//頂点を取得
 		int n,st,ed;
 		double w1;
+		int cood_num=i_coord.length;
 	
 		//探索区間の決定
 		if(i_ed>=i_st){
@@ -98,21 +103,25 @@ public class NyARCoord2Linear
 			ed = (int) (i_ed - w1);
 		}else{
 			//頂点[i]から頂点[i+1]までの輪郭が、2区間に分かれているとき
-			w1 = (double)((i_ed+i_cood_num-i_st+1)%i_cood_num) * 0.05 + 0.5;
+			w1 = (double)((i_ed+cood_num-i_st+1)%cood_num) * 0.05 + 0.5;
 			//探索区間の決定
-			st = ((int) (i_st+w1))%i_cood_num;
-			ed = ((int) (i_ed+i_cood_num-w1))%i_cood_num;
+			st = ((int) (i_st+w1))%cood_num;
+			ed = ((int) (i_ed+cood_num-w1))%cood_num;
 		}
 		//探索区間数を確認
 		if(st<=ed){
 			//探索区間は1区間
 			n = ed - st + 1;
-			this._dist_factor.observ2IdealBatch(i_xcoord, i_ycoord, st, n,this._xpos,this._ypos,0);
+			if(this._dist_factor!=null){
+				this._dist_factor.observ2IdealBatch(i_coord.items, st, n,this._xpos,this._ypos,0);
+			}
 		}else{
 			//探索区間は2区間
-			n=ed+1+i_cood_num-st;
-			this._dist_factor.observ2IdealBatch(i_xcoord, i_ycoord, st,i_cood_num-st,this._xpos,this._ypos,0);
-			this._dist_factor.observ2IdealBatch(i_xcoord, i_ycoord, 0,ed+1,this._xpos,this._ypos,i_cood_num-st);
+			n=ed+1+cood_num-st;
+			if(this._dist_factor!=null){
+				this._dist_factor.observ2IdealBatch(i_coord.items, st,cood_num-st,this._xpos,this._ypos,0);
+				this._dist_factor.observ2IdealBatch(i_coord.items, 0,ed+1,this._xpos,this._ypos,cood_num-st);
+			}
 		}
 		//要素数の確認
 		if (n < 2) {
@@ -125,9 +134,9 @@ public class NyARCoord2Linear
 
 		
 		this._pca.pca(this._xpos,this._ypos,n,evec, this.__getSquareLine_ev,mean);
-		o_line.dy = evec.m01;// line[i][0] = evec->m[1];
-		o_line.dx = -evec.m00;// line[i][1] = -evec->m[0];
-		o_line.c = -(o_line.dy * mean[0] + o_line.dx * mean[1]);// line[i][2] = -(line[i][0]*mean->v[0] + line[i][1]*mean->v[1]);
+		o_line.a = evec.m01;// line[i][0] = evec->m[1];
+		o_line.b = -evec.m00;// line[i][1] = -evec->m[0];
+		o_line.c = -(o_line.a * mean[0] + o_line.b * mean[1]);// line[i][2] = -(line[i][0]*mean->v[0] + line[i][1]*mean->v[1]);
 
 		return true;
 	}

@@ -49,7 +49,7 @@ public class NyARDoublePoint3d
 		}
 		return ret;
 	}
-	public void setValue(final NyARDoublePoint3d i_in)
+	public final void setValue(final NyARDoublePoint3d i_in)
 	{
 		this.x=i_in.x;
 		this.y=i_in.y;
@@ -57,15 +57,16 @@ public class NyARDoublePoint3d
 		return;
 	}
 	/**
-	 * i_pointとのベクトルから距離を計算します。
+	 * p2-p1間の距離の二乗値を計算します。
+	 * @param i_p1
 	 * @return
-	 */
-	public double dist(NyARDoublePoint3d i_point)
+	 */	
+	public final double sqDist(NyARDoublePoint3d i_p1)
 	{
 		double x,y,z;
-		x=this.x-i_point.x;
-		y=this.y-i_point.y;
-		z=this.z-i_point.z;
-		return Math.sqrt(x*x+y*y+z*z);
-	}
+		x=this.x-i_p1.x;
+		y=this.y-i_p1.y;
+		z=this.z-i_p1.z;
+		return x*x+y*y+z*z;
+	}	
 }

@@ -31,7 +31,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
  * Roberts法で勾配を計算します。
- * 出力画像のピクセルは、X,Y軸方向に-1され、下端、右端の画素は無効な値が入ります。
+ * 右端と左端の1ピクセルは、常に0が入ります。
  * X=|-1, 0|  Y=|0,-1|
  *   | 0, 1|    |1, 0|
  * V=sqrt(X^2+Y+2)/2
@@ -67,22 +67,52 @@ public class NyARRasterFilter_Roberts implements INyARRasterFilter
 			int[] in_ptr =(int[])i_input.getBuffer();
 			int[] out_ptr=(int[])i_output.getBuffer();
 			int width=i_size.w;
-			int height=i_size.h;
-			for(int y=0;y<height-1;y++){
-				int idx=y*width;
-				int p00=in_ptr[idx];
-				int p10=in_ptr[width+idx];
+			int idx=0;
+			int idx2=width;
+			int fx,fy;
+			int mod_p=(width-2)-(width-2)%8;
+			for(int y=i_size.h-2;y>=0;y--){
+				int p00=in_ptr[idx++];
+				int p10=in_ptr[idx2++];
 				int p01,p11;
-				for(int x=0;x<width-1;x++){
-					p01=in_ptr[idx+1];
-					p11=in_ptr[idx+width+1];
-					int fx=p11-p00;
-					int fy=p10-p01;
-					out_ptr[idx]=(int)Math.sqrt(fx*fx+fy*fy)>>1;
+				int x=width-2;
+				for(;x>=mod_p;x--){
+					p01=in_ptr[idx++];p11=in_ptr[idx2++];
+					fx=p11-p00;fy=p10-p01;
+					out_ptr[idx-2]=((fx<0?-fx:fx)+(fy<0?-fy:fy))>>1;
 					p00=p01;
 					p10=p11;
-					idx++;
 				}
+				for(;x>=0;x-=4){
+					p01=in_ptr[idx++];p11=in_ptr[idx2++];
+					fx=p11-p00;
+					fy=p10-p01;
+					out_ptr[idx-2]=((fx<0?-fx:fx)+(fy<0?-fy:fy))>>1;
+					p00=p01;p10=p11;
+
+					p01=in_ptr[idx++];p11=in_ptr[idx2++];
+					fx=p11-p00;
+					fy=p10-p01;
+					out_ptr[idx-2]=((fx<0?-fx:fx)+(fy<0?-fy:fy))>>1;
+					p00=p01;p10=p11;
+					p01=in_ptr[idx++];p11=in_ptr[idx2++];
+					
+					fx=p11-p00;
+					fy=p10-p01;
+					out_ptr[idx-2]=((fx<0?-fx:fx)+(fy<0?-fy:fy))>>1;
+					p00=p01;p10=p11;
+
+					p01=in_ptr[idx++];p11=in_ptr[idx2++];
+					fx=p11-p00;
+					fy=p10-p01;
+					out_ptr[idx-2]=((fx<0?-fx:fx)+(fy<0?-fy:fy))>>1;
+					p00=p01;p10=p11;
+
+				}
+				out_ptr[idx-1]=0;
+			}
+			for(int x=width-1;x>=0;x--){
+				out_ptr[idx++]=0;
 			}
 			return;
 		}

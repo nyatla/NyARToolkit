@@ -75,9 +75,10 @@ public class NyARRotMatrix extends NyARDoubleMatrix33
 		return;
 	}	
 	/**
-	 * 
 	 * @param i_linear
 	 * @param i_sqvertex
+	 * @note
+	 * 	Cで実装するときは、配列のポインタ版関数と2重化すること
 	 * @throws NyARException
 	 */
 	public void initRotBySquare(final NyARLinear[] i_linear,final NyARDoublePoint2d[] i_sqvertex) throws NyARException
@@ -115,6 +116,10 @@ public class NyARRotMatrix extends NyARDoubleMatrix33
 		this.m22 = w22/w;
 		return;
 	}
+	public final void initRotByAngle(NyARDoublePoint3d i_angle)
+	{
+		this.setZXYAngle(i_angle);
+	}	
 	/**
 	 * i_in_pointを変換行列で座標変換する。
 	 * @param i_in_point

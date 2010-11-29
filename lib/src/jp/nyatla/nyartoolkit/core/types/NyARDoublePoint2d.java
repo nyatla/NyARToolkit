@@ -30,7 +30,12 @@
  */
 package jp.nyatla.nyartoolkit.core.types;
 
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 
+/**
+ * データ型です。
+ * 2次元の浮動小数点方の点を格納します。
+ */
 public class NyARDoublePoint2d
 {
 	public double x;
@@ -61,48 +66,153 @@ public class NyARDoublePoint2d
 		}
 		return ret;
 	}
+	/**
+	 * p1->p2と、p2->p3の直線の外積を計算します。
+	 * @param p1
+	 * @param p2
+	 * @param p3
+	 * @return
+	 */
+	public final static double crossProduct3Point(NyARDoublePoint2d p1,NyARDoublePoint2d p2,NyARDoublePoint2d p3)
+	{
+		return (p2.x-p1.x)*(p3.y-p2.y)-(p2.y-p1.y)*(p3.x-p2.x);
+	}
+	/**
+	 * p1->p2と、p2->p3の直線の外積を計算します。
+	 * @param p1
+	 * @param p2
+	 * @param p3
+	 * @return
+	 */
+	public final static double crossProduct3Point(NyARDoublePoint2d p1,NyARDoublePoint2d p2,double p3_x,double p3_y)
+	{
+		return (p2.x-p1.x)*(p3_y-p2.y)-(p2.y-p1.y)*(p3_x-p2.x);
+	}
+
+	
+	
+	/**
+	 * 頂点配列の中央値を求めます。
+	 * @param i_points
+	 * @param i_number_of_data
+	 * 配列中の有効な頂点数です。
+	 * @param o_out
+	 */
+	public final static void makeCenter(NyARDoublePoint2d[] i_points,int i_number_of_data,NyARDoublePoint2d o_out)
+	{
+		double x,y;
+		x=y=0;
+		for(int i=i_number_of_data-1;i>=0;i--)
+		{
+			x+=i_points[i].x;
+			y+=i_points[i].y;
+		}
+		o_out.x=x/i_number_of_data;
+		o_out.x=y/i_number_of_data;
+	}
+	/**
+	 * {@link #makeCenter}の出力型違いの関数です。
+	 * @param i_points
+	 * @param i_number_of_data
+	 * @param o_out
+	 */
+	public final static void makeCenter(NyARDoublePoint2d[] i_points,int i_number_of_data,NyARIntPoint2d o_out)
+	{
+		double lx,ly;
+		lx=ly=0;
+		for(int i=i_number_of_data-1;i>=0;i--)
+		{
+			lx+=i_points[i].x;
+			ly+=i_points[i].y;
+		}
+		o_out.x=(int)(lx/i_number_of_data);
+		o_out.y=(int)(ly/i_number_of_data);
+	}
+	
+	/**
+	 * コンストラクタです。
+	 */
 	public NyARDoublePoint2d()
 	{
 		this.x=0;
 		this.y=0;
 		return;
-	}	
+	}
+	/**
+	 * i_srcの値をthisへセットします。
+	 * @param i_src
+	 */
 	public NyARDoublePoint2d(double i_x,double i_y)
 	{
 		this.x=i_x;
 		this.y=i_y;
 		return;
 	}
+	/**
+	 * i_srcの値をthisへセットします。
+	 * @param i_src
+	 */
 	public NyARDoublePoint2d(NyARDoublePoint2d i_src)
 	{
 		this.x=i_src.x;
 		this.y=i_src.y;
 		return;
 	}
+	/**
+	 * i_srcの値をthisへセットします。
+	 * @param i_src
+	 */
 	public NyARDoublePoint2d(NyARIntPoint2d i_src)
 	{
 		this.x=(double)i_src.x;
 		this.y=(double)i_src.y;
 		return;
 	}
-	public void setValue(NyARDoublePoint2d i_src)
+	/**
+	 * p2-p1間の距離の二乗値を計算します。
+	 * @param i_p1
+	 * @param i_p2
+	 * @return
+	 */	
+	public final double sqDist(NyARDoublePoint2d i_p1)
+	{
+		double x,y;
+		x=this.x-i_p1.x;
+		y=this.y-i_p1.y;
+		return x*x+y*y;
+	}
+	public final double sqDist(NyARIntPoint2d i_p1)
+	{
+		double x,y;
+		x=this.x-i_p1.x;
+		y=this.y-i_p1.y;
+		return x*x+y*y;
+	}	
+	/**
+	 * i_srcの値をthisへセットします。
+	 * @param i_src
+	 */
+	public final void setValue(NyARDoublePoint2d i_src)
 	{
 		this.x=i_src.x;
 		this.y=i_src.y;
 		return;
 	}
-	public void setValue(NyARIntPoint2d i_src)
+	/**
+	 * i_srcの値をthisへセットします。
+	 * @param i_src
+	 */
+	public final void setValue(NyARIntPoint2d i_src)
 	{
 		this.x=(double)i_src.x;
 		this.y=(double)i_src.y;
 		return;
 	}
-	/**
-	 * 格納値をベクトルとして、距離を返します。
-	 * @return
-	 */
-	public final double dist()
+	public final void setValue(double x,double y)
 	{
-		return Math.sqrt(this.x*this.x+this.y+this.y);
+		this.x=x;
+		this.y=y;
+		return;
 	}
+	
 }

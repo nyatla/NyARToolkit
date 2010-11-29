@@ -41,9 +41,10 @@ import jp.nyatla.nyartoolkit.core.utils.*;
  * NyARColorPatt_NyIdMarkerがラスタからPerspective変換して読みだすためのクラス
  *
  */
-class PerspectivePixelReader
+final class PerspectivePixelReader
 {
-	private NyARPerspectiveParamGenerator _param_gen=new NyARPerspectiveParamGenerator_O1(1,1,100,100);
+	private static int READ_RESOLUTION=100;
+	private NyARPerspectiveParamGenerator _param_gen=new NyARPerspectiveParamGenerator_O1(1,1);
 	private double[] _cparam=new double[8];
 
 
@@ -54,9 +55,12 @@ class PerspectivePixelReader
 
 	public boolean setSourceSquare(NyARIntPoint2d[] i_vertex)throws NyARException
 	{
-		return this._param_gen.getParam(i_vertex, this._cparam);
+		return this._param_gen.getParam(READ_RESOLUTION,READ_RESOLUTION,i_vertex, this._cparam);
 	}
-
+	public boolean setSourceSquare(NyARDoublePoint2d[] i_vertex)throws NyARException
+	{
+		return this._param_gen.getParam(READ_RESOLUTION,READ_RESOLUTION,i_vertex, this._cparam);
+	}
 	/**
 	 * 矩形からピクセルを切り出します
 	 * @param i_lt_x
@@ -725,6 +729,7 @@ class PerspectivePixelReader
 				ref_y[pt]=(int)((cpx3_1+cpy1_45)/d);
 				pt++;
 			}
+			//ここ、値チェックしてないけど？	→周波数出すときに周辺部でエラー出したら落ちるようにしてるから平気では？エラーはいたら教えて。
 			//1行分のピクセルを取得(場合によっては専用アクセサを書いた方がいい)
 			i_reader.getPixelSet(ref_x,ref_y,resolution*4,pixcel_temp);
 			//グレースケールにしながら、line→mapへの転写
@@ -755,7 +760,7 @@ class PerspectivePixelReader
 	}
 	public boolean setSquare(NyARIntPoint2d[] i_vertex) throws NyARException
 	{
-		if (!this._param_gen.getParam(i_vertex,this._cparam)) {
+		if (!this._param_gen.getParam(READ_RESOLUTION,READ_RESOLUTION,i_vertex,this._cparam)) {
 			return false;
 		}
 		return true;
@@ -1034,27 +1039,53 @@ public class NyIdMarkerPickup
 		return;
 	}
 	/**
-	 * i_imageから、idマーカを読みだします。
-	 * o_dataにはマーカデータ、o_paramにはまーかのパラメータを返却します。
+	 * imageの4頂点で囲まれた矩形からidマーカを読みだします。
 	 * @param image
-	 * @param i_square
+	 * @param i_vertex
 	 * @param o_data
 	 * @param o_param
 	 * @return
 	 * @throws NyARException
 	 */
-	public boolean pickFromRaster(INyARRgbRaster image, NyARIntPoint2d[] i_vertex,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
+	public final boolean pickFromRaster(INyARRgbRaster image, NyARDoublePoint2d[] i_vertex,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
 	{
-		
 		//遠近法のパラメータを計算
 		if(!this._perspective_reader.setSourceSquare(i_vertex)){
 			return false;
-		};
-		
+		}
+		return this._pickFromRaster(image,o_data,o_param);
+	}
+	/**
+	 * imageの4頂点で囲まれた矩形からidマーカを読みだします。
+	 * @param image
+	 * @param i_vertex
+	 * @param o_data
+	 * @param o_param
+	 * @return
+	 * @throws NyARException
+	 */
+	public final boolean pickFromRaster(INyARRgbRaster image, NyARIntPoint2d[] i_vertex,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
+	{
+		if(!this._perspective_reader.setSourceSquare(i_vertex)){
+			return false;
+		}
+		return this._pickFromRaster(image,o_data,o_param);
+	}
+	
+	/**
+	 * i_imageから、idマーカを読みだします。
+	 * o_dataにはマーカデータ、o_paramにはマーカのパラメータを返却します。
+	 * @param image
+	 * @param i_vertex
+	 * @param o_data
+	 * @param o_param
+	 * @return
+	 * @throws NyARException
+	 */
+	private final boolean _pickFromRaster(INyARRgbRaster image, NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
+	{
 		INyARRgbPixelReader reader=image.getRgbPixelReader();
 		NyARIntSize raster_size=image.getSize();
-		
-
 
 		final PerspectivePixelReader.TThreshold th=this.__pickFromRaster_th;
 		final MarkerPattEncoder encoder=this.__pickFromRaster_encoder;

@@ -5,11 +5,12 @@ import jp.nyatla.nyartoolkit.core.types.NyARHistogram;
 
 /**
  * kittlerThresholdの方式で閾値を求めます。
- * @param i_histogram
- * @return
  */
 public class NyARHistogramAnalyzer_KittlerThreshold implements INyARHistogramAnalyzer_Threshold
 {
+	/**
+	 * @override
+	 */
 	public int getThreshold(NyARHistogram i_histogram)
 	{
 		int i;		

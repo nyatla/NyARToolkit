@@ -32,8 +32,8 @@ package jp.nyatla.nyartoolkit.core.transmat.rotmatrix;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARMat;
-import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
-import jp.nyatla.nyartoolkit.core.types.NyARLinear;
+import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.types.matrix.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 
 public class NyARRotVector
@@ -50,26 +50,28 @@ public class NyARRotVector
 	
 	private NyARPerspectiveProjectionMatrix _projection_mat_ref;
 
-	private double[][] _inv_cpara_array_ref;
+//	private double[][] _inv_cpara_array_ref;
+	private NyARDoubleMatrix44 _inv_cpara=new NyARDoubleMatrix44();
 
 	public NyARRotVector(NyARPerspectiveProjectionMatrix i_cmat) throws NyARException
 	{
-		NyARMat mat_a = new NyARMat(3, 3);
-		double[][] a_array = mat_a.getArray();
-		
-		a_array[0][0] =i_cmat.m00;
-		a_array[0][1] =i_cmat.m01;
-		a_array[0][2] =i_cmat.m02;
-		a_array[1][0] =i_cmat.m10;
-		a_array[1][1] =i_cmat.m11;
-		a_array[1][2] =i_cmat.m12;
-		a_array[2][0] =i_cmat.m20;
-		a_array[2][1] =i_cmat.m21;
-		a_array[2][2] =i_cmat.m22;
-		
-		mat_a.matrixSelfInv();
+//		NyARMat mat_a = new NyARMat(3, 3);
+//		double[][] a_array = mat_a.getArray();
+//		
+//		a_array[0][0] =i_cmat.m00;
+//		a_array[0][1] =i_cmat.m01;
+//		a_array[0][2] =i_cmat.m02;
+//		a_array[1][0] =i_cmat.m10;
+//		a_array[1][1] =i_cmat.m11;
+//		a_array[1][2] =i_cmat.m12;
+//		a_array[2][0] =i_cmat.m20;
+///		a_array[2][1] =i_cmat.m21;
+//		a_array[2][2] =i_cmat.m22;
+//		
+//		mat_a.matrixSelfInv();
+		this._inv_cpara.inverse(i_cmat);
 		this._projection_mat_ref = i_cmat;
-		this._inv_cpara_array_ref = mat_a.getArray();
+//		this._inv_cpara_array_ref = mat_a.getArray();
 		//GCない言語のときは、ここで配列の所有権委譲してね！
 	}
 
@@ -82,9 +84,9 @@ public class NyARRotVector
 	{
 		//1行目
 		final NyARPerspectiveProjectionMatrix cmat= this._projection_mat_ref;
-		final double w1 = i_linear1.dy * i_linear2.dx - i_linear2.dy * i_linear1.dx;
-		final double w2 = i_linear1.dx * i_linear2.c - i_linear2.dx * i_linear1.c;
-		final double w3 = i_linear1.c * i_linear2.dy - i_linear2.c * i_linear1.dy;
+		final double w1 = i_linear1.a * i_linear2.b - i_linear2.a * i_linear1.b;
+		final double w2 = i_linear1.b * i_linear2.c - i_linear2.b * i_linear1.c;
+		final double w3 = i_linear1.c * i_linear2.a - i_linear2.c * i_linear1.a;
 
 		final double m0 = w1 * (cmat.m01 * cmat.m12 - cmat.m02 * cmat.m11) + w2 * cmat.m11 - w3 * cmat.m01;//w1 * (cpara[0 * 4 + 1] * cpara[1 * 4 + 2] - cpara[0 * 4 + 2] * cpara[1 * 4 + 1]) + w2 * cpara[1 * 4 + 1] - w3 * cpara[0 * 4 + 1];
 		final double m1 = -w1 * cmat.m00 * cmat.m12 + w3 * cmat.m00;//-w1 * cpara[0 * 4 + 0] * cpara[1 * 4 + 2] + w3 * cpara[0 * 4 + 0];
@@ -106,11 +108,11 @@ public class NyARRotVector
 	public void checkVectorByVertex(final NyARDoublePoint2d i_start_vertex, final NyARDoublePoint2d i_end_vertex) throws NyARException
 	{
 		double h;
-		final double[][] inv_cpara = this._inv_cpara_array_ref;
+		NyARDoubleMatrix44 inv_cpara = this._inv_cpara;
 		//final double[] world = __checkVectorByVertex_world;// [2][3];
-		final double world0 = inv_cpara[0][0] * i_start_vertex.x * 10.0 + inv_cpara[0][1] * i_start_vertex.y * 10.0 + inv_cpara[0][2] * 10.0;// mat_a->m[0]*st[0]*10.0+
-		final double world1 = inv_cpara[1][0] * i_start_vertex.x * 10.0 + inv_cpara[1][1] * i_start_vertex.y * 10.0 + inv_cpara[1][2] * 10.0;// mat_a->m[3]*st[0]*10.0+
-		final double world2 = inv_cpara[2][0] * i_start_vertex.x * 10.0 + inv_cpara[2][1] * i_start_vertex.y * 10.0 + inv_cpara[2][2] * 10.0;// mat_a->m[6]*st[0]*10.0+
+		final double world0 = inv_cpara.m00 * i_start_vertex.x * 10.0 + inv_cpara.m01 * i_start_vertex.y * 10.0 + inv_cpara.m02 * 10.0;// mat_a->m[0]*st[0]*10.0+
+		final double world1 = inv_cpara.m10 * i_start_vertex.x * 10.0 + inv_cpara.m11 * i_start_vertex.y * 10.0 + inv_cpara.m12 * 10.0;// mat_a->m[3]*st[0]*10.0+
+		final double world2 = inv_cpara.m20 * i_start_vertex.x * 10.0 + inv_cpara.m21 * i_start_vertex.y * 10.0 + inv_cpara.m22 * 10.0;// mat_a->m[6]*st[0]*10.0+
 		final double world3 = world0 + this.v1;
 		final double world4 = world1 + this.v2;
 		final double world5 = world2 + this.v3;

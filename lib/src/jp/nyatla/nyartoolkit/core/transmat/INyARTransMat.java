@@ -40,6 +40,24 @@ import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
  */
 public interface INyARTransMat
 {
+	/**
+	 * 理想座標系の四角系から、i_offsetのパラメタで示される矩形を(0,0,0)の点から移動するための行列式を計算し、o_resultへ格納します。
+	 * @param i_square
+	 * @param i_offset
+	 * @param o_result
+	 * @throws NyARException
+	 */
 	public void transMat(NyARSquare i_square,NyARRectOffset i_offset, NyARTransMatResult o_result) throws NyARException;
-	public void transMatContinue(NyARSquare i_square,NyARRectOffset i_offset, NyARTransMatResult io_result_conv) throws NyARException;
+	/**
+	 * 理想座標系の四角系から、i_offsetのパラメタで示される矩形を(0,0,0)の点から移動するための行列式を計算し、o_resultへ格納します。
+	 * i_prev_resultにある過去の情報を参照するため、変移が少ない場合はより高精度な値を返します。
+	 * @param i_square
+	 * @param i_offset
+	 * @param i_prev_result
+	 * 参照する過去のオブジェクトです。このオブジェクトとo_resultには同じものを指定できます。
+	 * @param o_result
+	 * 結果を格納するオブジェクトです。
+	 * @throws NyARException
+	 */
+	public void transMatContinue(NyARSquare i_square,NyARRectOffset i_offset,NyARTransMatResult i_prev_result,NyARTransMatResult o_result) throws NyARException;
 }

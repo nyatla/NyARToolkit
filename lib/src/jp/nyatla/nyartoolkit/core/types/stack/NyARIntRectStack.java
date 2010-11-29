@@ -38,7 +38,7 @@ public class NyARIntRectStack extends NyARObjectStack<NyARIntRect>
 {
 	public NyARIntRectStack(int i_length) throws NyARException
 	{
-		super(i_length,NyARIntRect.class);
+		super.initInstance(i_length,NyARIntRect.class);
 	}
 	protected NyARIntRect createElement()
 	{

@@ -53,6 +53,5 @@ public interface INyARColorPatt extends INyARRgbRaster
 	 * ラスターの取得に成功するとTRUE/失敗するとFALSE
 	 * @throws NyARException
 	 */
-//	public boolean pickFromRaster(INyARRgbRaster image, NyARSquare i_square) throws NyARException;
 	public boolean pickFromRaster(INyARRgbRaster image, NyARIntPoint2d[] i_vertexs) throws NyARException;
 }

@@ -5,6 +5,7 @@ import jp.nyatla.nyartoolkit.core.analyzer.histogram.*;
 import jp.nyatla.nyartoolkit.core.analyzer.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARHistogram;
+import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 /**
  * 明点と暗点をPタイル法で検出して、その中央値を閾値とする。
  * 
@@ -40,4 +41,9 @@ public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresh
 		this._raster_analyzer.analyzeRaster(i_input, this._histogram);
 		return this._sptile.getThreshold(this._histogram);
 	}
+	public int analyzeRaster(INyARRaster i_input,NyARIntRect i_area) throws NyARException
+	{
+		throw new NyARException();
+	}
+	
 }

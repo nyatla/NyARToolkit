@@ -63,55 +63,6 @@ public class NyARPartialDifferentiationOptimize
 		this._projection_mat_ref = i_projection_mat_ref;
 		return;
 	}
-
-	public final void sincos2Rotation_ZXY(TSinCosValue[] i_sincos, NyARDoubleMatrix33 i_rot_matrix)
-	{
-		final double sina = i_sincos[0].sin_val;
-		final double cosa = i_sincos[0].cos_val;
-		final double sinb = i_sincos[1].sin_val;
-		final double cosb = i_sincos[1].cos_val;
-		final double sinc = i_sincos[2].sin_val;
-		final double cosc = i_sincos[2].cos_val;
-		i_rot_matrix.m00 = cosc * cosb - sinc * sina * sinb;
-		i_rot_matrix.m01 = -sinc * cosa;
-		i_rot_matrix.m02 = cosc * sinb + sinc * sina * cosb;
-		i_rot_matrix.m10 = sinc * cosb + cosc * sina * sinb;
-		i_rot_matrix.m11 = cosc * cosa;
-		i_rot_matrix.m12 = sinc * sinb - cosc * sina * cosb;
-		i_rot_matrix.m20 = -cosa * sinb;
-		i_rot_matrix.m21 = sina;
-		i_rot_matrix.m22 = cosb * cosa;
-	}
-
-	private final void rotation2Sincos_ZXY(NyARDoubleMatrix33 i_rot_matrix, TSinCosValue[] o_out,NyARDoublePoint3d o_ang)
-	{
-		double x, y, z;
-		double sina = i_rot_matrix.m21;
-		if (sina >= 1.0) {
-			x = Math.PI / 2;
-			y = 0;
-			z = Math.atan2(-i_rot_matrix.m10, i_rot_matrix.m00);
-		} else if (sina <= -1.0) {
-			x = -Math.PI / 2;
-			y = 0;
-			z = Math.atan2(-i_rot_matrix.m10, i_rot_matrix.m00);
-		} else {
-			x = Math.asin(sina);
-			y = Math.atan2(-i_rot_matrix.m20, i_rot_matrix.m22);
-			z = Math.atan2(-i_rot_matrix.m01, i_rot_matrix.m11);
-		}
-		o_ang.x=x;
-		o_ang.y=y;
-		o_ang.z=z;
-		o_out[0].sin_val = Math.sin(x);
-		o_out[0].cos_val = Math.cos(x);
-		o_out[1].sin_val = Math.sin(y);
-		o_out[1].cos_val = Math.cos(y);
-		o_out[2].sin_val = Math.sin(z);
-		o_out[2].cos_val = Math.cos(z);
-		return;
-	}
-
 	/*
 	 * 射影変換式 基本式 ox=(cosc * cosb - sinc * sina * sinb)*ix+(-sinc * cosa)*iy+(cosc * sinb + sinc * sina * cosb)*iz+i_trans.x; oy=(sinc * cosb + cosc * sina *
 	 * sinb)*ix+(cosc * cosa)*iy+(sinc * sinb - cosc * sina * cosb)*iz+i_trans.y; oz=(-cosa * sinb)*ix+(sina)*iy+(cosb * cosa)*iz+i_trans.z;
@@ -132,26 +83,22 @@ public class NyARPartialDifferentiationOptimize
 	 * J=2*Σ(d[n]*f[n]+a[n]*c[n])/L K=2*Σ(-e[n]*f[n]+b[n]*c[n])/L M=Σ(-e[n]^2+d[n]^2-b[n]^2+a[n]^2)/L 偏微分式 +J*cos(x) +K*sin(x) -sin(x)^2 +cos(x)^2
 	 * +2*M*cos(x)*sin(x)
 	 */
-	private double optimizeParamX(TSinCosValue i_angle_y, TSinCosValue i_angle_z, NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d, int i_number_of_vertex, double i_hint_angle) throws NyARException
+	private double optimizeParamX(double sinb,double cosb,double sinc,double cosc,NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d, int i_number_of_vertex, double i_hint_angle) throws NyARException
 	{
 		NyARPerspectiveProjectionMatrix cp = this._projection_mat_ref;
-		final double sinb = i_angle_y.sin_val;
-		final double cosb = i_angle_y.cos_val;
-		final double sinc = i_angle_z.sin_val;
-		final double cosc = i_angle_z.cos_val;
 		double L, J, K, M, N, O;
 		L = J = K = M = N = O = 0;
+		final double cp00 = cp.m00;
+		final double cp01 = cp.m01;
+		final double cp02 = cp.m02;
+		final double cp11 = cp.m11;
+		final double cp12 = cp.m12;
+
 		for (int i = 0; i < i_number_of_vertex; i++) {
 			double ix, iy, iz;
 			ix = i_vertex3d[i].x;
 			iy = i_vertex3d[i].y;
 			iz = i_vertex3d[i].z;
-
-			final double cp00 = cp.m00;
-			final double cp01 = cp.m01;
-			final double cp02 = cp.m02;
-			final double cp11 = cp.m11;
-			final double cp12 = cp.m12;
 
 			double X0 = (cp00 * (-sinc * sinb * ix + sinc * cosb * iz) + cp01 * (cosc * sinb * ix - cosc * cosb * iz) + cp02 * (iy));
 			double X1 = (cp00 * (-sinc * iy) + cp01 * ((cosc * iy)) + cp02 * (-sinb * ix + cosb * iz));
@@ -191,26 +138,22 @@ public class NyARPartialDifferentiationOptimize
 
 	}
 
-	private double optimizeParamY(TSinCosValue i_angle_x, TSinCosValue i_angle_z, NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d, int i_number_of_vertex, double i_hint_angle) throws NyARException
+	private double optimizeParamY(double sina,double cosa,double sinc,double cosc, NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d, int i_number_of_vertex, double i_hint_angle) throws NyARException
 	{
 		NyARPerspectiveProjectionMatrix cp = this._projection_mat_ref;
-		final double sina = i_angle_x.sin_val;
-		final double cosa = i_angle_x.cos_val;
-		final double sinc = i_angle_z.sin_val;
-		final double cosc = i_angle_z.cos_val;
 		double L, J, K, M, N, O;
 		L = J = K = M = N = O = 0;
+		final double cp00 = cp.m00;
+		final double cp01 = cp.m01;
+		final double cp02 = cp.m02;
+		final double cp11 = cp.m11;
+		final double cp12 = cp.m12;
+
 		for (int i = 0; i < i_number_of_vertex; i++) {
 			double ix, iy, iz;
 			ix = i_vertex3d[i].x;
 			iy = i_vertex3d[i].y;
 			iz = i_vertex3d[i].z;
-
-			final double cp00 = cp.m00;
-			final double cp01 = cp.m01;
-			final double cp02 = cp.m02;
-			final double cp11 = cp.m11;
-			final double cp12 = cp.m12;
 
 			double X0 = (cp00 * (-sinc * sina * ix + cosc * iz) + cp01 * (cosc * sina * ix + sinc * iz) + cp02 * (-cosa * ix));
 			double X1 = (cp01 * (sinc * ix - cosc * sina * iz) + cp00 * (cosc * ix + sinc * sina * iz) + cp02 * (cosa * iz));
@@ -248,26 +191,22 @@ public class NyARPartialDifferentiationOptimize
 
 	}
 
-	private double optimizeParamZ(TSinCosValue i_angle_x, TSinCosValue i_angle_y, NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d, int i_number_of_vertex, double i_hint_angle) throws NyARException
+	private double optimizeParamZ(double sina,double cosa,double sinb,double cosb, NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d, int i_number_of_vertex, double i_hint_angle) throws NyARException
 	{
 		NyARPerspectiveProjectionMatrix cp = this._projection_mat_ref;
-		final double sina = i_angle_x.sin_val;
-		final double cosa = i_angle_x.cos_val;
-		final double sinb = i_angle_y.sin_val;
-		final double cosb = i_angle_y.cos_val;
 		double L, J, K, M, N, O;
 		L = J = K = M = N = O = 0;
+		final double cp00 = cp.m00;
+		final double cp01 = cp.m01;
+		final double cp02 = cp.m02;
+		final double cp11 = cp.m11;
+		final double cp12 = cp.m12;
+
 		for (int i = 0; i < i_number_of_vertex; i++) {
 			double ix, iy, iz;
 			ix = i_vertex3d[i].x;
 			iy = i_vertex3d[i].y;
 			iz = i_vertex3d[i].z;
-
-			final double cp00 = cp.m00;
-			final double cp01 = cp.m01;
-			final double cp02 = cp.m02;
-			final double cp11 = cp.m11;
-			final double cp12 = cp.m12;
 
 			double X0 = (cp00 * (-sina * sinb * ix - cosa * iy + sina * cosb * iz) + cp01 * (ix * cosb + sinb * iz));
 			double X1 = (cp01 * (sina * ix * sinb + cosa * iy - sina * iz * cosb) + cp00 * (cosb * ix + sinb * iz));
@@ -304,21 +243,32 @@ public class NyARPartialDifferentiationOptimize
 		
 		return getMinimumErrorAngleFromParam(L,J, K, M, N, O, i_hint_angle);
 	}
-	private TSinCosValue[] __angles_in=TSinCosValue.createArray(3);
 	private NyARDoublePoint3d __ang=new NyARDoublePoint3d();
 	public void modifyMatrix(NyARDoubleMatrix33 io_rot, NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d, int i_number_of_vertex) throws NyARException
 	{
-		TSinCosValue[] angles_in = this.__angles_in;// x,y,z
-		NyARDoublePoint3d ang = this.__ang;
-
+		NyARDoublePoint3d ang = this.__ang;		
 		// ZXY系のsin/cos値を抽出
-		rotation2Sincos_ZXY(io_rot, angles_in,ang);
-		ang.x += optimizeParamX(angles_in[1], angles_in[2], i_trans, i_vertex3d, i_vertex2d, i_number_of_vertex, ang.x);
-		ang.y += optimizeParamY(angles_in[0], angles_in[2], i_trans, i_vertex3d, i_vertex2d, i_number_of_vertex, ang.y);
-		ang.z += optimizeParamZ(angles_in[0], angles_in[1], i_trans, i_vertex3d, i_vertex2d, i_number_of_vertex, ang.z);
+		io_rot.getZXYAngle(ang);
+		modifyMatrix(ang,i_trans,i_vertex3d,i_vertex2d,i_number_of_vertex,ang);
 		io_rot.setZXYAngle(ang.x, ang.y, ang.z);
 		return;
 	}
+	public void modifyMatrix(NyARDoublePoint3d i_angle,NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d, int i_number_of_vertex,NyARDoublePoint3d o_angle) throws NyARException
+	{
+
+		// ZXY系のsin/cos値を抽出
+		double sinx = Math.sin(i_angle.x);
+		double cosx = Math.cos(i_angle.x);
+		double siny = Math.sin(i_angle.y);
+		double cosy = Math.cos(i_angle.y);
+		double sinz = Math.sin(i_angle.z);
+		double cosz = Math.cos(i_angle.z);		
+		o_angle.x = i_angle.x+optimizeParamX(siny,cosy,sinz,cosz, i_trans, i_vertex3d, i_vertex2d, i_number_of_vertex, i_angle.x);
+		o_angle.y = i_angle.y+optimizeParamY(sinx,cosx,sinz,cosz, i_trans, i_vertex3d, i_vertex2d, i_number_of_vertex, i_angle.y);
+		o_angle.z = i_angle.z+optimizeParamZ(sinx,cosx,siny,cosy, i_trans, i_vertex3d, i_vertex2d, i_number_of_vertex, i_angle.z);
+		return;	
+	}
+	
 	private double[] __sin_table= new double[4];
 	/**
 	 * エラーレートが最小になる点を得る。

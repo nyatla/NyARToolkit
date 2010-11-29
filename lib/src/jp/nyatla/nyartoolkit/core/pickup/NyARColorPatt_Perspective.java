@@ -26,10 +26,9 @@ package jp.nyatla.nyartoolkit.core.pickup;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
-import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core.utils.NyARPerspectiveParamGenerator_O1;
+import jp.nyatla.nyartoolkit.core.utils.*;
 
 
 /**
@@ -41,9 +40,10 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 {
 	protected int[] _patdata;
 	protected NyARIntPoint2d _pickup_lt=new NyARIntPoint2d();	
+	protected NyARIntSize _pickup_wh=new NyARIntSize();	
 	protected int _resolution;
 	protected NyARIntSize _size;
-	protected NyARPerspectiveParamGenerator_O1 _perspective_gen;
+	protected NyARPerspectiveParamGenerator _perspective_gen;
 	private NyARRgbPixelReader_INT1D_X8R8G8B8_32 _pixelreader;
 	private static final int LOCAL_LT=1;
 	private static final int BUFFER_FORMAT=NyARBufferType.INT1D_X8R8G8B8_32;
@@ -51,14 +51,13 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 	private void initializeInstance(int i_width, int i_height,int i_point_per_pix)
 	{
 		assert i_width>2 && i_height>2;
-		this._resolution=i_point_per_pix;	
 		this._size=new NyARIntSize(i_width,i_height);
 		this._patdata = new int[i_height*i_width];
 		this._pixelreader=new NyARRgbPixelReader_INT1D_X8R8G8B8_32(this._patdata,this._size);
 		return;		
 	}
 	/**
-	 * 例えば、64
+	 * コンストラクタです。サンプリングサイズを指定して、
 	 * @param i_width
 	 * 取得画像の解像度幅
 	 * @param i_height
@@ -104,13 +103,11 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 		assert(i_x_edge>=0);
 		assert(i_y_edge>=0);
 		//Perspectiveパラメタ計算器を作成
-		this._perspective_gen=new NyARPerspectiveParamGenerator_O1(
-			LOCAL_LT,LOCAL_LT,
-			(i_x_edge*2+this._size.w)*i_resolution,
-			(i_y_edge*2+this._size.h)*i_resolution);
+		this._perspective_gen=new NyARPerspectiveParamGenerator_O1(LOCAL_LT,LOCAL_LT);
 		//ピックアップ開始位置を計算
-		this._pickup_lt.x=i_x_edge*i_resolution+LOCAL_LT;
-		this._pickup_lt.y=i_y_edge*i_resolution+LOCAL_LT;
+		this._pickup_lt.setValue(i_x_edge*i_resolution+LOCAL_LT,i_y_edge*i_resolution+LOCAL_LT);
+		this._pickup_wh.setValue((i_x_edge*2+this._size.w)*i_resolution,(i_y_edge*2+this._size.h)*i_resolution);
+		this._resolution=i_resolution;	
 		return;
 	}
 	public void setEdgeSizeByPercent(int i_x_percent,int i_y_percent,int i_resolution)
@@ -168,7 +165,7 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 	{
 		//遠近法のパラメータを計算
 		final double[] cpara = this.__pickFromRaster_cpara;
-		if (!this._perspective_gen.getParam(i_vertexs, cpara)) {
+		if (!this._perspective_gen.getParam(this._pickup_wh,i_vertexs, cpara)) {
 			return false;
 		}
 		

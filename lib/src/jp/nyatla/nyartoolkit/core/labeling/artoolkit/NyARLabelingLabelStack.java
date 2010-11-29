@@ -33,21 +33,54 @@ package jp.nyatla.nyartoolkit.core.labeling.artoolkit;
 
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.labeling.*;
+import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
 /**
  * NyLabelの予約型動的配列
  * 
  */
-public class NyARLabelingLabelStack extends NyARLabelInfoStack<NyARLabelingLabel>
+public class NyARLabelingLabelStack extends NyARObjectStack<NyARLabelingLabel>
 {
 	public NyARLabelingLabelStack(int i_max_array_size) throws NyARException
 	{
-		super(i_max_array_size,NyARLabelingLabel.class);
+		super();
+		super.initInstance(i_max_array_size,NyARLabelingLabel.class);
 	}
 	protected NyARLabelingLabel createElement()
 	{
 		return new NyARLabelingLabel();
-	}		
+	}
+	/**
+	 * 配列をエリアでソートする。
+	 * @param i_array
+	 * @param i_length
+	 */
+	final public void sortByArea()
+	{
+		int len=this._length;
+		if(len<1){
+			return;
+		}
+		int h = len *13/10;
+		NyARLabelingLabel[] item=this._items;
+		for(;;){
+		    int swaps = 0;
+		    for (int i = 0; i + h < len; i++) {
+		        if (item[i + h].area > item[i].area) {
+		            final NyARLabelingLabel temp = item[i + h];
+		            item[i + h] = item[i];
+		            item[i] = temp;
+		            swaps++;
+		        }
+		    }
+		    if (h == 1) {
+		        if (swaps == 0){
+		        	break;
+		        }
+		    }else{
+		        h=h*10/13;
+		    }
+		}		
+	}	
 }
 	

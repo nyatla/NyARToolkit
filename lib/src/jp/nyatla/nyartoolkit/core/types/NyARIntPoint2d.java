@@ -30,6 +30,10 @@
  */
 package jp.nyatla.nyartoolkit.core.types;
 
+/**
+ * int型の二次元の点を格納します。
+ *
+ */
 public class NyARIntPoint2d
 {
 	public int x;
@@ -49,6 +53,11 @@ public class NyARIntPoint2d
 		}
 		return ret;
 	}
+	/**
+	 * i_fromからi_toへ配列をコピーします。
+	 * @param i_from
+	 * @param i_to
+	 */
 	public static void copyArray(final NyARIntPoint2d[] i_from,NyARIntPoint2d[] i_to)
 	{
 		for(int i=i_from.length-1;i>=0;i--)
@@ -57,5 +66,53 @@ public class NyARIntPoint2d
 			i_to[i].y=i_from[i].y;
 		}
 		return;
+	}
+	/**
+	 * p2-p1間の距離の二乗値を計算します。
+	 * @param i_p1
+	 * @param i_p2
+	 * @return
+	 */	
+	public final int sqDist(NyARIntPoint2d i_p1)
+	{
+		int x=this.x-i_p1.x;
+		int y=this.y-i_p1.y;
+		return x*x+y*y;
+	}
+	
+	/**
+	 * 中心位置を計算して設定する。
+	 * @param i_point
+	 * @param i_number_of_vertex
+	 */
+	public final void setCenterPos(NyARIntPoint2d[] i_point,int i_number_of_vertex)
+	{
+		int cx,cy;
+		cx=cy=0;
+		for(int i=i_number_of_vertex-1;i>=0;i--){
+			cx+=i_point[i].x;
+			cy+=i_point[i].y;
+		}
+		this.x=cx/i_number_of_vertex;
+		this.y=cy/i_number_of_vertex;
+	}
+	/**
+	 * i_sourceの値を、thisへセットします。
+	 * @param i_source
+	 */
+	public final void setValue(NyARIntPoint2d i_source)
+	{
+		this.x=i_source.x;
+		this.y=i_source.y;
+	}
+	public final void setValue(NyARDoublePoint2d i_source)
+	{
+		this.x=(int)i_source.x;
+		this.y=(int)i_source.y;
+	}
+	public final void setValue(int i_x,int i_y)
+	{
+		this.x=i_x;
+		this.y=i_y;
 	}
 }

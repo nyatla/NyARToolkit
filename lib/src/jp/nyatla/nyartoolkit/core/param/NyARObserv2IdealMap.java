@@ -63,6 +63,13 @@ public class NyARObserv2IdealMap
 		}
 		return;
 	}
+	public void observ2Ideal(int ix, int iy, NyARIntPoint2d o_point)
+	{
+		int idx=ix+iy*this._stride;
+		o_point.x=(int)this._mapx[idx];
+		o_point.y=(int)this._mapy[idx];
+		return;
+	}	
 	public void observ2Ideal(int ix, int iy, NyARDoublePoint2d o_point)
 	{
 		int idx=ix+iy*this._stride;
@@ -70,7 +77,8 @@ public class NyARObserv2IdealMap
 		o_point.y=this._mapy[idx];
 		return;
 	}
-	public void observ2IdealBatch(int[] i_x_coord, int[] i_y_coord,int i_start, int i_num, double[] o_x_coord,double[] o_y_coord,int i_out_start_index)
+	
+	public void observ2IdealBatch(NyARIntPoint2d[] i_coord,int i_start, int i_num, double[] o_x_coord,double[] o_y_coord,int i_out_start_index)
 	{
 		int idx;
 		int ptr=i_out_start_index;
@@ -78,7 +86,7 @@ public class NyARObserv2IdealMap
 		final double[] mapy=this._mapy;
 		final int stride=this._stride;
 		for (int j = 0; j < i_num; j++){
-			idx=i_x_coord[i_start + j]+i_y_coord[i_start + j]*stride;
+			idx=i_coord[i_start + j].x+i_coord[i_start + j].y*stride;
 			o_x_coord[ptr]=mapx[idx];
 			o_y_coord[ptr]=mapy[idx];
 			ptr++;

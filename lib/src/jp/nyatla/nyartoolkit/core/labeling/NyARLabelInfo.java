@@ -30,6 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.labeling;
 
+
 /**
  * 
  *
@@ -43,4 +44,5 @@ public class NyARLabelInfo
 	public int clip_t;
 	public double pos_x;
 	public double pos_y;
+
 }

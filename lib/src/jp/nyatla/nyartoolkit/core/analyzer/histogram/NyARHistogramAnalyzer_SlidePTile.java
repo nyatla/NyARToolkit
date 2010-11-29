@@ -5,13 +5,19 @@ import jp.nyatla.nyartoolkit.core.types.NyARHistogram;
 
 
 /**
- * 明点と暗点を双方向からPタイル法でカウントして、その中央値を閾値とする。
+ * PTileを使った敷居値決定クラスです。
+ * 明点と暗点を双方向からPTile法で敷居値を計算し、その中央値を閾値とします。
  * 
  * 
  */
 public class NyARHistogramAnalyzer_SlidePTile implements INyARHistogramAnalyzer_Threshold
 {
 	private int _persentage;
+	/**
+	 * コンストラクタです。
+	 * @param i_persentage
+	 * 敷居値とする、PTileのパーセンテージ値を指定します。
+	 */
 	public NyARHistogramAnalyzer_SlidePTile(int i_persentage)
 	{
 		assert (0 <= i_persentage && i_persentage <= 50);

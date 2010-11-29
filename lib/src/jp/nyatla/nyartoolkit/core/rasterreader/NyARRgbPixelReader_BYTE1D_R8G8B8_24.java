@@ -37,7 +37,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
  * バッファに使用できるピクセルリーダー
  *
  */
-public class NyARRgbPixelReader_BYTE1D_R8G8B8_24 implements INyARRgbPixelReader
+final public class NyARRgbPixelReader_BYTE1D_R8G8B8_24 implements INyARRgbPixelReader
 {
 	protected byte[] _ref_buf;
 
@@ -79,6 +79,14 @@ public class NyARRgbPixelReader_BYTE1D_R8G8B8_24 implements INyARRgbPixelReader
 		ref_buf[idx + 0] = (byte)i_rgb[0];// R
 		ref_buf[idx + 1] = (byte)i_rgb[1];// G
 		ref_buf[idx + 2] = (byte)i_rgb[2];// B
+	}
+	public void setPixel(int i_x, int i_y, int i_r,int i_g,int i_b) throws NyARException
+	{
+		final byte[] ref_buf = this._ref_buf;
+		final int idx=(i_y*this._size.w+i_x)*3;
+		ref_buf[idx + 0] = (byte)i_r;// R
+		ref_buf[idx + 1] = (byte)i_g;// G
+		ref_buf[idx + 2] = (byte)i_b;// B
 	}
 	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intrgb) throws NyARException
 	{

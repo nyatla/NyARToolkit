@@ -24,6 +24,9 @@
  */
 package jp.nyatla.nyartoolkit.core.types.matrix;
 
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
+import jp.nyatla.nyartoolkit.sample.NyIdTest;
+
 
 public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 {
@@ -53,7 +56,7 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		return ret;
 	}
 	/**
-	 * 遅いからあんまり使わないでね。
+	 * 配列の内容をセットします。順番は、00,01,02,03,10...の順です。
 	 */
 	public void setValue(double[] i_value)
 	{
@@ -76,7 +79,31 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		return;
 	}
 	/**
-	 * 遅いからあんまり使わないでね。
+	 * i_valueの内容を、このインスタンスにセットします。
+	 * @param i_value
+	 */
+	public void setValue(NyARDoubleMatrix44 i_value)
+	{
+		this.m00=i_value.m00;
+		this.m01=i_value.m01;
+		this.m02=i_value.m02;
+		this.m03=i_value.m03;
+		this.m10=i_value.m10;
+		this.m11=i_value.m11;
+		this.m12=i_value.m12;
+		this.m13=i_value.m13;
+		this.m20=i_value.m20;
+		this.m21=i_value.m21;
+		this.m22=i_value.m22;
+		this.m23=i_value.m23;
+		this.m30=i_value.m30;
+		this.m31=i_value.m31;
+		this.m32=i_value.m32;
+		this.m33=i_value.m33;
+		return;
+	}
+	/**
+	 * 行列の内容を配列に出力します。順番は、00,01,02,03,10...の順です。
 	 */
 	public void getValue(double[] o_value)
 	{
@@ -98,6 +125,35 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		o_value[15]=this.m33;
 		return;
 	}
+	/**
+	 * 行列の内容を転置してから配列に出力します。
+	 * 順番は、00,10,20,30,01...の順です。
+	 */	
+	public void getValueT(double[] o_value)
+	{
+		o_value[ 0]=this.m00;
+		o_value[ 1]=this.m10;
+		o_value[ 2]=this.m20;
+		o_value[ 3]=this.m30;
+		o_value[ 4]=this.m01;
+		o_value[ 5]=this.m11;
+		o_value[ 6]=this.m21;
+		o_value[ 7]=this.m31;
+		o_value[ 8]=this.m02;
+		o_value[ 9]=this.m12;
+		o_value[10]=this.m22;
+		o_value[11]=this.m32;
+		o_value[12]=this.m03;
+		o_value[13]=this.m13;
+		o_value[14]=this.m23;
+		o_value[15]=this.m33;
+		return;
+	}
+	/**
+	 * 逆行列を計算して、i_srcのthisへ格納します。i_srcにはthisも指定可能です。
+	 * @param i_src
+	 * @return
+	 */
 	public boolean inverse(NyARDoubleMatrix44 i_src)
 	{
 		final double a11,a12,a13,a14,a21,a22,a23,a24,a31,a32,a33,a34,a41,a42,a43,a44;
@@ -183,5 +239,268 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		this.m33=b44*det_1;
 		
 		return true;
+	}
+	
+	/**
+	 * 行列を姿勢変換行列として、3次元座標を座標変換します。4列目は1で仮定します。
+	 * @param i_x
+	 * @param i_y
+	 * @param i_z
+	 * @param o_out
+	 */
+	public final void transform3d(double i_x,double i_y,double i_z,NyARDoublePoint3d o_out)
+	{
+		o_out.x=this.m00*i_x+this.m01*i_y+this.m02*i_z+this.m03;
+		o_out.y=this.m10*i_x+this.m11*i_y+this.m12*i_z+this.m13;
+		o_out.z=this.m20*i_x+this.m21*i_y+this.m22*i_z+this.m23;
+		return;
+	}
+	
+	/**
+	 * 行列を姿勢変換行列として、3次元座標を座標変換します。
+	 * i_inとo_outには同一なインスタンスを指定できます。
+	 * @param i_in
+	 * @param o_out
+	 */
+	public final void transform3d(NyARDoublePoint3d i_in,NyARDoublePoint3d o_out)
+	{
+		transform3d(i_in.x,i_in.y,i_in.z,o_out);
+	}
+	/**
+	 * 行列を姿勢行列として、ZXY系の角度値を返します。
+	 * この関数は、0-PIの間で値を返します。
+	 * @param o_out
+	 */
+	public final void getZXYAngle(NyARDoublePoint3d o_out)
+	{
+		double sina = this.m21;
+		if (sina >= 1.0) {
+			o_out.x = Math.PI / 2;
+			o_out.y = 0;
+			o_out.z = Math.atan2(-this.m10, this.m00);
+		} else if (sina <= -1.0) {
+			o_out.x = -Math.PI / 2;
+			o_out.y = 0;
+			o_out.z = Math.atan2(-this.m10, this.m00);
+		} else {
+			o_out.x = Math.asin(sina);
+			o_out.z = Math.atan2(-this.m01, this.m11);
+			o_out.y = Math.atan2(-this.m20, this.m22);
+		}
+	}
+	/**
+	 * 行列の掛け算を実行して、結果を格納します。i_mat_lとi_mat_rには、thisを指定しないでください。
+	 * @param i_mat_l
+	 * @param i_mat_r
+	 */
+	public final void mul(NyARDoubleMatrix44 i_mat_l,NyARDoubleMatrix44 i_mat_r)
+	{
+		assert(this!=i_mat_l);
+		assert(this!=i_mat_r);
+		this.m00=i_mat_l.m00*i_mat_r.m00 + i_mat_l.m01*i_mat_r.m10 + i_mat_l.m02*i_mat_r.m20 + i_mat_l.m03*i_mat_r.m30;
+		this.m01=i_mat_l.m00*i_mat_r.m01 + i_mat_l.m01*i_mat_r.m11 + i_mat_l.m02*i_mat_r.m21 + i_mat_l.m03*i_mat_r.m31;
+		this.m02=i_mat_l.m00*i_mat_r.m02 + i_mat_l.m01*i_mat_r.m12 + i_mat_l.m02*i_mat_r.m22 + i_mat_l.m03*i_mat_r.m32;
+		this.m03=i_mat_l.m00*i_mat_r.m03 + i_mat_l.m01*i_mat_r.m13 + i_mat_l.m02*i_mat_r.m23 + i_mat_l.m03*i_mat_r.m33;
+
+		this.m10=i_mat_l.m10*i_mat_r.m00 + i_mat_l.m11*i_mat_r.m10 + i_mat_l.m12*i_mat_r.m20 + i_mat_l.m13*i_mat_r.m30;
+		this.m11=i_mat_l.m10*i_mat_r.m01 + i_mat_l.m11*i_mat_r.m11 + i_mat_l.m12*i_mat_r.m21 + i_mat_l.m13*i_mat_r.m31;
+		this.m12=i_mat_l.m10*i_mat_r.m02 + i_mat_l.m11*i_mat_r.m12 + i_mat_l.m12*i_mat_r.m22 + i_mat_l.m13*i_mat_r.m32;
+		this.m13=i_mat_l.m10*i_mat_r.m03 + i_mat_l.m11*i_mat_r.m13 + i_mat_l.m12*i_mat_r.m23 + i_mat_l.m13*i_mat_r.m33;
+
+		this.m20=i_mat_l.m20*i_mat_r.m00 + i_mat_l.m21*i_mat_r.m10 + i_mat_l.m22*i_mat_r.m20 + i_mat_l.m23*i_mat_r.m30;
+		this.m21=i_mat_l.m20*i_mat_r.m01 + i_mat_l.m21*i_mat_r.m11 + i_mat_l.m22*i_mat_r.m21 + i_mat_l.m23*i_mat_r.m31;
+		this.m22=i_mat_l.m20*i_mat_r.m02 + i_mat_l.m21*i_mat_r.m12 + i_mat_l.m22*i_mat_r.m22 + i_mat_l.m23*i_mat_r.m32;
+		this.m23=i_mat_l.m20*i_mat_r.m03 + i_mat_l.m21*i_mat_r.m13 + i_mat_l.m22*i_mat_r.m23 + i_mat_l.m23*i_mat_r.m33;
+
+		this.m30=i_mat_l.m30*i_mat_r.m00 + i_mat_l.m31*i_mat_r.m10 + i_mat_l.m32*i_mat_r.m20 + i_mat_l.m33*i_mat_r.m30;
+		this.m31=i_mat_l.m30*i_mat_r.m01 + i_mat_l.m31*i_mat_r.m11 + i_mat_l.m32*i_mat_r.m21 + i_mat_l.m33*i_mat_r.m31;
+		this.m32=i_mat_l.m30*i_mat_r.m02 + i_mat_l.m31*i_mat_r.m12 + i_mat_l.m32*i_mat_r.m22 + i_mat_l.m33*i_mat_r.m32;
+		this.m33=i_mat_l.m30*i_mat_r.m03 + i_mat_l.m31*i_mat_r.m13 + i_mat_l.m32*i_mat_r.m23 + i_mat_l.m33*i_mat_r.m33;	
+		return;
+	}
+	/**
+	 * この行列を単位行列にします。
+	 */
+	public final void identity()
+	{
+		this.m00=this.m11=this.m22=this.m33=1;
+		this.m01=this.m02=this.m03=this.m10=this.m12=this.m13=this.m20=this.m21=this.m23=this.m30=this.m31=this.m32=0;
+		return;
+	}
+	/**
+	 * 行列に、右手系のX軸回転を設定します。
+	 * @param i_radian
+	 */
+	public final void setRotateX(double i_radian)
+	{
+		double s=Math.sin(i_radian);
+		double c=Math.cos(i_radian);
+		this.identity();
+		this.m11=c;
+		this.m12=-s;
+		this.m21=s;
+		this.m22=c;
+		return;
+	}
+	/**
+	 * 行列に、右手系のY軸回転を設定します。
+	 * @param i_radian
+	 */
+	public final void setRotateY(double i_radian)
+	{
+		double s=Math.sin(i_radian);
+		double c=Math.cos(i_radian);
+		this.identity();
+		this.m00=c;
+		this.m02=s;
+		this.m20=-s;
+		this.m22=c;
 	}	
+	/**
+	 * 行列に、右手系のZ軸回転を設定します。
+	 * @param i_radian
+	 */
+	public final void setRotateZ(double i_radian)
+	{
+		double s=Math.sin(i_radian);
+		double c=Math.cos(i_radian);
+		this.identity();
+		this.m00=c;
+		this.m01=-s;
+		this.m10=s;
+		this.m11=c;
+		
+	}
+	/**
+	 * 行列に、右手系の並行移動を設定します。
+	 * @param i_radian
+	 */
+	public final void setTranslate(double i_x,double i_y,double i_z)
+	{
+		this.identity();
+		this.m03=i_x;
+		this.m13=i_y;
+		this.m23=i_z;
+	}
+	/**
+	 * この行列をX軸回転します。
+	 * @param i_mat_r
+	 */
+	public final void rotateX(double i_radian)
+	{
+		double s=Math.sin(i_radian);
+		double c=Math.cos(i_radian);
+		
+		double t1,t2;
+		t1=this.m01;t2=this.m02;
+		this.m01=t1*c + t2*s;
+		this.m02=t1*(-s) + t2*c;
+		t1=this.m11;t2=this.m12;
+		this.m11=t1*c + t2*s;
+		this.m12=t1*(-s) + t2*c;
+		t1=this.m21;t2=this.m22;
+		this.m21=t1*c + t2*s;
+		this.m22=t1*(-s) + t2*c;		
+		t1=this.m31;t2=this.m32;
+		this.m31=t1*c + t2*s;
+		this.m32=t1*(-s) + t2*c;
+	}
+	/**
+	 * この行列をY軸回転します。
+	 * @param i_mat_r
+	 */
+	public final void rotateY(double i_radian)
+	{
+		double s=Math.sin(i_radian);
+		double c=Math.cos(i_radian);
+
+		double t1,t2;
+		t1=this.m00;t2=this.m02;
+		this.m00=t1*c + t2*(-s);
+		this.m02=t1*s + t2*c;
+		t1=this.m10;t2=this.m12;
+		this.m10=t1*c + t2*(-s);
+		this.m12=t1*s + t2*c;
+		t1=this.m20;t2=this.m22;
+		this.m20=t1*c + t2*(-s);
+		this.m22=t1*s + t2*c;
+		t1=this.m30;t2=this.m32;
+		this.m30=t1*c + t2*(-s);
+		this.m32=t1*s + t2*c;
+	}
+	/**
+	 * この姿勢行列をZ軸回転します。
+	 * @i_radian
+	 */
+	public final void rotateZ(double i_radian)
+	{
+		double s=Math.sin(i_radian);
+		double c=Math.cos(i_radian);
+		
+		double t1,t2;
+		t1=this.m00;t2=this.m01;
+		this.m00=t1*c + t2*s;
+		this.m01=t1*(-s) + t2*c;
+
+		t1=this.m10;t2=this.m11;
+		this.m10=t1*c + t2*s;
+		this.m11=t1*(-s) + t2*c;
+
+		t1=this.m20;t2=this.m21;
+		this.m20=t1*c + t2*s;
+		this.m21=t1*(-s) + t2*c;
+
+		t1=this.m30;t2=this.m31;
+		this.m30=t1*c + t2*s;
+		this.m31=t1*(-s) + t2*c;
+		return;
+	}
+	/**
+	 * この姿勢行列を右手系で平行移動します。
+	 * @param i_x
+	 * @param i_y
+	 * @param i_z
+	 */
+	public final void translate(double i_x,double i_y,double i_z)
+	{
+		this.m03=this.m00*i_x + this.m01*i_y + this.m02*i_z + this.m03;
+		this.m13=this.m10*i_x + this.m11*i_y + this.m12*i_z + this.m13;
+		this.m23=this.m20*i_x + this.m21*i_y + this.m22*i_z + this.m23;
+		this.m33=this.m30*i_x + this.m31*i_y + this.m32*i_z + this.m33;
+		return;
+	}
+	public static void main(String[] args)
+	{
+
+		try {
+			NyARDoubleMatrix44 t1 = new NyARDoubleMatrix44();
+			NyARDoubleMatrix44 t2 = new NyARDoubleMatrix44();
+			NyARDoubleMatrix44 t3 = new NyARDoubleMatrix44();
+			NyARDoubleMatrix44 t4 = new NyARDoubleMatrix44();
+			t1.m00=Math.random()*100;
+			t1.m01=Math.random()*100;
+			t1.m02=Math.random()*100;
+			t1.m03=Math.random()*100;
+			t1.m10=Math.random()*100;
+			t1.m11=Math.random()*100;
+			t1.m12=Math.random()*100;
+			t1.m13=Math.random()*100;
+			t1.m20=Math.random()*100;
+			t1.m21=Math.random()*100;
+			t1.m22=Math.random()*100;
+			t1.m23=Math.random()*100;
+			t1.m30=Math.random()*100;
+			t1.m31=Math.random()*100;
+			t1.m32=Math.random()*100;
+			t1.m33=Math.random()*100;
+			t2.setValue(t1);
+			t1.rotateZ(Math.PI*10/180);
+			t4.setRotateZ(Math.PI*10/180);
+			t3.mul(t2,t4);
+			System.out.print("");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}	
+	
 }

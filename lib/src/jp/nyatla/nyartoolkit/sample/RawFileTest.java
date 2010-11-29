@@ -82,7 +82,7 @@ public class RawFileTest
 		NyARSingleDetectMarker ar = new NyARSingleDetectMarker(
 				ap, code, 80.0,ra.getBufferType(),NyARSingleDetectMarker.PF_NYARTOOLKIT);
 		NyARTransMatResult result_mat = new NyARTransMatResult();
-		ar.setContinueMode(false);
+		ar.setContinueMode(true);
 		ar.detectMarkerLite(ra, 100);
 		ar.getTransmationMatrix(result_mat);
 
@@ -97,6 +97,7 @@ public class RawFileTest
 		NyARDoublePoint3d ang=new NyARDoublePoint3d();
 		result_mat.getZXYAngle(ang);
 		System.out.println(d.getTime() - d2.getTime());
+		System.out.print(		ar.getConfidence());
 	}
 
 	public static void main(String[] args)

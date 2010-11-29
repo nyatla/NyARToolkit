@@ -29,7 +29,7 @@ class TransformedBitmapPickup extends NyARColorPatt_Perspective_O2
 	 */
 	public TransformedBitmapPickup(NyARPerspectiveProjectionMatrix i_ref_cparam, int i_width, int i_height, int i_resolution)
 	{
-		super(i_width, i_height, i_resolution, 0);
+		super(i_width, i_height, i_resolution, 0,0);
 		this._ref_perspective = i_ref_cparam;
 	}
 

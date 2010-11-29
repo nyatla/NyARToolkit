@@ -25,47 +25,48 @@
 package jp.nyatla.nyartoolkit.core.utils;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
+
 
 /**
  * NyARPerspectiveParamGeneratorを最適化したクラスです。
  */
 public class NyARPerspectiveParamGenerator_O1 extends NyARPerspectiveParamGenerator
 {
-	public NyARPerspectiveParamGenerator_O1(int i_local_x, int i_local_y, int i_width, int i_height)
+	/**
+	 * コンストラクタです。
+	 * @param i_local_x
+	 * パラメータ計算の基準点を指定します。
+	 * @param i_local_y
+	 * パラメータ計算の基準点を指定します。
+	 */
+	public NyARPerspectiveParamGenerator_O1(int i_local_x, int i_local_y)
 	{
-		super(i_local_x,i_local_y, i_width, i_height);
+		super(i_local_x,i_local_y);
 		return;
 	}
 
-
-	final public boolean getParam(final NyARIntPoint2d[] i_vertex, double[] o_param) throws NyARException
+	
+	public final boolean getParam(int i_dest_w,int i_dest_h,double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4,double[] o_param)throws NyARException
 	{
-		final double ltx = this._local_x;
-		final double lty = this._local_y;
-		final double rbx = ltx + this._width;
-		final double rby = lty + this._height;
-
+		double ltx=this._local_x;
+		double lty=this._local_y;
+		double rbx=ltx+i_dest_w;
+		double rby=lty+i_dest_h;
 		double det_1;
 		double a13, a14, a23, a24, a33, a34, a43, a44;
 		double b11, b12, b13, b14, b21, b22, b23, b24, b31, b32, b33, b34, b41, b42, b43, b44;
 		double t1, t2, t3, t4, t5, t6;
-		double v1, v2, v3, v4;
 		double kx0, kx1, kx2, kx3, kx4, kx5, kx6, kx7;
 		double ky0, ky1, ky2, ky3, ky4, ky5, ky6, ky7;
 		{
-			v1 = i_vertex[0].x;
-			v2 = i_vertex[1].x;
-			v3 = i_vertex[2].x;
-			v4 = i_vertex[3].x;
-			a13 = -ltx * v1;
-			a14 = -lty * v1;
-			a23 = -rbx * v2;
-			a24 = -lty * v2;
-			a33 = -rbx * v3;
-			a34 = -rby * v3;
-			a43 = -ltx * v4;
-			a44 = -rby * v4;
+			a13 = -ltx * x1;
+			a14 = -lty * x1;
+			a23 = -rbx * x2;
+			a24 = -lty * x2;
+			a33 = -rbx * x3;
+			a34 = -rby * x3;
+			a43 = -ltx * x4;
+			a44 = -rby * x4;
 
 			t1 = a33 * a44 - a34 * a43;
 			t4 = a34 * ltx - rbx * a44;
@@ -123,28 +124,24 @@ public class NyARPerspectiveParamGenerator_O1 extends NyARPerspectiveParamGenera
 			}
 			det_1 = 1 / det_1;
 
-			kx0 = (b11 * v1 + b12 * v2 + b13 * v3 + b14 * v4) * det_1;
+			kx0 = (b11 * x1 + b12 * x2 + b13 * x3 + b14 * x4) * det_1;
 			kx1 = (b11 + b12 + b13 + b14) * det_1;
-			kx2 = (b21 * v1 + b22 * v2 + b23 * v3 + b24 * v4) * det_1;
+			kx2 = (b21 * x1 + b22 * x2 + b23 * x3 + b24 * x4) * det_1;
 			kx3 = (b21 + b22 + b23 + b24) * det_1;
-			kx4 = (b31 * v1 + b32 * v2 + b33 * v3 + b34 * v4) * det_1;
+			kx4 = (b31 * x1 + b32 * x2 + b33 * x3 + b34 * x4) * det_1;
 			kx5 = (b31 + b32 + b33 + b34) * det_1;
-			kx6 = (b41 * v1 + b42 * v2 + b43 * v3 + b44 * v4) * det_1;
+			kx6 = (b41 * x1 + b42 * x2 + b43 * x3 + b44 * x4) * det_1;
 			kx7 = (b41 + b42 + b43 + b44) * det_1;
 		}
 		{
-			v1 = i_vertex[0].y;
-			v2 = i_vertex[1].y;
-			v3 = i_vertex[2].y;
-			v4 = i_vertex[3].y;
-			a13 = -ltx * v1;
-			a14 = -lty * v1;
-			a23 = -rbx * v2;
-			a24 = -lty * v2;
-			a33 = -rbx * v3;
-			a34 = -rby * v3;
-			a43 = -ltx * v4;
-			a44 = -rby * v4;
+			a13 = -ltx * y1;
+			a14 = -lty * y1;
+			a23 = -rbx * y2;
+			a24 = -lty * y2;
+			a33 = -rbx * y3;
+			a34 = -rby * y3;
+			a43 = -ltx * y4;
+			a44 = -rby * y4;
 
 			t1 = a33 * a44 - a34 * a43;
 			t4 = a34 * ltx - rbx * a44;
@@ -202,13 +199,13 @@ public class NyARPerspectiveParamGenerator_O1 extends NyARPerspectiveParamGenera
 			}
 			det_1 = 1 / det_1;
 
-			ky0 = (b11 * v1 + b12 * v2 + b13 * v3 + b14 * v4) * det_1;
+			ky0 = (b11 * y1 + b12 * y2 + b13 * y3 + b14 * y4) * det_1;
 			ky1 = (b11 + b12 + b13 + b14) * det_1;
-			ky2 = (b21 * v1 + b22 * v2 + b23 * v3 + b24 * v4) * det_1;
+			ky2 = (b21 * y1 + b22 * y2 + b23 * y3 + b24 * y4) * det_1;
 			ky3 = (b21 + b22 + b23 + b24) * det_1;
-			ky4 = (b31 * v1 + b32 * v2 + b33 * v3 + b34 * v4) * det_1;
+			ky4 = (b31 * y1 + b32 * y2 + b33 * y3 + b34 * y4) * det_1;
 			ky5 = (b31 + b32 + b33 + b34) * det_1;
-			ky6 = (b41 * v1 + b42 * v2 + b43 * v3 + b44 * v4) * det_1;
+			ky6 = (b41 * y1 + b42 * y2 + b43 * y3 + b44 * y4) * det_1;
 			ky7 = (b41 + b42 + b43 + b44) * det_1;
 		}
 
@@ -231,4 +228,6 @@ public class NyARPerspectiveParamGenerator_O1 extends NyARPerspectiveParamGenera
 		o_param[4] = ky2 - F * ky3;
 		return true;
 	}
+
+
 }

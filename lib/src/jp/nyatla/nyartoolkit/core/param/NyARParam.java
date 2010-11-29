@@ -35,6 +35,7 @@ import java.nio.*;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 
 /**
  * typedef struct { int xsize, ysize; double mat[3][4]; double dist_factor[4]; } ARParam;
@@ -53,10 +54,18 @@ public class NyARParam
 		return this._screen_size;
 	}
 
+	/**
+	 * ARToolKit形式の透視変換行列を返します。
+	 * @return
+	 */
 	public NyARPerspectiveProjectionMatrix getPerspectiveProjectionMatrix()
 	{
 		return this._projection_matrix;
 	}
+	/**
+	 * ARToolKit形式の歪み補正パラメータを返します。
+	 * @return
+	 */
 	public NyARCameraDistortionFactor getDistortionFactor()
 	{
 		return this._dist;
@@ -109,6 +118,18 @@ public class NyARParam
 		this._screen_size.h = i_ysize;// newparam->ysize = ysize;
 		return;
 	}
+	/**
+	 * 右手系の視錐台を作ります。
+	 * 計算結果を多用するときは、キャッシュするようにして下さい。
+	 * @param i_dist_min
+	 * @param i_dist_max
+	 * @param o_frustum
+	 */
+	public void makeCameraFrustumRH(double i_dist_min,double i_dist_max,NyARDoubleMatrix44 o_frustum)
+	{
+		this._projection_matrix.makeCameraFrustumRH(this._screen_size.w, this._screen_size.h, i_dist_min, i_dist_max, o_frustum);
+		return;
+	}	
 
 
 	/**
@@ -123,7 +144,7 @@ public class NyARParam
 		try {
 			byte[] buf = new byte[SIZE_OF_PARAM_SET];
 			i_stream.read(buf);
-			double[] tmp=new double[12];
+			double[] tmp=new double[16];
 
 			// バッファを加工
 			ByteBuffer bb = ByteBuffer.wrap(buf);
@@ -134,6 +155,9 @@ public class NyARParam
 			for(int i=0;i<12;i++){
 				tmp[i]=bb.getDouble();
 			}
+			//パディング
+			tmp[12]=tmp[13]=tmp[14]=0;
+			tmp[15]=1;
 			//Projectionオブジェクトにセット
 			this._projection_matrix.setValue(tmp);
 			//double値を4個読み込む

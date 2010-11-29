@@ -54,7 +54,7 @@ public abstract class SingleARMarkerProcesser
 	/**
 	 * detectMarkerのコールバック関数
 	 */
-	private class DetectSquareCB implements NyARSquareContourDetector.IDetectMarkerCallback
+	private class DetectSquare extends NyARSquareContourDetector_Rle
 	{
 		//公開プロパティ
 		public final NyARSquare square=new NyARSquare();
@@ -72,8 +72,9 @@ public abstract class SingleARMarkerProcesser
 		private final NyARMatchPattResult __detectMarkerLite_mr=new NyARMatchPattResult();
 		private NyARCoord2Linear _coordline;
 		
-		public DetectSquareCB(NyARParam i_param)
+		public DetectSquare(NyARParam i_param) throws NyARException
 		{
+			super(i_param.getScreenSize());
 			this._match_patt=null;
 			this._coordline=new NyARCoord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
 			return;
@@ -82,13 +83,13 @@ public abstract class SingleARMarkerProcesser
 		{
 			/*unmanagedで実装するときは、ここでリソース解放をすること。*/
 			this._deviation_data=new NyARMatchPattDeviationColorData(i_code_resolution,i_code_resolution);
-			this._inst_patt=new NyARColorPatt_Perspective_O2(i_code_resolution,i_code_resolution,4,25);
+			this._inst_patt=new NyARColorPatt_Perspective_O2(i_code_resolution,i_code_resolution,4,25,25);
 			this._match_patt = new NyARMatchPatt_Color_WITHOUT_PCA[i_ref_code.length];
 			for(int i=0;i<i_ref_code.length;i++){
 				this._match_patt[i]=new NyARMatchPatt_Color_WITHOUT_PCA(i_ref_code[i]);
 			}
 		}
-		private NyARIntPoint2d[] __tmp_vertex=NyARIntPoint2d.createArray(4);
+		private NyARIntPoint2d[] __ref_vertex=new NyARIntPoint2d[4];
 		private int _target_id;
 		/**
 		 * Initialize call back handler.
@@ -105,21 +106,17 @@ public abstract class SingleARMarkerProcesser
 		 * 矩形が見付かるたびに呼び出されます。
 		 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
 		 */
-		public void onSquareDetect(NyARSquareContourDetector i_sender,int[] i_coordx,int[] i_coordy,int i_coor_num,int[] i_vertex_index) throws NyARException
+		protected void onSquareDetect(NyARIntCoordinates i_coord,int[] i_vertex_index)  throws NyARException
 		{
 			if (this._match_patt==null) {
 				return;
 			}
 			//輪郭座標から頂点リストに変換
-			NyARIntPoint2d[] vertex=this.__tmp_vertex;
-			vertex[0].x=i_coordx[i_vertex_index[0]];
-			vertex[0].y=i_coordy[i_vertex_index[0]];
-			vertex[1].x=i_coordx[i_vertex_index[1]];
-			vertex[1].y=i_coordy[i_vertex_index[1]];
-			vertex[2].x=i_coordx[i_vertex_index[2]];
-			vertex[2].y=i_coordy[i_vertex_index[2]];
-			vertex[3].x=i_coordx[i_vertex_index[3]];
-			vertex[3].y=i_coordy[i_vertex_index[3]];
+			NyARIntPoint2d[] vertex=this.__ref_vertex;
+			vertex[0]=i_coord.items[i_vertex_index[0]];
+			vertex[1]=i_coord.items[i_vertex_index[1]];
+			vertex[2]=i_coord.items[i_vertex_index[2]];
+			vertex[3]=i_coord.items[i_vertex_index[3]];
 		
 			//画像を取得
 			if (!this._inst_patt.pickFromRaster(this._ref_raster,vertex)){
@@ -182,11 +179,11 @@ public abstract class SingleARMarkerProcesser
 			//directionを考慮して、squareを更新する。
 			for(int i=0;i<4;i++){
 				int idx=(i+4 - dir) % 4;
-				this._coordline.coord2Line(i_vertex_index[idx],i_vertex_index[(idx+1)%4],i_coordx,i_coordy,i_coor_num,sq.line[i]);
+				this._coordline.coord2Line(i_vertex_index[idx],i_vertex_index[(idx+1)%4],i_coord,sq.line[i]);
 			}
 			for (int i = 0; i < 4; i++) {
 				//直線同士の交点計算
-				if(!NyARLinear.crossPos(sq.line[i],sq.line[(i + 3) % 4],sq.sqvertex[i])){
+				if(!sq.line[i].crossPos(sq.line[(i + 3) % 4],sq.sqvertex[i])){
 					throw new NyARException();//ここのエラー復帰するならダブルバッファにすればOK
 				}
 			}
@@ -199,8 +196,6 @@ public abstract class SingleARMarkerProcesser
 	private int _lost_delay_count = 0;
 
 	private int _lost_delay = 5;
-
-	private NyARSquareContourDetector _square_detect;
 
 	protected INyARTransMat _transmat;
 
@@ -229,7 +224,6 @@ public abstract class SingleARMarkerProcesser
 		
 		NyARIntSize scr_size = i_param.getScreenSize();
 		// 解析オブジェクトを作る
-		this._square_detect = new NyARSquareContourDetector_Rle(scr_size);
 		this._transmat = new NyARTransMat(i_param);
 		this._tobin_filter=new NyARRasterFilter_ARToolkitThreshold(110,i_raster_type);
 
@@ -238,7 +232,7 @@ public abstract class SingleARMarkerProcesser
 		this._threshold_detect=new NyARRasterThresholdAnalyzer_SlidePTile(15,i_raster_type,4);
 		this._initialized=true;
 		//コールバックハンドラ
-		this._detectmarker_cb=new DetectSquareCB(i_param);
+		this._detectmarker=new DetectSquare(i_param);
 		this._offset=new NyARRectOffset();
 		return;
 	}
@@ -260,7 +254,7 @@ public abstract class SingleARMarkerProcesser
 			reset(true);
 		}
 		//検出するマーカセット、情報、検出器を作り直す。(1ピクセル4ポイントサンプリング,マーカのパターン領域は50%)
-		this._detectmarker_cb.setNyARCodeTable(i_ref_code_table,i_code_resolution);
+		this._detectmarker.setNyARCodeTable(i_ref_code_table,i_code_resolution);
 		this._offset.setSquare(i_marker_width);
 		return;
 	}
@@ -275,7 +269,7 @@ public abstract class SingleARMarkerProcesser
 		this._current_arcode_index = -1;
 		return;
 	}
-	private DetectSquareCB _detectmarker_cb;
+	private DetectSquare _detectmarker;
 	public void detectMarker(INyARRgbRaster i_raster) throws NyARException
 	{
 		// サイズチェック
@@ -286,11 +280,11 @@ public abstract class SingleARMarkerProcesser
 		this._tobin_filter.doFilter(i_raster, this._bin_raster);
 
 		// スクエアコードを探す
-		this._detectmarker_cb.init(i_raster,this._current_arcode_index);
-		this._square_detect.detectMarkerCB(this._bin_raster,this._detectmarker_cb);
+		this._detectmarker.init(i_raster,this._current_arcode_index);
+		this._detectmarker.detectMarker(this._bin_raster);
 		
 		// 認識状態を更新
-		final boolean is_id_found=this.updateStatus(this._detectmarker_cb.square,this._detectmarker_cb.code_index);
+		final boolean is_id_found=this.updateStatus(this._detectmarker.square,this._detectmarker.code_index);
 		//閾値フィードバック(detectExistMarkerにもあるよ)
 		if(!is_id_found){
 			//マーカがなければ、探索+DualPTailで基準輝度検索
@@ -308,8 +302,8 @@ public abstract class SingleARMarkerProcesser
 	 */
 	public void setConfidenceThreshold(double i_new_cf,double i_exist_cf)
 	{
-		this._detectmarker_cb.cf_threshold_exist=i_exist_cf;
-		this._detectmarker_cb.cf_threshold_new=i_new_cf;
+		this._detectmarker.cf_threshold_exist=i_exist_cf;
+		this._detectmarker.cf_threshold_new=i_new_cf;
 	}
 
 	private NyARTransMatResult __NyARSquare_result = new NyARTransMatResult();
@@ -348,7 +342,7 @@ public abstract class SingleARMarkerProcesser
 			} else if (i_code_index == this._current_arcode_index) {// 同じARCodeの再認識
 				// イベント生成
 				// 変換行列を作成
-				this._transmat.transMatContinue(i_square, this._offset, result);
+				this._transmat.transMatContinue(i_square, this._offset, result,result);
 				// OnUpdate
 				this.onUpdateHandler(i_square, result);
 				this._lost_delay_count = 0;
