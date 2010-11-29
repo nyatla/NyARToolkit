@@ -3,6 +3,7 @@ package jp.nyatla.nyartoolkit.dev.rpf.utils;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
 import jp.nyatla.nyartoolkit.core.types.NyARVecLinear2d;
+import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinates;
 
 public class VecLinearCoordinatesOperator
@@ -11,12 +12,12 @@ public class VecLinearCoordinatesOperator
 	 * margeResembleCoordsで使う距離敷居値の値です。
 	 * 許容する((距離^2)*2)を指定します。
 	 */
-	private final static int _SQ_DIFF_DOT_TH=((5*5) * 2);
+	private final static int _SQ_DIFF_DOT_TH=((10*10) * 2);
 	/**
 	 * margeResembleCoordsで使う角度敷居値の値です。
 	 * Cos(n)の値です。
 	 */
-	private final static double _SQ_ANG_TH=0.99;
+	private final static double _SQ_ANG_TH=NyARMath.COS_DEG_10;
 
 	//ワーク
 	private NyARLinear _l1 = new NyARLinear();
@@ -93,8 +94,11 @@ public class VecLinearCoordinatesOperator
 		for(int i=0;i<i_vector.length;i++)
 		{
 			VecLinearCoordinates.NyARVecLinearPoint ptr=items[i];
-			ptr.x/= ptr.scalar;
-			ptr.y/= ptr.scalar;
+			double d=1/ptr.scalar;
+			ptr.x*=d;
+			ptr.y*=d;
+			ptr.dx*=d;
+			ptr.dy*=d;
 		}
 	}
 }

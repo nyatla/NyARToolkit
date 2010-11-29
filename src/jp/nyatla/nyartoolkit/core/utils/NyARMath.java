@@ -16,6 +16,9 @@ public class NyARMath
 
 	
 	public final static double COS_DEG_30=0.8660;
+	public final static double COS_DEG_25=0.9063;
+	public final static double COS_DEG_20=0.9396;
+	public final static double COS_DEG_15=0.9395;
 	public final static double COS_DEG_10=0.9848;
 	public final static double COS_DEG_8 =0.9902;
 	public final static double COS_DEG_5 =0.9961;

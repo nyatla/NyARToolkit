@@ -68,7 +68,7 @@ public class Test_NyARRealityGl_ARMarker implements GLEventListener, JmfCaptureL
 		//キャプチャ画像と互換性のあるRealitySourceを構築
 		this._src=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),i_param.getDistortionFactor(),2,100);
 		//OpenGL互換のRealityを構築		
-		this._reality=new NyARRealityGl(i_param.getPerspectiveProjectionMatrix(),i_param.getScreenSize(),10,10000,3,3);
+		this._reality=new NyARRealityGl(i_param.getPerspectiveProjectionMatrix(),i_param.getScreenSize(),10,10000,3,10);
 		//マーカライブラリ(ARTKId)の構築
 		this._mklib= new ARTKMarkerTable(10,16,16,25,25,4);
 		//マーカテーブルの作成（２種類）
@@ -153,9 +153,9 @@ public class Test_NyARRealityGl_ARMarker implements GLEventListener, JmfCaptureL
 						NyARDoubleMatrix44 m=t.refTransformMatrix();
 						this._reality.glLoadModelViewMatrix(this._gl,m);
 						_gl.glPushMatrix(); // Save world coordinate system.
-						_gl.glTranslatef(0f,0,40f); // Place base of cube on marker surface.
+						_gl.glTranslatef(0f,0,20f); // Place base of cube on marker surface.
 						_gl.glDisable(GL.GL_LIGHTING); // Just use colours.
-						NyARGLDrawUtil.drawColorCube(this._gl,80f);
+						NyARGLDrawUtil.drawColorCube(this._gl,40f);
 						_gl.glPopMatrix(); // Restore world coordinate system.
 						//マーカ情報の描画
 						_gl.glPushMatrix(); // Save world coordinate system.
@@ -211,7 +211,7 @@ public class Test_NyARRealityGl_ARMarker implements GLEventListener, JmfCaptureL
 				//ターゲットに一致するデータを検索
 				ARTKMarkerTable.GetBestMatchTargetResult r=new ARTKMarkerTable.GetBestMatchTargetResult();
 				if(this._mklib.getBestMatchTarget(t,this._src,r)){
-					if(r.confidence<0.7)
+					if(r.confidence<0.6)
 					{	//一致率が低すぎる。
 						return;
 					}
@@ -226,7 +226,7 @@ public class Test_NyARRealityGl_ARMarker implements GLEventListener, JmfCaptureL
 					t.tag=r;
 				}else{
 					//一致しないので、このターゲットは捨てる。
-					this._reality.changeTargetToDead(t);
+					this._reality.changeTargetToDead(t,15);
 				}
 			}
 		} catch (Exception e) {

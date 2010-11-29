@@ -52,7 +52,8 @@ public class NyARRealityTarget extends NyARManagedObject
 		}
 		return ret;
 	}
-	
+	/** 無効なシリアルID値*/
+	public final static int INVALID_REALITY_TARGET_ID=-1;
 	private static Object _serial_lock=new Object();
 	private static long _serial_counter=0;
 	

@@ -12,6 +12,7 @@ import javax.media.opengl.*;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.dev.rpf.mklib.RawbitSerialIdTable;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTarget;
@@ -63,9 +64,9 @@ public class Test_NyARRealityGl_IdMarker implements GLEventListener, JmfCaptureL
 		//Realityの構築
 		i_param.changeScreenSize(SCREEN_X, SCREEN_Y);	
 		//キャプチャ画像と互換性のあるRealitySourceを構築
-		this._src=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),i_param.getDistortionFactor(),2,100);
+		this._src=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),i_param.getDistortionFactor(),1,100);
 		//OpenGL互換のRealityを構築		
-		this._reality=new NyARRealityGl(i_param.getPerspectiveProjectionMatrix(),i_param.getScreenSize(),10,10000,3,3);
+		this._reality=new NyARRealityGl(i_param.getPerspectiveProjectionMatrix(),i_param.getScreenSize(),10,10000,3,10);
 		//マーカライブラリ(NyId)の構築
 		this._mklib= new RawbitSerialIdTable(10);
 		//マーカサイズテーブルの作成(とりあえず全部8cm)
@@ -165,6 +166,17 @@ public class Test_NyARRealityGl_IdMarker implements GLEventListener, JmfCaptureL
 						
 						break;
 					case NyARRealityTarget.RT_UNKNOWN:
+						NyARDoublePoint2d[] p=t.refTargetVertex();						
+						NyARGLDrawUtil.beginScreenCoordinateSystem(this._gl,SCREEN_X,SCREEN_Y,true);
+						_gl.glLineWidth(2);
+						_gl.glColor3f(1.0f,0.0f,0.0f);
+						_gl.glBegin(GL.GL_LINE_LOOP);
+						_gl.glVertex2d(p[0].x,p[0].y);
+						_gl.glVertex2d(p[1].x,p[1].y);
+						_gl.glVertex2d(p[2].x,p[2].y);
+						_gl.glVertex2d(p[3].x,p[3].y);
+						_gl.glEnd();
+						NyARGLDrawUtil.endScreenCoordinateSystem(this._gl);
 						
 						break;
 					}
@@ -204,8 +216,8 @@ public class Test_NyARRealityGl_IdMarker implements GLEventListener, JmfCaptureL
 					//遷移に成功したので、tagにユーザ定義情報を書きこむ。
 					t.tag=new Long(r.id);
 				}else{
-					//一致しないので、このターゲットは捨てる。
-					this._reality.changeTargetToDead(t);
+					//一致しないので、このターゲットは捨てる。(15フレーム無視)
+					this._reality.changeTargetToDead(t,15);
 				}
 			}
 		} catch (Exception e) {

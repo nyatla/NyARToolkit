@@ -289,6 +289,13 @@ public class NyARTracker
 			this.changeStatusToIgnore(i_contoure_target,LIFE_OF_IGNORE_FROM_CONTOUR);
 			return;
 		}
+		if(i_contoure_target._delay_tick>20)
+		{
+			this.changeStatusToIgnore(i_contoure_target,LIFE_OF_IGNORE_FROM_CONTOUR);
+			return;
+			//一定の期間updateができなければ、ignoreへ遷移
+		}
+
 		NyARContourTargetStatus st=(NyARContourTargetStatus)i_contoure_target._ref_status;
 		//coordステータスを生成
 		NyARRectTargetStatus c=this.rect_pool.newObject();
@@ -627,6 +634,7 @@ public class NyARTracker
 	private final NyARTarget changeStatusToCntoure(NyARTarget i_target,NyARContourTargetStatus i_c)
 	{
 		//遷移元のステータスを制限
+		assert(i_c!=null);
 		assert(i_target._st_type==NyARTargetStatus.ST_NEW);
 		//個数制限
 		if(this._number_of_contoure>=this.MAX_NUMBER_OF_CONTURE){

@@ -187,8 +187,8 @@ public class Test_TrackTerget extends Frame
 	private static final long serialVersionUID = -2110888320986446576L;
 
 
-	private int W = 640;
-	private int H = 480;
+	private int W = 320;
+	private int H = 240;
 	InputSource _input_source;
 	public Test_TrackTerget(NyARCameraDistortionFactor p) throws NyARException, Exception
 	{
@@ -196,11 +196,11 @@ public class Test_TrackTerget extends Frame
 		Insets ins = this.getInsets();
 		this.setSize(1024 + ins.left + ins.right, 768 + ins.top + ins.bottom);
 		
-	this._input_source=new ImageSource(SAMPLE_FILES);
+//	this._input_source=new ImageSource(SAMPLE_FILES);
 //		this._input_source=new MoveSource();
 		this._input_source=new LiveSource(W,H);
 		//create sampler
-		this.tracksource=new NyARTrackerSource_Reference(100,p,W, H, 1,false);
+		this.tracksource=new NyARTrackerSource_Reference(100,p,W, H, 2,false);
 		_tmp_bf=new BufferedImage(W, H,BufferedImage.TYPE_INT_RGB);
 		
 		//create tracker
@@ -222,14 +222,13 @@ public class Test_TrackTerget extends Frame
     {
 		try {
 			// マーカーを検出
-			Date d2 = new Date();
+			long s=System.currentTimeMillis();
 			for (int i = 0; i < 1; i++) {
 				//tracker更新
 				this._input_source.UpdateInput(this.tracksource);
 				this.tracker.progress(this.tracksource);
 			}
-			Date d = new Date();
-			System.out.println(d.getTime() - d2.getTime());
+			System.out.println(System.currentTimeMillis() -s);
 
 			Thread.sleep(30);
 			
@@ -316,10 +315,10 @@ public class Test_TrackTerget extends Frame
     	Graphics g=sink.getGraphics();
     	g.setColor(c);
 		g.drawString("CT",t._sample_area.x,t._sample_area.y);
-		g.drawRect(t._sample_area.x,t._sample_area.y,t._sample_area.w,t._sample_area.h);
+//		g.drawRect(t._sample_area.x,t._sample_area.y,t._sample_area.w,t._sample_area.h);
 		NyARContourTargetStatus st=(NyARContourTargetStatus)t._ref_status;
-//		VecLinearCoordinatesOperator vp=new VecLinearCoordinatesOperator();
-//		vp.margeResembleCoords(st.vecpos);
+		VecLinearCoordinatesOperator vp=new VecLinearCoordinatesOperator();
+		vp.margeResembleCoords(st.vecpos);
 		for(int i2=0;i2<st.vecpos.length;i2++){
 //		for(int i2=43;i2<44;i2++){
 //			g.drawString(i2+":"+"-"+t._delay_tick,(int)st.vecpos.items[i2].x-1, (int)st.vecpos.items[i2].y-1);
@@ -327,8 +326,9 @@ public class Test_TrackTerget extends Frame
 			double co,si;
 			co=st.vecpos.items[i2].dx;
 			si=st.vecpos.items[i2].dy;
-			co/=Math.sqrt(co*co+si*si);
-			si/=Math.sqrt(co*co+si*si);
+			double p=Math.sqrt(co*co+si*si);
+			co/=p;
+			si/=p;
 			double ss=st.vecpos.items[i2].scalar*3;
 			g.drawLine(
 				(int)st.vecpos.items[i2].x,

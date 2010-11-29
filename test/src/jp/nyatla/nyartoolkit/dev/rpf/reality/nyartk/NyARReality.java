@@ -417,20 +417,32 @@ public class NyARReality
 		this._number_of_known++;
 		return true;
 	}
-	
 	/**
-	 * 指定したKnown,またはUnknownターゲットを、ターゲットをDeadターゲットにします。
+	 * 指定したKnown,またはUnknownターゲットを、50サイクルの間Deadターゲットにします。
 	 * Deadターゲットは次回のサイクルでRealityターゲットリストから削除され、一定のサイクル期間の間システムから無視されます。
 	 * @param i_item
 	 * @throws NyARException 
-	 */
+	 */	
 	public final void changeTargetToDead(NyARRealityTarget i_item) throws NyARException
+	{
+		changeTargetToDead(i_item,50);
+	}
+	
+	/**
+	 * 指定したKnown,またはUnknownターゲットを、Deadターゲットにします。
+	 * Deadターゲットは次回のサイクルでRealityターゲットリストから削除され、一定のサイクル期間の間システムから無視されます。
+	 * @param i_item
+	 * @param i_dead_cycle
+	 * 無視するサイクルを指定します。1サイクルは1フレームです。デフォルトは50です。
+	 * @throws NyARException 
+	 */
+	public final void changeTargetToDead(NyARRealityTarget i_item,int i_dead_cycle) throws NyARException
 	{
 		assert(i_item._target_type==NyARRealityTarget.RT_UNKNOWN || i_item._target_type==NyARRealityTarget.RT_KNOWN);
 		//IG検出して遷移した場合
 		if(i_item._ref_tracktarget._st_type!=NyARTargetStatus.ST_IGNORE){
 			//所有するトラックターゲットがIGNOREに設定
-			this._tracker.changeStatusToIgnore(i_item._ref_tracktarget,50);
+			this._tracker.changeStatusToIgnore(i_item._ref_tracktarget,i_dead_cycle);
 		}
 		//数の調整
 		if(i_item._target_type==NyARRealityTarget.RT_UNKNOWN){

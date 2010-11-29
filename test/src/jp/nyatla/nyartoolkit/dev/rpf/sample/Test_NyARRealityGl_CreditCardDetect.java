@@ -82,9 +82,9 @@ public class Test_NyARRealityGl_CreditCardDetect implements GLEventListener, Jmf
 		//Realityの構築
 		i_param.changeScreenSize(SCREEN_X, SCREEN_Y);	
 		//キャプチャ画像と互換性のあるRealitySourceを構築
-		this._src=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),i_param.getDistortionFactor(),1,100);
+		this._src=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),i_param.getDistortionFactor(),2,100);
 		//OpenGL互換のRealityを構築		
-		this._reality=new NyARRealityGl(i_param.getPerspectiveProjectionMatrix(),i_param.getScreenSize(),10,10000,3,3);
+		this._reality=new NyARRealityGl(i_param.getPerspectiveProjectionMatrix(),i_param.getScreenSize(),10,10000,3,10);
 		//マーカライブラリ(比率推定)の構築
 		this._mklib= new CardDetect();
 
@@ -188,7 +188,7 @@ public class Test_NyARRealityGl_CreditCardDetect implements GLEventListener, Jmf
 						if(tag==null){
 							break;
 						}
-						if(t.getGrabbRate()<50){
+						if(t.getGrabbRate()<20){
 							break;
 						}
 						if(tag.last_status==CardDetect.MORE_FRONT_CENTER)
@@ -199,7 +199,6 @@ public class Test_NyARRealityGl_CreditCardDetect implements GLEventListener, Jmf
 							_gl.glColor3d(c,c, 0.0);
 							_gl.glLineWidth(2);
 							NyARGLDrawUtil.beginScreenCoordinateSystem(this._gl,SCREEN_X,SCREEN_Y,true);
-//							NyARGLDrawUtil.drawText("moreCenter",1.0f);
 							_gl.glBegin(GL.GL_LINE_LOOP);
 							_gl.glVertex2d(p[0].x,p[0].y);
 							_gl.glVertex2d(p[1].x,p[1].y);
@@ -213,6 +212,29 @@ public class Test_NyARRealityGl_CreditCardDetect implements GLEventListener, Jmf
 							t.getTargetCenter(cp);
 							_gl.glTranslated(cp.x,SCREEN_Y-cp.y,1);
 							NyARGLDrawUtil.drawText("Please view the card from the front. "+t.getGrabbRate(),1f);
+							NyARGLDrawUtil.endScreenCoordinateSystem(this._gl);
+							
+						}else if(tag.last_status==CardDetect.ESTIMATE_NOW)
+						{
+							NyARDoublePoint2d[] p=t.refTargetVertex();
+							//もっと真ん中から写せメッセージ
+							double c=Math.sin((clock%45*8)*Math.PI/180);
+							_gl.glColor3d(0,c, 0.0);
+							_gl.glLineWidth(2);
+							NyARGLDrawUtil.beginScreenCoordinateSystem(this._gl,SCREEN_X,SCREEN_Y,true);
+							_gl.glBegin(GL.GL_LINE_LOOP);
+							_gl.glVertex2d(p[0].x,p[0].y);
+							_gl.glVertex2d(p[1].x,p[1].y);
+							_gl.glVertex2d(p[2].x,p[2].y);
+							_gl.glVertex2d(p[3].x,p[3].y);
+							_gl.glEnd();
+							NyARGLDrawUtil.endScreenCoordinateSystem(this._gl);
+							NyARGLDrawUtil.beginScreenCoordinateSystem(this._gl,SCREEN_X,SCREEN_Y,false);
+							NyARGLDrawUtil.setFontColor(t.getGrabbRate()<50?Color.RED:Color.BLUE);
+							NyARIntPoint2d cp=new NyARIntPoint2d();
+							t.getTargetCenter(cp);
+							_gl.glTranslated(cp.x,SCREEN_Y-cp.y,1);
+							NyARGLDrawUtil.drawText("Check card size...",1f);
 							NyARGLDrawUtil.endScreenCoordinateSystem(this._gl);
 							
 						}
@@ -255,7 +277,7 @@ public class Test_NyARRealityGl_CreditCardDetect implements GLEventListener, Jmf
 						switch(r.last_status){
 						case CardDetect.ESTIMATE_COMPLETE:
 							//レートチェック(17/11(1.54)くらいならクレジットカードサイズ。)
-							if(1.45<r.rate && r.rate<1.65){
+							if(1.35<r.rate && r.rate<1.75){
 								//クレジットカードサイズをセット
 								if(!this._reality.changeTargetToKnown(t,r.artk_direction,85,55)){
 									//遷移の成功チェック
@@ -263,11 +285,13 @@ public class Test_NyARRealityGl_CreditCardDetect implements GLEventListener, Jmf
 								}
 							}else{
 								//サイズ違う？
-								this._reality.changeTargetToDead(t);
+								this._reality.changeTargetToDead(t,50);
 							}
 							break;
+						case CardDetect.ESTIMATE_NOW:
+							break;
 						case CardDetect.FAILED_ESTIMATE:
-							this._reality.changeTargetToDead(t);
+							this._reality.changeTargetToDead(t,15);
 							break;
 						}
 					default:

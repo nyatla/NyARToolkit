@@ -37,6 +37,10 @@ public class CardDetect
 		 * </ul>
 		 */
 		public int last_status;
+		public UnknownRectInfo()
+		{
+			this._target_serial=NyARRealityTarget.INVALID_REALITY_TARGET_ID;
+		}
 	}
 	public final static int MORE_FRONT_CENTER=0;
 	public final static int ESTIMATE_NOW=1;
@@ -86,7 +90,7 @@ public class CardDetect
 		t2=d2+d4*0.5;
 		t3=t/t2;
 		t3=t3<1?1/t3:t3;
-		if(io_result._target_serial==0){
+		if(io_result._target_serial==NyARRealityTarget.INVALID_REALITY_TARGET_ID){
 			//サイクルをリセット
 			io_result._target_serial=i_target.getSerialId();
 			io_result.rate=t3;

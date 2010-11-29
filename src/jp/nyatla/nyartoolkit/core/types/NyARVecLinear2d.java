@@ -51,6 +51,15 @@ public class NyARVecLinear2d
 		double d=(x1*x2+y1*y2)/Math.sqrt((x1*x1+y1*y1)*(x2*x2+y2*y2));
 		return d;
 	}
+	public final double getAbsVecCos(NyARVecLinear2d i_v1)
+	{
+		double x1=i_v1.dx;
+		double y1=i_v1.dy;
+		double x2=this.dx;
+		double y2=this.dy;
+		double d=(x1*x2+y1*y2)/Math.sqrt((x1*x1+y1*y1)*(x2*x2+y2*y2));
+		return d>=0?d:-d;
+	}
 	/**
 	 * このベクトルと指定したベクトルが作るCos値を返します。
 	 * @param i_dx
