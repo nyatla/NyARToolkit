@@ -333,7 +333,7 @@ public class NyARDetectMarker
 	{
 		this._is_continue = i_is_continue;
 	}
-	public NyARSquare refSquare(inth i_index)
+	public NyARSquare refSquare(int i_index)
 	{
 		return this._detect_cb.result_stack.getItem(i_index).square;
 	}
