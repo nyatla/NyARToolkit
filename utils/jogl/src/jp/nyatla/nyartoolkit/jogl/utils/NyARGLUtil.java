@@ -30,14 +30,6 @@
  */
 package jp.nyatla.nyartoolkit.jogl.utils;
 
-import java.awt.Font;
-import java.nio.*;
-import javax.media.opengl.GL;
-
-import com.sun.opengl.util.j2d.TextRenderer;
-
-import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
 import jp.nyatla.nyartoolkit.core.types.*;
