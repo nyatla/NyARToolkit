@@ -78,7 +78,7 @@ public class J3dNyARRaster_RGB extends JmfNyARRaster_RGB
 
 	public J3dNyARRaster_RGB(NyARParam i_cparam,VideoFormat i_format) throws NyARException
 	{
-		super(i_cparam.getScreenSize(),i_format);
+		super(i_format);
 		//bufferdimageの種類を決める
 		if(this.getBufferType()!=NyARBufferType.BYTE1D_B8G8R8_24){
 			throw new NyARException();
