@@ -8,13 +8,9 @@ import jp.nyatla.nyartoolkit.core.match.NyARMatchPatt_Color_WITHOUT_PCA;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.rasterreader.NyARPerspectiveRasterReader;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
-import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
-import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTarget;
-import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource;
-import jp.nyatla.nyartoolkit.nyidmarker.*;
-import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerDataEncoder_RawBit;
-import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerData_RawBit;
+import jp.nyatla.nyartoolkit.rpf.reality.nyartk.NyARRealityTarget;
+import jp.nyatla.nyartoolkit.rpf.realitysource.nyartk.NyARRealitySource;
 
 /**
  * 簡易なARToolKitパターンテーブルです。
