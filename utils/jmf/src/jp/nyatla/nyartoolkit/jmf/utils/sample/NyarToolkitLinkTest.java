@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  * 
  */
-package jp.nyatla.nyartoolkit.jmf.utils.sample;
+package jp.nyatla.nyartoolkit.jmf.sample;
 
 import javax.media.*;
 
