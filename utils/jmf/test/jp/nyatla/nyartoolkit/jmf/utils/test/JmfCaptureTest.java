@@ -23,7 +23,7 @@
  * 
  */
 
-package jp.nyatla.nyartoolkit.jmf.utils.sample;
+package jp.nyatla.nyartoolkit.jmf.utils.test;
 
 import javax.media.*;
 

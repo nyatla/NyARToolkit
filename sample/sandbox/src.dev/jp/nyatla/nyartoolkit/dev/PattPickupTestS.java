@@ -31,7 +31,7 @@ import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
 import jp.nyatla.nyartoolkit.nyidmarker.*;
-import jp.nyatla.nyartoolkit.sample.RawFileTest;
+import jp.nyatla.nyartoolkit.test.RawFileTest;
 import jp.nyatla.nyartoolkit.utils.j2se.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.*;
 import jp.nyatla.nyartoolkit.core.pickup.*;
