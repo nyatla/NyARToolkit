@@ -5,6 +5,7 @@
 	<classpathentry kind="src" path="JavaSimpleLite_ImageSource"/>
 	<classpathentry kind="src" path="SingleARMarker"/>
 	<classpathentry kind="src" path="SingleNyIdMarker"/>
+	<classpathentry kind="src" path="src.rpf"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolKit"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolkit.utils.jmf"/>
