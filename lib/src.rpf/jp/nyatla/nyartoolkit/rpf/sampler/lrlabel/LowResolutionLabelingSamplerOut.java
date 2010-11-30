@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel;
+package jp.nyatla.nyartoolkit.rpf.sampler.lrlabel;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;

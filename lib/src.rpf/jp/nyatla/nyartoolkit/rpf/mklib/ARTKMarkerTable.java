@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.dev.rpf.mklib;
+package jp.nyatla.nyartoolkit.rpf.mklib;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARCode;
@@ -12,7 +12,6 @@ import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTarget;
 import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARRectTargetStatus;
 import jp.nyatla.nyartoolkit.nyidmarker.*;
 import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerDataEncoder_RawBit;
 import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerData_RawBit;

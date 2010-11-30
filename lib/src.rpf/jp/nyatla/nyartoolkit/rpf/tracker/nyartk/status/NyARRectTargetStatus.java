@@ -1,12 +1,12 @@
-package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status;
+package jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status;
 
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
-import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARVectorReader_INT1D_GRAY_8;
-import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinates;
+import jp.nyatla.nyartoolkit.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARVectorReader_INT1D_GRAY_8;
+import jp.nyatla.nyartoolkit.rpf.utils.VecLinearCoordinates;
 
 
 

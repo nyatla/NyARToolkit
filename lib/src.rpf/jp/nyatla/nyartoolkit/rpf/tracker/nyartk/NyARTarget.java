@@ -1,10 +1,10 @@
-package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
+package jp.nyatla.nyartoolkit.rpf.tracker.nyartk;
 
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.utils.NyARManagedObject;
-import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARTargetStatus;
+import jp.nyatla.nyartoolkit.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status.NyARTargetStatus;
 
 /**
  * トラッキングターゲットのクラスです。

@@ -1,12 +1,12 @@
-package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status;
+package jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
 import jp.nyatla.nyartoolkit.core.utils.NyARManagedObjectPool;
-import jp.nyatla.nyartoolkit.dev.rpf.utils.LineBaseVertexDetector;
-import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinates;
-import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinatesOperator;
+import jp.nyatla.nyartoolkit.rpf.utils.LineBaseVertexDetector;
+import jp.nyatla.nyartoolkit.rpf.utils.VecLinearCoordinates;
+import jp.nyatla.nyartoolkit.rpf.utils.VecLinearCoordinatesOperator;
 
 
 public class NyARRectTargetStatusPool extends NyARManagedObjectPool<NyARRectTargetStatus>

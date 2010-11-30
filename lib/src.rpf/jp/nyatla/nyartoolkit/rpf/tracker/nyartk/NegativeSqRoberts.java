@@ -22,7 +22,7 @@
  *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
+package jp.nyatla.nyartoolkit.rpf.tracker.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;

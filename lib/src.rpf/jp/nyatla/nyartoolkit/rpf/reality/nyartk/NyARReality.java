@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk;
+package jp.nyatla.nyartoolkit.rpf.reality.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
@@ -12,12 +12,12 @@ import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat_ARToolKit;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
-import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource;
-import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSampler;
-import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.*;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARRectTargetStatus;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARTargetStatus;
+import jp.nyatla.nyartoolkit.rpf.realitysource.nyartk.NyARRealitySource;
+import jp.nyatla.nyartoolkit.rpf.sampler.lrlabel.LowResolutionLabelingSampler;
+import jp.nyatla.nyartoolkit.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.*;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status.NyARRectTargetStatus;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status.NyARTargetStatus;
 
 
 

@@ -1,10 +1,10 @@
-package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
+package jp.nyatla.nyartoolkit.rpf.tracker.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARPointerStack;
 import jp.nyatla.nyartoolkit.core.utils.NyARDistMap;
-import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.*;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.*;
+import jp.nyatla.nyartoolkit.rpf.sampler.lrlabel.*;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status.*;
 
 
 

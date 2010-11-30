@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.dev.rpf.sample;
+package jp.nyatla.nyartoolkit.rpf.sample;
 
 import java.awt.*;
 import java.awt.color.*;
@@ -30,14 +30,14 @@ import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_RGB;
 //import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcHolder.AreaSrcItem;
-import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.*;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTarget;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTracker;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTrackerSource_Reference;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARContourTargetStatus;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARRectTargetStatus;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARTargetStatus;
-import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinatesOperator;
+import jp.nyatla.nyartoolkit.rpf.sampler.lrlabel.*;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARTarget;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARTracker;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARTrackerSource_Reference;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status.NyARContourTargetStatus;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status.NyARRectTargetStatus;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status.NyARTargetStatus;
+import jp.nyatla.nyartoolkit.rpf.utils.VecLinearCoordinatesOperator;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDevice;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDeviceList;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;

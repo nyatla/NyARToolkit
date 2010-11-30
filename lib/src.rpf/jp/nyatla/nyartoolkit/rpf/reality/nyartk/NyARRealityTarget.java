@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk;
+package jp.nyatla.nyartoolkit.rpf.reality.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
@@ -11,9 +11,9 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.core.utils.NyARManagedObject;
-import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTarget;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARRectTargetStatus;
+import jp.nyatla.nyartoolkit.rpf.realitysource.nyartk.NyARRealitySource;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARTarget;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status.NyARRectTargetStatus;
 
 /**
  * Realityターゲットを定義します。

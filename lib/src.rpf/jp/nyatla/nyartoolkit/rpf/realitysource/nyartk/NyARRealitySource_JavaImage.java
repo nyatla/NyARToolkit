@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk;
+package jp.nyatla.nyartoolkit.rpf.realitysource.nyartk;
 
 import java.awt.image.BufferedImage;
 
@@ -7,9 +7,8 @@ import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve;
 import jp.nyatla.nyartoolkit.core.rasterreader.NyARPerspectiveRasterReader;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTrackerSource;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTrackerSource_Reference;
-import jp.nyatla.nyartoolkit.jmf.utils.JmfNyARRaster_RGB;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARTrackerSource;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARTrackerSource_Reference;
 import jp.nyatla.nyartoolkit.utils.j2se.NyARBufferedImageRaster;
 
 /**

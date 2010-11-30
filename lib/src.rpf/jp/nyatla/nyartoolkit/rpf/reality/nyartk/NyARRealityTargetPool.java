@@ -1,11 +1,11 @@
-package jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk;
+package jp.nyatla.nyartoolkit.rpf.reality.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.utils.NyARManagedObjectPool;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTarget;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARTarget;
 
 public class NyARRealityTargetPool extends NyARManagedObjectPool<NyARRealityTarget>
 {

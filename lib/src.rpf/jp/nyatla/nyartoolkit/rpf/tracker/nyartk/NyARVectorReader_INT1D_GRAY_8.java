@@ -22,7 +22,7 @@
  *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
+package jp.nyatla.nyartoolkit.rpf.tracker.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
@@ -30,8 +30,8 @@ import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARContourPickup;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
-import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinates;
-import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinates.NyARVecLinearPoint;
+import jp.nyatla.nyartoolkit.rpf.utils.VecLinearCoordinates;
+import jp.nyatla.nyartoolkit.rpf.utils.VecLinearCoordinates.NyARVecLinearPoint;
 
 /**
  * グレイスケールラスタに対する、特殊な画素アクセス手段を提供します。

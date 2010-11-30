@@ -1,7 +1,5 @@
-package jp.nyatla.nyartoolkit.dev.rpf.utils;
+package jp.nyatla.nyartoolkit.rpf.utils;
 
-import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
-import jp.nyatla.nyartoolkit.core.types.NyARLinear;
 import jp.nyatla.nyartoolkit.core.types.NyARVecLinear2d;
 
 public class VecLinearCoordinates

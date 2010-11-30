@@ -1,9 +1,8 @@
-package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
+package jp.nyatla.nyartoolkit.rpf.tracker.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
-import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARReality;
-import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
+import jp.nyatla.nyartoolkit.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
 
 /**
  * LowResolutionLabelingSamplerへの入力コンテナの抽象クラスです。

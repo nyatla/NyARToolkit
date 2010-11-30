@@ -1,10 +1,10 @@
-package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status;
+package jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTrackerSource;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARVectorReader_INT1D_GRAY_8;
-import jp.nyatla.nyartoolkit.dev.rpf.utils.VecLinearCoordinates;
+import jp.nyatla.nyartoolkit.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARTrackerSource;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARVectorReader_INT1D_GRAY_8;
+import jp.nyatla.nyartoolkit.rpf.utils.VecLinearCoordinates;
 
 /**
  * 輪郭ソース1個を格納するクラスです。

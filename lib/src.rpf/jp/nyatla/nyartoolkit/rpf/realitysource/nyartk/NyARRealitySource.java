@@ -1,28 +1,12 @@
-package jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk;
-
-import java.awt.image.BufferedImage;
-
-import javax.media.Buffer;
-import javax.media.format.VideoFormat;
+package jp.nyatla.nyartoolkit.rpf.realitysource.nyartk;
 
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
-import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_RGB;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve;
 import jp.nyatla.nyartoolkit.core.rasterreader.NyARPerspectiveRasterReader;
-import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
-import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
-import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
-import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
-import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
-import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.*;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTrackerSource;
-import jp.nyatla.nyartoolkit.jmf.utils.JmfNyARRaster_RGB;
-import jp.nyatla.nyartoolkit.utils.j2se.NyARBufferedImageRaster;
-import jp.nyatla.nyartoolkit.utils.j2se.NyARRasterImageIO;
-import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.*;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARTrackerSource;
+
+import jp.nyatla.nyartoolkit.rpf.reality.nyartk.*;
 /**
  * NyARRealityクラスの入力コンテナです。
  * NyARRealityへ入力する情報セットを定義します。

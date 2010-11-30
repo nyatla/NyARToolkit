@@ -1,10 +1,8 @@
-package jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk;
+package jp.nyatla.nyartoolkit.rpf.tracker.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.stack.*;
-import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.*;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARContourTargetStatus;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARRectTargetStatus;
+import jp.nyatla.nyartoolkit.rpf.sampler.lrlabel.*;
 
 public class NyARTargetList extends NyARPointerStack<NyARTarget>
 {

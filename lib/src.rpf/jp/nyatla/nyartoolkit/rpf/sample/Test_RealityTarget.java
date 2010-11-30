@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.dev.rpf.sample;
+package jp.nyatla.nyartoolkit.rpf.sample;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -17,15 +17,15 @@ import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
-import jp.nyatla.nyartoolkit.dev.rpf.mklib.ARTKMarkerTable;
-import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARReality;
-import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTarget;
-import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTargetList;
-import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource;
-import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource_JavaImage;
-import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource_Jmf;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARRectTargetStatus;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.status.NyARTargetStatus;
+import jp.nyatla.nyartoolkit.rpf.mklib.ARTKMarkerTable;
+import jp.nyatla.nyartoolkit.rpf.reality.nyartk.NyARReality;
+import jp.nyatla.nyartoolkit.rpf.reality.nyartk.NyARRealityTarget;
+import jp.nyatla.nyartoolkit.rpf.reality.nyartk.NyARRealityTargetList;
+import jp.nyatla.nyartoolkit.rpf.realitysource.nyartk.NyARRealitySource;
+import jp.nyatla.nyartoolkit.rpf.realitysource.nyartk.NyARRealitySource_JavaImage;
+import jp.nyatla.nyartoolkit.rpf.realitysource.nyartk.NyARRealitySource_Jmf;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status.NyARRectTargetStatus;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status.NyARTargetStatus;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.utils.j2se.*;
 

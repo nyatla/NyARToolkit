@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.dev.rpf.sample;
+package jp.nyatla.nyartoolkit.rpf.sample;
 
 import java.awt.Frame;
 import java.awt.Insets;
@@ -13,10 +13,10 @@ import javax.media.opengl.*;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
-import jp.nyatla.nyartoolkit.dev.rpf.mklib.RawbitSerialIdTable;
-import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTarget;
-import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTargetList;
-import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource_Jmf;
+import jp.nyatla.nyartoolkit.rpf.mklib.RawbitSerialIdTable;
+import jp.nyatla.nyartoolkit.rpf.reality.nyartk.NyARRealityTarget;
+import jp.nyatla.nyartoolkit.rpf.reality.nyartk.NyARRealityTargetList;
+import jp.nyatla.nyartoolkit.rpf.realitysource.nyartk.NyARRealitySource_Jmf;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDevice;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDeviceList;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
