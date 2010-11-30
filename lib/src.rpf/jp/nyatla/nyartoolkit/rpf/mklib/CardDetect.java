@@ -1,10 +1,9 @@
-package jp.nyatla.nyartoolkit.dev.rpf.mklib;
+package jp.nyatla.nyartoolkit.rpf.mklib;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
-import jp.nyatla.nyartoolkit.dev.rpf.mklib.RawbitSerialIdTable.IdentifyIdResult;
-import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTarget;
-import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource;
+import jp.nyatla.nyartoolkit.rpf.reality.nyartk.NyARRealityTarget;
+
 /**
  * 未知の矩形を認識するサンプル。
  * 絶対的な寸法は求められないので、矩形の辺比率を推定して返します。

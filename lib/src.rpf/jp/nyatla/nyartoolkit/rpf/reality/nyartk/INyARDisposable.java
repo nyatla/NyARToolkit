@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk;
+package jp.nyatla.nyartoolkit.rpf.reality.nyartk;
 
 /**
  * オブジェクトの破棄タイミングを受け取るインタフェイスです。
