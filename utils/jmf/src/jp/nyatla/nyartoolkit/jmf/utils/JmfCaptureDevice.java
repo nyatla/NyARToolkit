@@ -8,6 +8,10 @@ import javax.media.format.*;
 import javax.media.protocol.*;
 import jp.nyatla.nyartoolkit.*;
 
+/**
+ * 1個のキャプチャデバイスを管理するクラスです。
+ * キャプチャデバイスの走査（開始・停止）、プロパティの取得・設定機能を提供します。
+ */
 public class JmfCaptureDevice
 {
 	private JmfCaptureListener _capture_listener;
@@ -28,20 +32,27 @@ public class JmfCaptureDevice
 	/**
 	 * サポートしているフォーマットの一覧を返します。
 	 * @return
+	 * サポートしているフォーマットを格納した配列。
 	 */
 	public Format[] getSupportFormats()
 	{
 		return this._info.getFormats();
 	}
-
+	/**
+	 * 現在のキャプチャフォーマットを返します。
+	 * @return
+	 * 現在設定してあるフォーマット。
+	 */
 	public final VideoFormat getCaptureFormat()
 	{
 		return this._capture_format;
 	}
 
 	/**
-	 * このキャプチャデバイスの提供する、i_index番目のフォーマットをキャプチャフォーマットに指定します。
+	 * 現在のキャプチャフォーマットを、指定したインデクス番号のフォーマットに指定します。
+	 * インデクス番号は、getSupportFormatsで得られるフォーマットの一覧の番号に対応します。
 	 * @param i_index
+	 * サポートしているフォーマットのインデクス番号。
 	 */
 	public void setCaptureFormat(int i_index)
 	{

@@ -215,11 +215,22 @@ class NyARBehavior extends Behavior
 						final NyARTransMatResult src = this.trans_mat_result;
 						related_nya.getTransmationMatrix(src);
 //						Matrix4d matrix = new Matrix4d(src.m00, -src.m10, -src.m20, 0, -src.m01, src.m11, src.m21, 0, -src.m02, src.m12, src.m22, 0, -src.m03, src.m13, src.m23, 1);
+/*						Matrix4d matrix = new Matrix4d(
+								 src.m00, src.m01, src.m02, src.m03,
+								-src.m10, -src.m11, -src.m12, -src.m13,
+								-src.m20, -src.m21, -src.m22, -src.m23,
+								0,0,0, 1.0);*/
+/*						Matrix4d matrix2 = new Matrix4d(
+						-src.m00, -src.m01, -src.m02, -src.m03,
+						-src.m10, -src.m11, -src.m12, -src.m13,
+						 src.m20,  src.m21,  src.m22,  src.m23,
+					           0,        0,        0,        1);
+						*/
 						Matrix4d matrix = new Matrix4d(
 								-src.m00, -src.m10, src.m20, 0,
 								-src.m01, -src.m11, src.m21, 0,
 								-src.m02, -src.m12, src.m22, 0,
-							   -src.m03,-src.m13, src.m23, 1);
+							    -src.m03,-src.m13, src.m23, 1);
 						matrix.transpose();
 						t3d = new Transform3D(matrix);
 						if (trgroup != null) {
