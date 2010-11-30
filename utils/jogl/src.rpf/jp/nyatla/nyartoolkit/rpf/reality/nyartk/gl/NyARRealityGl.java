@@ -3,16 +3,12 @@ package jp.nyatla.nyartoolkit.rpf.reality.nyartk.gl;
 import javax.media.opengl.GL;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.param.NyARFrustum;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
-import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
-import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
-import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
-import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARReality;
-import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource;
+import jp.nyatla.nyartoolkit.rpf.reality.nyartk.NyARReality;
+import jp.nyatla.nyartoolkit.rpf.realitysource.nyartk.NyARRealitySource;
 import jp.nyatla.nyartoolkit.jogl.utils.NyARGLDrawUtil;
 import jp.nyatla.nyartoolkit.jogl.utils.NyARGLUtil;
 

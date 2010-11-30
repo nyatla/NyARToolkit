@@ -6,11 +6,8 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve;
 import jp.nyatla.nyartoolkit.core.rasterreader.NyARPerspectiveRasterReader;
-import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSampler;
-import jp.nyatla.nyartoolkit.dev.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTracker;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTrackerSource;
-import jp.nyatla.nyartoolkit.dev.rpf.tracker.nyartk.NyARTrackerSource_Reference;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARTrackerSource;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARTrackerSource_Reference;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfNyARRaster_RGB;
 
 /**

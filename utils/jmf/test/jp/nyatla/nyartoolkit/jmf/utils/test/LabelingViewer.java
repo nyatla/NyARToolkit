@@ -38,6 +38,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfo;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfoPtrStack;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.*;
@@ -57,7 +58,7 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 		{
 			super(i_size);
 		}
-		protected void onSquareDetect(NyARIntPoint2d[] i_coord,int i_coor_num,int[] i_vertex_index,Object i_param) throws NyARException
+		protected void onSquareDetect(NyARIntCoordinates i_coord,int[] i_vertex_index)  throws NyARException
 		{
 			
 		}
@@ -95,7 +96,7 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 		NyARParam ar_param = new NyARParam();
 		ar_param.loadARParamFromFile(PARAM_FILE);
 		ar_param.changeScreenSize(320, 240);
-		this._raster = new JmfNyARRaster_RGB(320, 240,this._capture.getCaptureFormat());
+		this._raster = new JmfNyARRaster_RGB(this._capture.getCaptureFormat());
 		this._detect=new SquareDetector(ar_param.getScreenSize());
 		this._filter	= new NyARRasterFilter_Rgb2Gs_RgbAve(_raster.getBufferType());
 		//キャプチャイメージ用のラスタを準備
@@ -127,13 +128,13 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 			try{
 				NyARIntRect rect=new NyARIntRect();
 				rect.x=100;rect.y=100;rect.w=220;rect.h=140;
-				this._detect.detectMarker(gs,rect,110,null);
+				this._detect.detectMarker(gs,rect,110);
 			}catch(Exception e){
 				e.printStackTrace();
 			}
 			NyARRleLabelFragmentInfoPtrStack ls=(NyARRleLabelFragmentInfoPtrStack)this._detect._probe()[0];
 			for(int i=0;i<ls.getLength();i++){
-				NyARRleLabelFragmentInfoPtrStack.RleLabelFragmentInfo label=ls.getItem(i);
+				NyARRleLabelFragmentInfo label=ls.getItem(i);
 //				if(label.area==0){break;}
 				Graphics g2=img.getGraphics();
 				g2.setColor(Color.RED);

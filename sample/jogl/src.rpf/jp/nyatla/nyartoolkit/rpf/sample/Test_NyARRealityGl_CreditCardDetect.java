@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.dev.rpf.sample;
+package jp.nyatla.nyartoolkit.rpf.sample;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -20,12 +20,12 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
-import jp.nyatla.nyartoolkit.dev.rpf.mklib.ARTKMarkerTable;
-import jp.nyatla.nyartoolkit.dev.rpf.mklib.CardDetect;
-import jp.nyatla.nyartoolkit.dev.rpf.mklib.RawbitSerialIdTable;
-import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTarget;
-import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTargetList;
-import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource_Jmf;
+import jp.nyatla.nyartoolkit.rpf.mklib.ARTKMarkerTable;
+import jp.nyatla.nyartoolkit.rpf.mklib.CardDetect;
+import jp.nyatla.nyartoolkit.rpf.mklib.RawbitSerialIdTable;
+import jp.nyatla.nyartoolkit.rpf.reality.nyartk.NyARRealityTarget;
+import jp.nyatla.nyartoolkit.rpf.reality.nyartk.NyARRealityTargetList;
+import jp.nyatla.nyartoolkit.rpf.realitysource.nyartk.NyARRealitySource_Jmf;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDevice;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDeviceList;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
