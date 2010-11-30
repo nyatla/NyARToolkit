@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path=""/>
+	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolKit"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolkit.utils.jmf"/>
@@ -8,5 +8,5 @@
 	<classpathentry kind="lib" path="C:/Program Files (x86)/Java/Java3D/1.5.1/lib/ext/j3dutils.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files (x86)/Java/Java3D/1.5.1/lib/ext/vecmath.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files (x86)/JMF2.1.1e/lib/jmf.jar"/>
-	<classpathentry kind="output" path=""/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>
