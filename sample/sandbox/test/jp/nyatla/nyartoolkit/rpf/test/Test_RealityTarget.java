@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.rpf.sample;
+package jp.nyatla.nyartoolkit.rpf.test;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
