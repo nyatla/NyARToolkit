@@ -25,13 +25,13 @@ import jp.nyatla.nyartoolkit.dev.rpf.mklib.CardDetect;
 import jp.nyatla.nyartoolkit.dev.rpf.mklib.RawbitSerialIdTable;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTarget;
 import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.NyARRealityTargetList;
-import jp.nyatla.nyartoolkit.dev.rpf.reality.nyartk.gl.NyARRealityGl;
 import jp.nyatla.nyartoolkit.dev.rpf.realitysource.nyartk.NyARRealitySource_Jmf;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDevice;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDeviceList;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;
 import jp.nyatla.nyartoolkit.jogl.utils.NyARGLDrawUtil;
 import jp.nyatla.nyartoolkit.jogl.utils.NyARGLUtil;
+import jp.nyatla.nyartoolkit.rpf.reality.nyartk.gl.NyARRealityGl;
 
 import com.sun.opengl.util.Animator;
 
