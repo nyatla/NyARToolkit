@@ -1,215 +1,217 @@
-ARToolKit Java class library NyARToolkit.
-Copyright (C)2008-2010 Ryo Iizuka
+======================================================================
+NyARToolkit
+ version 3.0.0
+======================================================================
 
-version 2.5.2
+Copyright (C)2008-2010 Ryo Iizuka
 
 http://nyatla.jp/nyartoolkit/
 airmail(at)ebony.plala.or.jp
 wm(at)nyatla.jp
---------------------------------------------------
 
+----------------------------------------------------------------------
+ About NyARToolkit
+----------------------------------------------------------------------
+ * NyARToolkitは、ARToolKit 2.72.1を基盤としたARアプリケーション向けの
+   クラスライブラリです。
+ * J2SE5.0以上に対応しています。
+ * ARToolKitの基本機能と、NyARToolKitオリジナルの拡張機能、フレームワーク
+   で構成しています。
+ * ライブラリは3部構成です。環境依存の少ないlibモジュール、環境依存性のある
+   utilsモジュール、アプリケーションサンプルを実装したsampleモジュールです。
+ * libモジュールは、J2ME規格(ファイルIOのみJ2SE)での実装です。
+ * utilsモジュールは、カメラ制御、3Dシステム制御等、外部モジュール毎に
+   接続の為のヘルパークラスを提供します。
+ * sampleモジュールは、最低限の機能を持つ、ARアプリケーションです。
 
 
+ ARToolKitについては、下記のURLをご覧ください。
+ http://www.hitl.washington.edu/artoolkit/
 
-[[NyARToolkit/2.5]]
 
-NyARToolkitは、Pure Javaで実装したARToolKitクラスライブラリです。
-ARToolKit 2.72.1をベースに作られています。
+----------------------------------------------------------------------
+NyARToolkitの特徴
+----------------------------------------------------------------------
+NyARToolkitの特徴を紹介します。
 
+ * 多くの入力画像を使用できます。(BufferedImage,JMF出力,バイナリ入力,他)
+ * リファクタリングにより、ARToolkitと比較して再利用性が向上しています。
+ * ARToolKitと比較して、2～4倍ほど高速です。
+ * 次の項目について、高速な機能が利用できます。(ラべリング、姿勢最適化、
+   画像処理、行列計算、方程式計算)
+ * NyId規格のIDマーカが使用できます。
+ * RealityPlatform(マーカ状態管理システム)が利用できます。
 
-※ARToolkitは加藤博一先生とHuman Interface Technology Labにより
-　開発されたAugmented Reality (AR) ライブラリです。
-　詳しくは、下記URLをご覧ください。
-　http://www.hitl.washington.edu/artoolkit/
 
+----------------------------------------------------------------------
+ NyARToolkit License
+----------------------------------------------------------------------
 
-[[NyARToolkitの特徴]]
 
- -ARToolKitと同等な機能を、クラスベースAPIで提供します。
- -計算器チューニングにより、ARToolKitと比較して、処理性能が
-  向上しています。より高い性能を持つNyARToolkit最適化モード
-  と、ARToolKitと互換性のある互換モードを搭載しています。
+NyARToolkitは、商用ライセンスとGPLv3以降のデュアルライセンスを採用して
+います。
 
-  --NyARToolkit最適化モード
-    いくつかのアルゴリズムをARToolKitのものと差換え、高速化・精度の向上を図ります。
-    ARToolKit比で、約2倍の性能があります。（JIT有効時）
-    ただし、計算結果はARToolKitのそれと若干ズレがでます。
+GPLv3を承諾された場合には、商用、非商用にかかわらず、無償でご利用にな
+れます。GPLv3を承諾できない場合には、商用ライセンスの購入をご検討くだ
+さい。
 
-  --ARToolKit互換モード
-    ARToolKitのアルゴリズムを最適化し、高速化を図ります。
-    ARToolKitとほぼ同等の処理性能です。（JIT有効時）
 
- -取り扱える画像サイズに制限がなく、静止画も扱えます。
- -取り扱えるマーカー個数の最大値が可変です。
- -Idマーカシステム(NyId)が利用できます。
+ * GPLv3
+   GPLv3については、LICENCE.txtをお読みください。
 
+ * 商用ライセンス(日本国)
+   株式会社 エム・ソフトにお問い合わせください。
+   http://www.msoft.co.jp/pressrelease/press090928-1.html
 
+ * 商用ライセンス(その他の国)
+   商用ライセンスについては、ARToolWorks社に管理を委託しております。
+   http://www.artoolworks.com/Home.html
 
-[[構成]]
 
-NyARToolkitは、環境に依存しない計算部分の"NyARToolkit"
-と、カメラ/3Dレンダラに接続するための、インタフェイス
-クラスモジュールで作られています。
 
+----------------------------------------------------------------------
+ インストール
+----------------------------------------------------------------------
+Eclipse環境に、NyARToolkit開発環境をインストールする方法を説明します。
 
 
-+-----------------------------------------------+
-|                   Application                 |
-+-------+---------+--------+--------+-----------+
-|NyARJMF|CaptureQT| NyARJoglNyARJ3d |           |
-+-------+---------+--------+--------+           |
-|  JMF  |QuickTime|  JOGL  | Java3D |NyARToolkit|
-+-------+---------+--------+--------+           |
-|      Camera     |       3D        |           |
-------------------------------------+-----------+
+ 1.Eclipseで空のワークスペースを作成します。
 
+ 2.lib,sample,utilsディレクトリをワークスペースにインポートします。
 
--カメラインタフェイス
- カメラインタフェイスは、イメージソースからリアルタイムに画像を
- 取り込む為のモジュールです。
- JMF(NyARJMF)、又はQuickTime(CaptureQT)が用意されています。
+ 3.インポートしたプロジェクトのエラーを修正します。多くの場合、エラーは
+   文字コードの不一致と外部JARファイルの参照ミスです。文字コードの不一致
+   は、プロジェクトの文字コードをUTF8に変更することで解決します。
+   外部JARファイルの参照ミスについては、外部ライブラリの章を参考にして
+   下さい。
 
--3Dレンダラインタフェイス
- 3Dレンダラインタフェイスは、3Dレンダリングシステムに、画像や、
- 計算値を設定するためのモジュールです。
- JOGL(NyARJolg)又はJava3D(NyARJ3d)を使用することが出来ます。
+----------------------------------------------------------------------
+ 外部ライブラリ
+----------------------------------------------------------------------
+NyARToolkitの使用する外部ライブラリは、以下の通りです。
+新しいバージョンのものがあれば、そちらを使用してください。
 
--NyARToolkitコア
- NyARToolkitの中心的なモジュールです。数学処理、画像処理、管理機能
- などが、機能毎にクラス化されています。
 
+ 1. JMF JavaTM Media Framework 2.1.1e
+    utils.jmf,sample.joglの実行に必要です。
+    website: http://java.sun.com/products/java-media/jmf/index.jsp
 
-[[サンプルの動かし方]]
+ 2. QuickTime 7.5
+    utils.qtの実行に必要です。
+    http://www.apple.com/quicktime/qtjava/
 
-1.動作させる前に、JMFとJOGLかJava3Dをインストールしてください。
-  QuickTimeを使う場合には、QuickTime for Javaも必要です。
+ 3. Jogl
+    utils.jogl,sample.joglの実行に必要です。
+    website: https://jogl.dev.java.net/
+    file   : jogl-1.1.1-pre-20080328-xxxx-i586.zip
 
-
-動作確認したバージョンと入手先はこちらです。
-
-JMF JavaTM Media Framework 2.1.1e
-http://java.sun.com/products/java-media/jmf/index.jsp
-
-jogl-1.1.1-pre-20080328-xxxx-i586.zip
-https://jogl.dev.java.net/
-
-java3d-1_5_1-xxxx-i586.exe
-https://java3d.dev.java.net/binary-builds.html
-
-QuickTime 7.5
-http://www.apple.com/quicktime/qtjava/
-
-
-
-2.eclipseで空のワークスペースを作成し、sample,src,src.utils
-  ディレクトリをインポートしてください。
-  各ディレクトリの説明については、
-
--ディレクトリの説明
-  --srcディレクトリには、NyARToolkitコアモジュールを配置してあります。
-  --src.utilsディレクトリには、カメラキャプチャクラスや、3Dライブラリ
-    用のラッパークラス等の、インタフェイスモジュールが配置してあります。
-    があります。
-  --sampleディレクトリには、NyARToolkitを使用したサンプルプログラムがあります。
-
-
-[[プロジェクトの説明]]
-
-[[[ライブラリ]]]
-
--NyARToolkit
- NyARToolkitライブラリの本体です。依存する外部モジュールはありません。
-
--NyARToolkit.utils.jmf
- JMF用のインタフェイスモジュールです。
- JMFからの画像をNyARToolkitに取り込むクラス群があります。
- 外部ライブラリは、JMFに依存します。
-
--NyARToolkit.utils.qt
- QuickTime用のインタフェイスモジュールです。
- QuickTimeからの画像をNyARToolkitに取り込むクラス群があります。
-  外部ライブラリは、JMF、QuickTime for Javaに依存します。
-
--NyARToolkit.utils.jogl
- OpenGL用のインタフェイスモジュールです。
- OpenGLとNyARToolkitのインタフェイスクラス群があります。
- 外部ライブラリは、JMF,JOGLに依存します。
-
--NyARToolkit.utils.java3d
- Java3D用のインタフェイスモジュールです。
- Java3DとNyARToolkitのインタフェイスクラス群があります。
- 外部ライブラリは、JMF,Java3Dに依存します。
-
-
-[[[サンプル]]]
-
-NyARToolkit.sample.jogl
- JOGL/JMFを使ったサンプルプログラムがあります。
-
-  -jp.nyatla.nyartoolkit.jogl.sample.JavaSimpleLite
-   単一のARToolKit用マーカーを認識するARToolkitのsimpleLite相当のサンプルです。
-  -jp.nyatla.nyartoolkit.jogl.sample.JavaSimpleLite2
-   複数のARToolKit用マーカーを認識するサンプルです。1～100個程度のマーカーを
-   同時に認識します。
-  -jp.nyatla.nyartoolkit.jogl.sample.SingleNyIdMarker
-   単一のNyIdマーカを認識するためのサンプルです。アプリケーションフレームワーク
-   SingleNyIdMarkerProcesserのリファレンス実装です。
-
-
-NyARToolkit.sample.java3d
- JAVA3D/JMFを使ったサンプルプログラムです。
-
-  -jp.nyatla.nyartoolkit.java3d.sample
-   simpleLiteをJava3Dで動かすサンプルがあります。
-
-NyARToolkit.sample.jmf
-  JMFを使ったサンプルプログラムです。
-
-  -jp.nyatla..nyartoolkit.jmf.sample
-   JMFでキャプチャした画像をNyARToolkitで処理するサンプルプログラムです。
-
-
-NyARToolkit.sample.qt
- Quicktime for Javaを使ったサンプルプログラムです。
-
-  -jp.nyatla.nyartoolkit.qt.sample
-   QuickTimeでキャプチャした画像をNyARToolkitで処理するサンプルプログラムです。
-
-
-NyARToolkit.sandbox
- 正式サポートされていない開発中の実験クラス群です。動作しないものもあります。
-
-
-
-
-[[足りない機能等]]
-
-カメラキャリブレーション、マーカーのセーブ機能等が相変わらずありません。
-今後実装していきます。
-
-
-
-
-[[ライセンス]]
-
-NyARToolkitは、商用ライセンスとGPLv3以降のデュアルライセンスを採用しています。
-(Version/2.4.0より、GPLv3になりました。)
-
- -GPLv3
- GPLv3については、LICENCE.txtをお読みください。
-
- -商用ライセンス
- 商用ライセンスについては、ARToolWorks社に管理を委託しております。
- http://www.artoolworks.com/Home.html
-
- -日本国内での販売については、下記にお問い合わせ下さい。
- http://www.msoft.co.jp/pressrelease/press090928-1.html
-
-
-
-・謝辞
+ 4. java3d
+    utils.java3d,sample.java3dの実行に必要です。
+    website: https://java3d.dev.java.net/binary-builds.html
+    file:    java3d-1_5_1-xxxx-i586.exe
+
+
+実行するプロジェクトによっては、全ての外部ライブラリを揃える必要は
+ありません。必要なものだけをインストールしてください。
+
+
+
+
+----------------------------------------------------------------------
+ プロジェクトの概要
+----------------------------------------------------------------------
+Eclipseプロジェクトの概要です。
+
+ * NyARToolkit
+   NyARToolkitライブラリの本体です。基本的はJ2ME規格のコードです。
+   (一部、J2SE規格のコードが混じっています。)
+   2つのソースフォルダがあります。srcには画像処理、数値計算クラス群が
+   あります。src.rpfには、RealityPlatformを構成するクラス群があります。
+   依存する外部ライブラリはありません。
+
+ * NyARToolkit.sample.java3d
+   Java3dを出力先とするサンプルアプリケーションです。1個のサンプル
+   プログラムがあります。外部ライブラリは、Java3DとJMFに依存しています。
+
+ * NyARToolkit.sample.jogl
+   OpenGLを出力先とするサンプルアプリケーションです。2つのソースフォル
+   ダがあります。srcには従来形式のサンプルプログラムが5個、src.rpfには、
+   RealityPlatformを使ったサンプルプログラムが5個あります。
+
+ * NyARToolkit.sandbox
+   お砂場です。実験プログラムや作りかけのコードなどを埋蔵しています。
+   品質は未保証です（不具合等が多く放置されています）。
+   testソースフォルダにあるサンプルプログラムは、RealityPlatformの試験
+   に役立つかもしれません。
+
+ * NyARToolkit.utils.j2se
+   JavaSEに依存したヘルパークラス群と、テストプログラムがあります。
+   BufferedImageをそのままNyARToolkitへ入力するためのクラスなどが
+   あります。
+
+ * NyARToolkit.utils.java3d
+   Java3Dに依存したヘルパークラス群と、テストプログラムがあります。
+   NyARToolkitの出力値のJava3dへの入力を支援します。
+
+ * NyARToolkit.utils.jogl
+   Joglに依存したヘルパークラス群と、テストプログラムがあります。
+   NyARToolkitの出力値のJoglへの入力を支援します。
+
+ * NyARToolkit.utils.qt
+   QTJavaに依存したヘルパークラス群と、テストプログラムがあります。
+   QuickTimeからのキャプチャを支援します。
+
+----------------------------------------------------------------------
+ NyARToolkitのパフォーマンス
+----------------------------------------------------------------------
+
+NyARToolkitは、ARToolKitの処理系のいくつかを差し替え、高速化を図ってい
+ます。1マーカ検出時の性能では、アルゴリズムレベルで4倍、単純な速度比で
+約2倍程度高速です。
+
+3.0.0から追加されたRPF(RealityPlatform)を使用した場合、さらに1.5倍程度
+の高速化が可能です。RealityPlatformについては別資料の公開をお待ち下さい。
+
+----------------------------------------------------------------------
+ FAQ
+----------------------------------------------------------------------
+ *Q1.Windows7でJMFの設定が保存できません。
+   >JMFRegistryを、管理者権限で実行することで、保存ができるようになります。
+
+ *Q2.2.5.3以前のNyARToolkitとそのまま差し替えできません。
+   >いくつかの関数で、引数が変更になりました。サンプルファイルを参考に、
+    関数コールを修正してください。
+
+ *Q3.RealityPlatform(RPF)とは何ですか。使い方が判りません。
+  >RPFは、マーカ系ARアプリケーションの為の、フレームワークです。これを
+   使うと、未知のマーカを認識したり、マーカの環境プロパティに簡単に
+   アクセスできるようになります。また、軽度のマーカのはみ出しや、部分破壊
+   にも対応できます。
+   概念や説明書は今から書きますので、しばらくお待ちください。
+----------------------------------------------------------------------
+ 既知の不具合
+----------------------------------------------------------------------
+ 1.RPFの姿勢フィードバックが未実装。
+ 2.RPFの輪郭線抽出系のノイズ処理が最小二乗法の為、遅延が大きい。
+ 3.RPFの輪郭線抽出系のアルゴリズム不備で、環境によりドリフトが発生。
+ 4.RPFの二次元系の移動検出精度が低い。
+ 5.RPFのエッジ抽出が、ブラーに弱い。
+ 6.RPFの初期検出精度が、旧NyARToolkit系と比較して、低い。
+ 
+----------------------------------------------------------------------
+ お問い合わせ
+----------------------------------------------------------------------
+NyARToolkitに関するお問い合わせは、wm(at)nyatla.jp までご連絡ください。
+状況により、お返事が遅れることもあります。ご了承ください。
+
+----------------------------------------------------------------------
+ Special thanks
+----------------------------------------------------------------------
+加藤博一先生 (Hirokazu Kato, Ph. D.)
+ http://www.hitl.washington.edu/artoolkit/
+
+Prof. Mark Billinghurst
+ http://www.hitlabnz.org/
 
 arc@dmzさん
-http://digitalmuseum.jp/
-
-QuickTimeキャプチャモジュールを提供をして頂きました。有難うございます。
+ http://digitalmuseum.jp/
