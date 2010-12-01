@@ -41,8 +41,9 @@ import com.sun.j3d.utils.geometry.ColorCube;
 
 /**
  * Java3Dサンプルプログラム
- * 単一マーカー追跡用のBehaviorを使って、背景と１個のマーカーに連動した
- * TransformGroupを動かします。
+ * Hiroマーカ1個の上に、カラーキューブを表示します。
+ * このサンプルでは、Java3dのTransformGroupをマーカの位置姿勢に合致させるBehaviorと、
+ * 背景のオブジェクト一つを使います。
  *
  */
 public class NyARJava3D extends JFrame implements NyARSingleMarkerBehaviorListener

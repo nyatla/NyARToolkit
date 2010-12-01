@@ -214,7 +214,6 @@ final class PerspectivePixelReader
 		final int freq_table[]=this._freq_table;
 		//初期化
 		final double[] cpara=this._cparam;
-//		final INyARRgbPixelReader reader=this._raster.getRgbPixelReader();
 		final int[] ref_x=this._ref_x;
 		final int[] ref_y=this._ref_y;
 		final int[] pixcel_temp=this._pixcel_temp;
@@ -655,6 +654,9 @@ final class PerspectivePixelReader
 	
 	public boolean readDataBits(INyARRgbPixelReader i_reader,NyARIntSize i_raster_size,PerspectivePixelReader.TThreshold i_th,MarkerPattEncoder o_bitbuffer)throws NyARException
 	{
+		final int raster_width=i_raster_size.w;
+		final int raster_height=i_raster_size.h;
+		
 		final double[] index_x=this.__readDataBits_index_bit_x;
 		final double[] index_y=this.__readDataBits_index_bit_y;
 		
@@ -695,8 +697,8 @@ final class PerspectivePixelReader
 			
 			int pt=0;
 			for(int i2=0;i2<resolution;i2++)
-			{			
-
+			{
+				int xx,yy;
 				double d;
 				double cx0=1+index_x[i2*2+0];
 				double cx1=1+index_x[i2*2+1];
@@ -710,26 +712,45 @@ final class PerspectivePixelReader
 				double cpx3_1=cpara_3*cx1;
 				
 				d=cp6_0+cpy0_7;
-				ref_x[pt]=(int)((cpx0_0+cpy0_12)/d);
-				ref_y[pt]=(int)((cpx3_0+cpy0_45)/d);
+				ref_x[pt]=xx=(int)((cpx0_0+cpy0_12)/d);
+				ref_y[pt]=yy=(int)((cpx3_0+cpy0_45)/d);
+				if(xx<0 || xx>=raster_width || yy<0 || yy>=raster_height)
+				{
+					ref_x[pt]=xx<0?0:(xx>=raster_width?raster_width-1:raster_width);
+					ref_y[pt]=yy<0?0:(yy>=raster_height?raster_height-1:raster_height);
+				}
 				pt++;
 
 				d=cp6_0+cpy1_7;
-				ref_x[pt]=(int)((cpx0_0+cpy1_12)/d);
-				ref_y[pt]=(int)((cpx3_0+cpy1_45)/d);
+				ref_x[pt]=xx=(int)((cpx0_0+cpy1_12)/d);
+				ref_y[pt]=yy=(int)((cpx3_0+cpy1_45)/d);
+				if(xx<0 || xx>=raster_width || yy<0 || yy>=raster_height)
+				{
+					ref_x[pt]=xx<0?0:(xx>=raster_width?raster_width-1:raster_width);
+					ref_y[pt]=yy<0?0:(yy>=raster_height?raster_height-1:raster_height);
+				}
 				pt++;
 
 				d=cp6_1+cpy0_7;
-				ref_x[pt]=(int)((cpx0_1+cpy0_12)/d);
-				ref_y[pt]=(int)((cpx3_1+cpy0_45)/d);
+				ref_x[pt]=xx=(int)((cpx0_1+cpy0_12)/d);
+				ref_y[pt]=yy=(int)((cpx3_1+cpy0_45)/d);
+				if(xx<0 || xx>=raster_width || yy<0 || yy>=raster_height)
+				{
+					ref_x[pt]=xx<0?0:(xx>=raster_width?raster_width-1:raster_width);
+					ref_y[pt]=yy<0?0:(yy>=raster_height?raster_height-1:raster_height);
+				}
 				pt++;
 
 				d=cp6_1+cpy1_7;
-				ref_x[pt]=(int)((cpx0_1+cpy1_12)/d);
-				ref_y[pt]=(int)((cpx3_1+cpy1_45)/d);
+				ref_x[pt]=xx=(int)((cpx0_1+cpy1_12)/d);
+				ref_y[pt]=yy=(int)((cpx3_1+cpy1_45)/d);
+				if(xx<0 || xx>=raster_width || yy<0 || yy>=raster_height)
+				{
+					ref_x[pt]=xx<0?0:(xx>=raster_width?raster_width-1:raster_width);
+					ref_y[pt]=yy<0?0:(yy>=raster_height?raster_height-1:raster_height);
+				}
 				pt++;
 			}
-			//ここ、値チェックしてないけど？	→周波数出すときに周辺部でエラー出したら落ちるようにしてるから平気では？エラーはいたら教えて。
 			//1行分のピクセルを取得(場合によっては専用アクセサを書いた方がいい)
 			i_reader.getPixelSet(ref_x,ref_y,resolution*4,pixcel_temp);
 			//グレースケールにしながら、line→mapへの転写
@@ -744,19 +765,7 @@ final class PerspectivePixelReader
 				p++;
 			}
 		}
-/*		
-		for(int i=0;i<225*4;i++){
-			this.vertex_x[i]=0;
-			this.vertex_y[i]=0;
-		}
-		for(int i=0;i<(resolution)*2;i++){
-			for(int i2=0;i2<(resolution)*2;i2++){
-				this.vertex_x[i*(resolution)*2+i2]=(int)index_x[i2];
-				this.vertex_y[i*(resolution)*2+i2]=(int)index_y[i];
-				
-			}
-		}
-*/		return true;
+		return true;
 	}
 	public boolean setSquare(NyARIntPoint2d[] i_vertex) throws NyARException
 	{

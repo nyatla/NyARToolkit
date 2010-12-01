@@ -1,3 +1,29 @@
+/* 
+ * PROJECT: NyARToolkit JOGL sample program.
+ * --------------------------------------------------------------------------------
+ * The MIT License
+ * Copyright (c) 2008-2011 nyatla
+ * airmail(at)ebony.plala.or.jp
+ * http://nyatla.jp/nyartoolkit/
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * 
+ */
 package jp.nyatla.nyartoolkit.rpf.sample;
 
 import java.awt.Color;
@@ -52,7 +78,7 @@ public class Test_NyARRealityGl_IdMarker implements GLEventListener, JmfCaptureL
 
 	public Test_NyARRealityGl_IdMarker(NyARParam i_param) throws NyARException
 	{
-		Frame frame = new Frame("NyARReality on OpenGL");
+		Frame frame = new Frame("NyARToolkit+RPF["+this.getClass().getName()+"]");
 		
 		// キャプチャの準備
 		JmfCaptureDeviceList devlist = new JmfCaptureDeviceList();
@@ -64,7 +90,8 @@ public class Test_NyARRealityGl_IdMarker implements GLEventListener, JmfCaptureL
 		//Realityの構築
 		i_param.changeScreenSize(SCREEN_X, SCREEN_Y);	
 		//キャプチャ画像と互換性のあるRealitySourceを構築
-		this._src=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),i_param.getDistortionFactor(),1,100);
+//		this._src=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),i_param.getDistortionFactor(),2,100);
+		this._src=new NyARRealitySource_Jmf(this._capture.getCaptureFormat(),null,2,100);
 		//OpenGL互換のRealityを構築		
 		this._reality=new NyARRealityGl(i_param.getPerspectiveProjectionMatrix(),i_param.getScreenSize(),10,10000,3,10);
 		//マーカライブラリ(NyId)の構築
@@ -229,7 +256,7 @@ public class Test_NyARRealityGl_IdMarker implements GLEventListener, JmfCaptureL
 	{
 	}
 	
-	private final static String PARAM_FILE = "../Data/camera_para.dat";
+	private final static String PARAM_FILE = "../../Data/camera_para.dat";
 
 	public static void main(String[] args)
 	{

@@ -35,6 +35,9 @@ import jp.nyatla.nyartoolkit.utils.j2se.*;
 
 /**
  * NyARRealityのテストプログラム。動作保証なし。
+ * 
+ * ターゲットプロパティの取得実験用のテストコードです。
+ * クリックしたマーカや、その平面周辺から、画像を取得するテストができます。
  *
  */
 
@@ -147,26 +150,26 @@ public class Test_RealityTarget extends Frame implements MouseListener
 								//3d（カメラ）
 								{
 									NyARDoublePoint3d[] p=NyARDoublePoint3d.createArray(4);
-									p[3].x=-40;p[3].y=-40;p[3].z=0;
-									p[2].x=40; p[2].y=-40;p[2].z=0;
+									p[0].x=-60;p[0].y=40 ;p[0].z=0;
 									p[1].x=40; p[1].y=40 ;p[1].z=0;
-									p[0].x=-40;p[0].y=40 ;p[0].z=0;
+									p[2].x=40; p[2].y=-40;p[2].z=0;
+									p[3].x=-60;p[3].y=-40;p[3].z=0;
 									this._reality.getRgbPatt3d(this._input_source.reality_in,p, rt.refTransformMatrix(), 1, bmp);
 									this.getGraphics().drawImage(bmp.getBufferedImage(),this.getInsets().left+100,this.getInsets().top+240,null);
 								}
 								//3d（Target）
 								{
 									NyARDoublePoint3d[] p=NyARDoublePoint3d.createArray(4);
-									p[3].x=-40;p[3].y=-40;p[3].z=0;
-									p[2].x=40; p[2].y=-40;p[2].z=0;
+									p[0].x=-40;p[0].y=40 ;p[0].z=0;
 									p[1].x=40; p[1].y=40 ;p[1].z=0;
-									p[0].x=-80;p[0].y=40 ;p[0].z=0;
+									p[2].x=40; p[2].y=-40;p[2].z=0;
+									p[3].x=-40;p[3].y=-40;p[3].z=0;
 									rt.getRgbPatt3d(this._input_source.reality_in,p,null, 1, bmp);
 									this.getGraphics().drawImage(bmp.getBufferedImage(),this.getInsets().left+200,this.getInsets().top+240,null);
 								}
 								//3d（Target）
 								{
-									rt.getRgbRectPatt3d(this._input_source.reality_in,-80,-80,80,80,1, bmp);
+									rt.getRgbRectPatt3d(this._input_source.reality_in,-40,-40,80,80,1, bmp);
 									this.getGraphics().drawImage(bmp.getBufferedImage(),this.getInsets().left+300,this.getInsets().top+240,null);
 								}
 							break;
@@ -202,8 +205,8 @@ public class Test_RealityTarget extends Frame implements MouseListener
 	
 	NyARParam _param;
 	
-	private final static String SAMPLE_FILES = "../Data/320x240ABGR.png";
-	private final static String PARAM_FILE = "../Data/camera_para.dat";
+	private final static String SAMPLE_FILES = "../../Data/320x240ABGR.png";
+	private final static String PARAM_FILE = "../../Data/camera_para.dat";
 
 	private static final long serialVersionUID = -2110888320986446576L;
 
@@ -327,7 +330,7 @@ public class Test_RealityTarget extends Frame implements MouseListener
     	g.drawString("[D]("+t.grab_rate+")",r.x,r.y);
     }
     
-	private final static String PATT_HIRO = "../Data/patt.hiro";
+	private final static String PATT_HIRO = "../../Data/patt.hiro";
     
 
 

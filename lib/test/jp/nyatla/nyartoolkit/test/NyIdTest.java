@@ -81,6 +81,7 @@ public class NyIdTest
                     {
                         this.current_id = (this.current_id << 8) | code.packet[i];
                     }
+                    System.out.println("NyARId:"+this.current_id);
                 }
                 this.transmat = null;
             }

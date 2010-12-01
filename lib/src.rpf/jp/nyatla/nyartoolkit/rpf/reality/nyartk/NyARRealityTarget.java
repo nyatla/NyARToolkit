@@ -283,10 +283,10 @@ public class NyARRealityTarget extends NyARManagedObject
 		assert(this._target_type==RT_KNOWN);
 		//RECT座標を作成
 		NyARDoublePoint3d[] da4=this._ref_pool._wk_da3_4;
-		da4[0].x=i_x;    da4[0].y=i_y;    da4[0].z=0;
-		da4[1].x=i_x+i_w;da4[1].y=i_y;    da4[1].z=0;
-		da4[2].x=i_x+i_w;da4[2].y=i_y+i_h;da4[2].z=0;
-		da4[3].x=i_x;    da4[3].y=i_y+i_h;da4[3].z=0;
+		da4[0].x=i_x;    da4[0].y=i_y+i_h;da4[0].z=0;//LB
+		da4[1].x=i_x+i_w;da4[1].y=i_y+i_h;da4[1].z=0;//RB
+		da4[2].x=i_x+i_w;da4[2].y=i_y;    da4[2].z=0;//RT
+		da4[3].x=i_x;    da4[3].y=i_y;    da4[3].z=0;//LT
 		return getRgbPatt3d(i_src,da4,null,i_resolution,o_raster);
 	}
 	

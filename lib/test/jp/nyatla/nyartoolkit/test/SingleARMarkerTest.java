@@ -61,6 +61,7 @@ public class SingleARMarkerTest
 			synchronized(this._sync_object){
 				current_code=i_code;
 			}
+			System.out.println("Marker Number:"+i_code);
 		}
 		protected void onLeaveHandler()
 		{
