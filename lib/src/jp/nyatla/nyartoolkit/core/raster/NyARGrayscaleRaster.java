@@ -38,6 +38,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
  */
 public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 {
+	private IdoFilterImpl _impl;
 	protected Object _buf;
 	/**
 	 * バッファオブジェクトがアタッチされていればtrue
@@ -79,8 +80,7 @@ public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 	 * @param i_is_alloc
 	 * @throws NyARException
 	 */
-	public NyARGrayscaleRaster(int i_width, int i_height, int i_raster_type,
-			boolean i_is_alloc) throws NyARException
+	public NyARGrayscaleRaster(int i_width, int i_height, int i_raster_type,boolean i_is_alloc) throws NyARException
 	{
 		super(i_width, i_height, i_raster_type);
 		if (!initInstance(this._size, i_raster_type, i_is_alloc)) {
@@ -99,6 +99,7 @@ public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 	{
 		switch (i_buf_type) {
 		case NyARBufferType.INT1D_GRAY_8:
+			this._impl=new IdoFilterImpl_INT1D_GRAY_8();
 			this._buf = i_is_alloc ? new int[i_size.w * i_size.h] : null;
 			break;
 		default:
@@ -136,12 +137,10 @@ public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 	 * この関数は高速化していません。
 	 * @param i_value
 	 */
-	public void fill(int i_value) {
-		assert (this._buffer_type == NyARBufferType.INT1D_GRAY_8);
-		int[] buf = (int[]) this._buf;
-		for (int i = this._size.h * this._size.w - 1; i >= 0; i--) {
-			buf[i] = i_value;
-		}
+	public void fill(int i_value)
+	{
+		assert (this.isEqualBufferType(this.getBufferType()));
+		this._impl.fill(this,i_value);
 	}
 
 	/**
@@ -156,53 +155,78 @@ public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 	 * skip値。1なら等倍、2なら1/2倍、3なら1/3倍の偏重の画像を出力します。
 	 * @param o_output
 	 * 出力先ラスタ。このラスタの解像度は、w=(i_input.w-i_left)/i_skip,h=(i_input.h-i_height)/i_skipを満たす必要があります。
+	 * 出力先ラスタと入力ラスタのバッファタイプは、同じである必要があります。
 	 */
-	public static void copy(NyARGrayscaleRaster i_input, int i_left,int i_top,int i_skip, NyARGrayscaleRaster o_output)
+	public void copyTo(int i_left,int i_top,int i_skip, NyARGrayscaleRaster o_output)
 	{
-		assert (i_input.getSize().isInnerSize(i_left + o_output.getWidth() * i_skip, i_top+ o_output.getHeight() * i_skip));		
-		final int[] input = (int[]) i_input.getBuffer();
-		final int[] output = (int[]) o_output.getBuffer();
-		int pt_src, pt_dst;
-		NyARIntSize dest_size = o_output.getSize();
-		NyARIntSize src_size = i_input.getSize();
-		int skip_src_y = (src_size.w - dest_size.w * i_skip) + src_size.w * (i_skip - 1);
-		final int pix_count = dest_size.w;
-		final int pix_mod_part = pix_count - (pix_count % 8);
-		// 左上から1行づつ走査していく
-		pt_dst = 0;
-		pt_src = (i_top * src_size.w + i_left);
-		for (int y = dest_size.h - 1; y >= 0; y -= 1) {
-			int x;
-			for (x = pix_count - 1; x >= pix_mod_part; x--) {
-				try{
-				output[pt_dst++] = input[pt_src];
-				pt_src += i_skip;
-				}catch(Exception e){
-					e.printStackTrace();
-				}
-			}
-			for (; x >= 0; x -= 8) {
-				output[pt_dst++] = input[pt_src];
-				pt_src += i_skip;
-				output[pt_dst++] = input[pt_src];
-				pt_src += i_skip;
-				output[pt_dst++] = input[pt_src];
-				pt_src += i_skip;
-				output[pt_dst++] = input[pt_src];
-				pt_src += i_skip;
-				output[pt_dst++] = input[pt_src];
-				pt_src += i_skip;
-				output[pt_dst++] = input[pt_src];
-				pt_src += i_skip;
-				output[pt_dst++] = input[pt_src];
-				pt_src += i_skip;
-				output[pt_dst++] = input[pt_src];
-				pt_src += i_skip;
-			}
-			// スキップ
-			pt_src += skip_src_y;
-		}
+		assert (this.getSize().isInnerSize(i_left + o_output.getWidth() * i_skip, i_top+ o_output.getHeight() * i_skip));		
+		assert (this.isEqualBufferType(o_output.getBufferType()));
+		this._impl.copyTo(this, i_left, i_top, i_skip, o_output);
 		return;
-
 	}
+	////////////////////////////////////////////////////////////////////////////////
+	//ここからラスタドライバ
+	
+	interface IdoFilterImpl
+	{
+		public void fill(NyARGrayscaleRaster i_raster,int i_value);
+		public void copyTo(NyARGrayscaleRaster i_input, int i_left,int i_top,int i_skip, NyARGrayscaleRaster o_output);
+	}
+	
+	final class IdoFilterImpl_INT1D_GRAY_8 implements IdoFilterImpl
+	{
+		public void fill(NyARGrayscaleRaster i_raster,int i_value)
+		{
+			assert (i_raster._buffer_type == NyARBufferType.INT1D_GRAY_8);
+			int[] buf = (int[]) i_raster._buf;
+			for (int i = i_raster._size.h * i_raster._size.w - 1; i >= 0; i--) {
+				buf[i] = i_value;
+			}			
+		}
+
+		public void copyTo(NyARGrayscaleRaster i_input, int i_left,int i_top,int i_skip, NyARGrayscaleRaster o_output)
+		{
+			assert (i_input.getSize().isInnerSize(i_left + o_output.getWidth() * i_skip, i_top+ o_output.getHeight() * i_skip));		
+			final int[] input = (int[]) i_input.getBuffer();
+			final int[] output = (int[]) o_output.getBuffer();
+			int pt_src, pt_dst;
+			NyARIntSize dest_size = o_output.getSize();
+			NyARIntSize src_size = i_input.getSize();
+			int skip_src_y = (src_size.w - dest_size.w * i_skip) + src_size.w * (i_skip - 1);
+			final int pix_count = dest_size.w;
+			final int pix_mod_part = pix_count - (pix_count % 8);
+			// 左上から1行づつ走査していく
+			pt_dst = 0;
+			pt_src = (i_top * src_size.w + i_left);
+			for (int y = dest_size.h - 1; y >= 0; y -= 1) {
+				int x;
+				for (x = pix_count - 1; x >= pix_mod_part; x--) {
+					output[pt_dst++] = input[pt_src];
+					pt_src += i_skip;
+				}
+				for (; x >= 0; x -= 8) {
+					output[pt_dst++] = input[pt_src];
+					pt_src += i_skip;
+					output[pt_dst++] = input[pt_src];
+					pt_src += i_skip;
+					output[pt_dst++] = input[pt_src];
+					pt_src += i_skip;
+					output[pt_dst++] = input[pt_src];
+					pt_src += i_skip;
+					output[pt_dst++] = input[pt_src];
+					pt_src += i_skip;
+					output[pt_dst++] = input[pt_src];
+					pt_src += i_skip;
+					output[pt_dst++] = input[pt_src];
+					pt_src += i_skip;
+					output[pt_dst++] = input[pt_src];
+					pt_src += i_skip;
+				}
+				// スキップ
+				pt_src += skip_src_y;
+			}
+			return;
+		}
+	}	
+	
 }

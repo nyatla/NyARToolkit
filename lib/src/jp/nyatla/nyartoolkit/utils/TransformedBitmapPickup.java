@@ -5,6 +5,7 @@ import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
 import jp.nyatla.nyartoolkit.core.pickup.NyARColorPatt_Perspective_O2;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
+import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 
 /**
@@ -29,7 +30,8 @@ class TransformedBitmapPickup extends NyARColorPatt_Perspective_O2
 	 */
 	public TransformedBitmapPickup(NyARPerspectiveProjectionMatrix i_ref_cparam, int i_width, int i_height, int i_resolution)
 	{
-		super(i_width, i_height, i_resolution, 0,0);
+		//ANYラスタで構築
+		super(i_width, i_height, i_resolution, 0,NyARBufferType.NULL_ALLZERO);
 		this._ref_perspective = i_ref_cparam;
 	}
 

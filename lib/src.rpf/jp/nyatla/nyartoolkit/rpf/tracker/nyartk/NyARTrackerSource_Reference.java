@@ -69,7 +69,7 @@ public class NyARTrackerSource_Reference extends NyARTrackerSource
 	public void syncResource() throws NyARException
 	{
 		//内部状態の同期
-		NyARGrayscaleRaster.copy(this._base_raster,0,0,this._rob_resolution,this._rb_source);
+		this._base_raster.copyTo(0,0,this._rob_resolution,this._rb_source);
 		this._rfilter.doFilter(this._rb_source,this._rbraster);
 	}
 	/**

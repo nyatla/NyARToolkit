@@ -50,29 +50,12 @@ public class NyARRotVector
 	
 	private NyARPerspectiveProjectionMatrix _projection_mat_ref;
 
-//	private double[][] _inv_cpara_array_ref;
 	private NyARDoubleMatrix44 _inv_cpara=new NyARDoubleMatrix44();
 
 	public NyARRotVector(NyARPerspectiveProjectionMatrix i_cmat) throws NyARException
 	{
-//		NyARMat mat_a = new NyARMat(3, 3);
-//		double[][] a_array = mat_a.getArray();
-//		
-//		a_array[0][0] =i_cmat.m00;
-//		a_array[0][1] =i_cmat.m01;
-//		a_array[0][2] =i_cmat.m02;
-//		a_array[1][0] =i_cmat.m10;
-//		a_array[1][1] =i_cmat.m11;
-//		a_array[1][2] =i_cmat.m12;
-//		a_array[2][0] =i_cmat.m20;
-///		a_array[2][1] =i_cmat.m21;
-//		a_array[2][2] =i_cmat.m22;
-//		
-//		mat_a.matrixSelfInv();
 		this._inv_cpara.inverse(i_cmat);
 		this._projection_mat_ref = i_cmat;
-//		this._inv_cpara_array_ref = mat_a.getArray();
-		//GCない言語のときは、ここで配列の所有権委譲してね！
 	}
 
 	/**
@@ -118,15 +101,11 @@ public class NyARRotVector
 		final double world5 = world2 + this.v3;
 		// </Optimize>
 
-		//final double[] camera = __checkVectorByVertex_camera;// [2][2];
 		final NyARPerspectiveProjectionMatrix cmat= this._projection_mat_ref;
-		//h = cpara[2 * 4 + 0] * world0 + cpara[2 * 4 + 1] * world1 + cpara[2 * 4 + 2] * world2;
 		h = cmat.m20 * world0 + cmat.m21 * world1 + cmat.m22 * world2;
 		if (h == 0.0) {
 			throw new NyARException();
 		}
-		//final double camera0 = (cpara[0 * 4 + 0] * world0 + cpara[0 * 4 + 1] * world1 + cpara[0 * 4 + 2] * world2) / h;
-		//final double camera1 = (cpara[1 * 4 + 0] * world0 + cpara[1 * 4 + 1] * world1 + cpara[1 * 4 + 2] * world2) / h;
 		final double camera0 = (cmat.m00 * world0 + cmat.m01 * world1 + cmat.m02 * world2) / h;
 		final double camera1 = (cmat.m10 * world0 + cmat.m11 * world1 + cmat.m12 * world2) / h;
 
@@ -135,8 +114,6 @@ public class NyARRotVector
 		if (h == 0.0) {
 			throw new NyARException();
 		}
-		//final double camera2 = (cpara[0 * 4 + 0] * world3 + cpara[0 * 4 + 1] * world4 + cpara[0 * 4 + 2] * world5) / h;
-		//final double camera3 = (cpara[1 * 4 + 0] * world3 + cpara[1 * 4 + 1] * world4 + cpara[1 * 4 + 2] * world5) / h;
 		final double camera2 = (cmat.m00 * world3 + cmat.m01 * world4 + cmat.m02 * world5) / h;
 		final double camera3 = (cmat.m10 * world3 + cmat.m11 * world4 + cmat.m12 * world5) / h;
 

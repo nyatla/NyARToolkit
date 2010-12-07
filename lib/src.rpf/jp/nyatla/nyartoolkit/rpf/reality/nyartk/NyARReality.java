@@ -466,7 +466,7 @@ public class NyARReality
 	 * 成功すると、trueを返します。
 	 * @throws NyARException 
 	 */
-	public final boolean changeTargetToKnownBySerial(int i_serial,int i_dir,double i_marker_width) throws NyARException
+	public final boolean changeTargetToKnownBySerial(long i_serial,int i_dir,double i_marker_width) throws NyARException
 	{
 		NyARRealityTarget item=this.target.getItemBySerial(i_serial);
 		if(item==null){
@@ -479,7 +479,7 @@ public class NyARReality
 	 * @param i_serial
 	 * @throws NyARException 
 	 */
-	public final NyARRealityTarget changeTargetToDeadBySerial(int i_serial) throws NyARException
+	public final NyARRealityTarget changeTargetToDeadBySerial(long i_serial) throws NyARException
 	{
 		NyARRealityTarget item=this.target.getItemBySerial(i_serial);
 		if(item==null){

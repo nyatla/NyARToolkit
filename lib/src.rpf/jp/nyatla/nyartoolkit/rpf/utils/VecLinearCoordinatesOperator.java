@@ -31,14 +31,14 @@ public class VecLinearCoordinatesOperator
 	 */
 	public void margeResembleCoords(VecLinearCoordinates i_vector)
 	{
-		VecLinearCoordinates.NyARVecLinearPoint[] items=i_vector.items;
+		VecLinearCoordinates.VecLinearCoordinatePoint[] items=i_vector.items;
 		NyARLinear l1 = this._l1;
 		NyARLinear l2 = this._l2;
 		NyARDoublePoint2d p = this._p;
 
 
 		for (int i = i_vector.length - 1; i >= 0; i--) {
-			VecLinearCoordinates.NyARVecLinearPoint target1 = items[i];
+			VecLinearCoordinates.VecLinearCoordinatePoint target1 = items[i];
 			if(target1.scalar==0){
 				continue;
 			}
@@ -53,7 +53,7 @@ public class VecLinearCoordinatesOperator
 			target1.x*=s_tmp;
 			target1.y*=s_tmp;
 			for (int i2 = i - 1; i2 >= 0; i2--) {
-				VecLinearCoordinates.NyARVecLinearPoint target2 = items[i2];
+				VecLinearCoordinates.VecLinearCoordinatePoint target2 = items[i2];
 				if(target2.scalar==0){
 					continue;
 				}
@@ -92,7 +92,7 @@ public class VecLinearCoordinatesOperator
 		//加重平均解除なう(x,y位置のみ)
 		for(int i=0;i<i_vector.length;i++)
 		{
-			VecLinearCoordinates.NyARVecLinearPoint ptr=items[i];
+			VecLinearCoordinates.VecLinearCoordinatePoint ptr=items[i];
 			double d=1/ptr.scalar;
 			ptr.x*=d;
 			ptr.y*=d;

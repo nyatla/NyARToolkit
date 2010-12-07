@@ -17,8 +17,8 @@ public class LineBaseVertexDetector
 	/**
 	 * 頂点パターンテーブル(6用)
 	 */
-	private int[][] _order_table={{0,1,5,4},{0,2,5,3},{1,2,4,3}};
-	
+	private final static int[][] _order_table={{0,1,5,4},{0,2,5,3},{1,2,4,3}};
+	private NyARDoublePoint2d[] __wk_v=NyARDoublePoint2d.createArray(6);
 	/**
 	 * 適当に与えられた4線分から、四角形の頂点を計算する。
 	 * @param i_line
@@ -30,9 +30,9 @@ public class LineBaseVertexDetector
 	 * @throws NyARException
 	 */
 
-	public boolean line2SquareVertex(VecLinearCoordinates.NyARVecLinearPoint[] i_line,NyARDoublePoint2d[] o_point) throws NyARException
+	public boolean line2SquareVertex(VecLinearCoordinates.VecLinearCoordinatePoint[] i_line,NyARDoublePoint2d[] o_point) throws NyARException
 	{
-		NyARDoublePoint2d[] v=NyARDoublePoint2d.createArray(6);
+		NyARDoublePoint2d[] v=this.__wk_v;
 		int number_of_vertex=0;
 		int non_vertexid=0;
 		int ptr=0;

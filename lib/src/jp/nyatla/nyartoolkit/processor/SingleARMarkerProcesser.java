@@ -71,19 +71,21 @@ public abstract class SingleARMarkerProcesser
 		private NyARMatchPatt_Color_WITHOUT_PCA[] _match_patt;
 		private final NyARMatchPattResult __detectMarkerLite_mr=new NyARMatchPattResult();
 		private NyARCoord2Linear _coordline;
+		private int _raster_type;
 		
-		public DetectSquare(NyARParam i_param) throws NyARException
+		public DetectSquare(NyARParam i_param,int i_raster_type) throws NyARException
 		{
 			super(i_param.getScreenSize());
 			this._match_patt=null;
 			this._coordline=new NyARCoord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
+			this._raster_type=i_raster_type;
 			return;
 		}
 		public void setNyARCodeTable(NyARCode[] i_ref_code,int i_code_resolution)
 		{
 			/*unmanagedで実装するときは、ここでリソース解放をすること。*/
 			this._deviation_data=new NyARMatchPattDeviationColorData(i_code_resolution,i_code_resolution);
-			this._inst_patt=new NyARColorPatt_Perspective_O2(i_code_resolution,i_code_resolution,4,25,25);
+			this._inst_patt=new NyARColorPatt_Perspective_O2(i_code_resolution,i_code_resolution,4,25,this._raster_type);
 			this._match_patt = new NyARMatchPatt_Color_WITHOUT_PCA[i_ref_code.length];
 			for(int i=0;i<i_ref_code.length;i++){
 				this._match_patt[i]=new NyARMatchPatt_Color_WITHOUT_PCA(i_ref_code[i]);
@@ -232,7 +234,7 @@ public abstract class SingleARMarkerProcesser
 		this._threshold_detect=new NyARRasterThresholdAnalyzer_SlidePTile(15,i_raster_type,4);
 		this._initialized=true;
 		//コールバックハンドラ
-		this._detectmarker=new DetectSquare(i_param);
+		this._detectmarker=new DetectSquare(i_param,i_raster_type);
 		this._offset=new NyARRectOffset();
 		return;
 	}

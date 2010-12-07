@@ -38,6 +38,7 @@ import java.io.StreamTokenizer;
 import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.match.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 
@@ -224,7 +225,7 @@ public class NyARCode
 	 * 格納順は、パターンの右上が、1,2,3,4象限になる順番です。
 	 * @throws NyARException
 	 */
-	public void setRaster(NyARRgbRaster[] i_raster) throws NyARException
+	public void setRaster(INyARRgbRaster[] i_raster) throws NyARException
 	{
 		assert(i_raster.length!=4);
 		//ラスタにパターンをロードする。
@@ -239,7 +240,7 @@ public class NyARCode
 	 * 基準となるラスタを指定します。ラスタの解像度は、ARマーカコードと同じである必要があります。
 	 * @throws NyARException
 	 */	
-	public void setRaster(NyARRgbRaster i_raster) throws NyARException
+	public void setRaster(INyARRgbRaster i_raster) throws NyARException
 	{
 		//ラスタにパターンをロードする。
 		for(int i=0;i<4;i++){

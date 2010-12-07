@@ -162,17 +162,17 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 			for (int y = i_h-1; y >=0 ; y-=1){
 				int x,v;
 				for (x = pix_count-1; x >=pix_mod_part; x--){
-					v=input[pt_src++];output[pt_dst++]=((v& 0xff)+(v& 0xff)+(v& 0xff))<=th?0:1;
+					v=input[pt_src++];output[pt_dst++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v& 0xff))<=th?0:1;
 				}
 				for (;x>=0;x-=8){
-					v=input[pt_src++];output[pt_dst++]=((v& 0xff)+(v& 0xff)+(v& 0xff))<=th?0:1;
-					v=input[pt_src++];output[pt_dst++]=((v& 0xff)+(v& 0xff)+(v& 0xff))<=th?0:1;
-					v=input[pt_src++];output[pt_dst++]=((v& 0xff)+(v& 0xff)+(v& 0xff))<=th?0:1;
-					v=input[pt_src++];output[pt_dst++]=((v& 0xff)+(v& 0xff)+(v& 0xff))<=th?0:1;
-					v=input[pt_src++];output[pt_dst++]=((v& 0xff)+(v& 0xff)+(v& 0xff))<=th?0:1;
-					v=input[pt_src++];output[pt_dst++]=((v& 0xff)+(v& 0xff)+(v& 0xff))<=th?0:1;
-					v=input[pt_src++];output[pt_dst++]=((v& 0xff)+(v& 0xff)+(v& 0xff))<=th?0:1;
-					v=input[pt_src++];output[pt_dst++]=((v& 0xff)+(v& 0xff)+(v& 0xff))<=th?0:1;
+					v=input[pt_src++];output[pt_dst++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v& 0xff))<=th?0:1;
+					v=input[pt_src++];output[pt_dst++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v& 0xff))<=th?0:1;
+					v=input[pt_src++];output[pt_dst++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v& 0xff))<=th?0:1;
+					v=input[pt_src++];output[pt_dst++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v& 0xff))<=th?0:1;
+					v=input[pt_src++];output[pt_dst++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v& 0xff))<=th?0:1;
+					v=input[pt_src++];output[pt_dst++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v& 0xff))<=th?0:1;
+					v=input[pt_src++];output[pt_dst++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v& 0xff))<=th?0:1;
+					v=input[pt_src++];output[pt_dst++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v& 0xff))<=th?0:1;
 				}
 				//スキップ
 				pt_src+=skip_src;

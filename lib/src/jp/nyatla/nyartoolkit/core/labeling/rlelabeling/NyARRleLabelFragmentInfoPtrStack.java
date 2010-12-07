@@ -37,10 +37,6 @@ public class NyARRleLabelFragmentInfoPtrStack  extends NyARPointerStack<NyARRleL
 		return;
 	}
 
-	protected NyARRleLabelFragmentInfo createElement()
-	{
-		return new NyARRleLabelFragmentInfo();
-	}
 	/**
 	 * エリアの大きい順にラベルをソートします。
 	 */

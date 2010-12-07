@@ -17,7 +17,7 @@ public class NyARRectTargetStatusPool extends NyARManagedObjectPool<NyARRectTarg
 	public VecLinearCoordinates _vecpos=new VecLinearCoordinates(100);
 	public LineBaseVertexDetector _line_detect=new LineBaseVertexDetector();
 	public VecLinearCoordinatesOperator _vecpos_op=new VecLinearCoordinatesOperator(); 
-	public VecLinearCoordinates.NyARVecLinearPoint[] _indexbuf=new VecLinearCoordinates.NyARVecLinearPoint[4];
+	public VecLinearCoordinates.VecLinearCoordinatePoint[] _indexbuf=new VecLinearCoordinates.VecLinearCoordinatePoint[4];
 	public NyARLinear[] _line=NyARLinear.createArray(4);
 	/**
 	 * @param i_size

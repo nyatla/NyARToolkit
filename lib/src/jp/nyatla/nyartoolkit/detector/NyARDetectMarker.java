@@ -197,7 +197,7 @@ public class NyARDetectMarker
 
 		this._transmat = new NyARTransMat(i_ref_param);
 		//NyARToolkitプロファイル
-		this._square_detect =new RleDetector(new NyARColorPatt_Perspective_O2(cw, ch,4,25,25),i_ref_code,i_number_of_code,i_ref_param);
+		this._square_detect =new RleDetector(new NyARColorPatt_Perspective_O2(cw, ch,4,25,i_input_raster_type),i_ref_code,i_number_of_code,i_ref_param);
 		this._tobin_filter=new NyARRasterFilter_ARToolkitThreshold(100,i_input_raster_type);
 
 		//実サイズ保存

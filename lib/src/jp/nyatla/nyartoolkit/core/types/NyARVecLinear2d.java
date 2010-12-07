@@ -105,14 +105,14 @@ public class NyARVecLinear2d
 		return d>=0?d:-d;
 	}
 	/**
-	 * このベクトルと、i_pos1とi_pos2を結ぶ線分が作るcos値の絶対値を返します。
+	 * このベクトルと、i_pos1-&lt;i_pos2を結ぶ線分が作るcos値の絶対値を返します。
 	 * @param i_pos1
 	 * @param i_pos2
 	 * @return
 	 */
 	public final double getAbsVecCos(NyARDoublePoint2d i_pos1,NyARDoublePoint2d i_pos2)
 	{
-		double d=getVecCos(i_pos2.x-i_pos1.x,i_pos2.y-i_pos1.y);
+		double d=getAbsVecCos(i_pos2.x-i_pos1.x,i_pos2.y-i_pos1.y);
 		return d>=0?d:-d;
 	}
 	

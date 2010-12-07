@@ -31,7 +31,7 @@ import jp.nyatla.nyartoolkit.core.squaredetect.NyARContourPickup;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.rpf.utils.VecLinearCoordinates;
-import jp.nyatla.nyartoolkit.rpf.utils.VecLinearCoordinates.NyARVecLinearPoint;
+import jp.nyatla.nyartoolkit.rpf.utils.VecLinearCoordinates.VecLinearCoordinatePoint;
 
 /**
  * グレイスケールラスタに対する、特殊な画素アクセス手段を提供します。
@@ -39,7 +39,7 @@ import jp.nyatla.nyartoolkit.rpf.utils.VecLinearCoordinates.NyARVecLinearPoint;
  */
 public class NyARVectorReader_INT1D_GRAY_8
 {
-	private NyARVecLinearPoint[] _tmp_coord_pos;
+	private VecLinearCoordinatePoint[] _tmp_coord_pos;
 	private int _rob_resolution;
 	private NyARGrayscaleRaster _ref_base_raster;
 	private NyARGrayscaleRaster _ref_rob_raster;
@@ -62,7 +62,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 		this._ref_base_raster=i_ref_raster;
 		this._coord_buf = new NyARIntCoordinates((i_ref_raster.getWidth() + i_ref_raster.getHeight()) * 4);
 		this._factor=i_ref_raster_distortion;
-		this._tmp_coord_pos=NyARVecLinearPoint.createArray(this._coord_buf.items.length);
+		this._tmp_coord_pos=VecLinearCoordinatePoint.createArray(this._coord_buf.items.length);
 	}
 
 	/**
@@ -376,7 +376,7 @@ public class NyARVectorReader_INT1D_GRAY_8
 		return traceConture(coord, 1, s, o_coord);
 	}
 	//ベクトルの類似度判定式
-	public final static boolean checkVecCos(NyARVecLinearPoint i_current_vec,NyARVecLinearPoint i_prev_vec,double i_ave_dx,double i_ave_dy)
+	public final static boolean checkVecCos(VecLinearCoordinatePoint i_current_vec,VecLinearCoordinatePoint i_prev_vec,double i_ave_dx,double i_ave_dy)
 	{
 		double x1=i_current_vec.dx;
 		double y1=i_current_vec.dy;
@@ -404,12 +404,12 @@ public class NyARVectorReader_INT1D_GRAY_8
 	 */
 	public boolean traceConture(NyARIntCoordinates i_coord, int i_pos_mag,int i_cell_size, VecLinearCoordinates o_coord)
 	{
-		NyARVecLinearPoint[] pos=this._tmp_coord_pos;
+		VecLinearCoordinatePoint[] pos=this._tmp_coord_pos;
 		// ベクトル化
 		int MAX_COORD = o_coord.items.length;
 		int i_coordlen = i_coord.length;
 		NyARIntPoint2d[] coord = i_coord.items;
-		NyARVecLinearPoint pos_ptr;
+		VecLinearCoordinatePoint pos_ptr;
 
 		//0個目のライン探索
 		int number_of_data = 0;
@@ -499,13 +499,13 @@ public class NyARVectorReader_INT1D_GRAY_8
 	 * @param i_scale_th
 	 * @return
 	 */
-	private final boolean leastSquaresWithNormalize(NyARVecLinearPoint[] i_points,int i_number_of_data,NyARVecLinearPoint o_dest,double i_scale_th)
+	private final boolean leastSquaresWithNormalize(VecLinearCoordinatePoint[] i_points,int i_number_of_data,VecLinearCoordinatePoint o_dest,double i_scale_th)
 	{
 		int i;
 		int num=0;
 		double sum_xy = 0, sum_x = 0, sum_y = 0, sum_x2 = 0;
 		for (i=i_number_of_data-1; i>=0; i--){
-			NyARVecLinearPoint ptr=i_points[i];
+			VecLinearCoordinatePoint ptr=i_points[i];
 			//規定より小さいスケールは除外なう
 			if(ptr.scalar<i_scale_th)
 			{

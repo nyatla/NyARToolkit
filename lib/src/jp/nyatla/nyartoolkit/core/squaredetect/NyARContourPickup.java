@@ -217,7 +217,7 @@ public class NyARContourPickup
 				if(coord[1].x ==c && coord[1].y ==r){
 					//終点に達している。
 					o_coord.length=coord_num;
-					return true;
+					break;
 				}else{
 					//終点ではない。
 					coord[coord_num].x = c;
@@ -231,5 +231,6 @@ public class NyARContourPickup
 				return false;
 			}
 		}
+		return true;
 	}
 }
