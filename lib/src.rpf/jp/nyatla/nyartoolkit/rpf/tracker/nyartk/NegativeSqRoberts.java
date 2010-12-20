@@ -43,13 +43,17 @@ public class NegativeSqRoberts implements INyARRasterFilter
 	private IdoFilterImpl _do_filter_impl; 
 	public NegativeSqRoberts(int i_raster_type) throws NyARException
 	{
+		this.initInstance(i_raster_type);
+	}
+	public void initInstance(int i_raster_type)throws NyARException
+	{
 		switch (i_raster_type) {
 		case NyARBufferType.INT1D_GRAY_8:
 			this._do_filter_impl=new IdoFilterImpl_GRAY_8();
 			break;
 		default:
 			throw new NyARException();
-		}
+		}		
 	}
 	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException
 	{
@@ -73,7 +77,7 @@ public class NegativeSqRoberts implements INyARRasterFilter
 			int idx=0;
 			int idx2=width;
 			int fx,fy;
-			int mod_p=(width-2)-(width-2)%8;
+			int mod_p=(width-2)-(width-2)%4;
 			for(int y=i_size.h-2;y>=0;y--){
 				int p00=in_ptr[idx++];
 				int p10=in_ptr[idx2++];
@@ -94,7 +98,6 @@ public class NegativeSqRoberts implements INyARRasterFilter
 //					out_ptr[idx-2]=255-(((fx<0?-fx:fx)+(fy<0?-fy:fy))>>1);
 					fx=(fx*fx+fy*fy)>>SH;out_ptr[idx-2]=(fx>255?0:255-fx);
 					p00=p01;p10=p11;
-
 					p01=in_ptr[idx++];p11=in_ptr[idx2++];
 					fx=p11-p00;
 					fy=p10-p01;

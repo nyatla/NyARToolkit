@@ -97,6 +97,11 @@ public class NyARVecLinear2d
 		double d=(x1*i_dx+y1*i_dy)/Math.sqrt((x1*x1+y1*y1)*(i_dx*i_dx+i_dy*i_dy));
 		return d;
 	}
+	public final double getVecCos(NyARDoublePoint2d i_pos1,NyARDoublePoint2d i_pos2)
+	{
+		double d=getAbsVecCos(i_pos2.x-i_pos1.x,i_pos2.y-i_pos1.y);
+		return d>=0?d:-d;
+	}	
 	public final double getAbsVecCos(double i_v2_x,double i_v2_y)
 	{
 		double x1=this.dx;

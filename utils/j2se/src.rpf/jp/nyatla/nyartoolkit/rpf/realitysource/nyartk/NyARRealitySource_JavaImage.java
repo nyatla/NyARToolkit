@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve192;
 import jp.nyatla.nyartoolkit.core.rasterreader.NyARPerspectiveRasterReader;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARTrackerSource;
@@ -18,7 +18,7 @@ import jp.nyatla.nyartoolkit.utils.j2se.NyARBufferedImageRaster;
  */
 public class NyARRealitySource_JavaImage extends NyARRealitySource
 {
-	protected NyARRasterFilter_Rgb2Gs_RgbAve _filter;
+	protected NyARRasterFilter_Rgb2Gs_RgbAve192 _filter;
 	/**
 	 * 
 	 * @param i_width
@@ -37,7 +37,7 @@ public class NyARRealitySource_JavaImage extends NyARRealitySource
 	public NyARRealitySource_JavaImage(int i_width,int i_height,NyARCameraDistortionFactor i_ref_raster_distortion,int i_depth,int i_number_of_sample) throws NyARException
 	{
 		this._rgb_source=new NyARBufferedImageRaster(i_width,i_height,NyARBufferType.BYTE1D_R8G8B8_24);
-		this._filter=new NyARRasterFilter_Rgb2Gs_RgbAve(this._rgb_source.getBufferType());
+		this._filter=new NyARRasterFilter_Rgb2Gs_RgbAve192(this._rgb_source.getBufferType());
 		this._source_perspective_reader=new NyARPerspectiveRasterReader(_rgb_source.getBufferType());
 		this._tracksource=new NyARTrackerSource_Reference(i_number_of_sample,i_ref_raster_distortion,i_width,i_height,i_depth,true);
 		return;
@@ -58,7 +58,7 @@ public class NyARRealitySource_JavaImage extends NyARRealitySource
 	public NyARRealitySource_JavaImage(BufferedImage i_bmp,NyARCameraDistortionFactor i_ref_raster_distortion,int i_depth,int i_number_of_sample) throws NyARException
 	{
 		this._rgb_source=new NyARBufferedImageRaster(i_bmp);
-		this._filter=new NyARRasterFilter_Rgb2Gs_RgbAve(this._rgb_source.getBufferType());
+		this._filter=new NyARRasterFilter_Rgb2Gs_RgbAve192(this._rgb_source.getBufferType());
 		this._source_perspective_reader=new NyARPerspectiveRasterReader(_rgb_source.getBufferType());
 		this._tracksource=new NyARTrackerSource_Reference(i_number_of_sample,i_ref_raster_distortion,i_bmp.getWidth(),i_bmp.getHeight(),i_depth,true);
 	}

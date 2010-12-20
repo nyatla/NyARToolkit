@@ -18,7 +18,7 @@ import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfo;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_RGB;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve192;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARContourPickup;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
@@ -71,7 +71,7 @@ public class LabelingTest extends Frame
 		NyARRasterImageIO.copy(this._src_image,ra);
 		//GS値化
 		NyARGrayscaleRaster gs=new NyARGrayscaleRaster(this._src_image.getWidth(),this._src_image.getHeight());
-		NyARRasterFilter_Rgb2Gs_RgbAve filter=new NyARRasterFilter_Rgb2Gs_RgbAve(ra.getBufferType());
+		NyARRasterFilter_Rgb2Gs_RgbAve192 filter=new NyARRasterFilter_Rgb2Gs_RgbAve192(ra.getBufferType());
 		filter.doFilter(ra,gs);
 		//ラべリングの試験
 		Main_Labeling lv=new Main_Labeling(ra.getWidth(),ra.getHeight());

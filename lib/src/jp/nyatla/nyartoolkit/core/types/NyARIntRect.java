@@ -147,6 +147,7 @@ public class NyARIntRect
 	{
 		int x=i_x-this.x;
 		int y=i_y-this.y;
+		
 		return (0<=x && x<this.w && 0<=y && y<this.h);
 	}
 	public final boolean isInnerPoint(NyARDoublePoint2d i_pos)

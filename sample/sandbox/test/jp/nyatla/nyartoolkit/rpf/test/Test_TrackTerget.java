@@ -21,7 +21,7 @@ import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve192;
 import jp.nyatla.nyartoolkit.utils.j2se.NyARBufferedImageRaster;
 import jp.nyatla.nyartoolkit.utils.j2se.NyARRasterImageIO;
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -68,13 +68,13 @@ public class Test_TrackTerget extends Frame
 	{
 		private NyARBufferedImageRaster _src_image;
 		NyARGrayscaleRaster gs;
-		NyARRasterFilter_Rgb2Gs_RgbAve filter;
+		NyARRasterFilter_Rgb2Gs_RgbAve192 filter;
 
 		public ImageSource(String i_filename) throws IOException, NyARException
 		{
 			this._src_image=new NyARBufferedImageRaster(ImageIO.read(new File(i_filename)));
 			this.gs=new NyARGrayscaleRaster(this._src_image.getWidth(),this._src_image.getHeight());
-			this.filter=new NyARRasterFilter_Rgb2Gs_RgbAve(this._src_image.getBufferType());
+			this.filter=new NyARRasterFilter_Rgb2Gs_RgbAve192(this._src_image.getBufferType());
 		}
 		public void UpdateInput(NyARTrackerSource_Reference o_input) throws NyARException
 		{
@@ -112,7 +112,7 @@ public class Test_TrackTerget extends Frame
 	        NyARRasterImageIO.copy(_src_image, ra);
 			//GS値化
 			NyARGrayscaleRaster gs=new NyARGrayscaleRaster(320,240);
-			NyARRasterFilter_Rgb2Gs_RgbAve filter=new NyARRasterFilter_Rgb2Gs_RgbAve(ra.getBufferType());
+			NyARRasterFilter_Rgb2Gs_RgbAve192 filter=new NyARRasterFilter_Rgb2Gs_RgbAve192(ra.getBufferType());
 			filter.doFilter(ra,gs);
 			//samplerへ入力
 			o_input.wrapBuffer(gs);
@@ -135,7 +135,7 @@ public class Test_TrackTerget extends Frame
 			}
 			this._capture.setOnCapture(this);
 			this._raster = new JmfNyARRaster_RGB(this._capture.getCaptureFormat());
-			this._filter	= new NyARRasterFilter_Rgb2Gs_RgbAve(_raster.getBufferType());
+			this._filter	= new NyARRasterFilter_Rgb2Gs_RgbAve192(_raster.getBufferType());
 			this._capture.start();
 			_bi=new NyARGrayscaleRaster(W, H);
 			return;
@@ -151,7 +151,7 @@ public class Test_TrackTerget extends Frame
 		private JmfCaptureDevice _capture;
 		private JmfNyARRaster_RGB _raster;
 		private NyARGrayscaleRaster _bi;
-		private NyARRasterFilter_Rgb2Gs_RgbAve _filter;
+		private NyARRasterFilter_Rgb2Gs_RgbAve192 _filter;
 		
 		public void onUpdateBuffer(javax.media.Buffer i_buffer)
 		{

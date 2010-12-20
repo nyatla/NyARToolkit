@@ -211,8 +211,8 @@ public class Test_RealityTarget extends Frame implements MouseListener
 	private static final long serialVersionUID = -2110888320986446576L;
 
 
-	private int W = 320;
-	private int H = 240;
+	private int W = 640;
+	private int H = 480;
 	InputSource _input_source;
 	public Test_RealityTarget() throws NyARException, Exception
 	{
@@ -223,8 +223,8 @@ public class Test_RealityTarget extends Frame implements MouseListener
 		this._param.loadARParamFromFile(PARAM_FILE);
 		this._param.changeScreenSize(W,H);
 		this._reality=new NyARReality(this._param.getScreenSize(),10,1000,this._param.getPerspectiveProjectionMatrix(),null,10,10);
-//		this._input_source=new LiveSource();
-		this._input_source=new ImageSource(SAMPLE_FILES);
+		this._input_source=new LiveSource();
+//		this._input_source=new ImageSource(SAMPLE_FILES);
 		addMouseListener(this);
 		this._mklib= new ARTKMarkerTable(10,16,16,25,25,4);
 		this._mklib.addMarkerFromARPattFile(PATT_HIRO,0,"HIRO",80,80);

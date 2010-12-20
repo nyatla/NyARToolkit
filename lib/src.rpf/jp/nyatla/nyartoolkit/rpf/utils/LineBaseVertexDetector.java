@@ -32,6 +32,7 @@ public class LineBaseVertexDetector
 
 	public boolean line2SquareVertex(VecLinearCoordinates.VecLinearCoordinatePoint[] i_line,NyARDoublePoint2d[] o_point) throws NyARException
 	{
+		
 		NyARDoublePoint2d[] v=this.__wk_v;
 		int number_of_vertex=0;
 		int non_vertexid=0;

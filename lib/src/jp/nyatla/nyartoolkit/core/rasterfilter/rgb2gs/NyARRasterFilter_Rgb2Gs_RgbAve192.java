@@ -40,17 +40,17 @@ import jp.nyatla.nyartoolkit.core.types.*;
  * このフィルタは、RGB値の平均値を、(R+G+B)>>4で算出します。(スケールは、192>=n>=0になります。)
  *
  */
-public class NyARRasterFilter_Rgb2Gs_RgbAve implements INyARRasterFilter_Rgb2Gs
+public class NyARRasterFilter_Rgb2Gs_RgbAve192 implements INyARRasterFilter_Rgb2Gs
 {
 	IdoThFilterImpl _do_filter_impl;
-	public NyARRasterFilter_Rgb2Gs_RgbAve(int i_in_raster_type,int i_out_raster_type) throws NyARException
+	public NyARRasterFilter_Rgb2Gs_RgbAve192(int i_in_raster_type,int i_out_raster_type) throws NyARException
 	{
 		if(!initInstance(i_in_raster_type,i_out_raster_type))
 		{
 			throw new NyARException();
 		}
 	}
-	public NyARRasterFilter_Rgb2Gs_RgbAve(int i_in_raster_type) throws NyARException
+	public NyARRasterFilter_Rgb2Gs_RgbAve192(int i_in_raster_type) throws NyARException
 	{
 		if(!initInstance(i_in_raster_type,NyARBufferType.INT1D_GRAY_8))
 		{
@@ -299,6 +299,7 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve implements INyARRasterFilter_Rgb2Gs
 			final int pix_mod_part=pix_count-(pix_count%8);
 			int src_ptr=t*size.w+l;
 			for (int y = t; y < b; y++) {
+				
 				int x=0;
 				for (x = pix_count-1; x >=pix_mod_part; x--){
 					o_output[src_ptr++] = ((in_buf[bp++] & 0xff) + (in_buf[bp++] & 0xff) + (in_buf[bp++] & 0xff)) >>2;
@@ -313,6 +314,7 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve implements INyARRasterFilter_Rgb2Gs
 					o_output[src_ptr++] = ((in_buf[bp++] & 0xff) + (in_buf[bp++] & 0xff) + (in_buf[bp++] & 0xff)) >>2;
 					o_output[src_ptr++] = ((in_buf[bp++] & 0xff) + (in_buf[bp++] & 0xff) + (in_buf[bp++] & 0xff)) >>2;
 				}
+				
 				bp+=row_padding_dst;
 				src_ptr+=row_padding_src;
 			}

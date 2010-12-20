@@ -5,6 +5,7 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.INyARVectorReader;
 import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARVectorReader_INT1D_GRAY_8;
 import jp.nyatla.nyartoolkit.rpf.utils.VecLinearCoordinates;
 
@@ -120,6 +121,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		if(i_contour_status.vecpos.length<4){
 			return false;
 		}
+		
 		//キーベクトルを取得
 		i_contour_status.vecpos.getKeyCoord(this._ref_my_pool._indexbuf);
 		//点に変換
@@ -127,6 +129,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		if(!this._ref_my_pool._line_detect.line2SquareVertex(this._ref_my_pool._indexbuf,this_vx)){
 			return false;
 		}
+		
 //		//点から直線を再計算
 //		for(int i=3;i>=0;i--){
 //			this_sq.line[i].makeLinearWithNormalize(this_sq.sqvertex[i],this_sq.sqvertex[(i+1)%4]);
@@ -147,7 +150,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	 * @return
 	 * @throws NyARException
 	 */
-	public boolean setValueWithDeilyCheck(NyARVectorReader_INT1D_GRAY_8 i_vec_reader,LowResolutionLabelingSamplerOut.Item i_source,NyARRectTargetStatus i_prev_status) throws NyARException
+	public boolean setValueWithDeilyCheck(INyARVectorReader i_vec_reader,LowResolutionLabelingSamplerOut.Item i_source,NyARRectTargetStatus i_prev_status) throws NyARException
 	{
 		VecLinearCoordinates vecpos=this._ref_my_pool._vecpos;
 		//輪郭線を取る
@@ -186,7 +189,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	 * @return
 	 * @throws NyARException
 	 */
-	public boolean setValueByLineLog(NyARVectorReader_INT1D_GRAY_8 i_vec_reader,NyARRectTargetStatus i_prev_status) throws NyARException
+	public boolean setValueByLineLog(INyARVectorReader i_vec_reader,NyARRectTargetStatus i_prev_status) throws NyARException
 	{
 		//検出範囲からカーネルサイズの2乗値を計算。検出領域の二乗距離の1/(40*40) (元距離の1/40)
 		int d=((int)i_prev_status.estimate_rect.getDiagonalSqDist()/(NyARMath.SQ_40));
@@ -239,7 +242,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	 * @return
 	 * @throws NyARException
 	 */
-	public boolean setValueByAutoSelect(NyARVectorReader_INT1D_GRAY_8 i_vec_reader,LowResolutionLabelingSamplerOut.Item i_source,NyARRectTargetStatus i_prev_status) throws NyARException
+	public boolean setValueByAutoSelect(INyARVectorReader i_vec_reader,LowResolutionLabelingSamplerOut.Item i_source,NyARRectTargetStatus i_prev_status) throws NyARException
 	{
 		int current_detect_type=DT_SQDAILY;
 		//移動速度による手段の切り替え
@@ -306,6 +309,8 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		if(!i_sample_area.isInnerPoint(cx,cy)){
 			return false;
 		}
+
+		
 		//一番長い辺と短い辺の比を確認(10倍の比があったらなんか変)
 		int max=Integer.MIN_VALUE;
 		int min=Integer.MAX_VALUE;
@@ -365,13 +370,13 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	 * @return
 	 * @throws NyARException
 	 */
-	private boolean traceSquareLine(NyARVectorReader_INT1D_GRAY_8 i_reader,int i_edge_size,NyARRectTargetStatus i_prevsq,NyARLinear[] o_line) throws NyARException
+	private boolean traceSquareLine(INyARVectorReader i_reader,int i_edge_size,NyARRectTargetStatus i_prevsq,NyARLinear[] o_line) throws NyARException
 	{
 		NyARDoublePoint2d p1,p2;
 		VecLinearCoordinates vecpos=this._ref_my_pool._vecpos;
 		//NyARIntRect i_rect
 		p1=i_prevsq.estimate_vertex[0];
-		int dist_limit=i_edge_size*i_edge_size*2;
+		int dist_limit=i_edge_size*i_edge_size;
 		//強度敷居値(セルサイズ-1)
 //		int min_th=i_edge_size*2+1;
 //		min_th=(min_th*min_th);
@@ -393,7 +398,7 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 //			}
 //@todo:パラメタ調整
 			//角度規制(元の線分との角度を確認)
-			if(vecpos.items[vid].getAbsVecCos(i_prevsq.vertex[i],i_prevsq.vertex[(i+1)%4])<NyARMath.COS_DEG_8){
+			if(vecpos.items[vid].getAbsVecCos(i_prevsq.vertex[i],i_prevsq.vertex[(i+1)%4])<NyARMath.COS_DEG_5){
 				//System.out.println("CODE1");
 				return false;
 			}

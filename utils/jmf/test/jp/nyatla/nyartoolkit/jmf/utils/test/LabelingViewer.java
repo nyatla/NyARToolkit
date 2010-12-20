@@ -42,7 +42,7 @@ import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfo;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfoPtrStack;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve192;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector_Rle;
 import jp.nyatla.nyartoolkit.core.types.*;
 
@@ -98,13 +98,13 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 		ar_param.changeScreenSize(320, 240);
 		this._raster = new JmfNyARRaster_RGB(this._capture.getCaptureFormat());
 		this._detect=new SquareDetector(ar_param.getScreenSize());
-		this._filter	= new NyARRasterFilter_Rgb2Gs_RgbAve(_raster.getBufferType());
+		this._filter	= new NyARRasterFilter_Rgb2Gs_RgbAve192(_raster.getBufferType());
 		//キャプチャイメージ用のラスタを準備
 		return;
 	}
 	private NyARSquareContourDetector_Rle _detect;
 	private NyARGrayscaleRaster _bi=new NyARGrayscaleRaster(320,240);
-	private NyARRasterFilter_Rgb2Gs_RgbAve _filter;
+	private NyARRasterFilter_Rgb2Gs_RgbAve192 _filter;
 
 
 	

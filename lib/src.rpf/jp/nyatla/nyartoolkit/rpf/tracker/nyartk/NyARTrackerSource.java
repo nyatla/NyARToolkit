@@ -17,7 +17,7 @@ public abstract class NyARTrackerSource
 	//継承クラスで設定されるべきオブジェクト
 	protected NyARGrayscaleRaster _rbraster;
 	protected NyARGrayscaleRaster _base_raster;
-	protected NyARVectorReader_INT1D_GRAY_8 _vec_reader;	
+	protected INyARVectorReader _vec_reader;	
 	protected LowResolutionLabelingSamplerOut _sample_out;
 	/**
 	 * Robertsエッジ画像の解像度を指定する。
@@ -33,7 +33,7 @@ public abstract class NyARTrackerSource
 	 * 基本GS画像に変更を加えた場合は、getSampleOut,またはsyncResource関数を実行して同期してから実行してください。
 	 * @return
 	 */
-	public final NyARVectorReader_INT1D_GRAY_8 getBaseVectorReader()
+	public final INyARVectorReader getBaseVectorReader()
 	{
 		return this._vec_reader;
 	}

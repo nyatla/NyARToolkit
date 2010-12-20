@@ -153,7 +153,7 @@ public class NyARTracker
 		NyARTargetList cotr=targets[NyARTargetStatus.ST_CONTURE];
 		NyARTargetList retw=targets[NyARTargetStatus.ST_RECT];
 
-		NyARVectorReader_INT1D_GRAY_8 vecreader=i_s.getBaseVectorReader();
+		INyARVectorReader vecreader=i_s.getBaseVectorReader();
 		//ターゲットリストの振り分け
 		NyARTarget[] target_array=this._targets.getArray();
 		newtr.clear();
@@ -192,7 +192,7 @@ public class NyARTracker
 			case NyARTargetStatus.ST_RECT:
 				upgradeRectTarget(target_array[i]);
 				continue;
-			case NyARTargetStatus.ST_CONTURE:
+			case NyARTargetStatus.ST_CONTURE:		
 				upgradeContourTarget(target_array[i]);
 				continue;
 			}
@@ -217,7 +217,7 @@ public class NyARTracker
 	 * @return
 	 * @throws NyARException
 	 */
-	private final void upgradeNewTarget(NyARTarget i_new_target,NyARVectorReader_INT1D_GRAY_8 i_vecreader) throws NyARException
+	private final void upgradeNewTarget(NyARTarget i_new_target,INyARVectorReader i_vecreader) throws NyARException
 	{
 		assert(i_new_target._st_type==NyARTargetStatus.ST_NEW);
 
@@ -313,7 +313,7 @@ public class NyARTracker
 			//ターゲットいっぱい？
 			c.releaseObject();
 			return;
-		}
+		}		
 		return;
 	}	
 	private final void upgradeRectTarget(NyARTarget i_rect_target) throws NyARException
@@ -401,7 +401,7 @@ public class NyARTracker
 	 * @param index
 	 * @throws NyARException
 	 */
-	public static void updateContureStatus(NyARTargetList i_list,NyARVectorReader_INT1D_GRAY_8 i_vecreader,NyARContourTargetStatusPool i_stpool,LowResolutionLabelingSamplerOut.Item[] source,int[] index) throws NyARException
+	public static void updateContureStatus(NyARTargetList i_list,INyARVectorReader i_vecreader,NyARContourTargetStatusPool i_stpool,LowResolutionLabelingSamplerOut.Item[] source,int[] index) throws NyARException
 	{
 		NyARTarget[] crd=i_list.getArray();		
 		NyARTarget d_ptr;
@@ -437,7 +437,7 @@ public class NyARTracker
 			d_ptr._ref_status=st;
 		}
 	}
-	public static void updateRectStatus(NyARTargetList i_list,NyARVectorReader_INT1D_GRAY_8 i_vecreader,NyARRectTargetStatusPool i_stpool,LowResolutionLabelingSamplerOut.Item[] source,int[] index) throws NyARException
+	public static void updateRectStatus(NyARTargetList i_list,INyARVectorReader i_vecreader,NyARRectTargetStatusPool i_stpool,LowResolutionLabelingSamplerOut.Item[] source,int[] index) throws NyARException
 	{	
 		NyARTarget[] rct=i_list.getArray();
 		NyARTarget d_ptr;
