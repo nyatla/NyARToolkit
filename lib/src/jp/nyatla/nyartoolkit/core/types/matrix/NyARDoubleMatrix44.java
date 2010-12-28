@@ -25,7 +25,7 @@
 package jp.nyatla.nyartoolkit.core.types.matrix;
 
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
-import jp.nyatla.nyartoolkit.test.NyIdTest;
+
 
 
 public class NyARDoubleMatrix44 implements INyARDoubleMatrix

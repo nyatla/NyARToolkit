@@ -7,7 +7,7 @@ public final class NyARNewTargetStatus extends NyARTargetStatus
 {
 
 	public LowResolutionLabelingSamplerOut.Item current_sampleout;
-	protected NyARNewTargetStatus(INyARManagedObjectPoolOperater i_ref_pool_operator) throws NyARException
+	public NyARNewTargetStatus(INyARManagedObjectPoolOperater i_ref_pool_operator) throws NyARException
 	{
 		super(i_ref_pool_operator);
 		this.current_sampleout=null;

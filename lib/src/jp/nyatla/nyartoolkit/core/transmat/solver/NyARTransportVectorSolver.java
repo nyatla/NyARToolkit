@@ -45,7 +45,7 @@ public class NyARTransportVectorSolver implements INyARTransportVectorSolver
 	private double[] _cy;	
 	private final NyARPerspectiveProjectionMatrix _projection_mat;
 	private int _nmber_of_vertex;
-	public NyARTransportVectorSolver(final NyARPerspectiveProjectionMatrix i_projection_mat_ref,int i_max_vertex)
+	public NyARTransportVectorSolver(NyARPerspectiveProjectionMatrix i_projection_mat_ref,int i_max_vertex)
 	{
 		this._projection_mat=i_projection_mat_ref;
 		this._cx=new double[i_max_vertex];

@@ -100,8 +100,8 @@ public class NyARMatchPattDeviationColorData
 		int height=this._size.h;
 		int i_number_of_pix=width*height;
 		INyARRgbPixelReader reader=i_raster.getRgbPixelReader();
-		int rgb[]=new int[3];
-		int[] out=this._data;
+		int[] rgb=new int[3];
+		int[] dout=this._data;
 		int ave;//<PV/>
 		//<平均値計算>
 		ave = 0;
@@ -123,9 +123,9 @@ public class NyARMatchPattDeviationColorData
 			for(int y=height-1;y>=0;y--){
 				for(int x=width-1;x>=0;x--){
 					reader.getPixel(x,y,rgb);
-					w_sum = (ave - rgb[2]) ;out[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
-					w_sum = (ave - rgb[1]) ;out[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
-					w_sum = (ave - rgb[0]) ;out[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
+					w_sum = (ave - rgb[2]) ;dout[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
+					w_sum = (ave - rgb[1]) ;dout[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
+					w_sum = (ave - rgb[0]) ;dout[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
 				}
 			}
 			break;
@@ -133,9 +133,9 @@ public class NyARMatchPattDeviationColorData
 			for(int x=0;x<width;x++){
 				for(int y=height-1;y>=0;y--){
 					reader.getPixel(x,y,rgb);
-					w_sum = (ave - rgb[2]) ;out[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
-					w_sum = (ave - rgb[1]) ;out[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
-					w_sum = (ave - rgb[0]) ;out[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
+					w_sum = (ave - rgb[2]) ;dout[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
+					w_sum = (ave - rgb[1]) ;dout[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
+					w_sum = (ave - rgb[0]) ;dout[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
 				}
 			}
 			break;
@@ -143,9 +143,9 @@ public class NyARMatchPattDeviationColorData
 			for(int y=0;y<height;y++){
 				for(int x=0;x<width;x++){
 					reader.getPixel(x,y,rgb);
-					w_sum = (ave - rgb[2]) ;out[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
-					w_sum = (ave - rgb[1]) ;out[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
-					w_sum = (ave - rgb[0]) ;out[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
+					w_sum = (ave - rgb[2]) ;dout[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
+					w_sum = (ave - rgb[1]) ;dout[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
+					w_sum = (ave - rgb[0]) ;dout[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
 				}
 			}
 			break;
@@ -153,9 +153,9 @@ public class NyARMatchPattDeviationColorData
 			for(int x=width-1;x>=0;x--){
 				for(int y=0;y<height;y++){
 					reader.getPixel(x,y,rgb);
-					w_sum = (ave - rgb[2]) ;out[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
-					w_sum = (ave - rgb[1]) ;out[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
-					w_sum = (ave - rgb[0]) ;out[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
+					w_sum = (ave - rgb[2]) ;dout[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
+					w_sum = (ave - rgb[1]) ;dout[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
+					w_sum = (ave - rgb[0]) ;dout[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
 				}
 			}
 			break;
@@ -265,7 +265,7 @@ public class NyARMatchPattDeviationColorData
 	private static final double setRaster_ANY(INyARRgbPixelReader i_reader,NyARIntSize i_size,int i_number_of_pix,int[] o_out) throws NyARException
 	{
 		int width=i_size.w;
-		int rgb[]=new int[3];
+		int[] rgb=new int[3];
 		int ave;//<PV/>
 		//<平均値計算>
 		ave = 0;

@@ -64,7 +64,7 @@ public class NegativeSqRoberts implements INyARRasterFilter
 	{
 		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException;
 	}
-	final static int SH=4;
+	private final static int SH=4;
 	class IdoFilterImpl_GRAY_8 implements IdoFilterImpl
 	{
 		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException

@@ -101,7 +101,7 @@ public abstract class SingleARMarkerProcesser
 			this._ref_raster=i_raster;
 			this._target_id=i_target_id;
 			this.code_index=-1;
-			this.confidence=Double.MIN_NORMAL;
+			this.confidence=Double.MIN_VALUE;
 		}
 
 		/**

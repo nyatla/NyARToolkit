@@ -27,7 +27,6 @@ package jp.nyatla.nyartoolkit.nyidmarker;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.utils.*;
 
@@ -211,7 +210,7 @@ final class PerspectivePixelReader
 		//3,4,5,6,7,8,9,10
 		final int[] freq_count_table=this._freq_count_table;
 		//0,2,4,6,8,10,12,14,16,18,20の要素を持つ配列
-		final int freq_table[]=this._freq_table;
+		final int[] freq_table=this._freq_table;
 		//初期化
 		final double[] cpara=this._cparam;
 		final int[] ref_x=this._ref_x;
@@ -394,13 +393,13 @@ final class PerspectivePixelReader
 		return frq_l2h==frq_h2l?frq_l2h:-1;			
 	}
 
-	private final static int THRESHOLD_EDGE=10;
-	private final static int THRESHOLD_STEP=2;
-	private final static int THRESHOLD_WIDTH=10;
-	private final static int THRESHOLD_PIXEL=THRESHOLD_WIDTH/THRESHOLD_STEP;
-	private final static int THRESHOLD_SAMPLE=THRESHOLD_PIXEL*THRESHOLD_PIXEL;
-	private final static int THRESHOLD_SAMPLE_LT=THRESHOLD_EDGE;
-	private final static int THRESHOLD_SAMPLE_RB=100-THRESHOLD_WIDTH-THRESHOLD_EDGE;
+	private static final int THRESHOLD_EDGE=10;
+	private static final int THRESHOLD_STEP=2;
+	private static final int THRESHOLD_WIDTH=10;
+	private static final int THRESHOLD_PIXEL=THRESHOLD_WIDTH/THRESHOLD_STEP;
+	private static final int THRESHOLD_SAMPLE=THRESHOLD_PIXEL*THRESHOLD_PIXEL;
+	private static final int THRESHOLD_SAMPLE_LT=THRESHOLD_EDGE;
+	private static final int THRESHOLD_SAMPLE_RB=100-THRESHOLD_WIDTH-THRESHOLD_EDGE;
 	
 	public static class TThreshold{
 		public int th_h;
@@ -562,7 +561,7 @@ final class PerspectivePixelReader
 		return;
 	}
 
-	private boolean getHighPixelCenter(int i_st,final int[] i_pixels,int i_width,int i_height,int i_th,NyARIntPoint2d o_point)
+	private boolean getHighPixelCenter(int i_st,int[] i_pixels,int i_width,int i_height,int i_th,NyARIntPoint2d o_point)
 	{
 		int rp=i_st;
 		int pos_x=0;
@@ -789,7 +788,7 @@ class MarkerPattDecoder
  */
 class MarkerPattEncoder
 {
-	private final static int[] _bit_table_3={
+	private static final int[] _bit_table_3={
 		25,	26,	27,	28,	29,	30,	31,
 		48,	9,	10,	11,	12,	13,	32,
 		47,	24,	1,	2,	3,	14,	33,
@@ -798,13 +797,13 @@ class MarkerPattEncoder
 		44,	21,	20,	19,	18,	17,	36,
 		43,	42,	41,	40,	39,	38,	37
 		};	
-	private final static int[] _bit_table_2={
+	private static final int[] _bit_table_2={
 		9,	10,	11,	12,	13,
 		24,	1,	2,	3,	14,
 		23,	8,	0,	4,	15,
 		22,	7,	6,	5,	16,
 		21,	20,	19,	18,	17};
-	private final static int[][] _bit_tables={
+	private static final int[][] _bit_tables={
 		_bit_table_2,_bit_table_3,null,null,null,null,null,
 	};
 	/**

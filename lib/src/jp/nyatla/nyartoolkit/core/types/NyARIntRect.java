@@ -49,7 +49,7 @@ public class NyARIntRect
 	 * @param i_num_of_vertex
 	 * @param o_rect
 	 */
-	public final void setAreaRect(NyARDoublePoint2d i_vertex[],int i_num_of_vertex)
+	public final void setAreaRect(NyARDoublePoint2d[] i_vertex,int i_num_of_vertex)
 	{
 		//エリアを求める。
 		int xmax,xmin,ymax,ymin;
@@ -72,7 +72,7 @@ public class NyARIntRect
 		this.w=xmax-xmin+1;
 		this.y=ymin;
 	}
-	public final void setAreaRect(NyARIntPoint2d i_vertex[],int i_num_of_vertex)
+	public final void setAreaRect(NyARIntPoint2d[] i_vertex,int i_num_of_vertex)
 	{
 		//エリアを求める。
 		int xmax,xmin,ymax,ymin;

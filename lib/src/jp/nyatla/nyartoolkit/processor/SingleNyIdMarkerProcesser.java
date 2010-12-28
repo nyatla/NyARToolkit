@@ -35,7 +35,6 @@ import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.nyidmarker.*;
 import jp.nyatla.nyartoolkit.nyidmarker.data.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.*;
-import jp.nyatla.nyartoolkit.detector.NyARCustomSingleDetectMarker;
 
 public abstract class SingleNyIdMarkerProcesser
 {

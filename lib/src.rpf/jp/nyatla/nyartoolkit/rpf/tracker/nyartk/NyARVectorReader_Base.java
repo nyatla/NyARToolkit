@@ -11,7 +11,6 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.rpf.utils.VecLinearCoordinates;
-import jp.nyatla.nyartoolkit.rpf.utils.VecLinearCoordinates.VecLinearCoordinatePoint;
 
 /**
  * NyARVectorReaderインタフェイスのうち、バッファフォーマットに依存しない関数を実装するクラス。
@@ -20,7 +19,7 @@ import jp.nyatla.nyartoolkit.rpf.utils.VecLinearCoordinates.VecLinearCoordinateP
  */
 public abstract class NyARVectorReader_Base implements INyARVectorReader
 {
-	private VecLinearCoordinatePoint[] _tmp_coord_pos;
+	private VecLinearCoordinates.VecLinearCoordinatePoint[] _tmp_coord_pos;
 	private int _rob_resolution;
 	protected NyARGrayscaleRaster _ref_base_raster;
 	private NyARGrayscaleRaster _ref_rob_raster;
@@ -52,7 +51,7 @@ public abstract class NyARVectorReader_Base implements INyARVectorReader
 		this._ref_base_raster=i_ref_raster;
 		this._coord_buf = new NyARIntCoordinates((i_ref_raster.getWidth() + i_ref_raster.getHeight()) * 4);
 		this._factor=i_ref_raster_distortion;
-		this._tmp_coord_pos=VecLinearCoordinatePoint.createArray(this._coord_buf.items.length);
+		this._tmp_coord_pos=VecLinearCoordinates.VecLinearCoordinatePoint.createArray(this._coord_buf.items.length);
 		this._cpickup = i_contour_pickup;
 		return;
 	}
@@ -173,7 +172,7 @@ public abstract class NyARVectorReader_Base implements INyARVectorReader
 		return traceConture(coord, 1, s, o_coord);
 	}
 	//ベクトルの類似度判定式
-	private final static boolean checkVecCos(VecLinearCoordinatePoint i_current_vec,VecLinearCoordinatePoint i_prev_vec,double i_ave_dx,double i_ave_dy)
+	private final static boolean checkVecCos(VecLinearCoordinates.VecLinearCoordinatePoint i_current_vec,VecLinearCoordinates.VecLinearCoordinatePoint i_prev_vec,double i_ave_dx,double i_ave_dy)
 	{
 		double x1=i_current_vec.dx;
 		double y1=i_current_vec.dy;
@@ -201,20 +200,21 @@ public abstract class NyARVectorReader_Base implements INyARVectorReader
 	 */
 	public boolean traceConture(NyARIntCoordinates i_coord, int i_pos_mag,int i_cell_size, VecLinearCoordinates o_coord)
 	{
-		VecLinearCoordinatePoint[] pos=this._tmp_coord_pos;
+		assert(i_cell_size<=45);//intで二乗差分値を計算するときの限界
+		VecLinearCoordinates.VecLinearCoordinatePoint[] pos=this._tmp_coord_pos;
 		// ベクトル化
 		int MAX_COORD = o_coord.items.length;
 		int i_coordlen = i_coord.length;
 		NyARIntPoint2d[] coord = i_coord.items;
-		VecLinearCoordinatePoint pos_ptr;
+		VecLinearCoordinates.VecLinearCoordinatePoint pos_ptr;
 
 		//0個目のライン探索
 		int number_of_data = 0;
 		double sq;
-		long sq_sum=0;
+		int sq_sum=0;//3x3の場合、1ピクセルあたりΣ8*(255*255)が最大値なので、45x45程度のセルが最大。
 		//0番目のピクセル
 		pos[0].scalar=sq=this.getAreaVector33(coord[0].x * i_pos_mag, coord[0].y * i_pos_mag,i_cell_size, i_cell_size,pos[0]);
-		sq_sum+=sq;
+		sq_sum+=(int)sq;
 		//[2]に0を保管
 
 		//1点目だけは前方と後方、両方に探索をかける。
@@ -229,7 +229,7 @@ public abstract class NyARVectorReader_Base implements INyARVectorReader
 			// ベクトル取得
 			pos_ptr=pos[sum];
 			pos_ptr.scalar=sq=this.getAreaVector33(coord[i].x * i_pos_mag,coord[i].y * i_pos_mag, i_cell_size, i_cell_size,pos_ptr);
-			sq_sum+=sq;
+			sq_sum+=(int)sq;
 			// 類似度判定
 			if(checkVecCos(pos[sum],pos[sum-1],ave_dx,ave_dy))
 			{
@@ -251,7 +251,7 @@ public abstract class NyARVectorReader_Base implements INyARVectorReader
 			// ベクトル取得
 			pos_ptr=pos[sum];
 			pos_ptr.scalar=sq=this.getAreaVector33(coord[i].x * i_pos_mag,coord[i].y * i_pos_mag, i_cell_size, i_cell_size,pos_ptr);
-			sq_sum+=sq;			
+			sq_sum+=(int)sq;			
 			if(sq==0){
 				continue;
 			}
@@ -296,13 +296,13 @@ public abstract class NyARVectorReader_Base implements INyARVectorReader
 	 * @param i_scale_th
 	 * @return
 	 */
-	private final boolean leastSquaresWithNormalize(VecLinearCoordinatePoint[] i_points,int i_number_of_data,VecLinearCoordinatePoint o_dest,double i_scale_th)
+	private final boolean leastSquaresWithNormalize(VecLinearCoordinates.VecLinearCoordinatePoint[] i_points,int i_number_of_data,VecLinearCoordinates.VecLinearCoordinatePoint o_dest,double i_scale_th)
 	{
 		int i;
 		int num=0;
 		double sum_xy = 0, sum_x = 0, sum_y = 0, sum_x2 = 0;
 		for (i=i_number_of_data-1; i>=0; i--){
-			VecLinearCoordinatePoint ptr=i_points[i];
+			VecLinearCoordinates.VecLinearCoordinatePoint ptr=i_points[i];
 			//規定より小さいスケールは除外なう
 			if(ptr.scalar<i_scale_th)
 			{

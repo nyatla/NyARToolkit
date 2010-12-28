@@ -679,7 +679,7 @@ public class NyARTracker
  */
 final class SampleStack extends NyARPointerStack<LowResolutionLabelingSamplerOut.Item>
 {
-	protected SampleStack(int i_size) throws NyARException
+	public SampleStack(int i_size) throws NyARException
 	{
 		super();
 		this.initInstance(i_size,LowResolutionLabelingSamplerOut.Item.class);

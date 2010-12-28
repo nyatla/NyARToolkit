@@ -51,7 +51,9 @@ public class NyARGLUtil
 	 */
 	public final static double SCALE_FACTOR_toCameraViewRH_NYAR2=1/0.025;
 
-	
+    private NyARGLUtil()
+    {//生成の禁止
+    }	
 
 	
 	/**

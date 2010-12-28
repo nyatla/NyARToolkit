@@ -155,7 +155,7 @@ public class NyARIntSize
 	 * @param i_vertex
 	 * @param i_num_of_vertex
 	 */
-	public final void setAreaRect(NyARDoublePoint2d i_vertex[],int i_num_of_vertex)
+	public final void setAreaRect(NyARDoublePoint2d[] i_vertex,int i_num_of_vertex)
 	{
 		//エリアを求める。
 		int xmax,xmin,ymax,ymin;
@@ -176,7 +176,7 @@ public class NyARIntSize
 		this.h=ymax-ymin+1;
 		this.w=xmax-xmin+1;
 	}
-	public final void setAreaRect(NyARIntPoint2d i_vertex[],int i_num_of_vertex)
+	public final void setAreaRect(NyARIntPoint2d[] i_vertex,int i_num_of_vertex)
 	{
 		//エリアを求める。
 		int xmax,xmin,ymax,ymin;

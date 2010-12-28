@@ -3,7 +3,6 @@ package jp.nyatla.nyartoolkit.core.raster.rgb;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.*;
-import jp.nyatla.nyartoolkit.core.raster.*;
 
 public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 {

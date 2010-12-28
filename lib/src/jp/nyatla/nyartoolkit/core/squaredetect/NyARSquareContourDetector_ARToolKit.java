@@ -38,7 +38,6 @@ import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabelStack;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabeling_ARToolKit;
 import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARIntCoordinates;
-import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 

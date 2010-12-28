@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.types;
 
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
+
 
 /**
  * データ型です。

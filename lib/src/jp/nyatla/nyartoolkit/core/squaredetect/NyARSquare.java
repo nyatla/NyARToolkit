@@ -31,7 +31,7 @@
 package jp.nyatla.nyartoolkit.core.squaredetect;
 
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core.utils.NyARMath;
+
 /**
  * ARMarkerInfoに相当するクラス。 矩形情報を保持します。
  * 

@@ -36,7 +36,6 @@ import jp.nyatla.nyartoolkit.core.param.NyARObserv2IdealMap;
 import jp.nyatla.nyartoolkit.core.pca2d.INyARPca2d;
 import jp.nyatla.nyartoolkit.core.pca2d.NyARPca2d_MatrixPCA_O2;
 import jp.nyatla.nyartoolkit.core.types.NyARIntCoordinates;
-import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix22;

@@ -24,7 +24,7 @@ public class VecLinearCoordinates
 		}
 	}	
 	public int length;
-	public VecLinearCoordinatePoint items[];
+	public VecLinearCoordinatePoint[] items;
 
 	public VecLinearCoordinates(int i_length)
 	{

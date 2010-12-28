@@ -59,12 +59,12 @@ public class NyARSingleDetectMarker extends NyARCustomSingleDetectMarker
 	class RleDetector extends NyARSquareContourDetector_Rle
 	{
 		NyARCustomSingleDetectMarker _parent;
-		RleDetector(NyARCustomSingleDetectMarker i_parent,NyARIntSize i_size) throws NyARException
+		public RleDetector(NyARCustomSingleDetectMarker i_parent,NyARIntSize i_size) throws NyARException
 		{
 			super(i_size);
 			this._parent=i_parent;
 		}
-		public void onSquareDetect(NyARIntCoordinates i_coord,int[] i_vertex_index) throws NyARException
+		protected void onSquareDetect(NyARIntCoordinates i_coord,int[] i_vertex_index) throws NyARException
 		{
 			this._parent.updateSquareInfo(i_coord, i_vertex_index);
 		}	
@@ -76,12 +76,12 @@ public class NyARSingleDetectMarker extends NyARCustomSingleDetectMarker
 	class ARTKDetector extends NyARSquareContourDetector_ARToolKit
 	{
 		NyARCustomSingleDetectMarker _parent;
-		ARTKDetector(NyARCustomSingleDetectMarker i_parent,NyARIntSize i_size) throws NyARException
+		public ARTKDetector(NyARCustomSingleDetectMarker i_parent,NyARIntSize i_size) throws NyARException
 		{
 			super(i_size);
 			this._parent=i_parent;
 		}
-		public void onSquareDetect(NyARIntCoordinates i_coord,int[] i_vertex_index) throws NyARException
+		protected void onSquareDetect(NyARIntCoordinates i_coord,int[] i_vertex_index) throws NyARException
 		{
 			this._parent.updateSquareInfo(i_coord, i_vertex_index);
 		}	

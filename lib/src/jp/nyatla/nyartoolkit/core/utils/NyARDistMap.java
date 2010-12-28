@@ -39,7 +39,7 @@ public class NyARDistMap
 		public int col;
 		public int dist;
 	}
-	protected DistItem _map[];
+	protected DistItem[] _map;
 
 	protected int _min_dist;
 	protected int _min_dist_index;

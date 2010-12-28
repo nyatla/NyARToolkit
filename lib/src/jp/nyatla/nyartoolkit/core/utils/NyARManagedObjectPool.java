@@ -21,7 +21,7 @@ public class NyARManagedObjectPool<T extends NyARManagedObject>
 	/**
 	 * Javaの都合でバッファを所有させていますが、別にこの形で実装しなくてもかまいません。
 	 */
-	private class Operator implements NyARManagedObject.INyARManagedObjectPoolOperater
+	public class Operator implements NyARManagedObject.INyARManagedObjectPoolOperater
 	{
 		public NyARManagedObject[] _buffer;
 		public NyARManagedObject[] _pool;

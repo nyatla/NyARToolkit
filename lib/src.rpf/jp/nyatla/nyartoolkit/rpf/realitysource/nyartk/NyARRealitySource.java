@@ -31,7 +31,7 @@ public abstract class NyARRealitySource
 	protected NyARTrackerSource _tracksource;
 
 	
-	protected NyARRealitySource(){};
+	protected NyARRealitySource(){}
 	
 
 	/**
