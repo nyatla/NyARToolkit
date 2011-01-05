@@ -43,23 +43,25 @@ import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 
 /**
- * NyARCodeクラスの支援クラスです。このクラスは、NyARCodeのマーカファイル読み取り機能を担当します。
- * InputStreamからARToolkit形式のマーカデータを読み取って配列に格納する手順を実装します。
+ * {@link NyARCode}クラスの支援クラスです。
+ * このクラスは、{@link NyARCode}のマーカファイル読み取り機能のうち、InputStreamからARToolkit形式のマーカデータを読み取って配列に格納する手順を実装します。
+ * {@link NyARCode}以外から使用することはありません。
  */
 class NyARCodeFileReader
 {
 
 	/**
-	 * ImputStreamからARToolKit形式のマーカデータを読み込んでo_raster[4]に格納します。
+	 * ImputStreamからARToolKit形式のマーカデータを読み、o_raster[4]に格納します。
 	 * @param i_stream
 	 * 読出し元のストリームです。
 	 * @param o_raster
-	 * 出力先のラスタ配列です。バッファ形式は形式はINT1D_X8R8G8B8_32であり、全て同一なサイズである必要があります。
+	 * 出力先のラスタ配列です。
+	 * バッファ形式は形式はINT1D_X8R8G8B8_32であり、4要素、かつ全て同一なサイズである必要があります。
 	 * @throws NyARException
 	 */
 	public static void loadFromARToolKitFormFile(InputStream i_stream,NyARRaster[] o_raster) throws NyARException
 	{
-		assert o_raster.length==4;
+		assert(o_raster.length==4);
 		//4個の要素をラスタにセットする。
 		try {
 			StreamTokenizer st = new StreamTokenizer(new InputStreamReader(i_stream));
@@ -75,11 +77,11 @@ class NyARCodeFileReader
 		return;
 	}
 	/**
-	 * ImputStreamからARToolKit形式のマーカデータを読み込んでo_codeに格納します。
+	 * ImputStreamからARToolKit形式のマーカデータを読み込み、o_codeオブジェクトへ格納します。
 	 * @param i_stream
 	 * 読出し元のストリームです。
 	 * @param o_code
-	 * 出力先のNyARCodeオブジェクトです。
+	 * 出力先の{@link NyARCode}オブジェクトです。
 	 * @throws NyARException
 	 */
 	public static void loadFromARToolKitFormFile(InputStream i_stream,NyARCode o_code) throws NyARException
@@ -105,13 +107,14 @@ class NyARCodeFileReader
 		return;
 	}
 	/**
-	 * 1ブロック分のXRGBデータをi_stからo_bufへ読みだします。
+	 * ストリームi_stから、1ブロック(1方位分)のXRGBデータをからo_bufへ読みだします。
 	 * @param i_st
-	 * 入力元のStreamTokenizerを指定します。関数実行後、読み取り位置は更新されます。
+	 * 入力元のStreamTokenizerを指定します。
+	 * i_stの読み取り位置は更新されます。
 	 * @param i_width
-	 * パターンの横幅です。
+	 * パターンの横解像度(pixel)です。
 	 * @param i_height
-	 * パターンの縦幅です。
+	 * パターンの縦解像度(pixel)です。
 	 * @param o_buf
 	 * 読み取った値を格納する配列です。
 	 * @throws NyARException
@@ -144,8 +147,8 @@ class NyARCodeFileReader
 }
 
 /**
- * ARToolKitのマーカーパターン1個のデータに相当するクラスです。
- * マーカーパターンに対する、ARToolKit相当のプロパティ値を提供します。
+ * ARToolKitのマーカーパターン1個のデータを格納するクラスです。
+ * マーカーパターンのプロパティと、データのロード機能を提供します。
  */
 public class NyARCode
 {
@@ -155,39 +158,55 @@ public class NyARCode
 	private int _height;
 	
 	/**
-	 * directionを指定して、NyARMatchPattDeviationColorDataオブジェクトを取得します。
+	 * 指定したdirection(方位)の{@link NyARMatchPattDeviationColorData}オブジェクトの参照値を返します。
 	 * @param i_index
-	 * 0<=n<4の数値
+	 * 方位インデクスの値を指定します。
+	 * 範囲は、0&lt;=n&lt;=3の数値です。
 	 * @return
-	 * NyARMatchPattDeviationColorDataオブジェクト
+	 * 指定した方位の{@link NyARMatchPattDeviationColorData}オブジェクトを返します。
 	 */
 	public NyARMatchPattDeviationColorData getColorData(int i_index)
 	{
 		return this._color_pat[i_index];
 	}
+	/**
+	 * 指定したdirection(方位)の{@link NyARMatchPattDeviationBlackWhiteData}オブジェクトの参照値を返します。
+	 * @param i_index
+	 * 方位インデクスの値を指定します。
+	 * 範囲は、0&lt;=n&lt;=3の数値です。
+	 * @return
+	 * 指定した方位の{@link NyARMatchPattDeviationBlackWhiteData}オブジェクトを返します。
+	 */
 	public NyARMatchPattDeviationBlackWhiteData getBlackWhiteData(int i_index)
 	{
 		return this._bw_pat[i_index];
-	}	
+	}
+	/**
+	 * ARマーカの横解像度を返します。
+	 * @return
+	 * 解像度値
+	 */
 	public int getWidth()
 	{
 		return _width;
 	}
 
 	/**
-	 * パターンデータの高さを取得します。
+	 * ARマーカの縦解像度を返します。
 	 * @return
+	 * 解像度値
 	 */
 	public int getHeight()
 	{
 		return _height;
 	}
 	/**
-	 * コンストラクタです。空のNyARCodeオブジェクトを作成します。
+	 * コンストラクタです。
+	 * 空のNyARCodeオブジェクトを作成します。
 	 * @param i_width
-	 * 作成するマーカパターンの幅
+	 * 作成するマーカパターンの横解像度
 	 * @param i_height
-	 * 作成するマーカパターンの高さ
+	 * 作成するマーカパターンの縦解像度
 	 * @throws NyARException
 	 */
 	public NyARCode(int i_width, int i_height) throws NyARException
@@ -202,10 +221,10 @@ public class NyARCode
 		return;
 	}
 	/**
-	 * ファイル名を指定して、パターンデータをロードします。
-	 * ロードするパターンデータのサイズは、現在の値と同じである必要があります。
+	 * ARToolKit形式のパターンデータをファイルからロードします。
+	 * ロードするパターンデータの縦横解像度は、このインスタンスの値と同じである必要があります。
 	 * @param filename
-	 * ARToolKit形式のパターンデータファイルの名前
+	 * ARToolKit形式のパターンデータファイルのパス名
 	 * @throws NyARException
 	 */
 	public void loadARPattFromFile(String filename) throws NyARException
@@ -218,10 +237,23 @@ public class NyARCode
 		return;
 	}
 	/**
-	 * 4枚のラスタから、マーカーパターンを生成して格納します。
+	 * inputStreamから、ARToolKit形式のパターンデータをロードします。
+	 * ロードするパターンデータの縦横解像度は、このインスタンスの値と同じである必要があります。
+	 * @param i_stream
+	 * 読出し元のStreamオブジェクト
+	 * @throws NyARException
+	 */
+	public void loadARPatt(InputStream i_stream) throws NyARException
+	{
+		//ラスタにパターンをロードする。
+		NyARCodeFileReader.loadFromARToolKitFormFile(i_stream,this);
+		return;
+	}	
+	/**
+	 * 4枚のラスタオブジェクトから、マーカーパターンを生成して格納します。
 	 * @param i_raster
-	 * direction毎のパターンを格納したラスタ配列を指定します。
-	 * ラスタは同一なサイズ、かつマーカーパターンと同じサイズである必要があります。
+	 * パターンデータを格納したラスタオブジェクト配列を指定します。
+	 * ラスタは同一な解像度であり、かつこのインスタンスと同じ解像度である必要があります。
 	 * 格納順は、パターンの右上が、1,2,3,4象限になる順番です。
 	 * @throws NyARException
 	 */
@@ -235,9 +267,11 @@ public class NyARCode
 		return;
 	}
 	/**
-	 * 1枚のラスタから、マーカーパターンを生成して格納します。
+	 * 1枚のラスタオブジェクトから、マーカーパターンを生成して格納します。
+	 * 残りの3枚のデータは、関数がi_rasterを回転させて求めます。
 	 * @param i_raster
-	 * 基準となるラスタを指定します。ラスタの解像度は、ARマーカコードと同じである必要があります。
+	 * パターンデータを格納したラスタオブジェクトを指定します。
+	 * ラスタは、このインスタンスと同じ解像度である必要があります。
 	 * @throws NyARException
 	 */	
 	public void setRaster(INyARRgbRaster i_raster) throws NyARException
@@ -249,16 +283,5 @@ public class NyARCode
 		return;
 	}
 	
-	/**
-	 * inputStreamから、パターンデータをロードします。
-	 * ロードするパターンのサイズは、現在の値と同じである必要があります。
-	 * @param i_stream
-	 * @throws NyARException
-	 */
-	public void loadARPatt(InputStream i_stream) throws NyARException
-	{
-		//ラスタにパターンをロードする。
-		NyARCodeFileReader.loadFromARToolKitFormFile(i_stream,this);
-		return;
-	}
+
 }

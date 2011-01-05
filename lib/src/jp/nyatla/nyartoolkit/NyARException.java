@@ -32,22 +32,23 @@ package jp.nyatla.nyartoolkit;
 
 /**
  * NyARToolkitライブラリが生成するExceptionのクラスです。
- * このクラスは、NyARToolkitライブラリ内でのみ使用します。
- *
+ * このクラスは、NyARToolkitライブラリでのみ使用します。
  */
 public class NyARException extends Exception
 {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * コンストラクタです。例外オブジェクトを生成します。
+	 * コンストラクタです。
+	 * 例外オブジェクトを生成します。
 	 */
 	public NyARException()
 	{
 		super();
 	}
 	/**
-	 * コンストラクタです。例外オブジェクト継承して、例外を生成します。
+	 * コンストラクタです。
+	 * 例外オブジェクト継承して、例外を生成します。
 	 * @param e
 	 * 継承する例外オブジェクト
 	 */
@@ -56,7 +57,8 @@ public class NyARException extends Exception
 		super(e);
 	}
 	/**
-	 * コンストラクタです。メッセージを指定して、例外を生成します。
+	 * コンストラクタです。
+	 * メッセージを指定して、例外を生成します。
 	 * @param m
 	 */
 	public NyARException(String m)
@@ -64,19 +66,20 @@ public class NyARException extends Exception
 		super(m);
 	}
 	/**
-	 * ライブラリ開発者向けの関数です。メッセージを指定して、例外をスローします。
-	 * この関数は、NyARToolkitの仕様外動作を補足するために使います。
+	 * ライブラリ開発者向けの関数です。
+	 * 意図的に例外を発生するときに、コードに埋め込みます。
 	 * @param m
+	 * 例外メッセージを指定します。
 	 * @throws NyARException
 	 */
-
 	public static void trap(String m) throws NyARException
 	{
 		throw new NyARException("トラップ:" + m);
 	}
 	/**
-	 * ライブラリ開発者向けの関数です。"Not Implement!"メッセージを指定して、例外をスローします。
-	 * この関数は、NyARToolkitの未実装部分に記述して使います。
+	 * ライブラリ開発者向けの関数です。
+	 * "Not Implement!"メッセージを指定して、例外をスローします。
+	 * この関数は、NyARToolkitの未実装部分に埋め込みます。
 	 * @throws NyARException
 	 */
 	public static void notImplement() throws NyARException
@@ -84,7 +87,8 @@ public class NyARException extends Exception
 		throw new NyARException("Not Implement!");
 	}
 	/**
-	 * この関数は使用不能です。（別の関数を使用してください。）
+	 * ライブラリ開発者向けの関数です。
+	 * 関数が使用不能である事を、例外で通知します。
 	 * @throws NyARException
 	 */
 	public static void unavailability() throws NyARException

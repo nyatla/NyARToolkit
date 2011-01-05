@@ -4,32 +4,27 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
- * このクラスは、直線式の集合から頂点集合を計算する関数を提供します。
+ * このクラスは、4本の直線式から、凸包の頂点を計算する機能を提供します。
  */
 public class LineBaseVertexDetector
 {
-	/**
-	 * 頂点パターンテーブル
-	 * 頂点用の、存在しないIDに対応した、調査テーブル。4頂点の時も使う。
-	 */
+	/** 頂点の組合せテーブル(4,5頂点用)*/
 	private final static int[][] _45vertextable={
 			{1,2,4,3},{0,2,5,3},{0,1,5,4},{0,1,5,4},{0,2,5,3},{1,2,4,3}};
-	/**
-	 * 頂点パターンテーブル(6用)
-	 */
+	/** 頂点組合せテーブル。(6頂点用)*/
 	private final static int[][] _order_table={{0,1,5,4},{0,2,5,3},{1,2,4,3}};
+	/** ワーク変数*/
 	private NyARDoublePoint2d[] __wk_v=NyARDoublePoint2d.createArray(6);
 	/**
-	 * 適当に与えられた4線分から、四角形の頂点を計算する。
+	 * ４直線の交点から、凸包の頂点座標を計算します。
 	 * @param i_line
-	 * 4線分を格納した配列
+	 * 直線式の配列です。要素数は4である必要があります。
 	 * @param o_point
-	 * 検出した4頂点
+	 * 検出した頂点の座標です。要素数は4である必要があります。
 	 * @return
-	 * 四角形を検出したらtrue
+	 * 凸包を計算できると、trueを返します。
 	 * @throws NyARException
 	 */
-
 	public boolean line2SquareVertex(VecLinearCoordinates.VecLinearCoordinatePoint[] i_line,NyARDoublePoint2d[] o_point) throws NyARException
 	{
 		
@@ -98,10 +93,13 @@ public class LineBaseVertexDetector
 	}
 
 	/**
-	 * 4頂点を巡回して、正の外積の個数を数える。
+	 * 4頂点を巡回して、正の外積数を数えます。
 	 * @param p
+	 * 頂点配列。4要素である事。
 	 * @param order
+	 * 頂点のインデクス配列。4要素である事。
 	 * @return
+	 * 正の外積数
 	 */
 	private final static int countPlusExteriorProduct(NyARDoublePoint2d[] p,int[] order)
 	{

@@ -2,43 +2,46 @@ package jp.nyatla.nyartoolkit.rpf.mklib;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARCode;
-import jp.nyatla.nyartoolkit.core.match.NyARMatchPattDeviationColorData;
-import jp.nyatla.nyartoolkit.core.match.NyARMatchPattResult;
-import jp.nyatla.nyartoolkit.core.match.NyARMatchPatt_Color_WITHOUT_PCA;
+import jp.nyatla.nyartoolkit.core.match.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.rasterreader.NyARPerspectiveRasterReader;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
-import jp.nyatla.nyartoolkit.rpf.reality.nyartk.NyARRealityTarget;
-import jp.nyatla.nyartoolkit.rpf.realitysource.nyartk.NyARRealitySource;
+import jp.nyatla.nyartoolkit.rpf.reality.nyartk.*;
+import jp.nyatla.nyartoolkit.rpf.realitysource.nyartk.*;
 
 /**
- * 簡易なARToolKitパターンテーブルです。
- * このクラスは、ARToolKitスタイルのパターンファイルとIdとメタデータセットテーブルを定義します。
+ * このクラスは、ARToolKitマーカパターンのテーブルです。
+ * マーカパターンをID番号やメタデータに変換する事に役立ちます。
+ * テーブルには、ARToolKitフォーマットのマーカパターンと、ID番号、ユーザ定義のデータのセットを格納します。
+ * このクラスは、テーブルの操作機能と、テーブル要素の検索機能を提供します。
  */
 public class ARTKMarkerTable
 {
 	/**
-	 * selectTarget関数の戻り値を格納します。
+	 * 結果型です。{@link ARTKMarkerTable#getBestMatchTarget}関数の戻り値を格納します。
+	 * <p>memo-
 	 * 入れ子クラスの作れない処理系では、ARTKMarkerTable_GetBestMatchTargetResultとして宣言してください。
+	 * </p>
 	 */
 	public static class GetBestMatchTargetResult
 	{
-		/** 登録時に設定したIDです。*/
+		/** 登録時に設定したID値です。*/
 		public int idtag;
-		/** 登録時に設定した名前です。*/
+		/** 登録時に設定した名前文字列です。*/
 		public String name;
-		/** 登録時に設定したマーカサイズです。*/
+		/** 登録時に設定したマーカ幅です。単位は、mm単位です。*/
 		public double marker_width;
-		/** 登録時に設定したマーカサイズです。*/
+		/** 登録時に設定したマーカ高さです。単位は、mm単位です。*/
 		public double marker_height;
-		/** ARToolKit準拠の、マーカの方位値*/
+		/** ARToolKit準拠の、マーカの方位値です。0&lt;=n&lt;=3の値が入ります。*/
 		public int artk_direction;
-		/** 一致率*/
+		/** パターンの一致率です。0<&lt;n&lt;=1.0の数値が入ります。*/
 		public double confidence;
 	}
-	
-
+	/**
+	 * データを格納するリストクラスを定義します。
+	 */
 	private class MarkerTable extends NyARObjectStack<MarkerTable.SerialTableRow>
 	{
 		public class SerialTableRow
@@ -75,22 +78,30 @@ public class ARTKMarkerTable
 	private NyARMatchPatt_Color_WITHOUT_PCA _match_patt;
 	private NyARMatchPattDeviationColorData _deviation_data;
 	private MarkerTable _table;
+	
+	/** ワーク変数*/
+	private NyARMatchPattResult __tmp_patt_result=new NyARMatchPattResult();
+	
+	
 	/**
-	 * コンストラクタです。
+	 * コンストラクタです。引数にあるパラメータで、空のテーブルを作ります。
 	 * @param i_max
 	 * 登録するアイテムの最大数です。
 	 * @param i_resolution_x
-	 * 登録するパターンの解像度です。
+	 * 登録するパターンの横解像度です。
 	 * ARToolKit互換の標準値は16です。
 	 * @param i_resolution_y
-	 * 登録するパターンの解像度です。
+	 * 登録するパターンの縦解像度です。
 	 * ARToolKit互換の標準値は16です。
 	 * @param i_edge_x
-	 * エッジ部分の割合です。ARToolKit互換の標準値は25です。
+	 * エッジ部分の割合です。0<n<100の数値を指定します。
+	 * ARToolKit互換の標準値は25です。
 	 * @param i_edge_y
-	 * エッジ部分の割合です。ARToolKit互換の標準値は25です。
+	 * エッジ部分の割合です。0<n<100の数値を指定します。
+	 * ARToolKit互換の標準値は25です。
 	 * @param i_sample_per_pix
-	 * パターン取得の1ピクセルあたりのサンプリング数です。1なら1Pixel=1,2なら1Pixel=4のサンプリングをします。
+	 * 元画像からパターンを取得する時の、1ピクセル当たりのサンプリング数です。
+	 * 1なら1Pixel=1,2なら1Pixel=4ピクセルの画素を、元画像からサンプリングをします。
 	 * ARToolKit互換の標準値は4です。
 	 * 高解像度(64以上)のパターンを用いるときは、サンプリング数を低く設定してください。
 	 * @throws NyARException 
@@ -108,19 +119,20 @@ public class ARTKMarkerTable
 		this._match_patt=new NyARMatchPatt_Color_WITHOUT_PCA(i_resolution_x,i_resolution_y);
 	}
 	/**
-	 * ARTKパターンコードを、テーブルに追加します。このパターンコードのメタデータとして、IDと名前を指定できます。
+	 * テーブル操作関数です。{@link NyARCode}を元にして、テーブルにマーカパターンを追加します。
 	 * @param i_code
-	 * ARToolKit形式のパターンコードを格納したオブジェクト。このオブジェクトは、関数成功後はインスタンスに所有されます。
+	 * ARToolKit形式のパターンコードを格納したオブジェクト。このオブジェクトは、関数成功後はインスタンスが所有します。
 	 * パターンコードの解像度は、コンストラクタに指定した高さと幅である必要があります。
 	 * @param i_id
-	 * このマーカを識別するユーザ定義のID値です。任意の値を指定できます。不要な場合は0を指定してください。
+	 * このマーカを識別する、ユーザ定義のID値です。任意の値を指定できます。不要な場合は0を指定してください。
 	 * @param i_name
 	 * ユーザ定義の名前です。任意の値を指定できます。不要な場合はnullを指定して下さい。
 	 * @param i_width
-	 * マーカの高さ[通常mm単位]
+	 * 実際のマーカの高さです。[通常mm単位]
 	 * @param i_height
-	 * マーカの幅[通常mm単位]
+	 * 実際のマーカの幅です。[通常mm単位]
 	 * @return
+	 * 登録に成功すると、trueを返します。
 	 */
 	public boolean addMarker(NyARCode i_code,int i_id,String i_name,double i_width,double i_height)
 	{
@@ -133,17 +145,19 @@ public class ARTKMarkerTable
 		return true;
 	}
 	/**
-	 * i_rasterからパターンコードを生成して、テーブルへ追加します。
+	 * テーブル操作関数です。{@link NyARRgbRaster}クラスのオブジェクトからマーカパターンを生成して、テーブルへ追加します。方位は、上方向がdirection=0になります。
 	 * @param i_raster
+	 * マーカパターンの元となるラスタを指定します。解像度は、コンストラクタで指定したものと同じでなければなりません。
 	 * @param i_id
 	 * このマーカを識別するユーザ定義のID値です。任意の値を指定できます。不要な場合は0を指定してください。
 	 * @param i_name
 	 * ユーザ定義の名前です。任意の値を指定できます。不要な場合はnullを指定して下さい。
 	 * @param i_width
-	 * マーカの高さ[通常mm単位]
+	 * 実際のマーカの高さです。[通常mm単位]
 	 * @param i_height
-	 * マーカの幅[通常mm単位]
+	 * 実際のマーカの幅です。[通常mm単位]
 	 * @return
+	 * 登録に成功すると、trueを返します。
 	 * @throws NyARException
 	 */
 	public boolean addMarker(NyARRgbRaster i_raster,int i_id,String i_name,double i_width,double i_height) throws NyARException
@@ -158,17 +172,19 @@ public class ARTKMarkerTable
 		return true;
 	}
 	/**
-	 * ARToolkit準拠のパターンファイルからパターンコードを生成して、テーブルへ追加します。
+	 * テーブル操作関数です。ARToolkit準拠のパターンファイルを読み込み、テーブルへ追加します。
 	 * @param i_filename
+	 * パターンファイルのファイルパスを指定します。
 	 * @param i_id
 	 * このマーカを識別するユーザ定義のID値です。任意の値を指定できます。不要な場合は0を指定してください。
 	 * @param i_name
 	 * ユーザ定義の名前です。任意の値を指定できます。不要な場合はnullを指定して下さい。
 	 * @param i_width
-	 * マーカの高さ[通常mm単位]
+	 * 実際のマーカの高さです。[通常mm単位]
 	 * @param i_height
-	 * マーカの幅[通常mm単位]
+	 * 実際のマーカの幅です。[通常mm単位]
 	 * @return
+	 * 登録に成功すると、trueを返します。
 	 * @throws NyARException
 	 */
 	public boolean addMarkerFromARPattFile(String i_filename,int i_id,String i_name,double i_width,double i_height) throws NyARException
@@ -183,19 +199,19 @@ public class ARTKMarkerTable
 		return true;
 	}	
 	
-	private NyARMatchPattResult __tmp_patt_result=new NyARMatchPattResult();
 	/**
-	 * RealityTargetに最も一致するパターンをテーブルから検索して、メタデータを返します。
+	 * テーブル検索関数です。
+	 * {@link NyARRealityTarget}を元に{@link NyARRealitySource}からパターンのサンプリングを行い、最も一致するマーカパターンをテーブルから検索します。
+	 * 検索キーとなる{@link NyARRealityTarget}は、{@link NyARReality}派生クラスから取得した物を指定します。
 	 * @param i_target
-	 * Realityが検出したターゲット。
-	 * Unknownターゲットを指定すること。
+	 * 検索キーとなる、Unknownステータスの{@link NyARRealityTarget}クラスのオブジェクトを指定します。
 	 * @param i_rtsorce
-	 * i_targetを検出したRealitySourceインスタンス。
+	 * i_targetを検出した{@link NyARRealitySource}のインスタンスを指定します。関数は、このソースからパターン取得を行います。
 	 * @param o_result
 	 * 返却値を格納するインスタンスを設定します。
-	 * 返却値がtrueの場合のみ、内容が更新されています。
 	 * @return
-	 * 特定に成功すると、trueを返します。
+	 * パターンのサンプリングに成功すると、trueを返します。
+	 * 返却値がtrueの場合のみ、内容が更新されています。
 	 * @throws NyARException 
 	 */
 	public boolean getBestMatchTarget(NyARRealityTarget i_target,NyARRealitySource i_rtsorce,GetBestMatchTargetResult o_result) throws NyARException
