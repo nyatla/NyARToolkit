@@ -1,18 +1,41 @@
+/* 
+ * PROJECT: NyARToolkit(Extension)
+ * --------------------------------------------------------------------------------
+ * The NyARToolkit is Java edition ARToolKit class library.
+ * Copyright (C)2008-2009 Ryo Iizuka
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * For further information please contact.
+ *	http://nyatla.jp/nyatoolkit/
+ *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
+ * 
+ */
 package jp.nyatla.nyartoolkit.core.analyzer.histogram;
 
 import jp.nyatla.nyartoolkit.core.types.NyARHistogram;
 
 /**
- * 敷居値を求めるヒストグラム分析器です。
- * 判別法で閾値を求めます。
- * @note
- * 画素数が2048^2に満たない場合は、fixedint(24-8)で計算できます。
+ * このクラスは、判別法を用いて敷居値を求める機能を提供します。
+ * <p>memo:画素数が2048^2に満たない場合は、fixedint(24-8)で計算できます。</p>
  */
 public class NyARHistogramAnalyzer_DiscriminantThreshold implements INyARHistogramAnalyzer_Threshold
 {
 	private double _score;
 	/**
-	 * @override
+	 * この関数は、判別法を用いて敷居値を1個求めます。敷居値の範囲は、i_histogram引数の範囲と同じです。
+	 * 関数は、thisのプロパティを更新します。
 	 */
 	public int getThreshold(NyARHistogram i_histogram)
 	{
@@ -65,18 +88,18 @@ public class NyARHistogramAnalyzer_DiscriminantThreshold implements INyARHistogr
 		return th;
 	}
 	/**
-	 * 最後に実行したgetThresholdのスコアを返します。
-	 * スコアは正規化された分離度です。1.0>n>0.0の値を取ります。
-	 * 0.7以上なら概ね双峰的で有ることを示します。
+	 * 最後に実行した{@link #getThreshold}のスコアを返却します。
 	 * @return
-	 * 分離度
+	 * スコア値。範囲は0&lt;=n&lt;=1.0の間です。
 	 */
 	public final double getLastScore()
 	{
 		return this._score;
 	}
 	/**
-	 * Debug
+	 * デバック用関数
+	 * @param args
+	 * main関数引数
 	 */
 	public static void main(String[] args)
 	{

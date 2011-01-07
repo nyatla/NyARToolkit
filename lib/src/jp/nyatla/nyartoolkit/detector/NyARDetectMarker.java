@@ -47,14 +47,24 @@ import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
 
 
-
-
 /**
- * 複数のマーカーを検出し、それぞれに最も一致するARコードを、コンストラクタで登録したARコードから 探すクラスです。最大300個を認識しますが、ゴミラベルを認識したりするので100個程度が限界です。
- * 
+ * このクラスは、複数のマーカを取り扱うマーカ検出器です。
+ * 登録したn個のARマーカに対応するマーカを入力画像から検出し、その変換行列と一致度を返します。
+ * この関数はn個の登録したマーカに対して、画像中のm個のマーカから、最も位置するものを割り当てる動作をします。
+ * そのため、同一な種類（パターン）のマーカが複数存在する映像を、正しく処理できません。また、同一なマーカパターンを
+ * 複数登録することもできません。
+ * <p>簡単な使い方
+ * <ol>
+ * <li>インスタンスを作成します。パラメータには、計算アルゴリズムと入力画像形式、カメラパラメータ、検出するマーカパターンテーブルがあります。
+ * <li>{@link #detectMarkerLite}関数に画像と敷居値を入力して、マーカを検出します。
+ * <li>検出数が得られるので、インデクス番号を元に、{@link #getConfidence}等の関数を使って、取得したマーカの状態を得ます。
+ * <li>以降は、この処理を繰り返してマーカのパラメータを更新します。
+ * </ol>
+ * </p>
  */
 public class NyARDetectMarker
 {
+	/** 矩形検出器のブリッジ*/
 	private class RleDetector extends NyARSquareContourDetector_Rle
 	{
 		//公開プロパティ
@@ -152,29 +162,29 @@ public class NyARDetectMarker
 			this.result_stack.clear();
 			
 		}
-	}	
+	}
+	/** 変換行列計算器のインスタンス*/
+	private INyARTransMat _transmat;
 	private static final int AR_SQUARE_MAX = 300;
 	private boolean _is_continue = false;
 	private RleDetector _square_detect;
-	protected INyARTransMat _transmat;
 	private NyARRectOffset[] _offset;	
 
-
 	/**
-	 * 複数のマーカーを検出し、最も一致するARCodeをi_codeから検索するオブジェクトを作ります。
-	 * 
+	 * コンストラクタです。
+	 * パターンの重複しない複数のマーカを検出する検出器を作成します。
 	 * @param i_param
-	 * カメラパラメータを指定します。
+	 * カメラパラメータを指定します。このサイズは、{@link #detectMarkerLite}に入力する画像と同じである必要があります。
 	 * @param i_code
-	 * 検出するマーカーのARCode配列を指定します。
-	 * 配列要素のインデックス番号が、そのままgetARCodeIndex関数で得られるARCodeインデックスになります。 
-	 * 例えば、要素[1]のARCodeに一致したマーカーである場合は、getARCodeIndexは1を返します。
+	 * 検出するマーカーパターンを格納した、{@link NyARCode}の配列を指定します。配列には、先頭から、0から始まるインデクス番号が割り当てられます。
+	 * このインデクス番号は、{@link #getConfidence(int)}等のインデクス番号に使います。
 	 * @param i_marker_width
-	 * i_codeのマーカーサイズをミリメートルで指定した配列を指定します。 先頭からi_number_of_code個の要素には、有効な値を指定する必要があります。
+	 * 正方形マーカの物理サイズをmm単位で指定します。
 	 * @param i_number_of_code
-	 * i_codeに含まれる、ARCodeの数を指定します。
+	 * i_codeの有効な個数を指定します。
 	 * @param i_input_raster_type
-	 * 入力ラスタのピクセルタイプを指定します。この値は、INyARBufferReaderインタフェイスのgetBufferTypeの戻り値を指定します。
+	 * {@link #detectMarkerLite}に入力するラスタのバッファフォーマットを指定します。
+	 * この値は、{@link INyARRgbRaster#getBufferType}関数の戻り値を利用します。
 	 * @throws NyARException
 	 */
 	public NyARDetectMarker(NyARParam i_param,NyARCode[] i_code,double[] i_marker_width, int i_number_of_code,int i_input_raster_type) throws NyARException
@@ -182,6 +192,22 @@ public class NyARDetectMarker
 		initInstance(i_param,i_code,i_marker_width,i_number_of_code,i_input_raster_type);
 		return;
 	}
+	/**
+	 * この関数は、インスタンスを初期化します。
+	 * コンストラクタから呼び出します。
+	 * @see NyARDetectMarker#NyARDetectMarker(NyARParam, NyARCode[], double[], int, int)
+	 * @param i_ref_param
+	 * Check see also
+	 * @param i_ref_code
+	 * Check see also
+	 * @param i_marker_width
+	 * Check see also
+	 * @param i_number_of_code
+	 * Check see also
+	 * @param i_input_raster_type
+	 * Check see also
+	 * @throws NyARException
+	 */
 	protected void initInstance(
 		NyARParam	i_ref_param,
 		NyARCode[]	i_ref_code,
@@ -216,7 +242,7 @@ public class NyARDetectMarker
 
 	/**
 	 * i_imageにマーカー検出処理を実行し、結果を記録します。
-	 * 
+	 * ここからん
 	 * @param i_raster
 	 * マーカーを検出するイメージを指定します。
 	 * @param i_thresh
@@ -300,6 +326,7 @@ public class NyARDetectMarker
 	}
 }
 
+/** 内部クラスです。ユーザが使用することはありません*/
 class NyARDetectMarkerResult
 {
 	public int arcode_id;
@@ -309,6 +336,7 @@ class NyARDetectMarkerResult
 }
 
 
+/** 内部クラスです。ユーザが使用することはありません*/
 class NyARDetectMarkerResultStack extends NyARObjectStack<NyARDetectMarkerResult>
 {
 	public NyARDetectMarkerResultStack(int i_length) throws NyARException

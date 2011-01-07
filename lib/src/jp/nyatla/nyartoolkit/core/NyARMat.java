@@ -34,7 +34,7 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 
 /**
- * 可変サイズの行列計算クラスです。
+ * このクラスは、可変サイズの行列計算機能を提供します。
  * ARToolKitのARMat構造体と、その処理関数に相当する機能があります。
  * 2x2,3x3,4x4行列については、NyAToolKitの行列計算クラス({@link NyARDoubleMatrix44},{@link NyARDoubleMatrix33},{@link NyARDoubleMatrix22},)
  * がありますので、こちらを使ってください。

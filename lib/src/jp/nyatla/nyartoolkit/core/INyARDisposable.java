@@ -31,7 +31,7 @@
 package jp.nyatla.nyartoolkit.core;
 
 /**
- * オブジェクト破棄のタイミングを受け取るインタフェイスです。
+ * このインタフェイスは、オブジェクト破棄のタイミングを受け取る関数を定義します。
  * アンマネージリソースの破棄コントロールや、オブジェクトプールの制御に使います。
  */
 public interface INyARDisposable

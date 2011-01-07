@@ -32,17 +32,25 @@ package jp.nyatla.nyartoolkit.core.labeling;
 
 
 /**
- * 
+ * このクラスは、ラべリング結果１個を格納するデータ型です。
+ * ラベル１個の領域情報を格納します。
  *
  */
 public class NyARLabelInfo
 {
+	/** 領域の画素数*/
 	public int area;
+	/** 領域範囲の右端*/
 	public int clip_r;
+	/** 領域範囲の左端*/
 	public int clip_l;
+	/** 領域範囲の下端*/
 	public int clip_b;
+	/** 領域範囲の上端*/
 	public int clip_t;
+	/** 領域の中心位置(x)*/
 	public double pos_x;
+	/** 領域の中心位置(y)*/
 	public double pos_y;
 
 }

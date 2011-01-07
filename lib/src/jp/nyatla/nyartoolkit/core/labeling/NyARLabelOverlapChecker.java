@@ -34,16 +34,23 @@ import java.lang.reflect.Array;
 
 
 /**
- * ラベル同士の重なり（内包関係）を調べるクラスです。 
- * ラベルリストに内包するラベルを蓄積し、それにターゲットのラベルが内包されているか を確認します。
+ * このクラスは、ラベル同士の重なり関係を調べる機能を提供します。
+ * 重なりの判定アルゴリズムは、ARToolKitのそれと同一です。
+ * 登録済のラベルリストに対して、調査対象のラベルが重なっているかを調べます。
  */
 public class NyARLabelOverlapChecker<T extends NyARLabelInfo>
 {
 	private T[] _labels;
 	private int _length;
 	private Class<T> _element_type;
-	/*
-	*/
+	/**
+	 * コンストラクタです。
+	 * この関数は、NyARToolkitの矩形検出クラスから使います。
+	 * @param i_max_label
+	 * リストの最大登録数
+	 * @param i_element_type
+	 * リストのデータ型
+	 */
 	@SuppressWarnings("unchecked")
 	public NyARLabelOverlapChecker(int i_max_label,Class<T> i_element_type)
 	{
@@ -52,9 +59,9 @@ public class NyARLabelOverlapChecker<T extends NyARLabelInfo>
 	}
 
 	/**
-	 * チェック対象のラベルを追加する。
-	 * 
+	 * この関数は、チェックリストにラベルの参照を追加します。
 	 * @param i_label_ref
+	 * 追加するラベルの参照値
 	 */
 	public void push(T i_label_ref)
 	{
@@ -63,10 +70,11 @@ public class NyARLabelOverlapChecker<T extends NyARLabelInfo>
 	}
 
 	/**
-	 * 現在リストにあるラベルと重なっているかを返す。
-	 * 
+	 * この関数は、チェックリストにあるラベルと、与えられたラベルが、重なっているかを調べます。
 	 * @param i_label
-	 * @return 何れかのラベルの内側にあるならばfalse,独立したラベルである可能性が高ければtrueです．
+	 * 調査するラベル
+	 * @return
+	 * 何れかのラベルの内側にあるならばfalse,独立したラベルである可能性が高ければtrueです．
 	 */
 	public boolean check(T i_label)
 	{
@@ -87,9 +95,9 @@ public class NyARLabelOverlapChecker<T extends NyARLabelInfo>
 		return true;
 	}
 	/**
-	 * 最大i_max_label個のラベルを蓄積できるようにオブジェクトをリセットする
-	 * 
+	 * チェックリストの最大数を変更します。
 	 * @param i_max_label
+	 * 新しいチェックリストの大きさを設定します。
 	 */
 	@SuppressWarnings("unchecked")
 	public void setMaxLabels(int i_max_label)

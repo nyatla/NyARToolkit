@@ -44,16 +44,12 @@ import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.*;
 
 
-
-
 /**
- * 画像からARCodeに最も一致するマーカーを1個検出し、その変換行列を計算するクラスです。
- * 変換行列を求めるには、detectMarkerLite関数にラスタイメージを入力して、計算対象の矩形を特定します。
- * detectMarkerLiteが成功すると、getTransmationMatrix等の関数が使用可能な状態になり、変換行列を求めることができます。
- * 
- * 
+ * このクラスは、1個のマーカを取り扱うマーカ検出器のベースクラスです。
+ * アプリケーションからは、このクラスを継承した{@link NyARSingleDetectMarker}を使います。
+ * 登録した１個のARマーカに対応するマーカを入力画像から検出し、その変換行列と一致度を返します。
  */
-public class NyARCustomSingleDetectMarker
+public abstract class NyARCustomSingleDetectMarker
 {
 	/** 一致率*/
 	private double _confidence;
@@ -72,8 +68,11 @@ public class NyARCustomSingleDetectMarker
 	private NyARIntPoint2d[] __ref_vertex=new NyARIntPoint2d[4];
 
 	/**
-	 * 矩形が見付かるたびに呼び出されます。
-	 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
+	 * 内部関数です。
+	 * この関数は、thisの二次元矩形情報プロパティを更新します。
+	 * @param i_coord
+	 * @param i_vertex_index
+	 * @throws NyARException
 	 */
 	protected void updateSquareInfo(NyARIntCoordinates i_coord,int[] i_vertex_index) throws NyARException
 	{
@@ -118,18 +117,41 @@ public class NyARCustomSingleDetectMarker
 	
 	private boolean _is_continue = false;
 	private NyARSquareContourDetector _square_detect;
-	protected INyARTransMat _transmat;
-	//画処理用
+	private NyARRectOffset _offset; 
 	private NyARBinRaster _bin_raster;
+	private INyARTransMat _transmat;
+
+	
+	//画処理用
 	protected INyARRasterFilter_Rgb2Bin _tobin_filter;
 
-	private NyARRectOffset _offset; 
 
-
+	/**
+	 * コンストラクタです。
+	 * 実際の初期化は、継承クラスから、{@link #initInstance}関数をコールして実行します。
+	 */
 	protected NyARCustomSingleDetectMarker()
 	{
 		return;
 	}
+	/**
+	 * この関数は、インスタンスを初期化してます。
+	 * @param i_patt_inst
+	 * パターン取得オブジェクトを指定します。この解像度は、i_ref_code引数の解像度と同一である必要があります。
+	 * @param i_sqdetect_inst
+	 * 矩形検出器のオブジェクトを指定します。
+	 * @param i_transmat_inst
+	 * 変換行列計算器のオブジェクトを指定します。
+	 * @param i_filter
+	 * 画像の２値化オブジェクトを指定します。
+	 * @param i_ref_param
+	 * カメラパラメータオブジェクトの参照値を指定します。
+	 * @param i_ref_code
+	 * 検出するARマーカを格納したオブジェクトの参照値を指定します。
+	 * @param i_marker_width
+	 * マーカノ物理サイズを、mm単位で指定します。
+	 * @throws NyARException
+	 */
 	protected void initInstance(
 		INyARColorPatt i_patt_inst,
 		NyARSquareContourDetector i_sqdetect_inst,
@@ -155,22 +177,19 @@ public class NyARCustomSingleDetectMarker
 		this._offset=new NyARRectOffset();
 		this._offset.setSquare(i_marker_width);
 		return;
-		
 	}
-
-	
-
 	
 	/**
-	 * i_imageにマーカー検出処理を実行し、結果を記録します。
-	 * 
+	 * この関数は、画像から登録済のマーカ検出を行います。
+	 * マーカの検出に成功すると、thisのプロパティにマーカの二次元位置を記録します。
+	 * 関数の成功後は、マーカの姿勢行列と、一致度を、それぞれ{@link #getTransmationMatrix}と{@link #getConfidence}から得ることができます。
 	 * @param i_raster
-	 * マーカーを検出するイメージを指定します。イメージサイズは、カメラパラメータ
-	 * と一致していなければなりません。
-	 * @return マーカーが検出できたかを真偽値で返します。
+	 * マーカーを検出する画像。画像のサイズは、コンストラクタに指定した{@link NyARParam}オブジェクトと一致していなければなりません。
+	 * @return
+	 * マーカーが検出できたかを、真偽値で返します。
 	 * @throws NyARException
 	 */
-	public boolean detectMarkerLite(INyARRgbRaster i_raster) throws NyARException
+	protected boolean detectMarkerLite(INyARRgbRaster i_raster) throws NyARException
 	{
 		//サイズチェック
 		if(!this._bin_raster.getSize().isEqualSize(i_raster.getSize())){
@@ -191,12 +210,12 @@ public class NyARCustomSingleDetectMarker
 		}
 		return true;
 	}
+	
 	/**
-	 * 検出したマーカーの変換行列を計算して、o_resultへ値を返します。
-	 * 直前に実行したdetectMarkerLiteが成功していないと使えません。
-	 * 
+	 * この関数は、検出したマーカーの変換行列を計算して、o_resultへ値を返します。
+	 * 直前に実行した{@link #detectMarkerLite}が成功していないと使えません。
 	 * @param o_result
-	 * 変換行列を受け取るオブジェクトを指定します。
+	 * 変換行列を受け取るオブジェクト。
 	 * @throws NyARException
 	 */
 	public void getTransmationMatrix(NyARTransMatResult o_result) throws NyARException
@@ -210,26 +229,35 @@ public class NyARCustomSingleDetectMarker
 		return;
 	}
 	/**
-	 * 現在の矩形を返します。
+	 * この関数は、マーカーの画像上の位置を格納する、{@link NyARSquare}への参照値を返します。
+	 * 直前に実行した{@link #detectMarkerLite}が成功していないと使えません。
+	 * 返却値の内容は、次に{@link #detectMarkerLite}を実行するまで有効です。
 	 * @return
+	 * 矩形情報への参照値。
 	 */
 	public NyARSquare refSquare()
 	{
 		return this._square;
 	}
 	/**
-	 * 検出したマーカーの一致度を返します。
-	 * 
-	 * @return マーカーの一致度を返します。0～1までの値をとります。 一致度が低い場合には、誤認識の可能性が高くなります。
-	 * @throws NyARException
+	 * この関数は、検出したマーカーと登録済パターンとの、一致度を返します。
+	 * 直前に実行した{@link #detectMarkerLite}が成功していないと使えません。
+	 * 値は、0&lt;=n<1の間の数値を取ります。
+	 * 一般的に、一致度が低い場合は、マーカを誤認識しています。
+	 * @return
+	 * 一致度の数値。
 	 */
 	public double getConfidence()
 	{
 		return this._confidence;
 	}
 	/**
-	 * getTransmationMatrixの計算モードを設定します。 初期値はTRUEです。
-	 * 
+	 * この関数は、変換行列の計算モードを切り替えます。
+	 * 通常はtrueを使用します。
+	 * transMat互換の計算は、姿勢の初期値を毎回二次元座標から計算するため、負荷が安定します。
+	 * transMatCont互換の計算は、姿勢の初期値に前回の結果を流用します。このモードは、姿勢の安定したマーカに対しては
+	 * ジッタの減少や負荷減少などの効果がありますが、姿勢の安定しないマーカや複数のマーカを使用する環境では、
+	 * 少量の負荷変動があります。
 	 * @param i_is_continue
 	 * TRUEなら、transMatCont互換の計算をします。 FALSEなら、transMat互換の計算をします。
 	 */
@@ -238,7 +266,8 @@ public class NyARCustomSingleDetectMarker
 		this._is_continue = i_is_continue;
 	}
 	/**
-	 * プローブ関数
+	 * デバック関数。
+	 * privateメンバにアクセスするためのトンネルです。
 	 * @return
 	 */
 	public Object[] _getProbe()
@@ -246,8 +275,5 @@ public class NyARCustomSingleDetectMarker
 		Object[] r=new Object[1];
 		r[0]=this._inst_patt;
 		return r;
-	}	
-	
-	
-	
+	}
 }

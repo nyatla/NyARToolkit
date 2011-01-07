@@ -1,31 +1,74 @@
+/* 
+ * PROJECT: NyARToolkit(Extension)
+ * --------------------------------------------------------------------------------
+ * The NyARToolkit is Java edition ARToolKit class library.
+ * Copyright (C)2008-2009 Ryo Iizuka
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * For further information please contact.
+ *	http://nyatla.jp/nyatoolkit/
+ *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
+ * 
+ */
 package jp.nyatla.nyartoolkit.core.analyzer.raster;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.types.*;
+
 /**
- * 画像のヒストグラムを計算します。
- * RGBの場合、(R+G+B)/3のヒストグラムを計算します。
- * 
- * 
+ * このクラスは、グレースケール画像のヒストグラムを計算します。
+ * <p>memo: RGB画像のグレースケール化は分離が必要？</p>
  */
 public class NyARRasterAnalyzer_Histogram
 {
 	protected ICreateHistogramImpl _histImpl;
 	/**
-	 * ヒストグラム解析の縦方向スキップ数。継承クラスはこのライン数づつ
-	 * スキップしながらヒストグラム計算を行うこと。
+	 * ヒストグラム解析の縦方向スキップ数。
+	 * <p> memo:継承クラスはこのライン数づつ、スキップしながらヒストグラム計算を行うこと。</p>
 	 */
 	protected int _vertical_skip;
 	
-	
+	/**
+	 * コンストラクタです。
+	 * ラスタの画素フォーマットを指定して、ヒストグラム分析器を作ります。
+	 * @param i_raster_format
+	 * 入力するラスタの画素フォーマットを指定します。
+	 * {@link NyARBufferType#INT1D_GRAY_8}形式以外の画素フォーマットの場合は、解析時にグレースケール化を行います。
+	 * @param i_vertical_interval
+	 * 画素スキャン時の、Y軸方向のスキップ数を指定します。数値が大きいほど高速に解析できますが、精度は劣化します。0以上を指定してください。
+	 * @throws NyARException
+	 */
 	public NyARRasterAnalyzer_Histogram(int i_raster_format,int i_vertical_interval) throws NyARException
 	{
 		if(!initInstance(i_raster_format,i_vertical_interval)){
 			throw new NyARException();
 		}
 	}
+	/**
+	 * インスタンスを初期化します。
+	 * 継承クラスを実装するときには、この関数をオーバライドしてください。
+	 * @see #NyARRasterAnalyzer_Histogram(int i_raster_format,int i_vertical_interval)
+	 * @param i_raster_format
+	 * see Also.
+	 * @param i_vertical_interval
+	 * see Also.
+	 * @return
+	 * インスタンスの初期化に成功するとTrueを返します。
+	 */
 	protected boolean initInstance(int i_raster_format,int i_vertical_interval)
 	{
 		switch (i_raster_format) {
@@ -55,8 +98,11 @@ public class NyARRasterAnalyzer_Histogram
 		this._vertical_skip=i_vertical_interval;
 		return true;
 	}	
-	
-	
+	/**
+	 * 画素スキャン時の、Y軸方向のスキップ数を指定します。
+	 * @param i_step
+	 * 新しい行スキップ数
+	 */
 	public void setVerticalInterval(int i_step)
 	{
 		assert(this._vertical_skip>0);
@@ -65,10 +111,11 @@ public class NyARRasterAnalyzer_Histogram
 	}
 
 	/**
-	 * o_histogramにヒストグラムを出力します。
+	 * ラスタから、ヒストグラムを計算します。
 	 * @param i_input
+	 * 解析するラスタオブジェクト
 	 * @param o_histogram
-	 * @return
+	 * 解析結果を格納するヒストグラムオブジェクト。ヒストグラムの範囲は、256であること。
 	 * @throws NyARException
 	 */
 	public void analyzeRaster(INyARRaster i_input,NyARHistogram o_histogram) throws NyARException
@@ -88,6 +135,16 @@ public class NyARRasterAnalyzer_Histogram
 		this._histImpl.createHistogram(i_input,0,0,size.w,size.h,o_histogram.data,this._vertical_skip);
 		return;
 	}
+	/**
+	 * ラスタの一部分（矩形）から、ヒストグラムを計算します。
+	 * @param i_input
+	 * 解析するラスタオブジェクト
+	 * @param i_area
+	 * 解析する矩形範囲。ラスタの内側である事が必要。
+	 * @param o_histogram
+	 * 解析結果を格納するヒストグラムオブジェクト。ヒストグラムの範囲は、256であること。
+	 * @throws NyARException
+	 */	
 	public void analyzeRaster(INyARRaster i_input,NyARIntRect i_area,NyARHistogram o_histogram) throws NyARException
 	{
 		
@@ -106,11 +163,31 @@ public class NyARRasterAnalyzer_Histogram
 		return;
 	}
 	
+	/**
+	 * このインタフェイスは、ヒストグラム解析関数を定義します。
+	 * このインタフェイスを継承して、画素フォーマット毎のヒストグラム解析関数を実装します。
+	 */
 	protected interface ICreateHistogramImpl
 	{
+		/**
+		 * この関数には、ラスタ内の矩形範囲からヒストグラムを作成する機能を実装します。
+		 * @param i_raster
+		 * 解析するラスタオブジェクト
+		 * @param i_l
+		 * 矩形範囲 -L
+		 * @param i_t
+		 * 矩形範囲 -T
+		 * @param i_w
+		 * 矩形範囲 -W
+		 * @param i_h
+		 * 矩形範囲 -H
+		 * @param o_histogram
+		 * ヒストグラムを格納するオブジェクト
+		 * @param i_skip
+		 * 行スキップ数
+		 */
 		public void createHistogram(INyARRaster i_raster,int i_l,int i_t,int i_w,int i_h, int[] o_histogram,int i_skip);
 	}
-
 	class NyARRasterThresholdAnalyzer_Histogram_INT1D_GRAY_8 implements ICreateHistogramImpl
 	{
 		public void createHistogram(INyARRaster i_raster,int i_l,int i_t,int i_w,int i_h, int[] o_histogram,int i_skip)
@@ -337,7 +414,11 @@ public class NyARRasterAnalyzer_Histogram
 			return;	
 	    }
 	}
-
+	/**
+	 * デバック用関数
+	 * @param args
+	 * main関数引数
+	 */
 	public static void main(String[] args)
 	{
 		try{

@@ -147,7 +147,7 @@ class NyARCodeFileReader
 }
 
 /**
- * ARToolKitのマーカーパターン1個のデータを格納するクラスです。
+ * このクラスは、ARToolKitのマーカーパターン1個のデータを格納します。
  * マーカーパターンのプロパティと、データのロード機能を提供します。
  */
 public class NyARCode
