@@ -136,7 +136,7 @@ public class JavaSimpleLite_ImageSource implements GLEventListener
 		// 背景を書く
 		this._gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
 		try{
-			this._is_marker_exist=this._nya.detectMarkerLite(this._src_image);
+			this._is_marker_exist=this._nya.detectMarkerLite(this._src_image,110);
 			NyARGLDrawUtil.drawBackGround(this._gl,this._src_image, 1.0);
 			synchronized(this._sync_object){
 				// マーカーがあれば、立方体を描画

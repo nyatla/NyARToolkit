@@ -10,24 +10,49 @@ import jp.nyatla.nyartoolkit.rpf.realitysource.nyartk.NyARRealitySource;
 
 
 /**
- * 外部パターン認識のサンプルです。非同期にIDマーカを認識します。
- * このクラスはサンプルなので、マーカ判定を非同期なスレッドに問い合わせて、3秒後に結果を返却します。
- * このシーケンスを応用すると、外部サーバで高精度な画像一致探索等ができます。
- * 
+ * このクラスは、非同期にIDマーカを検索するIdマーカテーブルです。(非同期な {@link RawbitSerialIdTable}と考えてください。)
+ * テーブルには、IDマーカの範囲と、そのメタデータをセットで登録できます。
+ * このクラスは非同期にマーカパターン一致検索を行うシーケンスのサンプルになっています。
+ * 動作としては、マーカ判定を非同期なスレッドに問い合わせて、3秒後に結果を返却します。
+ * <p>応用-
+ * 非同期なマーカ一致探索をシーケンスを応用すると、マーカの一致探索に時間がかけられます。
+ * 例として、外部サーバで高精度な画像一致探索を行うシーケンスを作ることができます。
+ * 枠内にある画像を外部サーバに送信して、その画像のマーカメタデータを返すなどです。
  * 但し、毎回外部サーバに問い合わせるとパフォーマンスの劣化が激しいので、実際には結果をキャッシュ
  * するなどの対策が必要になります。
- * @author nyatla
- *
+ * </p>
+ * <p>サンプル-
+ * このクラスのサンプルは、{@link Test_NyARRealityGl_AsyncIdMarker}を見てください。
+ * </p>
  */
 public class ASyncIdMarkerTable
 {
+	/**
+	 * このインタフェイスは、{@link ASyncIdMarkerTable}のコンストラクタに使います。
+	 * クラスが、非同期なイベントを通知するために使います。
+	 */
 	public interface IResultListener
 	{
+		/**
+		 * この関数は、マーカの認識に成功した事を知らせます。
+		 * @param i_result
+		 * 認識の成功/失敗を示す真偽値。
+		 * @param i_serial
+		 * 特定したNyARRealityTargetのシリアル番号。
+		 * イベント受信者は、このシリアル番号を元に、{@link NyARReality}のAPIを使って、ターゲットのステータス遷移関数を走査します。
+		 * @param i_dir
+		 * ARToolKit準拠の方位定数。
+		 * @param i_width
+		 * マーカの縦横物理サイズ(mm)
+		 * @param id
+		 * {@link RawbitSerialIdTable}で定義する、IDマーカ番号。
+		 */
 		public void OnDetect(boolean i_result,long i_serial,int i_dir,double i_width,long id);
 	}
-	RawbitSerialIdTable _mklib;
-	IResultListener _listener;	
-	class AsyncThread extends Thread
+	private RawbitSerialIdTable _mklib;
+	private IResultListener _listener;
+	/** 非同期一致検索クラス*/
+	private class AsyncThread extends Thread
 	{
 		private ASyncIdMarkerTable _parent;
 		private long _serial;
@@ -60,6 +85,14 @@ public class ASyncIdMarkerTable
 			
 		}
 	}
+	/**
+	 * コンストラクタです。
+	 * 非同期Idマーカ探索オブジェクトを生成します。
+	 * @param i_listener
+	 * 非同期イベントを受け取るオブジェクトを指定します。
+	 * イベントは、このオブジェクトが作成するスレッドが呼び出します。
+	 * @throws NyARException
+	 */
 	public ASyncIdMarkerTable(IResultListener i_listener) throws NyARException
 	{
 		this._mklib=new RawbitSerialIdTable(1);	
@@ -72,10 +105,20 @@ public class ASyncIdMarkerTable
 		this._listener.OnDetect(i_result, i_serial, i_dir, i_width,i_id);
 	}
 	/**
-	 * このターゲットについて、非同期に認識依頼を出します。このプログラムはサンプルなので、別スレッドでIDマーカ判定をして、
-	 * 三秒後に適当なサイズとDirectionを返却するだけです。
+	 * この関数は、非同期IDマーカ認識を実行します。
+	 * この関数はサンプルなので、関数内でスレッドを生成して、三秒後に適当なサイズとDirectionを返却するだけです。
+	 * i_realityとi_sourceは、i_targetがマーカパターンを取得するために使います。i_targetと正しい関係にあるオブジェクトを指定します。
+	 * <p>メモ-
+	 * この関数では、非同期探索を行う前に、i_realityとi_sourceの内容が変更されてもよいように、探索依頼関数内でパターンのコピーを作り、
+	 * これを解析関数へ渡すようになっています。
+	 * </p>
+	 * @param i_reality
+	 * i_targetの親になる{@link NyARReality}です。
+	 * @param i_source
+	 * i_realityの更新に使った{@link NyARRealitySource}です。
 	 * @param i_target
-	 * @return
+	 * パターン認識を依頼する{@link NyARRealityTarget}です。
+	 * 通常、Unknownターゲットを指定します。
 	 * @throws NyARException 
 	 */
 	public void requestAsyncMarkerDetect(NyARReality i_reality,NyARRealitySource i_source,NyARRealityTarget i_target) throws NyARException

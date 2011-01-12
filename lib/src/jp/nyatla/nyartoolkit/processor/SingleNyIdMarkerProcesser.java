@@ -35,12 +35,32 @@ import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.nyidmarker.*;
 import jp.nyatla.nyartoolkit.nyidmarker.data.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.*;
-
+/**
+ * このクラスは、1個のNyARマーカを検出する処理を、イベントドリブンにするシーケンスを定義します。
+ * マーカの出現・移動・消滅を、イベントで通知することができます。
+ * クラスにはNyIdマーカのエンコーダを指定できます。エンコーダの種類を変えることで、異なる種類のNyIdマーカを同じクラスで
+ * 取り扱うことができます。（同時に取り扱うことはできません。）
+ * <p>イベントの説明-
+ * このクラスには、３個のイベントハンドラがあります。{@link SingleARMarkerProcesser}は、以下のタイミングでこれらを呼び出します。
+ * ユーザは継承クラスでこれらの関数に実装を行い、イベント駆動のアプリケーションを作成できます。
+ * <ul>
+ * <li>　{@link #onEnterHandler} - 登録したマーカが初めて見つかった時に呼び出されます。ここに、発見したマーカに対応した初期処理を書きます。
+ * <li>　{@link #onLeaveHandler} - 検出中のマーカが消失した時に呼び出されます。ここに、マーカの終期処理を書きます。
+ * <li>　{@link #onUpdateHandler}- 検出中のマーカの位置姿勢が更新されたときに呼び出されます。ここに、マーカ位置の更新処理を書きます。
+ * </ul>
+ * </p>
+ * <p>特性-
+ * <ul>
+ * <li>自動敷居値調整を行うため、環境光の変化に耐性があります。
+ * <li>複数のNyIdマーカが画像にある場合は、一番初めに認識したIdのマーカを優先して認識します。
+ * <li>複数の同一IDのNyIdマーカが画像にある場合は、区別できません。
+ * </ul>
+ * </p>
+ */
 public abstract class SingleNyIdMarkerProcesser
 {
 	/**
-	 * Rleラ矩形Detectorのブリッジ
-	 *
+	 * Rle矩形Detectorのブリッジ
 	 */
 	private class RleDetector extends NyARSquareContourDetector_Rle
 	{
@@ -142,9 +162,7 @@ public abstract class SingleNyIdMarkerProcesser
 	}	
 
 	
-	/**
-	 * オーナーが自由に使えるタグ変数です。
-	 */
+	/**　ユーザーが自由に使えるタグ変数です。*/
 	public Object tag;
 
 	/**
@@ -164,11 +182,29 @@ public abstract class SingleNyIdMarkerProcesser
 	private INyIdMarkerData _data_current;
 
 
+	/**
+	 * デフォルトコンストラクタ。
+	 * クラスを継承するときは、このコンストラクタを呼び出した後に、{@link #initInstance}関数でインスタンスの初期化処理を実装します。
+	 */
 	protected SingleNyIdMarkerProcesser()
 	{
 		return;
 	}
 	private boolean _initialized=false;
+	/**
+	 * この関数は、インスタンスを初期化します。
+	 * 継承先のクラスから呼び出してください。
+	 * @param i_param
+	 * カメラパラメータオブジェクト。このサイズは、{@link #detectMarker}に入力する画像と同じサイズである必要があります。
+	 * @param i_encoder
+	 * IDマーカの値エンコーダを指定します。
+	 * @param i_marker_width
+	 * マーカの物理縦横サイズをmm単位で指定します。
+	 * @param i_raster_type
+	 * {@link #detectMarker}関数に入力する画像の画素フォーマット。
+	 * この値には、{@link INyARRgbRaster#getBufferType}関数の戻り値を利用します。
+	 * @throws NyARException
+	 */
 	protected void initInstance(NyARParam i_param,INyIdMarkerDataEncoder i_encoder,double i_marker_width,int i_raster_format) throws NyARException
 	{
 		//初期化済？
@@ -192,13 +228,22 @@ public abstract class SingleNyIdMarkerProcesser
 		return;
 		
 	}
-
+	/**
+	 * この関数は、マーカの物理サイズを変更します。
+	 * @param i_width
+	 * マーカの物理縦横サイズをmm単位で指定します。
+	 */
 	public void setMarkerWidth(int i_width)
 	{
 		this._offset.setSquare(i_width);
 		return;
 	}
-
+	/**
+	 * この関数は、インスタンスの状態をリセットします。
+	 * 状態をリセットすると、もしマーカを認識している場合には、{@link #onLeaveHandler}イベントハンドラがコールされ、未認識状態になります。
+	 * @param i_is_force
+	 * 強制フラグ。trueにすると、イベント通知なしにマーカ認識状態をリセットします。
+	 */
 	public void reset(boolean i_is_force)
 	{
 		if (i_is_force == false && this._is_active){
@@ -209,7 +254,13 @@ public abstract class SingleNyIdMarkerProcesser
 		this._is_active=false;
 		return;
 	}
-
+	/**
+	 * この関数は、画像を処理して、適切なマーカ検出イベントハンドラを呼び出します。
+	 * イベントハンドラの呼び出しは、この関数を呼び出したスレッドが、この関数が終了するまでに行います。
+	 * @param i_raster
+	 * 検出処理をする画像を指定します。
+	 * @throws NyARException
+	 */
 	public void detectMarker(INyARRgbRaster i_raster) throws NyARException
 	{
 		// サイズチェック
@@ -288,8 +339,28 @@ public abstract class SingleNyIdMarkerProcesser
 		}
 		return is_id_found;
 	}	
-	//通知ハンドラ
+	/**
+	 * イベントハンドラです。
+	 * 継承したクラスで、マーカ発見時の処理を実装してください。
+	 * @param i_code
+	 * 検出したIDマーカの内容をエンコードしたデータです。
+	 * 使用したエンコーダに合せて、キャストしてください。
+	 * (例えば、{@link NyIdMarkerDataEncoder_RawBit}をエンコーダに用いた時は、{@link NyIdMarkerDataEncoder_RawBit}にキャストできます。)
+	 */
 	protected abstract void onEnterHandler(INyIdMarkerData i_code);
+	/**
+	 * イベントハンドラです。
+	 * 継承したクラスで、マーカ消失時の処理を実装してください。
+	 */
 	protected abstract void onLeaveHandler();
+	/**
+	 * イベントハンドラです。
+	 * 継承したクラスで、マーカ更新時の処理を実装してください。
+	 * 引数の値の有効期間は、イベントハンドラが終了するまでです。
+	 * @param i_square
+	 * 現在のマーカ検出位置です。
+	 * @param result
+	 * 現在の姿勢変換行列です。
+	 */
 	protected abstract void onUpdateHandler(NyARSquare i_square, NyARTransMatResult result);
 }

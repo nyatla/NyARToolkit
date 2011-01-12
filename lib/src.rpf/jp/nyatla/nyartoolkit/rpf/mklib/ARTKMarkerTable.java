@@ -12,9 +12,12 @@ import jp.nyatla.nyartoolkit.rpf.realitysource.nyartk.*;
 
 /**
  * このクラスは、ARToolKitマーカパターンのテーブルです。
- * マーカパターンをID番号やメタデータに変換する事に役立ちます。
+ * マーカパターンにID番号とメタデータを関連付けたテーブルを持ち、パターンの一致検索機能を提供します。
  * テーブルには、ARToolKitフォーマットのマーカパターンと、ID番号、ユーザ定義のデータのセットを格納します。
  * このクラスは、テーブルの操作機能と、テーブル要素の検索機能を提供します。
+ * <p>サンプル-
+ * このクラスのサンプルは、{@link Test_NyARRealityGl_ARMarker}を見てください。
+ * </p>
  */
 public class ARTKMarkerTable
 {
@@ -26,15 +29,15 @@ public class ARTKMarkerTable
 	 */
 	public static class GetBestMatchTargetResult
 	{
-		/** 登録時に設定したID値です。*/
+		/** ユーザ定義のID値です。*/
 		public int idtag;
-		/** 登録時に設定した名前文字列です。*/
+		/** ユーザ定義の名前文字列です。*/
 		public String name;
-		/** 登録時に設定したマーカ幅です。単位は、mm単位です。*/
+		/** マーカ幅です。単位は、mm単位です。*/
 		public double marker_width;
-		/** 登録時に設定したマーカ高さです。単位は、mm単位です。*/
+		/** マーカ高さです。単位は、mm単位です。*/
 		public double marker_height;
-		/** ARToolKit準拠の、マーカの方位値です。0&lt;=n&lt;=3の値が入ります。*/
+		/** ARToolKit準拠のマーカの方位値です。0&lt;=n&lt;=3の値が入ります。*/
 		public int artk_direction;
 		/** パターンの一致率です。0<&lt;n&lt;=1.0の数値が入ります。*/
 		public double confidence;

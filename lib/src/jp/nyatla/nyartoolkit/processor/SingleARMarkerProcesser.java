@@ -38,16 +38,26 @@ import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.*;
 
 /**
- * このクラスは、同時に１個のマーカを処理することのできる、アプリケーションプロセッサです。
+ * このクラスは、1個のARマーカを検出する処理を、イベントドリブンにするシーケンスを定義します。
  * マーカの出現・移動・消滅を、イベントで通知することができます。
- * クラスには複数のマーカを登録できます。一つのマーカが見つかると、プロセッサは継続して同じマーカを
- * １つだけ認識し続け、見失うまでの間は他のマーカを認識しません。
- * 
- * イベントは、 OnEnter→OnUpdate[n]→OnLeaveの順で発生します。
- * マーカが見つかるとまずOnEnterが１度発生して、何番のマーカが発見されたかがわかります。
- * 次にOnUpdateにより、現在の変換行列が連続して渡されます。最後にマーカを見失うと、OnLeave
- * イベントが発生します。
- * 
+ * クラスにはマーカパターンテーブルがあり、そこに複数種類のマーカを登録することができます。
+ * 一つのマーカが見つかると、プロセッサは継続して同じマーカを1つだけ認識し続け、見失うまでの間は他のマーカを認識しません。
+ * <p>イベントの説明-
+ * このクラスには、３個のイベントハンドラがあります。{@link SingleARMarkerProcesser}は、以下のタイミングでこれらを呼び出します。
+ * ユーザは継承クラスでこれらの関数に実装を行い、イベント駆動のアプリケーションを作成できます。
+ * <ul>
+ * <li>　{@link #onEnterHandler} - 登録したマーカが初めて見つかった時に呼び出されます。ここに、発見したマーカに対応した初期処理を書きます。
+ * <li>　{@link #onLeaveHandler} - 検出中のマーカが消失した時に呼び出されます。ここに、マーカの終期処理を書きます。
+ * <li>　{@link #onUpdateHandler}- 検出中のマーカの位置姿勢が更新されたときに呼び出されます。ここに、マーカ位置の更新処理を書きます。
+ * </ul>
+ * <p>特性-
+ * <ul>
+ * <li>自動敷居値調整を行うため、環境光の変化に耐性があります。
+ * <li>複数のマーカが画像にある場合は、一番初めに認識したマーカを優先して認識します。
+ * <li>複数の同一パターンマーカが画像にある場合は、区別できません。
+ * </ul>
+ * </p>
+
  */
 public abstract class SingleARMarkerProcesser
 {
@@ -191,14 +201,12 @@ public abstract class SingleARMarkerProcesser
 			}
 		}
 	}	
-	/**オーナーが自由に使えるタグ変数です。
-	 */
+	/**　ユーザーが自由に使えるタグ変数です。*/
 	public Object tag;
 
 	private int _lost_delay_count = 0;
-
 	private int _lost_delay = 5;
-
+	/** 姿勢変換行列の計算オブジェクト*/
 	protected INyARTransMat _transmat;
 
 	private NyARRectOffset _offset; 
@@ -211,14 +219,27 @@ public abstract class SingleARMarkerProcesser
 	protected int _current_arcode_index = -1;
 
 	private NyARRasterThresholdAnalyzer_SlidePTile _threshold_detect;
-	
+
+	/**
+	 * デフォルトコンストラクタ。
+	 * クラスを継承するときは、このコンストラクタを呼び出した後に、{@link #initInstance}関数でインスタンスの初期化処理を実装します。
+	 */
 	protected SingleARMarkerProcesser()
 	{
 		return;
 	}
 
 	private boolean _initialized=false;
-
+	/**
+	 * この関数は、インスタンスを初期化します。
+	 * 継承先のクラスから呼び出してください。
+	 * @param i_param
+	 * カメラパラメータオブジェクト。このサイズは、{@link #detectMarker}に入力する画像と同じサイズである必要があります。
+	 * @param i_raster_type
+	 * {@link #detectMarker}関数に入力する画像のフォーマット。
+	 * この値には、{@link INyARRgbRaster#getBufferType}関数の戻り値を利用します。
+	 * @throws NyARException
+	 */
 	protected void initInstance(NyARParam i_param,int i_raster_type) throws NyARException
 	{
 		//初期化済？
@@ -246,8 +267,18 @@ public abstract class SingleARMarkerProcesser
 		return;
 	}*/
 
-	/**検出するマーカコードの配列を指定します。 検出状態でこの関数を実行すると、
-	 * オブジェクト状態に強制リセットがかかります。
+	/**
+	 * この関数は、検出するマーカパターンテーブルの配列を指定します。 
+	 * マーカパターンには、配列の先頭から、0から始まるID番号を割り当てられます。
+	 * このIDは、{@link #onEnterHandler}イベントハンドラに通知されるID番号に対応し、マーカパターンの識別に使います。
+	 * @param i_ref_code_table
+	 * マーカパターンテーブルにセットする配列です。配列にあるマーカパターンの解像度は、i_code_resolutionに一致している必要があります。
+	 * @param i_code_resolution
+	 * マーカパターン縦横解像度です。
+	 * @param i_marker_width
+	 * <p>メモ:
+	 * マーカを検出している状態で関数を実行すると、イベント通知なしに、認識中のマーカを見失います。
+	 * </p>
 	 */
 	public void setARCodeTable(NyARCode[] i_ref_code_table, int i_code_resolution, double i_marker_width)
 	{
@@ -260,7 +291,12 @@ public abstract class SingleARMarkerProcesser
 		this._offset.setSquare(i_marker_width);
 		return;
 	}
-
+	/**
+	 * この関数は、インスタンスの状態をリセットします。
+	 * 状態をリセットすると、もしマーカを認識している場合には、{@link #onLeaveHandler}イベントハンドラがコールされ、未認識状態になります。
+	 * @param i_is_force
+	 * 強制フラグ。trueにすると、イベント通知なしにマーカ認識状態をリセットします。
+	 */
 	public void reset(boolean i_is_force)
 	{
 		if (this._current_arcode_index != -1 && i_is_force == false) {
@@ -272,6 +308,13 @@ public abstract class SingleARMarkerProcesser
 		return;
 	}
 	private DetectSquare _detectmarker;
+	/**
+	 * この関数は、画像を処理して、適切なマーカ検出イベントハンドラを呼び出します。
+	 * イベントハンドラの呼び出しは、この関数を呼び出したスレッドが、この関数が終了するまでに行います。
+	 * @param i_raster
+	 * 検出処理をする画像を指定します。
+	 * @throws NyARException
+	 */
 	public void detectMarker(INyARRgbRaster i_raster) throws NyARException
 	{
 		// サイズチェック
@@ -293,14 +336,16 @@ public abstract class SingleARMarkerProcesser
 			int th=this._threshold_detect.analyzeRaster(i_raster);
 			this._threshold=(this._threshold+th)/2;
 		}
-		
-		
 		return;
 	}
 	/**
-	 * 
+	 * この関数は、マーカパターンの一致率の敷居値を設定します。
+	 * 敷居値は、0.0&lt;n&lt;1.0の範囲で指定します。
 	 * @param i_new_detect_cf
+	 * 新しくマーカを発見するときの閾値です。
 	 * @param i_exist_detect_cf
+	 * 継続してマーカを追跡するときの閾値です。
+	 * i_new_detect_cfの6割程度の値を指定すると良いでしょう。
 	 */
 	public void setConfidenceThreshold(double i_new_cf,double i_exist_cf)
 	{
@@ -311,7 +356,7 @@ public abstract class SingleARMarkerProcesser
 	private NyARTransMatResult __NyARSquare_result = new NyARTransMatResult();
 
 	/**	オブジェクトのステータスを更新し、必要に応じてハンドル関数を駆動します。
-	 * 	戻り値は、「実際にマーカを発見する事ができたか」です。クラスの状態とは異なります。
+	 * 	戻り値は、「実際にマーカを発見する事ができたか」を示す真偽値です。クラスの状態とは異なります。
 	 */
 	private boolean updateStatus(NyARSquare i_square, int i_code_index)  throws NyARException
 	{
@@ -354,10 +399,26 @@ public abstract class SingleARMarkerProcesser
 			}
 		}
 	}
-
+	/**
+	 * イベントハンドラです。
+	 * 継承したクラスで、マーカ発見時の処理を実装してください。
+	 * @param i_code
+	 * 検出したマーカパターンのID番号です。ID番号については、{@link #setARCodeTable}の説明を参照してください。
+	 */
 	protected abstract void onEnterHandler(int i_code);
-
+	/**
+	 * イベントハンドラです。
+	 * 継承したクラスで、マーカ消失時の処理を実装してください。
+	 */
 	protected abstract void onLeaveHandler();
-
+	/**
+	 * イベントハンドラです。
+	 * 継承したクラスで、マーカ更新時の処理を実装してください。
+	 * 引数の値の有効期間は、イベントハンドラが終了するまでです。
+	 * @param i_square
+	 * 現在のマーカ検出位置です。
+	 * @param result
+	 * 現在の姿勢変換行列です。
+	 */
 	protected abstract void onUpdateHandler(NyARSquare i_square, NyARTransMatResult result);
 }

@@ -3,48 +3,64 @@ package jp.nyatla.nyartoolkit.rpf.mklib;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.rpf.reality.nyartk.NyARRealityTarget;
-
 /**
  * 未知の矩形を認識するサンプル。
  * 絶対的な寸法は求められないので、矩形の辺比率を推定して返します。
- * 既知のカードを認識したいのならば、比率推定後にターゲットの模様からその絶対サイズを特定すると良いかもしれません。
+ * 
  *
+ */
+
+/**
+ * このクラスは、未知の寸法、未知の縦横比率の矩形を認識するサンプルです。
+ * 矩形認識を依頼すると、認識状態のステータスと、可能であれば、その矩形の縦横比率を計算して返します。
+ * <p>アルゴリズム -
+ * このクラスは、矩形を正面から撮影したときに、その縦横比率を推定します。
+ * 正面かどうかは、４辺のなす角が概ねPI/2であるかと、対向する２辺が概ね同じ長さであるか
+ * から判定します。
+ * もし正面から撮影しない時でも、そのための「ヒント」を返却するので、ユーザに認識の仕方を教えるような使い方もできます。
+ * </p>
+ * <p>ヒント-
+ * 既知のカードを認識したいのならば、比率推定後にターゲットの模様からその絶対サイズを特定すると良いかもしれません。
+ * </p>
+ * <p>サンプル-
+ * このクラスのサンプルは、{@link Test_NyARRealityGl_CreditCardDetect}を見てください。
+ * </p>
  */
 public class CardDetect
 {
+	/**
+	 * このクラスは、矩形比率の推定結果を記録します。
+	 * {@link UnknownRectInfo#last_status}の値により、読出し可能なメンバが変わります。	
+	 */
 	public static class UnknownRectInfo
 	{
-		/** 内部使用。推定しているターゲットのシリアルID*/
+		/** 内部使用。推定している{@link RealityTarget}のシリアルID。*/
 		public long _target_serial;
 		/**　内部使用。成功回数のカウンタ*/
 		public int _success_point;
 		/**　内部使用。失敗回数のカウンタ*/
 		public int _failed;
-		/** 検出した矩形の縦横非推定値。%表記。*/
+		/** 検出した矩形の縦横非推定値。0&lt;=n&lt;=100%の間。表記。*/
 		public double rate;
 		/** ARToolKitスタイルのdirection値*/
 		public int artk_direction;
-		
-		/**
-		 * 現在の認識状況。
-		 * <ul>
-		 * <li>{@link #MORE_FRONT_CENTER}このターゲットを推定するには、より正面から撮影が必要です。</li>
-		 * <li>{@link #ESTIMATE_NOW}大きさを推定中です。引き続き、次のサイクルのi_targetとio_resultペアを入力してください。</li>
-		 * <li>{@link #ESTIMATE_COMPLETE}推定完了。io_resultのメンバ変数が利用可能です。</li>
-		 * <li>{@link #ESTIMATE_FAILED}推定に失敗しました。変な形のRECTだったのかも。</li>
-		 * <li>{@link #FAILED_TARGET_MISSMATCH}推定に失敗しました。i_targetとio_resultペアが間違っている。</li>
-		 * </ul>
-		 */
+		/**　認識ステータスの値*/
 		public int last_status;
+		/** コンストラクタ。初期化済みのインスタンスを生成します。*/
 		public UnknownRectInfo()
 		{
 			this._target_serial=NyARRealityTarget.INVALID_REALITY_TARGET_ID;
 		}
 	}
+	/** {@link #UnknownRectInfo}のステータス値。 このターゲットを推定するには、より正面から撮影が必要です。*/
 	public final static int MORE_FRONT_CENTER=0;
+	/** {@link #UnknownRectInfo}のステータス値。矩形比率を推定中です。*/
 	public final static int ESTIMATE_NOW=1;
+	/** {@link #UnknownRectInfo}のステータス値。矩形比率を推定完了。io_resultのメンバ変数が利用可能です。*/
 	public final static int ESTIMATE_COMPLETE=2;
+	/**　{@link #UnknownRectInfo}のステータス値。推定に失敗しました。変な形のRECTだったのかも。*/
 	public final static int FAILED_ESTIMATE=3;
+	/** {@link #UnknownRectInfo}のステータス値。推定に失敗しました。入力値が間違っている？*/
 	public final static int FAILED_TARGET_MISSMATCH=4;
 	/**
 	 * i_targetの大きさを推定して、{@link UnknownRectInfo}に結果を保存します。この関数は{@link UnknownRectInfo}の状態を変化させるだけです。
@@ -55,6 +71,37 @@ public class CardDetect
 	 * はじめてターゲットの推定をするときは、リセットした{@link UnknownRectInfo}を入力してください。
 	 * @return
 	 * 認識状況を返します。
+	 * @throws NyARException
+	 */
+	
+	/**
+	 * この関数は、i_targetの矩形比率を推定します。
+	 * 推定結果は、io_resultに返却します。
+	 * <p>関数の使い方-
+	 * 1回目に推定するときは、推定するターゲットをi_targetへ、io_resultに初期化済みのオブジェクトを入力します。関数は、i_targetの情報をio_resultへ記録します。
+	 * 2回目以降は、同じシリアルID値を持つ{@link NyARRealityTarget}と{@link UnknownRectInfo}をペアにして入力します。関数は、i_targetの情報でio_resultを更新します。
+	 * この関数は、i_targetを、{@link NyARRealityTarget}のシリアル番号で区別します。2回目以降は、両者のシリアルIDが一致していなければなりません。
+	 * 何度か入力を繰り返すと、io_resultの{@link UnknownRectInfo#last_status}が更新されて、比率の推定が完了します。
+	 * </p>
+	 * <p>{@link UnknownRectInfo#last_status}のステータス値について。
+	 * ステータス値の意味により、アプリケーションが何をするべきかが変わります。
+	 * <ul>
+	 * <li>{@link MORE_FRONT_CENTER}
+	 * 入力されたターゲットでは比率推定が難しい。より正面から撮影しなおす必要がある。
+	 * <li>{@link ESTIMATE_NOW}
+	 * 入力されたターゲットで比率推定中である。推定を継続するために、次の画像を入力する。
+	 * <li>{@link ESTIMATE_COMPLETE}
+	 * 比率推定に成功した。メンバ変数が読出し可能。
+	 * <li>{@link FAILED_ESTIMATE}
+	 * 比率推定に失敗した。比率推定を継続できないので、アプリケーションはこのターゲットを{@link NyARRealityTarget#RT_DEAD}へ遷移させるべきである。
+	 * <li>{@link FAILED_TARGET_MISSMATCH}
+	 * ２回目以降の認識で、ターゲットと記録オブジェクトのシリアルIDが一致しない。正しい組み合わせで入力するべき。
+	 * </ul>
+	 * </p>
+	 * @param i_target
+	 * 比率推定を実行する{@link NyARRealityTarget}オブジェクト。
+	 * @param io_result
+	 * 推定結果を受け取るオブジェクト。
 	 * @throws NyARException
 	 */
 	public void detectCardDirection(NyARRealityTarget i_target,UnknownRectInfo io_result) throws NyARException

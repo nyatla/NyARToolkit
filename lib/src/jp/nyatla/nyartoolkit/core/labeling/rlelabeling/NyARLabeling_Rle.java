@@ -181,7 +181,7 @@ public abstract class NyARLabeling_Rle
 		final int len=i_rel_img.r - l;
 		i_rel_img.fid = i_nof;// REL毎の固有ID
 		NyARRleLabelFragmentInfo v = o_stack.prePush();
-		if(o_stack==null){
+		if(v==null){
 			System.err.println("addFragment force recover!");
 			return false;
 		}

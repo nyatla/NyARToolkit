@@ -12,38 +12,36 @@ import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerDataEncoder_RawBit;
 import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerData_RawBit;
 
 /**
- * 簡易な同期型NyIdマーカIDテーブルです。
+ * このクラスは、簡易な同期型NyIdマーカのテーブルです。
+ * マーカのID番号とメタデータを関連付けたテーブルを持ち、ID番号の検索機能を提供します。
  * このクラスは、RawBitフォーマットドメインのNyIdマーカのIdとメタデータセットテーブルを定義します。
  * SerialIDは、RawBitマーカのデータパケットを、[0][1]...[n]の順に並べて、64bitの整数値に変換した値です。
- * 判別できるIdマーカは、domain=0(rawbit),model&lt;5,mask=0のもののみです。
- * <p>
- * このクラスは、NyRealityTargetをRawBitフォーマットドメインのSerialNumberマーカにエンコードする
- * 機能を提供します。
- * 使い方は、ユーザは、このクラスにIDマーカのSerialNumberとそのサイズを登録します。その後に、
- * NyRealityTargetをキーに、登録したデータからそのSerialNumberをサイズを得ることができます。
+ * 判別できるNyIdマーカは、domain=0(rawbitドメイン),model&lt;5,mask=0のもののみです。
+ * <p>使い方
+ * <ol>
+ * <li>ユーザは、このクラスにIDマーカのSerialNumberとそのサイズを登録します。
+ * <li>{@link NyARRealityTarget}をキーにしてテーブルを検索します。
+ * <li>一致するSerialNumberがあれば、戻り値から、そのサイズ、メタデータを得ることができます。
  * </p>
- * 
- * NyIdRawBitSerialNumberTable
  */
 public class RawbitSerialIdTable
 {
 	/**
-	 * selectTarget関数の戻り値を格納します。
+	 * このクラスは、{@link RawbitSerialIdTable#identifyId}関数の戻り値を格納します。
 	 * 入れ子クラスの作れない処理系では、RawbitSerialIdTable_IdentifyIdResultとして宣言してください。
 	 */
 	public static class IdentifyIdResult
 	{
-		/** ID番号です。*/
+		/** ユーザ定義のID番号です。*/
 		public long id;
-		/** 名前です。*/
+		/** ユーザ定義の名前です。*/
 		public String name;
 		/** 登録時に設定したマーカサイズです。*/
 		public double marker_width;
 		/** ARToolKit準拠の、マーカの方位値です。*/
 		public int artk_direction;
 	}
-	
-
+	/** テーブルのクラス*/
 	private class SerialTable extends NyARObjectStack<SerialTable.SerialTableRow>
 	{
 		public class SerialTableRow
@@ -93,7 +91,7 @@ public class RawbitSerialIdTable
 	/**
 	 * コンストラクタです。
 	 * @param i_max
-	 * 登録するアイテムの最大数です。
+	 * IDテーブルのサイズ。Idマーカ範囲の最大登録数です。
 	 * @throws NyARException 
 	 */
 	public RawbitSerialIdTable(int i_max) throws NyARException
@@ -101,8 +99,9 @@ public class RawbitSerialIdTable
 		this._table=new SerialTable(i_max);
 	}
 	/**
-	 * IDの範囲に対するメタデータセットを、テーブルに追加します。
-	 * この要素にヒットする範囲は,i_st&lt;=n&lt;=i_edになります。
+	 * この関数は、SerialIDの範囲に対応するメタデータを、テーブルに追加します。
+	 * ヒットする範囲は,i_st&lt;=n&lt;=i_edになります。
+	 * 例えば、10～20番までのマーカノサイズを一括して登録するときに役立ちます。
 	 * @param i_name
 	 * このID範囲の名前を指定します。不要な場合はnullを指定します。
 	 * @param i_st
@@ -110,7 +109,9 @@ public class RawbitSerialIdTable
 	 * @param i_ed
 	 * ヒット範囲の終了値です。
 	 * @param　i_width
-	 * ヒットしたマーカのサイズ値を指定します。
+	 * マーカのサイズ値を指定します。
+	 * @return
+	 * 登録の成否を真偽値で返します。
 	 */
 	public boolean addSerialIdRangeItem(String i_name,long i_st,long i_ed,double i_width)
 	{
@@ -122,13 +123,13 @@ public class RawbitSerialIdTable
 		return true;
 	}
 	/**
-	 * SerialIDに対するメタデータセットを、テーブルに追加します。
+	 * この関数は、1個のSerialIDに対応するメタデータを、テーブルに追加します。
 	 * @param i_serial
 	 * ヒットさせるシリアルidです。
 	 * @param i_width
-	 * ヒットしたマーカのサイズ値です。
+	 * マーカのサイズ値です。
 	 * @return
-	 * 登録に成功するとtrueを返します。
+	 * 登録の成否を真偽値で返します。
 	 */
 	public boolean addSerialIdItem(String i_name,long i_serial,double i_width)
 	{
@@ -144,7 +145,7 @@ public class RawbitSerialIdTable
 	 * @param i_width
 	 * ヒットしたマーカのサイズ値です。
 	 * @return
-	 * 登録に成功するとtrueです。
+	 * 登録の成否を真偽値で返します。
 	 */
 	public boolean addAnyItem(String i_name,double i_width)
 	{
@@ -156,12 +157,17 @@ public class RawbitSerialIdTable
 		return true;
 	}	
 	/**
-	 * i_raster上にあるi_vertexの頂点で定義される四角形のパターンから、一致するID値を特定します。
+	 * この関数は、任意の四角形をIdマーカとして検査し、一致するメタデータを返します。
+	 * i_rasterからi_vertexの頂点で定義される四角形のパターンを取得し、NyAIdマーカとして評価し、一致するID値をテーブルから取得します。
 	 * @param i_vertex
 	 * 4頂点の座標
 	 * @param i_raster
+	 * パターンを取得するラスタオブジェクト。
 	 * @param o_result
+	 * 取得結果を受け取るオブジェクト。
 	 * @return
+	 * テーブルから一致したIDが見つかればtrue
+	 * 戻り値がtrueの時のみ有効です。
 	 * @throws NyARException
 	 */
 	public final boolean identifyId(NyARDoublePoint2d[] i_vertex,INyARRgbRaster i_raster,IdentifyIdResult o_result) throws NyARException
@@ -210,18 +216,17 @@ public class RawbitSerialIdTable
 		return true;		
 	}
 	/**
-	 * RealityTargetに一致するID値を特定します。
+	 * この関数は、{@link NyARRealityTarget}のターゲットに一致するメタデータを返します。
 	 * 複数のパターンにヒットしたときは、一番初めにヒットした項目を返します。
 	 * @param i_target
-	 * Realityが検出したターゲット。
-	 * Unknownターゲットを指定すること。
+	 * 検索キーとなる、Unknownステータスの{@link NyARRealityTarget}クラスのオブジェクトを指定します。
 	 * @param i_rtsorce
-	 * i_targetを検出したRealitySourceインスタンス。
+	 * i_targetを検出した{@link NyARRealitySource}のインスタンスを指定します。関数は、このソースからパターン取得を行います。
 	 * @param o_result
 	 * 返却値を格納するインスタンスを設定します。
-	 * 返却値がtrueの場合のみ、内容が更新されています。
+	 * 戻り値がtrueの時のみ有効です。
 	 * @return
-	 * 特定に成功すると、trueを返します。
+	 * テーブルから一致したIDが見つかればtrue
 	 * @throws NyARException 
 	 */
 	public boolean identifyId(NyARRealityTarget i_target,NyARRealitySource i_rtsorce,IdentifyIdResult o_result) throws NyARException

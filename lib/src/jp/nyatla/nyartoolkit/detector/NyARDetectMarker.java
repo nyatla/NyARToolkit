@@ -50,14 +50,15 @@ import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 /**
  * このクラスは、複数のマーカを取り扱うマーカ検出器です。
  * 登録したn個のARマーカに対応するマーカを入力画像から検出し、その変換行列と一致度を返します。
- * この関数はn個の登録したマーカに対して、画像中のm個のマーカから、最も位置するものを割り当てる動作をします。
- * そのため、同一な種類（パターン）のマーカが複数存在する映像を、正しく処理できません。また、同一なマーカパターンを
- * 複数登録することもできません。
+ * この関数は、画像中のm個のマーカに、登録したn個のマーカの中から、最も一致したものの番号を割り当てる動作をします。
+ * そのため、同一な種類（パターン）のマーカが複数存在する場合、２つのマーカを区別することができません。
+ * また、同一なマーカパターンを複数登録すると、意図しない動作をします。
  * <p>簡単な使い方
  * <ol>
  * <li>インスタンスを作成します。パラメータには、計算アルゴリズムと入力画像形式、カメラパラメータ、検出するマーカパターンテーブルがあります。
  * <li>{@link #detectMarkerLite}関数に画像と敷居値を入力して、マーカを検出します。
- * <li>検出数が得られるので、インデクス番号を元に、{@link #getConfidence}等の関数を使って、取得したマーカの状態を得ます。
+ * <li>検出数が得られるので、{@link #getARCodeIndex}関数を使って、検出番号をマーカのインデクス番号に変換します。
+ * <li>インデクス番号を元に、{@link #getConfidence}等の関数を使って、取得したマーカの状態を得ます。
  * <li>以降は、この処理を繰り返してマーカのパラメータを更新します。
  * </ol>
  * </p>
@@ -172,12 +173,13 @@ public class NyARDetectMarker
 
 	/**
 	 * コンストラクタです。
-	 * パターンの重複しない複数のマーカを検出する検出器を作成します。
+	 * 同一でない複数のマーカを検出する検出器を作成します。
 	 * @param i_param
 	 * カメラパラメータを指定します。このサイズは、{@link #detectMarkerLite}に入力する画像と同じである必要があります。
 	 * @param i_code
-	 * 検出するマーカーパターンを格納した、{@link NyARCode}の配列を指定します。配列には、先頭から、0から始まるインデクス番号が割り当てられます。
-	 * このインデクス番号は、{@link #getConfidence(int)}等のインデクス番号に使います。
+	 * 検出するマーカーパターンを格納した、{@link NyARCode}の配列を指定します。配列には、先頭から、0から始まるID番号が割り当てられます。
+	 * このIDは、{@link #getARCodeIndex}で取得できるID値であり、マーカパターンの識別に使います。
+	 * 配列要素の{@link NyARCode}は、全て同じ解像度にしてください。
 	 * @param i_marker_width
 	 * 正方形マーカの物理サイズをmm単位で指定します。
 	 * @param i_number_of_code
@@ -241,13 +243,14 @@ public class NyARDetectMarker
 	private INyARRasterFilter_Rgb2Bin _tobin_filter;
 
 	/**
-	 * i_imageにマーカー検出処理を実行し、結果を記録します。
-	 * ここからん
+	 * この関数は、画像からマーカを検出します。
+	 * 関数は、登録されているマーカパターンそれぞれに対し、検出したマーカから最も一致した物を探し、その一致率と位置を計算します。
 	 * @param i_raster
 	 * マーカーを検出するイメージを指定します。
 	 * @param i_thresh
 	 * 検出閾値を指定します。0～255の範囲で指定してください。 通常は100～130くらいを指定します。
-	 * @return 見つかったマーカーの数を返します。 マーカーが見つからない場合は0を返します。
+	 * @return
+	 * 検出したマーカーの数を返します。 マーカーが見つからない場合は0を返します。
 	 * @throws NyARException
 	 */
 	public int detectMarkerLite(INyARRgbRaster i_raster, int i_threshold) throws NyARException
@@ -270,12 +273,13 @@ public class NyARDetectMarker
 	}
 
 	/**
-	 * i_indexのマーカーに対する変換行列を計算し、結果値をo_resultへ格納します。 直前に実行したdetectMarkerLiteが成功していないと使えません。
-	 * 
+	 * この関数は、i_index番目に検出したマーカの、変換行列を計算します。
+	 * 直前に実行した{@link #detectMarkerLite}が成功していないと使えません。
 	 * @param i_index
-	 * マーカーのインデックス番号を指定します。 直前に実行したdetectMarkerLiteの戻り値未満かつ0以上である必要があります。
+	 * 検出結果のインデックス番号を指定します。 
+	 * この値は、0から{@link #detectMarkerLite}関数の戻り値-1の数です。
 	 * @param o_result
-	 * 結果値を受け取るオブジェクトを指定してください。
+	 * 結果値を受け取るオブジェクト
 	 * @throws NyARException
 	 */
 	public void getTransmationMatrix(int i_index, NyARTransMatResult o_result) throws NyARException
@@ -291,11 +295,13 @@ public class NyARDetectMarker
 	}
 
 	/**
-	 * i_indexのマーカーの一致度を返します。
-	 * 
+	 * この関数は、i_index番目に検出したマーカの、一致度を返します。
+	 * 直前に実行した{@link #detectMarkerLite}が成功していないと使えません。
 	 * @param i_index
-	 * マーカーのインデックス番号を指定します。 直前に実行したdetectMarkerLiteの戻り値未満かつ0以上である必要があります。
-	 * @return マーカーの一致度を返します。0～1までの値をとります。 一致度が低い場合には、誤認識の可能性が高くなります。
+	 * 検出結果のインデックス番号を指定します。 
+	 * この値は、0から{@link #detectMarkerLite}関数の戻り値-1の数です。
+	 * @return
+	 * マーカーの一致度を返します。0～1までの値をとります。 一致度が低い場合には、誤認識の可能性が高くなります。
 	 * @throws NyARException
 	 */
 	public double getConfidence(int i_index)
@@ -303,11 +309,14 @@ public class NyARDetectMarker
 		return this._square_detect.result_stack.getItem(i_index).confidence;
 	}
 	/**
-	 * i_indexのマーカーのARCodeインデックスを返します。
-	 * 
+	 * この関数は、i_index番目に検出したマーカの、ID番号を返します。
+	 * 直前に実行した{@link #detectMarkerLite}が成功していないと使えません。
 	 * @param i_index
-	 * マーカーのインデックス番号を指定します。 直前に実行したdetectMarkerLiteの戻り値未満かつ0以上である必要があります。
+	 * 検出結果のインデックス番号を指定します。 
+	 * この値は、0から{@link #detectMarkerLite}関数の戻り値-1の数です。
 	 * @return
+	 * ID番号です。この値は、コンストラクタでマーカパターンを登録したときに決まる、シリアル番号です。
+	 * @throws NyARException
 	 */
 	public int getARCodeIndex(int i_index)
 	{
@@ -315,10 +324,14 @@ public class NyARDetectMarker
 	}
 
 	/**
-	 * getTransmationMatrixの計算モードを設定します。
-	 * 
+	 * この関数は、変換行列の計算モードを切り替えます。
+	 * 通常はtrueを使用します。
+	 * transMat互換の計算は、姿勢の初期値を毎回二次元座標から計算するため、負荷が安定します。
+	 * transMatCont互換の計算は、姿勢の初期値に前回の結果を流用します。このモードは、姿勢の安定したマーカに対しては
+	 * ジッタの減少や負荷減少などの効果がありますが、姿勢の安定しないマーカや複数のマーカを使用する環境では、
+	 * 少量の負荷変動があります。
 	 * @param i_is_continue
-	 * TRUEなら、transMatContinueを使用します。 FALSEなら、transMatを使用します。
+	 * TRUEなら、transMatCont互換の計算をします。 FALSEなら、transMat互換の計算をします。
 	 */
 	public void setContinueMode(boolean i_is_continue)
 	{
