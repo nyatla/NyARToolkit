@@ -31,12 +31,11 @@
 package jp.nyatla.nyartoolkit.core.pca2d;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 
 /**
- * ARToolkitのPCA関数を二次元に特化させて単純化したもの
- *
+ * このクラスは、{@link NyARPca2d_MatrixPCA}を展開して高速化したものです。
+ * 演算の内容は、{@link NyARPca2d_MatrixPCA}と同一です。
  */
 public class NyARPca2d_MatrixPCA_O2 implements INyARPca2d
 {
@@ -200,6 +199,7 @@ public class NyARPca2d_MatrixPCA_O2 implements INyARPca2d
 		// }
 		return;
 	}
+	//override
 	public void pca(double[] i_v1,double[] i_v2,int i_number_of_point,NyARDoubleMatrix22 o_evec, double[] o_ev,double[] o_mean) throws NyARException
 	{
 		PCA_PCA(i_v1,i_v2,i_number_of_point,o_evec, o_ev,o_mean);

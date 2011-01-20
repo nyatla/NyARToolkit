@@ -33,14 +33,26 @@ package jp.nyatla.nyartoolkit.core.squaredetect;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
-
+/**
+ * このクラスは、{@link NyARSquare}の動的配列御定義します。
+ */
 public class NyARSquareStack extends NyARObjectStack<NyARSquare>
 {
+	/**
+	 * コンストラクタ。
+	 * サイズを指定して、配列を作成します。
+	 * @param i_length
+	 * 配列の最大長さ
+	 * @throws NyARException
+	 */
 	public NyARSquareStack(int i_length) throws NyARException
 	{
 		super.initInstance(i_length,NyARSquare.class);
 
 	}
+	/**
+	 * 要素のオブジェクトを生成します。
+	 */
 	protected NyARSquare createElement()
 	{
 		return new NyARSquare();

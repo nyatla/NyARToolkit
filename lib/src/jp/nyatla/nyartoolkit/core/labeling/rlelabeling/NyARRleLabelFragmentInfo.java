@@ -26,6 +26,11 @@ package jp.nyatla.nyartoolkit.core.labeling.rlelabeling;
 
 import jp.nyatla.nyartoolkit.core.labeling.NyARLabelInfo;
 
+/**
+ * このクラスは、{@link NyARLabeling_Rle}の出力するフラグメント値を格納します。
+ * {@link NyARLabelInfo}に追加した要素は、輪郭のエントリポイント{@link #entry_x}です。
+ * {@link #entry_x}と{@link #clip_t}から、輪郭追跡の為のエントリポイントが求まります。
+ */
 public class NyARRleLabelFragmentInfo extends NyARLabelInfo
 {
 	public int entry_x;  // フラグメントラベルの位置

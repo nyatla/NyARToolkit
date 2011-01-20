@@ -31,12 +31,15 @@
 package jp.nyatla.nyartoolkit.core.labeling.artoolkit;
 
 import jp.nyatla.nyartoolkit.core.labeling.*;
+
 /**
- * [[Strage class]]
- *
+ * このクラスは、{@link NyARLabelingImage}クラスの使うデータ型です。
+ * ラベル１個分のデータを格納します。
+ * {@link NyARLabelInfo}にラベル番号が追加されています。
  */
 public class NyARLabelingLabel extends NyARLabelInfo
 {
-	public int id; // フラグメントラベルのインデクス
+	/** ラベルのID番号。この番号については、{@link NyARLabelingImage}を参照してください。*/
+	public int id;
 
 }

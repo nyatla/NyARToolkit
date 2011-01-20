@@ -31,26 +31,35 @@
 package jp.nyatla.nyartoolkit.core.squaredetect;
 
 import jp.nyatla.nyartoolkit.core.types.*;
+
 /**
- * 座標店集合（輪郭線）から、四角系の頂点候補点を計算します。
- *
+ * このクラスは、輪郭線を四角形と仮定して、その頂点位置を計算します。
+ * ARToolKitの四角形検出処理の一部です。
  */
 public class NyARCoord2SquareVertexIndexes
 {
 	private static final double VERTEX_FACTOR = 1.0;// 線検出のファクタ	
 	private final NyARVertexCounter __getSquareVertex_wv1 = new NyARVertexCounter();
 	private final NyARVertexCounter __getSquareVertex_wv2 = new NyARVertexCounter();
+	/**
+	 * コンストラクタです。
+	 * インスタンスを生成します。
+	 */
 	public NyARCoord2SquareVertexIndexes()
 	{
 		return;
 	}
 	/**
-	 * 座標集合から、頂点候補になりそうな場所を４箇所探して、そのインデクス番号を返します。
+	 * この関数は、座標集合から頂点候補になりそうな場所を４箇所探して、そのインデクス番号を返します。
 	 * @param i_coord
-	 * 輪郭を格納した配列です。
+	 * 輪郭点集合を格納したオブジェクト。
 	 * @param i_area
+	 * 矩形判定のヒント値。矩形の大きさを、そのラベルを構成するピクセルの数で指定します。
+	 * (注)このパラメータは、マーカノデザイン、枠の大きさが影響等、ラベルの大きさに影響を受けます。
 	 * @param o_vertex
+	 * 4頂点のインデクスを受け取る配列です。4要素以上の配列を指定してください。
 	 * @return
+	 * 頂点が見つかるとtrueを返します。
 	 */
 	public boolean getVertexIndexes(NyARIntCoordinates i_coord, int i_area, int[] o_vertex)
 	{

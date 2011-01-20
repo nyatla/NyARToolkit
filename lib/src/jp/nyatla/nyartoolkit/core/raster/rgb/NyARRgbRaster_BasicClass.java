@@ -35,36 +35,59 @@ import jp.nyatla.nyartoolkit.core.rasterreader.INyARRgbPixelReader;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
- * NyARRasterインタフェイスの基本関数/メンバを実装したクラス
- * 
- * 
+ * このクラスは、RGBラスタクラスの基本処理を実装します。
  */
 public abstract class NyARRgbRaster_BasicClass implements INyARRgbRaster
 {
-	final protected NyARIntSize _size;
+	/** ラスタのサイズを格納します。*/
+	protected final NyARIntSize _size;
 	private int _buffer_type;
+	/**
+	 * コンストラクタです。
+	 * @param i_width
+	 * ラスタの幅に設定する値
+	 * @param i_height
+	 * ラスタの高さに設定する値
+	 * @param i_buffer_type
+	 * バッファタイプ値に設定する値
+	 */
 	protected NyARRgbRaster_BasicClass(int i_width,int i_height,int i_buffer_type)
 	{
 		this._size= new NyARIntSize(i_width,i_height);
 		this._buffer_type=i_buffer_type;
 	}
+	/**
+	 * この関数は、ラスタの幅を返します。
+	 */	
 	final public int getWidth()
 	{
 		return this._size.w;
 	}
+	/**
+	 * この関数は、ラスタの高さを返します。
+	 */	
 	final public int getHeight()
 	{
 		return this._size.h;
 	}
-
+	/**
+	 * この関数は、ラスタのサイズを格納したオブジェクトを返します。
+	 */
 	final public NyARIntSize getSize()
 	{
 		return this._size;
 	}
+	/**
+	 * この関数は、ラスタのバッファへの参照値を返します。
+	 * バッファの形式は、コンストラクタに指定した形式と同じです。
+	 */	
 	final public int getBufferType()
 	{
 		return _buffer_type;
 	}
+	/**
+	 * この関数は、ラスタの幅を返します。
+	 */	
 	final public boolean isEqualBufferType(int i_type_value)
 	{
 		return this._buffer_type==i_type_value;

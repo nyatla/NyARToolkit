@@ -5,6 +5,16 @@ import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
  * このクラスは、4本の直線式から、凸包の頂点を計算する機能を提供します。
+ * <p>アルゴリズム -
+ * 4直線の交差点0から6の間で変動します。4以上の交差点があるときに、以下の手順で求めます。
+ * <ol>
+ * <li>4直線に、AからDまでの番号を振る。
+ * <li>AとBの交点を0として、AB→AC→AD→BC→BD→CDの順に、交点番号を振る。 
+ * <li>0-5,1-4,2-3の頂点を通る直線は存在しない事が判る。
+ * <li>{0,1,5,4},{0,2,5,3},{1,2,4,3}の順で頂点を辿った時、4個の外積が0か4になるものが凸包。
+ * </ol>
+ * 4,5頂点の場合も、頂点順序を辿る始点を変えることで、求められます。
+ * </p>
  */
 public class LineBaseVertexDetector
 {
@@ -17,6 +27,7 @@ public class LineBaseVertexDetector
 	private NyARDoublePoint2d[] __wk_v=NyARDoublePoint2d.createArray(6);
 	/**
 	 * ４直線の交点から、凸包の頂点座標を計算します。
+	 * 頂点の回転方向は、時計回りに正規化されます。
 	 * @param i_line
 	 * 直線式の配列です。要素数は4である必要があります。
 	 * @param o_point

@@ -35,10 +35,16 @@ import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
 
 /**
- * 8bitRGBを表現できるラスタ
- * 
+ * このインタフェイスは、{@link INyARRaster}に、カラー画像へアクセスする機能を追加します。
  */
 public interface INyARRgbRaster extends INyARRaster
 {
+	/**
+	 * この関数は、画素フォーマットによらない画素アクセスを行うオブジェクトへの参照値を返します。
+	 * 実装クラスでは、所有するバッファに関連したラスタ読出しオブジェクトを返す処理を実装してください。
+	 * @return
+	 * オブジェクトの参照値
+	 * @throws NyARException
+	 */
 	public INyARRgbPixelReader getRgbPixelReader() throws NyARException;
 }

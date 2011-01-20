@@ -35,24 +35,37 @@ import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 
 
 /**
- * This class calculates ARMatrix from square information. -- 変換行列を計算するクラス。
- * 
+ * このインタフェイスは、二次元矩形から３次元位置姿勢を推定する関数を定義します。
+ * ARToolKitの３次元推定処理の一部です。
  */
 public interface INyARTransMat
 {
 	/**
-	 * 理想座標系の四角系から、i_offsetのパラメタで示される矩形を(0,0,0)の点から移動するための行列式を計算し、o_resultへ格納します。
+	 * この関数は、理想座標系の四角系を元に、位置姿勢変換行列を求めます。
+	 * 位置姿勢変換行列は、オフセット位置を基準とした変換行列です。
+	 * 実装クラスでは、マーカの二次元座標から、位置姿勢行列を計算する処理を実装します。
 	 * @param i_square
+	 * 矩形情報を格納したオブジェクトです。
 	 * @param i_offset
+	 * カメラ座標系での、矩形のオフセット位置です。通常、原点中心のマーカ座標になります。
 	 * @param o_result
+	 * 結果を格納するオブジェクトです。
 	 * @throws NyARException
 	 */
 	public void transMat(NyARSquare i_square,NyARRectOffset i_offset, NyARTransMatResult o_result) throws NyARException;
 	/**
-	 * 理想座標系の四角系から、i_offsetのパラメタで示される矩形を(0,0,0)の点から移動するための行列式を計算し、o_resultへ格納します。
-	 * i_prev_resultにある過去の情報を参照するため、変移が少ない場合はより高精度な値を返します。
+	 * この関数は、理想座標系の四角系を元に、位置姿勢変換行列を求めます。
+	 * 位置姿勢変換行列は、オフセット位置を基準とした変換行列です。
+	 * 実装クラスでは、マーカの二次元座標から、位置姿勢行列を計算する処理を実装します。
+	 * 姿勢推定にi_prev_resultにある過去の情報を参照するため、変移が少ない場合は、{@link #transMat}と比較して高品質な値を返します。
+	 * <p>使い方 -
+	 * この関数は、連続して同じ対象（マーカ）の姿勢行列を求めるときに、効果を発揮します。フレーム毎に、そのマーカの前回求めた姿勢変換行列を繰り返し
+	 * 入力してください。
+	 * </p>
 	 * @param i_square
+	 * 矩形情報を格納したオブジェクトです。
 	 * @param i_offset
+	 * カメラ座標系での、矩形のオフセット位置です。通常、原点中心のマーカ座標になります。
 	 * @param i_prev_result
 	 * 参照する過去のオブジェクトです。このオブジェクトとo_resultには同じものを指定できます。
 	 * @param o_result

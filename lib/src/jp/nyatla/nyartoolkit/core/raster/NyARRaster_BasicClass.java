@@ -32,34 +32,60 @@ package jp.nyatla.nyartoolkit.core.raster;
 
 import jp.nyatla.nyartoolkit.core.types.*;
 
+/**
+ * このクラスは、ラスタクラスの基本処理を実装します。
+ */
 public abstract class NyARRaster_BasicClass implements INyARRaster
 {
-	protected NyARIntSize _size;
+	protected final NyARIntSize _size;
 	protected int _buffer_type;
+	/**
+	 * コンストラクタです。
+	 * メンバ変数を初期化して、インスタンスを生成します。
+	 * @param i_width
+	 * ラスタの幅に設定する値
+	 * @param i_height
+	 * ラスタの高さに設定する値
+	 * @param i_buffer_type
+	 * バッファタイプ値に設定する値
+	 */
 	protected NyARRaster_BasicClass(int i_width,int i_height,int i_buffer_type)
 	{
 		this._size= new NyARIntSize(i_width,i_height);
 		this._buffer_type=i_buffer_type;
 	}
-
-	final public int getWidth()
+	/**
+	 * この関数は、ラスタの幅を返します。
+	 */
+	public final int getWidth()
 	{
 		return this._size.w;
 	}
-
+	/**
+	 * この関数は、ラスタの高さを返します。
+	 */
 	final public int getHeight()
 	{
 		return this._size.h;
 	}
-
+	/**
+	 * この関数は、ラスタのサイズを格納したオブジェクトを返します。
+	 */
 	final public NyARIntSize getSize()
 	{
 		return this._size;
 	}
+	/**
+	 * この関数は、ラスタのバッファへの参照値を返します。
+	 * バッファの形式は、コンストラクタに指定した形式と同じです。
+	 */	
 	final public int getBufferType()
 	{
 		return _buffer_type;
 	}
+	/**
+	 * この関数は、ラスタの幅を返します。
+	 */
 	final public boolean isEqualBufferType(int i_type_value)
 	{
 		return this._buffer_type==i_type_value;

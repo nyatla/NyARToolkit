@@ -36,24 +36,30 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
 /**
- * NyLabelの予約型動的配列
- * 
+ * このクラスは、NyARLabelingLabelの動的配列です。
+ * {@link NyARLabeling_ARToolKit}が使います。
+ * {@link NyARObjectStack}からの追加機能として、配列要素のソート機能があります。
  */
 public class NyARLabelingLabelStack extends NyARObjectStack<NyARLabelingLabel>
 {
+	/**
+	 * コンストラクタです。
+	 * @param i_max_array_size
+	 * 配列の最大サイズ。
+	 * @throws NyARException
+	 */
 	public NyARLabelingLabelStack(int i_max_array_size) throws NyARException
 	{
 		super();
 		super.initInstance(i_max_array_size,NyARLabelingLabel.class);
 	}
+	/** {@link NyARLabelingLabel}要素を返します。*/
 	protected NyARLabelingLabel createElement()
 	{
 		return new NyARLabelingLabel();
 	}
 	/**
-	 * 配列をエリアでソートする。
-	 * @param i_array
-	 * @param i_length
+	 * この関数は、配列を{@link NyARLabelingLabel#area}でソートします。
 	 */
 	final public void sortByArea()
 	{

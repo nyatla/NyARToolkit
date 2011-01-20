@@ -20,40 +20,50 @@ import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status.NyARTargetStatus;
 
 /**
  *　このクラスは、NyARToolkitのリアリティモデルを実装します。
- * ターゲット要素の保持と、{@link NyARRealitySource}を元にした更新を担当します。
+ * Realityターゲット(以下、RTターゲット)要素の保持と、{@link NyARRealitySource}を元にした更新を担当します。
  * <p>NyARToolkitのリアリティモデル-
  * NyARToolkitのリアリティモデルは、ARToolKitのマーカー認識処理系をベースとしたデータモデルです。
  * このモデルでは、空間に存在する複数のマーカを個別に管理し、これらの情報に対するランダムアクセス性をアプリケーションに提供します。
  * 基本的には複数の{@link NyARRealityTarget}要素を持つテーブルです。
- * マーカ１個を１ターゲットとして取り扱い、{@link NyARRealityTarget}クラスに要素として格納します。
+ * マーカ１個を１RTターゲットとして取り扱い、{@link NyARRealityTarget}クラスに要素として格納します。
  * </p>
  * <p>基本的な使い方-
  * {@link NyARReality}は、定期的に入力される更新ソース(画像入力)に従ってテーブルの状態を更新することで、全体を管理します。
  * 他に操作関数がいくつあり、ユーザが要素の状態を制御することもできます。基本的には、ユーザは次の3つの実装をすることになります。
  * <ul>
  * <li>定期的に{@link NyARReality}へ更新ソースを入力する処理({@link #progress}関数を使用。)
- * <li>更新した{@link NyARReality}のターゲットをチェックし、その状態をユーザへ反映する処理。({@link #refTargetList()}で得られるターゲットリストから要素を読みだす。)
- * <li>アプリケーションの都合に合せた、{@link NyARReality}の編集処理({@link NyARReality#changeTargetToDead}関数等により、ターゲットのステータスを更新。)
+ * <li>更新した{@link NyARReality}のRTターゲットをチェックし、その状態をユーザへ反映する処理。({@link #refTargetList()}で得られるRTターゲットリストから要素を読みだす。)
+ * <li>アプリケーションの都合に合せた、{@link NyARReality}の編集処理({@link NyARReality#changeTargetToDead}関数等により、RTターゲットのステータスを更新。)
  * </ul>
  * </p>
- * <p>ターゲットのステータス-
- * {@link NyARReality}は、所有するターゲット{@link NyARReality}を３つのステータスで管理します。ステータスの意味は以下の通りです。
+ * <p>シリアル番号について
+ * {@link NyARReality}は、発見した全てのターゲットに、システムの起動から終了までの間一意になる「シリアル番号」を割り振ります。
+ * この番号は、システム内でターゲットを区別することに役立ち、{@link NyARRealityTarget#getSerialId()}関数で得ることができます。
+ * IDは64bitの数値です。
+ * </p>
+ * <p>RTターゲットのステータス-
+ * {@link NyARReality}は、所有するRTターゲット{@link NyARRealityTarget}を３つのステータスで管理します。
+ * 各RTターゲットのステータス値は、{@link NyARRealityTarget#getTargetType()}関数で得ることができます。
+ * ステータスの意味は以下の通りです。
  * <ul>
  * <li>Unknown　-
- * 既知のターゲットです。このターゲットは、２次元パラメータ（マーカの画面座標、パターンなど）を読みだすことができます。
- * このステータスのターゲットは、手動更新によりKnownステータスに遷移できます。遷移は、{@link #changeTargetToKnown}で手動で行います。
+ * 既知のRTターゲットです。このターゲットは、２次元パラメータ（マーカの画面座標、パターンなど）を読みだすことができます。
+ * このステータスのRTターゲットは、手動更新によりKnownステータスに遷移できます。遷移は、{@link #changeTargetToKnown}で手動で行います。
  * また、{@link #progress}による自動更新と、{@link #changeTargetToDead}関数による
  * 手動更新により、Deadステータスに遷移できます。自動更新は、システムがマーカを見失った場合に自動的に起こります。
- * 手動更新は、例えばそのターゲットが不要である場合（パターンチェックで対象外となった）に、無視するために使います。
+ * 手動更新は、例えばそのRTターゲットが不要である場合（パターンチェックで対象外となった）に、無視するために使います。
+ * ステータス値には、{@link NyARRealityTarget#RT_UNKNOWN}を取ります。
  * <li>Known -
- * 既知のターゲットです。このターゲットは、２次元パラメータと、物理サイズ、物理姿勢等の、３次元パラメータを読みだすことができます。
+ * 既知のRTターゲットです。このRTターゲットは、２次元パラメータと、物理サイズ、物理姿勢等の、３次元パラメータを読みだすことができます。
  * このステータスのターゲットは、{@link #progress}による自動更新と、{@link #changeTargetToDead}関数による
  * 手動更新により、Deadステータスに遷移できます。自動更新は、システムがマーカを見失った場合に自動的に起こります。
- * 手動更新は、例えばそのターゲットが不要である場合（対象外のマーカである）に、認識を無視するために使います。
+ * 手動更新は、例えばそのRTターゲットが不要である場合（対象外のマーカである）に、認識を無視するために使います。
+ * ステータス値には、{@link NyARRealityTarget#RT_KNOWN}を取ります。
  * <li>Dead -
- * 間もなく消失するターゲットです。次回の{@link #progress}の実行で、テーブルから消失します。
+ * 間もなく消失するRTターゲットです。次回の{@link #progress}の実行で、テーブルから消失します。
+ * ステータス値には、{@link NyARRealityTarget#RT_DEAD}を取ります。
  * </ul>
- * 全てのターゲットは、{@link #progress}により発生するUnknownステータスから始まり、必要なものだけがKnownステータスまで昇格し、
+ * 全てのRTターゲットは、{@link #progress}により発生するUnknownステータスから始まり、必要なものだけがKnownステータスまで昇格し、
  * 要らないものと消失した者はDeadステータスで終了します。UnknownステータスとKnownステータスの違いは、外部情報（マーカパターンに関する物理知識）
  * の有無です。Knownステータスのターゲットはより多くの外部情報により、Unknownステータスのターゲットよりも多くの情報を提供します。
  * </p>
@@ -63,21 +73,23 @@ import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status.NyARTargetStatus;
  */
 public class NyARReality
 {
-	//視野関係のデータ
+	/** 定数値。ARToolKitの視錐台のNEAR値です。(単位はmm)*/
 	public final static double FRASTRAM_ARTK_NEAR=10;
+	/** 定数値。ARToolKitの視錐台のFAR値です。(単位はmm)*/
 	public final static double FRASTRAM_ARTK_FAR=10000;
-	/**frastum*/
+	/** 視錐台のキャッシュ用オブジェクト*/
 	protected NyARFrustum _frustum;
+	/** 射影変換行列の参照値*/
 	protected NyARPerspectiveProjectionMatrix _ref_prjmat;
 
 	
 	//Realityでーた
 	/**
-	 * Unknownターゲットの最大数です。
+	 * UnknownステータスのRTターゲットの最大数です。
 	 */
 	private final int MAX_LIMIT_UNKNOWN;
 	/**
-	 * Knownターゲットの最大数です。
+	 * KnownターゲットのRTターゲットの最大数です。
 	 */
 	private final int MAX_LIMIT_KNOWN;	
 
@@ -99,20 +111,21 @@ public class NyARReality
 	
 	/**
 	 * コンストラクタ。
-	 * 樽型歪みが少ない、または補正済みの画像を入力するときには、{@link #NyARReality(NyARIntSize, double, double, NyARPerspectiveProjectionMatrix, NyARCameraDistortionFactor, int, int)}
+	 * 初期状態のインスタンスを生成します。
+	 * {@link #progress}に入力する入力画像の樽型歪みがすくないか、外部で補正した画像を入力するときは、別のコンストラクタ{@link #NyARReality(NyARIntSize, double, double, NyARPerspectiveProjectionMatrix, NyARCameraDistortionFactor, int, int)}
 	 * のi_dist_factorにnullを指定すると、より高速な動作が期待できます。
 	 * @param i_param
 	 * カメラパラメータを指定します。
 	 * @param i_near
 	 * 視錐体のnear-pointをmm単位で指定します。
-	 * default値は{@link #FRASTRAM_ARTK_NEAR}です。
+	 * 標準値は{@link #FRASTRAM_ARTK_NEAR}です。
 	 * @param i_far
 	 * 視錐体のfar-pointをmm単位で指定します。
-	 * default値は{@link #FRASTRAM_ARTK_FAR}です。
+	 * 標準値は{@link #FRASTRAM_ARTK_FAR}です。
 	 * @param i_max_known_target
-	 * Knownターゲットの最大数を指定します。
+	 * KnownステータスのRTターゲットの最大数を指定します。
 	 * @param i_max_unknown_target
-	 * UnKnownターゲットの最大数を指定します。
+	 * UnKnownステータスのRTターゲットの最大数を指定します。
 	 * @throws NyARException
 	 */
 	public NyARReality(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target) throws NyARException
@@ -125,6 +138,7 @@ public class NyARReality
 	}
 	/**
 	 * コンストラクタ。
+	 * 初期状態のインスタンスを生成します。
 	 * @param i_screen
 	 * スクリーン(入力画像)のサイズを指定します。
 	 * @param i_near
@@ -134,7 +148,7 @@ public class NyARReality
 	 * @param i_prjmat
 	 * ARToolKit形式の射影変換パラメータを指定します。
 	 * @param i_dist_factor
-	 * カメラ歪み矯正オブジェクトを指定します。歪み矯正が不要な時は、nullを指定します。
+	 * 樽型歪み矯正オブジェクトを指定します。歪み矯正が不要な時は、nullを指定します。
 	 * @param i_max_known_target
 	 * {@link #NyARReality(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target)}を参照
 	 * @param i_max_unknown_target
@@ -175,13 +189,17 @@ public class NyARReality
 	/**
 	 * Realityの状態を、i_inの{@link NyARRealitySource}を元に、１サイクル進めます。
 	 * 現在の更新ルールは以下の通りです。
-	 * 0.呼び出されるごとに、トラックターゲットからUnknownターゲットを生成する。
-	 * 1.一定時間捕捉不能なKnown,Unknownターゲットは、deadターゲットへ移動する。
-	 * 2.knownターゲットは最新の状態を維持する。
-	 * 3.deadターゲットは（次の呼び出しで）捕捉対象から削除する。
-	 * Knownターゲットが捕捉不能になった時の動作は、以下の通りです。
-	 * 4.[未実装]捕捉不能なターゲットの予測と移動
+	 * <ul>
+	 * <li>呼び出されるごとに、トラックターゲットからUnknownステータスのRTターゲットを生成する。
+	 * <li>一定時間捕捉不能なKnown,Unknownステータスは、deadステータスへ移動する。
+	 * <li>knownステータスのRTターゲットは最新の状態を維持する。
+	 * <li>deadステータスのRTターゲットは（次の呼び出しで）捕捉対象から削除する。
+	 * </ul>
+	 * <p>メモ-
+	 * [未実装]捕捉不能なRTターゲットの予測と移動
+	 * </p>
 	 * @param i_in
+	 * 入力する画像をセットしたオブジェクト。
 	 * @throws NyARException
 	 */
 	public void progress(NyARRealitySource i_in) throws NyARException
@@ -201,8 +219,8 @@ public class NyARReality
 		return;
 	}
 	/**
-	 * Realityターゲットリストの全ての項目を更新します。この関数内では、リスト要素の増減はありません。
 	 * {@link #progress}のサブ関数です。
+	 * RTターゲットリストの全ての項目を更新します。この関数内では、リスト要素の増減はありません。
 	 * @throws NyARException
 	 */
 	private final void upgradeLists() throws NyARException
@@ -229,8 +247,8 @@ public class NyARReality
 		}
 	}
 	/**
-	 * Realityターゲットリストの全ての項目のアップグレード処理を行います。この関数内でリスト要素の加算/減算/種別変更処理を行います。
 	 * {@link #progress}のサブ関数です。
+	 * RTターゲットリストの全ての項目のアップグレード処理を行います。この関数内でリスト要素の加算/減算/種別変更処理を行います。
 	 * @throws NyARException
 	 */
 	private final void updateLists() throws NyARException
@@ -241,8 +259,8 @@ public class NyARReality
 			NyARRealityTarget tar=rt_array[i];
 			if(tar._ref_tracktarget._delay_tick==0){
 				//30fps前後で1秒間の認識率とする。
-				tar.grab_rate+=3;
-				if(tar.grab_rate>100){tar.grab_rate=100;}
+				tar._grab_rate+=3;
+				if(tar._grab_rate>100){tar._grab_rate=100;}
 				switch(tar._target_type)
 				{
 				case NyARRealityTarget.RT_DEAD:
@@ -261,8 +279,8 @@ public class NyARReality
 				}
 			}else{
 				//更新をパスして補足レートの再計算(混ぜて8で割る)
-				tar.grab_rate=tar.grab_rate-(3*tar._ref_tracktarget._delay_tick);
-				if(tar.grab_rate<0){tar.grab_rate=0;}
+				tar._grab_rate=tar._grab_rate-(3*tar._ref_tracktarget._delay_tick);
+				if(tar._grab_rate<0){tar._grab_rate=0;}
 			}
 		}
 	}
@@ -322,9 +340,9 @@ public class NyARReality
 	//RealityTargetの編集関数
 
 	/**
-	 * Realityターゲットリストへ新しい{@link NyARRealityTarget}を追加する。
+	 * RTターゲットリストへ新しい{@link NyARRealityTarget}を追加する。
 	 * @param i_track_target
-	 * UnknownTargetに関連付ける{@link NyARTarget}.このターゲットは、{@link NyARTargetStatus#ST_RECT}であること？
+	 * UnknownTargetに関連付ける{@link NyARTarget}.このRTターゲットは、{@link NyARTargetStatus#ST_RECT}であること？
 	 */
 	private final NyARRealityTarget addUnknownTarget(NyARTarget i_track_target) throws NyARException
 	{
@@ -344,7 +362,7 @@ public class NyARReality
 		return rt;
 	}
 	/**
-	 * Realityターゲットリストから指定したインデクス番号のターゲットを削除します。
+	 * RTターゲットリストから指定したインデクス番号のRTターゲットを削除します。
 	 * @param i_index
 	 */
 	private final void deleteTarget(int i_index)
@@ -364,13 +382,13 @@ public class NyARReality
 	////////////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * 指定したターゲットを、UnknownターゲットからKnownターゲットへ遷移させます。
+	 * この関数は、指定したRTターゲットをUnknownステータスからKnownステータスへ遷移させます。
 	 * @param i_item
-	 * 移動するターゲット
+	 * 遷移させるRTターゲット。thisインスタンスから得られたものである必要があります。
 	 * @param i_dir
-	 * ターゲットの予備知識。ARToolkitのdirectionでどの方位であるかを示す値
+	 * このRTターゲットが、ARToolKitのdirectionでどの方位であるかを示す値
 	 * @param i_marker_size
-	 * ターゲットの予備知識。マーカーの高さ/幅がいくらであるかを示す値[mm単位]
+	 * マーカーの高さ/幅がいくらであるかを示す値[mm単位]
 	 * @return
 	 * 成功するとtrueを返します。
 	 * @throws NyARException 
@@ -382,15 +400,15 @@ public class NyARReality
 	
 
 	/**
-	 * 指定したターゲットを、UnknownターゲットからKnownターゲットへ遷移させます。
+	 * この関数は、指定したRTターゲットをUnknownステータスからKnownステータスへ遷移させます。
 	 * @param i_item
-	 * 移動するターゲット
+	 * 遷移させるRTターゲット。thisインスタンスから得られたものである必要があります。
 	 * @param i_dir
-	 * ターゲットの予備知識。ARToolkitのdirectionでどの方位であるかを示す値
+	 * このRTターゲットが、ARToolKitのdirectionでどの方位であるかを示す値
 	 * @param i_marker_width
-	 * ターゲットの予備知識。マーカーの高さがいくらであるかを示す値[mm単位]
+	 * マーカーの幅がいくらであるかを示す値[mm単位]
 	 * @param i_marker_height
-	 * ターゲットの予備知識。マーカーの幅がいくらであるかを示す値[mm単位]
+	 * マーカーの高さがいくらであるかを示す値[mm単位]
 	 * @return
 	 * 成功するとtrueを返します。
 	 * @throws NyARException 
@@ -433,9 +451,10 @@ public class NyARReality
 		return true;
 	}
 	/**
-	 * 指定したKnown,またはUnknownターゲットを、50サイクルの間Deadターゲットにします。
-	 * Deadターゲットは次回のサイクルでRealityターゲットリストから削除され、一定のサイクル期間の間システムから無視されます。
+	 * この関数は、指定しRTたターゲットをKnown,またはUnknownステータスからDeadステータスへ遷移させます。
+	 * {@link #changeTargetToDead(NyARRealityTarget, int)}の第二引数に、50を設定したときと同じ動作です。
 	 * @param i_item
+	 * 遷移させるRTターゲット。thisインスタンスから得られたものである必要があります。
 	 * @throws NyARException 
 	 */	
 	public final void changeTargetToDead(NyARRealityTarget i_item) throws NyARException
@@ -444,11 +463,12 @@ public class NyARReality
 	}
 	
 	/**
-	 * 指定したKnown,またはUnknownターゲットを、Deadターゲットにします。
-	 * Deadターゲットは次回のサイクルでRealityターゲットリストから削除され、一定のサイクル期間の間システムから無視されます。
+	 * この関数は、指定したRTターゲットをKnown,またはUnknownステータスからDeadステータスへ遷移させます。
+	 * Deadターゲットは次回のサイクルでRealityターゲットリストから削除され、i_dead_cycleに指定したサイクル期間、システムから無視されます。
 	 * @param i_item
+	 * 遷移させるターゲット。thisインスタンスから得られたものである必要があります。
 	 * @param i_dead_cycle
-	 * 無視するサイクルを指定します。1サイクルは1フレームです。デフォルトは50です。
+	 * 無視するサイクルを指定します。1サイクルは1フレームです。画像入力のフレームレートにより、実時間は異なります。
 	 * @throws NyARException 
 	 */
 	public final void changeTargetToDead(NyARRealityTarget i_item,int i_dead_cycle) throws NyARException
@@ -470,13 +490,13 @@ public class NyARReality
 		return;
 	}
 	/**
-	 * 指定したシリアル番号のUnknownターゲットを、Knownターゲットへ移動します。
+	 * この関数は、シリアル番号に一致するRTターゲットをUnknownステータスからKnownステータスへ遷移させます。
 	 * @param i_serial
-	 * ターゲットのシリアル番号を示す値
+	 * RTターゲットのシリアル番号を示す値。この値は、{@link NyARRealityTarget#getSerialId()}で得られる値です。
 	 * @param i_dir
-	 * ターゲットの予備知識。ARToolkitのdirectionでどの方位であるかを示す値
-	 * @param i_marker_width
-	 * ターゲットの予備知識。マーカーのサイズがいくらであるかを示す値[mm単位]
+	 * このRTターゲットが、ARToolKitのdirectionでどの方位であるかを示す値
+	 * @param i_marker_size
+	 * マーカーの高さ/幅がいくらであるかを示す値[mm単位]
 	 * @return
 	 * 成功すると、trueを返します。
 	 * @throws NyARException 
@@ -490,8 +510,11 @@ public class NyARReality
 		return changeTargetToKnown(item,i_dir,i_marker_width);
 	}
 	/**
-	 * 指定したシリアル番号のKnown/UnknownターゲットをDeadターゲットへ遷移します。
+	 * この関数は、シリアル番号に一致するRTターゲットをKnown/UnknownステータスからDeadターゲットへ遷移させます。
 	 * @param i_serial
+	 * RTターゲットのシリアル番号を示す値。この値は、{@link NyARRealityTarget#getSerialId()}で得られる値です。
+	 * @return
+	 * 成功すると、遷移したRTターゲットを返します。
 	 * @throws NyARException 
 	 */
 	public final NyARRealityTarget changeTargetToDeadBySerial(long i_serial) throws NyARException
@@ -505,33 +528,37 @@ public class NyARReality
 	}
 	
 	/**
-	 * 現在のUnKnownターゲットの数を返します。
+	 * この関数は、UnKnownステータスのRTターゲット数を返します。
 	 * @return
+	 * Unknownステータスのターゲット数。
 	 */
 	public final int getNumberOfUnknown()
 	{
 		return this._number_of_unknown;
 	}
 	/**
-	 * 現在のKnownターゲットの数を返します。
+	 * この関数は、KnownステータスのRTターゲット数を返します。
 	 * @return
+	 * Knownステータスのターゲット数。
 	 */
 	public final int getNumberOfKnown()
 	{
 		return this._number_of_known;
 	}
 	/**
-	 * 現在のDeadターゲットの数を返します。
+	 * この関数は、DeadステータスのRTターゲット数を返します。
 	 * @return
+	 * Deadステータスのターゲット数。
 	 */
 	public final int getNumberOfDead()
 	{
 		return this._number_of_dead;
 	}
 	/**
-	 * Realityターゲットリストへの参照値を返します。
-	 * このリストは編集関数を持ちますが、直接編集してはいけません。
+	 * この関数は、RTターゲットリストへの参照値を返します。
+	 * 得られたオブジェクトは、読出し専用です。直接操作しないでください。
 	 * @return
+	 * [READ　ONLY]RTターゲットリストへの参照値。
 	 */
 	public NyARRealityTargetList refTargetList()
 	{
@@ -539,10 +566,10 @@ public class NyARReality
 	}
 
 	/**
-	 * Knownターゲットを検索して、配列に返します。
+	 * この関数は、KnownステータスのRTターゲットを検索して、配列に返します。
 	 * @param o_result
 	 * 結果を格納する配列です。格納されるターゲットの最大数は、コンストラクタの設定値と同じです。
-	 * 配列サイズが不足した場合は、発見した順に最大数を返します。
+	 * 配列サイズが不足した場合は、発見した順に配列の個数だけ返します。
 	 * @return
 	 * 配列に格納したターゲットの数を返します。
 	 */
@@ -551,10 +578,10 @@ public class NyARReality
 		return this.target.selectTargetsByType(NyARRealityTarget.RT_KNOWN, o_result);
 	}
 	/**
-	 * Unknownターゲットを検索して、配列に返します。
+	 * この関数は、UnknownステータスのRTターゲットを検索して、配列に返します。
 	 * @param o_result
 	 * 結果を格納する配列です。格納されるターゲットの最大数は、コンストラクタの設定値と同じです。
-	 * 配列サイズが不足した場合は、発見した順に最大数を返します。
+	 * 配列サイズが不足した場合は、発見した順に配列の個数だけ返します。
 	 * @return
 	 * 配列に格納したターゲットの数を返します。
 	 */
@@ -563,7 +590,10 @@ public class NyARReality
 		return this.target.selectTargetsByType(NyARRealityTarget.RT_UNKNOWN, o_result);
 	}
 	/**
-	 * Unknownターゲットを1個検索して返します。
+	 * この関数は、UnknownステータスのRTターゲットを1個検索して返します。
+	 * <p>注意-
+	 * この関数を使うと、複数のUnknownステータスのRTターゲットがあるときに、その順番の影響で取りこぼしが発生することがあります。
+	 * </p>
 	 * @return
 	 * 一番初めに発見したターゲットを返します。見つからないときはNULLです。
 	 */
@@ -572,28 +602,36 @@ public class NyARReality
 		return this.target.selectSingleTargetByType(NyARRealityTarget.RT_UNKNOWN);
 	}
 	/**
-	 * フラスタムオブジェクトを返します。
+	 * この関数は、フラスタムオブジェクトの参照値を返します。
+	 * フラスタムオブジェクトは、コンストラクタに与えたカメラパラメータから計算されます。
 	 * @return
+	 * [READ ONLY]フラスタムオブジェクト。
 	 */
 	public NyARFrustum refFrustum()
 	{
 		return this._frustum;
 	}
 	/**
-	 * ARToolKitスタイルの射影変換行列を返します。
+	 * この関数は、ARToolKitスタイルの射影変換行列の参照値を返します。
+	 * 射影変換行列は、コンストラクタに与えたカメラパラメータから計算されます。
 	 * @return
+	 * [READ ONLY]射影変換行列オブジェクト。
 	 */
 	public NyARPerspectiveProjectionMatrix refPerspectiveProjectionMatrix()
 	{
 		return this._ref_prjmat;
 	}
 	/**
-	 * 画面座標系の4頂点でかこまれる領域から、RGB画像をo_rasterに取得します。
+	 * この関数は、画面座標系の4頂点でかこまれる領域を遠近法で自由変形して、o_rasterにRGB画像を取得します。
 	 * @param i_vertex
+	 * 四角形を定義する4頂点を格納した配列。
 	 * @param i_resolution
 	 * 1ピクセルあたりのサンプル数です。二乗した値が実際のサンプル数になります。
+	 * 2なら4ピクセル、4なら16ピクセルの入力から、出力1ピクセルを生成します。
 	 * @param o_raster
+	 * 出力先のラスタオブジェクト。
 	 * @return
+	 * 画像取得に成功するとtrue
 	 * @throws NyARException
 	 */
 	public final boolean getRgbPatt2d(NyARRealitySource i_src,NyARIntPoint2d[] i_vertex,int i_resolution,INyARRgbRaster o_raster) throws NyARException
@@ -601,27 +639,37 @@ public class NyARReality
 		return i_src.refPerspectiveRasterReader().read4Point(i_src.refRgbSource(),i_vertex,0,0,i_resolution, o_raster);
 	}
 	/**
-	 * 画面座標系の4頂点でかこまれる領域から、RGB画像をo_rasterに取得します。
+	 * この関数は、画面座標系の4頂点でかこまれる領域を遠近法で自由変形して、o_rasterにRGB画像を取得します。
 	 * @param i_vertex
+	 * 四角形を定義する4頂点を格納した配列。 
 	 * @param i_resolution
 	 * 1ピクセルあたりのサンプル数です。二乗した値が実際のサンプル数になります。
+	 * 2なら4ピクセル、4なら16ピクセルの入力から、出力1ピクセルを生成します。
 	 * @param o_raster
+	 * 出力先のラスタオブジェクト。
 	 * @return
+	 * 画像取得に成功するとtrue
 	 * @throws NyARException
 	 */
 	public final boolean getRgbPatt2d(NyARRealitySource i_src,NyARDoublePoint2d[] i_vertex,int i_resolution,INyARRgbRaster o_raster) throws NyARException
 	{
 		return i_src.refPerspectiveRasterReader().read4Point(i_src.refRgbSource(),i_vertex,0,0,i_resolution, o_raster);
-	}	
+	}
 	/**
-	 * カメラ座標系の4頂点でかこまれる領域から、RGB画像をo_rasterに取得します。
+	 * この関数は、RTターゲットの３次元座標系で定義される4頂点でかこまれる領域から、o_rasterにRGB画像を取得します。
 	 * @param i_vertex
+	 * RTターゲットの３次元座標系にある、四角形を定義する4頂点を格納した配列。 
 	 * @param i_matrix
 	 * i_vertexに適応する変換行列。
-	 * ターゲットの姿勢行列を指定すると、ターゲット座標系になります。不要ならばnullを設定してください。
+	 * ターゲットの姿勢行列を指定すると、ターゲット座標系になります。不要ならばnullを設定してください
+	 * (nullの場合、カメラ座標系での定義になります。)
 	 * @param i_resolution
+	 * 1ピクセルあたりのサンプル数です。二乗した値が実際のサンプル数になります。
+	 * 2なら4ピクセル、4なら16ピクセルの入力から、出力1ピクセルを生成します。
 	 * @param o_raster
+	 * 出力先のラスタオブジェクト。
 	 * @return
+	 * 画像取得に成功するとtrue
 	 * @throws NyARException
 	 */
 	public final boolean getRgbPatt3d(NyARRealitySource i_src,NyARDoublePoint3d[] i_vertex,NyARDoubleMatrix44 i_matrix,int i_resolution,INyARRgbRaster o_raster) throws NyARException

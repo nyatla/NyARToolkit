@@ -37,11 +37,11 @@ import jp.nyatla.nyartoolkit.nyidmarker.data.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.*;
 /**
  * このクラスは、1個のNyARマーカを検出する処理を、イベントドリブンにするシーケンスを定義します。
- * マーカの出現・移動・消滅を、イベントで通知することができます。
+ * マーカの出現・移動・消滅を、自己コールバック関数で通知することができます。
  * クラスにはNyIdマーカのエンコーダを指定できます。エンコーダの種類を変えることで、異なる種類のNyIdマーカを同じクラスで
  * 取り扱うことができます。（同時に取り扱うことはできません。）
- * <p>イベントの説明-
- * このクラスには、３個のイベントハンドラがあります。{@link SingleARMarkerProcesser}は、以下のタイミングでこれらを呼び出します。
+ * <p>自己コールバック関数の説明-
+ * このクラスには、３個の自己コールバック関数があります。{@link SingleARMarkerProcesser}は、以下のタイミングでこれらを呼び出します。
  * ユーザは継承クラスでこれらの関数に実装を行い、イベント駆動のアプリケーションを作成できます。
  * <ul>
  * <li>　{@link #onEnterHandler} - 登録したマーカが初めて見つかった時に呼び出されます。ここに、発見したマーカに対応した初期処理を書きます。
@@ -294,7 +294,7 @@ public abstract class SingleNyIdMarkerProcesser
 	private NyARRasterThresholdAnalyzer_SlidePTile _threshold_detect;
 	private NyARTransMatResult __NyARSquare_result = new NyARTransMatResult();
 
-	/**オブジェクトのステータスを更新し、必要に応じてハンドル関数を駆動します。
+	/**オブジェクトのステータスを更新し、必要に応じて自己コールバック関数を駆動します。
 	 */
 	private boolean updateStatus(NyARSquare i_square, INyIdMarkerData i_marker_data)  throws NyARException
 	{
@@ -340,7 +340,7 @@ public abstract class SingleNyIdMarkerProcesser
 		return is_id_found;
 	}	
 	/**
-	 * イベントハンドラです。
+	 * 自己コールバック関数です。
 	 * 継承したクラスで、マーカ発見時の処理を実装してください。
 	 * @param i_code
 	 * 検出したIDマーカの内容をエンコードしたデータです。
@@ -349,14 +349,14 @@ public abstract class SingleNyIdMarkerProcesser
 	 */
 	protected abstract void onEnterHandler(INyIdMarkerData i_code);
 	/**
-	 * イベントハンドラです。
+	 * 自己コールバック関数です。
 	 * 継承したクラスで、マーカ消失時の処理を実装してください。
 	 */
 	protected abstract void onLeaveHandler();
 	/**
-	 * イベントハンドラです。
+	 * 自己コールバック関数です。
 	 * 継承したクラスで、マーカ更新時の処理を実装してください。
-	 * 引数の値の有効期間は、イベントハンドラが終了するまでです。
+	 * 引数の値の有効期間は、関数が終了するまでです。
 	 * @param i_square
 	 * 現在のマーカ検出位置です。
 	 * @param result

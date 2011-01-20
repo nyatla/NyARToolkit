@@ -34,15 +34,28 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.*;
 
 /**
- * AR_TEMPLATE_MATCHING_COLORかつAR_MATCHING_WITHOUT_PCAと同等のルールで マーカーを評価します。
- * 
+ * このクラスは、カラーで２パターンの一致度を計算します。
+ * 評価アルゴリズムは、ARToolKitの、AR_TEMPLATE_MATCHING_COLORかつAR_MATCHING_WITHOUT_PCAと同様です。
+ * 比較対象のデータには、{@link NyARMatchPattDeviationColorData}クラスの物を使います。
  */
 public class NyARMatchPatt_Color_WITHOUT_PCA implements INyARMatchPatt
 {
+	/**　基準パターンへの産初値*/
 	protected NyARCode _code_patt;
-
+	/** 最適化定数*/
 	protected int _optimize_for_mod;
+	/** 最適化定数*/
 	protected int _rgbpixels;
+	/**
+	 * コンストラクタ。
+	 * 基準パターンの解像度を指定して、インスタンスを生成します。
+	 * このコンストラクタで生成したインスタンスの基準パターンは、NULLになっています。
+	 * 後で基準パターンを{@link setARCode}関数で設定してください。
+	 * @param i_width
+	 * 基準パターンのサイズ
+	 * @param i_height
+	 * 基準パターンのサイズ
+	 */	
 	public NyARMatchPatt_Color_WITHOUT_PCA(NyARCode i_code_ref)
 	{
 		int w=i_code_ref.getWidth();
@@ -53,6 +66,12 @@ public class NyARMatchPatt_Color_WITHOUT_PCA implements INyARMatchPatt
 		this.setARCode(i_code_ref);
 		return;
 	}
+	/**
+	 * コンストラクタ。
+	 * 基準パターンを元に、評価インスタンスを生成します。
+	 * @param i_code_ref
+	 * セットする基準パターン
+	 */	
 	public NyARMatchPatt_Color_WITHOUT_PCA(int i_width, int i_height)
 	{
 		//最適化定数の計算
@@ -61,7 +80,9 @@ public class NyARMatchPatt_Color_WITHOUT_PCA implements INyARMatchPatt
 		return;
 	}
 	/**
-	 * 比較対象のARCodeをセットします。
+	 * 基準パターンをセットします。セットできる基準パターンは、コンストラクタに設定したサイズと同じものである必要があります。
+	 * @param i_code_ref
+	 * セットする基準パターンを格納したオブジェクト
 	 * @throws NyARException
 	 */
 	public void setARCode(NyARCode i_code_ref)
@@ -70,8 +91,15 @@ public class NyARMatchPatt_Color_WITHOUT_PCA implements INyARMatchPatt
 		return;
 	}
 	/**
-	 * 現在セットされているARコードとi_pattを比較します。
-	 */
+	 * この関数は、現在の基準パターンと検査パターンを比較して、類似度を計算します。
+	 * @param i_patt
+	 * 検査パターンを格納したオブジェクトです。このサイズは、基準パターンと一致している必要があります。
+	 * @param o_result
+	 * 結果を受け取るオブジェクトです。
+	 * @return
+	 * 検査に成功するとtrueを返します。
+	 * @throws NyARException
+	 */	
 	public boolean evaluate(NyARMatchPattDeviationColorData i_patt,NyARMatchPattResult o_result) throws NyARException
 	{
 		assert this._code_patt!=null;

@@ -35,28 +35,77 @@ import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
- * 輪郭線を取得するクラスです。
- *
+ * このクラスは、輪郭線の抽出クラスです。
+ * 画像中の１点を開始点として、８方位探索で輪郭線を抽出します。出力は輪郭点の配列です。
+ * <p>入力できる画素フォーマット - {@link #getContour}に入力できる画素フォーマットに制限があります。<br/>
+ * {@link NyARBinRaster}
+ * <ul>
+ * <li>{@link NyARBufferType#INT1D_BIN_8}
+ * </ul>
+ * {@link NyARGrayscaleRaster}
+ * <ul>
+ * <li>{@link NyARBufferType#INT1D_GRAY_8}
+ * </ul>
+ * </p>
  */
 public class NyARContourPickup
 {
 	//巡回参照できるように、テーブルを二重化
 	//                                           0  1  2  3  4  5  6  7   0  1  2  3  4  5  6
+	/** 8方位探索の座標マップ*/
 	protected final static int[] _getContour_xdir = { 0, 1, 1, 1, 0,-1,-1,-1 , 0, 1, 1, 1, 0,-1,-1};
+	/** 8方位探索の座標マップ*/
 	protected final static int[] _getContour_ydir = {-1,-1, 0, 1, 1, 1, 0,-1 ,-1,-1, 0, 1, 1, 1, 0};
+
+	/**
+	 * この関数は、ラスタの指定点を基点に、輪郭線を抽出します。
+	 * 開始点は、輪郭の一部である必要があります。
+	 * 通常は、ラべリングの結果の上辺クリップとX軸エントリポイントを開始点として入力します。
+	 * @param i_raster
+	 * 輪郭線を抽出するラスタを指定します。
+	 * @param i_entry_x
+	 * 輪郭抽出の開始点です。
+	 * @param i_entry_y
+	 * 輪郭抽出の開始点です。
+	 * @param o_coord
+	 * 輪郭点を格納するオブジェクトを指定します。
+	 * @return
+	 * 輪郭線がo_coordの長さを超えた場合、falseを返します。
+	 * @throws NyARException
+	 */
 	public boolean getContour(NyARBinRaster i_raster,int i_entry_x,int i_entry_y,NyARIntCoordinates o_coord) throws NyARException
 	{
 		assert(i_raster.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
 		NyARIntSize s=i_raster.getSize();
 		return impl_getContour(i_raster,0,0,s.w-1,s.h-1,0,i_entry_x,i_entry_y,o_coord);
 	}
+	/**
+	 * この関数は、ラスタの指定点を基点に、画像の特定の範囲内から輪郭線を抽出します。
+	 * 開始点は、輪郭の一部である必要があります。
+	 * 通常は、ラべリングの結果の上辺クリップとX軸エントリポイントを開始点として入力します。
+	 * @param i_raster
+	 * 輪郭線を抽出するラスタを指定します。
+	 * @param i_area
+	 * 輪郭線の抽出範囲を指定する矩形。i_rasterのサイズ内である必要があります。
+	 * @param i_entry_x
+	 * 輪郭抽出の開始点です。
+	 * @param i_entry_y
+	 * 輪郭抽出の開始点です。
+	 * @param o_coord
+	 * 輪郭点を格納するオブジェクトを指定します。
+	 * @return
+	 * 輪郭線がo_coordの長さを超えた場合、falseを返します。
+	 * @throws NyARException
+	 */	
 	public boolean getContour(NyARBinRaster i_raster,NyARIntRect i_area,int i_entry_x,int i_entry_y,NyARIntCoordinates o_coord) throws NyARException
 	{
 		assert(i_raster.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
 		return impl_getContour(i_raster,i_area.x,i_area.y,i_area.x+i_area.w-1,i_area.h+i_area.y-1,0,i_entry_x,i_entry_y,o_coord);
 	}
 	/**
-	 * ラスタの指定点を基点に、輪郭線を抽出します。開始点は、輪郭の一部、かつ左上のエッジで有る必要があります。
+	 * この関数は、ラスタの指定点を基点に、輪郭線を抽出します。
+	 * 開始点は、輪郭の一部である必要があります。
+	 * 通常は、ラべリングの結果の上辺クリップとX軸エントリポイントを開始点として入力します。
 	 * @param i_raster
 	 * 輪郭線を抽出するラスタを指定します。
 	 * @param i_th
@@ -77,6 +126,26 @@ public class NyARContourPickup
 		NyARIntSize s=i_raster.getSize();
 		return impl_getContour(i_raster,0,0,s.w-1,s.h-1,i_th,i_entry_x,i_entry_y,o_coord);
 	}
+	/**
+	 * この関数は、ラスタの指定点を基点に、画像の特定の範囲内から輪郭線を抽出します。
+	 * 開始点は、輪郭の一部である必要があります。
+	 * 通常は、ラべリングの結果の上辺クリップとX軸エントリポイントを開始点として入力します。
+	 * @param i_raster
+	 * 輪郭線を抽出するラスタを指定します。
+	 * @param i_area
+	 * 輪郭線の抽出範囲を指定する矩形。i_rasterのサイズ内である必要があります。
+	 * @param i_th
+	 * 輪郭とみなす暗点の敷居値を指定します。
+	 * @param i_entry_x
+	 * 輪郭抽出の開始点です。
+	 * @param i_entry_y
+	 * 輪郭抽出の開始点です。
+	 * @param o_coord
+	 * 輪郭点を格納するオブジェクトを指定します。
+	 * @return
+	 * 輪郭線がo_coordの長さを超えた場合、falseを返します。
+	 * @throws NyARException
+	 */
 	public boolean getContour(NyARGrayscaleRaster i_raster,NyARIntRect i_area,int i_th,int i_entry_x,int i_entry_y,NyARIntCoordinates o_coord) throws NyARException
 	{
 		assert(i_raster.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));

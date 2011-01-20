@@ -34,22 +34,27 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
+/**
+ * このクラスは、ARToolKit由来の回転行列最適化関数を定義します。
+ *
+ */
 public interface INyARRotMatrixOptimize
 {
 	/**
+	 * この関数は、回転行列を最適化します。
+	 * 実装クラスでは、ARToolKitと互換性のある値を返す、回転行列の最適化処理を書きます。
 	 * @param io_rot
-	 * 初期回転行列
+	 * 最適化する回転行列を指定します。
 	 * @param i_trans
-	 * 初期並進ベクトル
+	 * 平行移動量
 	 * @param i_vertex3d
-	 * 初期3次元座標
+	 * 三次元オフセット座標
 	 * @param i_vertex2d
-	 * 画面上の頂点群
+	 * 理想座標系の頂点座標
 	 * @return
 	 * エラーレート
 	 * @throws NyARException
 	 */
-//	public double optimize(NyARRotMatrix io_rotmat,NyARDoublePoint3d io_transvec,INyARTransportVectorSolver i_solver,NyARDoublePoint3d[] i_offset_3d,NyARDoublePoint2d[] i_2d_vertex) throws NyARException;
 	public double modifyMatrix(NyARRotMatrix_ARToolKit io_rot, NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d) throws NyARException;
 	
 }

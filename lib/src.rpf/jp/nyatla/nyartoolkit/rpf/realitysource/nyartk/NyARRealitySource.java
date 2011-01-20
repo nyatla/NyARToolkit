@@ -8,49 +8,60 @@ import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARTrackerSource;
 
 import jp.nyatla.nyartoolkit.rpf.reality.nyartk.*;
 /**
- * NyARRealityクラスの入力コンテナです。
- * NyARRealityへ入力する情報セットを定義します。
- * 
- * このクラスは、元画像、元画像に対するPerspectiveReader,元画像からのSampleOutを提供します。
+ * このクラスは、{@link NyARReality}へのデータ入力コンテナです。
+ * {@link NyARReality}へ入力する情報セットをメンバに持ちます。
+ * このクラスは情報セットのみ定義します。関数の実体とメンバ変数の生成は、継承クラスで実装してください。
+ * <p>クラスの責務 -
+ * 情報セットは、{@link NyARTrackerSource},{@link INyARRgbRaster},{@link NyARPerspectiveRasterReader}
+ * の３要素で構成します。クラスは、これらのメンバ間の情報同期を責務とします。同期のタイミングは、メンバ関数の動作で定義します。
+ * </p>
+ * <p>使い方 -
+ * このクラスの派生クラスは、次のように使います。
+ * <ol>
+ * <li>内部RGBラスタへの書込み({@link #refRgbSource}で得られたオブジェクトへの直接書き込み、又は継承クラスで提供する関数を使った書込み。)
+ * <li>{@link NyARReality}への入力。
+ * </ol>
+ * なお、内部RGBラスタラスタと関連オブジェクトの同期は、{@link NyARReality#progress}で行います。
+ * {@link NyARReality}オブジェクトと同期した{@link NyARRealitySource}オブジェクトが完成するのは、{@link NyARReality#progress}を実行した後です。
+ * </p>
  * </ul>
  */
 public abstract class NyARRealitySource
 {
-	/**
-	 * RealitySourceの主ラスタ。継承先のコンストラクタで実体を割り当ててください。
-	 */
+	/** RealitySourceの主ラスタ。継承先のコンストラクタで実体を割り当ててください。*/
 	protected INyARRgbRaster _rgb_source;
-	/**
-	 * RealitySourceの主ラスタにリンクしたPerspectiveReader。継承先のコンストラクタで実体を割り当ててください。
-	 */
+	/** RealitySourceの主ラスタにリンクしたPerspectiveReader。継承先のコンストラクタで実体を割り当ててください。*/
 	protected NyARPerspectiveRasterReader _source_perspective_reader;
 
-	/**
-	 * TrackerSorceのホルダ。継承先のコンストラクタで実体を割り当ててください。
-	 */
+	/** TrackerSorceのホルダ。継承先のコンストラクタで実体を割り当ててください。*/
 	protected NyARTrackerSource _tracksource;
 
-	
+	/**
+	 * コンストラクタです。
+	 * 継承クラスでオーバライドして、メンバ変数を割り当てる処理を書いてください。
+	 */
 	protected NyARRealitySource(){}
 	
 
 	/**
-	 * このRealitySourceに対する読出し準備ができているかを返します。
+	 * この関数には、thisインスタンスの読出し準備ができているか返す処理を実装します。
+	 * 読出し可能な状態とは、{@link #makeTrackSource}を実行できる状態を指します。
 	 * @return
-	 * trueならば、{@link #makeTrackSource}が実行可能。
+	 * trueならば、読出し可能である。
 	 */
 	public abstract boolean isReady();	
 	/**
-	 * 現在のRGBラスタを{@link NyARTrackerSource}の基本ラスタに書込み、その参照値を返します。
-	 * この関数は、{@link NyARReality#progress}が呼び出します。
-	 * この関数は、{@link NyARTrackerSource}内の基本ラスタに書き込みを行うだけで、その内容を同期しません。
-	 * 継承クラスでは、{@link #_tracksource}の基本GS画像を、{@link #_rgb_source}の内容で更新する実装をしてください。
-	 * @throws NyARException 
+	 * この関数には、{@link #_rgb_source}の内容を{@link #_tracksource}のグレースケール画像へ反映する処理を書きます。
+	 * {@link NyARTrackerSource}のベースラスタに書き込みを行うだけである事に注意してください。
+	 * この関数は{@link NyARReality#progress}から呼び出される関数であり、ユーザが使用することはありません。
+	 * @throws NyARException
+	 * @return
+	 * RGB画像の内容を反映した{@link NyARTrackerSource}オブジェクトへの参照値。
 	 */
 	public abstract NyARTrackerSource makeTrackSource() throws NyARException;
 	/**
-	 * 現在のRGBラスタを{@link NyARTrackerSource}の基本ラスタに書込み、{@link NyARTrackerSource}も含めて同期します。
-	 * 通常、この関数は使用することはありません。デバックなどで、{@link NyARReality#progress}以外の方法でインスタンスの同期を行いたいときに使用してください。
+	 * この関数には、{@link #_rgb_source}の内容を{@link #_tracksource}のグレースケール画像へ反映し、{@link NyARTrackerSource#syncResource}を実行する処理を書きます。
+	 * 通常、ユーザがこの関数を使用することはありません。デバックなどで、{@link NyARReality#progress}以外の方法でオブジェクトの同期を行いたいときに使用します。
 	 * 継承クラスでは、{@link #_tracksource}の基本GS画像を、{@link #_rgb_source}の内容で更新してから、この関数を呼び出して同期する処理を実装をしてください。
 	 * @throws NyARException 
 	　*/
@@ -60,8 +71,8 @@ public abstract class NyARRealitySource
 		this._tracksource.syncResource();
 	}
 	/**
-	 * {@link #_rgb_source}を参照するPerspectiveRasterReaderを返します。
-	 * @return
+	 * RGBソースラスタ{@link #_rgb_source}を参照する{@link PerspectiveRasterReader}を返します。
+	 * @return [read only] {@link #_rgb_source}にリンクした{@link PerspectiveRasterReader}オブジェクト
 	 */
 	public NyARPerspectiveRasterReader refPerspectiveRasterReader()
 	{
@@ -69,18 +80,21 @@ public abstract class NyARRealitySource
 	}
 	
 	/**
-	 * 元画像への参照値を返します。
+	 * RGBソースラスタへの参照値を返します。
 	 * @return
+	 * RGBソースラスタへの参照値。
 	 */
 	public final INyARRgbRaster refRgbSource()
 	{
 		return this._rgb_source;
 	}
 	/**
-	 * 最後に作成したTrackSourceへのポインタを返します。
+	 * 最後に作成したTrackSourceへの参照ポインタを返します。
+	 * 更新の完了した{@link NyARReality}オブジェクトから情報を得るために使います。
 	 * この関数は、{@link NyARReality#progress}、または{@link #syncResource}の後に呼び出すことを想定しています。
 	 * それ以外のタイミングでは、返却値の内容が同期していないことがあるので注意してください。
 	 * @return
+	 * [read only]現在のトラッキングオブジェクトの参照ポインタ
 	 */
 	public final NyARTrackerSource refLastTrackSource()
 	{

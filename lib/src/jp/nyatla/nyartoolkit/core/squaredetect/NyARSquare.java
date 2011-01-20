@@ -33,19 +33,18 @@ package jp.nyatla.nyartoolkit.core.squaredetect;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
- * ARMarkerInfoに相当するクラス。 矩形情報を保持します。
- * 
- * directionは方角を表します。
- * 決定しないときはDIRECTION_UNKNOWNを設定してください。
- * 
+ * このクラスは、矩形情報を格納します。
+ * ARToolKitのARMarkerInfoに相当しますが、このクラスは理想座標のみを取り扱います。
  */
 public class NyARSquare
 {
+	/** 矩形の辺の直線式です。*/
     public NyARLinear[] line = NyARLinear.createArray(4);
+	/** 矩形の頂点です。 line[n]と、line[(n+3)%4]の交点でもあります。*/
     public NyARDoublePoint2d[] sqvertex = NyARDoublePoint2d.createArray(4);
     
     /**
-     * 中心点を計算します。
+     * この関数は、矩形の中心点を計算します。
      * @param o_out
      * 結果を格納するバッファ。
      */
@@ -56,7 +55,8 @@ public class NyARSquare
     	return;
     }
     /**
-     * 頂点同士の距離から、頂点のシフト量を返します。この関数は、よく似た２つの矩形の頂点同士の対応を取るために使用します。
+     * この関数は、頂点同士の距離から、頂点のシフト量（回転量）を返します。
+     * よく似た２つの矩形の頂点同士の、頂点の対応を取るために使用します。
      * @param i_square
      * 比較対象の矩形
      * @return
@@ -86,16 +86,13 @@ public class NyARSquare
     	}
     	return min_index;
     }
-   
     
-    
-    /**
-     * 4とnの最大公約数テーブル
-     */
+    /** 4とnの最大公約数テーブル*/
     private final static int[] _gcd_table4={-1,1,2,1};
     /**
-     * 頂点を左回転して、矩形を回転させます。
+     * この関数は、頂点を左回転して、矩形を回転させます。
      * @param i_shift
+     * シフト量。4未満、0以上である事。
      */
     public void rotateVertexL(int i_shift)
     {

@@ -192,7 +192,7 @@ public class Test_NyARRealityGl_ARMarker implements GLEventListener, JmfCaptureL
 						_gl.glRotatef(90,1.0f,0.0f,0.0f); // Place base of cube on marker surface.
 						NyARGLDrawUtil.setFontColor(t.getGrabbRate()<50?Color.RED:Color.BLUE);
 						ARTKMarkerTable.GetBestMatchTargetResult d=((ARTKMarkerTable.GetBestMatchTargetResult)(t.tag));
-						NyARGLDrawUtil.drawText("Name:"+d.name+" GRUB:"+t.grab_rate+"%",0.5f);
+						NyARGLDrawUtil.drawText("Name:"+d.name+" GRUB:"+t._grab_rate+"%",0.5f);
 						_gl.glPopMatrix();
 						
 						break;

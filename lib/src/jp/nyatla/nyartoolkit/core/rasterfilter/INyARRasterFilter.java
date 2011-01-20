@@ -26,8 +26,19 @@ package jp.nyatla.nyartoolkit.core.rasterfilter;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
-
+/**
+ * このインタフェイスは、ラスタのフィルタ処理をする関数の関数を定義します。
+ */
 public interface INyARRasterFilter
 {
+	/**
+	 * この関数は、入力画像にフィルタをかけて、出力画像へ書込みます。
+	 * 実装クラスでは、i_inputのラスタにフィルタをかけて、i_outputへ値を出力してください。
+	 * @param i_input
+	 * 入力画像。
+	 * @param i_output
+	 * 出力画像
+	 * @throws NyARException
+	 */
 	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException;
 }

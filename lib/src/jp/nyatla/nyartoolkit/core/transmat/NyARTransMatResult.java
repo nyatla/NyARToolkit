@@ -36,22 +36,25 @@ import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 
 /**
- * NyARTransMat戻り値専用のNyARMat
- * 
+ * {@link INyARTransMat}の出力する、位置姿勢行列を受け取る行列クラスです。
  */
 public class NyARTransMatResult extends NyARDoubleMatrix44
 {
 	/**
 	 * この行列に1度でも行列をセットしたかを返します。
+	 * {@link INyARTransMat#transMatContinue}関数が使います。
 	 */
 	public boolean has_value = false;
 	/**
-	 * 観測値とのずれを示すエラーレート値です。SetValueにより更新されます。
+	 * 観測値とのずれを示すエラーレート値です。{@link INyARTransMat}が更新します。
+	 * エラーレートの意味は、実装クラスごとに異なることに注意してください。
+	 * ユーザからは読出し専用です。
 	 * {@link #has_value}がtrueの時に使用可能です。
 	 */
 	public double last_error;
 	/**
 	 * コンストラクタです。
+	 * 初期値を設定したインスタンスを作成します。
 	 */
 	public NyARTransMatResult()
 	{
@@ -59,9 +62,13 @@ public class NyARTransMatResult extends NyARDoubleMatrix44
 		this.m33=1.0;
 	}
 	/**
-	 * 平行移動量と回転行列をセットします。この関数は、INyARTransmatインタフェイスのクラスが結果を保存するために使います。
+	 * この関数は、平行移動量と回転行列をセットして、インスタンスのパラメータを更新します。
+	 * 通常、ユーザが使うことはありません。
+	 * {@link INyARTransMat#transMatContinue}関数が使います。
 	 * @param i_rot
+	 * 設定する回転行列
 	 * @param i_trans
+	 * 設定する平行移動量
 	 */
 	public final void setValue(NyARDoubleMatrix33 i_rot, NyARDoublePoint3d i_trans,double i_error)
 	{

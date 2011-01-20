@@ -306,7 +306,7 @@ class NyARGLPixelReader_YUV extends JmfRGB24RasterHolder
 		try{
 			this._yuv2rgb.open();
 		}catch(Exception e){
-			throw new NyARException();
+			throw new NyARException(e);
 		}
 		return;
 	}

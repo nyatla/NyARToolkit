@@ -40,5 +40,14 @@ import jp.nyatla.nyartoolkit.core.raster.rgb.*;
  */
 public interface INyARRasterFilter_Rgb2Bin
 {
+	/**
+	 * この関数は、入力したRGBラスタを２値ラスタへ変換します。
+	 * 実装クラスでは、i_inputのラスタを2値化した画像をi_outputへ出力する処理を書いてください。
+	 * @param i_input
+	 * 入力画像
+	 * @param i_output
+	 * 出力画像
+	 * @throws NyARException
+	 */
 	public void doFilter(INyARRgbRaster i_input, NyARBinRaster i_output) throws NyARException;
 }

@@ -37,13 +37,17 @@ import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.*;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 /**
- * 基本姿勢と実画像を一致するように、角度を微調整→平行移動量を再計算
- * を繰り返して、変換行列を最適化する。
- *
+ * このクラスは、高速化したARToolKit由来の姿勢行列最適化処理を実装します。
  */
 public class NyARRotMatrixOptimize_O2 implements INyARRotMatrixOptimize
 {
 	private final NyARPerspectiveProjectionMatrix _projection_mat_ref;
+	/**
+	 * コンストラクタです。
+	 * 射影変換オブジェクトの参照値を設定して、インスタンスを生成します。
+	 * @param i_projection_mat_ref
+	 * 射影変換オブジェクトの参照値。
+	 */	
 	public NyARRotMatrixOptimize_O2(NyARPerspectiveProjectionMatrix i_projection_mat_ref)
 	{
 		this._projection_mat_ref=i_projection_mat_ref;
@@ -51,15 +55,8 @@ public class NyARRotMatrixOptimize_O2 implements INyARRotMatrixOptimize
 	}
 	private final double[][] __modifyMatrix_double1D = new double[8][3];
 	/**
-	 * arGetRot計算を階層化したModifyMatrix 896
-	 * 
-	 * @param trans
-	 * @param i_vertex3d
-	 * [m][3]
-	 * @param i_vertex2d
-	 * [n][2]
-	 * @return
-	 * @throws NyARException
+	 * この関数は、回転行列を最適化します。
+	 * ARToolKitのarGetRotに相当します。
 	 */
 	public double modifyMatrix(NyARRotMatrix_ARToolKit io_rot,NyARDoublePoint3d trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d) throws NyARException
 	{

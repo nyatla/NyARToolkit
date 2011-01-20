@@ -34,38 +34,70 @@ package jp.nyatla.nyartoolkit.core.raster;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
 
-
+/**
+ * このインタフェイスは、２次元ラスタにアクセスする関数を定義します。
+ * 二次元ラスタは、任意形式のバッファと、サイズ、バッファ形式を持つオブジェクトです。
+ */
 public interface INyARRaster
 {
+	/**
+	 * この関数は、ラスタの幅を返します。
+	 * 実装クラスでは、ラスタの幅を返す処理を実装してください。
+	 * @return
+	 * ラスタの幅
+	 */
 	public int getWidth();
+	/**
+	 * この関数は、ラスタの高さを返します。
+	 * 実装クラスでは、ラスタの幅を返す処理を実装してください。
+	 * @return
+	 * ラスタの高さ
+	 */
 	public int getHeight();
+	/**
+	 * この関数は、ラスタのサイズを格納したオブジェクトの参照値を返します。
+	 * 実装クラスでは、サイズオブジェクトの参照値を返す処理を実装してください。
+	 * @return
+	 * [read only]ラスタサイズの参照値
+	 */
 	public NyARIntSize getSize();
 	/**
-	 * バッファオブジェクトを返します。
+	 * この関数は、バッファオブジェクトを返します。
+	 * 実装クラスでは、バッファを格納したオブジェクトを返してください。
 	 * @return
+	 * バッファを格納したオブジェクト。
 	 */
 	public Object getBuffer();
 	/**
 	 * バッファオブジェクトのタイプを返します。
+	 * 実装クラスでは、{@link #getBuffer}の返すバッファの形式を返してください。
 	 * @return
+	 * バッファの形式。{@link NyARBufferType}の定義値です。
 	 */
 	public int getBufferType();
 	/**
-	 * バッファのタイプがi_type_valueであるか、チェックします。
-	 * この値は、NyARBufferTypeに定義された定数値です。
+	 * この関数は、バッファのタイプがi_type_valueであるか、チェックします。
+	 * 実装クラスでは、格納しているバッファタイプがi_type_valueと等しいかを確認してください。
 	 * @param i_type_value
+	 * バッファタイプ値。{@link NyARBufferType}の定義値です。
 	 * @return
+	 * 真偽値。
 	 */
 	public boolean isEqualBufferType(int i_type_value);
 	/**
-	 * getBufferがオブジェクトを返せるかの真偽値です。
+	 * この関数は、{@link #getBuffer}がオブジェクトを返せるかを真偽値返します。
+	 * 外部参照バッファを使用できるクラスで使います。
+	 * 実装クラスでは、{@link #getBuffer}がオブジェクトを返せるかの判定値を返してください。
 	 * @return
+	 * 真偽値。
 	 */
 	public boolean hasBuffer();
 	/**
-	 * i_ref_bufをラップします。できる限り整合性チェックを行います。
-	 * バッファの再ラッピングが可能な関数のみ、この関数を実装してください。
+	 * この関数は、外部参照バッファをラップして、ラスタのバッファにします。
+	 * 実装クラスでは、できる限り整合性チェックをしたうえで、バッファを切り替える処理を実装してください。
+	 * この関数は、実装しなくともかまいません。その場合は、{@link NyARException}例外を発生させてください。
 	 * @param i_ref_buf
+	 * 切り替える外部参照バッファオブジェクト。
 	 */
 	public void wrapBuffer(Object i_ref_buf) throws NyARException;
 }

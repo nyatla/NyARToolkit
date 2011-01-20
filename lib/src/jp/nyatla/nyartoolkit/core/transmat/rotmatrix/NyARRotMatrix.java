@@ -35,16 +35,19 @@ import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
+
 /**
- * 回転行列計算用の、3x3行列
- *
+ * このクラスは、回転行列を計算する行列クラスです。
+ * 通常は、ユーザが使用することはありません。
  */
 public class NyARRotMatrix extends NyARDoubleMatrix33
 {
 	/**
-	 * インスタンスを準備します。
-	 * 
-	 * @param i_param
+	 * コンストラクタです。
+	 * 参照する射影変換オブジェクトを指定して、インスタンスを生成します。
+	 * @param i_matrix
+	 * 参照する射影変換オブジェクト
+	 * @throws NyARException
 	 */
 	public NyARRotMatrix(NyARPerspectiveProjectionMatrix i_matrix) throws NyARException
 	{
@@ -55,8 +58,9 @@ public class NyARRotMatrix extends NyARDoubleMatrix33
 	final private NyARRotVector __initRot_vec1;
 	final private NyARRotVector __initRot_vec2;
 	/**
-	 * NyARTransMatResultの内容からNyARRotMatrixを復元します。
+	 * この関数は、{@link NyARTransMatResult}の内容を、回転行列にセットします。
 	 * @param i_prev_result
+	 * セットする姿勢変換行列。
 	 */
 	public final void initRotByPrevResult(NyARTransMatResult i_prev_result)
 	{
@@ -75,10 +79,14 @@ public class NyARRotMatrix extends NyARDoubleMatrix33
 		return;
 	}	
 	/**
+	 * この関数は、２次元座標系の矩形を表す直線式と、３次元座標系の矩形のオフセット座標値から、回転行列を計算します。
+	 * <p>メモ - 
+	 * Cで実装するときは、配列のポインタ版関数と2重化すること
+	 * </p>
 	 * @param i_linear
+	 * 直線式。4要素である必要があります。
 	 * @param i_sqvertex
-	 * @note
-	 * 	Cで実装するときは、配列のポインタ版関数と2重化すること
+	 * 矩形の３次元オフセット座標。4要素である必要があります。
 	 * @throws NyARException
 	 */
 	public void initRotBySquare(final NyARLinear[] i_linear,final NyARDoublePoint2d[] i_sqvertex) throws NyARException
@@ -116,14 +124,21 @@ public class NyARRotMatrix extends NyARDoubleMatrix33
 		this.m22 = w22/w;
 		return;
 	}
+	/**
+	 * この関数は、ZXY系の角度値を、回転行列にセットします。
+	 * @param i_angle
+	 * ZXY系のラジアン値
+	 */
 	public final void initRotByAngle(NyARDoublePoint3d i_angle)
 	{
 		this.setZXYAngle(i_angle);
 	}	
 	/**
-	 * i_in_pointを変換行列で座標変換する。
+	 * この関数は、入力した３次元頂点を回転して返します。
 	 * @param i_in_point
+	 * 回転する三次元座標
 	 * @param i_out_point
+	 * 回転した三次元座標
 	 */
 	public final void getPoint3d(final NyARDoublePoint3d i_in_point,final NyARDoublePoint3d i_out_point)
 	{
@@ -136,10 +151,13 @@ public class NyARRotMatrix extends NyARDoubleMatrix33
 		return;
 	}
 	/**
-	 * 複数の頂点を一括して変換する
+	 * この関数は、入力した複数の３次元頂点を回転して返します。
 	 * @param i_in_point
+	 * 回転する三次元座標の配列
 	 * @param i_out_point
+	 * 回転した三次元座標の配列
 	 * @param i_number_of_vertex
+	 * 回転する座標の個数
 	 */
 	public final void getPoint3dBatch(final NyARDoublePoint3d[] i_in_point,NyARDoublePoint3d[] i_out_point,int i_number_of_vertex)
 	{

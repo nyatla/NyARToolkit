@@ -6,12 +6,26 @@ import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
- * RGB画像をHSV画像に変換します。
+ * このクラスは、RGB画像をHSV画像に変換するフィルタです。
+ * 対応している入力画素形式は以下の通りです。
+ * <p>入力画素形式
+ * <ul>
+ * <li>NyARBufferType.BYTE1D_B8G8R8_24
+ * </ul>
+ * </p>
+ * 出力画素形式は、{@link NyARBufferType#INT1D_X7H9S8V8_32}形式のHSVラスタに限られます。
  *
  */
 public class NyARRasterFilter_Rgb2Hsv implements INyARRasterFilter
 {
 	private IdoFilterImpl _dofilterimpl;
+	/**
+	 * コンストラクタです。
+	 * 入力ラスタの形式を入力して、インスタンスを生成します。
+	 * @param i_raster_type
+	 * 入力ラスタの画素形式。
+	 * @throws NyARException
+	 */
 	public NyARRasterFilter_Rgb2Hsv(int i_raster_type) throws NyARException
 	{
 		switch (i_raster_type) {
@@ -23,18 +37,22 @@ public class NyARRasterFilter_Rgb2Hsv implements INyARRasterFilter
 			throw new NyARException();
 		}
 	}
+	/**
+	 * 入力ラスタをHSV形式に変換して、出力ラスタへ書込みます。
+	 * 画素形式は、コンストラクタに指定した形式に合せてください。
+	 */		
 	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException
 	{
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
 		this._dofilterimpl.doFilter(i_input,i_output,i_input.getSize());
 	}
-	
-	abstract class IdoFilterImpl
+	/** 変換用ドライバのインタフェイス*/	
+	protected abstract class IdoFilterImpl
 	{
 		public abstract void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException;
 		
 	}
-	class IdoFilterImpl_BYTE1D_B8G8R8_24 extends IdoFilterImpl
+	private class IdoFilterImpl_BYTE1D_B8G8R8_24 extends IdoFilterImpl
 	{
 		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException
 		{

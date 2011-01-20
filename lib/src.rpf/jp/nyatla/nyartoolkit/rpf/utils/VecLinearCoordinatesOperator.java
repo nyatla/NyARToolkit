@@ -2,9 +2,12 @@ package jp.nyatla.nyartoolkit.rpf.utils;
 
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
-import jp.nyatla.nyartoolkit.core.types.NyARVecLinear2d;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 
+/**
+ * このクラスは、{@link VecLinearCoordinates}を編集する機能を提供します。
+ * 将来、{@link VecLinearCoordinates}へ統合するかもしれません。
+ */
 public class VecLinearCoordinatesOperator
 {
 	/**
@@ -24,8 +27,10 @@ public class VecLinearCoordinatesOperator
 	private NyARDoublePoint2d _p = new NyARDoublePoint2d();
 	
 	/**
-	 * 配列の前方に、似たベクトルを集めます。似たベクトルの判定基準は、2線の定義点における直線の法線上での距離の二乗和です。
-	 * ベクトルの統合と位置情報の計算には、加重平均を用います。
+	 * この関数は、リストにある似たベクトルを集めます。
+	 * 似たベクトルの判定基準は、2線の定義点における直線の法線上での距離の二乗和です。
+	 * スケール値は単純加算され、ベクトルと位置は加重平均して加算します。
+	 * 集めたベクトルは、配列の前方に集められ、i_vectorの長さは処理後に減少します。
 	 * @param i_vector
 	 * 編集するオブジェクトを指定します。
 	 */

@@ -2,11 +2,16 @@ package jp.nyatla.nyartoolkit.rpf.utils;
 
 import jp.nyatla.nyartoolkit.core.types.NyARVecLinear2d;
 
+/**
+ * このクラスは、RFFパッケージが使う輪郭データのリストです。
+ * リスト要素に対する計算機能と、リストの操作機能を提供します。
+ *
+ */
 public class VecLinearCoordinates
 {	
 	/**
 	 * データ型です。
-	 * 輪郭ベクトルを格納します。
+	 * {@link NyARVecLinear2d}に輪郭強度値を追加したものです。
 	 */
 	public static class VecLinearCoordinatePoint extends NyARVecLinear2d
 	{
@@ -22,9 +27,21 @@ public class VecLinearCoordinates
 			}
 			return r;
 		}
-	}	
+	}
+	/**
+	 * [read only] リストの有効な長さです。
+	 */
 	public int length;
+	/**
+	 * リスト要素を格納する配列です。
+	 * この長さは、有効なデータの長さで無いことに注意してください。有効な長さは、{@link #length}から得られます。
+	 */
 	public VecLinearCoordinatePoint[] items;
+	/**
+	 * コンストラクタです。
+	 * @param i_length
+	 * リストの最大数を指定します。
+	 */
 
 	public VecLinearCoordinates(int i_length)
 	{
@@ -32,7 +49,7 @@ public class VecLinearCoordinates
 		this.items = VecLinearCoordinatePoint.createArray(i_length);
 	}
 	/**
-	 * ベクトルを1,2象限に制限します。
+	 * この関数は、要素のベクトルを、1,2象限方向に制限します。
 	 */
 	public final void limitQuadrantTo12()
 	{
@@ -44,16 +61,11 @@ public class VecLinearCoordinates
 			}
 		}
 	}
-	
-
 	/**
-	 * 輪郭配列から、から、キーのベクトル(絶対値の大きいベクトル)を順序を壊さずに抽出します。
-	 * 
-	 * @param i_vecpos
-	 *            抽出元の
-	 * @param i_len
+	 * この関数は、輪郭配列からキーのベクトル(絶対値の大きいベクトル)を抽出して、そのインデクスを配列に返します。
+	 * 抽出したベクトルの順序は、元の配列と同じです。
 	 * @param o_index
-	 *            インデクス番号を受け取る配列。受け取るインデックスの個数は、この配列の数と同じになります。
+	 * インデクス番号を受け取る配列。受け取るインデックスの個数は、この配列の数と同じになります。
 	 */
 	public void getOrderdKeyCoordIndexes(int[] o_index)
 	{
@@ -72,6 +84,12 @@ public class VecLinearCoordinates
 		}
 		return;
 	}
+	/**
+	 * この関数は、輪郭配列からキーのベクトル(絶対値の大きいベクトル)を抽出して、そのインデクスを配列に返します。
+	 * 抽出したベクトルの順序は、元の配列と異なります。そのかわり、{@link #getOrderdKeyCoordIndexes}より若干高速です。
+	 * @param o_index
+	 * インデクス番号を受け取る配列。受け取るインデックスの個数は、この配列の数と同じになります。
+	 */
 	public void getKeyCoordIndexes(int[] o_index)
 	{
 		VecLinearCoordinatePoint[] vp = this.items;
@@ -110,6 +128,12 @@ public class VecLinearCoordinates
 		}
 		return;
 	}
+	/**
+	 * この関数は、輪郭配列からキーのベクトル(絶対値の大きいベクトル)を抽出して、そのオブジェクトの参照値を配列に返します。
+	 * 抽出したベクトルの順序は、元の配列と異なります。
+	 * @param o_index
+	 * オブジェクトの参照値を受け取る配列。受け取るオブジェクトの個数は、この配列の数と同じになります。
+	 */
 	public void getKeyCoord(VecLinearCoordinatePoint[] o_index)
 	{
 		VecLinearCoordinatePoint[] vp = this.items;
@@ -150,9 +174,9 @@ public class VecLinearCoordinates
 	} 	
 	
 	/**
-	 * 最も大きいベクトル成分のインデクスを返します。
-	 * 
+	 * この関数は、最も大きいベクトル成分のインデクスを返します。
 	 * @return
+	 * ベクトルのインデクス。
 	 */
 	public final int getMaxCoordIndex()
 	{
@@ -169,11 +193,9 @@ public class VecLinearCoordinates
 	}
 
 
+
 	/**
-	 * ノイズレベルを指定して、ノイズ（だと思われる）ベクトルを削除します。
-	 */
-	/**
-	 * 大きさ(sq_dist)が0のベクトルを削除して、要素を前方に詰めます。
+	 * この関数は、リストから大きさ(sq_dist)が0のベクトルを削除して、要素を前方に詰めます。
 	 */
 	public void removeZeroDistItem()
 	{

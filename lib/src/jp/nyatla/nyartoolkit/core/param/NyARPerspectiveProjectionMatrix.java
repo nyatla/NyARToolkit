@@ -35,13 +35,18 @@ import jp.nyatla.nyartoolkit.core.types.matrix.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
- * 透視変換行列を格納します。
- * http://www.hitl.washington.edu/artoolkit/Papers/ART02-Tutorial.pdf
- * 7ページを見るといいよ。
- *
+ * このクラスは、ARToolKit形式の透視変換行列を格納します。
+ * 透視変換関数と、射影変換行列の生成関数を提供します。
+ * このクラスは{@link NyARParam}に所有されることを前提にしており、単独の仕様は考慮されていません。
+ * <p>アルゴリズム -
+ * http://www.hitl.washington.edu/artoolkit/Papers/ART02-Tutorial.pdfの7ページを参照。
+ * </p>
  */
 final public class NyARPerspectiveProjectionMatrix extends NyARDoubleMatrix44
 {
+	/**
+	 * コンストラクタです。空の行列を生成します。
+	 */
 	public NyARPerspectiveProjectionMatrix()
 	{
 		this.m30=this.m31=this.m32=0;
@@ -60,15 +65,13 @@ final public class NyARPerspectiveProjectionMatrix extends NyARDoubleMatrix44
 	{
 		return Math.sqrt(a * a + b * b + c * c);
 	}
-
 	/**
-	 * int arParamDecompMat( double source[3][4], double cpara[3][4], double trans[3][4] ); 関数の置き換え Optimize STEP[754->665]
-	 * 
+	 * この関数は、ARToolKitのarParamDecompMatと同じです。
+	 * 動作はよくわかりません…。
 	 * @param o_cpara
-	 *            戻り引数。3x4のマトリクスを指定すること。
+	 * 詳細不明。3x4のマトリクスを指定すること。
 	 * @param o_trans
-	 *            戻り引数。3x4のマトリクスを指定すること。
-	 * @return
+	 * 詳細不明。3x4のマトリクスを指定すること。
 	 */
 	public void decompMat(NyARMat o_cpara, NyARMat o_trans)
 	{
@@ -151,10 +154,9 @@ final public class NyARPerspectiveProjectionMatrix extends NyARDoubleMatrix44
 		return;
 	}
 	/**
-	 * int arParamChangeSize( ARParam *source, int xsize, int ysize, ARParam *newparam );
-	 * Matrixのスケールを変換します。
+	 * 行列にスケール値を積算します。
 	 * @param i_scale
-	 * 
+	 * スケール値
 	 */
 	public void changeScale(double i_scale)
 	{
@@ -175,9 +177,11 @@ final public class NyARPerspectiveProjectionMatrix extends NyARDoubleMatrix44
 	}
 	
 	/**
-	 * 3次元座標を2次元座標に変換します。
+	 * 座標値を射影変換します。
 	 * @param i_3dvertex
+	 * 変換元の座標値
 	 * @param o_2d
+	 * 変換後の座標値を受け取るオブジェクト
 	 */
 	public final void project(NyARDoublePoint3d i_3dvertex,NyARDoublePoint2d o_2d)
 	{
@@ -187,9 +191,15 @@ final public class NyARPerspectiveProjectionMatrix extends NyARDoubleMatrix44
 		return;
 	}
 	/**
-	 * 3次元座標を2次元座標に変換します。
-	 * @param i_3dvertex
+	 * 座標値を射影変換します。
+	 * @param i_x
+	 * 変換元の座標値
+	 * @param i_y
+	 * 変換元の座標値
+	 * @param i_z
+	 * 変換元の座標値
 	 * @param o_2d
+	 * 変換後の座標値を受け取るオブジェクト
 	 */
 	public final void project(double i_x,double i_y,double i_z,NyARDoublePoint2d o_2d)
 	{
@@ -199,9 +209,11 @@ final public class NyARPerspectiveProjectionMatrix extends NyARDoubleMatrix44
 		return;
 	}	
 	/**
-	 * 3次元座標を2次元座標に変換します。
+	 * 座標値を射影変換します。
 	 * @param i_3dvertex
+	 * 変換元の座標値
 	 * @param o_2d
+	 * 変換後の座標値を受け取るオブジェクト
 	 */
 	public final void project(NyARDoublePoint3d i_3dvertex,NyARIntPoint2d o_2d)
 	{
@@ -211,9 +223,15 @@ final public class NyARPerspectiveProjectionMatrix extends NyARDoubleMatrix44
 		return;
 	}	
 	/**
-	 * 3次元座標を2次元座標に変換します。
-	 * @param i_3dvertex
+	 * 座標値を射影変換します。
+	 * @param i_x
+	 * 変換元の座標値
+	 * @param i_y
+	 * 変換元の座標値
+	 * @param i_z
+	 * 変換元の座標値
 	 * @param o_2d
+	 * 変換後の座標値を受け取るオブジェクト
 	 */
 	public final void project(double i_x,double i_y,double i_z,NyARIntPoint2d o_2d)
 	{
@@ -225,11 +243,17 @@ final public class NyARPerspectiveProjectionMatrix extends NyARDoubleMatrix44
 	
 	/**
 	 * 右手系の視錐台を作ります。
+	 * この視錐台は、ARToolKitのarglCameraViewRHの作る視錐台と同じです。
 	 * @param i_screen_width
+	 * スクリーンサイズを指定します。
 	 * @param i_screen_height
+	 * スクリーンサイズを指定します。
 	 * @param i_dist_min
+	 * near pointを指定します(mm単位)
 	 * @param i_dist_max
+	 * far pointを指定します(mm単位)
 	 * @param o_frustum
+	 * 視錐台の格納先オブジェクトを指定します。
 	 */
 	public void makeCameraFrustumRH(double i_screen_width,double i_screen_height,double i_dist_min,double i_dist_max,NyARDoubleMatrix44 o_frustum)
 	{

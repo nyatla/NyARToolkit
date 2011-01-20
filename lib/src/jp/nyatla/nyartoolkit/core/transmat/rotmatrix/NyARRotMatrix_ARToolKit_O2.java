@@ -41,15 +41,18 @@ import jp.nyatla.nyartoolkit.core.param.*;
 public class NyARRotMatrix_ARToolKit_O2 extends NyARRotMatrix_ARToolKit
 {	
 	/**
-	 * インスタンスを準備します。
-	 * 
-	 * @param i_param
+	 * コンストラクタです。
+	 * 参照する射影変換オブジェクトを指定して、インスタンスを生成します。
+	 * @param i_matrix
+	 * 参照する射影変換オブジェクト
+	 * @throws NyARException
 	 */
 	public NyARRotMatrix_ARToolKit_O2(NyARPerspectiveProjectionMatrix i_matrix) throws NyARException
 	{
 		super(i_matrix);
 		return;
 	}
+	//override
 	public final void setAngle(final double i_x, final double i_y, final double i_z)
 	{
 		final double sina = Math.sin(i_x);

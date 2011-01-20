@@ -31,16 +31,37 @@
 package jp.nyatla.nyartoolkit.core.raster.rgb;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 
+/**
+ * このクラスは、{NyARBufferType#BYTE1D_R8G8B8_24}形式のバッファを持つラスタです。
+ * 内部参照バッファ、外部参照バッファの両方に対応します。
+ *
+ */
 public class NyARRgbRaster_RGB extends NyARRgbRaster
 {
+	/**
+	 * コンストラクタです。
+	 * バッファの参照方法とラスタのサイズを指定して、インスタンスを生成します。
+	 * @param i_width
+	 * ラスタサイズ
+	 * @param i_height
+	 * ラスタサイズ
+	 * @param i_is_alloc
+	 * バッファ参照方法値。trueなら内部バッファ、falseなら外部参照バッファです。
+	 */	
 	public NyARRgbRaster_RGB(int i_width, int i_height,boolean i_is_alloc) throws NyARException
 	{
 		super(i_width,i_height,NyARBufferType.BYTE1D_R8G8B8_24,i_is_alloc);
 	}
-
+	/**
+	 * コンストラクタです。
+	 * ラスタのサイズを指定して、インスタンスを生成します。
+	 * @param i_width
+	 * ラスタサイズ
+	 * @param i_height
+	 * ラスタサイズ
+	 */	
 	public NyARRgbRaster_RGB(int i_width, int i_height) throws NyARException
 	{
 		super(i_width,i_height,NyARBufferType.BYTE1D_R8G8B8_24);

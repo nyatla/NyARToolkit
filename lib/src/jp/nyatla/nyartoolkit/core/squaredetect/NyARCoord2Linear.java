@@ -43,9 +43,8 @@ import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix22;
 
 
 /**
- * 頂点集合を一次方程式のパラメータに変換します。
- * 
- *
+ * このクラスは、座標配列を直線式に変換します。
+ * 座標配列の連続する要素を主成分分析にかけて、直線式にします。
  */
 public class NyARCoord2Linear
 {
@@ -57,10 +56,13 @@ public class NyARCoord2Linear
 	private final double[] __getSquareLine_ev=new double[2];
 	private final NyARObserv2IdealMap _dist_factor;
 	/**
+	 * コンストラクタです。
+	 * 輪郭取得元画像の歪み矯正オブジェクトとサイズを指定して、インスタンスを生成します。
 	 * @param i_size
+	 * 入力画像のサイズ
 	 * @param i_distfactor_ref
-	 * カメラ歪みを補正する場合のパラメータを指定します。
-	 * nullの場合、補正マップを使用しません。
+	 * 樽型歪みを補正する場合に、オブジェクトを指定します。
+	 * nullの場合、補正を行いません。
 	 */
 	public NyARCoord2Linear(NyARIntSize i_size,NyARCameraDistortionFactor i_distfactor)
 	{
@@ -78,12 +80,17 @@ public class NyARCoord2Linear
 
 
 	/**
-	 * 輪郭点集合からay+bx+c=0の直線式を計算します。
+	 * この関数は、輪郭点集合からay+bx+c=0の直線式を計算します。
 	 * @param i_st
+	 * 直線計算の対象とする、輪郭点の開始インデックス
 	 * @param i_ed
+	 * 直線計算の対象とする、輪郭点の終了インデックス
 	 * @param i_coord
+	 * 輪郭点集合のオブジェクト。
 	 * @param o_line
+	 * 直線式を受け取るオブジェクト
 	 * @return
+	 * 直線式の計算に成功すると、trueを返します。
 	 * @throws NyARException
 	 */
 	public boolean coord2Line(int i_st,int i_ed,NyARIntCoordinates i_coord, NyARLinear o_line) throws NyARException

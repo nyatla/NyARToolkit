@@ -51,13 +51,22 @@ class TSinCosValue{
 }
 
 /**
- * 基本姿勢と実画像を一致するように、角度を微調整→平行移動量を再計算 を繰り返して、変換行列を最適化する。
- * 
+ * このクラスは、NyARToolkit方式の姿勢行列Optimizerです。
+ * <p>アルゴリズム -
+ * 姿勢行列をX,Y,Zの回転方向について偏微分して、それぞれ誤差が最小になる点を求めます。
+ * 下位が２点ある場合は、前回の結果に近い値を採用することで、ジッタを減らします。
+ * </p>
  */
 public class NyARPartialDifferentiationOptimize
 {
 	private final NyARPerspectiveProjectionMatrix _projection_mat_ref;
 
+	/**
+	 * コンストラクタです。
+	 * 射影変換オブジェクトの参照値を設定して、インスタンスを生成します。
+	 * @param i_projection_mat_ref
+	 * 射影変換オブジェクトの参照値。
+	 */
 	public NyARPartialDifferentiationOptimize(NyARPerspectiveProjectionMatrix i_projection_mat_ref)
 	{
 		this._projection_mat_ref = i_projection_mat_ref;
@@ -244,6 +253,22 @@ public class NyARPartialDifferentiationOptimize
 		return getMinimumErrorAngleFromParam(L,J, K, M, N, O, i_hint_angle);
 	}
 	private NyARDoublePoint3d __ang=new NyARDoublePoint3d();
+	/**
+	 * この関数は、回転行列を最適化します。
+	 * i_vertex3dのオフセット値を、io_rotとi_transで座標変換後に射影変換した２次元座標と、i_vertex2dが最も近くなるように、io_rotを調整します。
+	 * io_rot,i_transの値は、ある程度の精度で求められている必要があります。
+	 * @param io_rot
+	 * 調整する回転行列
+	 * @param i_trans
+	 * 平行移動量
+	 * @param i_vertex3d
+	 * 三次元オフセット座標
+	 * @param i_vertex2d
+	 * 理想座標系の頂点座標
+	 * @param i_number_of_vertex
+	 * 頂点数
+	 * @throws NyARException
+	 */
 	public void modifyMatrix(NyARDoubleMatrix33 io_rot, NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d, int i_number_of_vertex) throws NyARException
 	{
 		NyARDoublePoint3d ang = this.__ang;		
@@ -253,6 +278,24 @@ public class NyARPartialDifferentiationOptimize
 		io_rot.setZXYAngle(ang.x, ang.y, ang.z);
 		return;
 	}
+	/**
+	 * この関数は、回転角を最適化します。
+	 * i_vertex3dのオフセット値を、i_angleとi_transで座標変換後に射影変換した２次元座標と、i_vertex2dが最も近くなる値を、o_angleへ返します。
+	 * io_rot,i_transの値は、ある程度の精度で求められている必要があります。
+	 * @param i_angle
+	 * 回転角
+	 * @param i_trans
+	 * 平行移動量
+	 * @param i_vertex3d
+	 * 三次元オフセット座標
+	 * @param i_vertex2d
+	 * 理想座標系の頂点座標
+	 * @param i_number_of_vertex
+	 * 頂点数
+	 * @param o_angle
+	 * 調整した回転角を受け取る配列
+	 * @throws NyARException
+	 */	
 	public void modifyMatrix(NyARDoublePoint3d i_angle,NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d, int i_number_of_vertex,NyARDoublePoint3d o_angle) throws NyARException
 	{
 

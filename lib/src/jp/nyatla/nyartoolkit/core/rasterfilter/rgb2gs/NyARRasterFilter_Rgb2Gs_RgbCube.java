@@ -37,17 +37,37 @@ import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRasterFilter_Rgb2Gs;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
-
 /**
- * RGBラスタをGrayScaleに変換するフィルタを作成します。
- * このフィルタは、RGB値の平均値を、(R*G*B)/(255*255)で算出します。
- * 
- * この値は、RGB成分の作る立方体の体積を0-255スケールにした値です。
- *
+ * このクラスは、RGBラスタをGrayScaleに変換するフィルタを作成します。
+ * <p>アルゴリズム
+ * このフィルタは、RGB値の平均値を、(R*G*B)/(255*255)で算出します。(スケールは、255>=n>=0になります。)
+ * 三乗根ではないことに注意してください。
+ * </p>
+ * <p>入力可能な画素形式
+ * 入力可能な画素形式は以下の通りです。
+ * <ul>
+ * <li>{@link NyARBufferType#BYTE1D_B8G8R8_24}
+ * <li>{@link NyARBufferType#BYTE1D_R8G8B8_24}
+ * </ul>
+ * </p>
+ * <p>出力可能な画素形式
+ * 出力可能な画素形式は1種類です。
+ * <ul>
+ * <li>{@link NyARBufferType#INT1D_GRAY_8}
+ * </ul>
+ * </p>
  */
 public class NyARRasterFilter_Rgb2Gs_RgbCube implements INyARRasterFilter_Rgb2Gs
 {
 	private IdoFilterImpl _dofilterimpl;
+	/**
+	 * コンストラクタです。
+	 * 入力ラスタの画素形式を指定して、フィルタを作成します。
+	 * 出力ラスタの形式は、{@link NyARBufferType#INT1D_GRAY_8}を選択します。
+	 * @param i_in_raster_type
+	 * 入力ラスタの形式です。
+	 * @throws NyARException
+	 */	
 	public NyARRasterFilter_Rgb2Gs_RgbCube(int i_in_raster_type) throws NyARException
 	{
 		if(!initInstance(i_in_raster_type,NyARBufferType.INT1D_GRAY_8))
@@ -55,13 +75,34 @@ public class NyARRasterFilter_Rgb2Gs_RgbCube implements INyARRasterFilter_Rgb2Gs
 			throw new NyARException();
 		}
 	}
+	/**
+	 * コンストラクタです。
+	 * 入力、出力ラスタの画素形式を指定して、フィルタを作成します。
+	 * @param i_threshold
+	 * 敷居値の初期値です。0&lt;n&lt;256の値を指定します。
+	 * @param i_in_raster_type
+	 * 入力ラスタの形式です。
+	 * @param i_out_raster_type
+	 * 出力ラスタの形式です。
+	 * @throws NyARException
+	 */		
 	public NyARRasterFilter_Rgb2Gs_RgbCube(int i_in_raster_type,int i_out_raster) throws NyARException
 	{
 		if(!initInstance(i_in_raster_type,i_out_raster))
 		{
 			throw new NyARException();
 		}
-	}	
+	}
+	/**
+	 * この関数は、クラスを初期化します。
+	 * コンストラクタから呼び出します。
+	 * @param i_in_raster_type
+	 * 入力ラスタの画素形式を指定します。
+	 * @param i_out_raster_type
+	 * 出力ラスタの画素形式を指定します。
+	 * @return
+	 * 初期化に成功すると、trueを返します。
+	 */	
 	protected boolean initInstance(int i_in_raster_type,int i_out_raster_type)
 	{
 		switch(i_out_raster_type){
@@ -81,18 +122,22 @@ public class NyARRasterFilter_Rgb2Gs_RgbCube implements INyARRasterFilter_Rgb2Gs
 		return true;
 	}	
 	
-	
+	/**
+	 * この関数は、入力画像をグレースケール化して出力画像へ書込みます。
+	 * 入力画像と出力画像のサイズは同じである必要があります。
+	 */		
 	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output) throws NyARException
 	{
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
 		this._dofilterimpl.doFilter(i_input,i_output,i_input.getSize());
 	}
 	
-	interface IdoFilterImpl
+	/** 変換関数のインタフェイス*/
+	protected interface IdoFilterImpl
 	{
 		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException;
 	}
-	class IdoFilterImpl_BYTE1D_B8G8R8_24 implements IdoFilterImpl
+	private class IdoFilterImpl_BYTE1D_B8G8R8_24 implements IdoFilterImpl
 	{
 		/**
 		 * This function is not optimized.

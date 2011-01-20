@@ -32,17 +32,22 @@ import jp.nyatla.nyartoolkit.core.utils.*;
 
 
 /**
- * 遠近法を使ったパースペクティブ補正をかけて、ラスタ上の四角形から
- * 任意解像度の矩形パターンを作成します。
- *
+ * このクラスは、遠近法を使用して画像からパターンを取得します。
+ * 取得領域は、領域を定義する４頂点と、除外する枠線の幅（割合）から定義します。
  */
 public class NyARColorPatt_Perspective implements INyARColorPatt
 {
+	/** パターン格納用のバッファ*/
 	protected int[] _patdata;
+	/** 射影変換のLT位置*/
 	protected NyARIntPoint2d _pickup_lt=new NyARIntPoint2d();	
+	/** ソースパターンのサイズ*/
 	protected NyARIntSize _pickup_wh=new NyARIntSize();	
+	/** サンプリング解像度*/
 	protected int _resolution;
+	/** このラスタのサイズ*/
 	protected NyARIntSize _size;
+	/** 射影変換パラメータ計算オブジェクト*/
 	protected NyARPerspectiveParamGenerator _perspective_gen;
 	private NyARRgbPixelReader_INT1D_X8R8G8B8_32 _pixelreader;
 	private static final int LOCAL_LT=1;
@@ -57,11 +62,12 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 		return;		
 	}
 	/**
-	 * コンストラクタです。サンプリングサイズを指定して、
+	 * コンストラクタです。
+	 * このラスタのサイズと、サンプリング定数を指定して、インスタンスを生成します。
 	 * @param i_width
-	 * 取得画像の解像度幅
+	 * このラスタの幅
 	 * @param i_height
-	 * 取得画像の解像度高さ
+	 * このラスタの高さ
 	 * @param i_point_per_pix
 	 * 1ピクセルあたりの縦横サンプリング数。2なら2x2=4ポイントをサンプリングする。
 	 */
@@ -72,13 +78,16 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 		return;
 	}
 	/**
-	 * 例えば、64
+	 * コンストラクタです。
+	 * このラスタのサイズと、サンプリング定数、エッジ幅を指定して、インスタンスを生成します。
 	 * @param i_width
-	 * 取得画像の解像度幅
+	 * このラスタの幅
 	 * @param i_height
-	 * 取得画像の解像度高さ
+	 * このラスタの高さ
+	 * @param i_point_per_pix
+	 * 1ピクセルあたりの縦横サンプリング数。2なら2x2=4ポイントをサンプリングする。
 	 * @param i_edge_percentage
-	 * エッジ幅の割合(ARToolKit標準と同じなら、25)
+	 * エッジの割合。ARToolKitと同じなら25を指定してください。
 	 */
 	public NyARColorPatt_Perspective(int i_width, int i_height,int i_point_per_pix,int i_edge_percentage)
 	{
@@ -88,15 +97,20 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 		return;
 	}	
 	/**
-	 * 矩形領域のエッジサイズを指定します。
+	 * 矩形領域のエッジ（枠）サイズをドット数で指定します。
 	 * エッジの計算方法は以下の通りです。
-	 * 1.マーカ全体を(i_x_edge*2+width)x(i_y_edge*2+height)の解像度でパラメタを計算します。
-	 * 2.ピクセルの取得開始位置を(i_x_edge/2,i_y_edge/2)へ移動します。
-	 * 3.開始位置から、width x height個のピクセルを取得します。
-	 * 
+	 * <ol>
+	 * <li>マーカ全体を(i_x_edge*2+width)x(i_y_edge*2+height)の解像度でパラメタを計算します。
+	 * <li>ピクセルの取得開始位置を(i_x_edge/2,i_y_edge/2)へ移動します。
+	 * <li>開始位置から、width x height個のピクセルを取得します。
+	 * </ol>
 	 * ARToolKit標準マーカの場合は、width/2,height/2を指定してください。
 	 * @param i_x_edge
+	 * X方向のエッジのサイズ。
 	 * @param i_y_edge
+	 * Y方向のエッジのサイズ。
+	 * @param i_resolution
+	 * 1ピクセルあたりの縦横サンプリング数。2なら2x2=4ポイントをサンプリングする。
 	 */
 	public void setEdgeSize(int i_x_edge,int i_y_edge,int i_resolution)
 	{
@@ -110,6 +124,15 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 		this._resolution=i_resolution;	
 		return;
 	}
+	/**
+	 * 矩形領域のエッジ（枠）サイズを、割合で指定します。
+	 * @param i_x_percent
+	 * 左右のエッジの割合です。0から50の間の数で指定します。
+	 * @param i_y_percent
+	 * 上下のエッジの割合です。0から50の間の数で指定します。
+	 * @param i_resolution
+	 * 1ピクセルあたりの縦横サンプリング数。2なら2x2=4ポイントをサンプリングする。
+	 */
 	public void setEdgeSizeByPercent(int i_x_percent,int i_y_percent,int i_resolution)
 	{
 		assert(i_x_percent>=0);
@@ -117,49 +140,76 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 		setEdgeSize(this._size.w*i_x_percent/50,this._size.h*i_y_percent/50,i_resolution);
 		return;
 	}
-
-	
+	/**
+	 * この関数はラスタの幅を返します。
+	 */
 	public final int getWidth()
 	{
 		return this._size.w;
 	}
+	/**
+	 * この関数はラスタの高さを返します。
+	 */	
 	public final int getHeight()
 	{
 		return this._size.h;
 	}
+	/**
+	 * この関数はラスタのサイズの参照値を返します。
+	 */
 	public final NyARIntSize getSize()
 	{
 		return 	this._size;
 	}
+	/**
+	 * この関数は、ラスタの画素読み取りオブジェクトの参照値を返します。
+	 */
 	public final INyARRgbPixelReader getRgbPixelReader()
 	{
 		return this._pixelreader;
 	}
+	/**
+	 * この関数は、ラスタ画像のバッファを返します。
+	 * バッファ形式は、{@link NyARBufferType#INT1D_X8R8G8B8_32}(int[])です。
+	 */
 	public Object getBuffer()
 	{
 		return this._patdata;
 	}
+	/**
+	 * この関数は、インスタンスがバッファを所有しているかを返します。基本的にtrueです。
+	 */
 	public boolean hasBuffer()
 	{
 		return this._patdata!=null;
 	}
+	/**
+	 * この関数は使用不可能です。
+	 */
 	public void wrapBuffer(Object i_ref_buf) throws NyARException
 	{
 		NyARException.notImplement();
 	}
-	final public int getBufferType()
+	/**
+	 * この関数は、バッファタイプの定数を返します。
+	 */
+	public final int getBufferType()
 	{
 		return BUFFER_FORMAT;
 	}
-	final public boolean isEqualBufferType(int i_type_value)
+	/**
+	 * この関数は、インスタンスのバッファタイプが引数のものと一致しているか判定します。
+	 */	
+	public final boolean isEqualBufferType(int i_type_value)
 	{
 		return BUFFER_FORMAT==i_type_value;
 	}
 	private final int[] __pickFromRaster_rgb_tmp = new int[3];
+	/**　ワーク変数*/
 	protected final double[] __pickFromRaster_cpara=new double[8];
 	
 	/**
-	 * @see INyARColorPatt#pickFromRaster
+	 * この関数は、ラスタのi_vertexsで定義される四角形からパターンを取得して、インスタンスに格納します。
 	 */
 	public boolean pickFromRaster(INyARRgbRaster image,NyARIntPoint2d[] i_vertexs)throws NyARException
 	{

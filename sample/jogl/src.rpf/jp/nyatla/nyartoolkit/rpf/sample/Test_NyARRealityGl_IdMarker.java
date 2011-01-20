@@ -188,7 +188,7 @@ public class Test_NyARRealityGl_IdMarker implements GLEventListener, JmfCaptureL
 						_gl.glRotatef(90,1.0f,0.0f,0.0f); // Place base of cube on marker surface.
 						//マーカ情報の表示
 						NyARGLDrawUtil.setFontColor(t.getGrabbRate()<50?Color.RED:Color.BLUE);
-						NyARGLDrawUtil.drawText("ID:"+(Long)(t.tag)+" GRUB:"+t.grab_rate+"%",0.5f);
+						NyARGLDrawUtil.drawText("ID:"+(Long)(t.tag)+" GRUB:"+t._grab_rate+"%",0.5f);
 						_gl.glPopMatrix();
 						
 						break;

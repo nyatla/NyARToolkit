@@ -41,9 +41,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
 
 
 /**
- * This class calculates ARMatrix from square information and holds it. --
- * 変換行列を計算して、結果を保持するクラス。
- * 
+ * このクラスは、ARToolKitと同じ方法で、二次元矩形から３次元位置姿勢を推定します。
  */
 public class NyARTransMat_ARToolKit implements INyARTransMat
 {
@@ -51,14 +49,17 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 	private final static double AR_GET_TRANS_MAT_MAX_FIT_ERROR = 1.0;// #define AR_GET_TRANS_MAT_MAX_FIT_ERROR 1.0
 	private final static double AR_GET_TRANS_CONT_MAT_MAX_FIT_ERROR = 1.0;
 
+	/** 回転行列の計算オブジェクト*/
 	protected NyARRotMatrix_ARToolKit _rotmatrix;
+	/** 平行移動量の計算オブジェクト*/
 	protected INyARTransportVectorSolver _transsolver;
+	/** 姿勢行列最適化オブジェクト*/
 	protected INyARRotMatrixOptimize _mat_optimize;
 	private NyARCameraDistortionFactor _ref_dist_factor;
 
 	/**
-	 * 派生クラスで自分でメンバオブジェクトを指定したい場合はこちらを使う。
-	 *
+	 * コンストラクタです。
+	 * 派生クラスで自分でメンバオブジェクトを指定したい場合はこちらを使います。
 	 */
 	protected NyARTransMat_ARToolKit()
 	{
@@ -66,11 +67,28 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 		//作成して割り当ててください。
 		return;
 	}
+	/**
+	 * コンストラクタです。
+	 * 座標計算に必要なオブジェクトの参照値を元に、インスタンスを生成します。
+	 * @param i_ref_distfactor
+	 * 樽型歪み矯正オブジェクトの参照値です。歪み矯正が不要な時は、nullを指定します。
+	 * @param i_ref_projmat
+	 * 射影変換オブジェクトの参照値です。
+	 * @throws NyARException
+	 */
 	public NyARTransMat_ARToolKit(NyARCameraDistortionFactor i_ref_distfactor,NyARPerspectiveProjectionMatrix i_ref_projmat) throws NyARException
 	{
 		initInstance(i_ref_distfactor,i_ref_projmat);
 		return;
-	}	
+	}
+	/**
+	 * コンストラクタです。
+	 * 座標計算に必要なカメラパラメータの参照値を元に、インスタンスを生成します。
+	 * @param i_param
+	 * ARToolKit形式のカメラパラメータです。
+	 * インスタンスは、この中から樽型歪み矯正オブジェクト、射影変換オブジェクトを参照します。
+	 * @throws NyARException
+	 */	
 	public NyARTransMat_ARToolKit(NyARParam i_param) throws NyARException
 	{
 		initInstance(i_param.getDistortionFactor(),i_param.getPerspectiveProjectionMatrix());
@@ -91,13 +109,9 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 	private final NyARDoublePoint3d[] __transMat_vertex_3d = NyARDoublePoint3d.createArray(4);
 	private final NyARDoublePoint3d __transMat_trans=new NyARDoublePoint3d();
 	/**
-	 * double arGetTransMat( ARMarkerInfo *marker_info,double center[2], double width, double conv[3][4] )
-	 * 
-	 * @param i_square
-	 * 計算対象のNyARSquareオブジェクト
-	 * @param i_width
-	 * @return
-	 * @throws NyARException
+	 * この関数は、理想座標系の四角系を元に、位置姿勢変換行列を求めます。
+	 * ARToolKitのarGetTransMatに該当します。
+	 * @see INyARTransMat#transMatContinue
 	 */
 	public final void transMat(NyARSquare i_square,NyARRectOffset i_offset, NyARTransMatResult o_result_conv) throws NyARException
 	{
@@ -129,10 +143,10 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 		o_result_conv.setValue(this._rotmatrix,trans,err);
 		return;
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see jp.nyatla.nyartoolkit.core.transmat.INyARTransMat#transMatContinue(jp.nyatla.nyartoolkit.core.NyARSquare, int, double, jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult)
+	/**
+	 * この関数は、理想座標系の四角系を元に、位置姿勢変換行列を求めます。
+	 * 計算に過去の履歴を使う点が、{@link #transMat}と異なります。
+	 * @see INyARTransMat#transMatContinue
 	 */
 	public final void transMatContinue(NyARSquare i_square,NyARRectOffset i_offset,NyARTransMatResult i_prev_result,NyARTransMatResult o_result) throws NyARException
 	{

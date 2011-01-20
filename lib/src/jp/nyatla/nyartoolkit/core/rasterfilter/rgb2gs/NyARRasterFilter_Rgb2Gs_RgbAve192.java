@@ -36,13 +36,44 @@ import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
- * RGBラスタをGrayScaleに変換するフィルタを作成します。
- * このフィルタは、RGB値の平均値を、(R+G+B)>>4で算出します。(スケールは、192>=n>=0になります。)
- *
+ * このクラスは、RGBラスタをGrayScaleに変換するフィルタを作成します。
+ * このクラスが出力するグレースケール値の範囲は、元画像の3/4（0-191）になります。
+ * <p>アルゴリズム
+ * このフィルタは、RGB値の平均値を、(R+G+B)>>4で算出します。(スケールは、191>=n>=0になります。)
+ * これは、低速な除算をシフトに置き換え、変換速度を向上させるためです。
+ * </p>
+ * <p>入力可能な画素形式
+ * 入力可能な画素形式は以下の通りです。
+ * <ul>
+ * <li>{@link NyARBufferType#BYTE1D_B8G8R8_24}
+ * <li>{@link NyARBufferType#BYTE1D_R8G8B8_24}
+ * <li>{@link NyARBufferType#BYTE1D_B8G8R8X8_32}
+ * <li>{@link NyARBufferType#BYTE1D_X8R8G8B8_32}
+ * <li>{@link NyARBufferType#INT1D_X8R8G8B8_32}
+ * </ul>
+ * </p>
+ * <p>出力可能な画素形式
+ * 出力可能な画素形式は1種類です。
+ * <ul>
+ * <li>{@link NyARBufferType#INT1D_GRAY_8}
+ * </ul>
+ * </p>
  */
 public class NyARRasterFilter_Rgb2Gs_RgbAve192 implements INyARRasterFilter_Rgb2Gs
 {
-	IdoThFilterImpl _do_filter_impl;
+	/** 変換フィルタのインスタンス*/
+	protected IdoThFilterImpl _do_filter_impl;
+	/**
+	 * コンストラクタです。
+	 * 入力、出力ラスタの画素形式を指定して、フィルタを作成します。
+	 * @param i_threshold
+	 * 敷居値の初期値です。0&lt;n&lt;256の値を指定します。
+	 * @param i_in_raster_type
+	 * 入力ラスタの形式です。
+	 * @param i_out_raster_type
+	 * 出力ラスタの形式です。
+	 * @throws NyARException
+	 */	
 	public NyARRasterFilter_Rgb2Gs_RgbAve192(int i_in_raster_type,int i_out_raster_type) throws NyARException
 	{
 		if(!initInstance(i_in_raster_type,i_out_raster_type))
@@ -50,6 +81,14 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve192 implements INyARRasterFilter_Rgb2
 			throw new NyARException();
 		}
 	}
+	/**
+	 * コンストラクタです。
+	 * 入力ラスタの画素形式を指定して、フィルタを作成します。
+	 * 出力ラスタの形式は、{@link NyARBufferType#INT1D_GRAY_8}を選択します。
+	 * @param i_in_raster_type
+	 * 入力ラスタの形式です。
+	 * @throws NyARException
+	 */	
 	public NyARRasterFilter_Rgb2Gs_RgbAve192(int i_in_raster_type) throws NyARException
 	{
 		if(!initInstance(i_in_raster_type,NyARBufferType.INT1D_GRAY_8))
@@ -57,6 +96,16 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve192 implements INyARRasterFilter_Rgb2
 			throw new NyARException();
 		}
 	}
+	/**
+	 * この関数は、クラスを初期化します。
+	 * コンストラクタから呼び出します。
+	 * @param i_in_raster_type
+	 * 入力ラスタの画素形式を指定します。
+	 * @param i_out_raster_type
+	 * 出力ラスタの画素形式を指定します。
+	 * @return
+	 * 初期化に成功すると、trueを返します。
+	 */
 	protected boolean initInstance(int i_in_raster_type,int i_out_raster_type)
 	{
 		switch(i_out_raster_type){
@@ -81,6 +130,10 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve192 implements INyARRasterFilter_Rgb2
 		}
 		return true;
 	}
+	/**
+	 * この関数は、入力画像をグレースケール化して出力画像へ書込みます。
+	 * 入力画像と出力画像のサイズは同じである必要があります。
+	 */	
 	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output) throws NyARException
 	{
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
@@ -89,10 +142,14 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve192 implements INyARRasterFilter_Rgb2
 		return;
 	}
 	/**
-	 * 同一サイズのラスタi_inputとi_outputの間で、一部の領域だけにラスタ処理を実行します。
+	 * この関数は、入力画像の一部分だけをグレースケール化して、出力画像の該当位置へ書込みます。
+	 * 入力画像と出力画像のサイズは同じである必要があります。
 	 * @param i_input
-	 * @param i_rect
+	 * 入力画像
+	 * @param i_area
+	 * ２値化する矩形範囲。入力画像の範囲内である必要があります。
 	 * @param i_output
+	 * 出力画像
 	 * @throws NyARException
 	 */
 	public void doFilter(INyARRgbRaster i_input,NyARIntRect i_rect, NyARGrayscaleRaster i_output) throws NyARException
@@ -101,24 +158,34 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve192 implements INyARRasterFilter_Rgb2
 		this._do_filter_impl.doFilter(i_input,(int[])i_output.getBuffer(),i_rect.x,i_rect.y,i_rect.w,i_rect.h);
 		
 	}
+	
+	
+	
 	/**
-	 * 異サイズのラスタi_inputとi_outputの間で、一部の領域をi_outputへ転送します。
-	 * 関数は、i_outputのサイズをi_skip倍した領域を、i_inputのi_left,i_topの位置から切り出し、フィルタ処理をしてi_outputへ格納します。
+	 * この関数は、入力画像の一部分をサンプリングしてからグレースケール化して、出力画像へ書込みます。
+	 * 入力ラスタと出力ラスタのサイズは、以下の関係式を満たす必要があります。
+	 * <ul>
+	 * <li>入力画像の幅   =出力画像の幅*i_skip+i_top
+	 * <li>入力画像の高さ=出力画像の幅*i_skip+i_left
+	 * </ul>
 	 * @param i_input
+	 * 入力画像です。
 	 * @param i_left
+	 * 入力画像のサンプリング開始位置です。
 	 * @param i_top
+	 * 入力画像のサンプリング開始位置です。
 	 * @param i_skip
+	 * 入力画像のサンプリング値です。1ならば等倍、2なら2ドット,3なら3ドットおきに、画素をサンプリングします。
 	 * @param i_output
+	 * 出力画像です。
 	 */
 	public void doCutFilter(INyARRgbRaster i_input,int i_left,int i_top,int i_skip,NyARGrayscaleRaster i_output) throws NyARException
 	{
 		this._do_filter_impl.doCutFilter(i_input,i_left,i_top,i_skip,i_output);		
 	}
-	/*
-	 * ここから各種ラスタ向けのフィルタ実装
-	 *
-	 */
-	interface IdoThFilterImpl
+
+	/** 変換関数のインタフェイス*/
+	protected interface IdoThFilterImpl
 	{
 		/**
 		 * 同一サイズのラスタ間での転送
@@ -141,7 +208,7 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve192 implements INyARRasterFilter_Rgb2
 		public void doCutFilter(INyARRaster i_input, int l,int t,int i_st,NyARGrayscaleRaster o_output) throws NyARException;
 	}
 	
-	class doThFilterImpl_BUFFERFORMAT_INT1D_X8R8G8B8_32 implements IdoThFilterImpl
+	private class doThFilterImpl_BUFFERFORMAT_INT1D_X8R8G8B8_32 implements IdoThFilterImpl
 	{
 		public void doCutFilter(INyARRaster i_input, int l,int t,int i_st,NyARGrayscaleRaster o_output) throws NyARException
 		{
@@ -237,7 +304,7 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve192 implements INyARRasterFilter_Rgb2
 	
 	
 	
-	class doThFilterImpl_BYTE1D_B8G8R8_24 implements IdoThFilterImpl
+	private class doThFilterImpl_BYTE1D_B8G8R8_24 implements IdoThFilterImpl
 	{
 		public void doCutFilter(INyARRaster i_input, int l,int t,int i_st,NyARGrayscaleRaster o_output) throws NyARException
 		{
@@ -321,7 +388,7 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve192 implements INyARRasterFilter_Rgb2
 			return;
 		}		
 	}
-	class doThFilterImpl_BYTE1D_B8G8R8X8_32 implements IdoThFilterImpl
+	private class doThFilterImpl_BYTE1D_B8G8R8X8_32 implements IdoThFilterImpl
 	{
 		public void doCutFilter(INyARRaster i_input, int l,int t,int i_st,NyARGrayscaleRaster o_output) throws NyARException
 		{

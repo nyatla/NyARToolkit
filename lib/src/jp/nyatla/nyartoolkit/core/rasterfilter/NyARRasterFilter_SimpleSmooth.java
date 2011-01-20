@@ -29,15 +29,23 @@ import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
-
 /**
- * 平滑化フィルタ
- * 画像を平滑化します。
+ * このクラスは、単純平滑化フィルタです。
  * カーネルサイズは3x3です。
+ * <p>対応している画素形式は以下の通りです。
+ * <li>{@link NyARBufferType#INT1D_GRAY_8}
+ * </p>
  */
 public class NyARRasterFilter_SimpleSmooth implements INyARRasterFilter
 {
-	private IdoFilterImpl _do_filter_impl; 
+	private IdoFilterImpl _do_filter_impl;
+	/**
+	 * コンストラクタです。
+	 * 入力/出力ラスタの形式を入力して、インスタンスを生成します。
+	 * @param i_raster_type
+	 * 入力/出力ラスタの画素形式。
+	 * @throws NyARException
+	 */	
 	public NyARRasterFilter_SimpleSmooth(int i_raster_type) throws NyARException
 	{
 		switch (i_raster_type) {
@@ -48,17 +56,21 @@ public class NyARRasterFilter_SimpleSmooth implements INyARRasterFilter
 			throw new NyARException();
 		}
 	}
+	/**
+	 * 入力ラスタを平滑化して、出力ラスタへ書込みます。
+	 * 画素形式は、コンストラクタに指定した形式に合せてください。
+	 */		
 	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException
 	{
 		assert (i_input!=i_output);
 		this._do_filter_impl.doFilter(i_input,i_output,i_input.getSize());
 	}
-	
-	interface IdoFilterImpl
+	/** 変換用ドライバのインタフェイス*/	
+	protected interface IdoFilterImpl
 	{
 		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException;
 	}
-	class IdoFilterImpl_GRAY_8 implements IdoFilterImpl
+	private class IdoFilterImpl_GRAY_8 implements IdoFilterImpl
 	{
 		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException
 		{

@@ -38,12 +38,18 @@ import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 
 /**
- * typedef struct { int xsize, ysize; double mat[3][4]; double dist_factor[4]; } ARParam;
- * NyARの動作パラメータを格納するクラス
- *
+ * このクラスは、NyARToolkitの環境パラメータを格納します。
+ * 環境パラメータは、ARToolKitのパラメータと同一です。
+ * パラメータの要素には、以下のものがあります。
+ * <ul>
+ * <li>樽型歪みパラメータ - 入力画像の樽型歪みパラメータです。
+ * <li>スクリーンサイズ - 入力画像の解像度です。
+ * <li>透視変換パラメータ - 4x4行列です。
+ * </ul>
  */
 public class NyARParam
 {
+	/** スクリーンサイズです。*/
 	protected NyARIntSize _screen_size=new NyARIntSize();
 	private static final int SIZE_OF_PARAM_SET = 4 + 4 + (3 * 4 * 8) + (4 * 8);
 	private NyARCameraDistortionFactor _dist=new NyARCameraDistortionFactor();
@@ -55,23 +61,25 @@ public class NyARParam
 	}
 
 	/**
-	 * ARToolKit形式の透視変換行列を返します。
+	 * この関数は、ARToolKit形式の透視変換行列を返します。
 	 * @return
+	 * [read only]透視変換行列を返します。
 	 */
 	public NyARPerspectiveProjectionMatrix getPerspectiveProjectionMatrix()
 	{
 		return this._projection_matrix;
 	}
 	/**
-	 * ARToolKit形式の歪み補正パラメータを返します。
+	 * この関数は、ARToolKit形式の歪み補正パラメータを返します。
 	 * @return
+	 * [read only]歪み補正パラメータオブジェクト
 	 */
 	public NyARCameraDistortionFactor getDistortionFactor()
 	{
 		return this._dist;
 	}
 	/**
-	 * 
+	 * この関数は、配列から値を設定します。
 	 * @param i_factor
 	 * NyARCameraDistortionFactorにセットする配列を指定する。要素数は4であること。
 	 * @param i_projection
@@ -83,30 +91,13 @@ public class NyARParam
 		this._projection_matrix.setValue(i_projection);
 		return;
 	}
-
 	/**
-	 * ARToolKit標準ファイルから1個目の設定をロードする。
-	 * 
-	 * @param i_filename
-	 * @throws NyARException
-	 */
-	public void loadARParamFromFile(String i_filename) throws NyARException
-	{
-		try {
-			loadARParam(new FileInputStream(i_filename));
-		} catch (Exception e) {
-			throw new NyARException(e);
-		}
-	}
-
-	/**
-	 * int arParamChangeSize( ARParam *source, int xsize, int ysize, ARParam *newparam );
-	 * 関数の代替関数 サイズプロパティをi_xsize,i_ysizeに変更します。
+	 * この関数は、現在のスクリーンサイズを変更します。
+	 * ARToolKitのarParamChangeSize関数に相当します。
 	 * @param i_xsize
+	 * 新しいサイズ
 	 * @param i_ysize
-	 * @param newparam
-	 * @return
-	 * 
+	 * 新しいサイズ
 	 */
 	public void changeScreenSize(int i_xsize, int i_ysize)
 	{
@@ -119,11 +110,17 @@ public class NyARParam
 		return;
 	}
 	/**
-	 * 右手系の視錐台を作ります。
-	 * 計算結果を多用するときは、キャッシュするようにして下さい。
+	 * この関数は、カメラパラメータから右手系の視錐台を作ります。
+	 * <p>注意 -
+	 * この処理は低速です。繰り返しの使用はできるだけ避けてください。
+	 * </p>
 	 * @param i_dist_min
+	 * 視錐台のnear point(mm指定)
 	 * @param i_dist_max
+	 * 視錐台のfar point(mm指定)
 	 * @param o_frustum
+	 * 視錐台を受け取る配列。
+	 * @see NyARPerspectiveProjectionMatrix#makeCameraFrustumRH
 	 */
 	public void makeCameraFrustumRH(double i_dist_min,double i_dist_max,NyARDoubleMatrix44 o_frustum)
 	{
@@ -131,12 +128,28 @@ public class NyARParam
 		return;
 	}	
 
+	/**
+	 * この関数は、ARToolKit形式のカメラパラメータファイルから、1個目の設定をロードします。
+	 * @param i_filename
+	 * パラメータファイルのファイルパス
+	 * @throws NyARException
+	 */
+	public void loadARParamFromFile(String i_filename) throws NyARException
+	{
+		try {
+			loadARParam(new FileInputStream(i_filename));
+		} catch (Exception e) {
+			throw new NyARException(e);
+		}
+	}
+
+	
+
 
 	/**
-	 * int arParamLoad( const char *filename, int num, ARParam *param, ...);
-	 * i_streamの入力ストリームからi_num個の設定を読み込み、パラメタを配列にして返します。
-	 * 
+	 * この関数は、ストリームからARToolKit形式のカメラパラメーを1個目の設定をロードします。
 	 * @param i_stream
+	 * 読み込むストリームです。
 	 * @throws Exception
 	 */
 	public void loadARParam(InputStream i_stream)throws NyARException
@@ -171,7 +184,12 @@ public class NyARParam
 		}
 		return;
 	}
-
+	/**
+	 * この関数は機能しません。
+	 * @param i_stream
+	 * 未定義
+	 * @throws Exception
+	 */
 	public void saveARParam(OutputStream i_stream)throws Exception
 	{
 		NyARException.trap("未チェックの関数");

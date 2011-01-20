@@ -30,15 +30,27 @@ import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
- * Roberts法で勾配を計算します。
+ * このクラスは、Roberts法で勾配画像を作ります。
  * 右端と左端の1ピクセルは、常に0が入ります。
+ * <p>対応している画素形式は以下の通りです。
+ * <li>{@link NyARBufferType#INT1D_GRAY_8}
+ * </p>
+ * <pre>
  * X=|-1, 0|  Y=|0,-1|
  *   | 0, 1|    |1, 0|
  * V=sqrt(X^2+Y+2)/2
+ * </pre>
  */
 public class NyARRasterFilter_Roberts implements INyARRasterFilter
 {
-	private IdoFilterImpl _do_filter_impl; 
+	private IdoFilterImpl _do_filter_impl;
+	/**
+	 * コンストラクタです。
+	 * 入力/出力ラスタの形式を入力して、インスタンスを生成します。
+	 * @param i_raster_type
+	 * 入力/出力ラスタの画素形式。
+	 * @throws NyARException
+	 */	
 	public NyARRasterFilter_Roberts(int i_raster_type) throws NyARException
 	{
 		switch (i_raster_type) {
@@ -49,16 +61,20 @@ public class NyARRasterFilter_Roberts implements INyARRasterFilter
 			throw new NyARException();
 		}
 	}
+	/**
+	 * 入力ラスタのRoberts勾配を出力ラスタへ書込みます。
+	 * 画素形式は、コンストラクタに指定した形式に合せてください。
+	 */		
 	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException
 	{
 		this._do_filter_impl.doFilter(i_input,i_output,i_input.getSize());
 	}
-	
-	interface IdoFilterImpl
+	/** 変換用ドライバのインタフェイス*/	
+	protected interface IdoFilterImpl
 	{
 		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException;
 	}
-	class IdoFilterImpl_GRAY_8 implements IdoFilterImpl
+	private class IdoFilterImpl_GRAY_8 implements IdoFilterImpl
 	{
 		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException
 		{

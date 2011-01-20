@@ -3,16 +3,29 @@ package jp.nyatla.nyartoolkit.rpf.reality.nyartk;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.stack.*;
 
+/**
+ * このクラスは、{@link NyARRealityTarget}の参照リストを定義します。
+ * 基本的にユーザが生成することはありません。
+ * {@link NyARReality}がメンバ変数としてオブジェクトを所有します。
+ */
 public class NyARRealityTargetList extends NyARPointerStack<NyARRealityTarget>
 {
+	/**
+	 * コンストラクタです。
+	 * @param i_max_target
+	 * リストの最大格納数です。
+	 * @throws NyARException
+	 */
 	public NyARRealityTargetList(int i_max_target) throws NyARException
 	{
 		super.initInstance(i_max_target,(Class<NyARRealityTarget>)NyARRealityTarget.class);
 	}
 	/**
-	 * RealityTargetのシリアル番号をキーに、ターゲットを探索します。
+	 * この関数は、シリアル番号をキーに、リストからターゲットを探索します。
 	 * @param i_serial
+	 * 検索するシリアルID。{@link RealityTarget}を参照。
 	 * @return
+	 * 見つかると、そのオブジェクトの参照値。無ければnull
 	 */
 	public final NyARRealityTarget getItemBySerial(long i_serial)
 	{
@@ -26,10 +39,11 @@ public class NyARRealityTargetList extends NyARPointerStack<NyARRealityTarget>
 		return null;
 	}
 	/**
-	 * シリアルIDがi_serialに一致するターゲットのインデクス番号を返します。
+	 * この関数は、シリアル番号をキーに、リストからターゲットを探索して、そのインデクス番号を返します。
 	 * @param i_serial
+	 * 検索するシリアルID。{@link RealityTarget}を参照。
 	 * @return
-	 * @throws NyARException
+	 * リスト中のインデクス番号。
 	 */
 	public final int getIndexBySerial(int i_serial)
 	{
@@ -43,9 +57,10 @@ public class NyARRealityTargetList extends NyARPointerStack<NyARRealityTarget>
 		return -1;
 	}
 	/**
-	 * リストから特定のタイプのターゲットだけを選択して、一括でo_resultへ返します。
+	 * この関数は、特定のステータスのRTターゲットだけを選択して、一括でo_resultへ返します。
+	 * 配列サイズが十分でない場合、見つかった順に、配列の上限まで要素を返します。
 	 * @param i_type
-	 * ターゲットタイプです。NyARRealityTarget.RT_*を指定してください。
+	 * 検索するRTターゲットのステータス値。{@link NyARRealityTarget}で定義される、RT_から始まるステータスタイプ値を指定します。
 	 * @param o_list
 	 * 選択したターゲットを格納する配列です。
 	 * @return
@@ -65,9 +80,9 @@ public class NyARRealityTargetList extends NyARPointerStack<NyARRealityTarget>
 		return num;
 	}
 	/**
-	 * リストから特定のタイプのターゲットを1個選択して、返します。
+	 * この関数は、特定のステータスのRTターゲットを1個選択して返します。
 	 * @param i_type
-	 * ターゲットタイプです。NyARRealityTarget.RT_*を指定してください。
+	 * 検索するRTターゲットのステータス値。{@link NyARRealityTarget}で定義される、RT_から始まるステータスタイプ値を指定します。
 	 * @return
 	 * 見つかるとターゲットへの参照を返します。見つからなければNULLです。
 	 */

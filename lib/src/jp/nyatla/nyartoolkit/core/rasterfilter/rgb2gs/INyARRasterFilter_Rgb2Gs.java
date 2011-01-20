@@ -35,15 +35,18 @@ import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 
 /**
- * このインタフェイスは、RGBラスタをグレースケールラスタに変換します。
+ * このインタフェイスは、RGBラスタをグレースケールラスタに変換する関数を定義します。
  *
  */
 public interface INyARRasterFilter_Rgb2Gs
 {
 	/**
-	 * 同一サイズのラスタi_inputとi_outputの間で、フィルタ処理を実行します。
+	 * この関数は、入力画像をグレースケールにして出力画像へ書込みます。
+	 * 実装クラスでは、RGB画像をグレースケール画像に変換する処理を書いてください。
 	 * @param i_input
+	 * 入力画像
 	 * @param i_output
+	 * 出力画像
 	 * @throws NyARException
 	 */
 	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output) throws NyARException;

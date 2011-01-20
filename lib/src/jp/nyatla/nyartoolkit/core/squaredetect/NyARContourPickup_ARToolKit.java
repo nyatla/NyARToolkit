@@ -6,15 +6,18 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntCoordinates;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 
 /**
- * NyARLabelingImageから、輪郭線を抽出します。
- * @bug
- * この輪郭線抽出は、1ドット幅の輪郭を正しく抽出できません。ARToolKit互換の画像処理では問題になることは少ないので、
- * 大きな影響はありませんが、必要に応じてNyARContourPickupを参考に直してください。
+ * このクラスは、{@link NyARContourPickup}に、{@link NyARLabelingImage}の処理機能を追加したクラスです。
+ * <p>@bug
+ * この輪郭線抽出は、特定のパターンで1ドット幅の輪郭を正しく抽出できません。ARToolKit互換の画像処理では
+ * 問題になることは少ないので、大きな影響はありませんが、必要に応じて{@link NyARContourPickup}を参考に直してください。
+ * </p>
  */
 public class NyARContourPickup_ARToolKit extends NyARContourPickup
 {
 	/**
-	 * ラスタの指定点を基点に、輪郭線を抽出します。開始点は、輪郭の一部、かつ左上のエッジで有る必要があります。
+	 * この関数は、ラスタの指定点を基点に、輪郭線を抽出します。
+	 * 開始点は、輪郭の一部である必要があります。
+	 * 通常は、ラべリングの結果の上辺クリップとX軸エントリポイントを開始点として入力します。
 	 * @param i_raster
 	 * 輪郭線を抽出するラスタを指定します。
 	 * @param i_entry_x

@@ -35,12 +35,11 @@ import jp.nyatla.nyartoolkit.core.NyARMat;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core.raster.*;
 
 /**
- * 24ビットカラーのマーカーを保持するために使うクラスです。 このクラスは、ARToolkitのパターンと、ラスタから取得したパターンを保持します。
- * 演算順序以外の最適化をしたもの
- * 
+ * このクラスは、画像からパターンを取得する機能を備えたRGBラスタです。
+ * ARToolKit由来のアルゴリズムで画像からパターン取得する機能を提供します。
+ * この関数は可読性を重視しているため低速です。高速な{@link NyARColorPatt_O3}を使ってください。
  */
 public class NyARColorPatt_O1 implements INyARColorPatt
 {
@@ -50,7 +49,14 @@ public class NyARColorPatt_O1 implements INyARColorPatt
 	private NyARRgbPixelReader_INT1D_X8R8G8B8_32 _pixelreader;
 
 	private NyARIntSize _size;
-
+	/**
+	 * コンストラクタです。
+	 * 解像度を指定して、インスタンスを生成します。
+	 * @param i_width
+	 * ラスタのサイズ
+	 * @param i_height
+	 * ラスタのサイズ
+	 */
 	public NyARColorPatt_O1(int i_width, int i_height)
 	{
 		//入力制限
@@ -61,48 +67,84 @@ public class NyARColorPatt_O1 implements INyARColorPatt
 		this._pixelreader=new NyARRgbPixelReader_INT1D_X8R8G8B8_32(this._patdata,this._size);
 		return;
 	}
-
+	/**
+	 * この関数はラスタの幅を返します。
+	 */
 	public final int getWidth()
 	{
 		return this._size.w;
 	}
+	/**
+	 * この関数はラスタの高さを返します。
+	 */
 	public final int getHeight()
 	{
 		return this._size.h;
 	}
+	/**
+	 * この関数はラスタのサイズの参照値を返します。
+	 */
 	public final NyARIntSize getSize()
 	{
 		return 	this._size;
 	}
+	/**
+	 * この関数は、ラスタの画素読み取りオブジェクトの参照値を返します。
+	 */
 	public final INyARRgbPixelReader getRgbPixelReader()
 	{
 		return this._pixelreader;
 	}
+	/**
+	 * この関数は、ラスタ画像のバッファを返します。
+	 * バッファ形式は、{@link NyARBufferType#INT1D_X8R8G8B8_32}(int[])です。
+	 */
 	public Object getBuffer()
 	{
 		return this._patdata;
 	}
+	/**
+	 * この関数は、インスタンスがバッファを所有しているかを返します。基本的にtrueです。
+	 */
 	public boolean hasBuffer()
 	{
 		return this._patdata!=null;
 	}
+	/**
+	 * この関数は使用不可能です。
+	 */
 	public void wrapBuffer(Object i_ref_buf) throws NyARException
 	{
 		NyARException.notImplement();
 	}
-	final public int getBufferType()
+	/**
+	 * この関数は、バッファタイプの定数を返します。
+	 */
+	public final int getBufferType()
 	{
 		return BUFFER_FORMAT;
 	}
-	final public boolean isEqualBufferType(int i_type_value)
+	/**
+	 * この関数は、インスタンスのバッファタイプが引数のものと一致しているか判定します。
+	 */
+	public final boolean isEqualBufferType(int i_type_value)
 	{
 		return BUFFER_FORMAT==i_type_value;
 	}
 	private final NyARMat __get_cpara_a = new NyARMat(8, 8);
 	private final NyARMat __get_cpara_b = new NyARMat(8, 1);
 	private final static double[][] __get__cpara_world = {{ 100.0, 100.0 }, { 100.0 + 10.0, 100.0 }, { 100.0 + 10.0, 100.0 + 10.0 },{ 100.0, 100.0 + 10.0 } };
-	
-	final protected boolean get_cpara(final NyARIntPoint2d[] i_vertex, NyARMat o_para)throws NyARException
+	/**
+	 * この関数は、射影変換パラメータを計算します。
+	 * @param i_vertex
+	 * 変換元の４角系を定義する頂点配列。４頂点である必要がある。
+	 * @param o_para
+	 * 計算したパラメータの出力先配列
+	 * @return
+	 * 計算に成功するとtrueです。
+	 * @throws NyARException
+	 */
+	protected final boolean get_cpara(final NyARIntPoint2d[] i_vertex, NyARMat o_para)throws NyARException
 	{
 		double[][] world = __get__cpara_world;
 		NyARMat a = __get_cpara_a;// 次処理で値を設定するので、初期化不要// new NyARMat( 8, 8 );
@@ -147,7 +189,7 @@ public class NyARColorPatt_O1 implements INyARColorPatt
 	private final NyARMat __pickFromRaster_cpara_c = new NyARMat(8, 1);
 	
 	/**
-	 * @see INyARColorPatt#pickFromRaster
+	 * この関数は、ラスタのi_vertexsで定義される四角形からパターンを取得して、インスタンスに格納します。
 	 */
 	public boolean pickFromRaster(INyARRgbRaster image,NyARIntPoint2d[] i_vertexs)throws NyARException
 	{

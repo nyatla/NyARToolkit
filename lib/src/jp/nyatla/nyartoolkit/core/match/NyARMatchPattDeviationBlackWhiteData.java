@@ -32,11 +32,16 @@ package jp.nyatla.nyartoolkit.core.match;
 
 
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.types.*;
 
 
 /**
- * INyARMatchPattのColor差分ラスタを格納するクラスです。
- *
+ * このクラスは、グレースケールの差分画像を格納します。
+ * 差分画像は、p[i]=((255-画素[i])-画像全体の平均値)のピクセルで構成されている、平均値との差分値です。
+ * {@link NyARMatchPatt_BlackWhite}の入力値と使います。
+ * <p>使い方 - 
+ * {@link #setRaster}関数で、差分画像を作成し、プロパティ取得関数でその情報を得ます。
+ * </p>
  */
 public class NyARMatchPattDeviationBlackWhiteData
 {
@@ -44,15 +49,32 @@ public class NyARMatchPattDeviationBlackWhiteData
 	private double _pow;
 	//
 	private int _number_of_pixels;
+	/**
+	 * この関数は、画素データを格納した配列を返します。
+	 * {@link NyARMatchPatt_BlackWhite#evaluate}関数から使います。
+	 */
 	public int[] refData()
 	{
 		return this._data;
 	}
+	/**
+	 * この関数は、差分画像の強度値を返します。
+	 * 強度値は、差分画像の画素を二乗した値の合計です。
+	 * @return
+	 * 0&lt;nの強度値。
+	 */
 	public double getPow()
 	{
 		return this._pow;
 	}
-	                  
+	/**
+	 * コンストラクタです。
+	 * 差分画像のサイズを指定して、インスタンスを生成します。
+	 * @param i_width
+	 * 差分画像のサイズ
+	 * @param i_height
+	 * 差分画像のサイズ
+	 */
 	public NyARMatchPattDeviationBlackWhiteData(int i_width,int i_height)
 	{
 		this._number_of_pixels=i_height*i_width;
@@ -60,8 +82,10 @@ public class NyARMatchPattDeviationBlackWhiteData
 		return;
 	}
 	/**
-	 * XRGB[width*height]の配列から、パターンデータを構築。
+	 * この関数は、ラスタから差分画像を生成して、格納します。
+	 * 制限事項として、{@link NyARBufferType#INT1D_X8R8G8B8_32}形式のラスタのみ、入力できます。
 	 * @param i_buffer
+	 * 差分画像の元画像。サイズは、このインスタンスと同じである必要があります。
 	 */
 	public void setRaster(INyARRaster i_raster)
 	{

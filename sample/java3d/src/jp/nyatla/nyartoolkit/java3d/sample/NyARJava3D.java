@@ -31,6 +31,9 @@ import javax.media.j3d.*;
 
 import com.sun.j3d.utils.universe.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
 import javax.swing.JFrame;
 import javax.vecmath.*;
 
@@ -97,7 +100,13 @@ public class NyARJava3D extends JFrame implements NyARSingleMarkerBehaviorListen
 	public NyARJava3D() throws Exception
 	{
 		super("Java3D Example NyARToolkit");
-
+		this.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e)
+			{
+				nya_behavior.stop();
+				System.exit(0);
+			}
+		});
 		//NyARToolkitの準備
 		NyARCode ar_code = new NyARCode(16, 16);
 		ar_code.loadARPattFromFile(CARCODE_FILE);

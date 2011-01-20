@@ -34,17 +34,25 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
- * 1枚のグレースケール画像を定義するクラスです。画像データは内部保持/外部保持が選択可能です。
+ * このクラスは、グレースケース画像を格納するラスタクラスです。
+ * 外部バッファ、内部バッファの両方に対応します。
  */
 public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 {
 	private IdoFilterImpl _impl;
+	/** バッファオブジェクト*/
 	protected Object _buf;
-	/**
-	 * バッファオブジェクトがアタッチされていればtrue
-	 */
+	/** バッファオブジェクトがアタッチされていればtrue*/
 	protected boolean _is_attached_buffer;
-
+	/**
+	 * コンストラクタです。
+	 * 内部参照のバッファ（{@link NyARBufferType#INT1D_GRAY_8}形式）を持つインスタンスを生成します。
+	 * @param i_width
+	 * ラスタのサイズ
+	 * @param i_height
+	 * ラスタのサイズ
+	 * @throws NyARException
+	 */
 	public NyARGrayscaleRaster(int i_width, int i_height) throws NyARException
 	{
 		super(i_width, i_height, NyARBufferType.INT1D_GRAY_8);
@@ -54,12 +62,17 @@ public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 		}
 	}
 	/**
-	 * 
+	 * コンストラクタです。
+	 * 画像のサイズパラメータとバッファ参照方式を指定して、インスタンスを生成します。
+	 * バッファの形式は、{@link NyARBufferType#INT1D_GRAY_8}です。
 	 * @param i_width
+	 * ラスタのサイズ
 	 * @param i_height
+	 * ラスタのサイズ
 	 * @param i_is_alloc
-	 * 画像バッファを内部保持にするかのフラグ値。trueなら、インスタンスがバッファを確保します。falseなら、
-	 * 画像バッファは外部参照になり、wrapBuffer関数を使用できます。
+	 * バッファを外部参照にするかのフラグ値。
+	 * trueなら内部バッファ、falseなら外部バッファを使用します。
+	 * falseの場合、初期のバッファはnullになります。インスタンスを生成したのちに、{@link #wrapBuffer}を使って割り当ててください。
 	 * @throws NyARException
 	 */
 	public NyARGrayscaleRaster(int i_width, int i_height, boolean i_is_alloc)
@@ -73,11 +86,22 @@ public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 	}
 
 	/**
+	 * コンストラクタです。
+	 * 画像のサイズパラメータとバッファ形式を指定して、インスタンスを生成します。
 	 * @param i_width
+	 * ラスタのサイズ
 	 * @param i_height
+	 * ラスタのサイズ
 	 * @param i_raster_type
-	 *            NyARBufferTypeに定義された定数値を指定してください。
+	 * ラスタのバッファ形式。
+	 * {@link NyARBufferType}に定義された定数値を指定してください。指定できる値は、以下の通りです。
+	 * <ul>
+	 * <li>{@link NyARBufferType#INT1D_GRAY_8}
+	 * <ul>
 	 * @param i_is_alloc
+	 * バッファを外部参照にするかのフラグ値。
+	 * trueなら内部バッファ、falseなら外部バッファを使用します。
+	 * falseの場合、初期のバッファはnullになります。インスタンスを生成したのちに、{@link #wrapBuffer}を使って割り当ててください。
 	 * @throws NyARException
 	 */
 	public NyARGrayscaleRaster(int i_width, int i_height, int i_raster_type,boolean i_is_alloc) throws NyARException
@@ -91,8 +115,11 @@ public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 	/**
 	 * このクラスの初期化シーケンスです。コンストラクタから呼び出します。
 	 * @param i_size
+	 * ラスタサイズ
 	 * @param i_buf_type
+	 * バッファ形式
 	 * @param i_is_alloc
+	 * バッファ参照方法値
 	 * @return
 	 */
 	protected boolean initInstance(NyARIntSize i_size, int i_buf_type,boolean i_is_alloc)
@@ -108,23 +135,27 @@ public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 		this._is_attached_buffer = i_is_alloc;
 		return true;
 	}
+	/**
+	 * この関数は、ラスタのバッファへの参照値を返します。
+	 * バッファの形式は、コンストラクタに指定した形式と同じです。
+	 */	
 	public Object getBuffer()
 	{
 		return this._buf;
 	}
 
 	/**
-	 * インスタンスがバッファを所有するかを返します。 コンストラクタでi_is_allocをfalseにしてラスタを作成した場合、
-	 * バッファにアクセスするまえに、バッファの有無をこの関数でチェックしてください。
-	 * @return
+	 * この関数は、インスタンスがバッファを所有するかを返します。
+	 * 内部参照バッファの場合は、常にtrueです。
+	 * 外部参照バッファの場合は、バッファにアクセスする前に、このパラメタを確認してください。
 	 */
 	public boolean hasBuffer()
 	{
 		return this._buf != null;
 	}
 	/**
-	 *　追加機能-無し。
-	 * @throws NyARException 
+	 * この関数は、ラスタに外部参照バッファをセットします。
+	 * 外部参照バッファを持つインスタンスでのみ使用できます。内部参照バッファを持つインスタンスでは使用できません。
 	 */
 	public void wrapBuffer(Object i_ref_buf) throws NyARException
 	{
@@ -133,18 +164,19 @@ public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 	}
 
 	/**
-	 * 指定した数値でラスタを埋めます。
+	 * この関数は、指定した数値でラスタを埋めます。
 	 * この関数は高速化していません。
 	 * @param i_value
+	 * 埋める数値を指定します。0から255の数値を指定して下さい。
 	 */
 	public void fill(int i_value)
 	{
-		assert (this.isEqualBufferType(this.getBufferType()));
 		this._impl.fill(this,i_value);
 	}
 
 	/**
-	 * ラスタの異解像度間コピーをします。
+	 * この関数は、指定ラスタに、このインスタンスの内容をコピーをします。
+	 * 異解像度間コピーもできますが、入力範囲とラスタサイズの間には、一定の関係が成立する必要があります。
 	 * @param i_input
 	 * 入力ラスタ
 	 * @param i_top
@@ -167,13 +199,14 @@ public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 	////////////////////////////////////////////////////////////////////////////////
 	//ここからラスタドライバ
 	
-	interface IdoFilterImpl
+	/** ラスタドライバの関数を定義します。*/
+	protected interface IdoFilterImpl
 	{
 		public void fill(NyARGrayscaleRaster i_raster,int i_value);
 		public void copyTo(NyARGrayscaleRaster i_input, int i_left,int i_top,int i_skip, NyARGrayscaleRaster o_output);
 	}
-	
-	final class IdoFilterImpl_INT1D_GRAY_8 implements IdoFilterImpl
+	/**　{@link NyARBufferType#INT1D_GRAY_8}形式のラスタドライバです。*/
+	protected final class IdoFilterImpl_INT1D_GRAY_8 implements IdoFilterImpl
 	{
 		public void fill(NyARGrayscaleRaster i_raster,int i_value)
 		{

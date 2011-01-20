@@ -35,22 +35,31 @@ import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 
+/**
+ * このクラスは、ベクトル(直線)から回転行列を計算する関数を定義します。
+ * 通常、ユーザがこのクラスを使うことはありません。{@link NyARRotMatrix}クラスから使います。
+ */
 public class NyARRotVector
 {
 
-	//publicメンバ達
+	/** ベクトル要素1*/
 	public double v1;
-
+	/** ベクトル要素2*/
 	public double v2;
-
+	/** ベクトル要素3*/
 	public double v3;
 
-	//privateメンバ達
-	
+	//privateメンバ達	
 	private NyARPerspectiveProjectionMatrix _projection_mat_ref;
-
 	private NyARDoubleMatrix44 _inv_cpara=new NyARDoubleMatrix44();
 
+	/**
+	 * コンストラクタです。
+	 * 射影変換オブジェクトの参照値を設定して、インスタンスを作成します。
+	 * @param i_cmat
+	 * 射影変換オブジェクト。この値はインスタンスの生存中は変更しないでください。
+	 * @throws NyARException
+	 */
 	public NyARRotVector(NyARPerspectiveProjectionMatrix i_cmat) throws NyARException
 	{
 		this._inv_cpara.inverse(i_cmat);
@@ -58,9 +67,12 @@ public class NyARRotVector
 	}
 
 	/**
-	 * ２直線に直交するベクトルを計算する・・・だと思う。
+	 * この関数は、２直線に直交するベクトルを計算して、その３次元ベクトルをインスタンスに格納します。
+	 * （多分）
 	 * @param i_linear1
+	 * 直線１
 	 * @param i_linear2
+	 * 直線２
 	 */
 	public void exteriorProductFromLinear(NyARLinear i_linear1, NyARLinear i_linear2)
 	{
@@ -79,13 +91,14 @@ public class NyARRotVector
 		this.v3 = m2 / w;
 		return;
 	}
-
 	/**
-	 * static int check_dir( double dir[3], double st[2], double ed[2],double cpara[3][4] ) Optimize:STEP[526->468]
-	 * ベクトルの開始/終了座標を指定して、ベクトルの方向を調整する。
+	 * この関数は、ARToolKitのcheck_dir関数に相当します。
+	 * 詳細は不明です。(ベクトルの開始/終了座標を指定して、ベクトルの方向を調整？)
 	 * @param i_start_vertex
+	 * 開始位置？
 	 * @param i_end_vertex
-	 * @param cpara
+	 * 終了位置？
+	 * @throws NyARException
 	 */
 	public void checkVectorByVertex(final NyARDoublePoint2d i_start_vertex, final NyARDoublePoint2d i_end_vertex) throws NyARException
 	{
@@ -124,12 +137,10 @@ public class NyARRotVector
 		}
 	}
 	/**
-	 * int check_rotation( double rot[2][3] )
-	 * 2つのベクトル引数の調整をする？
-	 * @param i_r
+	 * この関数は、ARToolKitのcheck_rotationに相当する計算をします。
+	 * 詳細は不明です。(2つのベクトルの関係を調整？)
 	 * @throws NyARException
 	 */
-
 	public final static void checkRotation(NyARRotVector io_vec1, NyARRotVector io_vec2) throws NyARException
 	{
 		double w;

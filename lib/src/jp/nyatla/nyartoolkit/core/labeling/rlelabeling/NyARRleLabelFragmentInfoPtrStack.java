@@ -26,9 +26,16 @@ package jp.nyatla.nyartoolkit.core.labeling.rlelabeling;
 
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabel;
+import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabeling_ARToolKit;
+import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARPointerStack;
 
-
+/**
+ * このクラスは、{@link NyARRleLabelFragmentInfo}の参照値の動的配列です。
+ * {@link NyARLabeling_Rle}が使います。
+ * {@link NyARPointerStack}からの追加機能として、配列要素のソート機能があります。
+ */
 public class NyARRleLabelFragmentInfoPtrStack  extends NyARPointerStack<NyARRleLabelFragmentInfo>
 {
 	public NyARRleLabelFragmentInfoPtrStack(int i_length) throws NyARException
@@ -38,7 +45,7 @@ public class NyARRleLabelFragmentInfoPtrStack  extends NyARPointerStack<NyARRleL
 	}
 
 	/**
-	 * エリアの大きい順にラベルをソートします。
+	 * この関数は、配列を{@link NyARLabelingLabel#area}でソートします。
 	 */
 	final public void sortByArea()
 	{

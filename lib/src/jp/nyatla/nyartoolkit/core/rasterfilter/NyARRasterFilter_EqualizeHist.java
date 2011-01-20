@@ -27,20 +27,38 @@ package jp.nyatla.nyartoolkit.core.rasterfilter;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.analyzer.raster.NyARRasterAnalyzer_Histogram;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
+import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARHistogram;
+
 /**
- * ヒストグラムを平滑化します。
- *
+ * このクラスは、ヒストグラムの平滑化フィルタです。
+ * <p>対応している画素形式は以下の通りです。
+ * <li>{@link NyARBufferType#INT1D_GRAY_8}
+ * </p>
  */
 public class NyARRasterFilter_EqualizeHist extends NyARRasterFilter_CustomToneTable
 {
 	private NyARRasterAnalyzer_Histogram _hist_analyzer;
 	private NyARHistogram _histogram=new NyARHistogram(256);
+	/**
+	 * コンストラクタです。
+	 * 入出力ラスタの形式と、ヒストグラムのサンプリングパラメータを入力して、インスタンスを生成します。
+	 * @param i_raster_type
+	 * 入出力ラスタの画素形式。
+	 * @param i_sample_interval
+	 * ヒストグラム分析の間引き値。何ラインおきに画素のスキャンを行うかを指定します。
+	 * 1以上の数値を指定してください。
+	 * @throws NyARException
+	 */
 	public NyARRasterFilter_EqualizeHist(int i_raster_type,int i_sample_interval) throws NyARException
 	{
 		super(i_raster_type);
 		this._hist_analyzer=new NyARRasterAnalyzer_Histogram(i_raster_type,i_sample_interval);
 	}
+	/**
+	 * 入力ラスタにトーンフィルタを適応した画素を出力ラスタへ書込みます。
+	 * 画素形式は、コンストラクタに指定した形式に合せてください。
+	 */
 	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException
 	{
 		//ヒストグラムを得る

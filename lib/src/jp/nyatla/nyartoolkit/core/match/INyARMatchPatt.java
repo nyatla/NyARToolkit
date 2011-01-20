@@ -33,9 +33,16 @@ package jp.nyatla.nyartoolkit.core.match;
 import jp.nyatla.nyartoolkit.core.NyARCode;
 
 /**
- * ARCodeとINyARColorPattの間で一致計算をするインタフェイスです。
+ * このインタフェイスは、パターンマッチ処理の共通関数を定義します。
+ * パターンマッチクラスは、基準{@link NyARCode}パターンと、入力した画像の比較機能を提供します。
+ * 比較関数の多くが実体クラスに移動したため、現在このインタフェイスは意味を失っています。
  */
 public interface INyARMatchPatt
 {
+	/**
+	 * この関数は、インスタンスに基準となるARマーカオブジェクトをセットします。
+	 * @param i_code
+	 * セットするARマーカ
+	 */
 	public void setARCode(NyARCode i_code);
 }

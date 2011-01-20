@@ -35,21 +35,26 @@ import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
- * ARToolKit互換のラベリングクラスです。 ARToolKitと同一な評価結果を返します。
- * 
+ * このクラスは、ARToolKitのアルゴリズムと互換性のあるラベリングクラスです。
+ * 入力画像に対して、インデクス化されたラべリング画像を出力します。
  */
 final public class NyARLabeling_ARToolKit
 {
 	private static final int WORK_SIZE = 1024 * 32;// #define WORK_SIZE 1024*32
 
-	private final NyARWorkHolder work_holder = new NyARWorkHolder(WORK_SIZE);
+	private final NyARWorkHolder _work_holder = new NyARWorkHolder(WORK_SIZE);
 
 
 	/**
-	 * static ARInt16 *labeling2( ARUint8 *image, int thresh,int *label_num, int **area, double **pos, int **clip,int **label_ref, int LorR ) 関数の代替品
-	 * ラスタimageをラベリングして、結果を保存します。 Optimize:STEP[1514->1493]
-	 * 
+	 * この関数は、ラスタをラべリングします。
+	 * 結果は、o_destinationに出力します。
+	 * <p>メモ -
+	 * この関数の元になるARToolKitの関数は、static ARInt16 *labeling2( ARUint8 *image, int thresh,int *label_num, int **area, double **pos, int **clip,int **label_ref, int LorR )です。
+	 * </p>
 	 * @param i_raster
+	 * 入力元の二値ラスタオブジェクトです。バッファフォーマットは、{@link NyARBufferType.INT1D_BIN_8}である必要があります。
+	 * @param o_destination
+	 * ラべリング画像の出力先オブジェクトです。i_rasterと同じサイズである必要があります。
 	 * @throws NyARException
 	 */
 	public int labeling(NyARBinRaster i_raster,NyARLabelingImage o_destination) throws NyARException
@@ -79,7 +84,7 @@ final public class NyARLabeling_ARToolKit
 		int wk_max = 0;
 
 		int pixel_index;
-		int[][] work2 = this.work_holder.work2;
+		int[][] work2 = this._work_holder.work2;
 
 		// [1,1](ptr0)と、[0,1](ptr1)のインデクス値を計算する。
 		for (j = 1; j < lysize - 1; j++) {// for (int j = 1; j < lysize - 1;j++, pnt += poff*2, pnt2 += 2) {
@@ -185,7 +190,7 @@ final public class NyARLabeling_ARToolKit
 						}
 					} else {
 						// 現在地までの領域を予約
-						this.work_holder.reserv(wk_max);
+						this._work_holder.reserv(wk_max);
 						wk_max++;
 						label_idxtbl[wk_max - 1] = wk_max;
 						label_pixel = wk_max;// work[wk_max-1] = *pnt2 = wk_max;
@@ -265,7 +270,7 @@ final public class NyARLabeling_ARToolKit
 }
 
 /**
- * NyARLabeling_O2のworkとwork2を可変長にするためのクラス
+ * このクラスは、{@link NyARLabeling_ARToolKit}のworkとwork2メンバを可変長にするためのクラスです。
  * 
  * 
  */

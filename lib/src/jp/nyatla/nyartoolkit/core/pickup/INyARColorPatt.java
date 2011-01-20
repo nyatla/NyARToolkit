@@ -34,23 +34,21 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
+/**
+ * このインタフェイスは、{@link INyARRgbRaster}に、RGBラスタから任意の４頂点で定義した領域を、自由変形して格納する関数を追加します。
+ * 元々は、ARToolKitにある、画像からパターンを取得する処理用の関数です。
+ */
 public interface INyARColorPatt extends INyARRgbRaster
 {
 	/**
-	 * ラスタイメージからi_square部分のカラーパターンを抽出して、thisメンバに格納します。
-	 * 
+	 * この関数は、画像の４頂点でかこまれる領域から、自由変形したパターンを取得して格納します。
+	 * 実装クラスでは、imageのi_vertexsで定義される四角形からパターンを取得して、インスタンスのバッファに格納する処理を書いてください。
 	 * @param image
-	 * Source raster object.
-	 * ----
-	 * 抽出元のラスタオブジェクト
+	 * 取得元の画像です。
 	 * @param i_vertexs
-	 * Vertexes of the square. Number of element must be 4.
-	 * ----
-	 * 射影変換元の４角形を構成する頂点群頂群。要素数は4であること。
+	 * 収録元画像上の、４頂点を格納した配列です。要素数は4である必要があります。
 	 * @return
-	 * True if sucessfull; otherwise false.
-	 * ----
-	 * ラスターの取得に成功するとTRUE/失敗するとFALSE
+	 * 取得に成功すると、trueを返します。
 	 * @throws NyARException
 	 */
 	public boolean pickFromRaster(INyARRgbRaster image, NyARIntPoint2d[] i_vertexs) throws NyARException;

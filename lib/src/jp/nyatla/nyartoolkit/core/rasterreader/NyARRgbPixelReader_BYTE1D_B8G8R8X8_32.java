@@ -31,19 +31,33 @@
 package jp.nyatla.nyartoolkit.core.rasterreader;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
+/**
+ * このクラスは、{@link NyARBufferType#BYTE1D_B8G8R8X8_32}形式のラスタバッファに対応する、ピクセルリーダです。
+ */
 final public class NyARRgbPixelReader_BYTE1D_B8G8R8X8_32 implements INyARRgbPixelReader
 {
+	/** 参照する外部バッファ*/
 	protected byte[] _ref_buf;
 	private NyARIntSize _ref_size;
-
+	/**
+	 * コンストラクタです。
+	 * 参照するラスタのバッファとサイズを指定して、インスタンスを作成します。
+	 * @param i_buf
+	 * ラスタのバッファオブジェクトの参照値
+	 * @param i_size
+	 * ラスタのサイズオブジェクトの参照値。
+	 */
 	public NyARRgbPixelReader_BYTE1D_B8G8R8X8_32(byte[] i_ref_buf, NyARIntSize i_size)
 	{
 		this._ref_buf=i_ref_buf;
 		this._ref_size = i_size;
 	}
-
+	/**
+	 * この関数は、指定した座標の1ピクセル分のRGBデータを、配列に格納して返します。
+	 */
 	public void getPixel(int i_x, int i_y, int[] o_rgb)
 	{
 		final byte[] ref_buf =this._ref_buf;
@@ -53,7 +67,9 @@ final public class NyARRgbPixelReader_BYTE1D_B8G8R8X8_32 implements INyARRgbPixe
 		o_rgb[2] = (ref_buf[bp + 0] & 0xff);// B
 		return;
 	}
-
+	/**
+	 * この関数は、座標群から、ピクセルごとのRGBデータを、配列に格納して返します。
+	 */
 	public void getPixelSet(int[] i_x, int[] i_y, int i_num, int[] o_rgb)
 	{
 		int bp;
@@ -67,6 +83,9 @@ final public class NyARRgbPixelReader_BYTE1D_B8G8R8X8_32 implements INyARRgbPixe
 		}
 		return;
 	}
+	/**
+	 * この関数は、RGBデータを指定した座標のピクセルにセットします。
+	 */
 	public void setPixel(int i_x, int i_y, int[] i_rgb) throws NyARException
 	{
 		final byte[] ref_buf =this._ref_buf;
@@ -75,6 +94,9 @@ final public class NyARRgbPixelReader_BYTE1D_B8G8R8X8_32 implements INyARRgbPixe
 		ref_buf[bp+1] = (byte)i_rgb[1];// G
 		ref_buf[bp+0] = (byte)i_rgb[2];// B	
 	}
+	/**
+	 * この関数は、RGBデータを指定した座標のピクセルにセットします。
+	 */
 	public void setPixel(int i_x, int i_y, int i_r,int i_g,int i_b) throws NyARException
 	{
 		final byte[] ref_buf =this._ref_buf;
@@ -83,11 +105,18 @@ final public class NyARRgbPixelReader_BYTE1D_B8G8R8X8_32 implements INyARRgbPixe
 		ref_buf[bp+1] = (byte)i_g;// G
 		ref_buf[bp+0] = (byte)i_b;// B	
 	}
-	
+	/**
+	 * この関数は、機能しません。
+	 */	
 	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intrgb) throws NyARException
 	{
 		NyARException.notImplement();		
 	}
+	/**
+	 * この関数は、参照しているバッファをi_ref_bufferへ切り替えます。
+	 * 通常は、このインスタンスを所有するクラスが使います。ユーザが使うことはありません。
+	 * 関数は、入力値のバッファサイズと、型だけを確認します。
+	 */	
 	public void switchBuffer(Object i_ref_buffer) throws NyARException
 	{
 		assert(((byte[])i_ref_buffer).length>=this._ref_size.w*this._ref_size.h*4);

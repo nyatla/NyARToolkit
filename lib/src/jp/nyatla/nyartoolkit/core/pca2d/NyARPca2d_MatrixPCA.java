@@ -34,9 +34,9 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARMat;
 import jp.nyatla.nyartoolkit.core.NyARVec;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix22;
+
 /**
- * NyARMatrixを利用した主成分分析
- * ARToolKitと同じ処理をします。
+ * このクラスは、ARToolKitと同じ手順で主成分分析を行います。
  */
 public class NyARPca2d_MatrixPCA implements INyARPca2d
 {
@@ -44,7 +44,7 @@ public class NyARPca2d_MatrixPCA implements INyARPca2d
 	private final NyARMat __pca_evec = new NyARMat(2, 2);
 	private final NyARVec __pca_ev = new NyARVec(2);
 	private final NyARVec __pca_mean = new NyARVec(2);	
-	
+	//override
 	public void pca(double[] i_v1,double[] i_v2,int i_number_of_point,NyARDoubleMatrix22 o_evec, double[] o_ev,double[] o_mean) throws NyARException
 	{
 		final NyARMat input = this.__pca_input;// 次処理で初期化される。		

@@ -10,26 +10,79 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 
 /**
- * 定数閾値による2値化をする。
- * 
+ * この関数は、ARToolKit互換のアルゴリズムでRGBラスタを2値画像へ変換します。
+ * <p>ARToolKitのアルゴリズム -
+ * ARToolKitでは、敷居値thと、RGB成分 R,G,Bから、次の式で２値画素を求めます。
+ * <pre>A=th*3<(R+G+B)?0:1</pre>
+ * </p>
+ * <p>入力可能な画素形式
+ * 入力可能な画素形式は以下の通りです。
+ * <ul>
+ * <li>{@link NyARBufferType#BYTE1D_B8G8R8_24}
+ * <li>{@link NyARBufferType#BYTE1D_R8G8B8_24}
+ * <li>{@link NyARBufferType#BYTE1D_B8G8R8X8_32}
+ * <li>{@link NyARBufferType#BYTE1D_X8R8G8B8_32}
+ * <li>{@link NyARBufferType#INT1D_X8R8G8B8_32}
+ * <li>{@link NyARBufferType#WORD1D_R5G6B5_16LE}
+ * </ul>
+ * </p>
+ * <p>出力可能な画素形式
+ * 出力可能な画素形式は1種類です。
+ * <ul>
+ * <li>{@link NyARBufferType#INT1D_BIN_8}
+ * </ul>
+ * </p>
  */
 public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rgb2Bin
 {
+	/** 敷居値*/
 	protected int _threshold;
 	private IdoThFilterImpl _do_threshold_impl;
-
+	/**
+	 * コンストラクタです。
+	 * 固定式位置の初期値、入力ラスタの画素形式を指定して、フィルタを作成します。
+	 * 出力ラスタの形式は、{@link NyARBufferType#INT1D_BIN_8}を選択します。
+	 * @param i_initial_threshold
+	 * 敷居値の初期値です。0&lt;n&lt;256の値を指定します。
+	 * @param i_in_raster_type
+	 * 入力ラスタの形式です。
+	 * @throws NyARException
+	 */
 	public NyARRasterFilter_ARToolkitThreshold(int i_threshold,int i_in_raster_type) throws NyARException
 	{
 		if(!initInstance(i_threshold,i_in_raster_type,NyARBufferType.INT1D_BIN_8)){
 			throw new NyARException();
 		}
 	}
+	/**
+	 * コンストラクタです。
+	 * 固定式位置の初期値、入力、出力ラスタの画素形式を指定して、フィルタを作成します。
+	 * @param i_threshold
+	 * 敷居値の初期値です。0&lt;n&lt;256の値を指定します。
+	 * @param i_in_raster_type
+	 * 入力ラスタの形式です。
+	 * @param i_out_raster_type
+	 * 出力ラスタの形式です。
+	 * @throws NyARException
+	 */
 	public NyARRasterFilter_ARToolkitThreshold(int i_threshold,int i_in_raster_type,int i_out_raster_type) throws NyARException
 	{
 		if(!initInstance(i_threshold,i_in_raster_type,i_out_raster_type)){
 			throw new NyARException();
 		}
 	}
+	/**
+	 * この関数は、クラスを初期化します。
+	 * コンストラクタから呼び出します。
+	 * @param i_threshold
+	 * 敷居値の初期値です。0以上、256未満の数値を指定します。
+	 * @param i_in_raster_type
+	 * 入力ラスタの画素形式を指定します。
+	 * @param i_out_raster_type
+	 * 出力ラスタの画素形式を指定します。
+	 * @return
+	 * 初期化に成功すると、trueを返します。
+	 */
 	protected boolean initInstance(int i_threshold,int i_in_raster_type,int i_out_raster_type)
 	{
 		switch(i_out_raster_type){
@@ -63,14 +116,19 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 	}	
 	
 	/**
-	 * 画像を２値化するための閾値。暗点<=th<明点となります。
+	 * この関数は、敷居値を設定します。
+	 * 0以上、256未満の数値を指定してください。
 	 * @param i_threshold
+	 * 設定する敷居値
 	 */
 	public void setThreshold(int i_threshold)
 	{
 		this._threshold = i_threshold;
 	}
-
+	/**
+	 * この関数は、入力画像を２値化した画像を出力画像へ書込みます。
+	 * 入力画像と出力画像のサイズは同じである必要があります。
+	 */
 	public void doFilter(INyARRgbRaster i_input, NyARBinRaster i_output) throws NyARException
 	{
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
@@ -78,6 +136,17 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 		this._do_threshold_impl.doThFilter(i_input,0,0,s.w,s.h,this._threshold,i_output);
 		return;
 	}
+	/**
+	 * この関数は、入力画像の一部分だけを２値化して、出力画像の該当位置へ書込みます。
+	 * 入力画像と出力画像のサイズは同じである必要があります。
+	 * @param i_input
+	 * 入力画像
+	 * @param i_area
+	 * ２値化する矩形範囲。入力画像の範囲内である必要があります。
+	 * @param i_output
+	 * 出力画像
+	 * @throws NyARException
+	 */
 	public void doFilter(INyARRgbRaster i_input,NyARIntRect i_area, NyARBinRaster i_output) throws NyARException
 	{
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
@@ -87,13 +156,13 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 	}
 	
 
-
+	/** フィルタ関数の定義*/
 	protected interface IdoThFilterImpl
 	{
 		public void doThFilter(INyARRaster i_raster,int i_l,int i_t,int i_w,int i_h,int i_th,INyARRaster o_raster);
 	}
 	
-	class doThFilterImpl_BUFFERFORMAT_BYTE1D_RGB_24 implements IdoThFilterImpl
+	private class doThFilterImpl_BUFFERFORMAT_BYTE1D_RGB_24 implements IdoThFilterImpl
 	{
 		public void doThFilter(INyARRaster i_raster,int i_l,int i_t,int i_w,int i_h,int i_th,INyARRaster o_raster)
 		{
@@ -142,7 +211,7 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 			return;	
 		}
 	}
-	class doThFilterImpl_BUFFERFORMAT_INT1D_X8R8G8B8_32 implements IdoThFilterImpl
+	private class doThFilterImpl_BUFFERFORMAT_INT1D_X8R8G8B8_32 implements IdoThFilterImpl
 	{
 		public void doThFilter(INyARRaster i_raster,int i_l,int i_t,int i_w,int i_h,int i_th,INyARRaster o_raster)
 		{
@@ -185,7 +254,7 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 	
 
 
-	class doThFilterImpl_BUFFERFORMAT_BYTE1D_B8G8R8X8_32 implements IdoThFilterImpl
+	private class doThFilterImpl_BUFFERFORMAT_BYTE1D_B8G8R8X8_32 implements IdoThFilterImpl
 	{
 		public void doThFilter(INyARRaster i_raster,int i_l,int i_t,int i_w,int i_h,int i_th,INyARRaster o_raster)
 		{
@@ -233,7 +302,7 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 	    }
 	}
 
-	class doThFilterImpl_BUFFERFORMAT_BYTE1D_X8R8G8B8_32 implements IdoThFilterImpl
+	private class doThFilterImpl_BUFFERFORMAT_BYTE1D_X8R8G8B8_32 implements IdoThFilterImpl
 	{
 		public void doThFilter(INyARRaster i_raster,int i_l,int i_t,int i_w,int i_h,int i_th,INyARRaster o_raster)
 		{
@@ -281,7 +350,7 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 	    }
 	}
 
-	class doThFilterImpl_BUFFERFORMAT_WORD1D_R5G6B5_16LE implements IdoThFilterImpl
+	private class doThFilterImpl_BUFFERFORMAT_WORD1D_R5G6B5_16LE implements IdoThFilterImpl
 	{
 		public void doThFilter(INyARRaster i_raster,int i_l,int i_t,int i_w,int i_h,int i_th,INyARRaster o_raster)
 		{

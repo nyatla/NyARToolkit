@@ -35,20 +35,38 @@ import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
- *
+ *　このクラスは、{@link NyARLabeling_ARToolKit}の出力するラべリング画像を格納するラスタです。
+ *　データに、インデクス化したラべリング画像と、ラベルの配列、画像のインデクスの配列を持ちます。
+ * <p>ラベル画像-
+ * ラべリング画像は、ラベルのインデクス値を格納します。インデクス値は、{@link #getIndexArray}で
+ * 得られるインデクス配列を使って、ラベル番号に変換できます。
+ * 例えば、インデクス番号nの画素は、ラベル番号L[n]になります。
+ * </p>
  */
 public class NyARLabelingImage extends NyARRaster_BasicClass
 {
 	private final static int MAX_LABELS = 1024*32;
-
-	protected int[] _ref_buf;
+	/** 画像バッファ*/
+	protected int[] _buf;
+	/** ラベル配列のスタック*/
 	protected NyARLabelingLabelStack _label_list;
+	/** インデクステーブル*/
 	protected int[] _index_table;
+	/** インデクステーブルが有効であるかを示す値*/
 	protected boolean _is_index_table_enable;
+	/**
+	 * コンストラクタです。
+	 * ラべリング画像のサイズを指定して、インスタンスを生成します。
+	 * @param i_width
+	 * ラスタの幅を指定します。
+	 * @param i_height
+	 * ラスタの高さを指定します。
+	 * @throws NyARException
+	 */
 	public NyARLabelingImage(int i_width, int i_height) throws NyARException
 	{
 		super(i_width,i_height,NyARBufferType.INT1D);
-		this._ref_buf =new int[i_height*i_width];
+		this._buf =new int[i_height*i_width];
 		this._label_list = new NyARLabelingLabelStack(MAX_LABELS);
 		this._index_table=new int[MAX_LABELS];
 		this._is_index_table_enable=false;
@@ -56,27 +74,34 @@ public class NyARLabelingImage extends NyARRaster_BasicClass
 		drawFrameEdge();
 		return;
 	}
+	/**
+	 * 画像バッファを返します。バッファの形式は、{@link NyARBufferType.INT1D}(int[])です。
+	 */
 	public Object getBuffer()
 	{
-		return this._ref_buf;
+		return this._buf;
 	}
 	public boolean hasBuffer()
 	{
-		return this._ref_buf!=null;
+		return this._buf!=null;
 	}
+	/**
+	 * このクラスでは、関数は機能しません。
+	 */
 	public void wrapBuffer(Object i_ref_buf) throws NyARException
 	{
 		NyARException.notImplement();
 	}	
 	/**
-	 * エッジを書きます。
+	 * この関数は、矩形エッジ（画像を囲む枠）を書きます。
+	 * ARToolKit互換のコーナー検出の前処理に必要なため、実装しています。
 	 */
 	public void drawFrameEdge()
 	{
 		int w=this._size.w;
 		int h=this._size.h;
 		// NyLabelingImageのイメージ初期化(枠書き)
-		int[] img = (int[]) this._ref_buf;
+		int[] img = (int[]) this._buf;
 		int bottom_ptr = (h - 1) * w;
 		for (int i = 0; i < w; i++) {
 			img[i] = 0;
@@ -90,25 +115,36 @@ public class NyARLabelingImage extends NyARRaster_BasicClass
 	}
 
 	/**
-	 * ラベリング結果がインデックステーブルを持つ場合、その配列を返します。
-	 * 持たない場合、nullを返します。
-	 * 
+	 * この関数は、ラベルのインデクステーブルを返します。
+	 * <p>格納値 - 
 	 * 値がnullの時はラベル番号そのものがラスタに格納されていますが、
 	 * null以外の時はラスタに格納されているのはインデクス番号です。
-	 * 
 	 * インデクス番号とラベル番号の関係は、以下の式で表されます。
-	 * ラベル番号:=value[インデクス番号]
-	 * 
+	 * ラベル番号n,インデクス番号i: n=indextable[i]
+	 * </p>
+	 * @return
+	 * ラベリング結果がインデックステーブルを持つ場合、その配列を返します。
+	 * 持たない場合、nullを返します。
 	 */
 	public int[] getIndexArray()
 	{
 		return this._is_index_table_enable?this._index_table:null;
 	}
-	
+	/**
+	 * この関数は、ラベル情報を格納したスタックオブジェクトを返します。
+	 * @return
+	 * 現在の画像に対するラベルのスタック
+	 */
 	public NyARLabelingLabelStack getLabelStack()
 	{
 		return this._label_list;
 	}
+	/**
+	 * この関数は、インスタンスの状態をリセットします。
+	 * リセット後にインスタンスのラベルスタックはクリアされますが、画像情報は未定義値になります。
+	 * @param i_label_index_enable
+	 * モード値。現在指定できるのは、trueのみです。
+	 */
 	public void reset(boolean i_label_index_enable)
 	{
 		assert(i_label_index_enable==true);//非ラベルモードは未実装
@@ -117,16 +153,19 @@ public class NyARLabelingImage extends NyARRaster_BasicClass
 		return;
 	}
 	/**
-	 * i_labelのラベルの、クリップ領域が上辺に接しているx座標を返します。
-	 * @param i_index
+	 * この関数は、i_labelのラベルのクリップ領域が上辺に接している点の、x座標を返します。
+	 * NyARToolkitでは、ラベルの輪郭をトレースするときに、その始点を探索するために使います。
+	 * @param i_label
+	 * 探索するラベル
 	 * @return
+	 * ラベルの上辺クリップとの接点となる、x位置
 	 */
 	public int getTopClipTangentX(NyARLabelingLabel i_label) throws NyARException
 	{
 		int pix;
 		int i_label_id=i_label.id;
 		int[] index_table=this._index_table;
-		int[] limage=this._ref_buf;
+		int[] limage=this._buf;
 		int limage_ptr=i_label.clip_t*this._size.w;
 		final int clip1 = i_label.clip_r;
 		// p1=ShortPointer.wrap(limage,j*xsize+clip.get());//p1 =&(limage[j*xsize+clip[0]]);

@@ -30,19 +30,21 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 
 /**
- * 視錐台と、これを使った演算関数を定義します。
- * @author nyatla
- *
+ * このクラスは、視錐台と、これを使った演算関数を定義します。
+ * クラスのメンバには、視錐台行列、その逆行列があります。
+ * 提供する機能は、視錐台を使った演算です。
  */
 public class NyARFrustum
 {
-	/** frastum行列*/
+	/** frustum行列*/
 	protected NyARDoubleMatrix44 _frustum_rh=new NyARDoubleMatrix44();
-	/** frastum逆行列*/
-	protected NyARDoubleMatrix44 _inv_frustum_rh=new NyARDoubleMatrix44();	
+	/** frustum逆行列*/
+	protected NyARDoubleMatrix44 _inv_frustum_rh=new NyARDoubleMatrix44();
+	/** 撮像画面のサイズ*/
 	protected NyARIntSize _screen_size=new NyARIntSize();
 	/**
-	 * コンストラクタです。ARToolkitの射影変換行列から、インスタンスを作ります。
+	 * コンストラクタです。
+	 * ARToolkitの射影変換行列から、インスタンスを作ります。
 	 * @param i_projection
 	 * @param i_width
 	 * スクリーンサイズです。
@@ -58,10 +60,13 @@ public class NyARFrustum
 		this.setValue(i_projection, i_width, i_height, i_near, i_far);
 	}
 	/**
-	 * ARToolKitスタイルの射影変換行列から、視錐台をセットします。
+	 * この関数は、ARToolKitスタイルの射影変換行列から視錐台を作成してセットします。
 	 * @param i_projection
+	 * ARToolKitスタイルの射影変換行列
 	 * @param i_width
+	 * スクリーンサイズです。
 	 * @param i_height
+	 * スクリーンサイズです。
 	 * @param i_near
 	 * nearポイントをmm単位で指定します。
 	 * @param i_far
@@ -74,20 +79,20 @@ public class NyARFrustum
 		this._screen_size.setValue(i_width,i_height);
 	}
 	/**
-	 * 画像上の座標を、撮像点座標に変換します。
-	 * この座標は、カメラ座標系です。
+	 * このスクリーン座標を、撮像点座標に変換します。
+	 * 撮像点の座標系は、カメラ座標系になります。
+	 * <p>公式 - 
+	 * この関数は、gluUnprojectのビューポートとモデルビュー行列を固定したものです。
+	 * 公式は、以下の物使用しました。
+	 * http://www.opengl.org/sdk/docs/man/xhtml/gluUnProject.xml
+	 * ARToolKitの座標系に合せて計算するため、OpenGLのunProjectとはix,iyの与え方が違います。画面上の座標をそのまま与えてください。
+	 * </p>
 	 * @param ix
-	 * 画像上の座標
+	 * スクリーン上の座標
 	 * @param iy
 	 * 画像上の座標
 	 * @param o_point_on_screen
 	 * 撮像点座標
-	 * <p>
-	 * この関数は、gluUnprojectのビューポートとモデルビュー行列を固定したものです。
-	 * 公式は、以下の物使用。
-	 * http://www.opengl.org/sdk/docs/man/xhtml/gluUnProject.xml
-	 * ARToolKitの座標系に合せて計算するため、OpenGLのunProjectとはix,iyの与え方が違います。画面上の座標をそのまま与えてください。
-	 * </p>
 	 */
 	public final void unProject(double ix,double iy,NyARDoublePoint3d o_point_on_screen)
 	{
@@ -103,13 +108,16 @@ public class NyARFrustum
 		return;
 	}
 	/**
-	 * 画面上の点と原点を結ぶ直線と任意姿勢の平面の交差点を、カメラの座標系で取得します。
+	 * この関数は、スクリーン上の点と原点を結ぶ直線と、任意姿勢の平面の交差点を、カメラの座標系で取得します。
 	 * この座標は、カメラ座標系です。
 	 * @param ix
+	 * スクリーン上の座標
 	 * @param iy
+	 * スクリーン上の座標
 	 * @param i_mat
 	 * 平面の姿勢行列です。
 	 * @param o_pos
+	 * 結果を受け取るオブジェクトです。
 	 */
 	public final void unProjectOnCamera(double ix,double iy,NyARDoubleMatrix44 i_mat,NyARDoublePoint3d o_pos)
 	{
@@ -130,15 +138,19 @@ public class NyARFrustum
 	/**
 	 * 画面上の点と原点を結ぶ直線と任意姿勢の平面の交差点を、平面の座標系で取得します。
 	 * ARToolKitの本P175周辺の実装と同じです。
-	 * @param ix
-	 * @param iy
-	 * @param i_mat
-	 * 平面の姿勢行列です。
-	 * @param o_pos
-	 * @return
 	 * <p>
 	 * このAPIは繰り返し使用には最適化されていません。同一なi_matに繰り返しアクセスするときは、展開してください。
 	 * </p>
+	 * @param ix
+	 * スクリーン上の座標
+	 * @param iy
+	 * スクリーン上の座標
+	 * @param i_mat
+	 * 平面の姿勢行列です。
+	 * @param o_pos
+	 * 結果を受け取るオブジェクトです。
+	 * @return
+	 * 計算に成功すると、trueを返します。
 	 */
 	public final boolean unProjectOnMatrix(double ix,double iy,NyARDoubleMatrix44 i_mat,NyARDoublePoint3d o_pos)
 	{
@@ -153,11 +165,15 @@ public class NyARFrustum
 		return true;
 	}
 	/**
-	 * カメラ座標系を、画面座標へ変換します。
+	 * カメラ座標系の点を、スクリーン座標の点へ変換します。
 	 * @param i_x
+	 * カメラ座標系の点
 	 * @param i_y
+	 * カメラ座標系の点
 	 * @param i_z
+	 * カメラ座標系の点
 	 * @param o_pos2d
+	 * 結果を受け取るオブジェクトです。
 	 */
 	public final void project(double i_x,double i_y,double i_z,NyARDoublePoint2d o_pos2d)
 	{
@@ -173,6 +189,7 @@ public class NyARFrustum
 	 * 透視変換行列の参照値を返します。
 	 * この値は読出し専用です。変更しないでください。
 	 * @return
+	 * [read only]透視変換行列を格納したオブジェクト
 	 */
 	public final NyARDoubleMatrix44 refMatrix()
 	{
@@ -182,6 +199,7 @@ public class NyARFrustum
 	 * 透視変換行列の逆行列を返します。
 	 * この値は読出し専用です。変更しないでください。
 	 * @return
+	 * [read only]透視変換行列の逆行列を格納したオブジェクト
 	 */
 	public final NyARDoubleMatrix44 refInvMatrix()
 	{

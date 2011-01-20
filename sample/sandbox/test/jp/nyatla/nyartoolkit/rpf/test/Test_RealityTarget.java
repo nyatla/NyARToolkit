@@ -307,7 +307,7 @@ public class Test_RealityTarget extends Frame implements MouseListener
     	NyARIntPoint2d b=new NyARIntPoint2d();
     	t.getTargetCenter(b);
     	NyARIntRect r=t._ref_tracktarget._sample_area;
-    	g.drawString("[K]("+t.grab_rate+")",b.x,b.y);
+    	g.drawString("[K]("+t._grab_rate+")",b.x,b.y);
 		g.drawRect(r.x,r.y, r.w,r.h);
     	if(t._ref_tracktarget._st_type==NyARTargetStatus.ST_RECT){
         	g.drawString(">"+((NyARRectTargetStatus)(t._ref_tracktarget._ref_status)).detect_type,r.x,r.y+10);
@@ -320,14 +320,14 @@ public class Test_RealityTarget extends Frame implements MouseListener
     	NyARIntPoint2d b=new NyARIntPoint2d();
     	t.getTargetCenter(b);
     	NyARIntRect r=t._ref_tracktarget._sample_area;
-    	g.drawString("[U]("+t.grab_rate+")",b.x,b.y);
+    	g.drawString("[U]("+t._grab_rate+")",b.x,b.y);
 		g.drawRect(r.x,r.y, r.w,r.h);
 	}
     private void drawDeadRT(Graphics g,NyARRealityTarget t)
     {
     	g.setColor(Color.RED);
     	NyARIntRect r=t._ref_tracktarget._sample_area;
-    	g.drawString("[D]("+t.grab_rate+")",r.x,r.y);
+    	g.drawString("[D]("+t._grab_rate+")",r.x,r.y);
     }
     
 	private final static String PATT_HIRO = "../../Data/patt.hiro";

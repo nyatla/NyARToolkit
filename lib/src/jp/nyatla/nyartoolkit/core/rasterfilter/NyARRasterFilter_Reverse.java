@@ -31,13 +31,21 @@ import jp.nyatla.nyartoolkit.core.rasterreader.*;
 
 
 /**
- * ネガポジ反転フィルタ。
- * 画像の明暗を反転します。
- *
+ * このクラスは、ネガポジ反転フィルタです。
+ * <p>対応している画素形式は以下の通りです。
+ * <li>{@link NyARBufferType#INT1D_GRAY_8}
+ * </p>
  */
 public class NyARRasterFilter_Reverse implements INyARRasterFilter
 {
-	private IdoFilterImpl _do_filter_impl; 
+	private IdoFilterImpl _do_filter_impl;
+	/**
+	 * コンストラクタです。
+	 * 入出力ラスタの形式を入力して、インスタンスを生成します。
+	 * @param i_raster_type
+	 * 入出力ラスタの画素形式。
+	 * @throws NyARException
+	 */	
 	public NyARRasterFilter_Reverse(int i_raster_type) throws NyARException
 	{
 		switch (i_raster_type) {
@@ -48,16 +56,20 @@ public class NyARRasterFilter_Reverse implements INyARRasterFilter
 			throw new NyARException();
 		}
 	}
+	/**
+	 * 入力ラスタを反転して、画素を出力ラスタへ書込みます。
+	 * 画素形式は、コンストラクタに指定した形式に合せてください。
+	 */	
 	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException
 	{
 		this._do_filter_impl.doFilter(i_input,i_output,i_input.getSize());
 	}
-	
-	interface IdoFilterImpl
+	/** 変換用ドライバのインタフェイス*/	
+	protected interface IdoFilterImpl
 	{
 		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException;
 	}
-	class IdoFilterImpl_GRAY_8 implements IdoFilterImpl
+	private class IdoFilterImpl_GRAY_8 implements IdoFilterImpl
 	{
 		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException
 		{

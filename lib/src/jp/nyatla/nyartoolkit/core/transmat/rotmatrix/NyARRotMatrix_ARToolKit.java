@@ -33,16 +33,18 @@ package jp.nyatla.nyartoolkit.core.transmat.rotmatrix;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.param.*;
+
 /**
- * 回転行列計算用の、3x3行列
- *
+ * このクラスは、ARToolKitと同じ計算結果を出力する、行列クラスです。
  */
 public class NyARRotMatrix_ARToolKit extends NyARRotMatrix
 {	
 	/**
-	 * インスタンスを準備します。
-	 * 
-	 * @param i_param
+	 * コンストラクタです。
+	 * 参照する射影変換オブジェクトを指定して、インスタンスを生成します。
+	 * @param i_matrix
+	 * 参照する射影変換オブジェクト
+	 * @throws NyARException
 	 */
 	public NyARRotMatrix_ARToolKit(NyARPerspectiveProjectionMatrix i_matrix) throws NyARException
 	{
@@ -50,10 +52,10 @@ public class NyARRotMatrix_ARToolKit extends NyARRotMatrix
 		this._angle=new NyARDoublePoint3d();
 		return;
 	}
+	/** ARToolkitスタイルの角度値です。*/
 	final protected NyARDoublePoint3d _angle;
 	
-
-	
+	//override
 	public final void initRotBySquare(final NyARLinear[] i_linear,final NyARDoublePoint2d[] i_sqvertex) throws NyARException
 	{
 		super.initRotBySquare(i_linear,i_sqvertex);
@@ -61,15 +63,23 @@ public class NyARRotMatrix_ARToolKit extends NyARRotMatrix
 		this.updateAngleFromMatrix();
 		return;
 	}
+	/**
+	 * ARToolKitスタイルの角度値の参照値を返します。
+	 * @return
+	 * [read only]角度値
+	 */
 	public final NyARDoublePoint3d refAngle()
 	{
 		return this._angle;
 	}
 	/**
-	 * 回転角から回転行列を計算してセットします。
+	 * ARToolKitスタイルの角度値を、行列にセットします。
 	 * @param i_x
+	 * X軸の回転量。
 	 * @param i_y
+	 * Y軸の回転量。
 	 * @param i_z
+	 * Z軸の回転量。
 	 */
 	public void setAngle(final double i_x, final double i_y, final double i_z)
 	{

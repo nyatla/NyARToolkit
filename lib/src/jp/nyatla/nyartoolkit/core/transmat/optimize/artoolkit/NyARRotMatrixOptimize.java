@@ -37,51 +37,30 @@ import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.*;
 import jp.nyatla.nyartoolkit.core.transmat.solver.INyARTransportVectorSolver;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
+
 /**
- * 基本姿勢と実画像を一致するように、角度を微調整→平行移動量を再計算
- * を繰り返して、変換行列を最適化する。
- *
+ * このクラスは、高速化したARToolKit由来の姿勢行列最適化処理を実装します。
+ * さらに高速化した{@link NyARRotMatrixOptimize_O2}を使用してください。
  */
 public class NyARRotMatrixOptimize implements INyARRotMatrixOptimize
 {
-	private final static int AR_GET_TRANS_MAT_MAX_LOOP_COUNT = 5;// #define AR_GET_TRANS_MAT_MAX_LOOP_COUNT 5
-	private final static double AR_GET_TRANS_MAT_MAX_FIT_ERROR = 1.0;// #define AR_GET_TRANS_MAT_MAX_FIT_ERROR 1.0
 	private final NyARPerspectiveProjectionMatrix _projection_mat_ref;
+	/**
+	 * コンストラクタです。
+	 * 射影変換オブジェクトの参照値を設定して、インスタンスを生成します。
+	 * @param i_projection_mat_ref
+	 * 射影変換オブジェクトの参照値。
+	 */	
 	public NyARRotMatrixOptimize(NyARPerspectiveProjectionMatrix i_projection_mat_ref)
 	{
 		this._projection_mat_ref=i_projection_mat_ref;
 		return;
 	}
-	final public double optimize(NyARRotMatrix_ARToolKit io_rotmat,NyARDoublePoint3d io_transvec,INyARTransportVectorSolver i_solver,NyARDoublePoint3d[] i_offset_3d,NyARDoublePoint2d[] i_2d_vertex) throws NyARException
-	{
-		double err = -1;
-		/*ループを抜けるタイミングをARToolKitと合わせるために変なことしてます。*/
-		for (int i = 0;; i++) {
-			// <arGetTransMat3>
-			err = modifyMatrix(io_rotmat,io_transvec,i_offset_3d,i_2d_vertex);
-			i_solver.solveTransportVector(i_offset_3d, io_transvec);
-			err = modifyMatrix(io_rotmat,io_transvec,i_offset_3d,i_2d_vertex);			
-			// //</arGetTransMat3>
-			if (err < AR_GET_TRANS_MAT_MAX_FIT_ERROR || i == AR_GET_TRANS_MAT_MAX_LOOP_COUNT-1) {
-				break;
-			}
-			i_solver.solveTransportVector(i_offset_3d, io_transvec);
-		}		
-		return err;
-	}
 	
 	private final double[][] __modifyMatrix_double1D = new double[8][3];
 	/**
-	 * arGetRot計算を階層化したModifyMatrix 896
-	 * 
-	 * @param nyrot
-	 * @param trans
-	 * @param i_vertex3d
-	 * [m][3]
-	 * @param i_vertex2d
-	 * [n][2]
-	 * @return
-	 * @throws NyARException
+	 * この関数は、回転行列を最適化します。
+	 * ARToolKitのarGetRotに相当します。
 	 */
 	public double modifyMatrix(NyARRotMatrix_ARToolKit io_rot,NyARDoublePoint3d trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d) throws NyARException
 	{

@@ -31,25 +31,44 @@ import jp.nyatla.nyartoolkit.core.utils.*;
 
 
 /**
- * 遠近法を使ったパースペクティブ補正をかけて、ラスタ上の四角形から
- * 任意解像度の矩形パターンを作成します。
- * 
- * 出力ラスタ形式が、INT1D_X8R8G8B8_32の物については、単体サンプリングモードの時は高速化済み。マルチサンプリングモードのときは高速化なし。
- * 入力ラスタ形式がINT1D_X8R8G8B8_32,BYTE1D_B8G8R8_24,BYTE1D_R8G8B8_24については、高速化済み。
- * 他の形式のラスタでは、PixelReaderを介した低速転送で対応します。
+ * このクラスは、ラスタから任意四角形のパターンを取得します。
+ * パターンは、遠近法を使ったパースペクティブ補正をかけて、ラスタ矩形に得られます。
+ * <p>サンプリングモード -
+ * このクラスは、２種類のサンプリングモードがあります。単体サンプルモードと、マルチサンプルモードです。
+ * 単体サンプルモードは、{@link #read4Point}関数の解像度値に1を指定したときのモードです。出力1ピクセルに対して、入力1ピクセルを割り当てます。
+ * マルチサンプルモードは、{@link #read4Point}関数の解像度値に2以上を指定したときのモードです。出力1ピクセルに対して、入力nピクセルの平均値を割り当てます。
+ * 低解像度の出力を得る場合、マルチサンプルモードの方が良い結果が得られますが、単体サンプルモードと比較して低速になります。
+ * </p>
+ * <p>入力ラスタについて
+ * 基本的には全ての{@link INyARRgbRaster}を実装したクラスを処理できますが、次の３種類のバッファを持つものを推奨します。
+ * <ul>
+ * <li>{@link NyARBufferType#INT1D_X8R8G8B8_32}
+ * <li>{@link NyARBufferType#BYTE1D_B8G8R8_24}
+ * <li>{@link NyARBufferType#BYTE1D_R8G8B8_24}
+ * </ul>
+ * </p>
+ * <p>出力ラスタについて
+ * 基本的には全ての{@link NyARBufferType.INT1D_X8R8G8B8_32}形式のバッファを持つラスタを使用してください。
+ * 他の形式でも動作しますが、低速な場合があります。
+ * </p>
+ * <p>高速化について - 
+ * 入力ラスタ形式が、{@link NyARBufferType#INT1D_X8R8G8B8_32},{@link NyARBufferType#BYTE1D_B8G8R8_24)
+ * ,{@link NyARBufferType#BYTE1D_R8G8B8_24}のものについては、他の形式よりも高速に動作します。
+ * また、出力ラスタ形式が、{@link NyARBufferType#INT1D_X8R8G8B8_32}の物については、単体サンプリングモードの時のみ、さらに高速に動作します。
+ * 他の形式のラスタでは、以上のものよりも低速転送で対応します。
  * <p>メモ-
  * この関数は、1倍の時はNyARColorPatt_Perspective,
  * n倍の時はNyARColorPatt_Perspective_O2の関数を元に作ってます。
  * </p>
- *
  */
 public class NyARPerspectiveRasterReader
 {
+	/** 射影変換パラメータ生成器*/
 	protected NyARPerspectiveParamGenerator _perspective_gen;
 	private static final int LOCAL_LT=1;
+	/** 射影変換パラメータの記憶配列*/
 	protected final double[] __pickFromRaster_cpara=new double[8];
 	private IPickupRasterImpl _picker;	
-	
 	private void initializeInstance(int i_buffer_type)
 	{
 		//新しいモードに対応したら書いてね。
@@ -73,8 +92,9 @@ public class NyARPerspectiveRasterReader
 		return;		
 	}
 	/**
-	 * コンストラクタです。このコンストラクタで作成したインスタンスは、入力ラスタタイプに依存しませんが低速です。
-	 * 入力画像のラスタの形式が既知の場合は、もう一方のコンストラクタを使用してください。
+	 * コンストラクタです。
+	 * このコンストラクタで作成したインスタンスは、入力ラスタタイプに依存しませんが低速です。
+	 * 入力画像の画素形式が既知の場合は、もう一方のコンストラクタを使用してください。
 	 */
 	public NyARPerspectiveRasterReader()
 	{
@@ -84,6 +104,7 @@ public class NyARPerspectiveRasterReader
 	/**
 	 * コンストラクタです。入力ラスタの形式を制限してインスタンスを作成します。
 	 * @param i_input_raster_type
+	 * {@link #read4Point}へ入力するラスタの画素形式。値については、クラスの説明を参照してください。
 	 */
 	public NyARPerspectiveRasterReader(int i_input_raster_type)
 	{
@@ -93,9 +114,9 @@ public class NyARPerspectiveRasterReader
 	}
 
 	/**
-	 * i_in_rasterから4頂点i_vertexsでかこまれた領域の画像を射影変換して、o_outへ格納します。
+	 * この関数は、入力ラスタの4頂点(i_vertexs)でかこまれた領域の画像を射影変換して、o_outへ格納します。
 	 * @param i_in_raster
-	 * このラスタの形式は、コンストラクタで制限したものと一致している必要があります。
+	 * このラスタの形式は、コンストラクタで制限したものと一致している必要があります。(制限した場合のみ)
 	 * @param i_vertex
 	 * 4頂点を格納した配列です。
 	 * @param i_edge_x
@@ -107,6 +128,7 @@ public class NyARPerspectiveRasterReader
 	 * @param o_out
 	 * 出力先のラスタです。
 	 * @return
+	 * パターンの取得に成功すると、trueを返します。
 	 * @throws NyARException
 	 */
 	public boolean read4Point(INyARRgbRaster i_in_raster,NyARDoublePoint2d[] i_vertex,int i_edge_x,int i_edge_y,int i_resolution,INyARRgbRaster o_out)throws NyARException
@@ -130,8 +152,24 @@ public class NyARPerspectiveRasterReader
 		return true;
 	}
 	/**
-	 * read4Pointの入力型違いです。
-	 */	
+	 * この関数は、入力ラスタの4頂点(i_vertexs)でかこまれた領域の画像を射影変換して、o_outへ格納します。
+	 * 2番目の引数型だけが、{@link #read4Point(INyARRgbRaster, NyARDoublePoint2d[], int, int, int, INyARRgbRaster)}と異なります。
+	 * @param i_in_raster
+	 * {@link #read4Point(INyARRgbRaster, NyARDoublePoint2d[], int, int, int, INyARRgbRaster)}を参照。
+	 * @param i_vertex
+	 * {@link #read4Point(INyARRgbRaster, NyARDoublePoint2d[], int, int, int, INyARRgbRaster)}を参照。
+	 * @param i_edge_x
+	 * {@link #read4Point(INyARRgbRaster, NyARDoublePoint2d[], int, int, int, INyARRgbRaster)}を参照。
+	 * @param i_edge_y
+	 * {@link #read4Point(INyARRgbRaster, NyARDoublePoint2d[], int, int, int, INyARRgbRaster)}を参照。
+	 * @param i_resolution
+	 * {@link #read4Point(INyARRgbRaster, NyARDoublePoint2d[], int, int, int, INyARRgbRaster)}を参照。
+	 * @param o_out
+	 * {@link #read4Point(INyARRgbRaster, NyARDoublePoint2d[], int, int, int, INyARRgbRaster)}を参照。
+	 * @return
+	 * {@link #read4Point(INyARRgbRaster, NyARDoublePoint2d[], int, int, int, INyARRgbRaster)}を参照。
+	 * @throws NyARException
+	 */
 	public boolean read4Point(INyARRgbRaster i_in_raster,NyARIntPoint2d[] i_vertex,int i_edge_x,int i_edge_y,int i_resolution,INyARRgbRaster o_out)throws NyARException
 	{
 		NyARIntSize out_size=o_out.getSize();
@@ -153,8 +191,39 @@ public class NyARPerspectiveRasterReader
 		return true;
 	}
 	/**
-	 * read4Pointの入力型違いです。
-	 */	
+	 * この関数は、入力ラスタの4頂点(i_vertexs)でかこまれた領域の画像を射影変換して、o_outへ格納します。
+	 * {@link #read4Point(INyARRgbRaster, NyARDoublePoint2d[], int, int, int, INyARRgbRaster)}と比較して、
+	 * 4頂点を直値で指定する違いがあります。
+	 * @param i_in_raster
+	 * {@link #read4Point(INyARRgbRaster, NyARDoublePoint2d[], int, int, int, INyARRgbRaster)}を参照。
+	 * @param i_x1
+	 * 1番目の頂点の座標
+	 * @param i_y1
+	 * 1番目の頂点の座標
+	 * @param i_x2
+	 * 2番目の頂点の座標
+	 * @param i_y2
+	 * 2番目の頂点の座標
+	 * @param i_x3
+	 * 3番目の頂点の座標
+	 * @param i_y3
+	 * 3番目の頂点の座標
+	 * @param i_x4
+	 * 4番目の頂点の座標
+	 * @param i_y4
+	 * 4番目の頂点の座標
+	 * @param i_edge_x
+	 * {@link #read4Point(INyARRgbRaster, NyARDoublePoint2d[], int, int, int, INyARRgbRaster)}を参照。
+	 * @param i_edge_y
+	 * {@link #read4Point(INyARRgbRaster, NyARDoublePoint2d[], int, int, int, INyARRgbRaster)}を参照。
+	 * @param i_resolution
+	 * {@link #read4Point(INyARRgbRaster, NyARDoublePoint2d[], int, int, int, INyARRgbRaster)}を参照。
+	 * @param o_out
+	 * {@link #read4Point(INyARRgbRaster, NyARDoublePoint2d[], int, int, int, INyARRgbRaster)}を参照。
+	 * @return
+	 * {@link #read4Point(INyARRgbRaster, NyARDoublePoint2d[], int, int, int, INyARRgbRaster)}を参照。
+	 * @throws NyARException
+	 */
 	public boolean read4Point(INyARRgbRaster i_in_raster,double i_x1,double i_y1,double i_x2,double i_y2,double i_x3,double i_y3,double i_x4,double i_y4,int i_edge_x,int i_edge_y,int i_resolution,INyARRgbRaster o_out)throws NyARException
 	{
 		NyARIntSize out_size=o_out.getSize();
@@ -182,12 +251,14 @@ public class NyARPerspectiveRasterReader
 //ここから先は入力画像毎のラスタドライバ
 //
 
+/** 画素形式毎のドライバ定義*/
 interface IPickupRasterImpl
 {
 	public void onePixel(int pk_l,int pk_t,double[] cpara,INyARRgbRaster i_in_raster,INyARRgbRaster o_out)throws NyARException;
 	public void multiPixel(int pk_l,int pk_t,double[] cpara,int i_resolution,INyARRgbRaster i_in_raster,INyARRgbRaster o_out)throws NyARException;
 }
 
+/** BYTE1D_R8G8B8_24形式のドライバ*/
 final class PPickup_Impl_BYTE1D_R8G8B8_24 implements IPickupRasterImpl
 {
 	public void onePixel(int pk_l,int pk_t,double[] cpara,INyARRgbRaster i_in_raster,INyARRgbRaster o_out)throws NyARException
@@ -373,7 +444,7 @@ final class PPickup_Impl_BYTE1D_R8G8B8_24 implements IPickupRasterImpl
 
 
 
-
+/** BYTE1D_B8G8R8_24形式のドライバ*/
 final class PPickup_Impl_BYTE1D_B8G8R8_24 implements IPickupRasterImpl
 {
 	public void onePixel(int pk_l,int pk_t,double[] cpara,INyARRgbRaster i_in_raster,INyARRgbRaster o_out)throws NyARException
@@ -557,7 +628,7 @@ final class PPickup_Impl_BYTE1D_B8G8R8_24 implements IPickupRasterImpl
 
 
 
-
+/** BYTE1D_B8G8R8X8_32形式のドライバ*/
 final class PPickup_Impl_BYTE1D_B8G8R8X8_32 implements IPickupRasterImpl
 {
 	public void onePixel(int pk_l,int pk_t,double[] cpara,INyARRgbRaster i_in_raster,INyARRgbRaster o_out)throws NyARException

@@ -30,13 +30,23 @@ import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
- * 色調テーブルを使用したフィルターです。
- * 色調テーブルクラスのベースクラスです。
+ * このクラスは、色調フィルタのベースクラスです。
+ * 継承クラスで{@link #table}に変換ルールを書き込む処理を実装します。 
+ * <p>対応している画素形式は以下の通りです。
+ * <li>{@link NyARBufferType#INT1D_GRAY_8}
+ * </p>
  */
 public class NyARRasterFilter_CustomToneTable implements INyARRasterFilter
 {
 	protected final int[] table=new int[256];
 	private IdoFilterImpl _dofilterimpl;
+	/**
+	 * コンストラクタです。
+	 * 入力/出力ラスタのバッファフォーマットを指定して、インスタンスを生成します。
+	 * @param i_raster_type
+	 * ラスタ形式。
+	 * @throws NyARException
+	 */
 	protected NyARRasterFilter_CustomToneTable(int i_raster_type) throws NyARException
 	{
 		switch (i_raster_type) {
@@ -48,6 +58,10 @@ public class NyARRasterFilter_CustomToneTable implements INyARRasterFilter
 		}
 		this._dofilterimpl._table_ref=this.table;
 	}
+	/**
+	 * 変換テーブルに従って、画素値を交換した画像を出力します。
+	 * 画素形式は、コンストラクタに指定した形式に合せてください。
+	 */
 	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException
 	{
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);

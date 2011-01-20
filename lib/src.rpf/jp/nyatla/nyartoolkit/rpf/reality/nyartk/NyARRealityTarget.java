@@ -17,25 +17,35 @@ import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARTarget;
 import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status.NyARRectTargetStatus;
 
 /**
- * Realityターゲットを定義します。
- * {@link #tag}以外のクラスメンバに対する書き込み操作を行わないでください。
- *
+ * このクラスは、Realityターゲット(RTターゲット)のプロパティを格納します。
+ * プロパティには、ターゲットのメタデータ、二次元座標系データ、三次元座標系データの３個があります。
+ * ターゲットのメタデータは常に利用が可能です。二次元座標系データは、{@link #RT_DEAD}以外のステータスを持つ
+ * RTターゲットだけが利用できます。三次元座標データは、{@link #RT_KNOWN}ステータスを持つRTターゲットだけが利用できます。
+ * ユーザーが直接書き込みできるのは{@link #tag}メンバのみです。他のメンバには、書き込みをしないでください。
+ * 
  */
 public class NyARRealityTarget extends NyARManagedObject
 {
-	/**　ユーザオブジェクトを配置するポインタータグ。ユーザが自由にオブジェクトポインタを配置できる。
-	 * {@link INyARDisposable}インタフェイスを持つオブジェクトを指定すると、このターゲットを開放するときに{@link INyARDisposable#dispose()}をコールする。
-	 * <p>{@link INyARDisposable}インタフェイスは、Managed環境下では通常不要。</p>
+	/**　ユーザオブジェクトを配置するポインタータグです。ユーザが自由にオブジェクトを配置できます。
+	 * {@link INyARDisposable}インタフェイスを持つオブジェクトを指定すると、このターゲットを開放するときに{@link INyARDisposable#dispose()}が自動的にコールされます。
+	 * <p>{@link INyARDisposable}インタフェイスは、RTターゲットの消失時に特別な処理を実行したいときに追加してください。</p>
 	 */
 	public Object tag;
-
+	/**
+	 * コンストラクタです。
+	 * この関数は、ユーザが使うことはありません。
+	 * @param i_pool
+	 * 親となるマネージドオブジェクトプール
+	 */
 	public NyARRealityTarget(NyARRealityTargetPool i_pool)
 	{
 		super(i_pool._op_interface);
 		this._ref_pool=i_pool;
 	}
 	/**
-	 * @Override
+	 * ファイナライザです。
+	 * この関数は、ユーザが使うことはありません。
+	 * {@link INyARDisposable}に関する処理を追加しています。
 	 */
 	public int releaseObject()
 	{
@@ -53,14 +63,16 @@ public class NyARRealityTarget extends NyARManagedObject
 		}
 		return ret;
 	}
-	/** 無効なシリアルID値*/
+	/** 定数値。無効なシリアルID値を定義します。*/
 	public final static int INVALID_REALITY_TARGET_ID=-1;
 	private static Object _serial_lock=new Object();
 	private static long _serial_counter=0;
 	
 	/**
-	 * ID生成器。システムの稼働範囲内で一意なIDを持つこと。
+	 * ID生成器。システムの稼働期間中、一意なRealityTargetSerialIDを返します。
+	 * この関数は、ユーザが使うことはありません。
 	 * @return
+	 * 一意なID
 	 */
 	public static long createSerialId()
 	{
@@ -70,43 +82,44 @@ public class NyARRealityTarget extends NyARManagedObject
 	}
 	////////////////////////
 	
-	/**
-	 * 親情報
-	 */
+	/** 親情報*/
 	private NyARRealityTargetPool _ref_pool;
 	////////////////////////
 	//targetの基本情報
 
-	/** 内部向けの公開メンバ変数です。{@link #getSerialId}を使ってください。*/
+	/** 内部向けのメンバ変数です。{@link #getSerialId}を使ってください。*/
 	public long _serial;
-	/** 内部向けの公開メンバ変数です。{@link #refTransformMatrix}を使ってください。*/
+	/** 内部向けのメンバ変数です。{@link #refTransformMatrix}を使ってください。*/
 	public NyARTransMatResult _transform_matrix=new NyARTransMatResult();
 
-	/** ターゲットの種類。未知のターゲット。*/
+	/** ターゲットの種類。Unknownステータスであることを示します。*/
 	public final static int RT_UNKNOWN   =0;
-	/** ターゲットの種類。既知のターゲット。*/
+	/** ターゲットの種類。Knownステータスである事を示します。*/
 	public final static int RT_KNOWN     =2;
-	/** ターゲットの種類。間もなく消失するターゲット。次回のprogressでリストから除去される。*/
+	/** ターゲットの種類。Deadステータスである事を示します。*/
 	public final static int RT_DEAD      =4;
 
-	/** 内部向けpublicメンバ変数。{@link #getTargetType()}を使ってください。*/
+	/** 内部向けのメンバ変数です。{@link #getTargetType()}を使ってください。*/
 	public int _target_type;
 	
-	/** 内部向けpublicメンバ。 ターゲットのオフセット位置。*/
+	/** 内部向けのメンバ変数です。ターゲットのオフセット位置。*/
 	public NyARRectOffset _offset=new NyARRectOffset();
-	/** 内部向けpublicメンバ。このターゲットが参照しているトラックターゲット*/
+	/** 内部向けのメンバ変数です。このターゲットが参照しているトラックターゲット*/
 	public NyARTarget _ref_tracktarget;
-	/** 内部向けpublicメンバ。スクリーン上の歪み解除済み矩形。*/
+	/** 内部向けのメンバ変数です。スクリーン上の歪み解除済み矩形。*/
 	public NyARSquare _screen_square=new NyARSquare();
-	/** 内部向けpublicメンバ。getGrabbRateを使ってください。*/
-	public int grab_rate;
+	/** 内部向けのメンバ変数です。{@link #getGrabbRate}を使ってください。*/
+	public int _grab_rate;
 	
 
 	
 	/**
-	 * カメラ座標系をターゲット座標系に変換する行列の参照値を返します。
+	 * この関数は、RTターゲットの姿勢変換行列の参照値を返します。
+	 * 姿勢変換行列は、カメラ座標系をRTターゲット座標系に変換する行列です。
 	 * この値は変更しないでください。（編集するときは、コピーを作ってください。）
+	 * 値は、次のサイクルを実行するまで有効です。
 	 * @return
+	 * [READ ONLY]姿勢変換行列の参照値。
 	 */
 	public final NyARTransMatResult refTransformMatrix()
 	{
@@ -114,19 +127,26 @@ public class NyARRealityTarget extends NyARManagedObject
 		return this._transform_matrix;
 	}
 	/**
-	 * このターゲットのタイプを返します。
-	 * {@link #RT_UNKNOWN}=未確定ターゲット。2次元座標利用可能
-	 * {@link #RT_KNOWN}  =確定した既知のターゲット。3次元座標利用可能
-	 * {@link #RT_DEAD}   =次のprogressで削除するターゲット
+	 * この関数は、RTターゲットのステータスタイプを返します。
+	 * <p>値のサマリ-
+	 * 詳しくは、{@link NyARReality}を参考にして下さい。
+	 * <ul>
+	 * <li>{@link #RT_UNKNOWN}=未確定ターゲット。2次元座標利用可能
+	 * <li>{@link #RT_KNOWN}  =確定した既知のターゲット。3次元座標利用可能
+	 * <li>{@link #RT_DEAD}   =次のprogressで削除するターゲット
+	 * </ul>
 	 * @return
+	 * RTターゲットのステータス値
 	 */
 	public int getTargetType()
 	{
 		return this._target_type;
 	}
 	/**
-	 * Reality内で一意な、ターゲットのシリアルIDです。
+	 * この関数は、RTターゲットのシリアルIDを返します。
+	 * 詳しくは、{@link NyARReality}を参考にして下さい。
 	 * @return
+	 * シリアルID。
 	 */
 	public long getSerialId()
 	{
@@ -134,18 +154,23 @@ public class NyARRealityTarget extends NyARManagedObject
 	}
 
 	/**
-	 * このターゲットの補足率を返します。0-100の数値です。
-	 * 20を切ると消失の可能性が高い？
+	 * この関数は、RTターゲットの補足率を返します。
+	 * 値は、一定期間における、ターゲットの認識率を元に計算します。
+	 * 20を切ると消失の可能性が高い？様な気がします。
 	 * @return
+	 * 補足率の値。0-100の数値です。
 	 */
 	public int getGrabbRate()
 	{
-		return this.grab_rate;
+		return this._grab_rate;
 	}
 	/**
-	 * ターゲットの頂点配列への参照値を返します。この値は、二次元検出系の出力値です。
-	 * 値が有効なのは、次のサイクルを実行するまでの間です。
+	 * この関数は、RTターゲットの四角系頂点配列への参照値を返します。
+	 * 二次元系の座標値です。{@link #RT_KNOWN}と{@link #RT_UNKNOWN}ステータスのRTターゲットで使用できます。
+	 * 樽型歪みの逆矯正は行いません。
+	 * 値は、次のサイクルを実行するまで有効です。
 	 * @return
+	 * [READ ONLY]ターゲットの四角系の頂点配列(4要素)。
 	 */
 	public final NyARDoublePoint2d[] refTargetVertex()
 	{
@@ -153,9 +178,11 @@ public class NyARRealityTarget extends NyARManagedObject
 		return ((NyARRectTargetStatus)(this._ref_tracktarget._ref_status)).vertex;
 	}
 	/**
-	 * 対象矩形の頂点配列をコピーして返します。
+	 * この関数は、RTターゲットの四角系頂点配列をコピーして返します。
+	 * 二次元系の座標値です。{@link #RT_KNOWN}と{@link #RT_UNKNOWN}ステータスのRTターゲットで使用できます。
 	 * 樽型歪みの逆矯正は行いません。
 	 * @param o_vertex
+	 * 値を格納する配列。4要素である事。
 	 */
 	public final void getTargetVertex(NyARDoublePoint2d[] o_vertex)
 	{
@@ -166,9 +193,11 @@ public class NyARRealityTarget extends NyARManagedObject
 		}
 	}
 	/**
-	 * 対象矩形の中央点を返します。
-	 * 樽型歪みの逆矯正は行いません。
+	 * この関数は、RTターゲットの四角系の中央点を返します。
+	 * 二次元系の座標値です。{@link #RT_KNOWN}と{@link #RT_UNKNOWN}ステータスのRTターゲットで使用できます。
+	 * 樽型歪み逆矯正は行いません。
 	 * @param o_center
+	 * 値を格納するオブジェクト。
 	 */
 	public final void getTargetCenter(NyARDoublePoint2d o_center)
 	{
@@ -176,8 +205,9 @@ public class NyARRealityTarget extends NyARManagedObject
 		NyARDoublePoint2d.makeCenter(((NyARRectTargetStatus)(this._ref_tracktarget._ref_status)).vertex,4,o_center);
 	}
 	/**
-	 * {@link #getTargetCenter}の出力型違いの関数です。
+	 * {@link #getTargetCenter(NyARDoublePoint2d)}の出力型違いの関数です。
 	 * @param o_center
+	 * 値を格納するオブジェクト。
 	 */
 	public final void getTargetCenter(NyARIntPoint2d o_center)
 	{
@@ -185,12 +215,16 @@ public class NyARRealityTarget extends NyARManagedObject
 		NyARDoublePoint2d.makeCenter(((NyARRectTargetStatus)(this._ref_tracktarget._ref_status)).vertex,4,o_center);
 	}
 	/**
-	 * 画面上の点が、このターゲットを構成する頂点の内側にあるか判定します。
+	 * この関数は、点がRTターゲットの二次元座標系の四角形の内側にあるか判定します。
 	 * (範囲ではなく、頂点の内側であることに注意してください。)
-	 * この関数は、Known/Unknownターゲットに使用できます。
+	 * 二次元系の座標値です。{@link #RT_KNOWN}と{@link #RT_UNKNOWN}ステータスのRTターゲットで使用できます。
+	 * 入力値の樽型歪み矯正は行いません。
 	 * @param i_x
+	 * 検査する座標x
 	 * @param i_y
+	 * 検査する座標y
 	 * @return
+	 * 点が内側にあるときはtrue,無い時はfalse
 	 */
 	public final boolean isInnerVertexPoint2d(int i_x,int i_y)
 	{
@@ -205,12 +239,17 @@ public class NyARRealityTarget extends NyARManagedObject
 		return true;
 	}
 	/**
-	 * 画面上の点が、このターゲットを包括する矩形の内側にあるかを判定します。
-	 * この関数は、Known/Unknownターゲットに使用できます。
+	 * この関数は、点がRTターゲットの二次元座標系の四角形を包括する矩形の内側にあるか判定します。
+	 * 二次元系の座標値です。{@link #RT_KNOWN}と{@link #RT_UNKNOWN}ステータスのRTターゲットで使用できます。
+	 * 入力値の樽型歪み矯正は行いません。
+	 * <p>メモ-この関数にはnewが残っています。大量に呼び出すときにはnewの削除を検討しましょう。
+	 * </p>
 	 * @param i_x
+	 * 検査する座標x
 	 * @param i_y
+	 * 検査する座標y
 	 * @return
-	 * <p>メモ:この関数にはnewが残ってるので注意</p>
+	 * 点が内側にあるときはtrue,無い時はfalse
 	 */
 	public final boolean isInnerRectPoint2d(int i_x,int i_y)
 	{
@@ -222,19 +261,25 @@ public class NyARRealityTarget extends NyARManagedObject
 	}
 	
 	/**
-	 * ターゲット座標系の4頂点でかこまれる領域を射影した平面から、RGB画像をo_rasterに取得します。
+	 * この関数は、RTターゲット座標系の4頂点で囲まれる領域を射影した平面から、RGB画像をo_rasterに取得します。
+	 * 三次元系の座標値です。{@link #RT_KNOWN}ステータスのRTターゲットで使用できます。
+	 * <p>メモ:この関数にはnewが残ってるので注意</p>
+	 * @param i_src
+	 * 画像ソース。このRTターゲットの親の{@link NyARReality}に入力した{@link NyARRealitySource}オブジェクト。
 	 * @param i_vertex
 	 * ターゲットのオフセットを基準値とした、頂点座標。要素数は4であること。(mm単位)
 	 * @param i_matrix
-	 * i_vertexに適応する変換行列。
-	 * ターゲットの姿勢行列を指定すると、ターゲット座標系になります。不要ならばnullを設定してください。
+	 * RTターゲット座標系の姿勢変換行列。値を指定すると、RTターゲット座標系と平行な面から、任意の姿勢に変換した後にパターンを取得します。
+	 * nullを指定すると、RTターゲット座標系と同じ平面の座標系で取得します。
+	 * この変数は、例えばマーカの40mm上のパターンを取得したりするときに役立ちます。(誤差の影響を強く受けるため、精密な測定には向いていません。)
 	 * @param i_resolution
-	 * 1ピクセルあたりのサンプリング値(n^2表現)
+	 * 1ピクセルあたりのサンプル数です。二乗した値が実際のサンプル数になります。
+	 * 2なら4ピクセル、4なら16ピクセルの入力から、出力1ピクセルを生成します。
 	 * @param o_raster
-	 * 出力ラスタ
+	 * 出力先のラスタオブジェクト。
 	 * @return
+	 * 画像取得に成功するとtrue
 	 * @throws NyARException
-	 * <p>メモ:この関数にはnewが残ってるので注意</p>
 	 */
 	public final boolean getRgbPatt3d(NyARRealitySource i_src,NyARDoublePoint3d[] i_vertex,NyARDoubleMatrix44 i_matrix,int i_resolution,INyARRgbRaster o_raster) throws NyARException
 	{
@@ -261,21 +306,25 @@ public class NyARRealityTarget extends NyARManagedObject
 		return i_src.refPerspectiveRasterReader().read4Point(i_src.refRgbSource(),da4,0,0,i_resolution, o_raster);
 	}
 	/**
-	 * ターゲットと同じ平面に定義した矩形から、パターンを取得します。
+	 * RTターゲット座標系の4頂点で定義する矩形から、RGB画像をo_rasterに取得します。
+	 * 三次元系の座標値です。{@link #RT_KNOWN}ステータスのRTターゲットで使用できます。
 	 * @param i_src
+	 * 画像ソース。このRTターゲットの親の{@link NyARReality}に入力した{@link NyARRealitySource}オブジェクト。
 	 * @param i_x
-	 * ターゲットのオフセットを基準値とした、矩形の左上座標(mm単位)
+	 * RTターゲット座標系の矩形の左上座標X(mm単位)
 	 * @param i_y
-	 * ターゲットのオフセットを基準値とした、矩形の左上座標(mm単位)
+	 * RTターゲット座標系の矩形の左上座標Y(mm単位)
 	 * @param i_w
-	 * ターゲットのオフセットを基準値とした、矩形の幅(mm単位)
+	 * RTターゲット座標系の矩形の幅(mm単位)
 	 * @param i_h
-	 * ターゲットのオフセットを基準値とした、矩形の幅(mm単位)
+	 * RTターゲット座標系の矩形の高さ(mm単位)
 	 * @param i_resolution
-	 * 1ピクセルあたりのサンプリング値(n^2表現)
+	 * 1ピクセルあたりのサンプル数です。二乗した値が実際のサンプル数になります。
+	 * 2なら4ピクセル、4なら16ピクセルの入力から、出力1ピクセルを生成します。
 	 * @param o_raster
-	 * 出力ラスタ
+	 * 出力先のラスタオブジェクト。
 	 * @return
+	 * 画像取得に成功するとtrue
 	 * @throws NyARException
 	 */
 	public final boolean getRgbRectPatt3d(NyARRealitySource i_src,double i_x,double i_y,double i_w,double i_h,int i_resolution,INyARRgbRaster o_raster) throws NyARException

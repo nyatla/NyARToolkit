@@ -41,7 +41,11 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntCoordinates;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 
-
+/**
+ * このクラスは、{@link NyARLabeling_ARToolKit}クラスを用いた矩形検出器です。
+ * 検出した矩形を、自己コールバック関数{@link #onSquareDetect}へ通知します。
+ * 継承クラスで自己コールバック関数{@link #onSquareDetect}を実装する必要があります。
+ */
 public abstract class NyARSquareContourDetector_ARToolKit extends NyARSquareContourDetector
 {
 	private static final int AR_AREA_MAX = 100000;// #define AR_AREA_MAX 100000
@@ -60,9 +64,10 @@ public abstract class NyARSquareContourDetector_ARToolKit extends NyARSquareCont
 	private final NyARIntCoordinates _coord;
 	private final int[] __detectMarker_mkvertex = new int[4];
 	/**
-	 * 最大i_squre_max個のマーカーを検出するクラスを作成する。
-	 * 
-	 * @param i_param
+	 * コンストラクタです。
+	 * 入力画像のサイズを指定して、インスタンスを生成します。
+	 * @param i_size
+	 * 入力画像のサイズ
 	 */
 	public NyARSquareContourDetector_ARToolKit(NyARIntSize i_size) throws NyARException
 	{
@@ -78,14 +83,9 @@ public abstract class NyARSquareContourDetector_ARToolKit extends NyARSquareCont
 		this._coord=new NyARIntCoordinates(number_of_coord);
 		return;
 	}
-
 	/**
-	 * arDetectMarker2を基にした関数
-	 * この関数はNyARSquare要素のうち、directionを除くパラメータを取得して返します。
-	 * directionの確定は行いません。
-	 * @param i_raster
-	 * 解析する２値ラスタイメージを指定します。
-	 * @throws NyARException
+	 * この関数は、ラスタから矩形を検出して、自己コールバック関数{@link #onSquareDetect}で通知します。
+	 * ARToolKitのarDetectMarker2を基にしています。
 	 */
 	public final void detectMarker(NyARBinRaster i_raster) throws NyARException
 	{

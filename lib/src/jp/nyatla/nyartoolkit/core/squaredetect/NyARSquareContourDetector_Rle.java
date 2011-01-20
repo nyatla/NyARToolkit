@@ -37,13 +37,15 @@ import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.*;
 
-
+/**
+ * このクラスは、{@link NyARLabeling_Rle}クラスを用いた矩形検出器です。
+ * 検出した矩形を、自己コールバック関数{@link #onSquareDetect}へ通知します。
+ * 継承クラスで自己コールバック関数{@link #onSquareDetect}を実装する必要があります。
+ */
 public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 {
-	/**
-	 * label_stackにソート後の結果を蓄積するクラス
-	 */
-	class Labeling extends NyARLabeling_Rle
+	/** label_stackにソート後の結果を蓄積するクラス*/
+	private class Labeling extends NyARLabeling_Rle
 	{
 		public NyARRleLabelFragmentInfoPtrStack label_stack;
 		int _right;
@@ -103,7 +105,8 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 	
 	private final NyARIntCoordinates _coord;
 	/**
-	 * コンストラクタ
+	 * コンストラクタです。
+	 * 入力画像のサイズを指定して、インスタンスを生成します。
 	 * @param i_size
 	 * 入力画像のサイズ
 	 */
@@ -125,6 +128,17 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 	}
 
 	private final int[] __detectMarker_mkvertex = new int[4];
+	/**
+	 * この関数は、ラスタから矩形を検出して、自己コールバック関数{@link #onSquareDetect}で通知します。
+	 * @param i_raster
+	 * 検出元のラスタ画像
+	 * 入力できるラスタの画素形式は、{@link NyARLabeling_Rle#labeling(NyARGrayscaleRaster, int)}と同じです。
+	 * @param i_area
+	 * 検出する範囲。検出元のラスタの内側である必要があります。
+	 * @param i_th
+	 * ラベルと判定する敷居値
+	 * @throws NyARException
+	 */
 	public void detectMarker(NyARGrayscaleRaster i_raster,NyARIntRect i_area,int i_th) throws NyARException
 	{
 		assert(i_area.w*i_area.h>0);
@@ -178,7 +192,8 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 		return;
 	}
 	/**
-	 * @override
+	 * この関数は、ラスタから矩形を検出して、自己コールバック関数{@link #onSquareDetect}で通知します。
+	 * ARToolKitのarDetectMarker2を基にしています。
 	 */
 	public void detectMarker(NyARBinRaster i_raster) throws NyARException
 	{
@@ -235,6 +250,7 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 	/**
 	 * デバック用API
 	 * @return
+	 * オブジェクト配列
 	 */
 	public Object[] _probe()
 	{

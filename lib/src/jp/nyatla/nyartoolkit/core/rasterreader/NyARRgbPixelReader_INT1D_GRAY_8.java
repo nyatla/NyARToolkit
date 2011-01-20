@@ -31,26 +31,41 @@
 package jp.nyatla.nyartoolkit.core.rasterreader;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
-
+/**
+ * このクラスは、{@link NyARBufferType#INT1D_GRAY_8}形式のラスタバッファに対応する、ピクセルリーダです。
+ */
 final public class NyARRgbPixelReader_INT1D_GRAY_8 implements INyARRgbPixelReader
 {
+	/** 参照する外部バッファ*/
 	protected int[] _ref_buf;
 
 	private NyARIntSize _size;
-
+	/**
+	 * コンストラクタです。
+	 * 参照するラスタのバッファとサイズを指定して、インスタンスを作成します。
+	 * @param i_buf
+	 * ラスタのバッファオブジェクトの参照値
+	 * @param i_size
+	 * ラスタのサイズオブジェクトの参照値。
+	 */
 	public NyARRgbPixelReader_INT1D_GRAY_8(int[] i_buf, NyARIntSize i_size)
 	{
 		this._ref_buf = i_buf;
 		this._size = i_size;
 	}
-
+	/**
+	 * この関数は、指定した座標の1ピクセル分のRGBデータを、配列に格納して返します。
+	 */
 	public void getPixel(int i_x, int i_y, int[] o_rgb)
 	{
 		o_rgb[0] = o_rgb[1]=o_rgb[2]=this._ref_buf[i_x + i_y * this._size.w];
 		return;
 	}
-
+	/**
+	 * この関数は、座標群から、ピクセルごとのRGBデータを、配列に格納して返します。
+	 */
 	public void getPixelSet(int[] i_x, int[] i_y, int i_num, int[] o_rgb)
 	{
 		final int width = this._size.w;
@@ -60,18 +75,32 @@ final public class NyARRgbPixelReader_INT1D_GRAY_8 implements INyARRgbPixelReade
 		}
 		return;
 	}
+	/**
+	 * この関数は、機能しません。
+	 */
 	public void setPixel(int i_x, int i_y, int[] i_rgb) throws NyARException
 	{
 		NyARException.notImplement();		
 	}
+	/**
+	 * この関数は、機能しません。
+	 */
 	public void setPixel(int i_x, int i_y, int i_r,int i_g,int i_b) throws NyARException
 	{
 		NyARException.notImplement();		
 	}
+	/**
+	 * この関数は、機能しません。
+	 */
 	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intrgb) throws NyARException
 	{
 		NyARException.notImplement();		
 	}
+	/**
+	 * この関数は、参照しているバッファをi_ref_bufferへ切り替えます。
+	 * 通常は、このインスタンスを所有するクラスが使います。ユーザが使うことはありません。
+	 * 関数は、入力値のバッファサイズと、型だけを確認します。
+	 */		
 	public void switchBuffer(Object i_ref_buffer) throws NyARException
 	{
 		assert(((int[])i_ref_buffer).length>=this._size.w*this._size.h);

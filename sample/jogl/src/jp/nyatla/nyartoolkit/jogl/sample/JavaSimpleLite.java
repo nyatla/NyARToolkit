@@ -95,6 +95,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e)
 			{
+				_capture.stop();
 				System.exit(0);
 			}
 		});

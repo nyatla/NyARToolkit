@@ -31,14 +31,18 @@
 package jp.nyatla.nyartoolkit.core.match;
 
 
-
 /**
- * [[Strage class]]
- *
+ * このクラスは、{@link NyARMatchPatt_BlackWhite}や{@link NyARMatchPatt_Color_WITHOUT_PCA}のevaluate
+ * 関数の戻り値を格納します。
  */
 public class NyARMatchPattResult
 {
+	/** {@link #direction}の初期値。方位不明である事を表します。*/
 	public static final int DIRECTION_UNKNOWN=-1;
+	/** パターンの一致率。0から1.0までの数値です。高い方が、一致率が高いことを示します。*/
 	public double confidence;
+	/** ARToolKit準拠の方位定数です。
+	 *  画像の右上位置が、0=1象限、1=2象限、、2=3象限、、3=4象限の位置にあることを示します。
+	 */
 	public int direction;
 }

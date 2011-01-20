@@ -29,45 +29,35 @@ import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
-class RleInfoStack extends NyARObjectStack<NyARRleLabelFragmentInfo>
-{	
-	public RleInfoStack(int i_length) throws NyARException
-	{
-		super();
-		super.initInstance(i_length, NyARRleLabelFragmentInfo.class);
-		return;
-	}
 
-	protected NyARRleLabelFragmentInfo createElement()
-	{
-		return new NyARRleLabelFragmentInfo();
-	}
-}
-/**
- * [strage class]
- */
-
-
-class RleElement
-{
-	int l;
-	int r;
-	int fid;
-	public static RleElement[] createArray(int i_length)
-	{
-		RleElement[] ret = new RleElement[i_length];
-		for (int i = 0; i < i_length; i++) {
-			ret[i] = new RleElement();
-		}
-		return ret;
-	}
-}
 
 
 /**
- * ラべリングクラスです。入力画像をラべリングして、そのエントリポイントと情報を、ハンドラ関数を介して返します。
- * 
- *
+ * このクラスは、RLE圧縮を利用した輪郭線エントリポイント検出用のラべリングクラスです。
+ * ラべリング画像を生成せずに、ラベル輪郭へのエントリーポイントの一覧を作ることに注意してください。
+ * <p>コールバック関数
+ * このクラスはいくつかの自己コールバック関数を持つ抽象クラスです。継承クラスでコールバック関数を実装して使います。
+ * <ul>
+ * <li>{@link #onLabelFound}- {@link #labeling}関数が検出したラベルを通知するコールバック関数です。
+ * ここに、発見したラベルを処理するコードを書きます。
+ * </ul>
+ * </p>
+ * <p>ラベル輪郭のエントリーポイント -
+ * このエントリポイントは、ラベルを構成する塊の輪郭を指す１点です。ここから８方位輪郭検出を実行すると、
+ * ラベルの輪郭を一周することができます。
+ * </p>
+ * <p>入力できる画素形式 -
+ * <p>{@link NyARBinRaster}を入力する場合
+ * <ul>
+ * <li>{@link NyARBufferType#INT1D_BIN_8}
+ * </ul>
+ * </p>
+ * <p>{@link NyARGrayscaleRaster}を入力する場合
+ * <ul>
+ * <li>{@link NyARBufferType#INT1D_GRAY_8}
+ * </ul>
+ * </p>
+ * </p>
  */
 public abstract class NyARLabeling_Rle
 {
@@ -79,11 +69,16 @@ public abstract class NyARLabeling_Rle
 	private RleElement[] _rle2;
 	private int _max_area;
 	private int _min_area;
-	/**
-	 * 処理対象のラスタサイズ
-	 */
+	/** 入力ラスタのサイズ*/
 	protected NyARIntSize _raster_size=new NyARIntSize();
-
+	/**
+	 * コンストラクタです。{@link #labeling}に入力するラスタのサイズを指定して、インスタンスを生成します。
+	 * @param i_width
+	 * 入力画像の幅
+	 * @param i_height
+	 * 入力画像の高さ
+	 * @throws NyARException
+	 */
 	public NyARLabeling_Rle(int i_width,int i_height) throws NyARException
 	{
 		this._raster_size.setValue(i_width,i_height);
@@ -96,9 +91,13 @@ public abstract class NyARLabeling_Rle
 		return;
 	}
 	/**
-	 * 対象サイズ
+	 * 検出するラベルのエリア（画素数）範囲を設定します。
+	 * この範囲にあるラベルのみが、結果に返されます。
+	 * 初期値は、{@link #AR_AREA_MAX},{@link #AR_AREA_MIN}です。
 	 * @param i_max
+	 * エリアの最大値を指定します。
 	 * @param i_min
+	 * エリアの最小値を指定します。
 	 */
 	public void setAreaRange(int i_max,int i_min)
 	{
@@ -174,7 +173,15 @@ public abstract class NyARLabeling_Rle
 		// 行確定
 		return current;
 	}
-
+	/**
+	 * フラグメントをRLEスタックへ追加する。
+	 * @param i_rel_img
+	 * @param i_nof
+	 * @param i_row_index
+	 * @param o_stack
+	 * @return
+	 * @throws NyARException
+	 */
 	private final boolean addFragment(RleElement i_rel_img, int i_nof, int i_row_index,RleInfoStack o_stack) throws NyARException
 	{
 		int l=i_rel_img.l;
@@ -197,12 +204,10 @@ public abstract class NyARLabeling_Rle
 		return true;
 	}
 	/**
-	 * BINラスタをラベリングします。
+	 * この関数は、2値イメージの{@link NyARBinRaster}ラスタをラベリングします。
+	 * 検出したラベルは、自己コールバック関数{@link #onLabelFound}で通知します。
 	 * @param i_bin_raster
-	 * @param o_stack
-	 * 結果を蓄積するスタックオブジェクトを指定します。
-	 * 関数は、このオブジェクトに結果を追記します。
-	 * @return
+	 * 入力画像。対応する形式は、クラスの説明を参照してください。
 	 * @throws NyARException
 	 */
 	public void labeling(NyARBinRaster i_bin_raster) throws NyARException
@@ -211,20 +216,27 @@ public abstract class NyARLabeling_Rle
 		NyARIntSize size=i_bin_raster.getSize();
 		this.imple_labeling(i_bin_raster,0,0,0,size.w,size.h);
 	}
+	/**
+	 * この関数は、2値イメージの{@link NyARBinRaster}ラスタの指定範囲をラベリングします。
+	 * 検出したラベルは、自己コールバック関数{@link #onLabelFound}で通知します。
+	 * @param i_bin_raster
+	 * 入力画像。対応する形式は、クラスの説明を参照してください。
+	 * @param i_area
+	 * ラべリングする画像内の範囲
+	 * @throws NyARException
+	 */
 	public void labeling(NyARBinRaster i_bin_raster,NyARIntRect i_area) throws NyARException
 	{
 		assert(i_bin_raster.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
 		this.imple_labeling(i_bin_raster,0,i_area.x,i_area.y,i_area.w,i_area.h);
 	}
 	/**
-	 * GSラスタの２値ラべリングを実行します。
+	 * この関数は、2値イメージの{@link NyARBinRaster}ラスタをラベリングします。
+	 * 検出したラベルは、自己コールバック関数{@link #onLabelFound}で通知します。
 	 * @param i_gs_raster
+	 * 入力画像。対応する形式は、クラスの説明を参照してください。
 	 * @param i_th
-	 * 二値化の敷居値を指定します。
-	 * @param o_stack
-	 * 結果を蓄積するスタックオブジェクトを指定します。
-	 * 関数は、このオブジェクトに結果を追記します。
-	 * @return
+	 * 暗点を判定するための敷居値0から255の数値である事。
 	 * @throws NyARException
 	 */
 	public void labeling(NyARGrayscaleRaster i_gs_raster,int i_th) throws NyARException
@@ -234,14 +246,14 @@ public abstract class NyARLabeling_Rle
 		this.imple_labeling(i_gs_raster,i_th,0,0,size.w,size.h);
 	}
 	/**
-	 * 範囲付きでGSラスタの２値ラべリングを実行します。
+	 * この関数は、2値イメージの{@link NyARBinRaster}ラスタの指定範囲をラベリングします。
+	 * 検出したラベルは、自己コールバック関数{@link #onLabelFound}で通知します。
 	 * @param i_gs_raster
+	 * 入力画像。対応する形式は、クラスの説明を参照してください。
 	 * @param i_area
+	 * ラべリングする画像内の範囲
 	 * @param i_th
-	 * @param o_stack
-	 * 結果を蓄積するスタックオブジェクトを指定します。
-	 * 関数は、このオブジェクトに結果を追記します。
-	 * @return
+	 * 暗点を判定するための敷居値0から255の数値である事。
 	 * @throws NyARException
 	 */
 	public void labeling(NyARGrayscaleRaster i_gs_raster,NyARIntRect i_area,int i_th) throws NyARException
@@ -430,19 +442,58 @@ public abstract class NyARLabeling_Rle
 		}
 	}
 	/**
-	 * ハンドラ関数です。継承先クラスでオーバライドしてください。
-	 * i_labelのインスタンスは、次のラべリング実行まで保証されていますが、将来にわたり保証されないかもしれません。(恐らく保証されますが)
-	 * コールバック関数から参照を使用する場合は、互換性を確認するために、念のため、assertで_af_label_array_safe_referenceフラグをチェックしてください。
-	 * @param i_label
+	 * この仮想関数は自己コールバック関数です。
+	 * {@link #labeling}関数が、検出したラベルを通知するために使います。
+	 * @param i_ref_label
+	 * 検出したラベルを格納したオブジェクト。値の有効期間は、次の{@link #labeling}が実行されるまでです。
+	 * (注)この仕様は変わるかもしれません。
+	 * @throws NyARException
 	 */
+
 	protected abstract void onLabelFound(NyARRleLabelFragmentInfo i_ref_label) throws NyARException;
 	
 	/**
 	 * クラスの仕様確認フラグです。ラベル配列の参照アクセスが可能かを返します。
-	 * 
+	 * このクラスでは、true固定です。
 	 */
 	public final static boolean _sf_label_array_safe_reference=true;
 }
 
+/**
+ * このクラスは、{@link NyARLabeling_Rle}が内部的に使うRLEスタックです。
+ * ユーザが使うことはありません。
+ */
+class RleInfoStack extends NyARObjectStack<NyARRleLabelFragmentInfo>
+{	
+	public RleInfoStack(int i_length) throws NyARException
+	{
+		super();
+		super.initInstance(i_length, NyARRleLabelFragmentInfo.class);
+		return;
+	}
 
+	protected NyARRleLabelFragmentInfo createElement()
+	{
+		return new NyARRleLabelFragmentInfo();
+	}
+}
+/**
+ * このクラスは、{@link #RleInfoStack}の要素です。
+ * RLEフラグメントのパラメータを保持します。
+ * ユーザが使うことはありません。
+ */
+class RleElement
+{
+	int l;
+	int r;
+	int fid;
+	public static RleElement[] createArray(int i_length)
+	{
+		RleElement[] ret = new RleElement[i_length];
+		for (int i = 0; i < i_length; i++) {
+			ret[i] = new RleElement();
+		}
+		return ret;
+	}
+}
 

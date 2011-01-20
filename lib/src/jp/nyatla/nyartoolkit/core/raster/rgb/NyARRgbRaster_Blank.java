@@ -34,9 +34,9 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.rasterreader.INyARRgbPixelReader;
 import jp.nyatla.nyartoolkit.core.types.*;
 
-/*
- * 真っ黒の矩形を定義する。
- * 
+/**
+ * このクラスは、空のラスタを定義します。
+ * 空のラスタは、バッファを持たないサイズのみのラスタです。デバックなどに使います。
  */
 public class NyARRgbRaster_Blank extends NyARRgbRaster_BasicClass
 {
@@ -78,25 +78,50 @@ public class NyARRgbRaster_Blank extends NyARRgbRaster_BasicClass
 	}
 
 	private INyARRgbPixelReader _reader;
-	
+	/**
+	 * コンストラクタです。
+	 * バッファの参照方法を指定して、インスタンスを生成します。
+	 * @param i_width
+	 * ラスタサイズ
+	 * @param i_height
+	 * ラスタサイズ
+	 */
 	public NyARRgbRaster_Blank(int i_width, int i_height)
 	{
 		super(i_width,i_height,NyARBufferType.NULL_ALLZERO);
 		this._reader = new PixelReader();
 		return;
 	}
+	/**
+	 * この関数は、画素フォーマットによらない画素アクセスを行うオブジェクトへの参照値を返します。
+	 * @return
+	 * オブジェクトの参照値
+	 * @throws NyARException
+	 */	
 	public INyARRgbPixelReader getRgbPixelReader() throws NyARException
 	{
 		return this._reader;
 	}
+	/**
+	 * この関数は、ラスタのバッファへの参照値を返します。
+	 * 常にNULLです。
+	 */	
 	public Object getBuffer()
 	{
 		return null;
 	}
+	/**
+	 * この関数は、インスタンスがバッファを所有するかを返します。
+	 * 内部参照バッファの場合は、常にfalseです。
+	 */		
 	public boolean hasBuffer()
 	{
 		return false;
 	}
+	/**
+	 * この関数は、ラスタに外部参照バッファをセットします。
+	 * このクラスでは使用できません。
+	 */	
 	public void wrapBuffer(Object i_ref_buf) throws NyARException
 	{
 		NyARException.notImplement();
