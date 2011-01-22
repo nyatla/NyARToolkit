@@ -24,20 +24,37 @@
  */
 package jp.nyatla.nyartoolkit.core.types.matrix;
 
-import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
-
+/**
+ * このクラスは、3x3行列を格納します。
+ */
 public class NyARDoubleMatrix33 implements INyARDoubleMatrix
 {
+	/** 行列の要素値です。*/
 	public double m00;
+	/** 行列の要素値です。*/
 	public double m01;
+	/** 行列の要素値です。*/
 	public double m02;
+	/** 行列の要素値です。*/
 	public double m10;
+	/** 行列の要素値です。*/
 	public double m11;
+	/** 行列の要素値です。*/
 	public double m12;
+	/** 行列の要素値です。*/
 	public double m20;
+	/** 行列の要素値です。*/
 	public double m21;
+	/** 行列の要素値です。*/
 	public double m22;
+	/**
+	 * この関数は、オブジェクトの配列を生成して返します。
+	 * @param i_number
+	 * 配列の長さ
+	 * @return
+	 * 新しいオブジェクト配列
+	 */
 	public static NyARDoubleMatrix33[] createArray(int i_number)
 	{
 		NyARDoubleMatrix33[] ret=new NyARDoubleMatrix33[i_number];
@@ -48,8 +65,8 @@ public class NyARDoubleMatrix33 implements INyARDoubleMatrix
 		return ret;
 	}
 	/**
-	 * 遅いからあんまり使わないでね。
-	 */
+	 * この関数は、要素数9の配列を、行列にセットします。
+	 */	
 	public void setValue(double[] i_value)
 	{
 		this.m00=i_value[0];
@@ -63,6 +80,11 @@ public class NyARDoubleMatrix33 implements INyARDoubleMatrix
 		this.m22=i_value[8];
 		return;
 	}
+	/**
+	 * この関数は、オブジェクトの内容をインスタンスにコピーします。
+	 * @param i_value
+	 * コピー元のオブジェクト
+	 */
 	public void setValue(NyARDoubleMatrix33 i_value)
 	{
 		this.m00=i_value.m00;
@@ -77,7 +99,7 @@ public class NyARDoubleMatrix33 implements INyARDoubleMatrix
 		return;
 	}	
 	/**
-	 * 遅いからあんまり使わないでね。
+	 * この関数は、要素数9の配列に、行列の内容をコピーします。
 	 */
 	public void getValue(double[] o_value)
 	{
@@ -92,6 +114,13 @@ public class NyARDoubleMatrix33 implements INyARDoubleMatrix
 		o_value[8]=this.m22;
 		return;
 	}
+	/**
+	 * この関数は、逆行列を計算して、インスタンスにセットします。
+	 * @param i_src
+	 * 逆行列を計算するオブジェクト。thisを指定できます。
+	 * @return
+	 * 逆行列を得られると、trueを返します。
+	 */	
 	public boolean inverse(NyARDoubleMatrix33 i_src)
 	{
 		final double a11,a12,a13,a21,a22,a23,a31,a32,a33;
@@ -133,8 +162,10 @@ public class NyARDoubleMatrix33 implements INyARDoubleMatrix
 		return true;
 	}
 	/**
-	 * この関数は、0-PIの間で値を返します。
+	 * この関数は、行列を回転行列として、ZXY系の角度値を計算します。
 	 * @param o_out
+	 *　角度値を受け取るオブジェクトです。
+	 * 角度値の範囲は、0-PIです。
 	 */
 	public final void getZXYAngle(NyARDoublePoint3d o_out)
 	{
@@ -153,11 +184,25 @@ public class NyARDoubleMatrix33 implements INyARDoubleMatrix
 			o_out.y = Math.atan2(-this.m20, this.m22);
 		}
 	}
+	/**
+	 * この関数は、行列を回転行列として、ZXY系の角度値をセットします。
+	 * @param i_angle
+	 *　セットする角度値です。
+	 */	
 	public final void setZXYAngle(NyARDoublePoint3d i_angle)
 	{
 		setZXYAngle(i_angle.x,i_angle.y,i_angle.z);
 		return;
 	}
+	/**
+	 * この関数は、行列を回転行列として、ZXY系の角度値をセットします。
+	 * @param i_x
+	 *　X軸の角度値
+	 * @param i_y
+	 *　X軸の角度値
+	 * @param i_z
+	 *　X軸の角度値
+	 */
 	public final void setZXYAngle(final double i_x, final double i_y, final double i_z)
 	{
 		final double sina = Math.sin(i_x);
@@ -178,16 +223,28 @@ public class NyARDoubleMatrix33 implements INyARDoubleMatrix
 		return;
 	}
 	/**
-	 * 回転行列を適応して座標変換します。
-	 * @param i_angle
+	 * この関数は、3次元座標を座標変換します。
+	 * @param i_position
+	 * 変換する三次元座標
 	 * @param o_out
+	 * 変換後の座標を受け取るオブジェクト
 	 */
 	public final void transformVertex(NyARDoublePoint3d i_position,NyARDoublePoint3d o_out)
 	{
 		transformVertex(i_position.x,i_position.y,i_position.z,o_out);
 		return;
 	}
-	
+	/**
+	 * この関数は、3次元座標を座標変換します。
+	 * @param i_x
+	 * 変換する三次元座標(X)
+	 * @param i_y
+	 * 変換する三次元座標(Y)
+	 * @param i_z
+	 * 変換する三次元座標(Z)
+	 * @param o_out
+	 * 変換後の座標を受け取るオブジェクト
+	 */
 	public final void transformVertex(double i_x,double i_y,double i_z,NyARDoublePoint3d o_out)
 	{
 		o_out.x=this.m00*i_x+this.m01*i_y+this.m02*i_z;

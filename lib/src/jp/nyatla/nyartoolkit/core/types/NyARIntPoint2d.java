@@ -31,18 +31,21 @@
 package jp.nyatla.nyartoolkit.core.types;
 
 /**
- * int型の二次元の点を格納します。
+ * このクラスは、int型の二次元の点を格納します。
  *
  */
 public class NyARIntPoint2d
 {
+	/** X座標の値です。*/
 	public int x;
-
+	/** Y座標の値です。*/
 	public int y;
 	/**
-	 * 配列ファクトリ
+	 * この関数は、指定サイズのオブジェクト配列を作ります。
 	 * @param i_number
+	 * 作成する配列の長さ
 	 * @return
+	 * 新しい配列。
 	 */
 	public static NyARIntPoint2d[] createArray(int i_number)
 	{
@@ -54,9 +57,12 @@ public class NyARIntPoint2d
 		return ret;
 	}
 	/**
-	 * i_fromからi_toへ配列をコピーします。
+	 * この関数は、配列の値をコピーします。
+	 * 配列の長さは、同じである必要があります。
 	 * @param i_from
+	 * コピー元の配列
 	 * @param i_to
+	 * コピー先の配列
 	 */
 	public static void copyArray(final NyARIntPoint2d[] i_from,NyARIntPoint2d[] i_to)
 	{
@@ -68,10 +74,11 @@ public class NyARIntPoint2d
 		return;
 	}
 	/**
-	 * p2-p1間の距離の二乗値を計算します。
+	 * この関数は、インスタンスの座標と、指定点との距離の２乗値を返します。
 	 * @param i_p1
-	 * @param i_p2
+	 * 点の座標
 	 * @return
+	 * i_p1との距離の二乗値
 	 */	
 	public final int sqDist(NyARIntPoint2d i_p1)
 	{
@@ -79,12 +86,13 @@ public class NyARIntPoint2d
 		int y=this.y-i_p1.y;
 		return x*x+y*y;
 	}
-	
 	/**
-	 * 中心位置を計算して設定する。
-	 * @param i_point
-	 * @param i_number_of_vertex
-	 */
+	 * この関数は、頂点集合から、中央値(Σp[n]/n)を求めて、インスタンスにセットします。
+	 * @param i_points
+	 * 頂点集合を格納した配列です。
+	 * @param i_number_of_data
+	 * 配列中の有効な頂点数です。
+	 */	
 	public final void setCenterPos(NyARIntPoint2d[] i_point,int i_number_of_vertex)
 	{
 		int cx,cy;
@@ -97,19 +105,32 @@ public class NyARIntPoint2d
 		this.y=cy/i_number_of_vertex;
 	}
 	/**
-	 * i_sourceの値を、thisへセットします。
+	 * この関数は、オブジェクトからインスタンスに値をセットします。
 	 * @param i_source
+	 * コピー元のオブジェクト。
 	 */
 	public final void setValue(NyARIntPoint2d i_source)
 	{
 		this.x=i_source.x;
 		this.y=i_source.y;
 	}
+	/**
+	 * この関数は、オブジェクトからインスタンスに値をセットします。
+	 * @param i_source
+	 * コピー元のオブジェクト。
+	 */	
 	public final void setValue(NyARDoublePoint2d i_source)
 	{
 		this.x=(int)i_source.x;
 		this.y=(int)i_source.y;
 	}
+	/**
+	 * この関数は、インスタンスに値をセットします。
+	 * @param i_x
+	 * {@link #x}にセットする値
+	 * @param i_y
+	 * {@link #y}にセットする値
+	 */	
 	public final void setValue(int i_x,int i_y)
 	{
 		this.x=i_x;

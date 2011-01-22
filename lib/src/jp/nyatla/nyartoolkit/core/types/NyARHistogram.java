@@ -30,26 +30,34 @@
  */
 package jp.nyatla.nyartoolkit.core.types;
 
+
 /**
- * ヒストグラムを格納するクラスです。
+ * このクラスは、ヒストグラムを格納するデータ型
  */
 public class NyARHistogram
 {
-	/**
-	 * サンプリング値の格納変数
+	/** ヒストグラムを格納する配列です。
+	 * <p>注意 - 配列の長さ({@link #data})と{@link #length}の意味は異なります。
+	 * ヒストグラムの解像度に、この配列の長さを使わないでください。</p>
 	 */
 	public final int[] data;
-	/**
-	 * 有効なサンプリング値の範囲。[0-data.length-1]
+	/** ヒストグラムの解像度です。
+	 * {@link #data}配列の0から{@link #length}-1までの要素が、アクセス可能な要素です。
 	 */
 	public int length;
 	/**
-	 * 有効なサンプルの総数 data[i]
+	 * ヒストグラムの合計値です。
+	 * ヒストグラム分析器は、ここにヒストグラム要素の合計値を書込みます。
 	 */
 	public int total_of_data;
 	
 	
-	
+	/**
+	 * コンストラクタです。
+	 * ヒストグラムの解像度を指定してインスタンスを作ります。
+	 * @param i_length
+	 * ヒストグラムの解像度値。通常は256を指定してください。
+	 */
 	public NyARHistogram(int i_length)
 	{
 		this.data=new int[i_length];
@@ -57,10 +65,13 @@ public class NyARHistogram
 		this.total_of_data=0;
 	}
 	/**
-	 * 区間i_stからi_edまでの総データ数を返します。
+	 * この関数は、ヒストグラム要素の、i_stからi_edまでの区間の、合計値を返します。
 	 * @param i_st
+	 * 集計開始点のインデクス
 	 * @param i_ed
+	 * 集計終了点のインデクス
 	 * @return
+	 * ヒストグラムの合計値
 	 */
 	public final int getTotal(int i_st,int i_ed)
 	{
@@ -73,8 +84,10 @@ public class NyARHistogram
 		return result;
 	}
 	/**
-	 * 指定したi_pos未満サンプルを０にします。
+	 * この関数は、指定したインデクス以下のヒストグラム要素を0にします。
+	 *　実行結果は、{@link #total_of_data}に反映されます。
 	 * @param i_pos
+	 * 操作するヒストグラム要素のインデクス値。
 	 */
 	public void lowCut(int i_pos)
 	{
@@ -86,8 +99,10 @@ public class NyARHistogram
 		this.total_of_data-=s;
 	}
 	/**
-	 * 指定したi_pos以上のサンプルを０にします。
+	 * この関数は、指定したインデクス以上のヒストグラム要素を0にします。
+	 *　実行結果は、{@link #total_of_data}に反映されます。
 	 * @param i_pos
+	 * 操作するヒストグラム要素のインデクス値。
 	 */
 	public void highCut(int i_pos)
 	{
@@ -99,7 +114,9 @@ public class NyARHistogram
 		this.total_of_data-=s;
 	}
 	/**
-	 * 最小の値が格納されているサンプル番号を返します。
+	 * この関数は、ヒストグラム要素の中で最小の要素のインデクス番号を返します。
+	 * @return
+	 * 最小要素のインデクス番号
 	 */
 	public int getMinSample()
 	{
@@ -116,16 +133,18 @@ public class NyARHistogram
 		return ret;
 	}
 	/**
-	 * サンプルの中で最小の値を返します。
+	 * この関数は、ヒストグラム要素の中で最小の要素値を返します。
 	 * @return
+	 * 最小要素の値
 	 */
 	public int getMinData()
 	{
 		return this.data[this.getMinSample()];
 	}
 	/**
-	 * 平均値を計算します。
+	 * この関数は、ヒストグラム要素全体の平均値を計算します。
 	 * @return
+	 * ヒストグラム要素の平均値
 	 */
 	public int getAverage()
 	{

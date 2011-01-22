@@ -31,19 +31,22 @@
 package jp.nyatla.nyartoolkit.core.types;
 
 
-
 /**
- * データ型です。
- * 2次元の浮動小数点方の点を格納します。
+ * このクラスはデータ型です。
+ * ２次元の浮動小数点座標を格納します。
  */
 public class NyARDoublePoint2d
 {
+	/** X座標の値です。*/
 	public double x;
+	/** Y座標の値です。*/
 	public double y;
 	/**
-	 * 配列ファクトリ
+	 * この関数は、オブジェクトの一次元配列を作ります。
 	 * @param i_number
+	 * 作成する配列の長さ
 	 * @return
+	 * 新しい配列。
 	 */
 	public static NyARDoublePoint2d[] createArray(int i_number)
 	{
@@ -54,6 +57,15 @@ public class NyARDoublePoint2d
 		}
 		return ret;
 	}
+	/**
+	 * この関数は、オブジェクトの二次元配列を作ります。
+	 * @param i_length_x
+	 * 作成する配列の列数
+	 * @param i_length_y
+	 * 作成する配列の行数
+	 * @return
+	 * 新しい配列。
+	 */	
 	public static NyARDoublePoint2d[][] create2dArray(int i_length_x,int i_length_y)
 	{
 		NyARDoublePoint2d[][] ret=new NyARDoublePoint2d[i_length_y][i_length_x];
@@ -67,36 +79,45 @@ public class NyARDoublePoint2d
 		return ret;
 	}
 	/**
-	 * p1->p2と、p2->p3の直線の外積を計算します。
+	 * この関数は、３点で定義される直線から、外積を計算します。
+	 * 外積は、p1->p2と、p2->p3で定義する直線の外積です。
 	 * @param p1
+	 * 点１
 	 * @param p2
+	 * 点２
 	 * @param p3
+	 * 点３
 	 * @return
+	 * 外積の値
 	 */
 	public final static double crossProduct3Point(NyARDoublePoint2d p1,NyARDoublePoint2d p2,NyARDoublePoint2d p3)
 	{
 		return (p2.x-p1.x)*(p3.y-p2.y)-(p2.y-p1.y)*(p3.x-p2.x);
 	}
 	/**
-	 * p1->p2と、p2->p3の直線の外積を計算します。
+	 * この関数は、３点で定義される直線から、外積を計算します。
+	 * 外積は、p1->p2と、p2->p3で定義する直線の外積です。
 	 * @param p1
+	 * 点１
 	 * @param p2
+	 * 点２
 	 * @param p3
+	 * 点３
 	 * @return
+	 * 外積の値
 	 */
 	public final static double crossProduct3Point(NyARDoublePoint2d p1,NyARDoublePoint2d p2,double p3_x,double p3_y)
 	{
 		return (p2.x-p1.x)*(p3_y-p2.y)-(p2.y-p1.y)*(p3_x-p2.x);
 	}
-
-	
-	
 	/**
-	 * 頂点配列の中央値を求めます。
+	 * この関数は、頂点集合から、中央値(Σp[n]/n)を求めます。
 	 * @param i_points
+	 * 頂点集合を格納した配列です。
 	 * @param i_number_of_data
 	 * 配列中の有効な頂点数です。
 	 * @param o_out
+	 * 中央値を受け取るオブジェクトです。
 	 */
 	public final static void makeCenter(NyARDoublePoint2d[] i_points,int i_number_of_data,NyARDoublePoint2d o_out)
 	{
@@ -111,10 +132,13 @@ public class NyARDoublePoint2d
 		o_out.x=y/i_number_of_data;
 	}
 	/**
-	 * {@link #makeCenter}の出力型違いの関数です。
+	 * この関数は、頂点集合から、中央値(Σp[n]/n)を求めます。
 	 * @param i_points
+	 * 頂点集合を格納した配列です。
 	 * @param i_number_of_data
+	 * 配列中の有効な頂点数です。
 	 * @param o_out
+	 * 中央値を受け取るオブジェクトです。
 	 */
 	public final static void makeCenter(NyARDoublePoint2d[] i_points,int i_number_of_data,NyARIntPoint2d o_out)
 	{
@@ -128,9 +152,9 @@ public class NyARDoublePoint2d
 		o_out.x=(int)(lx/i_number_of_data);
 		o_out.y=(int)(ly/i_number_of_data);
 	}
-	
 	/**
 	 * コンストラクタです。
+	 * 初期値を格納したインスタンスを生成します。
 	 */
 	public NyARDoublePoint2d()
 	{
@@ -139,8 +163,12 @@ public class NyARDoublePoint2d
 		return;
 	}
 	/**
-	 * i_srcの値をthisへセットします。
-	 * @param i_src
+	 * コンストラクタです。
+	 * 初期値を指定してインスタンスを生成します。
+	 * @param i_x
+	 * {@link #x}の初期値
+	 * @param i_y
+	 * {@link #y}の初期値
 	 */
 	public NyARDoublePoint2d(double i_x,double i_y)
 	{
@@ -149,8 +177,10 @@ public class NyARDoublePoint2d
 		return;
 	}
 	/**
-	 * i_srcの値をthisへセットします。
+	 * コンストラクタです。
+	 * i_srcの値で初期化したインスタンスを生成します。
 	 * @param i_src
+	 * 初期値とするオブジェクト
 	 */
 	public NyARDoublePoint2d(NyARDoublePoint2d i_src)
 	{
@@ -159,8 +189,10 @@ public class NyARDoublePoint2d
 		return;
 	}
 	/**
-	 * i_srcの値をthisへセットします。
+	 * コンストラクタです。
+	 * i_srcの値で初期化したインスタンスを生成します。
 	 * @param i_src
+	 * 初期値とするオブジェクト
 	 */
 	public NyARDoublePoint2d(NyARIntPoint2d i_src)
 	{
@@ -169,10 +201,11 @@ public class NyARDoublePoint2d
 		return;
 	}
 	/**
-	 * p2-p1間の距離の二乗値を計算します。
+	 * この関数は、インスタンスの座標と、指定点との距離の２乗値を返します。
 	 * @param i_p1
-	 * @param i_p2
+	 * 点の座標
 	 * @return
+	 * i_p1との距離の二乗値
 	 */	
 	public final double sqDist(NyARDoublePoint2d i_p1)
 	{
@@ -181,16 +214,24 @@ public class NyARDoublePoint2d
 		y=this.y-i_p1.y;
 		return x*x+y*y;
 	}
+	/**
+	 * この関数は、インスタンスの座標と、指定点との距離の２乗値を返します。
+	 * @param i_p1
+	 * 点の座標
+	 * @return
+	 * i_p1との距離の二乗値
+	 */	
 	public final double sqDist(NyARIntPoint2d i_p1)
 	{
 		double x,y;
 		x=this.x-i_p1.x;
 		y=this.y-i_p1.y;
 		return x*x+y*y;
-	}	
+	}
 	/**
-	 * i_srcの値をthisへセットします。
+	 * この関数は、オブジェクトからインスタンスに値をセットします。
 	 * @param i_src
+	 * コピー元のオブジェクト。
 	 */
 	public final void setValue(NyARDoublePoint2d i_src)
 	{
@@ -199,8 +240,9 @@ public class NyARDoublePoint2d
 		return;
 	}
 	/**
-	 * i_srcの値をthisへセットします。
+	 * この関数は、オブジェクトからインスタンスに値をセットします。
 	 * @param i_src
+	 * コピー元のオブジェクト。
 	 */
 	public final void setValue(NyARIntPoint2d i_src)
 	{
@@ -208,10 +250,17 @@ public class NyARDoublePoint2d
 		this.y=(double)i_src.y;
 		return;
 	}
-	public final void setValue(double x,double y)
+	/**
+	 * この関数は、インスタンスに値をセットします。
+	 * @param i_x
+	 * {@link #x}にセットする値
+	 * @param i_y
+	 * {@link #y}にセットする値
+	 */
+	public final void setValue(double i_x,double i_y)
 	{
-		this.x=x;
-		this.y=y;
+		this.x=i_x;
+		this.y=i_y;
 		return;
 	}
 	

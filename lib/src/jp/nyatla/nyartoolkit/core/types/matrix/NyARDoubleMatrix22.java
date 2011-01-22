@@ -23,15 +23,21 @@
  * 
  */
 package jp.nyatla.nyartoolkit.core.types.matrix;
-
+/**
+ * このクラスは、2x2行列を格納します。
+ */
 public class NyARDoubleMatrix22 implements INyARDoubleMatrix
 {
+	/** 行列の要素値です。*/
 	public double m00;
+	/** 行列の要素値です。*/
 	public double m01;
+	/** 行列の要素値です。*/
 	public double m10;
+	/** 行列の要素値です。*/
 	public double m11;
 	/**
-	 * 遅いからあんまり使わないでね。
+	 * この関数は、要素数4の配列を、行列にセットします。
 	 */
 	public void setValue(double[] i_value)
 	{
@@ -42,7 +48,7 @@ public class NyARDoubleMatrix22 implements INyARDoubleMatrix
 		return;
 	}
 	/**
-	 * 遅いからあんまり使わないでね。
+	 * この関数は、要素数4の配列に、行列の内容をコピーします。
 	 */
 	public void getValue(double[] o_value)
 	{
@@ -52,6 +58,13 @@ public class NyARDoubleMatrix22 implements INyARDoubleMatrix
 		o_value[4]=this.m11;
 		return;
 	}
+	/**
+	 * この関数は、逆行列を計算して、インスタンスにセットします。
+	 * @param i_src
+	 * 逆行列を計算するオブジェクト。thisを指定できます。
+	 * @return
+	 * 逆行列を得られると、trueを返します。
+	 */
 	public boolean inverse(NyARDoubleMatrix22 i_src)
 	{
 		final double a11,a12,a21,a22;

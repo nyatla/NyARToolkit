@@ -37,9 +37,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 
 /**
- * 並進ベクトル[T]を３次元座標[b]と基点の回転済行列[M]から計算します。
- * ARToolKit互換の数値を計算します。
- *
+ * このクラスは、ARToolKitと同じ計算手順で並進ベクトルを求めます。
  */
 public class NyARTransportVectorSolver_ARToolKit implements INyARTransportVectorSolver
 {
@@ -53,7 +51,13 @@ public class NyARTransportVectorSolver_ARToolKit implements INyARTransportVector
 	private double[] _cy=new double[4];
 	
 	private final NyARPerspectiveProjectionMatrix _projection_mat;
-	public NyARTransportVectorSolver_ARToolKit(final NyARPerspectiveProjectionMatrix i_projection_mat_ref)
+	/**
+	 * コンストラクタです。
+	 * 射影変換オブジェクトの参照値を指定して、インスタンスを生成します。
+	 * @param i_projection_mat_ref
+	 * 射影変換オブジェクトの参照値です。
+	 */
+	public NyARTransportVectorSolver_ARToolKit(NyARPerspectiveProjectionMatrix i_projection_mat_ref)
 	{
 		this._projection_mat=i_projection_mat_ref;
 		//aとb(aの転置行列)の固定部分を設定。
@@ -70,6 +74,10 @@ public class NyARTransportVectorSolver_ARToolKit implements INyARTransportVector
 		}
 		return;
 	}
+	/**
+	 * この関数は、射影変換後の２次元頂点座標をセットします。
+	 * i_number_of_vertexは４である必要があります。
+	 */
 	public void set2dVertex(NyARDoublePoint2d[] i_ref_vertex_2d,int i_number_of_vertex) throws NyARException
 	{		
 		assert(i_number_of_vertex==4);
@@ -94,13 +102,7 @@ public class NyARTransportVectorSolver_ARToolKit implements INyARTransportVector
 	}
 	/**
 	 * 画面座標群と3次元座標群から、平行移動量を計算します。
-	 * 2d座標系は、直前に実行したset2dVertexのものを使用します。
-	 * @param i_vertex_2d
-	 * 直前のset2dVertexコールで指定したものと同じものを指定してください。
-	 * @param i_vertex3d
-	 * 3次元空間の座標群を設定します。頂点の順番は、画面座標群と同じ順序で格納してください。
-	 * @param o_transfer
-	 * @throws NyARException
+	 * 2d座標系は、直前に実行した{@link #set2dVertex}のものを使用します。
 	 */
 	public void solveTransportVector(NyARDoublePoint3d[] i_vertex3d,NyARDoublePoint3d o_transfer) throws NyARException
 	{

@@ -31,23 +31,24 @@
 package jp.nyatla.nyartoolkit.core.types;
 
 /**
- * 基点x,yと、幅、高さで矩形を定義します。
- *
+ * このクラスは、基点x,yと、幅、高さで矩形を定義します。
  */
 public class NyARIntRect
 {
+	/** 矩形の左上の点(X)*/
 	public int x;
-
+	/** 矩形の左上の点(Y)*/
 	public int y;
-
+	/** 矩形の幅(X)*/
 	public int w;
-
+	/** 矩形の高さ(Y)*/
 	public int h;
 	/**
-	 * 頂点を包括するRECTを計算します。
+	 * この関数は、頂点集合を包括する矩形を計算して、インスタンスにセットします。
 	 * @param i_vertex
+	 * 頂点集合を格納した配列
 	 * @param i_num_of_vertex
-	 * @param o_rect
+	 * 計算対象とする要素の数
 	 */
 	public final void setAreaRect(NyARDoublePoint2d[] i_vertex,int i_num_of_vertex)
 	{
@@ -72,6 +73,13 @@ public class NyARIntRect
 		this.w=xmax-xmin+1;
 		this.y=ymin;
 	}
+	/**
+	 * この関数は、頂点集合を包括する矩形を計算して、インスタンスにセットします。
+	 * @param i_vertex
+	 * 頂点集合を格納した配列
+	 * @param i_num_of_vertex
+	 * 計算対象とする要素の数
+	 */
 	public final void setAreaRect(NyARIntPoint2d[] i_vertex,int i_num_of_vertex)
 	{
 		//エリアを求める。
@@ -97,11 +105,15 @@ public class NyARIntRect
 	}
 
 	/**
-	 * 矩形を指定した領域内にクリップします。
+	 * この関数は、矩形を領域内にクリップします。
 	 * @param top
+	 * クリップする上辺
 	 * @param bottom
+	 * クリップする下辺
 	 * @param left
+	 * クリップする左辺
 	 * @param right
+	 * クリップする右辺
 	 */
 	public final void clip(int i_left,int i_top,int i_right,int i_bottom)
 	{
@@ -138,10 +150,13 @@ public class NyARIntRect
 	}
 
 	/**
-	 * 点がRECTの範囲内であるか判定します。
+	 * この関数は、点が矩形の範囲内にあるか判定します。
 	 * @param i_x
+	 * 調査する座標(X)
 	 * @param i_y
+	 * 調査する座標(Y)
 	 * @return
+	 *　点が矩形の中にあれば、trueを返します。
 	 */
 	public final boolean isInnerPoint(int i_x,int i_y)
 	{
@@ -150,12 +165,26 @@ public class NyARIntRect
 		
 		return (0<=x && x<this.w && 0<=y && y<this.h);
 	}
+	/**
+	 * この関数は、点が矩形の範囲内にあるか判定します。
+	 * @param i_pos
+	 * 調査する座標
+	 * @return
+	 *　点が矩形の中にあれば、trueを返します。
+	 */
 	public final boolean isInnerPoint(NyARDoublePoint2d i_pos)
 	{
 		int x=(int)i_pos.x-this.x;
 		int y=(int)i_pos.y-this.y;
 		return (0<=x && x<this.w && 0<=y && y<this.h);
 	}
+	/**
+	 * この関数は、点が矩形の範囲内にあるか判定します。
+	 * @param i_pos
+	 * 調査する座標
+	 * @return
+	 *　点が矩形の中にあれば、trueを返します。
+	 */
 	public final boolean isInnerPoint(NyARIntPoint2d i_pos)
 	{
 		int x=i_pos.x-this.x;
@@ -163,10 +192,11 @@ public class NyARIntRect
 		return (0<=x && x<this.w && 0<=y && y<this.h);
 	}
 	/**
-	 * RECTがこのRECTの範囲内であるか判定します。
+	 * この関数は、引数の矩形が、この矩形内にあるか判定します。
 	 * @param i_rect
-	 * @param i_y
+	 * 内側にあるか調べる矩形
 	 * @return
+	 *　矩形が内側にあれば、trueを返します。
 	 */
 	public final boolean isInnerRect(NyARIntRect i_rect)
 	{
@@ -177,6 +207,19 @@ public class NyARIntRect
 		int lh=ly+i_rect.h;
 		return (0<=lx && lx<this.w && 0<=ly && ly<this.h && lw<=this.w && lh<=this.h);
 	}
+	/**
+	 * この関数は、引数で定義される矩形が、この矩形内にあるか判定します。
+	 * @param i_x
+	 * 内側にあるか調べる矩形の左上座標(X)
+	 * @param i_y
+	 * 内側にあるか調べる矩形の左上座標(Y)
+	 * @param i_w
+	 * 内側にあるか調べる矩形の幅
+	 * @param i_h
+	 * 内側にあるか調べる矩形の高さ
+	 * @return
+	 *　矩形が内側にあれば、trueを返します。
+	 */
 	public final boolean isInnerRect(int i_x,int i_y,int i_w,int i_h)
 	{
 		assert(i_w>=0 && i_h>=0);
@@ -187,11 +230,11 @@ public class NyARIntRect
 		return (0<=lx && lx<this.w && 0<=ly && ly<this.h && lw<=this.w && lh<=this.h);
 	}
 	/**
-	 * RECT1とRECT2の差分値を計算します。
-	 * 差分値は、矩形同士の対角点２点(左上,右下)の距離の二乗の合計値です。
-	 * @param i_rect1
+	 * この関数は、２つの矩形の対角点同士の距離の二乗値を計算します。
 	 * @param i_rect2
+	 * 比較する矩形
 	 * @return
+	 * 左上、右下の点同士の距離の二乗値
 	 */
 	public final int sqDiagonalPointDiff(NyARIntRect i_rect2)
 	{
@@ -206,8 +249,9 @@ public class NyARIntRect
 		return ret;
 	}
 	/**
-	 * 対角線の二乗距離を返します。
+	 * この関数は、矩形の対角距離の二乗距離を返します。
 	 * @return
+	 * 矩形の対角距離の二乗値。
 	 */
 	public final int getDiagonalSqDist()
 	{
@@ -217,8 +261,9 @@ public class NyARIntRect
 	}
 
 	/**
-	 * i_sourceの値をthisにセットします。
+	 * この関数は、オブジェクトの値をインスタンスにセットします。
 	 * @param i_source
+	 * セットする値を格納したオブジェクト。
 	 */
 	public final void setValue(NyARIntRect i_source)
 	{

@@ -32,15 +32,26 @@ package jp.nyatla.nyartoolkit.core.types;
 
 
 /**
- * 0=a*x+b*y+cのパラメータを格納します。
+ * このクラスは、0=a*x+b*y+cのパラメータを格納します。
  * x,yの増加方向は、x=L→R,y=B→Tです。 y軸が反転しているので注意してください。
  *
  */
 public class NyARLinear
 {
-	public double b;//係数b
-	public double a;//係数a
-	public double c;//切片
+	/** 直線式の係数 b*/
+	public double b;
+	/** 直線式の係数 a*/
+	public double a;
+	/** 直線式の係数 c*/
+	public double c;
+	
+	/**
+	 * この関数は、指定サイズのオブジェクト配列を作ります。
+	 * @param i_number
+	 * 作成する配列の長さ
+	 * @return
+	 * 新しい配列。
+	 */	
 	public static NyARLinear[] createArray(int i_number)
 	{
 		NyARLinear[] ret=new NyARLinear[i_number];
@@ -49,7 +60,12 @@ public class NyARLinear
 			ret[i]=new NyARLinear();
 		}
 		return ret;
-	}	
+	}
+	/**
+	 * この関数は、引数値からパラメータをインスタンスへコピーします。
+	 * @param i_source
+	 * コピー元のオブジェクト
+	 */
 	public final void copyFrom(NyARLinear i_source)
 	{
 		this.b=i_source.b;
@@ -58,10 +74,13 @@ public class NyARLinear
 		return;
 	}
 	/**
-	 * 2直線の交点を計算します。
+	 * この関数は、直線の交点を計算します。
 	 * @param l_line_2
+	 * 交点を計算する直線式
 	 * @param o_point
+	 * 交点座標を格納するオブジェクト
 	 * @return
+	 * 交点が求まればtrue
 	 */
 	public final boolean crossPos(NyARLinear l_line_2,NyARDoublePoint2d o_point)
 	{
@@ -74,12 +93,17 @@ public class NyARLinear
 		return true;
 	}
 	/**
-	 * 指定したパラメータの式との交点を得る。
+	 * この関数は、直線の交点を計算します。
 	 * @param i_a
+	 * 交点を求める直線式の係数a
 	 * @param i_b
+	 * 交点を求める直線式の係数b
 	 * @param i_c
+	 * 交点を求める直線式の係数c
 	 * @param o_point
+	 * 交点座標を格納するオブジェクト
 	 * @return
+	 * 交点が求まればtrue
 	 */
 	public final boolean crossPos(double i_a,double i_b,double i_c,NyARDoublePoint2d o_point)
 	{
@@ -91,6 +115,19 @@ public class NyARLinear
 		o_point.y = (i_a * this.c - this.a * i_c) / w1;
 		return true;
 	}
+	/**
+	 * この関数は、直線の交点を計算します。
+	 * @param i_a
+	 * 交点を求める直線式の係数a
+	 * @param i_b
+	 * 交点を求める直線式の係数b
+	 * @param i_c
+	 * 交点を求める直線式の係数c
+	 * @param o_point
+	 * 交点座標を格納するオブジェクト
+	 * @return
+	 * 交点が求まればtrue
+	 */
 	public final boolean crossPos(double i_a,double i_b,double i_c,NyARIntPoint2d o_point)
 	{
 		final double w1 = this.a * i_b - i_a * this.b;
@@ -102,9 +139,11 @@ public class NyARLinear
 		return true;
 	}
 	/**
-	 * 2直線が交差しているかを返します。
+	 * この関数は、2直線が交差しているかを返します。
 	 * @param l_line_2
+	 * 交差しているか確認するオブジェクト
 	 * @return
+	 * 交差していればtrue
 	 */
 	public final boolean isCross(NyARLinear l_line_2)
 	{
@@ -113,31 +152,43 @@ public class NyARLinear
 	}
 	
 	/**
-	 * ２点を結ぶ直線の式を得る。この式は正規化されている。
+	 * この関数は、2点を結ぶ直線式を計算して、インスタンスに格納します。
+	 * 式の係数値は、正規化されます。
 	 * @param i_point1
+	 * 点１
 	 * @param i_point2
+	 * 点２
 	 * @return
+	 * 直線式が求まれば、true
 	 */
 	public final boolean makeLinearWithNormalize(NyARIntPoint2d i_point1,NyARIntPoint2d i_point2)
 	{
 		return makeLinearWithNormalize(i_point1.x,i_point1.y,i_point2.x,i_point2.y);
 	}
 	/**
-	 * ２点を結ぶ直線の式を得る。この式は正規化されている。
+	 * この関数は、2点を結ぶ直線式を計算して、インスタンスに格納します。
+	 * 式の係数値は、正規化されます。
 	 * @param i_point1
+	 * 点１
 	 * @param i_point2
+	 * 点２
 	 * @return
+	 * 直線式が求まれば、true
 	 */
 	public final boolean makeLinearWithNormalize(NyARDoublePoint2d i_point1,NyARDoublePoint2d i_point2)
 	{
 		return makeLinearWithNormalize(i_point1.x,i_point1.y,i_point2.x,i_point2.y);
 	}
 	/**
-	 * ２点を結ぶ直線の式を得る。この式は正規化されている。
+	 * この関数は、2点を結ぶ直線式を計算して、インスタンスに格納します。
+	 * 式の係数値は、正規化されます。
 	 * @param i_point1
+	 * 点１
 	 * @param i_point2
+	 * 点２
 	 * @return
-	 */	
+	 * 直線式が求まれば、true
+	 */
 	public final boolean makeLinearWithNormalize(double x1,double y1,double x2,double y2)
 	{
 		double dx=y2-y1;
@@ -153,11 +204,15 @@ public class NyARLinear
 		return true;
 	}
 	/**
-	 * 傾きと通過点を入力して、その直線式をセットする。
+	 * この関数は、傾きと通過点から直線式を計算して、インスタンスへセットします。
 	 * @param i_dx
+	 * Xの傾き
 	 * @param i_dy
+	 * Yの傾き
 	 * @param i_x
+	 * 通過点の座標X
 	 * @param i_y
+	 * 通過点の座標Y
 	 */
 	public final void setVector(double i_dx,double i_dy,double i_x,double i_y)
 	{
@@ -166,6 +221,11 @@ public class NyARLinear
 		this.c=(i_dx*i_y-i_dy*i_x);
 		return;
 	}
+	/**
+	 * この関数は、{@link NyARVecLinear2d}を直線式に変換して、インスタンスへセットします。
+	 * @param i_vector
+	 * セットするオブジェクト
+	 */
 	public final void setVector(NyARVecLinear2d i_vector)
 	{
 		this.a= i_vector.dy;
@@ -173,6 +233,11 @@ public class NyARLinear
 		this.c=(i_vector.dx*i_vector.y-i_vector.dy*i_vector.x);
 		return;		
 	}
+	/**
+	 * この関数は、{@link NyARVecLinear2d}を正規化された直線式に変換して、インスタンスへセットします。
+	 * @param i_vector
+	 * セットするオブジェクト
+	 */
 	public final boolean setVectorWithNormalize(NyARVecLinear2d i_vector)
 	{
 		double dx=i_vector.dx;
@@ -188,7 +253,13 @@ public class NyARLinear
 		return true;
 	}
 	/**
-	 * i_x,i_yを通過する、i_linearの法線を計算して、格納します。
+	 * この関数は、i_x,i_yを通過する、i_linearの法線を計算して、インスタンスへ格納します。
+	 * @param i_x
+	 * 通過点X
+	 * @param i_y
+	 * 通過点Y
+	 * @param i_linear
+	 * 法線を計算する直線式(この引数にはthisを指定できます。)
 	 */
 	public final void normalLine(double i_x,double i_y,NyARLinear i_linear)
 	{
@@ -199,12 +270,17 @@ public class NyARLinear
 		this.c=-(lb*i_x-la*i_y);
 	}
 	/**
-	 * i_x,i_yを通るこの直線の法線と、i_linearが交わる点を返します。
+	 * この関数は、i_x,i_yを通るこの直線の法線と、i_linearが交わる点を返します。
 	 * @param i_x
+	 * 法線が通過する点X
 	 * @param i_y
+	 * 法線が通過する点Y
 	 * @param i_linear
+	 * 交点を計算する直線式
 	 * @param o_point
+	 * 交点を返却するオブジェクト
 	 * @return
+	 * 交点が求まれば、trueを返します。
 	 */
 	public final boolean normalLineCrossPos(double i_x,double i_y,NyARLinear i_linear,NyARDoublePoint2d o_point)
 	{
@@ -221,38 +297,42 @@ public class NyARLinear
 		o_point.y = ((la * i_linear.c - i_linear.a * lc) / w1);
 		return true;
 	}
-	/**
-	 * i_x,i_yを通るこの直線の法線上での、この直線とi_linearの距離の二乗値を返します。
-	 * i_x,i_yに直線上の点を指定すると、この直線の垂線上での、もう一方の直線との距離の二乗値が得られます。
-	 * @param i_linear
-	 * @param i_x
-	 * @param i_y
-	 * @param o_point
-	 * @return
-	 * 交点が無い場合、無限大を返します。
-	 *//*
-	public final double sqDistWithLinear(NyARLinear i_linear, double i_x,double i_y)
-	{
-		//thisを法線に変換
-		double la=this.b;
-		double lb=-this.a;
-		double lc=-(la*i_x+lb*i_y);
-		//交点を計算
-		final double w1 = i_linear.a * lb - la * i_linear.b;
-		if (w1 == 0.0) {
-			return Double.POSITIVE_INFINITY;
-		}
-		double x=i_x-((i_linear.b * lc - lb * i_linear.c) / w1);
-		double y=i_y-((la * i_linear.c - i_linear.a * lc) / w1);
-		return x*x+y*y;
-	}*/
+//	/**
+//	 * i_x,i_yを通るこの直線の法線上での、この直線とi_linearの距離の二乗値を返します。
+//	 * i_x,i_yに直線上の点を指定すると、この直線の垂線上での、もう一方の直線との距離の二乗値が得られます。
+//	 * @param i_linear
+//	 * @param i_x
+//	 * @param i_y
+//	 * @param o_point
+//	 * @return
+//	 * 交点が無い場合、無限大を返します。
+//	 */
+//	public final double sqDistWithLinear(NyARLinear i_linear, double i_x,double i_y)
+//	{
+//		//thisを法線に変換
+//		double la=this.b;
+//		double lb=-this.a;
+//		double lc=-(la*i_x+lb*i_y);
+//		//交点を計算
+//		final double w1 = i_linear.a * lb - la * i_linear.b;
+//		if (w1 == 0.0) {
+//			return Double.POSITIVE_INFINITY;
+//		}
+//		double x=i_x-((i_linear.b * lc - lb * i_linear.c) / w1);
+//		double y=i_y-((la * i_linear.c - i_linear.a * lc) / w1);
+//		return x*x+y*y;
+//	}
 
 	/**
-	 * この矩形を任意の範囲でクリッピングしたときの2頂点を返します。
+	 * この関数は、直線を0,0基点(左上)の矩形でクリッピングしたときの、端点を計算します。
 	 * @param i_width
+	 * 矩形の幅
 	 * @param i_height
+	 * 矩形の高さ
 	 * @param o_point
+	 * 端点を返すオブジェクト配列。2要素である必要があります。
 	 * @return
+	 * 端点が求まればtrue
 	 */
 	public final boolean makeSegmentLine(int i_width,int i_height,NyARIntPoint2d[] o_point)
 	{	
@@ -291,15 +371,21 @@ public class NyARLinear
 			}
 		}
 		return false;
-	}	
+	}
 	/**
-	 * この直線を、任意の矩形でクリッピングしたときに得られる線分の2頂点を返します。
+	 * この関数は、直線を矩形でクリッピングしたときの、端点を計算します。
 	 * @param i_left
+	 * 矩形の左上座標(X)
 	 * @param i_top
+	 * 矩形の左上座標(Y)
 	 * @param i_width
+	 * 矩形の幅
 	 * @param i_height
+	 * 矩形の高さ
 	 * @param o_point
+	 * 端点を返すオブジェクト配列。2要素である必要があります。
 	 * @return
+	 * 端点が求まればtrue
 	 */
 	public final boolean makeSegmentLine(int i_left,int i_top,int i_width,int i_height,NyARIntPoint2d[] o_point)
 	{	
@@ -342,13 +428,15 @@ public class NyARLinear
 		return false;
 	}
 	/**
-	 * 直線と、i_sp1とi_sp2の作る線分との二乗距離値の合計を返します。計算方法は、線分の２端点を通過する直線の法線上での、２端点と直線の距離の合計です。
+	 * この関数は、この直線と、i_sp1とi_sp2の作る線分との、二乗距離値の合計を返します。
+	 * 計算方法は、線分の端点を通過する直線の法線上での、端点と直線の距離の合計です。
 	 * 線分と直線の類似度を判定する数値になります。
 	 * @param i_sp1
+	 * 線分の端点1
 	 * @param i_sp2
-	 * @param o_point
+	 * 線分の端点2
 	 * @return
-	 * 距離が取れないときは無限大です。
+	 * 二乗距離値の合計。距離が取れないときは無限大です。
 	 */
 	public final double sqDistBySegmentLineEdge(NyARDoublePoint2d i_sp1,NyARDoublePoint2d i_sp2)
 	{
@@ -374,12 +462,15 @@ public class NyARLinear
 		y = ((la * this.c - this.a * lc) / w1)-i_sp2.y;
 
 		return sqdist+x*x+y*y;
-	}	
+	}
 	/**
-	 * 最小二乗法を使用して直線を計算します。
+	 * この関数は、頂点群から最小二乗法を使用して直線を計算します。
 	 * @param i_points
+	 * 頂点群を格納した配列。
 	 * @param i_number_of_data
+	 * 計算対象の頂点群の数
 	 * @return
+	 * 計算に成功すると、trueを返します。
 	 */
 	public boolean leastSquares(NyARDoublePoint2d[] i_points,int i_number_of_data)
 	{

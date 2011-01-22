@@ -30,14 +30,15 @@ import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
- * 並進ベクトル[T]を３次元座標[b]と基点の回転済行列[M]から計算します。
- * 
+ * このクラスは、ARToolKitと同じアルゴリズムを、異なる演算手順で処理して、並進ベクトルを求めます。
  * アルゴリズムは、ARToolKit 拡張現実プログラミング入門 の、P207のものです。
- * 
- * 計算手順
+ * <p>計算手順
+ * <pre>
  * [A]*[T]=bを、[A]T*[A]*[T]=[A]T*[b]にする。
  * set2dVertexで[A]T*[A]=[M]を計算して、Aの3列目の情報だけ保存しておく。
  * getTransportVectorで[M]*[T]=[A]T*[b]を連立方程式で解いて、[T]を得る。
+ * </pre>
+ * </p>
  */
 public class NyARTransportVectorSolver implements INyARTransportVectorSolver
 {
@@ -45,6 +46,14 @@ public class NyARTransportVectorSolver implements INyARTransportVectorSolver
 	private double[] _cy;	
 	private final NyARPerspectiveProjectionMatrix _projection_mat;
 	private int _nmber_of_vertex;
+	/**
+	 * コンストラクタです。
+	 * 射影変換オブジェクトの参照値と、取り扱う頂点の最大数を指定して、インスタンスを生成します。
+	 * @param i_projection_mat_ref
+	 * 射影変換オブジェクトの参照値です。
+	 * @param i_max_vertex
+	 * 取り扱う頂点の最大数。
+	 */
 	public NyARTransportVectorSolver(NyARPerspectiveProjectionMatrix i_projection_mat_ref,int i_max_vertex)
 	{
 		this._projection_mat=i_projection_mat_ref;
@@ -54,13 +63,8 @@ public class NyARTransportVectorSolver implements INyARTransportVectorSolver
 	}
 	private double _a00,_a01_10,_a02_20,_a11,_a12_21,_a22;
 	/**
-	 * 平行移動量計算のための、画面上の頂点群を指定します。
-	 * @param i_ref_vertex_2d
-	 * 入力パラメータ。歪み矯正済の画面上の頂点座標群への参照値を指定します。
-	 * @param i_number_of_vertex
-	 * i_ref_vertex_2dのデータ数を指定します。
-	 * @throws NyARException
-	 * 
+	 * この関数は、射影変換後の２次元頂点座標をセットします。
+	 * i_number_of_vertexは、コンストラクタで指定した最大数以下である必要があります。
 	 */
 	public void set2dVertex(NyARDoublePoint2d[] i_ref_vertex_2d,int i_number_of_vertex) throws NyARException
 	{
@@ -101,12 +105,8 @@ public class NyARTransportVectorSolver implements INyARTransportVectorSolver
 	}
 	
 	/**
-	 * 先にセットした2次元座標群と3次元座標群から、平行移動量を計算します。
-	 * 2d座標系は、直前に実行したset2dVertexのものを使用します。
-	 * @param i_vertex3d
-	 * 3次元空間の座標群を設定します。頂点の順番は、画面座標群と同じ順序で格納してください。
-	 * @param o_transfer
-	 * @throws NyARException
+	 * 画面座標群と3次元座標群から、平行移動量を計算します。
+	 * 2d座標系は、直前に実行した{@link #set2dVertex}のものを使用します。
 	 */
 	public void solveTransportVector(NyARDoublePoint3d[] i_vertex3d,NyARDoublePoint3d o_transfer) throws NyARException
 	{

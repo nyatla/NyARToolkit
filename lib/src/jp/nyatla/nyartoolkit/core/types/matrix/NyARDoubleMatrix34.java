@@ -26,18 +26,33 @@ package jp.nyatla.nyartoolkit.core.types.matrix;
 
 public class NyARDoubleMatrix34 implements INyARDoubleMatrix
 {
+	/** 行列の要素値です。*/
 	public double m00;
+	/** 行列の要素値です。*/
 	public double m01;
+	/** 行列の要素値です。*/
 	public double m02;
+	/** 行列の要素値です。*/
 	public double m03;
+	/** 行列の要素値です。*/
 	public double m10;
+	/** 行列の要素値です。*/
 	public double m11;
+	/** 行列の要素値です。*/
 	public double m12;
+	/** 行列の要素値です。*/
 	public double m13;
+	/** 行列の要素値です。*/
 	public double m20;
+	/** 行列の要素値です。*/
 	public double m21;
+	/** 行列の要素値です。*/
 	public double m22;
+	/** 行列の要素値です。*/
 	public double m23;
+	/**
+	 * この関数は、要素数12の配列を、行列にセットします。
+	 */		
 	public void setValue(double[] i_value)
 	{
 		this.m00=i_value[0];
@@ -54,6 +69,11 @@ public class NyARDoubleMatrix34 implements INyARDoubleMatrix
 		this.m23=i_value[11];
 		return;
 	}
+	/**
+	 * この関数は、オブジェクトの内容をインスタンスにコピーします。
+	 * @param i_value
+	 * コピー元のオブジェクト
+	 */	
 	public void setValue(NyARDoubleMatrix34 i_value)
 	{
 		this.m00=i_value.m00;
@@ -70,6 +90,9 @@ public class NyARDoubleMatrix34 implements INyARDoubleMatrix
 		this.m23=i_value.m23;
 		return;
 	}
+	/**
+	 * この関数は、要素数12の配列に、行列の内容をコピーします。
+	 */	
 	public void getValue(double[] o_value)
 	{
 		o_value[0]=this.m00;

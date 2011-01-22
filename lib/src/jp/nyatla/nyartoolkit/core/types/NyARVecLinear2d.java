@@ -26,15 +26,26 @@ package jp.nyatla.nyartoolkit.core.types;
 
 
 /**
- * 定点と傾きのパラメータで、直線を表現します。
- *
+ * このクラスは、通過点とX,Yの変化量で、直線を定義します。
  */
 public class NyARVecLinear2d
 {
+	/** 直線の通過点(X)*/
 	public double x;
+	/** 直線の通過点(Y)*/
 	public double y;
+	/** x方向の直線の変化量*/
 	public double dx;
+	/** y方向の直線の変化量*/
 	public double dy;
+	
+	/**
+	 * この関数は、指定サイズのオブジェクト配列を作ります。
+	 * @param i_number
+	 * 作成する配列の長さ
+	 * @return
+	 * 新しい配列。
+	 */	
 	public static NyARVecLinear2d[] createArray(int i_length)
 	{
 		NyARVecLinear2d[] r=new NyARVecLinear2d[i_length];
@@ -44,9 +55,10 @@ public class NyARVecLinear2d
 		return r;
 	}
 	/**
-	 * 法線ベクトルを計算します。
+	 * この関数は、法線を計算します。
+	 * 通過点は変更しません。
 	 * @param i_src
-	 * 元のベクトルを指定します。この値には、thisを指定できます。
+	 * 元のインスタンスを指定します。この値には、thisを指定できます。
 	 */
 	public final void normalVec(NyARVecLinear2d i_src)
 	{
@@ -54,6 +66,11 @@ public class NyARVecLinear2d
 		this.dx=i_src.dy;
 		this.dy=-w;
 	}
+	/**
+	 * この関数は、オブジェクトの値をインスタンスにセットします。
+	 * @param i_value
+	 * コピー元のオブジェクト
+	 */
 	public final void setValue(NyARVecLinear2d i_value)
 	{
 		this.dx=i_value.dx;
@@ -62,9 +79,11 @@ public class NyARVecLinear2d
 		this.y=i_value.y;
 	}
 	/**
-	 * このベクトルと指定した直線が作るCos値を返します。
+	 * この関数は、この直線と引数の直線とが作るCos値を返します。
 	 * @param i_v1
+	 * 直線を格納したオブジェクト
 	 * @return
+	 * ２直線のCOS値（radian）
 	 */
 	public final double getVecCos(NyARVecLinear2d i_v1)
 	{
@@ -75,58 +94,83 @@ public class NyARVecLinear2d
 		double d=(x1*x2+y1*y2)/Math.sqrt((x1*x1+y1*y1)*(x2*x2+y2*y2));
 		return d;
 	}
+	/**
+	 * この関数は、この直線と引数の直線とが作るCos値の絶対値を返します。
+	 * @param i_v1
+	 * 直線を格納したオブジェクト
+	 * @return
+	 * ２直線のCOS値の絶対値（radian）
+	 */
 	public final double getAbsVecCos(NyARVecLinear2d i_v1)
 	{
-		double x1=i_v1.dx;
-		double y1=i_v1.dy;
-		double x2=this.dx;
-		double y2=this.dy;
-		double d=(x1*x2+y1*y2)/Math.sqrt((x1*x1+y1*y1)*(x2*x2+y2*y2));
+		double d=getVecCos(i_v1);
 		return d>=0?d:-d;
 	}
 	/**
-	 * このベクトルと指定したベクトルが作るCos値を返します。
+	 * この関数は、この直線とベクトルが作るCos値を返します。
 	 * @param i_dx
+	 * ベクトルのX成分
 	 * @param i_dy
+	 * ベクトルのY成分
 	 * @return
+	 * ２直線のCOS値（radian）
 	 */
 	public final double getVecCos(double i_dx,double i_dy)
 	{
 		double x1=this.dx;
 		double y1=this.dy;
-		double d=(x1*i_dx+y1*i_dy)/Math.sqrt((x1*x1+y1*y1)*(i_dx*i_dx+i_dy*i_dy));
-		return d;
-	}
-	public final double getVecCos(NyARDoublePoint2d i_pos1,NyARDoublePoint2d i_pos2)
-	{
-		double d=getAbsVecCos(i_pos2.x-i_pos1.x,i_pos2.y-i_pos1.y);
-		return d>=0?d:-d;
-	}	
-	public final double getAbsVecCos(double i_v2_x,double i_v2_y)
-	{
-		double x1=this.dx;
-		double y1=this.dy;
-		double d=(x1*i_v2_x+y1*i_v2_y)/Math.sqrt((x1*x1+y1*y1)*(i_v2_x*i_v2_x+i_v2_y*i_v2_y));
-		return d>=0?d:-d;
+		return (x1*i_dx+y1*i_dy)/Math.sqrt((x1*x1+y1*y1)*(i_dx*i_dx+i_dy*i_dy));
 	}
 	/**
-	 * このベクトルと、i_pos1-&lt;i_pos2を結ぶ線分が作るcos値の絶対値を返します。
-	 * @param i_pos1
-	 * @param i_pos2
+	 * この関数は、この直線とベクトルが作るCos値の絶対値を返します。
+	 * @param i_v2_x
+	 * ベクトルのX成分
+	 * @param i_v2_y
+	 * ベクトルのY成分
 	 * @return
+	 * ２直線のCOS値の絶対値（radian）
+	 */
+	public final double getAbsVecCos(double i_v2_x,double i_v2_y)
+	{
+		double d=getVecCos(i_v2_x,i_v2_y);
+		return d>=0?d:-d;
+	}	
+	/**
+	 * この関数は、この直線と線分が作るCos値を返します。
+	 * @param i_pos1
+	 * 線分の端点１
+	 * @param i_pos2
+	 * 線分の端点２
+	 * @return
+	 * ２直線のCOS値（radian）
+	 */
+	public final double getVecCos(NyARDoublePoint2d i_pos1,NyARDoublePoint2d i_pos2)
+	{
+		return getVecCos(i_pos2.x-i_pos1.x,i_pos2.y-i_pos1.y);
+	}	
+
+	/**
+	 * この関数は、この直線と線分が作るCos値の絶対値を返します。
+	 * @param i_pos1
+	 * 線分の端点１
+	 * @param i_pos2
+	 * 線分の端点２
+	 * @return
+	 * ２直線のCOS値の絶対値（radian）
 	 */
 	public final double getAbsVecCos(NyARDoublePoint2d i_pos1,NyARDoublePoint2d i_pos2)
 	{
-		double d=getAbsVecCos(i_pos2.x-i_pos1.x,i_pos2.y-i_pos1.y);
-		return d>=0?d:-d;
+		return getAbsVecCos(i_pos2.x-i_pos1.x,i_pos2.y-i_pos1.y);
 	}
 	
 	/**
-	 * 交点を求めます。
+	 * この関数は、直線との交点を求めます。
 	 * @param i_vector1
-	 * @param i_vector2
+	 * 交点を求める直線
 	 * @param o_point
+	 * 交点座標を得るオブジェクト。
 	 * @return
+	 * 交点が求まると、trueを返します。
 	 */
 	public final boolean crossPos(NyARVecLinear2d i_vector1,NyARDoublePoint2d o_point)
 	{
@@ -145,13 +189,15 @@ public class NyARVecLinear2d
 		return true;
 	}
 	/**
-	 * 直線と、i_sp1とi_sp2の作る線分との二乗距離値の合計を返します。
-	 * 線分と直線の類似度を
+	 * この関数は、この直線と、i_sp1とi_sp2の作る線分との、二乗距離値の合計を返します。
+	 * 計算方法は、線分の端点を通過する直線の法線上での、端点と直線の距離の合計です。
+	 * 線分と直線の類似度を判定する数値になります。
 	 * @param i_sp1
+	 * 線分の端点1
 	 * @param i_sp2
-	 * @param o_point
+	 * 線分の端点2
 	 * @return
-	 * 距離が取れないときは無限大です。
+	 * 二乗距離値の合計。距離が取れないときは無限大です。
 	 */
 	public final double sqDistBySegmentLineEdge(NyARDoublePoint2d i_sp1,NyARDoublePoint2d i_sp2)
 	{
@@ -184,10 +230,16 @@ public class NyARVecLinear2d
 	}
 
 	/**
-	 * i_lineの直線をセットします。x,yの値は、(i_x,i_y)を通過するi_lineの法線とi_lineの交点をセットします。
+	 * この関数は、i_lineの直線を、インスタンスにセットします。
+	 * {@link #x},{@link #y}の値は、(i_x,i_y)を通過するi_lineの法線とi_lineの交点をセットします。
 	 * @param i_line
+	 * セットする直線式
 	 * @param i_x
+	 * {@link #x},{@link #y}を確定するための、法線の通過点
 	 * @param i_y
+	 * {@link #x},{@link #y}を確定するための、法線の通過点
+	 * @return
+	 * セットに成功すると、trueを返します。
 	 */
 	public boolean setLinear(NyARLinear i_line,double i_x,double i_y)
 	{
@@ -206,11 +258,13 @@ public class NyARVecLinear2d
 		return true;
 	}
 	/**
-	 * 点群から最小二乗法で直線を計算してセットします。
-	 * 通過点x,yは、点群の中央値を通過する、算出された直線の法線との交点です。
+	 * この関数は、頂点群から最小二乗法を使用して直線を計算します。
 	 * @param i_points
+	 * 頂点群を格納した配列。
 	 * @param i_number_of_data
+	 * 計算対象の頂点群の数
 	 * @return
+	 * 計算に成功すると、trueを返します。
 	 */
 	public final boolean leastSquares(NyARDoublePoint2d[] i_points,int i_number_of_data)
 	{
@@ -240,10 +294,13 @@ public class NyARVecLinear2d
 		return true;
 	}
 	/**
-	 * 正規化したベクトルを出力する{@link #leastSquares}です。
+	 * この関数は、正規化したベクトルを出力する、{@link #leastSquares}です。
 	 * @param i_points
+	 * 頂点群を格納した配列。
 	 * @param i_number_of_data
+	 * 計算対象の頂点群の数
 	 * @return
+	 * 計算に成功すると、trueを返します。
 	 */
 	public final boolean leastSquaresWithNormalize(NyARDoublePoint2d[] i_points,int i_number_of_data)
 	{

@@ -29,33 +29,40 @@
  * 
  */
 package jp.nyatla.nyartoolkit.core.types;
+
 /**
- * 座標点配列を定義します。
- * 座標点配列は、輪郭線やパスの定義に使用します。
+ * このクラスは、整数型の２次元輪郭線を格納します。
+ * 輪郭線は、２次元座標{@link NyARIntPoint2d}の集合です。
  */
 public class NyARIntCoordinates
 {
-	/**
-	 * 点を格納する配列です。
-	 */
+	/** 点を格納する配列です。*/
 	public NyARIntPoint2d[] items;
-	/**
-	 * 配列の有効な長さです。0から、items.length-1までの数を取ります。
-	 */
+	/** 有効な要素の長さです。この値の最大値は、{@link #items#length}と同じです。*/
 	public int length;
+	/**
+	 * コンストラクタです。
+	 * 最大長さを指定して、有効要素数0のインスタンスを作ります。
+	 * @param i_length
+	 * 輪郭の最大長
+	 */
 	public NyARIntCoordinates(int i_length)
 	{
 		this.items=NyARIntPoint2d.createArray(i_length);
 		this.length=0;
 	}
 	/**
-	 * 指定した点を結ぶ直線を計算して、輪郭に保存します。
-	 * 動作チェックはしたけど、多分動くレベル。
+	 * この関数は２点を結ぶ直線を計算して、輪郭線を保存します。
+	 * 輪郭線は、Bresenhamのアルゴリズムで計算します。
+	 * ２点間の距離が、格納可能な最大長さ以下になるように注意してください。
 	 * @param i_x0
+	 * 点1のX座標
 	 * @param i_y0
+	 * 点1のY座標
 	 * @param i_x1
+	 * 点2のX座標
 	 * @param i_y1
-	 * @param o_coord
+	 * 点2のY座標
 	 * @return
 	 * 成功するとtrueを返します。
 	 */

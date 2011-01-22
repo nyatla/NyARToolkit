@@ -30,22 +30,45 @@ import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 
 public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 {
+	/** 行列の要素値です。*/
 	public double m00;
+	/** 行列の要素値です。*/
 	public double m01;
+	/** 行列の要素値です。*/
 	public double m02;
+	/** 行列の要素値です。*/
 	public double m03;
+	/** 行列の要素値です。*/
 	public double m10;
+	/** 行列の要素値です。*/
 	public double m11;
+	/** 行列の要素値です。*/
 	public double m12;
+	/** 行列の要素値です。*/
 	public double m13;
+	/** 行列の要素値です。*/
 	public double m20;
+	/** 行列の要素値です。*/
 	public double m21;
+	/** 行列の要素値です。*/
 	public double m22;
+	/** 行列の要素値です。*/
 	public double m23;
+	/** 行列の要素値です。*/
 	public double m30;
+	/** 行列の要素値です。*/
 	public double m31;
+	/** 行列の要素値です。*/
 	public double m32;
+	/** 行列の要素値です。*/
 	public double m33;
+	/**
+	 * この関数は、オブジェクトの配列を生成して返します。
+	 * @param i_number
+	 * 配列の長さ
+	 * @return
+	 * 新しいオブジェクト配列
+	 */	
 	public static NyARDoubleMatrix44[] createArray(int i_number)
 	{
 		NyARDoubleMatrix44[] ret=new NyARDoubleMatrix44[i_number];
@@ -56,7 +79,8 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		return ret;
 	}
 	/**
-	 * 配列の内容をセットします。順番は、00,01,02,03,10...の順です。
+	 * この関数は、要素数16の配列を、行列にセットします。
+	 * 00,01,02,03,10...の順です。
 	 */
 	public void setValue(double[] i_value)
 	{
@@ -79,8 +103,9 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		return;
 	}
 	/**
-	 * i_valueの内容を、このインスタンスにセットします。
+	 * この関数は、オブジェクトの内容をインスタンスにコピーします。
 	 * @param i_value
+	 * コピー元のオブジェクト
 	 */
 	public void setValue(NyARDoubleMatrix44 i_value)
 	{
@@ -103,8 +128,9 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		return;
 	}
 	/**
-	 * 行列の内容を配列に出力します。順番は、00,01,02,03,10...の順です。
-	 */
+	 * この関数は、要素数16の配列に、行列の内容をコピーします。
+	 * 順番は、00,01,02,03,10...の順です。
+	 */	
 	public void getValue(double[] o_value)
 	{
 		o_value[ 0]=this.m00;
@@ -126,8 +152,10 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		return;
 	}
 	/**
-	 * 行列の内容を転置してから配列に出力します。
+	 * この関数は、要素数16の配列に、行列の内容を転置してからコピーします。
 	 * 順番は、00,10,20,30,01...の順です。
+	 * @param o_value
+	 * 値を受け取る配列
 	 */	
 	public void getValueT(double[] o_value)
 	{
@@ -150,9 +178,11 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		return;
 	}
 	/**
-	 * 逆行列を計算して、i_srcのthisへ格納します。i_srcにはthisも指定可能です。
+	 * この関数は、逆行列を計算して、インスタンスにセットします。
 	 * @param i_src
+	 * 逆行列を計算するオブジェクト。thisを指定できます。
 	 * @return
+	 * 逆行列を得られると、trueを返します。
 	 */
 	public boolean inverse(NyARDoubleMatrix44 i_src)
 	{
@@ -240,13 +270,17 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		
 		return true;
 	}
-	
 	/**
-	 * 行列を姿勢変換行列として、3次元座標を座標変換します。4列目は1で仮定します。
+	 * この関数は、3次元座標を座標変換します。
+	 * 4列目は1と仮定します。
 	 * @param i_x
+	 * 変換する三次元座標(X)
 	 * @param i_y
+	 * 変換する三次元座標(Y)
 	 * @param i_z
+	 * 変換する三次元座標(Z)
 	 * @param o_out
+	 * 変換後の座標を受け取るオブジェクト
 	 */
 	public final void transform3d(double i_x,double i_y,double i_z,NyARDoublePoint3d o_out)
 	{
@@ -255,21 +289,23 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		o_out.z=this.m20*i_x+this.m21*i_y+this.m22*i_z+this.m23;
 		return;
 	}
-	
 	/**
-	 * 行列を姿勢変換行列として、3次元座標を座標変換します。
-	 * i_inとo_outには同一なインスタンスを指定できます。
+	 * この関数は、3次元座標を座標変換します。
+	 * 4列目は1と仮定します。
 	 * @param i_in
+	 * 返還前する座標値
 	 * @param o_out
-	 */
+	 * 変換後の座標を受け取るオブジェクト
+	 */	
 	public final void transform3d(NyARDoublePoint3d i_in,NyARDoublePoint3d o_out)
 	{
 		transform3d(i_in.x,i_in.y,i_in.z,o_out);
 	}
 	/**
-	 * 行列を姿勢行列として、ZXY系の角度値を返します。
-	 * この関数は、0-PIの間で値を返します。
+	 * この関数は、行列の回転成分から、ZXY系の角度値を計算します。
 	 * @param o_out
+	 *　角度値を受け取るオブジェクトです。
+	 * 角度値の範囲は、0-PIです。
 	 */
 	public final void getZXYAngle(NyARDoublePoint3d o_out)
 	{
@@ -289,9 +325,12 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		}
 	}
 	/**
-	 * 行列の掛け算を実行して、結果を格納します。i_mat_lとi_mat_rには、thisを指定しないでください。
+	 * この関数は、行列同士の掛け算をして、インスタンスに格納します。
+	 *　i_mat_lとi_mat_rには、thisを指定しないでください。
 	 * @param i_mat_l
+	 * 左成分の行列
 	 * @param i_mat_r
+	 * 右成分の行列
 	 */
 	public final void mul(NyARDoubleMatrix44 i_mat_l,NyARDoubleMatrix44 i_mat_r)
 	{
@@ -319,7 +358,7 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		return;
 	}
 	/**
-	 * この行列を単位行列にします。
+	 * この関数は、行列を単位行列にします。
 	 */
 	public final void identity()
 	{
@@ -328,8 +367,9 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		return;
 	}
 	/**
-	 * 行列に、右手系のX軸回転を設定します。
+	 * この関数は、行列に右手系のX軸回転を設定します。
 	 * @param i_radian
+	 * 設定するX回転角(radian)
 	 */
 	public final void setRotateX(double i_radian)
 	{
@@ -343,8 +383,9 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		return;
 	}
 	/**
-	 * 行列に、右手系のY軸回転を設定します。
+	 * この関数は、行列に右手系のY軸回転を設定します。
 	 * @param i_radian
+	 * 設定するY回転角(radian)
 	 */
 	public final void setRotateY(double i_radian)
 	{
@@ -357,8 +398,9 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		this.m22=c;
 	}	
 	/**
-	 * 行列に、右手系のZ軸回転を設定します。
+	 * この関数は、行列に右手系のZ軸回転を設定します。
 	 * @param i_radian
+	 * 設定するZ回転角(radian)
 	 */
 	public final void setRotateZ(double i_radian)
 	{
@@ -372,8 +414,13 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		
 	}
 	/**
-	 * 行列に、右手系の並行移動を設定します。
-	 * @param i_radian
+	 * この関数は、行列に右手系の平行移動量を設定します。
+	 * @param i_x
+	 * x軸方向の平行移動量
+	 * @param i_y
+	 * y軸方向の平行移動量
+	 * @param i_z
+	 * z軸方向の平行移動量
 	 */
 	public final void setTranslate(double i_x,double i_y,double i_z)
 	{
@@ -383,8 +430,9 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		this.m23=i_z;
 	}
 	/**
-	 * この行列をX軸回転します。
+	 * この関数は、現在の行列をX軸で回転します。
 	 * @param i_mat_r
+	 * 回転量(radian)
 	 */
 	public final void rotateX(double i_radian)
 	{
@@ -406,8 +454,9 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		this.m32=t1*(-s) + t2*c;
 	}
 	/**
-	 * この行列をY軸回転します。
+	 * この関数は、現在の行列をY軸で回転します。
 	 * @param i_mat_r
+	 * 回転量(radian)
 	 */
 	public final void rotateY(double i_radian)
 	{
@@ -429,8 +478,9 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		this.m32=t1*s + t2*c;
 	}
 	/**
-	 * この姿勢行列をZ軸回転します。
-	 * @i_radian
+	 * この関数は、現在の行列をZ軸で回転します。
+	 * @param i_mat_r
+	 * 回転量(radian)
 	 */
 	public final void rotateZ(double i_radian)
 	{
@@ -456,10 +506,13 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		return;
 	}
 	/**
-	 * この姿勢行列を右手系で平行移動します。
+	 * この関数は、現在の行列を平行移動します。
 	 * @param i_x
+	 * X方向の平行移動量
 	 * @param i_y
+	 * Y方向の平行移動量
 	 * @param i_z
+	 * Z方向の平行移動量
 	 */
 	public final void translate(double i_x,double i_y,double i_z)
 	{
@@ -469,6 +522,10 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		this.m33=this.m30*i_x + this.m31*i_y + this.m32*i_z + this.m33;
 		return;
 	}
+	/**
+	 * テストプログラム
+	 * @param args
+	 */
 	public static void main(String[] args)
 	{
 
