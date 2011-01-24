@@ -52,7 +52,7 @@ import jp.nyatla.nyartoolkit.core.utils.*;
  * 他の形式でも動作しますが、低速な場合があります。
  * </p>
  * <p>高速化について - 
- * 入力ラスタ形式が、{@link NyARBufferType#INT1D_X8R8G8B8_32},{@link NyARBufferType#BYTE1D_B8G8R8_24)
+ * 入力ラスタ形式が、{@link NyARBufferType#INT1D_X8R8G8B8_32},{@link NyARBufferType#BYTE1D_B8G8R8_24}
  * ,{@link NyARBufferType#BYTE1D_R8G8B8_24}のものについては、他の形式よりも高速に動作します。
  * また、出力ラスタ形式が、{@link NyARBufferType#INT1D_X8R8G8B8_32}の物については、単体サンプリングモードの時のみ、さらに高速に動作します。
  * 他の形式のラスタでは、以上のものよりも低速転送で対応します。

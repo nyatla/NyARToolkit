@@ -28,9 +28,9 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 
 /**
- * 遠近法を用いたPerspectiveパラメータを計算するクラスです。
- * 任意頂点四角系と矩形から、遠近法の変形パラメータを計算します。
- * このクラスはリファレンス実装のため、パフォーマンスが良くありません。NyARPerspectiveParamGenerator_O1を使ってください。
+ * このクラスは、遠近法を用いてPerspectiveパラメータを計算します。
+ * 遠近法を可読性を重視して実装している為、若干低速です。
+ * 高速化をした{@link NyARPerspectiveParamGenerator_O1}関数を使用してください。
  */
 public class NyARPerspectiveParamGenerator_Reference extends NyARPerspectiveParamGenerator
 {
@@ -47,7 +47,9 @@ public class NyARPerspectiveParamGenerator_Reference extends NyARPerspectivePara
 		return;
 	}
 
-	
+	/**
+	 * この関数は、遠近法のパラメータを計算して、返却します。
+	 */
 	public final boolean getParam(int i_dest_w,int i_dest_h,double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4,double[] o_param)throws NyARException
 	{
 		double ltx=this._local_x;

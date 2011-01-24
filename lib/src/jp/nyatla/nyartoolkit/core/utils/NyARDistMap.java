@@ -27,25 +27,50 @@ package jp.nyatla.nyartoolkit.core.utils;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 
 /**
- * 2つの点集合同士を比較して、集合の各点同士の距離が最も近くになる組み合わせを計算
- * するためのクラスです。
- * 点集合の2次元距離マップを作成して、そこから最適な組み合わせを計算します。
+ * このクラスは、距離マップを利用した、頂点集合同士のマッチング処理機能を提供します。
+ * 2つの点集合同士を比較して、集合の各点同士の距離が最も近くになる組み合わせを計算します。
+ * <p>アルゴリズム - 
+ * 2つの点集合の総当たりの距離マップを作り、その距離が小さいのものから順に抽出することで、
+ * 其々の点の移動距離が最小になる組み合わせを計算します。
+ * </p>
+ * <p>使い方　-
+ * このクラスは、まず距離マップを作るために距離値をセットして、次に組み合わせを得る手順で使います。
+ * 距離マップには行と列があります。列を基準値、行を比較値として、その距離値を格納します。
+ * 行と列の距離マップを作り終えたら、組合せを計算します。
+ * <ol>
+ * <li>{@link setMapSize}関数で、マップサイズ（比較する頂点数）を設定する。
+ * <li>{@link #setDist},または{@link #setPointDists}で、距離マップに全ての値を書き込む。
+ * <li>
+ * </ol>
+ * </p>
  */
 public class NyARDistMap
 {
+	/** 処理用のデータ型*/
 	protected class DistItem
 	{
 		public int row;
 		public int col;
 		public int dist;
 	}
+	/**　距離マップ用の配列*/
 	protected DistItem[] _map;
-
+	/**　ワーク変数*/
 	protected int _min_dist;
+	/**　ワーク変数*/
 	protected int _min_dist_index;
+	/**　ワーク変数*/
 	protected int _size_row;
+	/**　ワーク変数*/
 	protected int _size_col;
-
+	/**
+	 * コンストラクタです。
+	 * マップの最大サイズを指定して、インスタンスを作成します。
+	 * @param i_max_col
+	 * マップの最大列数
+	 * @param i_max_row
+	 * マップの最大行数
+	 */
 	public NyARDistMap(int i_max_col,int i_max_row)
 	{
 		this._min_dist=Integer.MAX_VALUE;
@@ -58,10 +83,12 @@ public class NyARDistMap
 		}
 	}
 	/**
-	 * マップのサイズを再設定します。内容は不定になり、距離マップの再設定が必要です。
+	 * この関数は、マップのサイズを指定します。
+	 * 値は初期化されません。
 	 * @param i_col
-	 * 列数
+	 * 新しい列数。
 	 * @param i_row
+	 * 新しい行数。
 	 */
 	public void setMapSize(int i_col,int i_row)
 	{
@@ -69,11 +96,16 @@ public class NyARDistMap
 		this._size_col=i_col;
 	}
 	/**
-	 * 列と行を指定して、距離値をマップに値をセットします。
-	 * このAPIは低速です。setPointsDistsを参考に、マップに直接距離値を置く関数を検討してください。
+	 * この関数は、列と行を指定して、距離値1個をマップにセットします。
+	 * <p>注意 -
+	 * このAPIは低速です。性能が必要な時は、{@link #setPointsDists}を参考に、一括書込みする関数を検討してください。
+	 * </p>
 	 * @param i_col
+	 * 列のインデクスを指定します。
 	 * @param i_row
+	 * 行のインデクスを指定します。
 	 * @param i_dist
+	 * その行と列の距離値を指定します。
 	 */
 	public void setDist(int i_col,int i_row,int i_dist)
 	{
@@ -89,13 +121,19 @@ public class NyARDistMap
 		return;
 	}
 	/**
-	 * 2つの点集合同士の距離を計算して、距離マップに値をセットします。
-	 * 点の座標が他の表現で実装されている場合は、この関数をオーバーロードして実装してください。
+	 * この関数は、２つの座標点配列同士の距離値を一括してマップにセットします。
+	 * <p>
+	 * 実装メモ - 
+	 * 点のフォーマットが合わない実装されている場合は、この関数参考にオーバーロードしてください。
+	 * </p>
 	 * @param i_vertex_r
+	 * 比較する頂点群を格納した配列。
 	 * @param i_row_len
+	 * i_vertex_rの有効な要素数
 	 * @param i_vertex_c
+	 * 基準となる頂点群を格納した配列
 	 * @param i_col_len
-	 * @param o_rowindex
+	 * i_vertex_cの有効な要素数
 	 */
 	public void setPointDists(NyARIntPoint2d[] i_vertex_r,int i_row_len,NyARIntPoint2d[] i_vertex_c,int i_col_len)
 	{
@@ -124,10 +162,12 @@ public class NyARDistMap
 		return;
 	}
 	/**
-	 * 現在の距離マップから、colに対するrowの組み合わせを計算します。
-	 * colに対して最適なものが無い場合は、o_rowindexの値に-1がセットされます。
+	 * この関数は、現在の距離マップから、col要素に対するrow要素の組合せを計算します。
+	 * colに対して適したrow要素が見つからない場合は、o_rowindexの該当要素に-1を設定します。
 	 * この関数は内部データを不可逆に変更します。計算後は、距離マップの再セットが必要です。
 	 * @param o_rowindex
+	 * 組合せを受け取る配列です。
+	 * col[n]に対するrow[m]のインデクス番号mを、o_rowindex[n]に返します。
 	 */
 	public void getMinimumPair(int[] o_rowindex)
 	{

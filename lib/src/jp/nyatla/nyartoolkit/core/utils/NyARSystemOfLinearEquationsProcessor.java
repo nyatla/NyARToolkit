@@ -25,8 +25,7 @@
 package jp.nyatla.nyartoolkit.core.utils;
 
 /**
- * 連立方程式を解くためのプロセッサクラスです。
- *
+ * このクラスは、連立方程式を解く関数を実装します。
  */
 public class NyARSystemOfLinearEquationsProcessor
 {
@@ -54,12 +53,31 @@ public class NyARSystemOfLinearEquationsProcessor
 		return true;
 	}
 	/**
-	 * [i_left_src]=[i_right_src]の式にガウスの消去法を実行して、[x][x]の要素が1になるように基本変形します。
-	 * i_mとi_nが等しくない時は、最終行までの[x][x]要素までを1になるように変形します。
+	 * この関数は、方程式の係数配列にガウスの消去法を実行します。
+	 * [i_left_src]=[i_right_src]の式にガウスの消去法を実行して、i_leftの要素を1になるように基本変形します。
+	 * i_mとi_nが等しくない場合は、最終行の要素が1になるまで基本変形を実行して、終了します。
+	 * <p>
+	 * 方程式の係数は、次のように入力します。
+	 * <pre>
+	 * <table>
+	 * <tr><td>i_left[0][0]*X+</td><td>i_left[0][1]*Y+</td><td>i_left[0][2]*Z</td><td>=</td><td>i_right[0]</td></tr>
+	 * <tr><td>i_left[1][0]*X+</td><td>i_left[1][1]*Y+</td><td>i_left[1][2]*Z</td><td>=</td><td>i_right[1]</td></tr>
+	 * <tr><td>i_left[2][0]*X+</td><td>i_left[2][1]*Y+</td><td>i_left[2][2]*Z</td><td>=</td><td>i_right[2]</td></tr>
+	 * </table>
+	 * </pre>
+	 * 関数を実行すると、配列は次のようになります。
+	 * <pre>
+	 * <table>
+	 * <tr><td>1</td><td>0</td><td>0</td><td>=</td><td>A</td></tr>
+	 * <tr><td>0</td><td>1</td><td>0</td><td>=</td><td>B</td></tr>
+	 * <tr><td>0</td><td>0</td><td>1</td><td>=</td><td>C</td></tr>
+	 * </table>
+	 * </pre>
+	 * </p>
 	 * @param i_left
 	 * 連立方程式の左辺値を指定します。[i_m][i_n]の配列を指定してください。
 	 * @param i_right
-	 * 連立方程式の右辺値を指定します。[i_m][i_n]の配列を指定してください。
+	 * 連立方程式の右辺値を指定します。[i_m]の配列を指定してください。
 	 * @param i_n
 	 * 連立方程式の係数の数を指定します。
 	 * @param i_m
@@ -131,8 +149,15 @@ public class NyARSystemOfLinearEquationsProcessor
 		return true;	
 	}
 	/**
-	 * i_leftとi_rightの連立方程式を解いて、i_left,i_right内容を更新します。
+	 * この関数は、i_leftとi_rightで表現された連立方程式を解いて、i_left,i_right内容を更新します。
 	 * i_right[n]の内容が、i_left[x][n]番目の係数の解になります。
+	 * 配列の表現については、{@link #doGaussianElimination}を参照してください。
+	 * @param i_left
+	 * 連立方程式の左辺値を指定します。[i_m][i_n]の配列を指定してください。
+	 * @param i_right
+	 * 連立方程式の右辺値を指定します。[i_m]の配列を指定してください。
+	 * @param i_number_of_system
+	 * 方程式の数を指定します。
 	 * @return
 	 * 方程式が解ければtrueを返します。
 	 */

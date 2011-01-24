@@ -81,6 +81,7 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 	 * @param i_is_alloc
 	 * 外部参照/内部バッファのフラグ
 	 * @return
+	 * 初期化が成功すると、trueです。
 	 */
 	protected boolean initInstance(NyARIntSize i_size,int i_raster_type,boolean i_is_alloc)
 	{
@@ -139,6 +140,7 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 	 * コンストラクタでi_is_allocをfalseにしてラスタを作成した場合、
 	 * バッファにアクセスするまえに、バッファの有無をこの関数でチェックしてください。
 	 * @return
+	 * インスタンスがバッファを所有すれば、trueです。
 	 */		
 	public boolean hasBuffer()
 	{

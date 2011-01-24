@@ -66,8 +66,6 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve192 implements INyARRasterFilter_Rgb2
 	/**
 	 * コンストラクタです。
 	 * 入力、出力ラスタの画素形式を指定して、フィルタを作成します。
-	 * @param i_threshold
-	 * 敷居値の初期値です。0&lt;n&lt;256の値を指定します。
 	 * @param i_in_raster_type
 	 * 入力ラスタの形式です。
 	 * @param i_out_raster_type
@@ -146,7 +144,7 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve192 implements INyARRasterFilter_Rgb2
 	 * 入力画像と出力画像のサイズは同じである必要があります。
 	 * @param i_input
 	 * 入力画像
-	 * @param i_area
+	 * @param i_rect
 	 * ２値化する矩形範囲。入力画像の範囲内である必要があります。
 	 * @param i_output
 	 * 出力画像

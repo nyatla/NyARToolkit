@@ -28,7 +28,7 @@ import jp.nyatla.nyartoolkit.NyARException;
 
 
 /**
- * NyARPerspectiveParamGeneratorを最適化したクラスです。
+ * このクラスは、{@link NyARPerspectiveParamGenerator_Reference}を高速化したクラスです。
  */
 public class NyARPerspectiveParamGenerator_O1 extends NyARPerspectiveParamGenerator
 {
@@ -45,7 +45,9 @@ public class NyARPerspectiveParamGenerator_O1 extends NyARPerspectiveParamGenera
 		return;
 	}
 
-	
+	/**
+	 * この関数は、遠近法のパラメータを計算して、返却します。
+	 */
 	public final boolean getParam(int i_dest_w,int i_dest_h,double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4,double[] o_param)throws NyARException
 	{
 		double ltx=this._local_x;

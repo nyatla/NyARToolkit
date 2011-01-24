@@ -77,9 +77,9 @@ public class NyARRasterFilter_Rgb2Gs_YCbCr implements INyARRasterFilter_Rgb2Gs
 	 * 出力ラスタの形式です。
 	 * @throws NyARException
 	 */	
-	public NyARRasterFilter_Rgb2Gs_YCbCr(int i_in_raster_type,int i_out_raster) throws NyARException
+	public NyARRasterFilter_Rgb2Gs_YCbCr(int i_in_raster_type,int i_out_raster_type) throws NyARException
 	{
-		if(!initInstance(i_in_raster_type,i_out_raster))
+		if(!initInstance(i_in_raster_type,i_out_raster_type))
 		{
 			throw new NyARException();
 		}

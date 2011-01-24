@@ -9,24 +9,27 @@ import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 
 /**
- * マーカの周辺領域からビットマップを取得する方法を提供します。
- * 比較的負荷が大きいので、連続してパターンを取得し続ける用途には向いていません。
- *
+ * このクラスは、姿勢変換行列を使用してマーカの周辺領域からパターンを取得する機能を持つラスタです。
+ * 画像の画素フォーマットは、{@link NyARBufferType#INT1D_X8R8G8B8_32}形式のです。
+ * このクラスは試験的であり、異なる解像度のパターンを取得することや、異なる画素フォーマットへ画像を出力する事ができません。
+ * {@link NyARPerspectiveRasterReader}クラスの使用を検討してください。
  */
 class TransformedBitmapPickup extends NyARColorPatt_Perspective_O2
 {
 	private NyARIntPoint2d[] _work_points = NyARIntPoint2d.createArray(4);
-
 	private NyARPerspectiveProjectionMatrix _ref_perspective;
-
 	/**
-	 * 
+	 * コンストラクタです。
+	 * 射影変換パラメータ、ラスタサイズ、サンプリング解像度からインスタンスを生成します。
+	 * @param i_ref_cparam
+	 * 射影変換パラメータの参照値
 	 * @param i_width
-	 * 取得するビットマップの幅
+	 * ラスタの幅
 	 * @param i_height
-	 * 取得するビットマップの解像度
+	 * ラスタの高さ
 	 * @param i_resolution
-	 * resolution of reading pixel per point. ---- 取得時の解像度。高解像度のときは1を指定してください。低解像度のときは2以上を指定します。
+	 * ピクセルあたりのサンプリング解像度。1なら出力1ピクセルにつき1ピクセル、2なら1ピクセルにつき4ピクセル(2x2)をサンプリングします。
+	 * 小さい画像では数値が大きいほど良い結果が得られますが、時間がかかります。
 	 */
 	public TransformedBitmapPickup(NyARPerspectiveProjectionMatrix i_ref_cparam, int i_width, int i_height, int i_resolution)
 	{
@@ -36,12 +39,11 @@ class TransformedBitmapPickup extends NyARColorPatt_Perspective_O2
 	}
 
 	/**
-	 * This function retrieves bitmap from the area defined by RECT(i_l,i_t,i_r,i_b) above transform matrix i_base_mat. 
-	 * ----
-	 * この関数は、basementで示される平面のAで定義される領域から、ビットマップを読み出します。
+	 * この関数は、姿勢変換行列i_base_matで示される平面の矩形(i_l,i_t,i_r,i_b)から、ビットマップを読み出します。
 	 * 例えば、8cmマーカでRECT(i_l,i_t,i_r,i_b)に-40,0,0,-40.0を指定すると、マーカの左下部分の画像を抽出します。
-	 * 
 	 * マーカから離れた場所になるほど、また、マーカの鉛直方向から外れるほど誤差が大きくなります。
+	 * ----
+	 * This function gets bitmap from the area defined by RECT(i_l,i_t,i_r,i_b) above transform matrix i_base_mat. 
 	 * @param i_src_imege
 	 * 詠み出し元の画像を指定します。
 	 * @param i_l
@@ -53,7 +55,9 @@ class TransformedBitmapPickup extends NyARColorPatt_Perspective_O2
 	 * @param i_b
 	 * 基準点からの右下の相対座標（y）を指定します。
 	 * @param i_base_mat
-	 * @return 画像の取得の成否を返す。
+	 * 平面の姿勢を示す行列です。マーカ姿勢を指定することで、マーカの表面を指定することができます。
+	 * @return
+	 * 画像の取得に成功するとtrueを返します。
 	 */
 	public boolean pickupImage2d(INyARRgbRaster i_src_imege, double i_l, double i_t, double i_r, double i_b, NyARTransMatResult i_base_mat) throws NyARException
 	{

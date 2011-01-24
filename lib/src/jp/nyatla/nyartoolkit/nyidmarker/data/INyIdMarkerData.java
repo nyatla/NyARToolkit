@@ -25,23 +25,22 @@
 package jp.nyatla.nyartoolkit.nyidmarker.data;
 
 /**
- * 
- * [[Strage class]]
- *
+ * このインタフェイスは、エンコード済みマーカデータ格納クラスの共通関数を定義します。
  */
 public interface INyIdMarkerData
 {
 	/**
-	 * i_targetのマーカデータと自身のデータが等しいかを返します。
+	 * この関数は、i_targetのマーカデータとインスタンスのデータを比較します。
 	 * @param i_target
 	 * 比較するマーカオブジェクト
 	 * @return
-	 * 等しいかの真偽値
+	 * 内容が等しいかの真偽値。等しければtrue
 	 */
 	public boolean isEqual(INyIdMarkerData i_target);
 	/**
-	 * i_sourceからマーカデータをコピーします。
+	 * この関数は、i_sourceからインスタンスにマーカデータをコピーします。
 	 * @param i_source
+	 * コピー元のオブジェクト。
 	 */
 	public void copyFrom(INyIdMarkerData i_source);
 }

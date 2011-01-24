@@ -31,13 +31,111 @@ import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.utils.*;
 
 
+/**
+ * このクラスは、ラスタ画像に定義したの任意矩形から、NyIdパターンのデータを読み取ります。
+ * 読み取り結果は、{@link NyARIdMarkerData}クラスのオブジェクト出力します。
+ *
+ */
+public class NyIdMarkerPickup
+{
+	private PerspectivePixelReader _perspective_reader;
+	private final PerspectivePixelReader.TThreshold __pickFromRaster_th=new PerspectivePixelReader.TThreshold();
+	private final MarkerPattEncoder __pickFromRaster_encoder=new MarkerPattEncoder();
+
+	/**
+	 * コンストラクタです。インスタンスを生成します。
+	 */
+	public NyIdMarkerPickup()
+	{
+		this._perspective_reader=new PerspectivePixelReader();
+		return;
+	}
+	/**
+	 * この関数は、ラスタからNyIdマーカの情報を読み出します。
+	 * @param image
+	 * NyIdマーカが撮影されている（見込みのある）ラスタ
+	 * @param i_vertex
+	 * マーカの頂点位置を示す配列。4要素である事。
+	 * @param o_data
+	 * 抽出したパターンデータを格納するオブジェクト。
+	 * @param o_param
+	 * 抽出したパターンパラメータを格納するオブジェクト。
+	 * @return
+	 * 抽出に成功するとtrue.失敗するとfalseです。
+	 * @throws NyARException
+	 */
+	public final boolean pickFromRaster(INyARRgbRaster image, NyARDoublePoint2d[] i_vertex,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
+	{
+		//遠近法のパラメータを計算
+		if(!this._perspective_reader.setSourceSquare(i_vertex)){
+			return false;
+		}
+		return this._pickFromRaster(image,o_data,o_param);
+	}
+	/**
+	 * この関数は、ラスタからNyIdマーカの情報を読み出します。
+	 * @param image
+	 * NyIdマーカが撮影されている（見込みのある）ラスタ
+	 * @param i_vertex
+	 * マーカの頂点位置を示す配列。4要素である事。
+	 * @param o_data
+	 * 抽出したパターンデータを格納するオブジェクト。
+	 * @param o_param
+	 * 抽出したパターンパラメータを格納するオブジェクト。
+	 * @return
+	 * 抽出に成功するとtrue.失敗するとfalseです。
+	 * @throws NyARException
+	 */
+	public final boolean pickFromRaster(INyARRgbRaster image, NyARIntPoint2d[] i_vertex,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
+	{
+		if(!this._perspective_reader.setSourceSquare(i_vertex)){
+			return false;
+		}
+		return this._pickFromRaster(image,o_data,o_param);
+	}
+	
+	/**
+	 * i_imageから、idマーカを読みだします。
+	 * o_dataにはマーカデータ、o_paramにはマーカのパラメータを返却します。
+	 * @param image
+	 * @param i_vertex
+	 * @param o_data
+	 * @param o_param
+	 * @return
+	 * @throws NyARException
+	 */
+	private final boolean _pickFromRaster(INyARRgbRaster image, NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
+	{
+		INyARRgbPixelReader reader=image.getRgbPixelReader();
+		NyARIntSize raster_size=image.getSize();
+
+		final PerspectivePixelReader.TThreshold th=this.__pickFromRaster_th;
+		final MarkerPattEncoder encoder=this.__pickFromRaster_encoder;
+		//マーカパラメータを取得
+		this._perspective_reader.detectThresholdValue(reader,raster_size,th);
+
+		if(!this._perspective_reader.readDataBits(reader,raster_size,th, encoder)){
+			return false;
+		}
+		final int d=encoder.encode(o_data);
+		if(d<0){
+			return false;
+		}
+		o_param.direction=d;
+		o_param.threshold=th.th;
+		
+		return true;
+	}
+}
 
 
 
 
 
 /**
- * NyARColorPatt_NyIdMarkerがラスタからPerspective変換して読みだすためのクラス
+ * {@link NyARColorPatt_NyIdMarker}がラスタからPerspective変換して読みだすためのクラス
+ * 画像処理全般を担当します。
+ * ユーザがこのクラスを使うことはありません。
  *
  */
 final class PerspectivePixelReader
@@ -46,22 +144,40 @@ final class PerspectivePixelReader
 	private NyARPerspectiveParamGenerator _param_gen=new NyARPerspectiveParamGenerator_O1(1,1);
 	private double[] _cparam=new double[8];
 
-
+	/**
+	 * コンストラクタです。
+	 */
 	public PerspectivePixelReader()
 	{
 		return;
 	}
-
+	/**
+	 * この関数は、マーカ四角形をインスタンスにセットします。
+	 * @param i_vertex
+	 * セットする四角形頂点座標。4要素である必要があります。
+	 * @return
+	 * 成功するとtrueです。
+	 * @throws NyARException
+	 */
 	public boolean setSourceSquare(NyARIntPoint2d[] i_vertex)throws NyARException
 	{
 		return this._param_gen.getParam(READ_RESOLUTION,READ_RESOLUTION,i_vertex, this._cparam);
 	}
+	/**
+	 * この関数は、マーカ四角形をインスタンスにセットします。
+	 * @param i_vertex
+	 * セットする四角形頂点座標。4要素である必要があります。
+	 * @return
+	 * 成功するとtrueです。
+	 * @throws NyARException
+	 */
 	public boolean setSourceSquare(NyARDoublePoint2d[] i_vertex)throws NyARException
 	{
 		return this._param_gen.getParam(READ_RESOLUTION,READ_RESOLUTION,i_vertex, this._cparam);
 	}
+
 	/**
-	 * 矩形からピクセルを切り出します
+	 * ラスタから射影変換したピクセルを得ます。
 	 * @param i_lt_x
 	 * @param i_lt_y
 	 * @param i_step_x
@@ -69,7 +185,7 @@ final class PerspectivePixelReader
 	 * @param i_width
 	 * @param i_height
 	 * @param i_out_st
-	 * o_pixelへの格納場所の先頭インデクス
+	 * 格納バッファo_pixelの先頭のインデクス。
 	 * @param o_pixel
 	 * @throws NyARException
 	 */
@@ -120,6 +236,7 @@ final class PerspectivePixelReader
 		return true;
 	}
 	/**
+	 * パターン分析関数。
 	 * i_freqにあるゼロクロス点の周期が、等間隔か調べます。
 	 * 次段半周期が、前段の80%より大きく、120%未満であるものを、等間隔周期であるとみなします。
 	 * @param i_freq
@@ -140,6 +257,7 @@ final class PerspectivePixelReader
 		return true;
 	}
 	/**
+	 * パターン分析関数。
 	 * i_freq_count_tableとi_freq_tableの内容を調査し、最も大きな周波数成分を返します。
 	 * @param i_freq_count_table
 	 * @param i_freq_table
@@ -191,18 +309,20 @@ final class PerspectivePixelReader
 	private final int[] _freq_table=new int[(MAX_FREQ*2-1)*MAX_FREQ*2/2];
 
 	/**
-	 * i_y1行目とi_y2行目を平均して、タイミングパターンの周波数を得ます。
-	 * LHLを1周期として、たとえばLHLHLの場合は2を返します。LHLHやHLHL等の始端と終端のレベルが異なるパターンを
+	 * この関数は、マーカ画像のi_y1行目とi_y2行目を平均して、タイミングパターンの周波数を得ます。
+	 * L=暗点、H=明点、LHL=1周期として、たとえばLHLHLの場合は2を返します。LHLHやHLHL等の始端と終端のレベルが異なるパターンを
 	 * 検出した場合、関数は失敗します。
-	 * 
 	 * @param i_y1
-	 * @param i_y2
+	 * ライン1のインデクス
 	 * @param i_th_h
+	 * 明点の敷居値
 	 * @param i_th_l
+	 * 暗点の敷居値
 	 * @param o_edge_index
-	 * 検出したエッジ位置(H->L,L->H)のインデクスを受け取る配列です。
-	 * [FRQ_POINTS]以上の配列を指定してください。
+	 * 検出したエッジ位置(H->L,L->H)のインデクスを受け取る配列。
+	 * [FRQ_POINTS]以上の配列を指定すること。
 	 * @return
+	 * 周波数の値。失敗すると-1
 	 * @throws NyARException
 	 */
 	public int getRowFrequency(INyARRgbPixelReader i_reader,NyARIntSize i_raster_size,int i_y1,int i_th_h,int i_th_l,int[] o_edge_index)throws NyARException
@@ -276,11 +396,26 @@ final class PerspectivePixelReader
 		}
 		return getMaxFreq(freq_count_table,freq_table,o_edge_index);
 	}
-	
+	/**
+	 * この関数は、マーカ画像のi_x1列目とi_x2列目を平均して、タイミングパターンの周波数を得ます。
+	 * L=暗点、H=明点、LHL=1周期として、たとえばLHLHLの場合は2を返します。LHLHやHLHL等の始端と終端のレベルが異なるパターンを
+	 * 検出した場合、関数は失敗します。
+	 * @param i_x1
+	 * ライン1のインデクス
+	 * @param i_th_h
+	 * 明点の敷居値
+	 * @param i_th_l
+	 * 暗点の敷居値
+	 * @param o_edge_index
+	 * 検出したエッジ位置(H->L,L->H)のインデクスを受け取る配列。
+	 * [FRQ_POINTS]以上の配列を指定すること。
+	 * @return
+	 * 周波数の値。失敗すると-1
+	 * @throws NyARException
+	 */
 	public int getColFrequency(INyARRgbPixelReader i_reader,NyARIntSize i_raster_size,int i_x1,int i_th_h,int i_th_l,int[] o_edge_index)throws NyARException
 	{
 		final double[] cpara=this._cparam;
-//		final INyARRgbPixelReader reader=this._raster.getRgbPixelReader();
 		final int[] ref_x=this._ref_x;
 		final int[] ref_y=this._ref_y;
 		final int[] pixcel_temp=this._pixcel_temp;
@@ -400,7 +535,9 @@ final class PerspectivePixelReader
 	private static final int THRESHOLD_SAMPLE=THRESHOLD_PIXEL*THRESHOLD_PIXEL;
 	private static final int THRESHOLD_SAMPLE_LT=THRESHOLD_EDGE;
 	private static final int THRESHOLD_SAMPLE_RB=100-THRESHOLD_WIDTH-THRESHOLD_EDGE;
-	
+	/**
+	 * 敷居値の保持型
+	 */
 	public static class TThreshold{
 		public int th_h;
 		public int th_l;
@@ -410,8 +547,11 @@ final class PerspectivePixelReader
 		public int rb_x;
 		public int rb_y;
 	}	
-
-	class THighAndLow{
+	/**
+	 * H/Lの保持型
+	 */
+	class THighAndLow
+	{
 		public int h;
 		public int l;
 	}
@@ -480,11 +620,13 @@ final class PerspectivePixelReader
 	private NyARIntPoint2d __detectThresholdValue_tpt=new NyARIntPoint2d();
 	private int[] _th_pixels=new int[THRESHOLD_SAMPLE*4];
 	/**
-	 * 指定した場所のピクセル値を調査して、閾値を計算して返します。
+	 * この関数はマーカパターンから、敷居値を決定します。
 	 * @param i_reader
-	 * @param i_x
-	 * @param i_y
-	 * @return
+	 * ラスタリーダオブジェクト
+	 * @param i_raster_size
+	 * ラスのタのサイズ
+	 * @param o_threshold
+	 * 敷居値を受け取るオブジェクト
 	 * @throws NyARException
 	 */
 	public void detectThresholdValue(INyARRgbPixelReader i_reader,NyARIntSize i_raster_size,TThreshold o_threshold)throws NyARException
@@ -650,7 +792,20 @@ final class PerspectivePixelReader
 	}
 	private double[] __readDataBits_index_bit_x=new double[MAX_DATA_BITS*2];
 	private double[] __readDataBits_index_bit_y=new double[MAX_DATA_BITS*2];
-	
+	/**
+	 * この関数は、マーカパターンからデータを読み取ります。
+	 * @param i_reader
+	 * ラスタリーダ
+	 * @param i_raster_size
+	 * ラスタのサイズ
+	 * @param i_th
+	 * 敷居値情報
+	 * @param o_bitbuffer
+	 * データビットの出力先
+	 * @return
+	 * 成功するとtrue
+	 * @throws NyARException
+	 */
 	public boolean readDataBits(INyARRgbPixelReader i_reader,NyARIntSize i_raster_size,PerspectivePixelReader.TThreshold i_th,MarkerPattEncoder o_bitbuffer)throws NyARException
 	{
 		final int raster_width=i_raster_size.w;
@@ -766,15 +921,10 @@ final class PerspectivePixelReader
 		}
 		return true;
 	}
-	public boolean setSquare(NyARIntPoint2d[] i_vertex) throws NyARException
-	{
-		if (!this._param_gen.getParam(READ_RESOLUTION,READ_RESOLUTION,i_vertex,this._cparam)) {
-			return false;
-		}
-		return true;
-	}
+
 
 }
+
 class MarkerPattDecoder
 {
 	public void decode(int model,int domain,int mask)
@@ -783,8 +933,9 @@ class MarkerPattDecoder
 	}
 }
 /**
- * マーカパターンのエンコーダです。
- *
+ * このクラスは、マーカパターンのエンコーダです。{@link PerspectivePixelReader}から使います。
+ * ピクセルセットから、マーカーデータへエンコードする処理を定義します。
+ * 暫定として、5x5と、7x7のマーカについて定義します。
  */
 class MarkerPattEncoder
 {
@@ -816,6 +967,11 @@ class MarkerPattEncoder
 	private int[] _bits=new int[16];
 	private int[] _work=new int[16];
 	private int _model;
+	/**
+	 * この関数は、
+	 * @param i_index_no
+	 * @param i_value
+	 */
 	public void setBitByBitIndex(int i_index_no,int i_value)
 	{
 		assert i_value==0 || i_value==1;
@@ -829,7 +985,13 @@ class MarkerPattEncoder
 		}
 		return;
 	}
-	
+	/**
+	 * この関数は、ビットイメージ{@link #_bits}のnビット目に、値をセットします。
+	 * @param i_bit_no
+	 * ビットイメージのインデクス
+	 * @param i_value
+	 * セットする値。
+	 */
 	public void setBit(int i_bit_no,int i_value)
 	{
 		assert i_value==0 || i_value==1;
@@ -842,6 +1004,13 @@ class MarkerPattEncoder
 		}
 		return;
 	}
+	/**
+	 * この関数は、ビットイメージ{@link #_bits}のnビット目から、値を得ます。
+	 * @param i_bit_no
+	 * ビットイメージのインデクス
+	 * @return
+	 * ビット値
+	 */
 	public int getBit(int i_bit_no)
 	{
 		if(i_bit_no==0){
@@ -852,6 +1021,11 @@ class MarkerPattEncoder
 			return (this._bits[bidx]>>(sidx))&(0x01);
 		}
 	}
+	/**
+	 * この関数は、現在セットされているモデル番号を返します。
+	 * @return
+	 * 現在のモデル番号
+	 */
 	public int getModel()
 	{
 		return this._model;
@@ -875,7 +1049,15 @@ class MarkerPattEncoder
 		}
 		return -1;
 	}
-	public static int getCheckValue(int i_model,int[] i_data)
+	/**
+	 * この関数は、チェックドットの値を返します。
+	 * @param i_model
+	 * モデル番号
+	 * @param i_data
+	 * データ配列
+	 * @return
+	 */
+	private static int getCheckValue(int i_model,int[] i_data)
 	{
 		int v;
 		switch(i_model){
@@ -894,6 +1076,13 @@ class MarkerPattEncoder
 		}
 		return -1;
 	}
+	/**
+	 * この関数は、インスタンスの状態を、指定モデル向けにセットします。
+	 * @param i_model
+	 * モデル番号
+	 * @return
+	 * 成功するとtrueを返します。
+	 */
 	public boolean initEncoder(int i_model)
 	{
 		if(i_model>3 || i_model<2){
@@ -946,10 +1135,10 @@ class MarkerPattEncoder
 	/**
 	 * 格納しているマーカパターンをエンコードして、マーカデータを返します。
 	 * @param o_out
+	 * マーカデータを受け取るオブジェクト。
 	 * @return
 	 * 成功すればマーカの方位を返却します。失敗すると-1を返します。
 	 */
-
 	public int encode(NyIdMarkerPattern o_out)
 	{
 		final int d=getDirection();
@@ -1013,6 +1202,18 @@ class MarkerPattEncoder
 //		}
 		return;
 	}
+	/**
+	 * この関数は、ビットパックi_packを指定ビットだけ左シフトします。
+	 * 現在未使用です。
+	 * @param i_pack
+	 * 操作する配列
+	 * @param i_start
+	 * シフトの開始アドレス
+	 * @param i_length
+	 * シフトする配列の長さ
+	 * @param i_ls
+	 * シフト量
+	 */
 	public void shiftLeft(int[] i_pack,int i_start,int i_length,int i_ls)
 	{
 		int[] work=this._work;
@@ -1029,87 +1230,4 @@ class MarkerPattEncoder
 		}
 		return;
 	}	
-}
-/**
- * ラスタ画像の任意矩形から、NyARIdMarkerDataを抽出します。
- *
- */
-public class NyIdMarkerPickup
-{
-	private PerspectivePixelReader _perspective_reader;
-	private final PerspectivePixelReader.TThreshold __pickFromRaster_th=new PerspectivePixelReader.TThreshold();
-	private final MarkerPattEncoder __pickFromRaster_encoder=new MarkerPattEncoder();
-
-
-	public NyIdMarkerPickup()
-	{
-		this._perspective_reader=new PerspectivePixelReader();
-		return;
-	}
-	/**
-	 * imageの4頂点で囲まれた矩形からidマーカを読みだします。
-	 * @param image
-	 * @param i_vertex
-	 * @param o_data
-	 * @param o_param
-	 * @return
-	 * @throws NyARException
-	 */
-	public final boolean pickFromRaster(INyARRgbRaster image, NyARDoublePoint2d[] i_vertex,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
-	{
-		//遠近法のパラメータを計算
-		if(!this._perspective_reader.setSourceSquare(i_vertex)){
-			return false;
-		}
-		return this._pickFromRaster(image,o_data,o_param);
-	}
-	/**
-	 * imageの4頂点で囲まれた矩形からidマーカを読みだします。
-	 * @param image
-	 * @param i_vertex
-	 * @param o_data
-	 * @param o_param
-	 * @return
-	 * @throws NyARException
-	 */
-	public final boolean pickFromRaster(INyARRgbRaster image, NyARIntPoint2d[] i_vertex,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
-	{
-		if(!this._perspective_reader.setSourceSquare(i_vertex)){
-			return false;
-		}
-		return this._pickFromRaster(image,o_data,o_param);
-	}
-	
-	/**
-	 * i_imageから、idマーカを読みだします。
-	 * o_dataにはマーカデータ、o_paramにはマーカのパラメータを返却します。
-	 * @param image
-	 * @param i_vertex
-	 * @param o_data
-	 * @param o_param
-	 * @return
-	 * @throws NyARException
-	 */
-	private final boolean _pickFromRaster(INyARRgbRaster image, NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
-	{
-		INyARRgbPixelReader reader=image.getRgbPixelReader();
-		NyARIntSize raster_size=image.getSize();
-
-		final PerspectivePixelReader.TThreshold th=this.__pickFromRaster_th;
-		final MarkerPattEncoder encoder=this.__pickFromRaster_encoder;
-		//マーカパラメータを取得
-		this._perspective_reader.detectThresholdValue(reader,raster_size,th);
-
-		if(!this._perspective_reader.readDataBits(reader,raster_size,th, encoder)){
-			return false;
-		}
-		final int d=encoder.encode(o_data);
-		if(d<0){
-			return false;
-		}
-		o_param.direction=d;
-		o_param.threshold=th.th;
-		
-		return true;
-	}
 }

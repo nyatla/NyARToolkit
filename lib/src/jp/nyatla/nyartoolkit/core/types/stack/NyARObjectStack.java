@@ -28,22 +28,38 @@ import jp.nyatla.nyartoolkit.NyARException;
 
 
 /**
- * 可変長なオブジェクト配列です。
- * 型Tのオブジェクト配列を所有し、アクセス方法を提供します。
+ * このクラスは、オブジェクトを格納する可変長配列です。
+ * 配列に、オブジェクトの実態を所有します。
+ * このクラスの実体化は禁止しています。継承して使ってください。
+ * <p>継承クラスの実装方法 - 
+ * 配列要素の生成シーケンスを実装するには、{@link #createElement}をオーバライドして、
+ * コンストラクタから{@link #initInstance}を呼び出します。
+ * {@link #initInstance}には２種類の関数があります。要素生成パラメータの有無で、どちらかを選択して呼び出してください。
+ * </p>
+ * @param <T>
+ * 配列型を指定します。
  */
 public class NyARObjectStack<T> extends NyARPointerStack<T>
 {
-
+	/**
+	 * コンストラクタです。
+	 * クラスの実体化を禁止するために宣言しています。
+	 * 継承クラスから呼び出してください。
+	 * @throws NyARException
+	 */
 	protected NyARObjectStack() throws NyARException
 	{
 		return;
 	}
 	/**
-	 * パラメータが不要なインスタンスを作るためのinitInstance
-	 * コンストラクタから呼び出します。この関数を使うときには、 createElement()をオーバライドしてください。
+	 * この関数は、インスタンスを初期化します。
+	 * 継承クラスのコンストラクタから呼び出します。
+	 * {@link #initInstance(int, Class, Object)}との違いは、オブジェクトの生成に引数を渡すかどうかです。
+	 * 引数が必要な時は、こちらの関数を使って、{@link #createElement()}をオーバライドします。
 	 * @param i_length
+	 * 配列の最大長さ
 	 * @param i_element_type
-	 * @param i_param
+	 * 配列型を示すクラスタイプ
 	 * @throws NyARException
 	 */
 	protected void initInstance(int i_length,Class<T> i_element_type) throws NyARException
@@ -56,11 +72,16 @@ public class NyARObjectStack<T> extends NyARPointerStack<T>
 		return;
 	}
 	/**
-	 * パラメータが必要なインスタンスを作るためのinitInstance
-	 * コンストラクタから呼び出します。この関数を使うときには、 createElement(Object i_param)をオーバライドしてください。
+	 * この関数は、インスタンスを初期化します。
+	 * 継承クラスのコンストラクタから呼び出します。
+	 * {@link #initInstance(int, Class)}との違いは、オブジェクトの生成に引数を渡すかどうかです。
+	 * 引数が必要な時は、こちらの関数を使って、{@link #createElement(Object)}をオーバライドします。
 	 * @param i_length
+	 * 配列の最大長さ
 	 * @param i_element_type
+	 * 配列型を示すクラスタイプ
 	 * @param i_param
+	 * 配列要素を生成するときに渡すパラメータ
 	 * @throws NyARException
 	 */
 	protected void initInstance(int i_length,Class<T> i_element_type,Object i_param) throws NyARException
@@ -72,18 +93,36 @@ public class NyARObjectStack<T> extends NyARPointerStack<T>
 		}
 		return;
 	}
+	/**
+	 * この関数は、配列要素のオブジェクトを１個作ります。
+	 * {@link #initInstance(int, Class)}から呼び出されます。
+	 * 継承クラスでオーバライドして、要素オブジェクトを１個生成して返す処理を実装してください。
+	 * @return
+	 * 新しいオブジェクトを返してください。
+	 * @throws NyARException
+	 */
 	protected T createElement() throws NyARException
 	{
 		throw new NyARException();
 	}
+	/**
+	 * この関数は、配列要素のオブジェクトを(引数付きで)１個作ります。
+	 * {@link #initInstance(int, Class, Object)}から呼び出されます。
+	 * 継承クラスでオーバライドして、要素オブジェクトを１個生成して返す処理を実装してください。
+	 * @return
+	 * 新しいオブジェクトを返してください。
+	 * @throws NyARException
+	 */
 	protected T createElement(Object i_param) throws NyARException
 	{
 		throw new NyARException();
 	}
 	
 	/**
-	 * 新しい領域を予約します。
+	 * この関数は、配列から新しい要素を１個わりあてて返します。
+	 * 関数が成功すると、有効な配列長が+1されます。
 	 * @return
+	 * 成功すると、新しい配列要素。
 	 * 失敗するとnull
 	 * @throws NyARException
 	 */
@@ -99,18 +138,16 @@ public class NyARObjectStack<T> extends NyARPointerStack<T>
 		return ret;
 	}
 	/**
-	 * このクラスは、オブジェクトをpushすることはできません。
-	 * prePush()を使用してください。
+	 * この関数は機能しません。{@link #prePush}を使って下さい。
 	 */
 	public T push(T i_object)
 	{
 		return null;
 	}
 	/**
-	 * スタックを初期化します。
+	 * この関数は、配列の有効長を設定します。
 	 * @param i_reserv_length
-	 * 使用済みにするサイズ
-	 * @return
+	 * 設定するサイズ
 	 */
 	public final void init(int i_reserv_length) throws NyARException
 	{
@@ -119,11 +156,8 @@ public class NyARObjectStack<T> extends NyARPointerStack<T>
 			throw new NyARException();
 		}
 		this._length=i_reserv_length;
-	}	
-	/**
-	 * 指定した要素を削除します。
-	 * 削除した要素は前方詰めで詰められます。
-	 */
+	}
+	//override
 	public final void remove(int i_index)
 	{
 		if(i_index!=this._length-1){
@@ -135,12 +169,7 @@ public class NyARObjectStack<T> extends NyARPointerStack<T>
 		}
 		this._length--;
 	}
-	/**
-	 * 指定した要素を順序を無視して削除します。
-	 * 削除後のスタックの順序は保証されません。
-	 * このAPIは、最後尾の有効要素と、削除対象の要素を交換することで、削除を実現します。
-	 * @param i_index
-	 */
+	//override
 	public final void removeIgnoreOrder(int i_index)
 	{
 		assert(this._length>i_index && i_index>=0);

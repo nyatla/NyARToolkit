@@ -35,16 +35,25 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
- * NyARIntPoint2d型の可変長配列です。
- *
+ * このクラスは、{@link NyARIntPoint2d}型の可変長配列です。
  */
 public class NyARIntPointStack extends NyARObjectStack<NyARIntPoint2d>
 {
+	/**
+	 * コンストラクタです。
+	 * 配列の最大長さを指定して、インスタンスを生成します。
+	 * @param i_length
+	 * 配列の最大長さ
+	 * @throws NyARException
+	 */
 	public NyARIntPointStack(int i_length) throws NyARException
 	{
 		super.initInstance(i_length,NyARIntPoint2d.class);
 		return;
 	}
+	/**
+	 * この関数は、配列要素を作成します。
+	 */
 	protected NyARIntPoint2d createElement()
 	{
 		return new NyARIntPoint2d();

@@ -25,36 +25,50 @@
 package jp.nyatla.nyartoolkit.core.utils;
 
 /**
- * NyARManagedObjectPoolの要素クラスです。
- *
+ * このクラスは、{@link NyARManagedObjectPool}の要素の基本クラスです。
+ * オブジェクトの有効性を判断するための、参照カウンタをもちます。
+ * {@link NyARManagedObjectPool}に対して、オブジェクトの操作インタフェイスを提供します。
  */
 public class NyARManagedObject
 {
 	/**
-	 * このインタフェイスは、NyARManagedObjectがPoolを操作するために使います。
-	 */	
+	 * このインタフェイスは、{@link NyARManagedObject}が{@link NyARManagedObjectPool}を
+	 * 所有される操作する関数を定義します。
+	 */
 	public interface INyARManagedObjectPoolOperater
 	{
+		/**
+		 * この関数は、指定したオブジェクトを、割り当て済みから未割り当てにします。
+		 * @param i_object
+		 * 未割当にするオブジェクト。
+		 */
 		public void deleteObject(NyARManagedObject i_object);	
 	}
-	/**
-	 * オブジェクトの参照カウンタ
-	 */
+	
+	/** オブジェクトの参照カウンタ*/
 	private int _count;
-	/**
-	 * オブジェクトの解放関数へのポインタ
-	 */
+
+	/** 所有されるオブジェクトプールの操作インタフェイスのポインタ*/
 	private INyARManagedObjectPoolOperater _pool_operater;
+	
 	/**
-	 * NyARManagedObjectPoolのcreateElement関数が呼び出すコンストラクタです。
+	 * コンストラクタです。
+	 * 所有される{@link NyARManagedObjectPool}を指定して、インスタンスを作成します。
+	 * この関数は、{@link NyARManagedObjectPool#createElement}関数が呼び出します。ユーザが使うことはありません。
 	 * @param i_ref_pool_operator
-	 * Pool操作の為のインタフェイス
+	 * このオブジェクトの所有者の持つ、操作インタフェイス
 	 */
 	protected NyARManagedObject(INyARManagedObjectPoolOperater i_ref_pool_operator)
 	{
 		this._count=0;
 		this._pool_operater=i_ref_pool_operator;
 	}
+	/**
+	 * この関数は、オブジェクトを初期状態にします。
+	 * この関数は、{@link NyARManagedObjectPool}が呼び出します。ユーザが呼び出すことはありません。
+	 * @return
+	 * このオブジェクトを初期化したオブジェクト。
+	 */
 	public final NyARManagedObject initObject()
 	{
 		assert(this._count==0);
@@ -62,8 +76,9 @@ public class NyARManagedObject
 		return this;
 	}
 	/**
-	 * このオブジェクトに対する、新しい参照オブジェクトを返します。
+	 * この関数は、オブジェクトの参照カウンタを1加算します。
 	 * @return
+	 * このオブジェクトの参照値。
 	 */
 	public final NyARManagedObject refObject()
 	{
@@ -72,8 +87,10 @@ public class NyARManagedObject
 		return this;
 	}
 	/**
-	 * 参照オブジェクトを開放します。
+	 * この関数は、オブジェクトの参照カウンタを1減算します。
+	 * 参照カウンタが0になると、オブジェクトは未参照状態となり、自動的に{@link NyARManagedObjectPool}へ返却されます。
 	 * @return
+	 * 減算後の参照カウンタ
 	 */
 	public int releaseObject()
 	{
@@ -85,8 +102,9 @@ public class NyARManagedObject
 		return this._count;
 	}
 	/**
-	 * 現在の参照カウンタを返します。
+	 * この関数は、現在のインスタンスの参照カウンタ値を返します。
 	 * @return
+	 * 参照カウンタ値
 	 */
 	public final int getCount()
 	{

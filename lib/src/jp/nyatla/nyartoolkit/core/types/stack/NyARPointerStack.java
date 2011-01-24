@@ -5,18 +5,22 @@ import java.lang.reflect.Array;
 import jp.nyatla.nyartoolkit.NyARException;
 
 /**
- * 実体をもたない可変長配列です。
- * このクラスは実体化できません。継承して使います。
- *
+ * このクラスは、オブジェクトの参照値を格納する可変長配列です。
+ * このクラスの実体化は禁止しています。継承して使ってください。
  * @param <T>
+ * 配列型を指定します。
  */
 public class NyARPointerStack<T>
 {
+	/** オブジェクトの参照値を格納するバッファ*/
 	protected T[] _items;
+	/** 配列の長さ。({@link #_items#length)とは異なることに注意してください。*/
 	protected int _length;
 	
 	/**
-	 * このクラスは実体化できません。
+	 * コンストラクタです。
+	 * クラスの実体化を禁止するために宣言しています。
+	 * 継承クラスから呼び出してください。
 	 * @throws NyARException
 	 */
 	protected NyARPointerStack() throws NyARException
@@ -24,9 +28,12 @@ public class NyARPointerStack<T>
 	}
 
 	/**
-	 * スタックのメンバ変数を初期化します。この関数は、このクラスを継承したクラスを公開するときに、コンストラクタから呼び出します。
+	 * この関数は、インスタンスを初期化します。
+	 * この関数は、このクラスを継承したクラスのコンストラクタから呼び出します。
 	 * @param i_length
+	 * 配列の最大長さ
 	 * @param i_element_type
+	 * 配列型を示すクラスタイプ
 	 * @throws NyARException
 	 */
 	@SuppressWarnings("unchecked")
@@ -40,9 +47,11 @@ public class NyARPointerStack<T>
 	}
 
 	/**
-	 * スタックに参照を積みます。
+	 * この関数は、配列の最後尾にオブジェクトを追加します。
+	 * @param i_object
+	 * 追加するオブジェクト
 	 * @return
-	 * 失敗するとnull
+	 * 追加したオブジェクト。失敗するとnullを返します。
 	 */
 	public T push(T i_object)
 	{
@@ -56,9 +65,13 @@ public class NyARPointerStack<T>
 		return i_object;
 	}
 	/**
-	 * スタックに参照を積みます。pushとの違いは、失敗した場合にassertすることです。
+	 * この関数は、配列の最後尾にオブジェクトを追加します。
+	 * {@link #push}との違いは、失敗したときにASSERT、または例外を発生することです。
+	 * 確実に成功することがわっかっていない場合は、{@link #push}を使ってください。
 	 * @param i_object
+	 * 追加するオブジェクト
 	 * @return
+	 * 追加したオブジェクト。
 	 */
 	public T pushAssert(T i_object)
 	{
@@ -71,8 +84,9 @@ public class NyARPointerStack<T>
 	}
 	
 	/** 
-	 * 見かけ上の要素数を1減らして、そのオブジェクトを返します。
+	 * この関数は、配列の最後尾の要素を取り除いて返します。
 	 * @return
+	 * 最後尾のオブジェクト。
 	 */
 	public T pop()
 	{
@@ -81,9 +95,9 @@ public class NyARPointerStack<T>
 		return this._items[this._length];
 	}
 	/**
-	 * 見かけ上の要素数をi_count個減らします。
+	 * この関数は、配列の最後尾から指定個数の要素を取り除きます。
 	 * @param i_count
-	 * @return
+	 * 取り除く個数
 	 */
 	public final void pops(int i_count)
 	{
@@ -92,29 +106,41 @@ public class NyARPointerStack<T>
 		return;
 	}	
 	/**
-	 * 配列を返します。
-	 * 
+	 * この関数は、配列全体を返します。
+	 * 有効な要素の数は、先頭から{@link #getLength}個です。
 	 * @return
+	 * 配列の参照ポインタ
 	 */
 	public final T[] getArray()
 	{
 		return this._items;
 	}
+	/**
+	 * この関数は、指定したインデクスの配列要素を返します。
+	 * @param i_index
+	 * 要素のインデクス番号。
+	 * 有効な値は、0から{@link #getLength}-1です。
+	 * @return
+	 * 配列要素の参照値
+	 */
 	public final T getItem(int i_index)
 	{
 		return this._items[i_index];
 	}
 	/**
-	 * 配列の見かけ上の要素数を返却します。
+	 * この関数は、配列の有効な要素数返します。
 	 * @return
+	 * 有効な要素数
 	 */
 	public final int getLength()
 	{
 		return this._length;
 	}
 	/**
-	 * 指定した要素を削除します。
-	 * 削除した要素は前方詰めで詰められます。
+	 * この関数は、指定したインデクスの要素を配列から取り除きます。
+	 * 要素は、前方詰めで詰められます。
+	 * @param i_index
+	 * 削除する要素のインデクス
 	 */
 	public void remove(int i_index)
 	{
@@ -132,8 +158,12 @@ public class NyARPointerStack<T>
 		this._length--;
 	}
 	/**
-	 * 指定した要素を順序を無視して削除します。
+	 * この関数は、指定したインデクスの要素を配列から取り除きます。
+	 * 要素の順番は、削除したインデクス以降が不定になります。
+	 * このAPIは、最後尾の有効要素と、削除対象の要素を交換することで、削除を実現します。
+	 * {@link #remove}より高速ですが、要素の順序が重要な処理では注意して使ってください。
 	 * @param i_index
+	 * 削除する要素のインデクス
 	 */
 	public void removeIgnoreOrder(int i_index)
 	{
@@ -145,7 +175,7 @@ public class NyARPointerStack<T>
 		this._length--;
 	}
 	/**
-	 * 見かけ上の要素数をリセットします。
+	 * この関数は、配列の長さを0にリセットします。
 	 */
 	public void clear()
 	{

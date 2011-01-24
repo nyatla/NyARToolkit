@@ -63,18 +63,6 @@ public class CardDetect
 	/** {@link #UnknownRectInfo}のステータス値。推定に失敗しました。入力値が間違っている？*/
 	public final static int FAILED_TARGET_MISSMATCH=4;
 	/**
-	 * i_targetの大きさを推定して、{@link UnknownRectInfo}に結果を保存します。この関数は{@link UnknownRectInfo}の状態を変化させるだけです。
-	 * @param i_target
-	 * 大きさを推定するターゲット。
-	 * @param io_result
-	 * 入出力パラメータ。前段までの推定結果と現在の推定値をマージして返します。
-	 * はじめてターゲットの推定をするときは、リセットした{@link UnknownRectInfo}を入力してください。
-	 * @return
-	 * 認識状況を返します。
-	 * @throws NyARException
-	 */
-	
-	/**
 	 * この関数は、i_targetの矩形比率を推定します。
 	 * 推定結果は、io_resultに返却します。
 	 * <p>関数の使い方-

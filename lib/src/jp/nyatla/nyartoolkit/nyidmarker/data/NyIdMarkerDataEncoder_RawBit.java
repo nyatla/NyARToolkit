@@ -25,12 +25,17 @@
 package jp.nyatla.nyartoolkit.nyidmarker.data;
 
 import jp.nyatla.nyartoolkit.nyidmarker.*;
-
-
+/**
+ * このクラスは、マーカパターンを{@link NyIdMarkerData_RawBit}型のデータに変換します。
+ */
 public class NyIdMarkerDataEncoder_RawBit implements INyIdMarkerDataEncoder
 {	
 	private final static int _DOMAIN_ID=0;
 	private final static int[] _mod_data={7,31,127,511,2047,4095};
+	/**
+	 * この関数は、マーカパターンデータを{@link NyIdMarkerData_RawBit}型のデータに変換します。
+	 * o_destには、{@link NyIdMarkerData_RawBit}型のオブジェクトを指定してください。
+	 */
 	public boolean encode(NyIdMarkerPattern i_data,INyIdMarkerData o_dest)
 	{
 		final NyIdMarkerData_RawBit dest=(NyIdMarkerData_RawBit)o_dest;
@@ -54,6 +59,9 @@ public class NyIdMarkerDataEncoder_RawBit implements INyIdMarkerDataEncoder
 		dest.length=packet_length;
 		return true;
 	}
+	/**
+	 * この関数は、{@link NyIdMarkerData_RawBit}型のオブジェクトを生成して返します。
+	 */
 	public INyIdMarkerData createDataInstance()
 	{
 		return new NyIdMarkerData_RawBit();

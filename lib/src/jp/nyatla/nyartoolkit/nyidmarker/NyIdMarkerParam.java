@@ -25,19 +25,17 @@
 package jp.nyatla.nyartoolkit.nyidmarker;
 
 /**
- * [[Strage class]]
- * マーカを抽出した時のパラメータを格納するクラスです。
- *
+ * このクラスは、NyIdマーカを抽出した時の画像処理パラメータを格納します。
+ * {@link NyIdMarkerPickup#pickFromRaster}関数の返却値を受け取るために使います。
  */
 public class NyIdMarkerParam
 {
 	/**
-	 * マーカの方位値です。
+	 * ARToolKit準拠のマーカの方位値です。
 	 */
 	public int direction;
 	/**
-	 * マーカ周辺のパターン閾値です。
+	 * マーカから求められたラべリング用閾値です。
 	 */
 	public int threshold; 
-	
 }

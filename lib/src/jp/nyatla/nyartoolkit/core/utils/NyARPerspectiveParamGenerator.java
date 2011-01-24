@@ -28,20 +28,24 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
- * 遠近法を用いたPerspectiveパラメータを計算するクラスのテンプレートです。
- * 任意頂点四角系と矩形から、遠近法の変形パラメータを計算します。
- * このクラスはリファレンス実装のため、パフォーマンスが良くありません。実際にはNyARPerspectiveParamGenerator_O1を使ってください。
+ * このクラスは、遠近法を用いたPerspectiveパラメータを計算する抽象クラスです。
+ * 任意頂点の四角形と矩形から、遠近法の変形パラメータを計算します。
+ * パラメータは、8個の定数値です。配列に返却します。
+ * 継承クラスで、{@link #getParam}関数を実装してください。
  */
 public abstract class NyARPerspectiveParamGenerator
 {
+	/** 射影の基点(X)*/
 	protected int _local_x;
+	/** 射影の基点(Y)*/
 	protected int _local_y;
 	/**
 	 * コンストラクタです。
+	 * 変換先の基準点を設定してインスタンスを作成します。
 	 * @param i_local_x
-	 * パラメータ計算の基準点を指定します。
+	 * パラメータ計算の基準点を指定します。デフォルト値は1です。
 	 * @param i_local_y
-	 * パラメータ計算の基準点を指定します。
+	 * パラメータ計算の基準点を指定します。デフォルト値は1です。
 	 */
 	public NyARPerspectiveParamGenerator(int i_local_x,int i_local_y)
 	{
@@ -50,7 +54,7 @@ public abstract class NyARPerspectiveParamGenerator
 		return;
 	}
 	/**
-	 * 遠近法のパラメータを計算します。
+	 * この関数は、遠近法のパラメータを計算して、返却します。
 	 * @param i_size
 	 * 変換先の矩形のサイズを指定します。
 	 * @param i_vertex
@@ -67,7 +71,7 @@ public abstract class NyARPerspectiveParamGenerator
 		return this.getParam(i_size.w,i_size.h,i_vertex[0].x,i_vertex[0].y,i_vertex[1].x,i_vertex[1].y,i_vertex[2].x,i_vertex[2].y,i_vertex[3].x,i_vertex[3].y, o_param);
 	}
 	/**
-	 * 遠近法のパラメータを計算します。
+	 * この関数は、遠近法のパラメータを計算して、返却します。
 	 * @param i_size
 	 * 変換先の矩形のサイズを指定します。
 	 * @param i_vertex
@@ -83,7 +87,7 @@ public abstract class NyARPerspectiveParamGenerator
 		return this.getParam(i_size.w,i_size.h,i_vertex[0].x,i_vertex[0].y,i_vertex[1].x,i_vertex[1].y,i_vertex[2].x,i_vertex[2].y,i_vertex[3].x,i_vertex[3].y, o_param);
 	}
 	/**
-	 * 遠近法のパラメータを計算します。
+	 * この関数は、遠近法のパラメータを計算して、返却します。
 	 * @param i_width
 	 * 変換先の矩形のサイズを指定します。
 	 * @param i_height
@@ -101,7 +105,7 @@ public abstract class NyARPerspectiveParamGenerator
 		return this.getParam(i_width,i_height,i_vertex[0].x,i_vertex[0].y,i_vertex[1].x,i_vertex[1].y,i_vertex[2].x,i_vertex[2].y,i_vertex[3].x,i_vertex[3].y, o_param);
 	}
 	/**
-	 * 遠近法のパラメータを計算します。
+	 * この関数は、遠近法のパラメータを計算して、返却します。
 	 * @param i_width
 	 * 変換先の矩形のサイズを指定します。
 	 * @param i_height
@@ -119,19 +123,32 @@ public abstract class NyARPerspectiveParamGenerator
 		return this.getParam(i_width,i_height,i_vertex[0].x,i_vertex[0].y,i_vertex[1].x,i_vertex[1].y,i_vertex[2].x,i_vertex[2].y,i_vertex[3].x,i_vertex[3].y, o_param);
 	}
 	/**
-	 * 遠近法のパラメータを計算します。継承クラスで実装してください。
+	 * この関数は、遠近法のパラメータを計算して、返却します。
+	 * 実装クラスでは、遠近法のパラメータを計算する処理を実装してください。
 	 * @param i_dest_w
+	 * 出力先矩形の幅を指定します。
 	 * @param i_dest_h
+	 * 出力先矩形の高さを指定します。
 	 * @param x1
+	 * 変換元四角形の頂点1のX座標です。
 	 * @param y1
+	 * 変換元四角形の頂点1のY座標です。
 	 * @param x2
+	 * 変換元四角形の頂点2のX座標です。
 	 * @param y2
+	 * 変換元四角形の頂点2のY座標です。
 	 * @param x3
+	 * 変換元四角形の頂点3のX座標です。
 	 * @param y3
+	 * 変換元四角形の頂点3のY座標です。
 	 * @param x4
+	 * 変換元四角形の頂点4のX座標です。
 	 * @param y4
+	 * 変換元四角形の頂点4のY座標です。
 	 * @param o_param
+	 *　結果を受け取る配列を指定します。
 	 * @return
+	 * 計算に成功するとtrueを返します。
 	 * @throws NyARException
 	 */
 	public abstract boolean getParam(int i_dest_w,int i_dest_h,double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4,double[] o_param)throws NyARException;

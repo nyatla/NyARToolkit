@@ -25,23 +25,58 @@
 package jp.nyatla.nyartoolkit.core.utils;
 
 import jp.nyatla.nyartoolkit.*;
+
 /**
- * 方程式を解く関数を定義します。
- *
+ * このクラスには、方程式を解く関数を定義します。
  */
 public class NyAREquationSolver
 {
+	/**
+	 * この関数は、 二次方程式(ax^2+bx+c=0)を解いて、実根のみを返します。
+	 * @param i_a
+	 * 係数aの値
+	 * @param i_b
+	 * 係数bの値
+	 * @param i_c
+	 * 係数cの値
+	 * @param o_result
+	 * 解を受け取る配列。2要素以上である事。
+	 * @return
+	 * o_resultに格納した実根の数。
+	 */
 	public static int solve2Equation(double i_a, double i_b, double i_c,double[] o_result)
 	{
 		assert i_a!=0;
 		return solve2Equation(i_b/i_a,i_c/i_a,o_result,0);
 	}
-	
+	/**
+	 * この関数は、 二次方程式(x^2+bx+c=0)を解いて、実根のみを返します。
+	 * @param i_b
+	 * 係数bの値
+	 * @param i_c
+	 * 係数cの値
+	 * @param o_result
+	 * 解を受け取る配列。2要素以上である事。
+	 * @return
+	 * o_resultに格納した実根の数。
+	 */
 	public static int solve2Equation(double i_b, double i_c,double[] o_result)
 	{
 		return solve2Equation(i_b,i_c,o_result,0);
 	}
-	
+	/**
+	 * この関数は、 二次方程式(x^2+bx+c=0)を解いて、実根のみを返します。
+	 * @param i_b
+	 * 係数bの値
+	 * @param i_c
+	 * 係数cの値
+	 * @param o_result
+	 * 解を受け取る配列。
+	 * @param i_result_st
+	 * o_resultの格納を開始するインデクス番号
+	 * @return
+	 * o_resultに格納した実根の数。
+	 */	
 	public static int solve2Equation(double i_b, double i_c,double[] o_result,int i_result_st)
 	{
 		double t=i_b*i_b-4*i_c;
@@ -62,9 +97,8 @@ public class NyAREquationSolver
 	}
 
 	/**
-	 * ３次方程式 a*x^3+b*x^2+c*x+d=0の実根を求める。	 
-	 * http://aoki2.si.gunma-u.ac.jp/JavaScript/src/3jisiki.html
-	 * のコードを基にしてます。
+	 * この関数は、３次方程式(a*x^3+b*x^2+c*x+d=0)の実根を計算します。	 
+	 * このコードは、http://aoki2.si.gunma-u.ac.jp/JavaScript/src/3jisiki.htmlを元にしています。
 	 * @param i_a
 	 * X^3の係数
 	 * @param i_b
@@ -76,18 +110,16 @@ public class NyAREquationSolver
 	 * @param o_result
 	 * 実根。double[3]を指定すること。
 	 * @return
+	 * 返却した実根の数。
 	 */
 	public static int solve3Equation(double i_a, double i_b, double i_c, double i_d,double[] o_result)
 	{
 		assert (i_a != 0);
 		return solve3Equation(i_b/i_a,i_c/i_a,i_d/i_a,o_result);
 	}
-	
 	/**
-	 * ３次方程式 x^3+b*x^2+c*x+d=0の実根を求める。
-	 * だけを求める。
-	 * http://aoki2.si.gunma-u.ac.jp/JavaScript/src/3jisiki.html
-	 * のコードを基にしてます。
+	 * この関数は、３次方程式(x^3+b*x^2+c*x+d=0)の実根を計算します。	 
+	 * このコードは、http://aoki2.si.gunma-u.ac.jp/JavaScript/src/3jisiki.htmlを元にしています。
 	 * @param i_b
 	 * X^2の係数
 	 * @param i_c
@@ -95,9 +127,10 @@ public class NyAREquationSolver
 	 * @param i_d
 	 * X^0の係数
 	 * @param o_result
-	 * 実根。double[1]以上を指定すること。
+	 * 実根。double[3]を指定すること。
 	 * @return
-	 */
+	 * 返却した実根の数。
+	 */	
 	public static int solve3Equation(double i_b, double i_c, double i_d,double[] o_result)
 	{
 		double tmp,b,   p, q;
@@ -131,18 +164,21 @@ public class NyAREquationSolver
 	
 	
 	/**
-	 * ４次方程式の実根だけを求める。
+	 * この関数は、4次方程式(ax^4+bx^3+b*cx^2+d*x+e=0)の実根を計算します。	 
 	 * @param i_a
-	 * X^3の係数
+	 * X^4の係数
 	 * @param i_b
-	 * X^2の係数
+	 * X^3の係数
 	 * @param i_c
-	 * X^1の係数
+	 * X^2の係数
 	 * @param i_d
+	 * X^1の係数
+	 * @param i_e
 	 * X^0の係数
 	 * @param o_result
-	 * 実根。double[3]を指定すること。
+	 * 実根。double[4]を指定すること。
 	 * @return
+	 * 返却した実根の数。
 	 */
 	public static int solve4Equation(double i_a, double i_b, double i_c, double i_d,double i_e,double[] o_result) throws NyARException
 	{

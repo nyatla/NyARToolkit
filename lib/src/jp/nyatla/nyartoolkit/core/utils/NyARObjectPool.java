@@ -31,19 +31,25 @@ import jp.nyatla.nyartoolkit.NyARException;
 
 
 /**
- * このクラスは、型Tのオブジェクトプールを提供します。
- *
+ * このクラスは、シンプルなオブジェクトプールの基本クラスです。
+ * 生成済のオブジェクトを複数所有して、他のオブジェクトに貸付る機能を提供します。
+ * 参照カウンタを持つ管理されたオブジェクトプールが必要な時には、{@link NyARManagedObjectPool}クラスを使用します。
  * @param <T>
+ * 要素のオブジェクト型
  */
 public class NyARObjectPool<T extends Object>
 {
+	/**　要素の保管リスト*/
 	protected T[] _buffer;
+	/**　未割当の要素トリスト*/
 	protected T[] _pool;
+	/** 未割当の要素の数*/
 	protected int _pool_stock;
 
 	/**
-	 * オブジェクトプールからオブジェクトを取り出します。
+	 * この関数は、新しいオブジェクトを１個割り当てて返します。
 	 * @return
+	 * 新しいオブジェクト。失敗した場合はnull
 	 */
 	public T newObject()
 	{
@@ -55,8 +61,10 @@ public class NyARObjectPool<T extends Object>
 		
 	}
 	/**
-	 * オブジェクトプールへオブジェクトを返却します。
-	 * @return
+	 * この関数は、オブジェクトプールへオブジェクトを返却します。
+	 * @param　i_object
+	 * {@link #newObject}で割り当てたオブジェクトを指定します。
+	 * 必ず同じインスタンスで割り当てたオブジェクトを指定してください。
 	 */
 	public void deleteObject(T i_object)
 	{
@@ -68,16 +76,20 @@ public class NyARObjectPool<T extends Object>
 	}
 
 	/**
-	 * このクラスは実体化できません。
-	 * @throws NyARException
+	 * コンストラクタです。
+	 * 生成拒否の為に、コンストラクタを隠蔽します。
+	 * 継承クラスを作成してください。
 	 */
 	public NyARObjectPool() throws NyARException
 	{
 	}
 	/**
-	 * オブジェクトを初期化します。この関数は、このクラスを継承したクラスを公開するときに、コンストラクタから呼び出します。
+	 * この関数は、インスタンスを初期化します。
+	 * 継承クラスのコンストラクタから呼び出します。
 	 * @param i_length
+	 * 配列の最大長さ
 	 * @param i_element_type
+	 * 配列型を示すクラスタイプ
 	 * @throws NyARException
 	 */
 	@SuppressWarnings("unchecked")
@@ -96,8 +108,11 @@ public class NyARObjectPool<T extends Object>
 		return;		
 	}
 	/**
-	 * オブジェクトを作成します。
+	 * この関数は、配列要素のオブジェクトを１個作ります。
+	 * {@link #initInstance(int, Class)}から呼び出されます。
+	 * 継承クラスでオーバライドして、要素オブジェクトを１個生成して返す処理を実装してください。
 	 * @return
+	 * 新しいオブジェクトを返してください。
 	 * @throws NyARException
 	 */
 	protected T createElement() throws NyARException

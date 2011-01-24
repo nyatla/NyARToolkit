@@ -23,10 +23,11 @@
  * 
  */
 package jp.nyatla.nyartoolkit.nyidmarker;
+
 /**
- * [[Strage class]]
- * IDマーカパターン値を格納するクラスです。
- * クラスは、未整形のマーカデータを格納しています。
+ * このクラスは、Idマーカのデータ部の値を格納します。
+ * Idマーカのデータ仕様については、以下のURLを参照してください。
+ * http://sourceforge.jp/projects/nyartoolkit/docs/standards_document0001/ja/2/standards_document0001.pdf
  *
  */
 public class NyIdMarkerPattern
@@ -48,7 +49,7 @@ public class NyIdMarkerPattern
 	 */
 	public int check;
 	/**
-	 * データパケットの値
+	 * データパケットの配列。有効長はモデルによって異なります。
 	 */
 	public final int[] data=new int[32];
 }

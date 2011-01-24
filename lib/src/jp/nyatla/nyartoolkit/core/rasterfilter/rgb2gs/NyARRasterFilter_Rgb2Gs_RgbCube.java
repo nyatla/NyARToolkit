@@ -78,17 +78,15 @@ public class NyARRasterFilter_Rgb2Gs_RgbCube implements INyARRasterFilter_Rgb2Gs
 	/**
 	 * コンストラクタです。
 	 * 入力、出力ラスタの画素形式を指定して、フィルタを作成します。
-	 * @param i_threshold
-	 * 敷居値の初期値です。0&lt;n&lt;256の値を指定します。
 	 * @param i_in_raster_type
 	 * 入力ラスタの形式です。
 	 * @param i_out_raster_type
 	 * 出力ラスタの形式です。
 	 * @throws NyARException
 	 */		
-	public NyARRasterFilter_Rgb2Gs_RgbCube(int i_in_raster_type,int i_out_raster) throws NyARException
+	public NyARRasterFilter_Rgb2Gs_RgbCube(int i_in_raster_type,int i_out_raster_type) throws NyARException
 	{
-		if(!initInstance(i_in_raster_type,i_out_raster))
+		if(!initInstance(i_in_raster_type,i_out_raster_type))
 		{
 			throw new NyARException();
 		}
