@@ -75,7 +75,7 @@ public class NyARLabelingImage extends NyARRaster_BasicClass
 		return;
 	}
 	/**
-	 * 画像バッファを返します。バッファの形式は、{@link NyARBufferType.INT1D}(int[])です。
+	 * 画像バッファを返します。バッファの形式は、{@link NyARBufferType#INT1D}(int[])です。
 	 */
 	public Object getBuffer()
 	{

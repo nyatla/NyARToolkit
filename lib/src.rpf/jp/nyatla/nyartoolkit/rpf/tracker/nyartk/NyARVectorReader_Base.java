@@ -13,7 +13,7 @@ import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.rpf.utils.VecLinearCoordinates;
 
 /**
- * NyARVectorReaderインタフェイスのうち、バッファフォーマットに依存しない関数を実装するクラス。
+ * NyARVectorReaderインタフェイスのうち、画素形式に依存しない関数を実装するクラス。
  * 派生クラスで画素アクセス関数を実装して、最終的なクラスに仕上げます。
  *
  */

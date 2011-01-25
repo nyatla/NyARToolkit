@@ -69,19 +69,19 @@ public interface INyARRaster
 	 */
 	public Object getBuffer();
 	/**
-	 * バッファオブジェクトのタイプを返します。
+	 * この関数は、バッファの画素形式を返します。
 	 * 実装クラスでは、{@link #getBuffer}の返すバッファの形式を返してください。
 	 * @return
 	 * バッファの形式。{@link NyARBufferType}の定義値です。
 	 */
 	public int getBufferType();
 	/**
-	 * この関数は、バッファのタイプがi_type_valueであるか、チェックします。
-	 * 実装クラスでは、格納しているバッファタイプがi_type_valueと等しいかを確認してください。
+	 * この関数は、画素形式がi_type_valueであるか、チェックします。
+	 * 実装クラスでは、格納しているバッファの画素形式がi_type_valueと等しいかを確認してください。
 	 * @param i_type_value
 	 * バッファタイプ値。{@link NyARBufferType}の定義値です。
 	 * @return
-	 * 真偽値。
+	 * 真偽値。画素形式が一致していればtrue。
 	 */
 	public boolean isEqualBufferType(int i_type_value);
 	/**
@@ -89,7 +89,7 @@ public interface INyARRaster
 	 * 外部参照バッファを使用できるクラスで使います。
 	 * 実装クラスでは、{@link #getBuffer}がオブジェクトを返せるかの判定値を返してください。
 	 * @return
-	 * 真偽値。
+	 * 真偽値。{@link #getBuffer}が利用可能ならtrue。
 	 */
 	public boolean hasBuffer();
 	/**

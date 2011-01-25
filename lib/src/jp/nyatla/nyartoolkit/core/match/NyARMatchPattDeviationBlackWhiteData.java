@@ -84,7 +84,7 @@ public class NyARMatchPattDeviationBlackWhiteData
 	/**
 	 * この関数は、ラスタから差分画像を生成して、格納します。
 	 * 制限事項として、{@link NyARBufferType#INT1D_X8R8G8B8_32}形式のラスタのみ、入力できます。
-	 * @param i_buffer
+	 * @param i_raster
 	 * 差分画像の元画像。サイズは、このインスタンスと同じである必要があります。
 	 */
 	public void setRaster(INyARRaster i_raster)

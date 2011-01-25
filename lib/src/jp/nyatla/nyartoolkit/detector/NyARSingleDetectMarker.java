@@ -108,7 +108,7 @@ public class NyARSingleDetectMarker extends NyARCustomSingleDetectMarker
 	 * @param i_marker_width
 	 * 正方形マーカの物理サイズをmm単位で指定します。
 	 * @param i_input_raster_type
-	 * {@link #detectMarker}に入力するラスタのバッファフォーマットを指定します。
+	 * {@link #detectMarker}に入力するラスタの画素形式を指定します。
 	 * この値は、{@link INyARRgbRaster#getBufferType}関数の戻り値を利用します。
 	 * @param i_profile_id
 	 * 計算アルゴリズムの選択値です。以下の定数のいずれかを指定します。
@@ -202,7 +202,7 @@ public class NyARSingleDetectMarker extends NyARCustomSingleDetectMarker
 	 * 関数は、画像の二値化、ラべリング、矩形検出、パターンの一致判定処理までを行い、画像中にある最も一致したパターンを持つ矩形の座標を、thisの
 	 * プロパティへ保管します。
 	 * @param i_raster
-	 * 検出元の画像を指定します。この画像は、コンストラクタで指定したものと同じサイズ、画素フォーマットに限られます。
+	 * 検出元の画像を指定します。この画像は、コンストラクタで指定したものと同じサイズ、画素形式に限られます。
 	 * @param i_threshold
 	 * 二値化の敷居値を指定します。0&lt;=n<256の間で指定します。
 	 * @return

@@ -37,7 +37,7 @@ public interface INyARDoubleMatrix
 	/**
 	 * この関数は、配列の内容を行列にセットします。
 	 * 実装クラスでは、配列の内容をインスタンスにセットする処理を実装してください。
-	 * @param o_value
+	 * @param i_value
 	 * セットする配列。
 	 */
 	public void setValue(double[] i_value);

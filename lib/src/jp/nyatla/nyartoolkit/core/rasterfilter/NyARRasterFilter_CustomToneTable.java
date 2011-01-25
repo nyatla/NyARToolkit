@@ -42,7 +42,7 @@ public class NyARRasterFilter_CustomToneTable implements INyARRasterFilter
 	private IdoFilterImpl _dofilterimpl;
 	/**
 	 * コンストラクタです。
-	 * 入力/出力ラスタのバッファフォーマットを指定して、インスタンスを生成します。
+	 * 入力/出力ラスタの画素形式を指定して、インスタンスを生成します。
 	 * @param i_raster_type
 	 * ラスタ形式。
 	 * @throws NyARException

@@ -56,7 +56,7 @@ public final class NyARHsvRaster extends NyARRaster_BasicClass
 	}
 	/**
 	 * この関数は、ラスタのバッファへの参照値を返します。
-	 * バッファの形式{@link NyARBufferType.INT1D_X7H9S8V8_32}です。
+	 * バッファの形式{@link NyARBufferType#INT1D_X7H9S8V8_32}です。
 	 */
 	public Object getBuffer()
 	{

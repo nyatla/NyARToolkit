@@ -30,8 +30,8 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterreader;
 
-import jp.nyatla.nyartoolkit.NyARException;
-
+import jp.nyatla.nyartoolkit.*;
+import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 /**
  * このインタフェイスは、ラスタからRGBピクセル値を読みだす関数を定義します。
  * {@link INyARRgbRaster}インタフェイスを実装したクラスで使うことを想定しています。

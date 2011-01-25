@@ -37,7 +37,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
 /**
  * このクラスは、輪郭線の抽出クラスです。
  * 画像中の１点を開始点として、８方位探索で輪郭線を抽出します。出力は輪郭点の配列です。
- * <p>入力できる画素フォーマット - {@link #getContour}に入力できる画素フォーマットに制限があります。<br/>
+ * <p>入力できる画素形式 - {@link #getContour}に入力できる画素形式に制限があります。<br/>
  * {@link NyARBinRaster}
  * <ul>
  * <li>{@link NyARBufferType#INT1D_BIN_8}

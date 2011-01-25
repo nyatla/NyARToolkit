@@ -98,11 +98,13 @@ public class NyARDoublePoint2d
 	 * この関数は、３点で定義される直線から、外積を計算します。
 	 * 外積は、p1->p2と、p2->p3で定義する直線の外積です。
 	 * @param p1
-	 * 点１
+	 * 点1
 	 * @param p2
-	 * 点２
-	 * @param p3
-	 * 点３
+	 * 点2
+	 * @param p3_x
+	 * 点3の座標(X)
+	 * @param p3_y
+	 * 点3の座標(Y)
 	 * @return
 	 * 外積の値
 	 */

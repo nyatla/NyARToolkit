@@ -56,8 +56,8 @@ public class NyARRaster extends NyARRaster_BasicClass
 	 * ラスタのサイズ
 	 * @param i_height
 	 * ラスタのサイズ
-	 * @param i_raster_type
-	 * ラスタのバッファ形式。
+	 * @param i_buffer_type
+	 * ラスタの画素形式。
 	 * {@link NyARBufferType}に定義された定数値を指定してください。
 	 * 指定できる値は、クラスの説明を見てください。
 	 * @param i_is_alloc
@@ -81,8 +81,8 @@ public class NyARRaster extends NyARRaster_BasicClass
 	 * ラスタのサイズ
 	 * @param i_height
 	 * ラスタのサイズ
-	 * @param i_raster_type
-	 * ラスタのバッファ形式。
+	 * @param i_buffer_type
+	 * ラスタの画素形式。
 	 * {@link NyARBufferType}に定義された定数値を指定してください。
 	 * 指定できる値は、クラスの説明を見てください。
 	 * @throws NyARException
@@ -104,6 +104,7 @@ public class NyARRaster extends NyARRaster_BasicClass
 	 * @param i_is_alloc
 	 * バッファ参照方法値
 	 * @return
+	 * 初期化に成功するとtrueを返します。
 	 */
 	protected boolean initInstance(NyARIntSize i_size,int i_buf_type,boolean i_is_alloc)
 	{
@@ -132,7 +133,6 @@ public class NyARRaster extends NyARRaster_BasicClass
 	 * インスタンスがバッファを所有するかを返します。
 	 * コンストラクタでi_is_allocをfalseにしてラスタを作成した場合、
 	 * バッファにアクセスするまえに、バッファの有無をこの関数でチェックしてください。
-	 * @return
 	 */	
 	public boolean hasBuffer()
 	{

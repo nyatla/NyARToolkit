@@ -478,7 +478,7 @@ class RleInfoStack extends NyARObjectStack<NyARRleLabelFragmentInfo>
 	}
 }
 /**
- * このクラスは、{@link #RleInfoStack}の要素です。
+ * このクラスは、{@link RleInfoStack}の要素です。
  * RLEフラグメントのパラメータを保持します。
  * ユーザが使うことはありません。
  */

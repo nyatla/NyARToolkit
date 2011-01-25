@@ -54,7 +54,7 @@ public class NyARManagedObjectPool<T extends NyARManagedObject>
 	}
 	/**
 	 * オブジェクト要素から参照する操作インタフェイス。ユーザが使用することはありません。
-	 * @bug このスコープはprotectedではないか？
+	 * <p>メモ - このスコープはprotectedではないか？</p>
 	 */
 	public Operator _op_interface=new Operator();
 

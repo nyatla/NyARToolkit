@@ -48,7 +48,7 @@ import jp.nyatla.nyartoolkit.core.utils.*;
  * </ul>
  * </p>
  * <p>出力ラスタについて
- * 基本的には全ての{@link NyARBufferType.INT1D_X8R8G8B8_32}形式のバッファを持つラスタを使用してください。
+ * 基本的には全ての{@link NyARBufferType#INT1D_X8R8G8B8_32}形式のバッファを持つラスタを使用してください。
  * 他の形式でも動作しますが、低速な場合があります。
  * </p>
  * <p>高速化について - 

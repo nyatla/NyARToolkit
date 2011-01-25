@@ -9,20 +9,22 @@ import jp.nyatla.nyartoolkit.core.raster.*;
 
 
 
-
 /**
  * 画像データのサンプラです。画像データから、輪郭線抽出のヒントを計算して、出力コンテナに格納します。
  * 入力-LowResolutionLabelingSamplerIn
  * 出力-LowResolutionLabelingSamplerOut
  */
+/**
+ * このクラスは、{@link NyARTracker}が使う、ラべリングクラスです。
+ * 1/2^nに縮尺した画像をラべリングして、元画像の解像度でラベルデータを返します。
+ * このクラスに入力されるデータは縮尺されたエッジ画像のため、その為のパラメータ調整がしてあります。
+ */
 public class LowResolutionLabelingSampler
 {
 	/**
 	 * 1/n画像のラべリングをするクラス。
-	 * @author nyatla
-	 *
 	 */
-	class Main_Labeling extends NyARLabeling_Rle
+	private class Main_Labeling extends NyARLabeling_Rle
 	{
 		private int _pix;
 		public int current_th;
@@ -67,18 +69,15 @@ public class LowResolutionLabelingSampler
 	}
 	private Main_Labeling _main_labeling;
 	/**
-	 * コンストラクタです。samplingするラスターのパラメタを指定して、インスタンスを初期化します。
+	 * コンストラクタです。
+	 * 入力画像解像度と、サンプリングパラメータを指定して、インスタンスを初期化します。
 	 * @param i_width
-	 * サンプリングするLowResolutionLabelingSamplerInの基本解像度幅
-	 * この値は、samplingに渡すLowResolutionLabelingSamplerInに設定した値と同じである必要があります。
+	 * サンプリングするラスタの解像度
 	 * @param i_height
-	 * サンプリングするLowResolutionLabelingSamplerInの基本解像度高さ
-	 * この値は、samplingに渡すLowResolutionLabelingSamplerInに設定した値と同じである必要があります。
+	 * サンプリングするラスタの解像度
 	 * @param i_pix_size
-	 * 座標系の倍率係数を指定する。例えば1/2画像(面積1/4)のサンプリング結果を元画像サイズに戻すときは、4を指定する。
-	 * 最低解像度とするRasterのdepth。
-	 * この値は、samplingに渡すLowResolutionLabelingSamplerInに設定した値と同じである必要があります。
-	 * <p>メモ:ラスタ形式の多値化を考えるならアレだ。Impl作成。</p>
+	 * 座標系の倍率係数。
+	 * 例えば1/2画像(面積1/4)のサンプリング結果を元画像サイズに戻すときは、2を指定する。
 	 * @throws NyARException
 	 */
 	public LowResolutionLabelingSampler(int i_width,int i_height,int i_pix_size) throws NyARException
@@ -86,14 +85,14 @@ public class LowResolutionLabelingSampler
 		this._main_labeling=new Main_Labeling(i_width/i_pix_size,i_height/i_pix_size,i_pix_size);
 	}
 	/**
-	 * i_inのデータをサンプリングして、o_outにサンプル値を作成します。
-	 * この関数は、o_outにi_inのサンプリング結果を出力します。既にo_outにあるデータは初期化されます。
+	 * この関数は、入力ラスタをサンプリングして、o_outにラベル情報を出力します。
 	 * @param i_in
 	 * 入力元のデータです。
 	 * @param i_th
 	 * ラべリングの敷居値です。
 	 * @param o_out
 	 * 出力先のデータです。
+	 * オブジェクトのデータは、初期化されます。
 	 * @throws NyARException
 	 */
 	public void sampling(NyARGrayscaleRaster i_in,int i_th,LowResolutionLabelingSamplerOut o_out) throws NyARException

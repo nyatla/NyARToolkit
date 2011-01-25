@@ -48,14 +48,10 @@ public class NyARMatchPatt_Color_WITHOUT_PCA implements INyARMatchPatt
 	protected int _rgbpixels;
 	/**
 	 * コンストラクタ。
-	 * 基準パターンの解像度を指定して、インスタンスを生成します。
-	 * このコンストラクタで生成したインスタンスの基準パターンは、NULLになっています。
-	 * 後で基準パターンを{@link setARCode}関数で設定してください。
-	 * @param i_width
-	 * 基準パターンのサイズ
-	 * @param i_height
-	 * 基準パターンのサイズ
-	 */	
+	 * 基準パターンを元に、インスタンスを生成します。
+	 * @param i_code_ref
+	 * セットする基準パターンの参照値
+	 */
 	public NyARMatchPatt_Color_WITHOUT_PCA(NyARCode i_code_ref)
 	{
 		int w=i_code_ref.getWidth();
@@ -68,9 +64,13 @@ public class NyARMatchPatt_Color_WITHOUT_PCA implements INyARMatchPatt
 	}
 	/**
 	 * コンストラクタ。
-	 * 基準パターンを元に、評価インスタンスを生成します。
-	 * @param i_code_ref
-	 * セットする基準パターン
+	 * 基準パターンの解像度を指定して、インスタンスを生成します。
+	 * このコンストラクタで生成したインスタンスの基準パターンは、NULLになっています。
+	 * 後で基準パターンを{@link #setARCode}関数で設定してください。
+	 * @param i_width
+	 * 基準パターンのサイズ
+	 * @param i_height
+	 * 基準パターンのサイズ
 	 */	
 	public NyARMatchPatt_Color_WITHOUT_PCA(int i_width, int i_height)
 	{

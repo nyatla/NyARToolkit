@@ -33,7 +33,7 @@ import jp.nyatla.nyartoolkit.core.utils.*;
 
 /**
  * このクラスは、ラスタ画像に定義したの任意矩形から、NyIdパターンのデータを読み取ります。
- * 読み取り結果は、{@link NyARIdMarkerData}クラスのオブジェクト出力します。
+ * 読み取り結果は、{@link NyIdMarkerPattern}クラスのオブジェクトに出力します。
  *
  */
 public class NyIdMarkerPickup
@@ -133,7 +133,7 @@ public class NyIdMarkerPickup
 
 
 /**
- * {@link NyARColorPatt_NyIdMarker}がラスタからPerspective変換して読みだすためのクラス
+ * {@link NyIdMarkerPickup}がラスタからPerspective変換して読みだすためのクラス
  * 画像処理全般を担当します。
  * ユーザがこのクラスを使うことはありません。
  *

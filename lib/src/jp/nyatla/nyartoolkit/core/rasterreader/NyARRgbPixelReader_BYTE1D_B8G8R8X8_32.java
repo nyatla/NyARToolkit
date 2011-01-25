@@ -45,7 +45,7 @@ final public class NyARRgbPixelReader_BYTE1D_B8G8R8X8_32 implements INyARRgbPixe
 	/**
 	 * コンストラクタです。
 	 * 参照するラスタのバッファとサイズを指定して、インスタンスを作成します。
-	 * @param i_buf
+	 * @param i_ref_buf
 	 * ラスタのバッファオブジェクトの参照値
 	 * @param i_size
 	 * ラスタのサイズオブジェクトの参照値。

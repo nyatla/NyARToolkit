@@ -52,7 +52,7 @@ final public class NyARLabeling_ARToolKit
 	 * この関数の元になるARToolKitの関数は、static ARInt16 *labeling2( ARUint8 *image, int thresh,int *label_num, int **area, double **pos, int **clip,int **label_ref, int LorR )です。
 	 * </p>
 	 * @param i_raster
-	 * 入力元の二値ラスタオブジェクトです。バッファフォーマットは、{@link NyARBufferType.INT1D_BIN_8}である必要があります。
+	 * 入力元の二値ラスタオブジェクトです。画素形式は、{@link NyARBufferType#INT1D_BIN_8}である必要があります。
 	 * @param o_destination
 	 * ラべリング画像の出力先オブジェクトです。i_rasterと同じサイズである必要があります。
 	 * @throws NyARException

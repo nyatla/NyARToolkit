@@ -1,17 +1,17 @@
 package jp.nyatla.nyartoolkit.utils;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
-import jp.nyatla.nyartoolkit.core.pickup.NyARColorPatt_Perspective_O2;
-import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
-import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
-import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
-import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
+import jp.nyatla.nyartoolkit.core.param.*;
+import jp.nyatla.nyartoolkit.core.pickup.*;
+import jp.nyatla.nyartoolkit.core.raster.rgb.*;
+import jp.nyatla.nyartoolkit.core.transmat.*;
+import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.rasterreader.*;
 
 /**
  * このクラスは、姿勢変換行列を使用してマーカの周辺領域からパターンを取得する機能を持つラスタです。
- * 画像の画素フォーマットは、{@link NyARBufferType#INT1D_X8R8G8B8_32}形式のです。
- * このクラスは試験的であり、異なる解像度のパターンを取得することや、異なる画素フォーマットへ画像を出力する事ができません。
+ * 画像の画素形式は、{@link NyARBufferType#INT1D_X8R8G8B8_32}形式のです。
+ * このクラスは試験的であり、異なる解像度のパターンを取得することや、異なる画素形式へ画像を出力する事ができません。
  * {@link NyARPerspectiveRasterReader}クラスの使用を検討してください。
  */
 class TransformedBitmapPickup extends NyARColorPatt_Perspective_O2

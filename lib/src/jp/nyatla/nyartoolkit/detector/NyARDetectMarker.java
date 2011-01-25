@@ -185,7 +185,7 @@ public class NyARDetectMarker
 	 * @param i_number_of_code
 	 * i_codeの有効な個数を指定します。
 	 * @param i_input_raster_type
-	 * {@link #detectMarkerLite}に入力するラスタのバッファフォーマットを指定します。
+	 * {@link #detectMarkerLite}に入力するラスタの画素形式を指定します。
 	 * この値は、{@link INyARRgbRaster#getBufferType}関数の戻り値を利用します。
 	 * @throws NyARException
 	 */

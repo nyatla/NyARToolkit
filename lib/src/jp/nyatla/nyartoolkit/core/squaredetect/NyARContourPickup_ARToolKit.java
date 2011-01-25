@@ -24,8 +24,6 @@ public class NyARContourPickup_ARToolKit extends NyARContourPickup
 	 * 輪郭抽出の開始点です。
 	 * @param i_entry_y
 	 * 輪郭抽出の開始点です。
-	 * @param i_array_size
-	 * o_coordの有効長を指定します。
 	 * @param o_coord
 	 * 輪郭点を格納するオブジェクトを指定します。
 	 * @return

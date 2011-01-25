@@ -38,7 +38,7 @@ public class NyARIntCoordinates
 {
 	/** 点を格納する配列です。*/
 	public NyARIntPoint2d[] items;
-	/** 有効な要素の長さです。この値の最大値は、{@link #items#length}と同じです。*/
+	/** 有効な要素の長さです。*/
 	public int length;
 	/**
 	 * コンストラクタです。

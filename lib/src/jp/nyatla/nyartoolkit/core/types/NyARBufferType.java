@@ -30,10 +30,12 @@
  */
 package jp.nyatla.nyartoolkit.core.types;
 
+import jp.nyatla.nyartoolkit.core.raster.*;
 /**
- * このクラスは、主に{@link INyARRaster}で使用する、バッファ形式定数を定義します。
+ * このクラスは、バッファの形式を表す定数を定義します。
+ * 定数は、主に{@link INyARRaster}で使用する画素形式として使います。
  * バッファ形式定数は32bitの値で、フィールドの組合せで定義しています。
- * アプリケーションは、定数からバッファの構造を知ることができます。
+ * ユーザは、定数からバッファの構造を知ることができます。
  * <pre>
  * <table>
  * <tr><td>ビットイールド(ビット幅)</td><td>カテゴリ</td><td>備考</td></tr>
@@ -74,26 +76,26 @@ public class NyARBufferType
 	/** RGB形式。byte[3]で、R8G8B8の24ビットで画素が格納されている。
 	 */
 	public static final int BYTE1D_R8G8B8_24   = T_BYTE1D|0x0001;
-	/** RGB形式。 byte[3]で、B8G8R8の24ビットの画素フォーマット。
+	/** RGB形式。 byte[3]で、B8G8R8の24ビットの画素形式。
 	 */
 	public static final int BYTE1D_B8G8R8_24   = T_BYTE1D|0x0002;
-	/** RGB形式。byte[4]で、R8G8B8X8の32ビットの画素フォーマット。
+	/** RGB形式。byte[4]で、R8G8B8X8の32ビットの画素形式。
 	 */
 	public static final int BYTE1D_B8G8R8X8_32 = T_BYTE1D|0x0101;
-	/** RGB形式。byte[4]で、X8R8G8B8の32ビットの画素フォーマット。
+	/** RGB形式。byte[4]で、X8R8G8B8の32ビットの画素形式。
 	 */
 	public static final int BYTE1D_X8R8G8B8_32 = T_BYTE1D|0x0102;
 
-	/**　RGB形式。byte[2]で、RGB565の16ビット(little endian)の画素フォーマット。
+	/**　RGB形式。byte[2]で、RGB565の16ビット(little endian)の画素形式。
 	 */
 	public static final int BYTE1D_R5G6B5_16LE = T_BYTE1D|0x0201;
-	/**　RGB形式。byte[2]で、RGB565の16ビット(big endian)の画素フォーマット。
+	/**　RGB形式。byte[2]で、RGB565の16ビット(big endian)の画素形式。
 	 */
     public static final int BYTE1D_R5G6B5_16BE = T_BYTE1D|0x0202;
-	/**　RGB形式。short[1]で、RGB565の16ビット(little endian)の画素フォーマット。
+	/**　RGB形式。short[1]で、RGB565の16ビット(little endian)の画素形式。
 	 */	
     public static final int WORD1D_R5G6B5_16LE = T_SHORT1D|0x0201;
-	/**　RGB形式。short[1]で、RGB565の16ビット(big endian)の画素フォーマット。
+	/**　RGB形式。short[1]で、RGB565の16ビット(big endian)の画素形式。
 	 */
     public static final int WORD1D_R5G6B5_16BE = T_SHORT1D|0x0202;
 
@@ -125,12 +127,12 @@ public class NyARBufferType
 	 */
 	public static final int INT1D_BIN_8  = T_INT1D|0x0002;
 	
-	/**　RGB形式。int[1]で、XRGB32の32ビットの画素フォーマット。
+	/**　RGB形式。int[1]で、XRGB32の32ビットの画素形式。
 	 *  (エンディアンはプラットフォーム依存。)
 	 */
     public static final int INT1D_X8R8G8B8_32=T_INT1D|0x0102;
 
-	/** HSV形式。int[1]で、H:9bit(0-359),S:8bit(0-255),V(0-255)の画素フォーマット
+	/** HSV形式。int[1]で、H:9bit(0-359),S:8bit(0-255),V(0-255)の画素形式
 	 */
 	public static final int INT1D_X7H9S8V8_32=T_INT1D|0x0103;
     

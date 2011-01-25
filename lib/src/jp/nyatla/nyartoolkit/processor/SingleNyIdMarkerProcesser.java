@@ -200,8 +200,8 @@ public abstract class SingleNyIdMarkerProcesser
 	 * IDマーカの値エンコーダを指定します。
 	 * @param i_marker_width
 	 * マーカの物理縦横サイズをmm単位で指定します。
-	 * @param i_raster_type
-	 * {@link #detectMarker}関数に入力する画像の画素フォーマット。
+	 * @param i_raster_format
+	 * {@link #detectMarker}関数に入力する画像の画素形式。
 	 * この値には、{@link INyARRgbRaster#getBufferType}関数の戻り値を利用します。
 	 * @throws NyARException
 	 */

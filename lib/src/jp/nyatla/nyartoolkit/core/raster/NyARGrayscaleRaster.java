@@ -121,6 +121,7 @@ public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 	 * @param i_is_alloc
 	 * バッファ参照方法値
 	 * @return
+	 * 初期化に成功するとtrueを返します。
 	 */
 	protected boolean initInstance(NyARIntSize i_size, int i_buf_type,boolean i_is_alloc)
 	{
@@ -177,17 +178,15 @@ public class NyARGrayscaleRaster extends NyARRaster_BasicClass
 	/**
 	 * この関数は、指定ラスタに、このインスタンスの内容をコピーをします。
 	 * 異解像度間コピーもできますが、入力範囲とラスタサイズの間には、一定の関係が成立する必要があります。
-	 * @param i_input
-	 * 入力ラスタ
-	 * @param i_top
-	 * 入力ラスタの左上点を指定します。
 	 * @param i_left
 	 * 入力ラスタの左上点を指定します。
+	 * @param i_top
+	 * 入力ラスタの左上点を指定します。
 	 * @param i_skip
-	 * skip値。1なら等倍、2なら1/2倍、3なら1/3倍の偏重の画像を出力します。
+	 * skip値。1なら等倍、2なら1/2倍、3なら1/3倍の画像を出力します。
 	 * @param o_output
 	 * 出力先ラスタ。このラスタの解像度は、w=(i_input.w-i_left)/i_skip,h=(i_input.h-i_height)/i_skipを満たす必要があります。
-	 * 出力先ラスタと入力ラスタのバッファタイプは、同じである必要があります。
+	 * 出力先ラスタと入力ラスタの画素形式は、同じである必要があります。
 	 */
 	public void copyTo(int i_left,int i_top,int i_skip, NyARGrayscaleRaster o_output)
 	{

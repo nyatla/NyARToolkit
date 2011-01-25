@@ -38,7 +38,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
  * 距離マップには行と列があります。列を基準値、行を比較値として、その距離値を格納します。
  * 行と列の距離マップを作り終えたら、組合せを計算します。
  * <ol>
- * <li>{@link setMapSize}関数で、マップサイズ（比較する頂点数）を設定する。
+ * <li>{@link #setMapSize}関数で、マップサイズ（比較する頂点数）を設定する。
  * <li>{@link #setDist},または{@link #setPointDists}で、距離マップに全ての値を書き込む。
  * <li>
  * </ol>
@@ -98,7 +98,7 @@ public class NyARDistMap
 	/**
 	 * この関数は、列と行を指定して、距離値1個をマップにセットします。
 	 * <p>注意 -
-	 * このAPIは低速です。性能が必要な時は、{@link #setPointsDists}を参考に、一括書込みする関数を検討してください。
+	 * このAPIは低速です。性能が必要な時は、{@link #setPointDists}を参考に、一括書込みする関数を検討してください。
 	 * </p>
 	 * @param i_col
 	 * 列のインデクスを指定します。

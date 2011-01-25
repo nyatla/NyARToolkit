@@ -44,10 +44,10 @@ public class NyARRasterAnalyzer_Histogram
 	
 	/**
 	 * コンストラクタです。
-	 * ラスタの画素フォーマットを指定して、ヒストグラム分析器を作ります。
+	 * ラスタの画素形式を指定して、ヒストグラム分析器を作ります。
 	 * @param i_raster_format
-	 * 入力するラスタの画素フォーマットを指定します。
-	 * {@link NyARBufferType#INT1D_GRAY_8}形式以外の画素フォーマットの場合は、解析時にグレースケール化を行います。
+	 * 入力するラスタの画素形式を指定します。
+	 * {@link NyARBufferType#INT1D_GRAY_8}以外の画素形式の場合は、解析時にグレースケール化を行います。
 	 * @param i_vertical_interval
 	 * 画素スキャン時の、Y軸方向のスキップ数を指定します。数値が大きいほど高速に解析できますが、精度は劣化します。0以上を指定してください。
 	 * @throws NyARException

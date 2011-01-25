@@ -28,8 +28,7 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.analyzer.histogram.*;
 import jp.nyatla.nyartoolkit.core.analyzer.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
-import jp.nyatla.nyartoolkit.core.types.NyARHistogram;
-import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
+import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
  * このクラスは、画像のヒストグラムから{@link NyARHistogramAnalyzer_SlidePTile}による敷居値検出をする機能を提供します。
@@ -42,9 +41,9 @@ public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresh
 	private NyARHistogram _histogram;
 	/**
 	 * この関数は、ヒストグラム作成時の行スキップ数を指定します。
-	 * @see {@link NyARRasterAnalyzer_Histogram#setVerticalInterval}
 	 * @param i_step
 	 * 新しい行スキップ数
+	 * @see NyARRasterAnalyzer_Histogram#setVerticalInterval
 	 */
 	public void setVerticalInterval(int i_step)
 	{
@@ -57,7 +56,7 @@ public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresh
 	 * @param i_persentage
 	 * {@link NyARHistogramAnalyzer_SlidePTile#NyARHistogramAnalyzer_SlidePTile}へ渡す分析パラメータです。
 	 * @param i_raster_format
-	 * 分析するラスタの画素フォーマットです。
+	 * 分析するラスタの画素形式です。
 	 * @param i_vertical_interval
 	 * ヒストグラム作成時の行スキップ数です。
 	 * @throws NyARException

@@ -173,7 +173,7 @@ public class NyARLinear
 	 * @param i_point2
 	 * 点２
 	 * @return
-	 * 直線式が求まれば、true
+	 * 直線式が求るとtrueを返します。
 	 */
 	public final boolean makeLinearWithNormalize(NyARDoublePoint2d i_point1,NyARDoublePoint2d i_point2)
 	{
@@ -182,12 +182,16 @@ public class NyARLinear
 	/**
 	 * この関数は、2点を結ぶ直線式を計算して、インスタンスに格納します。
 	 * 式の係数値は、正規化されます。
-	 * @param i_point1
-	 * 点１
-	 * @param i_point2
-	 * 点２
+	 * @param x1
+	 * 点1の座標(X)
+	 * @param y1
+	 * 点1の座標(Y)
+	 * @param x2
+	 * 点2の座標(X)
+	 * @param y2
+	 * 点2の座標(Y)
 	 * @return
-	 * 直線式が求まれば、true
+	 * 直線式が求るとtrueを返します。
 	 */
 	public final boolean makeLinearWithNormalize(double x1,double y1,double x2,double y2)
 	{

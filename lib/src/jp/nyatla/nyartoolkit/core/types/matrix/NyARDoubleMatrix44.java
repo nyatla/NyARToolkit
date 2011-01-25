@@ -431,7 +431,7 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 	}
 	/**
 	 * この関数は、現在の行列をX軸で回転します。
-	 * @param i_mat_r
+	 * @param i_radian
 	 * 回転量(radian)
 	 */
 	public final void rotateX(double i_radian)
@@ -455,7 +455,7 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 	}
 	/**
 	 * この関数は、現在の行列をY軸で回転します。
-	 * @param i_mat_r
+	 * @param i_radian
 	 * 回転量(radian)
 	 */
 	public final void rotateY(double i_radian)
@@ -479,7 +479,7 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 	}
 	/**
 	 * この関数は、現在の行列をZ軸で回転します。
-	 * @param i_mat_r
+	 * @param i_radian
 	 * 回転量(radian)
 	 */
 	public final void rotateZ(double i_radian)

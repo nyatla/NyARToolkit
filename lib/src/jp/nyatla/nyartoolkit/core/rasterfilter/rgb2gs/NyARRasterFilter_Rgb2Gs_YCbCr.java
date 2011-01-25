@@ -113,14 +113,7 @@ public class NyARRasterFilter_Rgb2Gs_YCbCr implements INyARRasterFilter_Rgb2Gs
 		return true;
 	}	
 	/**
-	 * この関数は、クラスを初期化します。
-	 * コンストラクタから呼び出します。
-	 * @param i_in_raster_type
-	 * 入力ラスタの画素形式を指定します。
-	 * @param i_out_raster_type
-	 * 出力ラスタの画素形式を指定します。
-	 * @return
-	 * 初期化に成功すると、trueを返します。
+	 * この関数は、入力したRGBラスタを２値ラスタへ変換します。
 	 */	
 	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output) throws NyARException
 	{

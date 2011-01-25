@@ -41,7 +41,7 @@ public class NyARVecLinear2d
 	
 	/**
 	 * この関数は、指定サイズのオブジェクト配列を作ります。
-	 * @param i_number
+	 * @param i_length
 	 * 作成する配列の長さ
 	 * @return
 	 * 新しい配列。

@@ -93,7 +93,7 @@ public class NyARRgbRaster_Blank extends NyARRgbRaster_BasicClass
 		return;
 	}
 	/**
-	 * この関数は、画素フォーマットによらない画素アクセスを行うオブジェクトへの参照値を返します。
+	 * この関数は、画素形式によらない画素アクセスを行うオブジェクトへの参照値を返します。
 	 * @return
 	 * オブジェクトの参照値
 	 * @throws NyARException

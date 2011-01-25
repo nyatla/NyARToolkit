@@ -88,7 +88,7 @@ public class NyARCameraDistortionFactor
 	
 	/**
 	 * この関数は、パラメータ値を配列へ返します。
-	 * @param i_factor
+	 * @param o_factor
 	 * 歪みパラメータ値の出力先配列。4要素である必要があります。
 	 */
 	public void getValue(double[] o_factor)

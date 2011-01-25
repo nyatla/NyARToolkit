@@ -42,7 +42,7 @@ public class NyARRasterFilter_ARToolkitThreshold implements INyARRasterFilter_Rg
 	 * コンストラクタです。
 	 * 固定式位置の初期値、入力ラスタの画素形式を指定して、フィルタを作成します。
 	 * 出力ラスタの形式は、{@link NyARBufferType#INT1D_BIN_8}を選択します。
-	 * @param i_initial_threshold
+	 * @param i_threshold
 	 * 敷居値の初期値です。0&lt;n&lt;256の値を指定します。
 	 * @param i_in_raster_type
 	 * 入力ラスタの形式です。

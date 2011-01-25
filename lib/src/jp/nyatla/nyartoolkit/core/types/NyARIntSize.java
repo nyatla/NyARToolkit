@@ -78,9 +78,9 @@ public class NyARIntSize
 	}
 	/**
 	 * この関数は、引数値をインスタンスにセットします。
-	 * @param i_width
+	 * @param i_w
 	 * {@link #w}に設定する値
-	 * @param i_height
+	 * @param i_h
 	 * {@link #h}に設定する値
 	 */
 	public final void setValue(int i_w,int i_h)

@@ -14,7 +14,7 @@ public class NyARPointerStack<T>
 {
 	/** オブジェクトの参照値を格納するバッファ*/
 	protected T[] _items;
-	/** 配列の長さ。({@link #_items#length)とは異なることに注意してください。*/
+	/** 配列の有効な長さ。({@link #_items}の配列長とは異なることに注意してください。*/
 	protected int _length;
 	
 	/**

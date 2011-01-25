@@ -341,11 +341,11 @@ public abstract class SingleARMarkerProcesser
 	/**
 	 * この関数は、マーカパターンの一致率の敷居値を設定します。
 	 * 敷居値は、0.0&lt;n&lt;1.0の範囲で指定します。
-	 * @param i_new_detect_cf
+	 * @param i_new_cf
 	 * 新しくマーカを発見するときの閾値です。
-	 * @param i_exist_detect_cf
+	 * @param i_exist_cf
 	 * 継続してマーカを追跡するときの閾値です。
-	 * i_new_detect_cfの6割程度の値を指定すると良いでしょう。
+	 * i_new_cfの6割程度の値を指定すると良いでしょう。
 	 */
 	public void setConfidenceThreshold(double i_new_cf,double i_exist_cf)
 	{

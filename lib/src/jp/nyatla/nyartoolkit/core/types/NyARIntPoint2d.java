@@ -88,9 +88,9 @@ public class NyARIntPoint2d
 	}
 	/**
 	 * この関数は、頂点集合から、中央値(Σp[n]/n)を求めて、インスタンスにセットします。
-	 * @param i_points
+	 * @param i_point
 	 * 頂点集合を格納した配列です。
-	 * @param i_number_of_data
+	 * @param i_number_of_vertex
 	 * 配列中の有効な頂点数です。
 	 */	
 	public final void setCenterPos(NyARIntPoint2d[] i_point,int i_number_of_vertex)

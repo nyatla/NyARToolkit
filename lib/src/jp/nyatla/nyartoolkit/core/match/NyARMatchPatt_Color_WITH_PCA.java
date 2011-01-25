@@ -38,7 +38,9 @@ import jp.nyatla.nyartoolkit.core.NyARCode;
  * このクラスは、カラーで２パターンの一致度を計算します。
  * 評価アルゴリズムは、ARToolKitの、AR_TEMPLATE_MATCHING_COLORかつAR_MATCHING_WITH_PCAと同様です。
  * 比較対象のデータには、{@link NyARMatchPattDeviationColorData}クラスの物を使います。
- * @bug このクラスは動作確認が不十分です。動作しないかもしれませんので、注意してください。
+ *　<p>bug - 
+ *	このクラスは動作確認が不十分です。動作しないかもしれませんので、注意してください。
+ *	</p>
  */
 public class NyARMatchPatt_Color_WITH_PCA extends NyARMatchPatt_Color_WITHOUT_PCA
 {
@@ -52,7 +54,7 @@ public class NyARMatchPatt_Color_WITH_PCA extends NyARMatchPatt_Color_WITHOUT_PC
 	 * コンストラクタ。
 	 * 基準パターンの解像度を指定して、インスタンスを生成します。
 	 * このコンストラクタで生成したインスタンスの基準パターンは、NULLになっています。
-	 * 後で基準パターンを{@link setARCode}関数で設定してください。
+	 * 後で基準パターンを{@link #setARCode}関数で設定してください。
 	 * @param i_width
 	 * 基準パターンのサイズ
 	 * @param i_height

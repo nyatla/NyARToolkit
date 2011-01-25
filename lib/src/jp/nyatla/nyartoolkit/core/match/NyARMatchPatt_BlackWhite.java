@@ -48,7 +48,7 @@ public class NyARMatchPatt_BlackWhite implements INyARMatchPatt
 	 * コンストラクタ。
 	 * 基準パターンの解像度を指定して、インスタンスを生成します。
 	 * このコンストラクタで生成したインスタンスの基準パターンは、NULLになっています。
-	 * 後で基準パターンを{@link setARCode}関数で設定してください。
+	 * 後で基準パターンを{@link #setARCode}関数で設定してください。
 	 * @param i_width
 	 * 基準パターンのサイズ
 	 * @param i_height

@@ -60,7 +60,7 @@ public class NyARCoord2Linear
 	 * 輪郭取得元画像の歪み矯正オブジェクトとサイズを指定して、インスタンスを生成します。
 	 * @param i_size
 	 * 入力画像のサイズ
-	 * @param i_distfactor_ref
+	 * @param i_distfactor
 	 * 樽型歪みを補正する場合に、オブジェクトを指定します。
 	 * nullの場合、補正を行いません。
 	 */

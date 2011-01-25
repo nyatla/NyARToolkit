@@ -91,7 +91,7 @@ public class NyARMatchPattDeviationColorData
 	
 	/**
 	 * この関数は、ラスタから差分画像を生成して、格納します。
-	 * @param i_buffer
+	 * @param i_raster
 	 * 差分画像の元画像。サイズは、このインスタンスと同じである必要があります。
 	 * {@link NyARBufferType#INT1D_X8R8G8B8_32}形式のバッファを持つラスタの場合、他の形式よりも
 	 * 何倍か高速に動作します。
@@ -113,7 +113,7 @@ public class NyARMatchPattDeviationColorData
 	/**
 	 * この関数は、元画像を回転してから、差分画像を生成して、格納します。
 	 * 制限として、この関数はあまり高速ではありません。連続使用するときは、最適化を検討してください。
-	 * @param i_reader
+	 * @param i_raster
 	 * 差分画像の元画像。サイズは、このインスタンスと同じである必要があります。
 	 * @param i_direction
 	 * 右上の位置です。0=1象限、1=2象限、、2=3象限、、3=4象限の位置に対応します。

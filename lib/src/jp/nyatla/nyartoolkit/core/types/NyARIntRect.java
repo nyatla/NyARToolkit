@@ -106,14 +106,14 @@ public class NyARIntRect
 
 	/**
 	 * この関数は、矩形を領域内にクリップします。
-	 * @param top
-	 * クリップする上辺
-	 * @param bottom
-	 * クリップする下辺
-	 * @param left
+	 * @param i_left
 	 * クリップする左辺
-	 * @param right
+	 * @param i_top
+	 * クリップする上辺
+	 * @param i_right
 	 * クリップする右辺
+	 * @param i_bottom
+	 * クリップする下辺
 	 */
 	public final void clip(int i_left,int i_top,int i_right,int i_bottom)
 	{
