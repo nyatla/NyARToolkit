@@ -269,6 +269,7 @@ public abstract class NyARCustomSingleDetectMarker
 	 * デバック関数。
 	 * privateメンバにアクセスするためのトンネルです。
 	 * @return
+	 * デバック用オブジェクトを格納した配列。
 	 */
 	public Object[] _getProbe()
 	{

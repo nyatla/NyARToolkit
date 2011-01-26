@@ -102,20 +102,20 @@ public class NyARSingleDetectMarker extends NyARCustomSingleDetectMarker
 	 * コンストラクタです。
 	 * 指定した1種のマーカを1個検出するインスタンスを作ります。
 	 * @param i_param
-	 * カメラパラメータを指定します。このサイズは、{@link #detectMarker}に入力する画像と同じである必要があります。
+	 * カメラパラメータを指定します。このサイズは、{@link #detectMarkerLite}に入力する画像と同じである必要があります。
 	 * @param i_code
 	 * 検出するマーカパターンを指定します。
 	 * @param i_marker_width
 	 * 正方形マーカの物理サイズをmm単位で指定します。
 	 * @param i_input_raster_type
-	 * {@link #detectMarker}に入力するラスタの画素形式を指定します。
+	 * {@link #detectMarkerLite}に入力するラスタの画素形式を指定します。
 	 * この値は、{@link INyARRgbRaster#getBufferType}関数の戻り値を利用します。
 	 * @param i_profile_id
 	 * 計算アルゴリズムの選択値です。以下の定数のいずれかを指定します。
 	 * <ul>
-	 * <li>{@link NyARSingleDetectMarker#PF_ARTOOLKIT_COMPATIBLE}
-	 * <li>{@link NyARSingleDetectMarker#PF_NYARTOOLKIT}
-	 * <li>{@link NyARSingleDetectMarker#PF_NYARTOOLKIT_ARTOOLKIT_FITTING}
+	 * <li>{@link #PF_ARTOOLKIT_COMPATIBLE}
+	 * <li>{@link #PF_NYARTOOLKIT}
+	 * <li>{@link #PF_NYARTOOLKIT_ARTOOLKIT_FITTING}
 	 * </ul>
 	 * @throws NyARException
 	 */
@@ -128,8 +128,8 @@ public class NyARSingleDetectMarker extends NyARCustomSingleDetectMarker
 	/**
 	 * コンストラクタです。
 	 * 指定した1種のマーカを1個検出するインスタンスを作ります。
-	 * i_profile_idに{@link NyARSingleDetectMarker#PF_NYARTOOLKIT}を選択した{@link NyARSingleDetectMarker#NyARSingleDetectMarker(NyARParam, NyARCode, double, int, int)と同じです。
-	 * @see NyARSingleDetectMarker#NyARSingleDetectMarker(NyARParam, NyARCode, double, int, int)
+	 * i_profile_idに{@link #PF_NYARTOOLKIT}を選択した{@link #NyARSingleDetectMarker(NyARParam, NyARCode, double, int, int)}と同じです。
+	 * @see #NyARSingleDetectMarker(NyARParam, NyARCode, double, int, int)
 	 * @param i_param
 	 * Check see also
 	 * @param i_code
@@ -148,8 +148,8 @@ public class NyARSingleDetectMarker extends NyARCustomSingleDetectMarker
 	}
 	/**
 	 * この関数は、インスタンスを初期化します。
-	 * 引数は、{@link NyARSingleDetectMarker#NyARSingleDetectMarker}の対応する引数と同じです。
-	 * @see NyARSingleDetectMarker#NyARSingleDetectMarker(NyARParam, NyARCode, double, int, int)
+	 * 引数は、{@link #NyARSingleDetectMarker}の対応する引数と同じです。
+	 * @see #NyARSingleDetectMarker(NyARParam, NyARCode, double, int, int)
 	 * @param i_ref_param
 	 * Check see also
 	 * @param i_ref_code

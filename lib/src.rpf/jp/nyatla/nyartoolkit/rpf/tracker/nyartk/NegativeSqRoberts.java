@@ -31,21 +31,40 @@ import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
- * NyARReality用のエッジ検出フィルタ。
- * Roberts勾配の2乗値16倍に最大値制限をかけ、反転した値です。
- * 右端と左端の1ピクセルは、常に0が入ります。
+ * この関数は、{@link NyARTracker}用のエッジ検出フィルターです。
+ * {@link NyARTrackerSource_Reference}から、ヒント画像を作るために使います。通常、ユーザが使うことはありません。
+ * <p>フィルタの構造 - 
+ * このフィルタは、Roberts勾配の値の2乗値を16倍して、範囲を0から255に制限して反転した値を出力します。
+ * 右端と左端の1ピクセルは、常に0が入ります。<br/>
+ * Roberts勾配のカーネルとは、以下の形式です。
+ * <pre>
  * X=|-1, 0|  Y=|0,-1|
  *   | 0, 1|    |1, 0|
- * V=sqrt(X^2+Y+2)/2
+ * V=(sqrt(X^2+Y+2)>>4);V=V>255?255:V;
+ * </pre>
  */
 public class NegativeSqRoberts implements INyARRasterFilter
 {
 	private IdoFilterImpl _do_filter_impl; 
+	/**
+	 * コンストラクタです。
+	 * 入力ラスタの画素形式を指定して、インスタンスを作成します。
+	 * @param i_raster_type
+	 * 入力するラスタの画素形式です。{@link NyARBufferType#INT1D_GRAY_8}のみ対応します。
+	 * @throws NyARException
+	 */
 	public NegativeSqRoberts(int i_raster_type) throws NyARException
 	{
 		this.initInstance(i_raster_type);
 	}
-	public void initInstance(int i_raster_type)throws NyARException
+	/**
+	 * この関数は、インスタンスを初期化します。
+	 * コンストラクタから呼び出します。
+	 * @param i_raster_type
+	 * 入力するラスタの画素形式です。
+	 * @throws NyARException
+	 */
+	protected void initInstance(int i_raster_type)throws NyARException
 	{
 		switch (i_raster_type) {
 		case NyARBufferType.INT1D_GRAY_8:
@@ -55,17 +74,35 @@ public class NegativeSqRoberts implements INyARRasterFilter
 			throw new NyARException();
 		}		
 	}
+	/**
+	 * この関数は、入力画像にフィルタ処理をして、出力画像に書き込みます。
+	 */
 	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException
 	{
 		this._do_filter_impl.doFilter(i_input,i_output,i_input.getSize());
 	}
-	
-	interface IdoFilterImpl
+	/**
+	 * このインタフェイスは、フィルタ処理関数を定義します。
+	 * {@link NegativeSqRoberts#doFilter}から使います。
+	 *
+	 */
+	protected interface IdoFilterImpl
 	{
+		/**
+		 * この関数は、i_sizeのサイズを持つ入力画像をフィルタ処理して、同じくi_sizeのサイズを持つ出力画像へ書込みます。
+		 * 実装クラスでは、{@link NegativeSqRoberts}のアルゴリズムでフィルタ処理を行う処理を書きます。
+		 * @param i_input
+		 * 入力画像
+		 * @param i_output
+		 * 出力画像
+		 * @param i_size
+		 * 入力、出力画像のサイズ
+		 * @throws NyARException
+		 */
 		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException;
 	}
 	private final static int SH=4;
-	class IdoFilterImpl_GRAY_8 implements IdoFilterImpl
+	private class IdoFilterImpl_GRAY_8 implements IdoFilterImpl
 	{
 		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException
 		{

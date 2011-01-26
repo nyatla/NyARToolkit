@@ -4,14 +4,27 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.rpf.sampler.lrlabel.*;
 import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status.*;
 
+/**
+ * このクラスは、RECTトラックターゲットのリストです。
+ * {@link NyARTargetList}クラスの矩形検索関数を置き換えます。
+ *
+ */
 public class NyARRectTargetList extends NyARTargetList
 {
+	/**
+	 * コンストラクタです。
+	 * リストの最大サイズを指定して、インスタンスを生成します。
+	 * @param iMaxTarget
+	 * リストの最大サイズ
+	 * @throws NyARException
+	 */
 	public NyARRectTargetList(int iMaxTarget) throws NyARException
 	{
 		super(iMaxTarget);
 	}
 	/**
-	 * super classの機能に、予測位置からの探索を追加します。
+	 * この関数は、サンプルアイテムに最も近いアイテムのリストインデクスを検索します。
+	 * ベースクラスの関数との違いは、予想矩形位置も探索範囲に含む事です。
 	 */
 	public int getMatchTargetIndex(LowResolutionLabelingSamplerOut.Item i_item)
 	{
