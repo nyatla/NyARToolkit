@@ -4,6 +4,10 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.stack.*;
 import jp.nyatla.nyartoolkit.rpf.sampler.lrlabel.*;
 
+/**
+ * このクラスは、{@link NyARTarget}参照値をリストするクラスです。
+ * リストの基本関数と、検索関数を提供します。
+ */
 public class NyARTargetList extends NyARPointerStack<NyARTarget>
 {
 	public NyARTargetList(int i_max_target) throws NyARException
@@ -11,8 +15,10 @@ public class NyARTargetList extends NyARPointerStack<NyARTarget>
 		super.initInstance(i_max_target,NyARTarget.class);
 	}
 	/**
-	 * Sampleの位置キーに一致する可能性の高い要素のインデクスを１つ返します。
+	 * この関数は、Sampleの位置キーに一致する可能性の高い要素のインデクスを１つ返します。
+	 * 検索基準は、矩形同士の重なりです。
 	 * @param i_item
+	 * キーにするオブジェクト。
 	 * @return
 	 * 一致する可能性が高い要素のインデクス番号。見つからないときは-1
 	 */
