@@ -5,15 +5,17 @@ import jp.nyatla.nyartoolkit.core.utils.NyARManagedObjectPool;
 
 
 
-/*
- * 輪郭情報を保管します。
- * このクラスの要素は、他の要素から参照する可能性があります。
+/**
+ * このクラスは、{@link NyARContourTargetStatus}型のプールクラスです。
+ * 通常、ユーザが使うことはありません。
  */
 public final class NyARContourTargetStatusPool extends NyARManagedObjectPool<NyARContourTargetStatus>
 {	
 	/**
+	 * コンストラクタです。
+	 * プールの最大サイズを利用して、インスタンスを生成します。
 	 * @param i_size
-	 * スタックの最大サイズ
+	 * プールの最大サイズです。
 	 * @throws NyARException
 	 */
 	public NyARContourTargetStatusPool(int i_size) throws NyARException
@@ -21,7 +23,7 @@ public final class NyARContourTargetStatusPool extends NyARManagedObjectPool<NyA
 		super.initInstance(i_size,NyARContourTargetStatus.class);
 	}
 	/**
-	 * @Override
+	 * この関数は、リスト要素を生成して返します。
 	 */
 	protected NyARContourTargetStatus createElement()
 	{

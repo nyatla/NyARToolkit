@@ -1,8 +1,8 @@
 package jp.nyatla.nyartoolkit.rpf.mklib;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
-import jp.nyatla.nyartoolkit.rpf.reality.nyartk.NyARRealityTarget;
+import jp.nyatla.nyartoolkit.rpf.reality.nyartk.*;
 /**
  * 未知の矩形を認識するサンプル。
  * 絶対的な寸法は求められないので、矩形の辺比率を推定して返します。
@@ -22,9 +22,6 @@ import jp.nyatla.nyartoolkit.rpf.reality.nyartk.NyARRealityTarget;
  * <p>ヒント-
  * 既知のカードを認識したいのならば、比率推定後にターゲットの模様からその絶対サイズを特定すると良いかもしれません。
  * </p>
- * <p>サンプル-
- * このクラスのサンプルは、{@link Test_NyARRealityGl_CreditCardDetect}を見てください。
- * </p>
  */
 public class CardDetect
 {
@@ -34,7 +31,7 @@ public class CardDetect
 	 */
 	public static class UnknownRectInfo
 	{
-		/** 内部使用。推定している{@link RealityTarget}のシリアルID。*/
+		/** 内部使用。推定している{@link NyARRealityTarget}のシリアルID。*/
 		public long _target_serial;
 		/**　内部使用。成功回数のカウンタ*/
 		public int _success_point;
@@ -52,15 +49,15 @@ public class CardDetect
 			this._target_serial=NyARRealityTarget.INVALID_REALITY_TARGET_ID;
 		}
 	}
-	/** {@link #UnknownRectInfo}のステータス値。 このターゲットを推定するには、より正面から撮影が必要です。*/
+	/** {@link UnknownRectInfo}のステータス値。 このターゲットを推定するには、より正面から撮影が必要です。*/
 	public final static int MORE_FRONT_CENTER=0;
-	/** {@link #UnknownRectInfo}のステータス値。矩形比率を推定中です。*/
+	/** {@link UnknownRectInfo}のステータス値。矩形比率を推定中です。*/
 	public final static int ESTIMATE_NOW=1;
-	/** {@link #UnknownRectInfo}のステータス値。矩形比率を推定完了。io_resultのメンバ変数が利用可能です。*/
+	/** {@link UnknownRectInfo}のステータス値。矩形比率を推定完了。io_resultのメンバ変数が利用可能です。*/
 	public final static int ESTIMATE_COMPLETE=2;
-	/**　{@link #UnknownRectInfo}のステータス値。推定に失敗しました。変な形のRECTだったのかも。*/
+	/**　{@link UnknownRectInfo}のステータス値。推定に失敗しました。変な形のRECTだったのかも。*/
 	public final static int FAILED_ESTIMATE=3;
-	/** {@link #UnknownRectInfo}のステータス値。推定に失敗しました。入力値が間違っている？*/
+	/** {@link UnknownRectInfo}のステータス値。推定に失敗しました。入力値が間違っている？*/
 	public final static int FAILED_TARGET_MISSMATCH=4;
 	/**
 	 * この関数は、i_targetの矩形比率を推定します。
@@ -74,15 +71,15 @@ public class CardDetect
 	 * <p>{@link UnknownRectInfo#last_status}のステータス値について。
 	 * ステータス値の意味により、アプリケーションが何をするべきかが変わります。
 	 * <ul>
-	 * <li>{@link MORE_FRONT_CENTER}
+	 * <li>{@link #MORE_FRONT_CENTER}
 	 * 入力されたターゲットでは比率推定が難しい。より正面から撮影しなおす必要がある。
-	 * <li>{@link ESTIMATE_NOW}
+	 * <li>{@link #ESTIMATE_NOW}
 	 * 入力されたターゲットで比率推定中である。推定を継続するために、次の画像を入力する。
-	 * <li>{@link ESTIMATE_COMPLETE}
+	 * <li>{@link #ESTIMATE_COMPLETE}
 	 * 比率推定に成功した。メンバ変数が読出し可能。
-	 * <li>{@link FAILED_ESTIMATE}
+	 * <li>{@link #FAILED_ESTIMATE}
 	 * 比率推定に失敗した。比率推定を継続できないので、アプリケーションはこのターゲットを{@link NyARRealityTarget#RT_DEAD}へ遷移させるべきである。
-	 * <li>{@link FAILED_TARGET_MISSMATCH}
+	 * <li>{@link #FAILED_TARGET_MISSMATCH}
 	 * ２回目以降の認識で、ターゲットと記録オブジェクトのシリアルIDが一致しない。正しい組み合わせで入力するべき。
 	 * </ul>
 	 * </p>
@@ -150,11 +147,15 @@ public class CardDetect
 		return;
 	}
 	/**
-	 * p1->p2とp2->p3の作る角のsin値の絶対値を得ます。
+	 * この関数は、ベクトル(p1-&lt;p2)と(p2-&lt;p3)の作る角のsin値の絶対値を得ます。
 	 * @param p1
+	 * 点1
 	 * @param p2
+	 * 点2
 	 * @param p3
+	 * 点3
 	 * @return
+	 * sin値(0&lt;=n&lt;=1)
 	 */
 	public final static double getAbsSin(NyARDoublePoint2d p1,NyARDoublePoint2d p2,NyARDoublePoint2d p3)
 	{

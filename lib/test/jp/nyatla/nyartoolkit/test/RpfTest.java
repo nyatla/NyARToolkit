@@ -8,6 +8,7 @@ import java.util.Date;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
+import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
 import jp.nyatla.nyartoolkit.rpf.reality.nyartk.NyARReality;
 import jp.nyatla.nyartoolkit.rpf.reality.nyartk.NyARRealityTarget;
 import jp.nyatla.nyartoolkit.rpf.realitysource.nyartk.NyARRealitySource;
@@ -19,20 +20,23 @@ import jp.nyatla.nyartoolkit.rpf.realitysource.nyartk.NyARRealitySource_Referenc
 
 
 /**
- * NyARRealityのテストプログラム。動作保証なし。
- * 
- * ターゲットプロパティの取得実験用のテストコードです。
- * クリックしたマーカや、その平面周辺から、画像を取得するテストができます。
- *
+ * このサンプルは、{@link NyARReality}クラスの動作チェック＆ベンチマークプログラムです。
+ * 静止画からからUnknownステータスのマーカを検出して、Knownステータスに遷移できるかと、
+ * {@link NyARReality}が正常に動作するかを確認できます。
+ * また、{@link NyARReality#progress}を1000回実行して、処理時間を計測します。
+ * この数値は、{@link NyARReality}の基本性能の指標として使うことができます。
  */
-
 public class RpfTest
 {
 	private final static String PARAM_FILE = "../Data/camera_para.dat";
 	private final static String DATA_FILE = "../Data/320x240ABGR.raw";
 	private static final long serialVersionUID = -2110888320986446576L;
 
-    
+    /**
+     * メイン関数です。
+     * 次のフローで処理を実行します。
+     * @param args
+     */
 	public static void main(String[] args)
 	{
 

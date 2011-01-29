@@ -58,7 +58,7 @@ public class NyARRealitySource_Reference extends NyARRealitySource
 	}
 	/**
 	 * 所有するラスタが読出し可能であるかを返します。このクラスの場合には、常にtrueです。
-	 * @see {@link NyARRealitySource#isReady()}
+	 * @see NyARRealitySource#isReady()
 	 */
 	public final boolean isReady()
 	{
@@ -66,7 +66,7 @@ public class NyARRealitySource_Reference extends NyARRealitySource
 	}
 	/**
 	 * RGBソースとトラッカのリソースとの内容の同期を取ります。
-	 * @see {@link NyARRealitySource#syncResource()}
+	 * @see NyARRealitySource#syncResource()
 	 */
 	public final void syncResource() throws NyARException
 	{
@@ -75,7 +75,7 @@ public class NyARRealitySource_Reference extends NyARRealitySource
 	}
 	/**
 	 * RGBソースとトラッカのグレースケール画像との同期を取ります。
-	 * @see {@link NyARRealitySource#makeTrackSource()}
+	 * @see NyARRealitySource#makeTrackSource()
 	 */
 	public final NyARTrackerSource makeTrackSource() throws NyARException
 	{

@@ -8,8 +8,17 @@ import jp.nyatla.nyartoolkit.rpf.sampler.lrlabel.LowResolutionLabelingSampler;
 import jp.nyatla.nyartoolkit.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
 
 /**
- * NyARTrackerSourceのリファレンス実装です。
+ * このクラスは、NyARTrackerSourceのリファレンス実装です。
  * 全ての画像処理を処理系のソフトウェアで実装します。
+ * <p>基本的な使い方 - 
+ * このクラスは、次のような手順で使います。
+ * <ul>
+ * <li>{@link #refBaseRaster}関数で、基本グレースケール画像を得る。
+ * <li>基本グレースケール画像に、新しいイメージを書込む。
+ * <li>{@link NyARTracker#progress}関数に入力する。
+ * </ul>
+ * インスタンスの所有するラスタ間の同期は、{@link NyARTracker#progress}がコールする{@link #makeSampleOut}関数で行います。
+ * </p>
  */
 public class NyARTrackerSource_Reference extends NyARTrackerSource
 {
@@ -20,6 +29,8 @@ public class NyARTrackerSource_Reference extends NyARTrackerSource
 	private NyARGrayscaleRaster _rb_source;
 	private NegativeSqRoberts _rfilter=new NegativeSqRoberts(NyARBufferType.INT1D_GRAY_8);
 	/**
+	 * コンストラクタです。
+	 * ヒント画像
 	 * @param i_number_of_sample
 	 * サンプラが検出する最大数。
 	 *　通常100~200以上を指定します。(QVGA画像あたり、100個を基準にします。)
@@ -65,7 +76,9 @@ public class NyARTrackerSource_Reference extends NyARTrackerSource
 		this._base_raster.wrapBuffer(i_ref_source.getBuffer());
 	}
 
-
+	/**
+	 * この関数は、基準画像と内部状態を同期します。 通常、ユーザがこの関数を使用することはありません。 
+	 */
 	public void syncResource() throws NyARException
 	{
 		//内部状態の同期
@@ -75,8 +88,7 @@ public class NyARTrackerSource_Reference extends NyARTrackerSource
 	/**
 	 * SampleOutを計算して返します。
 	 * この関数は、NyARTrackerが呼び出します。
-	 * @param samplerout
-	 * @throws NyARException
+	 * 通常、ユーザがこの関数を使用することはありません。 
 	 */
 	public LowResolutionLabelingSamplerOut makeSampleOut() throws NyARException
 	{

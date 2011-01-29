@@ -7,11 +7,36 @@ import jp.nyatla.nyartoolkit.rpf.sampler.lrlabel.*;
 import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status.*;
 
 
-
-
 /**
- * このクラスは、四角形のトラッキングクラスです。画面内にある複数の矩形を、ターゲットとして識別して、追跡します。
- * @author nyatla
+ * このクラスは、画像中の四角形をトラッキングして、その状態を公開します。
+ * 入力データは、専用画像データコンテナの{@link NyARTrackerSource}クラスを使います。
+ * クラスはトラッキングしているターゲット(トラックターゲット)のリストを所有し、公開します。
+ * ユーザは、このリストを参照し、編集することで、トラックターゲットの状態を得ることができます。
+ * <p>アルゴリズム - 
+ * トラッカは既知サンプルリストと未知サンプルリストの２つのリストを持っています。
+ * このトラッキングアルゴリズムでは、サンプリングとトラッキングの２段構成で、これらのリストを編集して処理を進めます。
+ * <p>サンプリング - 
+ * サンプリングは、ラべリングした輪郭線から四角形（サンプル）を見つけ、既知のものと未知のものに分離する作業です。
+ * 判定は、ターゲットのリストとサンプルの値を比較して行います。既知のターゲットは既知サンプルリストへ保存し、
+ * 未知のものはそのまま新しいターゲットとして、ターゲットリストへ登録します。
+ * ここで、ラべリングを軽量な画像（1/2^nのエッジ画像）に対して行うことで、負荷軽減を達成します。
+ * </p>
+ * <p>トラッキング
+ * トラッキングは少々複雑です。トラッキングは、4つのステージがあり、各ステージで必要な情報のみをトラックターゲットから抽出します。
+ * 4つのターゲットは、new,ignore,contoure,rectです。
+ * <ul>
+ * <li>new - 新規ターゲットです。contourターゲットへ遷移するのを待っています。得られる情報は、2D画像上でのクリップ範囲のみです。
+ * <li>ignore - 分析を必要としないターゲットです。一定時間が経過すると、自動的に消失します。得られる情報は、2D画像上でのクリップ範囲のみです。
+ * <li>contur - 輪郭線まで分析するターゲットです。rectターゲットへ遷移するのを待っています。得られる情報は、2D画像上でのクリップ範囲、輪郭線情報です。
+ * <li>rect - 矩形頂点まで分析するターゲットです。得られる情報は、2D画像上でのクリップ範囲、矩形の頂点座標です。
+ * </ul>
+ * </p>
+ * まずはじめに、トラッカはサンプリングで得られた既知サンプルを適切なターゲットにディスパッチします。
+ * 全てのディスパッチが完了した後に、ディスパッチされた情報を元に、各ターゲットの状態を更新します。
+ * ステージによっては、ディスパッチが行われなかった場合でも、ステージ独自のサンプリング方法で状態を更新する場合があります。
+ * 通常は、new,contur,rectの順で遷移します。各ステージに置かれるターゲットの数を調整することで、負荷量をコントロールすることができます。
+ * ignoreは分析の必要ないターゲットを意図的に無視するためのステージです。認識に失敗したターゲットや、消失したターゲットなどがここに集められ、消滅していきます。
+ * </p>
  *
  */
 public class NyARTracker
@@ -26,7 +51,7 @@ public class NyARTracker
 	private NyARTargetPool target_pool;
 	/**
 	 * ターゲットリストです。このプロパティは内部向けです。
-	 * refTrackTarget関数を介してアクセスしてください。
+	 * {@link #refTrackTarget}関数を介してアクセスしてください。
 	 */
 	public NyARTargetList _targets;
 
@@ -49,40 +74,45 @@ public class NyARTracker
 	private int _number_of_rect;	
 	
 	/**
-	 * newターゲットの数を返します。
+	 * この関数は、newステータスのターゲット数を返します。
 	 * @return
+	 * newターゲットの数
 	 */
 	public final int getNumberOfNew()
 	{
 		return this._number_of_new;		
 	}
 	/**
-	 * ignoreターゲットの数を返します。
+	 * この関数は、ignoreステータスのターゲット数を返します。
 	 * @return
+	 * ignoreターゲットの数
 	 */
 	public final int getNumberOfIgnore()
 	{
 		return this._number_of_ignore;		
 	}
 	/**
-	 * contourターゲットの数を返します。
+	 * この関数は、contourターゲットの数を返します。
 	 * @return
+	 * contourターゲットの数
 	 */
 	public final int getNumberOfContur()
 	{
 		return this._number_of_contoure;		
 	}
 	/**
-	 * rectターゲットの数を返します。
+	 * この関数は、rectターゲットの数を返します。
 	 * @return
+	 * rectターゲットの数
 	 */
 	public final int getNumberOfRect()
 	{
 		return this._number_of_rect;		
 	}
 	/**
-	 * ターゲットリストの参照値を返します。
+	 * この関数は、ターゲットリストの参照値を返します。
 	 * @return
+	 * [read only]ターゲットリストの参照値
 	 */
 	public final NyARTargetList refTrackTarget()
 	{
@@ -90,6 +120,7 @@ public class NyARTracker
 	}
 	/**
 	 * コンストラクタです。
+	 * ステージごとのターゲットの最大数を指定して、インスタンスを生成します。
 	 * @param i_max_new
 	 * Newトラックターゲットの最大数を指定します。
 	 * @param i_max_cont
@@ -138,8 +169,11 @@ public class NyARTracker
 	}
 
 	/**
-	 * Trackerの状態を更新します。
-	 * @param i_source
+	 * この関数は、{@link NyARTrackerSource}の情報から、インスタンスの状態を更新します。
+	 * 関数の実行後に、インスタンスの所有するトラックターゲットの状態は更新されます。
+	 * この関数は、{@link NyARTrackerSource#makeSampleOut}を呼び出してトラックソース内の画像を同期をします。
+	 * @param i_s
+	 * 基本画像にイメージを書き込んだコンテナを指定します。
 	 * @throws NyARException
 	 */
 	public void progress(NyARTrackerSource i_s) throws NyARException
@@ -355,7 +389,7 @@ public class NyARTracker
 	 * @param i_sample
 	 * @throws NyARException 
 	 */
-	public final static void updateNewStatus(NyARTargetList i_list,NyARNewTargetStatusPool i_pool,LowResolutionLabelingSamplerOut.Item[] source,int[] index) throws NyARException
+	private final static void updateNewStatus(NyARTargetList i_list,NyARNewTargetStatusPool i_pool,LowResolutionLabelingSamplerOut.Item[] source,int[] index) throws NyARException
 	{
 		NyARTarget d_ptr;
 		NyARTarget[] i_nes=i_list.getArray();		
@@ -401,7 +435,7 @@ public class NyARTracker
 	 * @param index
 	 * @throws NyARException
 	 */
-	public static void updateContureStatus(NyARTargetList i_list,INyARVectorReader i_vecreader,NyARContourTargetStatusPool i_stpool,LowResolutionLabelingSamplerOut.Item[] source,int[] index) throws NyARException
+	private static void updateContureStatus(NyARTargetList i_list,INyARVectorReader i_vecreader,NyARContourTargetStatusPool i_stpool,LowResolutionLabelingSamplerOut.Item[] source,int[] index) throws NyARException
 	{
 		NyARTarget[] crd=i_list.getArray();		
 		NyARTarget d_ptr;
@@ -437,7 +471,7 @@ public class NyARTracker
 			d_ptr._ref_status=st;
 		}
 	}
-	public static void updateRectStatus(NyARTargetList i_list,INyARVectorReader i_vecreader,NyARRectTargetStatusPool i_stpool,LowResolutionLabelingSamplerOut.Item[] source,int[] index) throws NyARException
+	private static void updateRectStatus(NyARTargetList i_list,INyARVectorReader i_vecreader,NyARRectTargetStatusPool i_stpool,LowResolutionLabelingSamplerOut.Item[] source,int[] index) throws NyARException
 	{	
 		NyARTarget[] rct=i_list.getArray();
 		NyARTarget d_ptr;
@@ -593,10 +627,15 @@ public class NyARTracker
 		this._number_of_ignore--;
 		return;
 	}
-	
 	/**
-	 * このターゲットのステータスを、IgnoreStatusへ変更します。
-	 * @throws NyARException 
+	 * この関数は、指定したターゲットのステータスを、ignoreにします。
+	 * @param i_target
+	 * 遷移させるトラックターゲットを指定します。
+	 * このターゲットのステータスは、{@link NyARTargetStatus#ST_NEW},{@link NyARTargetStatus#ST_CONTURE},{@link NyARTargetStatus#ST_RECT}の何れかである必要があります。
+	 * このオブジェクトは、インスタンスに所有されている必要があります。
+	 * @param i_life
+	 * ignoreに遷移した後の、生存時間をサイクル数で指定します。
+	 * @throws NyARException
 	 */
 	public final void changeStatusToIgnore(NyARTarget i_target,int i_life) throws NyARException
 	{
@@ -675,10 +714,17 @@ public class NyARTracker
 }
 
 /**
- * サンプルを格納するスタックです。このクラスは、一時的なリストを作るために使います。
+ * このクラスは、サンプルの参照値を格納するスタックです。
+ * {@link NyARTracker}から使います。ユーザが使うことはありません。
  */
 final class SampleStack extends NyARPointerStack<LowResolutionLabelingSamplerOut.Item>
 {
+	/**
+	 * コンストラクタです。
+	 * @param i_size
+	 * リストの最大数
+	 * @throws NyARException
+	 */
 	public SampleStack(int i_size) throws NyARException
 	{
 		super();
@@ -688,16 +734,35 @@ final class SampleStack extends NyARPointerStack<LowResolutionLabelingSamplerOut
 
 
 /**
- * NyARTargetとSampleStack.Item間の、点間距離マップを作製するクラスです。
- * スーパークラスから、setPointDists関数をオーバライドします。
- *
+ * このクラスは、{@link NyARDistMap}の距離マップ生成関数を拡張したクラスです。
+ * {@link #setPointDists}をオーバロードします。
  */
 final class DistMap extends NyARDistMap
 {
+	/**
+	 * コンストラクタです。
+	 * {@link NyARDistMap}と同じです。
+	 * @param i_max_col
+	 * {@link NyARDistMap}を参照してください。
+	 * @param i_max_row
+	 * {@link NyARDistMap}を参照してください。
+	 */
 	public DistMap(int i_max_col,int i_max_row)
 	{
 		super(i_max_col,i_max_row);
 	}
+	/**
+	 * この関数は、ターゲットリスト距離マップの作成と頂点ペアの計算をバッチ処理して返します。
+	 * 得られるのは、{@link NyARTargetList}の要素と最も距離の近い{@link SampleStack}要素の、インデクス番号を格納した配列です。
+	 * @param igsource
+	 * サンプルの配列
+	 * @param igtr
+	 * ターゲットの配列
+	 * @param index
+	 * インデクス配列を格納する配列。igtrと同じサイズが必要です。
+	 * 該当する要素が見つからないときは、-1をセットします。
+	 * 
+	 */
 	public void makePairIndexes(SampleStack igsource, NyARTargetList igtr,int[] index)
 	{
 		this.setPointDists(igsource.getArray(),igsource.getLength(),igtr.getArray(),igtr.getLength());
@@ -705,12 +770,15 @@ final class DistMap extends NyARDistMap
 		return;
 	}
 	/**
-	 * ２ペアの点間距離を計算します。
-	 * getMinimumPairで求まるインデクスは、NyARTargetに最も一致するLowResolutionLabelingSamplerOut.Itemのインデックスになります。
+	 * この関数は、サンプルの矩形とターゲットのクリップ矩形の対角頂点距離を元に、距離マップを作ります。
 	 * @param i_sample
+	 * サンプルを格納した配列。
 	 * @param i_smp_len
+	 * i_sampleの有効な要素数
 	 * @param i_target
+	 * ターゲットを格納した配列。
 	 * @param i_target_len
+	 * i_targetの有効な要素数
 	 */
 	public void setPointDists(LowResolutionLabelingSamplerOut.Item[] i_sample,int i_smp_len,NyARTarget[] i_target,int i_target_len)
 	{

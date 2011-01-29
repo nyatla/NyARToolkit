@@ -13,36 +13,39 @@ import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.rpf.utils.VecLinearCoordinates;
 
 /**
- * NyARVectorReaderインタフェイスのうち、画素形式に依存しない関数を実装するクラス。
+ * このクラスは、NyARVectorReaderインタフェイスのうち、画素形式に依存しない関数を実装する抽象クラスです。
+ * {@link #getAreaVector33}と{@link #getAreaVector22}関数が未実装です。
  * 派生クラスで画素アクセス関数を実装して、最終的なクラスに仕上げます。
- *
  */
 public abstract class NyARVectorReader_Base implements INyARVectorReader
 {
 	private VecLinearCoordinates.VecLinearCoordinatePoint[] _tmp_coord_pos;
 	private int _rob_resolution;
+	/** 参照する基本GS画像の参照値*/
 	protected NyARGrayscaleRaster _ref_base_raster;
+	/** 参照するヒント画像の参照値*/
 	private NyARGrayscaleRaster _ref_rob_raster;
+	/** 参照する歪み矯正オブジェクトの参照値*/
 	protected NyARCameraDistortionFactor _factor;
 	/**
-	 * 継承を必須とするため、コンストラクタを隠蔽。
+	 * コンストラクタです。
+	 * 継承を必須とするため、隠蔽します。
 	 */
 	protected NyARVectorReader_Base()
 	{
-		
 	}
 	
 	/**
+	 * この関数は、インスタンスを初期化します。
 	 * 継承クラスのコンストラクタから呼び出す。
 	 * @param i_ref_raster
-	 * 基本画像
+	 * 基本GS画像の参照値。
 	 * @param i_ref_raster_distortion
 	 * 歪み解除オブジェクト(nullの場合歪み解除を省略)
 	 * @param i_ref_rob_raster
-	 * エッジ探索用のROB画像
+	 * 基本GS画像のヒント画像の参照値。
 	 * @param i_contour_pickup
-	 * 輪郭線取得クラス
-	 * @param 
+	 * 輪郭線取得オブジェクト
 	 */
 	public void initInstance(NyARGrayscaleRaster i_ref_raster,NyARCameraDistortionFactor i_ref_raster_distortion,NyARGrayscaleRaster i_ref_rob_raster,NyARContourPickup i_contour_pickup)
 	{
@@ -55,13 +58,15 @@ public abstract class NyARVectorReader_Base implements INyARVectorReader
 		this._cpickup = i_contour_pickup;
 		return;
 	}
-	/**
-	 * ワーク変数
-	 */
+	/** ワーク変数*/
 	protected NyARIntCoordinates _coord_buf;
 	private NyARContourPickup _cpickup;
+	/** ベクトルマージ用の敷居値*/
 	protected final double _MARGE_ANG_TH = NyARMath.COS_DEG_10;
-
+	/**
+	 * この関数は、ヒント画像の基点から輪郭点をトレースして、元画像の輪郭ベクトルを配列に返します。
+	 * 輪郭ベクトルの検出特性については、{@link #traceConture(NyARIntCoordinates, int, int, VecLinearCoordinates)}を確認してください。
+	 */
 	public boolean traceConture(int i_th,
 			NyARIntPoint2d i_entry, VecLinearCoordinates o_coord)
 			throws NyARException
@@ -82,19 +87,9 @@ public abstract class NyARVectorReader_Base implements INyARVectorReader
 
 
 	/**
-	 * 点1と点2の間に線分を定義して、その線分上のベクトルを得ます。点は、画像の内側でなければなりません。 320*240の場合、(x>=0 &&
-	 * x<320 x+w>0 && x+w<320),(y>0 && y<240 y+h>=0 && y+h<=319)となります。
-	 * 
-	 * @param i_pos1
-	 *            点1の座標です。
-	 * @param i_pos2
-	 *            点2の座標です。
-	 * @param i_area
-	 *            ベクトルを検出するカーネルサイズです。1の場合(n*2-1)^2のカーネルになります。 点2の座標です。
-	 * @param o_coord
-	 *            結果を受け取るオブジェクトです。
-	 * @return
-	 * @throws NyARException
+	 * この関数は、元画像の点1と点2の間に線分を定義して、その線分上のベクトルを配列に得ます。 点は、画像の内側でなければなりません。
+	 * この関数はクリッピング処理を行いません。クリッピングが必要な時には、traceLineWithClipを使います。
+	 * 輪郭ベクトルの検出特性については、{@link #traceConture(NyARIntCoordinates, int, int, VecLinearCoordinates)}を確認してください。
 	 */
 	public boolean traceLine(NyARIntPoint2d i_pos1, NyARIntPoint2d i_pos2,int i_edge, VecLinearCoordinates o_coord)
 	{
@@ -133,7 +128,11 @@ public abstract class NyARVectorReader_Base implements INyARVectorReader
 		// 点数は20点程度を得る。
 		return traceConture(coord, 1, s, o_coord);
 	}
-
+	/**
+	 * この関数は、元画像の点1と点2の間に線分を定義して、その線分上のベクトルを配列に得ます。 点は、画像の内側でなければなりません。
+	 * この関数はクリッピング処理を行いません。クリッピングが必要な時には、traceLineWithClipを使います。
+	 * 輪郭ベクトルの検出特性については、{@link #traceConture(NyARIntCoordinates, int, int, VecLinearCoordinates)}を確認してください。
+	 */
 	public boolean traceLine(NyARDoublePoint2d i_pos1,NyARDoublePoint2d i_pos2, int i_edge, VecLinearCoordinates o_coord)
 	{
 		NyARIntCoordinates coord = this._coord_buf;
@@ -190,13 +189,8 @@ public abstract class NyARVectorReader_Base implements INyARVectorReader
 		return false;
 	}
 	/**
-	 * 輪郭線を取得します。
-	 * 取得アルゴリズムは、以下の通りです。
-	 * 1.輪郭座標(n)の画素周辺の画素ベクトルを取得。
-	 * 2.輪郭座標(n+1)周辺の画素ベクトルと比較。
-	 * 3.差分が一定以下なら、座標と強度を保存
-	 * 4.3点以上の集合になったら、最小二乗法で直線を計算。
-	 * 5.直線の加重値を個々の画素ベクトルの和として返却。
+	 * この関数は、カーネルサイズを指定して、ヒント画像の輪郭座標から、元画像の輪郭線のベクトルを得ます。
+	 * 輪郭ベクトルは、隣接する要素が似ている場合、加算してまとめられます。隣接していないベクトルはまとめられません。
 	 */
 	public boolean traceConture(NyARIntCoordinates i_coord, int i_pos_mag,int i_cell_size, VecLinearCoordinates o_coord)
 	{
@@ -339,14 +333,7 @@ public abstract class NyARVectorReader_Base implements INyARVectorReader
 	private NyARLinear __temp_l = new NyARLinear();
 
 	/**
-	 * クリッピング付きのライントレーサです。
-	 * 
-	 * @param i_pos1
-	 * @param i_pos2
-	 * @param i_edge
-	 * @param o_coord
-	 * @return
-	 * @throws NyARException
+	 * この関数は、クリッピング付きのライントレーサです。 元画像の点1と点2の間に線分を定義して、その線分上のベクトルを配列に得ます。 座標は、適切に画像内にクリッピングします。
 	 */
 	public boolean traceLineWithClip(NyARDoublePoint2d i_pos1,
 		NyARDoublePoint2d i_pos2, int i_edge, VecLinearCoordinates o_coord)

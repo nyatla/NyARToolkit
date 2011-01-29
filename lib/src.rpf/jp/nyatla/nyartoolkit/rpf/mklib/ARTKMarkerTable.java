@@ -15,9 +15,7 @@ import jp.nyatla.nyartoolkit.rpf.realitysource.nyartk.*;
  * マーカパターンにID番号とメタデータを関連付けたテーブルを持ち、パターンの一致検索機能を提供します。
  * テーブルには、ARToolKitフォーマットのマーカパターンと、ID番号、ユーザ定義のデータのセットを格納します。
  * このクラスは、テーブルの操作機能と、テーブル要素の検索機能を提供します。
- * <p>サンプル-
- * このクラスのサンプルは、{@link Test_NyARRealityGl_ARMarker}を見てください。
- * </p>
+
  */
 public class ARTKMarkerTable
 {

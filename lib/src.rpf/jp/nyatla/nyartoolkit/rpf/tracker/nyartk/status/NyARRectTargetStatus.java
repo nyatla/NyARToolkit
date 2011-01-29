@@ -6,63 +6,55 @@ import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.utils.NyARMath;
 import jp.nyatla.nyartoolkit.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
 import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.INyARVectorReader;
-import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARVectorReader_INT1D_GRAY_8;
 import jp.nyatla.nyartoolkit.rpf.utils.VecLinearCoordinates;
 
 
 
-
+/**
+ * このクラスは、RECTステータスのターゲットステータスを格納します。
+ * RECTステータスは、ラベルから推定した矩形の４点座標と、そこから計算できるパラメータを持ちます。
+ */
 public class NyARRectTargetStatus extends NyARTargetStatus
 {
 	private NyARRectTargetStatusPool _ref_my_pool;
 	
 	
-	/**
-	 * 現在の矩形情報
-	 */
+	/** [read only]矩形の頂点情報。4要素です。*/
 	public NyARDoublePoint2d[] vertex=NyARDoublePoint2d.createArray(4);
 
-	/**
-	 * 予想した頂点速度の二乗値の合計
-	 */
+	/**　[read only]頂点予想値から計算した、頂点速度の二乗値の合計*/
 	public int estimate_sum_sq_vertex_velocity_ave;
 
-	/**
-	 * 予想頂点範囲
-	 */
+	/**　[read only]頂点予測値のクリップ領域。*/
 	public NyARIntRect estimate_rect=new NyARIntRect();
-	/**
-	 * 予想頂点位置
-	 */
+
+	/**　[read only]頂点予測位置。4要素です。*/
 	public NyARDoublePoint2d[] estimate_vertex=NyARDoublePoint2d.createArray(4);
 
-	/**
-	 * 最後に使われた検出タイプの値です。DT_xxxの値をとります。
-	 */
+	/** [read only]どのような手法で矩形を検出したかを示す値。DT_XXXの値を取ります。*/
 	public int detect_type;
-	/**
-	 * 初期矩形検出で検出を実行した。
-	 */
+	
+	/** 定数値。初期矩形検出に成功し、値を更新したことを示す。*/
 	public static final int DT_SQINIT=0;
-	/**
-	 * 定常矩形検出で検出を実行した。
-	 */
+
+	/** 定数値。ラベル情報を元にした検出に成功し、値を更新したことを示す。*/
 	public static final int DT_SQDAILY=1;
-	/**
-	 * 定常直線検出で検出を実行した。
-	 */
+	
+	/**　定数値。直線トレース検出に成功し、値を更新したことを示す。*/
 	public static final int DT_LIDAILY=2;
-	/**
-	 * みつからなかったよ。
-	 */
+
+	/**　定数値。検出できず、過去のデータをそのまま引き継いだ事を示す。*/
 	public static final int DT_FAILED=-1;
 	
 	//
 	//制御部
 	
 	/**
-	 * @Override
-	 */
+	 * コンストラクタです。
+	 * この関数は、所有されるプールオブジェクトが使います。ユーザは使いません。
+	 * @param i_pool
+	 * プールオブジェクトのコントロールインタフェイス
+	 */	
 	public NyARRectTargetStatus(NyARRectTargetStatusPool i_pool)
 	{
 		super(i_pool._op_interface);
@@ -104,13 +96,17 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 //		this.estimate_rect.clip(i_left, i_top, i_right, i_bottom);
 		return;
 	}
-	
 	/**
-	 * 輪郭情報を元に矩形パラメータを推定し、値をセットします。
-	 * この関数は、処理の成功失敗に関わらず、内容変更を行います。
+	 * この関数は、輪郭ステータスから矩形パラメータを推定して、インスタンスにセットします。
+	 * 関数の成否にかかわらず、入力オブジェクトとインスタンスの状態が変化することに注意してください。
+	 * 関数が成功すると、{@link #DT_SQINIT}を{@link #detect_type}にセットします。
 	 * @param i_contour_status
-	 * 関数を実行すると、このオブジェクトの内容は破壊されます。
+	 * 輪郭ステータスを格納したオブジェクト。
+	 * 関数を実行すると、この内容は変更されます。
+	 * @param i_sample_area
+	 * ラベル情報から得たラベルのクリップ範囲です。
 	 * @return
+	 * 関数が成功するとtrueを返します。
 	 * @throws NyARException
 	 */
 	public boolean setValueWithInitialCheck(NyARContourTargetStatus i_contour_status,NyARIntRect i_sample_area) throws NyARException
@@ -143,14 +139,15 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		return true;
 	}
 	/**
-	 * 値をセットします。この関数は、処理の成功失敗に関わらず、内容変更を行います。
-	 * @param i_sampler_in
+	 * この関数は、ラベル情報から矩形パラメータを推定して、インスタンスにセットします。
+	 * 関数の成否にかかわらず、インスタンスの状態が変化することに注意してください。
+	 * @param i_vec_reader
 	 * @param i_source
 	 * @param i_prev_status
 	 * @return
 	 * @throws NyARException
 	 */
-	public boolean setValueWithDeilyCheck(INyARVectorReader i_vec_reader,LowResolutionLabelingSamplerOut.Item i_source,NyARRectTargetStatus i_prev_status) throws NyARException
+	private boolean setValueWithDeilyCheck(INyARVectorReader i_vec_reader,LowResolutionLabelingSamplerOut.Item i_source,NyARRectTargetStatus i_prev_status) throws NyARException
 	{
 		VecLinearCoordinates vecpos=this._ref_my_pool._vecpos;
 		//輪郭線を取る
@@ -183,13 +180,14 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		return true;
 	}
 	/**
-	 * 輪郭からの単独検出
-	 * @param i_raster
+	 * この関数は、前回の位置情報と直線検出器で矩形パラメータを推定して、インスタンスにセットします。
+	 * 関数の成否にかかわらず、インスタンスの状態が変化することに注意してください。
+	 * @param i_vec_reader
 	 * @param i_prev_status
 	 * @return
 	 * @throws NyARException
 	 */
-	public boolean setValueByLineLog(INyARVectorReader i_vec_reader,NyARRectTargetStatus i_prev_status) throws NyARException
+	private boolean setValueByLineLog(INyARVectorReader i_vec_reader,NyARRectTargetStatus i_prev_status) throws NyARException
 	{
 		//検出範囲からカーネルサイズの2乗値を計算。検出領域の二乗距離の1/(40*40) (元距離の1/40)
 		int d=((int)i_prev_status.estimate_rect.getDiagonalSqDist()/(NyARMath.SQ_40));
@@ -232,14 +230,16 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 		return true;
 	}
 	/**
-	 * 状況に応じて矩形選択手法を切り替えます。
+	 * この関数は、２回目以降の矩形検出で、状況に応じた矩形検出処理を実行して、新しい値をインスタンスにセットします。
+	 * 関数が成功すると、{@link #detect_type}に値をセットします。
 	 * @param i_vec_reader
-	 * サンプリングデータの基本画像にリンクしたVectorReader
+	 * 画素ベクトルを読みだすためのオブジェクト。
 	 * @param i_source
-	 * サンプリングデータ
+	 * ラべリングから得られたサンプル情報。（存在しないときはNULL）
 	 * @param i_prev_status
-	 * 前回の状態を格納したオブジェクト
+	 * 前回の状態を格納したステータスオブジェクト。
 	 * @return
+	 * 値のセットに成功するとtrueを返します。
 	 * @throws NyARException
 	 */
 	public boolean setValueByAutoSelect(INyARVectorReader i_vec_reader,LowResolutionLabelingSamplerOut.Item i_source,NyARRectTargetStatus i_prev_status) throws NyARException
@@ -478,8 +478,10 @@ public class NyARRectTargetStatus extends NyARTargetStatus
 	    }
     }
     /**
-     * ARToolKitのdirectionモデルに従って、頂点をシフトします。
+     * この関数は、矩形の頂点情報をARToolKitのdirectionモデルに従って回転します。
+     * マーカパターンから方位値を得た後に、頂点順序を調整するために使います。
      * @param i_dir
+     * ARToolKitのdirection値
      */
     public void shiftByArtkDirection(int i_dir)
     {

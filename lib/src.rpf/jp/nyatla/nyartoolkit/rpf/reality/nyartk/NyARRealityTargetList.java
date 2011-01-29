@@ -23,7 +23,7 @@ public class NyARRealityTargetList extends NyARPointerStack<NyARRealityTarget>
 	/**
 	 * この関数は、シリアル番号をキーに、リストからターゲットを探索します。
 	 * @param i_serial
-	 * 検索するシリアルID。{@link RealityTarget}を参照。
+	 * 検索するシリアルID。{@link NyARRealityTarget}を参照。
 	 * @return
 	 * 見つかると、そのオブジェクトの参照値。無ければnull
 	 */
@@ -41,7 +41,7 @@ public class NyARRealityTargetList extends NyARPointerStack<NyARRealityTarget>
 	/**
 	 * この関数は、シリアル番号をキーに、リストからターゲットを探索して、そのインデクス番号を返します。
 	 * @param i_serial
-	 * 検索するシリアルID。{@link RealityTarget}を参照。
+	 * 検索するシリアルID。{@link NyARRealityTarget}を参照。
 	 * @return
 	 * リスト中のインデクス番号。
 	 */
@@ -61,7 +61,7 @@ public class NyARRealityTargetList extends NyARPointerStack<NyARRealityTarget>
 	 * 配列サイズが十分でない場合、見つかった順に、配列の上限まで要素を返します。
 	 * @param i_type
 	 * 検索するRTターゲットのステータス値。{@link NyARRealityTarget}で定義される、RT_から始まるステータスタイプ値を指定します。
-	 * @param o_list
+	 * @param o_result
 	 * 選択したターゲットを格納する配列です。
 	 * @return
 	 * 選択できたターゲットの個数です。o_resultのlengthと同じ場合、取りこぼしが発生した可能性があります。

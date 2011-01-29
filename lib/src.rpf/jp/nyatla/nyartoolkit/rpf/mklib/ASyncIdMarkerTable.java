@@ -21,9 +21,6 @@ import jp.nyatla.nyartoolkit.rpf.realitysource.nyartk.NyARRealitySource;
  * 但し、毎回外部サーバに問い合わせるとパフォーマンスの劣化が激しいので、実際には結果をキャッシュ
  * するなどの対策が必要になります。
  * </p>
- * <p>サンプル-
- * このクラスのサンプルは、{@link Test_NyARRealityGl_AsyncIdMarker}を見てください。
- * </p>
  */
 public class ASyncIdMarkerTable
 {

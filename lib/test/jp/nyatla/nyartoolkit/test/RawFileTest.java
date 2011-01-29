@@ -41,9 +41,10 @@ import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
- * 320x240のBGRA32で記録されたRAWイメージから、１種類のパターンを認識し、
- * その変換行列を1000回求め、それにかかったミリ秒時間を表示します。
- * 
+ * このサンプルは、{@link NyARSingleDetectMarker}クラスの動作チェック＆ベンチマークプログラムです。
+ * 静止画から1個のHiroマーカを認識して、その姿勢変換行列、パターン一致率を得る動作を確認できます。
+ * 同時に、この処理を1000回実行して、処理時間を計測します。この数値は、NyARToolkitの基本性能の
+ * 指標として使うことができます。
  */
 public class RawFileTest
 {

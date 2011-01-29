@@ -67,9 +67,6 @@ import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status.NyARTargetStatus;
  * 要らないものと消失した者はDeadステータスで終了します。UnknownステータスとKnownステータスの違いは、外部情報（マーカパターンに関する物理知識）
  * の有無です。Knownステータスのターゲットはより多くの外部情報により、Unknownステータスのターゲットよりも多くの情報を提供します。
  * </p>
- * <p>サンプル-
- * {@link Test_NyARRealityGl_ARMarker}や、{@link Test_NyARRealityGl_IdMarker}が参考になります。
- * </p>
  */
 public class NyARReality
 {
@@ -495,7 +492,7 @@ public class NyARReality
 	 * RTターゲットのシリアル番号を示す値。この値は、{@link NyARRealityTarget#getSerialId()}で得られる値です。
 	 * @param i_dir
 	 * このRTターゲットが、ARToolKitのdirectionでどの方位であるかを示す値
-	 * @param i_marker_size
+	 * @param i_marker_width
 	 * マーカーの高さ/幅がいくらであるかを示す値[mm単位]
 	 * @return
 	 * 成功すると、trueを返します。

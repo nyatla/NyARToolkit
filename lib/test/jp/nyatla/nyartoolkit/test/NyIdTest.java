@@ -41,18 +41,37 @@ import jp.nyatla.nyartoolkit.nyidmarker.data.*;
 import jp.nyatla.nyartoolkit.processor.*;
 
 /**
- * 320x240のBGRA32で記録されたIdmarkerを撮影したRAWイメージから、
- * Idマーカを認識します。
- *
+ * このプログラムは、NyIdマーカ検出クラス{@link SingleNyIdMarkerProcesser}の動作チェックプログラムです。
+ * 静止画から1個のIDマーカを読み取り、その数値を得る動作を確認できます。
+ * 
+ * このプログラムには結果を表示する機能がありません。
+ * 数値の確認は、ブレークポイントを仕掛けるなどして行ってください。
  */
 public class NyIdTest
 {
+	/**
+	 * このクラスは、{@link SingleNyIdMarkerProcesser}の自己コールバック関数を実装したクラスです。
+	 * 自己コールバック関数は、{@link #detectMarker}の内部から呼び出さます。
+	 * これにより、アプリケーションにマーカ状態の変化を通知します。
+	 * 通知される条件については、それぞれの関数の説明を見てください。
+	 */
     public class MarkerProcessor extends SingleNyIdMarkerProcesser
     {
         private Object _sync_object = new Object();
+        /** {@link #onUpdateHandler}関数で得た姿勢行列のポインタ*/
         public NyARTransMatResult transmat = null;
+        /** {@link #onEnterHandler}関数で得た姿勢行列のポインタ*/
         public int current_id = -1;
-
+        /**
+         * コンストラクタです。
+         * パラメータを{@link #initInstance}へセットして初期化します。
+         * ここでは、{@link #initInstance}へ値を引き渡すだけです。
+         * @param i_cparam
+         * カメラパラメータ。
+         * @param i_raster_format
+         * 入力ラスタのフォーマット。
+         * @throws Exception
+         */
         public MarkerProcessor(NyARParam i_cparam, int i_raster_format) throws Exception
         {
         	super();//
@@ -61,7 +80,10 @@ public class NyIdTest
             return;
         }
         /**
-         * アプリケーションフレームワークのハンドラ（マーカ出現）
+         * この関数は、{@link #detectMarker}から呼び出される自己コールバック関数です。
+         * 画像にマーカが現われたときに呼び出されます。
+         * ここでは、例として、マーカの情報を読み取り、それを{@link NyIdMarkerData_RawBit}を使って
+         * int値にエンコードする処理を実装しています。
          */
         protected void onEnterHandler(INyIdMarkerData i_code)
         {
@@ -87,7 +109,10 @@ public class NyIdTest
             }
         }
         /**
-         * アプリケーションフレームワークのハンドラ（マーカ消滅）
+         * この関数は、{@link #detectMarker}から呼び出される自己コールバック関数です。
+         * 画像からマーカが消え去った時に呼び出されます。
+         * ここでは、マーカが消えた場合の後始末処理をします。
+         * このサンプルでは、メンバ変数をリセットしています。
          */
         protected void onLeaveHandler()
         {
@@ -99,7 +124,11 @@ public class NyIdTest
             return;
         }
         /**
-         * アプリケーションフレームワークのハンドラ（マーカ更新）
+         * この関数は、{@link #detectMarker}から呼び出される自己コールバック関数です。
+         * 画像中のマーカの位置が変化したときに呼び出されます。
+         * この関数は、{@link #onEnterHandler}直後に呼び出されることもあります。
+         * 
+         * このサンプルでは、引数で通知されたマーカの姿勢を、メンバ変数に保存しています。
          */
         protected void onUpdateHandler(NyARSquare i_square, NyARTransMatResult result)
         {
@@ -111,9 +140,19 @@ public class NyIdTest
     }
 	private final String data_file = "../Data/320x240NyId.raw";
 	private final String camera_file = "../Data/camera_para.dat";
+	/**
+	 * コンストラクタです。
+	 * ここで行う処理はありません。
+	 */
     public NyIdTest()
     {
     }
+    /**
+     * テスト関数の本体です。
+     * 設定ファイル、サンプル画像の読み込んだのちに{@link MarkerProcessor}を生成し、
+     * １回だけ画像を入力して、マーカ検出を試行します。
+     * @throws Exception
+     */
     public void Test() throws Exception
     {
         //AR用カメラパラメタファイルをロード
@@ -134,6 +173,12 @@ public class NyIdTest
         pr.detectMarker(ra);
         return;
     }
+    /**
+     * プログラムのエントリーポイントです。
+     * サンプルプログラム{@link NyIdTest}を実行します。
+     * @param args
+     * 引数はありません。
+     */
 	public static void main(String[] args)
 	{
 
