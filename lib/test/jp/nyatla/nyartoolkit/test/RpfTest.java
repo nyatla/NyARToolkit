@@ -1,14 +1,11 @@
 package jp.nyatla.nyartoolkit.test;
 
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.util.Date;
 
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
-import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
-import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
 import jp.nyatla.nyartoolkit.rpf.reality.nyartk.NyARReality;
 import jp.nyatla.nyartoolkit.rpf.reality.nyartk.NyARRealityTarget;
 import jp.nyatla.nyartoolkit.rpf.realitysource.nyartk.NyARRealitySource;
@@ -25,6 +22,13 @@ import jp.nyatla.nyartoolkit.rpf.realitysource.nyartk.NyARRealitySource_Referenc
  * {@link NyARReality}が正常に動作するかを確認できます。
  * また、{@link NyARReality#progress}を1000回実行して、処理時間を計測します。
  * この数値は、{@link NyARReality}の基本性能の指標として使うことができます。
+ * <p>必要なファイル - 
+ * このプログラムの実行には、以下の外部ファイルが必要です。
+ * <ul>
+ * <li>camera_para.dat - ARToolKit付属のカメラパラメータファイル
+ * <li>320x240ABGR.raw　- Hiroマーカを撮影した、QVGAサイズのXBGR形式のサンプル画像
+ * </ul>
+ * </p>
  */
 public class RpfTest
 {
@@ -35,7 +39,16 @@ public class RpfTest
     /**
      * メイン関数です。
      * 次のフローで処理を実行します。
+     * <ol>
+     * <li>{@link NyARParam}にカメラパラメタを読み込み。QVGAサイズに再設定。
+     * <li>{@link NyARReality}オブジェクトの生成。歪み補正はなし。
+     * <li>{@link NyARRealitySource_Reference}オブジェクトの生成。フォーマットは、{@link NyARBufferType#BYTE1D_B8G8R8X8_32}
+     * <li>{@link NyARRealitySource_Reference}オブジェクトに、{@link #DATA_FILE}の内容を書き込み。
+     * <li>{@link NyARReality#progress}を1000回実行。処理時間を出力。
+     * <li>0番目のUnknowntargetをKnownターゲットにして、姿勢行列を計算して表示。
+     * </ol>
      * @param args
+     * 引数は必要ありません。
      */
 	public static void main(String[] args)
 	{

@@ -45,6 +45,13 @@ import jp.nyatla.nyartoolkit.core.types.*;
  * 静止画から1個のHiroマーカを認識して、その姿勢変換行列、パターン一致率を得る動作を確認できます。
  * 同時に、この処理を1000回実行して、処理時間を計測します。この数値は、NyARToolkitの基本性能の
  * 指標として使うことができます。
+ * <p>必要なファイル - 
+ * このプログラムの実行には、以下の外部ファイルが必要です。
+ * <ul>
+ * <li>camera_para.dat - ARToolKit付属のカメラパラメータファイル
+ * <li>patt.hiro - ARToolKit付属のHiroマーカのパターンファイル
+ * <li>320x240ABGR.raw　- Hiroマーカを撮影した、QVGAサイズのXBGR形式のサンプル画像
+ * </ul>
  */
 public class RawFileTest
 {
@@ -54,11 +61,20 @@ public class RawFileTest
 
 	private final String camera_file = "../Data/camera_para.dat";
 
+	/**
+	 * コンストラクタです。
+	 * ここでは処理を行いません。
+	 */
 	public RawFileTest()
 	{
 	}
 
-
+	/**
+	 * この関数は、テスト関数の本体です。
+	 * カメラ設定ファイル、ARマーカのパターン読出しを読み込み、試験イメージに対してマーカ検出を実行します。
+	 * マーカ検出を1000回繰り返して、経過した時間をms単位で表示します。
+	 * @throws Exception
+	 */
 	public void Test_arDetectMarkerLite() throws Exception
 	{
 		// AR用カメラパラメタファイルをロード
@@ -100,7 +116,12 @@ public class RawFileTest
 		System.out.println(d.getTime() - d2.getTime());
 		System.out.print(		ar.getConfidence());
 	}
-
+    /**
+     * プログラムのエントリーポイントです。
+     * サンプルプログラム{@link RawFileTest}を実行します。
+     * @param args
+     * 引数はありません。
+     */
 	public static void main(String[] args)
 	{
 

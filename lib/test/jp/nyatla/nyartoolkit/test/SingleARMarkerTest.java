@@ -40,7 +40,21 @@ import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.processor.*;
-
+/**
+ * このプログラムは、NyIdマーカ検出クラス{@link SingleARMarkerProcesser}の動作チェックプログラムです。
+ * 静止画から1個のhiroマーカを認識する動作を確認できます。
+ * 
+ * このプログラムには結果を表示する機能がありません。
+ * 数値の確認は、ブレークポイントを仕掛けるなどして行ってください。
+ * <p>必要なファイル - 
+ * このプログラムの実行には、以下の外部ファイルが必要です。
+ * <ul>
+ * <li>camera_para.dat - ARToolKit付属のカメラパラメータファイル
+ * <li>patt.hiro - ARToolKit付属のHiroマーカのパターンファイル
+ * <li>320x240ABGR.raw　- Hiroマーカを撮影した、QVGAサイズのXBGR形式のサンプル画像
+ * </ul>
+ * </p>
+ */
 public class SingleARMarkerTest
 {
 	class MarkerProcessor extends SingleARMarkerProcesser
@@ -48,7 +62,16 @@ public class SingleARMarkerTest
 		private Object _sync_object=new Object();
 		public NyARTransMatResult transmat=null;
 		public int current_code=-1;
-
+	    /**
+         * コンストラクタです。
+         * パラメータを{@link #initInstance}へセットして初期化します。
+         * ここでは、{@link #initInstance}へ値を引き渡すだけです。
+         * @param i_cparam
+         * カメラパラメータ。
+         * @param i_raster_format
+         * 入力ラスタのフォーマット。
+         * @throws Exception
+         */
 		public MarkerProcessor(NyARParam i_cparam,int i_raster_format) throws NyARException
 		{
 			//アプリケーションフレームワークの初期化
@@ -56,6 +79,11 @@ public class SingleARMarkerTest
 			initInstance(i_cparam,i_raster_format);
 			return;
 		}
+        /**
+         * この関数は、{@link #detectMarker}から呼び出される自己コールバック関数です。
+         * 画像にマーカが現われたときに呼び出されます。
+         * ここでは、例として、マーカのインデクス番号を保存する処理をしています。
+         */		
 		protected void onEnterHandler(int i_code)
 		{
 			synchronized(this._sync_object){
@@ -63,6 +91,12 @@ public class SingleARMarkerTest
 			}
 			System.out.println("Marker Number:"+i_code);
 		}
+        /**
+         * この関数は、{@link #detectMarker}から呼び出される自己コールバック関数です。
+         * 画像からマーカが消え去った時に呼び出されます。
+         * ここでは、マーカが消えた場合の後始末処理をします。
+         * このサンプルでは、メンバ変数をリセットしています。
+         */		
 		protected void onLeaveHandler()
 		{
 			synchronized(this._sync_object){
@@ -71,7 +105,13 @@ public class SingleARMarkerTest
 			}
 			return;			
 		}
-
+        /**
+         * この関数は、{@link #detectMarker}から呼び出される自己コールバック関数です。
+         * 画像中のマーカの位置が変化したときに呼び出されます。
+         * この関数は、{@link #onEnterHandler}直後に呼び出されることもあります。
+         * 
+         * このサンプルでは、引数で通知されたマーカの姿勢を、メンバ変数に保存しています。
+         */
 		protected void onUpdateHandler(NyARSquare i_square, NyARTransMatResult result)
 		{
 			synchronized(this._sync_object){
@@ -82,10 +122,19 @@ public class SingleARMarkerTest
 	private final static String CARCODE_FILE = "../Data/patt.hiro";
 	private final static String PARAM_FILE = "../Data/camera_para.dat";	
 	private final String data_file = "../Data/320x240ABGR.raw";
-
+	/**
+	 * コンストラクタです。
+	 * ここで行う処理はありません。
+	 */
 	public SingleARMarkerTest()
     {
     }
+    /**
+     * テスト関数の本体です。
+     * 設定ファイル、サンプル画像の読み込んだのちに、１種類のマーカを登録した{@link MarkerProcessor}を生成し、
+     * １回だけ画像を入力して、マーカ検出を試行します。
+     * @throws Exception
+     */	
     public void Test() throws Exception
     {
         //AR用カメラパラメタファイルをロード
@@ -110,9 +159,14 @@ public class SingleARMarkerTest
         pr.detectMarker(ra);
         return;
     }
+    /**
+     * プログラムのエントリーポイントです。
+     * サンプルプログラム{@link NyIdTest}を実行します。
+     * @param args
+     * 引数はありません。
+     */    
 	public static void main(String[] args)
 	{
-
 		try {
 			SingleARMarkerTest t = new SingleARMarkerTest();
 			// t.Test_arGetVersion();
