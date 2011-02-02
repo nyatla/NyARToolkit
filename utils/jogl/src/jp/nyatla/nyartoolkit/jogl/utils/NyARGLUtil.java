@@ -35,30 +35,32 @@ import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 /**
- * OpenGL向けの形式変換変換関数を提供します。
+ * このクラスは、NyARToolkitのデータ型と、OpenGLデータ型を変換する関数を定義します。
  * 描画系関数は{@link NyARGLDrawUtil}を参照してください。
  */
 public class NyARGLUtil
 {
 	/**
-	 * NyARToolKit 2.53以前のコードと互換性を持たせるためのスケール値。{@link #toCameraFrustumRH}のi_scaleに設定することで、
-	 * 以前のバージョンの数値系と互換性を保ちます。
+	 * NyARToolKit 2.53以前のコードと互換性を持たせるためのスケール値。
+	 * {@link #toCameraFrustumRH}のi_scaleに設定することで、以前のバージョンの数値系と互換性を保ちます。
 	 */
 	public final static double SCALE_FACTOR_toCameraFrustumRH_NYAR2=1.0;
 	/**
-	 * NyARToolKit 2.53以前のコードと互換性を持たせるためのスケール値。{@link #toCameraViewRH}のi_scaleに設定することで、
-	 * 以前のバージョンの数値系と互換性を保ちます。
+	 * NyARToolKit 2.53以前のコードと互換性を持たせるためのスケール値。
+	 * {@link #toCameraViewRH}のi_scaleに設定することで、以前のバージョンの数値系と互換性を保ちます。
 	 */
 	public final static double SCALE_FACTOR_toCameraViewRH_NYAR2=1/0.025;
 
-    private NyARGLUtil()
+	private NyARGLUtil()
     {//生成の禁止
     }	
 
 	
 	/**
-	 * ARToolKitスタイルのカメラパラメータから、 CameraFrustamを計算します。
+	 * この関数は、ARToolKitスタイルのカメラパラメータから、 CameraFrustamを計算します。
+	 * カメラパラメータの要素のうち、ProjectionMatrix成分のみを使います。
 	 * @param i_arparam
+	 * ARToolKitスタイルのカメラパラメータ。
 	 * @param i_scale
 	 * スケール値を指定します。1=1mmです。10ならば1=1cm,1000ならば1=1mです。
 	 * 2.53以前のNyARToolkitと互換性を持たせるときは、{@link #SCALE_FACTOR_toCameraFrustumRH_NYAR2}を指定してください。
@@ -67,6 +69,7 @@ public class NyARGLUtil
 	 * @param i_far
 	 * 視錐体のfarPointを指定します。単位は、i_scaleに設定した値で決まります。
 	 * @param o_gl_projection
+	 * OpenGLスタイルのProjectionMatrixです。double[16]を指定します。
 	 */
 	public static void toCameraFrustumRH(NyARParam i_arparam,double i_scale,double i_near,double i_far,double[] o_gl_projection)
 	{
@@ -74,7 +77,7 @@ public class NyARGLUtil
 		return;
 	}
 	/**
-	 * ARToolKitスタイルのProjectionMatrixから、 CameraFrustamを計算します。
+	 * この関数は、ARToolKitスタイルのProjectionMatrixから、 CameraFrustamを計算します。
 	 * @param i_promat
 	 * @param i_size
 	 * スクリーンサイズを指定します。
@@ -95,13 +98,14 @@ public class NyARGLUtil
 		return;
 	}
 	/**
-	 * NyARTransMatResultをOpenGLの行列へ変換します。
+	 * この関数は、NyARTransMatResultをOpenGLのModelView行列へ変換します。
 	 * @param mat
 	 * 変換元の行列
 	 * @param i_scale
 	 * 座標系のスケール値を指定します。1=1mmです。10ならば1=1cm,1000ならば1=1mです。
 	 * 2.53以前のNyARToolkitと互換性を持たせるときは、{@link #SCALE_FACTOR_toCameraViewRH_NYAR2}を指定してください。
 	 * @param o_gl_result
+	 * OpenGLスタイルのProjectionMatrixです。double[16]を指定します。
 	 */
 	public static void toCameraViewRH(NyARDoubleMatrix44 mat,double i_scale, double[] o_gl_result)
 	{

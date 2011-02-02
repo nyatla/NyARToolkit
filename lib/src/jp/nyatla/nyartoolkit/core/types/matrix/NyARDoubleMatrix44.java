@@ -305,7 +305,7 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 	 * この関数は、行列の回転成分から、ZXY系の角度値を計算します。
 	 * @param o_out
 	 *　角度値を受け取るオブジェクトです。
-	 * 角度値の範囲は、0-PIです。
+	 * 角度値の範囲は、0-PI(要確認)です。
 	 */
 	public final void getZXYAngle(NyARDoublePoint3d o_out)
 	{

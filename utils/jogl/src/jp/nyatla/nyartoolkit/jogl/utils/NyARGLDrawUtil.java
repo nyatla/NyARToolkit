@@ -15,17 +15,23 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import com.sun.opengl.util.j2d.TextRenderer;
 
 /**
- * OpenGL向けの描画関数を提供します。
+ * このクラスには、アプリケーションの為のOpenGL用のヘルパー関数を定義します。
+ * NyARToolKitを使ったアプリケーションを実装するのに役立ちます。
+ * ほとんどの関数はstatic宣言です。このクラスのインスタンスを作る必要はありません。
+ * 
+ *
  */
 public class NyARGLDrawUtil
 {
 	private static TextRenderer _tr=new TextRenderer(new Font("SansSerif", Font.PLAIN, 10));
 	/**
-	 * 立方体を描画します。
+	 * この関数は、指定サイズの立方体を現在のビューポートへ描画します。
+	 * ARToolKitのサンプルで使われているカラーキューブを描画します。
 	 * @param i_gl
-	 * OpenGLインスタンス
+	 * OpenGLのインスタンス
 	 * @param i_size_per_mm
-	 * 立方体の辺の長さを[mm単位]
+	 * 立方体の辺の長さ。[mm単位]
+	 * ARシステムをmmオーダーで構築していない場合は、別単位になります。
 	 */
 	public static void drawColorCube(GL i_gl,float i_size_per_mm)
 	{
@@ -60,27 +66,36 @@ public class NyARGLDrawUtil
 		i_gl.glCallList(polyList); // Draw the cube.
 	}
 	/**
-	 * フォントカラーをセットします。
+	 * この関数は、{@link NyARGLDrawUtil}の描画する文字列の、フォントカラーを設定します。
+	 * フォントカラーはOpenGL固有のものではなく、{@link NyARGLDrawUtil}固有のものです。
 	 * @param i_c
+	 * 設定する色。
 	 */
 	public static void setFontColor(Color i_c)
 	{
 		NyARGLDrawUtil._tr.setColor(i_c);
 	}
 	/**
-	 * フォントスタイルをセットします。
+	 * この関数は、{@link NyARGLDrawUtil}の描画する文字列の、フォントスタイルを設定します。
+	 * フォントスタイルはOpenGL固有のものではなく、{@link NyARGLDrawUtil}固有のものです。
 	 * @param i_font_name
+	 * フォントの名前を指定します。デフォルト値は、"SansSerif"です。
 	 * @param i_font_style
+	 * フォントスタイルを指定します。デフォルト値は、{@link Font#PLAIN}です。
 	 * @param i_size
+	 * フォントサイズを指定します。デフォルト値は、10です。
 	 */
 	public static void setFontStyle(String i_font_name,int i_font_style,int i_size)
 	{
 		NyARGLDrawUtil._tr=new TextRenderer(new Font(i_font_name,i_font_style, i_size));
 	}
 	/**
-	 * 現在のフォントで、文字列を描画します。
+	 * この関数は、文字列を描画します。
+	 * この関数は、ちらつきが発生したり、あまり品質が良くありません。品質を求められる環境では、別途実装をして下さい。
 	 * @param i_str
+	 * 描画する文字列。
 	 * @param i_scale
+	 * 文字列のスケール値。
 	 */
 	public static void drawText(String i_str,float i_scale)
 	{
@@ -90,9 +105,17 @@ public class NyARGLDrawUtil
 		return;
 	}
 	/**
-	 * INyARRasterの内容を現在のビューポートへ描画します。
+	 * この関数は、{@link INyARRaster}の内容を、現在のビューポートへ描画します。
+	 * カメラ画像の背景を描画するのに使用できます。
 	 * @param i_gl
+	 * OpenGLのインスタンス
 	 * @param i_raster
+	 * 描画するラスタオブジェクト。何れかのバッファ形式である必要があります。
+	 * <ol>
+	 * <li>{@link NyARBufferType#BYTE1D_B8G8R8_24}
+	 * <li>{@link NyARBufferType#BYTE1D_R8G8B8_24}
+	 * <li>{@link NyARBufferType#BYTE1D_B8G8R8X8_32}
+	 * </ol>
 	 * @param i_zoom
 	 * @throws NyARException
 	 */
@@ -177,13 +200,18 @@ public class NyARGLDrawUtil
 		}
 	}
 	/**
-	 * スクリーン座標系をOpenGLにロードします。この関数は、PROJECTIONとMODELVIEWスタックをそれぞれ1づつpushします。
-	 * スクリーン座標系を使用し終わったら、endScreenCoordinateSystemを呼び出してください。
+	 * この関数は、スクリーン座標系をOpenGLにロードします。
+	 * スクリーンに二次元系の情報をそのまま書きこむときに使います。
+	 * この関数は、PROJECTIONとMODELVIEWスタックをそれぞれ1づつpushします。
+	 * スクリーン座標系を使用し終わったら、{@link endScreenCoordinateSystem}を必ず呼び出してください。
 	 * @param i_gl
+	 * OpenGLのインスタンス
 	 * @param i_width
+	 * スクリーンの幅
 	 * @param i_height
+	 * スクリーンの高さ
 	 * @param i_revers_y_direction
-	 * Y軸の反転フラグです。trueならばtop->bottom、falseならばbottom->top方向になります。
+	 * Y軸の反転フラグ。trueならばtop->bottom、falseならばbottom->top方向になります。
 	 */
 	public static void beginScreenCoordinateSystem(GL i_gl,int i_width,int i_height,boolean i_revers_y_direction)
 	{
@@ -201,8 +229,10 @@ public class NyARGLDrawUtil
 		return;
 	}
 	/**
-	 * ロードしたスクリーン座標系を元に戻します。{@link #beginScreenCoordinateSystem}の後に呼び出してください。
+	 * この関数は、ロードしたスクリーン座標系を元に戻します。
+	 * {@link #beginScreenCoordinateSystem}の後に呼び出してください。
 	 * @param i_gl
+	 * OpenGLのインスタンス
 	 */
 	public static void endScreenCoordinateSystem(GL i_gl)
 	{
