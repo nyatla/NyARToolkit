@@ -55,21 +55,19 @@ public class NyARRealityGl extends NyARReality
 	/**
 	 * この関数は、透視投影行列と視錐体パラメータを元に、インスタンスを作成します。
 	 * 初期状態のインスタンスを生成します。
-	 * この関数は、i_prjmatにnullを指定することで、樽型歪み矯正を行わないインスタンスを生成できます。
+	 * この関数は、樽型歪み矯正を行わないインスタンスを生成できます。
 	 * @param i_prjmat
 	 * ARToolKit形式の射影変換パラメータを指定します。
-	 * @param i_screen
+	 * @param i_screen_size
 	 * スクリーン(入力画像)のサイズを指定します。
 	 * @param i_near
-	 * {@link #NyARReality(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target)}を参照
+	 * {@link NyARReality#NyARReality(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target)}を参照
 	 * @param i_far
-	 * {@link #NyARReality(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target)}を参照
-	 * @param i_dist_factor
-	 * 樽型歪み矯正オブジェクトを指定します。歪み矯正が不要な時は、nullを指定します。
+	 * {@link NyARReality#NyARReality(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target)}を参照
 	 * @param i_max_known_target
-	 * {@link #NyARReality(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target)}を参照
+	 * {@link NyARReality#NyARReality(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target)}を参照
 	 * @param i_max_unknown_target
-	 * {@link #NyARReality(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target)}を参照
+	 * {@link NyARReality#NyARReality(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target)}を参照
 	 * @throws NyARException
 	 */
 	public NyARRealityGl(NyARPerspectiveProjectionMatrix i_prjmat,NyARIntSize i_screen_size,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target) throws NyARException

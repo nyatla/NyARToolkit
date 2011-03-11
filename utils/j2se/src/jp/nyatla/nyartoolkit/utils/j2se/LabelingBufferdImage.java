@@ -44,9 +44,10 @@ import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingImage;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabel;
 
 /**
- * bitmapとして利用可能なラベリングイメージです。
- * 
- * 
+ * このクラスは、デバック用途のクラスです。
+ * NyARToolkit形式の画像を、BufferedImage形式へ変換してコピーします。
+ * NyARBufferedImageRasterをか、NyARRasterImageIOを使用してください。
+ * @deprecated
  */
 public class LabelingBufferdImage extends BufferedImage
 {

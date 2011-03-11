@@ -12,14 +12,17 @@ import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
- * バッファにBufferedImageを使用するNyARRgbRasterです。
- * ラップするbufferedImageの種類によっては、パフォーマンスが低下する事があるので注意してください。
- * @author nyatla
- *
+ * このクラスは、BufferedImageをピクセルバッファに持つNyARToolKit互換のラスタクラスです。
+ * BufferedImageインスタンスをラップしています。
+ * 通常のJavaプログラムと相互運用する場合に便利です。
+ * BufferedImageの形式はコンストラクタで指定できます。
  */
 public class NyARBufferedImageRaster extends NyARRgbRaster
 {
 	private BufferedImage _buffered_image;
+	/**
+	 * この関数は、NyARRgbRasterに、NyARBufferedImageRasterの機能を追加します。
+	 */
 	protected boolean initInstance(NyARIntSize i_size,int i_raster_type,boolean i_is_alloc)
 	{
 		if(super.initInstance(i_size, i_raster_type, i_is_alloc)){
@@ -39,15 +42,24 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 	}
 
 	/**
-	 * NyARBufferTypeと互換性のある形式のBufferedImageを作成します。
+	 * コンストラクタです。
+	 * BufferedImage形式のバッファを持つラスタオブジェクトを作成します。
+	 * BufferedImageのピクセル形式には特色があります。i_raster_typeの説明を参考にして下さい。
 	 * @param i_width
+	 * ラスタの幅を指定します。
 	 * @param i_height
+	 * ラスタの高さを指定します。
 	 * @param i_raster_type
-	 * バッファタイプを指定します。使用できるラスタタイプは、次の種類です。
-	 * NyARBufferType.BYTE1D_R8G8B8_24,NyARBufferType.BYTE1D_B8G8R8_24,NyARBufferType.INT1D_X8R8G8B8_32,NyARBufferType.OBJECT_Java_BufferedImage
-	 * NyARBufferType.OBJECT_Java_BufferedImageは低速低速です。パフォーマンスが必要なシステムでは他のバッファタイプを指定してください。
+	 * BufferedImageのバッファタイプを指定します。使用できるラスタタイプは次の種類です。
+	 * <ul>
+	 * <li>NyARBufferType.BYTE1D_R8G8B8_24(推奨)</li>
+	 * <li>NyARBufferType.BYTE1D_B8G8R8_24(推奨)</li>
+	 * <li>NyARBufferType.INT1D_X8R8G8B8_32</li>
+	 * <li>NyARBufferType.OBJECT_Java_BufferedImage</li>
+	 * </ul>
+	 * NyARBufferType.OBJECT_Java_BufferedImageは低速です。パフォーマンスが必要なシステムでは他のバッファタイプを指定してください。
 	 * NyARToolKitの入力・出力に使用する場合は、関数に最適なバッファタイプを使用するとパフォーマンスが向上します。詳細は関数のドキュメントを参照してください。
-	 * (NyARBufferType.OBJECT_Java_BufferedImageは全ての関数で低速であり、他の直値タイプは概ね高速に動作します。)
+	 * (NyARBufferType.OBJECT_Java_BufferedImageは全ての関数で低速であり、他のタイプは概ね高速に動作します。)
 	 * @throws NyARException
 	 */
 	public NyARBufferedImageRaster(int i_width,int i_height,int i_raster_type) throws NyARException
@@ -120,7 +132,7 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 		return;
 	}
 	/**
-	 * 既にあるbufferedImageをラップしてラスタをつくります。BufferedImageの内容により、ラスタタイプは自動的に決定します。
+	 * この関数は、既にあるBufferedImageをラップしてラスタをつくります。BufferedImageの内容により、ラスタタイプは自動的に決定します。
 	 * @param i_bfi
 	 * ラップするbufferedImageを設定します。インスタンスが参照するのは、このインスタンスのデフォルトバンクのイメージです。
 	 * NyARToolKitと互換性が低いBufferedImageを指定すると、パフォーマンスが劣化することがあります。注意してください。
@@ -155,16 +167,18 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 		return;
 	}
 	/**
-	 * BufferedImageを返します。
+	 * この関数は、ラップしているBufferedImageを返します。
 	 * @return
+	 * ラップしているBufferedImageの実体
 	 */
 	public final BufferedImage getBufferedImage()
 	{
 		return this._buffered_image;
 	}
 	/**
-	 * BufferedImageのGraphicsを返します。
+	 * この関数は、BufferedImageのGraphicsを返します。
 	 * @return
+	 * ラップしているBufferedImageのGraphicsオブジェクト
 	 */
 	public final Graphics getGraphics()
 	{
@@ -172,7 +186,7 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 	}
 
 	/**
-	 * BufferedImageを分析して、WriterbleRasterと互換性のあるNyARBufferTypeを調べます。
+	 * この関数は、BufferedImageを分析して、WriterbleRasterと互換性のあるNyARBufferTypeを調べます。
 	 * @param im
 	 * @return
 	 */
@@ -229,9 +243,8 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 
 
 /**
- * BufferedImage用の低速PixelReader
- * @author nyatla
- *
+ * このクラスは、BufferedImage用の低速なPixelReaderです。
+ * BufferedImageの形式に依存しない代わりに、ピクセルへのアクセス速度が極端に低速です。
  */
 final class NyARRgbPixelReader_OBJECT_Java_BufferedImage implements INyARRgbPixelReader
 {

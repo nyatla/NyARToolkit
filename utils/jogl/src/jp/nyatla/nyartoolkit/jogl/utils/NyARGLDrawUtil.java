@@ -203,7 +203,7 @@ public class NyARGLDrawUtil
 	 * この関数は、スクリーン座標系をOpenGLにロードします。
 	 * スクリーンに二次元系の情報をそのまま書きこむときに使います。
 	 * この関数は、PROJECTIONとMODELVIEWスタックをそれぞれ1づつpushします。
-	 * スクリーン座標系を使用し終わったら、{@link endScreenCoordinateSystem}を必ず呼び出してください。
+	 * スクリーン座標系を使用し終わったら、{@link #endScreenCoordinateSystem}を必ず呼び出してください。
 	 * @param i_gl
 	 * OpenGLのインスタンス
 	 * @param i_width
