@@ -223,6 +223,16 @@ public class NyARDoubleMatrix33 implements INyARDoubleMatrix
 		return;
 	}
 	/**
+	 * この関数は、インスタンスに単位行列をロードします。
+	 */
+	public void loadIdentity()
+	{
+		this.m00=this.m11=this.m22=1;
+		this.m01=this.m02=
+		this.m10=this.m12=
+		this.m20=this.m21=0;
+	}	
+	/**
 	 * この関数は、3次元座標を座標変換します。
 	 * @param i_position
 	 * 変換する三次元座標
@@ -251,5 +261,5 @@ public class NyARDoubleMatrix33 implements INyARDoubleMatrix
 		o_out.y=this.m10*i_x+this.m11*i_y+this.m12*i_z;
 		o_out.z=this.m20*i_x+this.m21*i_y+this.m22*i_z;
 		return;
-	}
+	}	
 }

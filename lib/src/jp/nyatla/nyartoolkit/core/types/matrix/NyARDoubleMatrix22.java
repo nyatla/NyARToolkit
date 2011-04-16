@@ -82,5 +82,14 @@ public class NyARDoubleMatrix22 implements INyARDoubleMatrix
 		this.m10=-a21*det;
 		this.m11=a11*det;
 		return true;
+	}
+	/**
+	 * この関数は、インスタンスに単位行列をロードします。
+	 */
+	public void loadIdentity()
+	{
+		this.m00=this.m11=1;
+		this.m01=
+		this.m10=0;
 	}	
 }

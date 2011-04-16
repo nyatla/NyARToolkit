@@ -44,8 +44,15 @@ public class NyARFrustum
 	protected NyARIntSize _screen_size=new NyARIntSize();
 	/**
 	 * コンストラクタです。
+	 * 未初期化のインスタンスを作成します。
+	 */
+	public NyARFrustum()
+	{
+	}
+	/**
+	 * コンストラクタです。
 	 * ARToolkitの射影変換行列から、インスタンスを作ります。
-	 * @param i_projection
+	 * @param i_perspective_mat
 	 * @param i_width
 	 * スクリーンサイズです。
 	 * @param i_height
@@ -55,13 +62,28 @@ public class NyARFrustum
 	 * @param i_far
 	 * 遠平面までの距離です。単位はmm
 	 */
-	public NyARFrustum(NyARPerspectiveProjectionMatrix i_projection,int i_width,int i_height,double i_near,double i_far)
+	public NyARFrustum(NyARPerspectiveProjectionMatrix i_perspective_mat,int i_width,int i_height,double i_near,double i_far)
 	{
-		this.setValue(i_projection, i_width, i_height, i_near, i_far);
+		this.setValue(i_perspective_mat, i_width, i_height, i_near, i_far);
+	}
+	/**
+	 * この関数は、視錐台行列をインスタンスにセットします。
+	 * @param i_projection
+	 * ARToolKitスタイルの射影変換行列
+	 * @param i_width
+	 * スクリーンサイズです。
+	 * @param i_height
+	 * スクリーンサイズです。
+	 */
+	public void setValue(NyARDoubleMatrix44 i_projection_mat,int i_width,int i_height)
+	{
+		this._frustum_rh.setValue(i_projection_mat);
+		this._inv_frustum_rh.inverse(this._frustum_rh);
+		this._screen_size.setValue(i_width,i_height);
 	}
 	/**
 	 * この関数は、ARToolKitスタイルの射影変換行列から視錐台を作成してセットします。
-	 * @param i_projection
+	 * @param i_artk_perspective_mat
 	 * ARToolKitスタイルの射影変換行列
 	 * @param i_width
 	 * スクリーンサイズです。
@@ -72,14 +94,14 @@ public class NyARFrustum
 	 * @param i_far
 	 * farポイントをmm単位で指定します。
 	 */
-	public void setValue(NyARPerspectiveProjectionMatrix i_projection,int i_width,int i_height,double i_near,double i_far)
+	public void setValue(NyARPerspectiveProjectionMatrix i_artk_perspective_mat,int i_width,int i_height,double i_near,double i_far)
 	{
-		i_projection.makeCameraFrustumRH(i_width, i_height, i_near, i_far,this._frustum_rh);
+		i_artk_perspective_mat.makeCameraFrustumRH(i_width, i_height, i_near, i_far,this._frustum_rh);
 		this._inv_frustum_rh.inverse(this._frustum_rh);
 		this._screen_size.setValue(i_width,i_height);
-	}
+	}	
 	/**
-	 * このスクリーン座標を、撮像点座標に変換します。
+	 * この関数は、スクリーン座標を撮像点座標に変換します。
 	 * 撮像点の座標系は、カメラ座標系になります。
 	 * <p>公式 - 
 	 * この関数は、gluUnprojectのビューポートとモデルビュー行列を固定したものです。

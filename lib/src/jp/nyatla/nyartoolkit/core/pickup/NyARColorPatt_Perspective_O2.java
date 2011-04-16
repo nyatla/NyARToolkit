@@ -39,7 +39,7 @@ public class NyARColorPatt_Perspective_O2 implements INyARColorPatt
 	/** パターン格納用のバッファ*/
 	protected int[] _patdata;
 	/** サンプリング解像度*/
-	protected int _resolution;
+	protected int _sample_per_pixel;
 	/** このラスタのサイズ*/	
 	protected NyARIntSize _size;
 	private NyARRgbPixelReader_INT1D_X8R8G8B8_32 _pixelreader;
@@ -48,7 +48,7 @@ public class NyARColorPatt_Perspective_O2 implements INyARColorPatt
 	private void initializeInstance(int i_width, int i_height,int i_point_per_pix,int i_input_raster_type)
 	{
 		assert i_width>2 && i_height>2;
-		this._resolution=i_point_per_pix;	
+		this._sample_per_pixel=i_point_per_pix;	
 		this._size=new NyARIntSize(i_width,i_height);
 		this._patdata = new int[i_height*i_width];
 		this._pixelreader=new NyARRgbPixelReader_INT1D_X8R8G8B8_32(this._patdata,this._size);
@@ -99,15 +99,15 @@ public class NyARColorPatt_Perspective_O2 implements INyARColorPatt
 	 * 左右のエッジの割合です。0から50の間の数で指定します。
 	 * @param i_y_percent
 	 * 上下のエッジの割合です。0から50の間の数で指定します。
-	 * @param i_resolution
+	 * @param i_sample_per_pixel
 	 * 1ピクセルあたりの縦横サンプリング数。2なら2x2=4ポイントをサンプリングする。
 	 */
-	public void setEdgeSizeByPercent(int i_x_percent,int i_y_percent,int i_resolution)
+	public void setEdgeSizeByPercent(int i_x_percent,int i_y_percent,int i_sample_per_pixel)
 	{
 		assert(i_x_percent>=0);
 		assert(i_y_percent>=0);
 		this._edge.setValue(i_x_percent, i_y_percent);
-		this._resolution=i_resolution;
+		this._sample_per_pixel=i_sample_per_pixel;
 		return;
 	}
 	/**
@@ -180,7 +180,7 @@ public class NyARColorPatt_Perspective_O2 implements INyARColorPatt
 	public boolean pickFromRaster(INyARRgbRaster image,NyARIntPoint2d[] i_vertexs)throws NyARException
 	{
 		//遠近法のパラメータを計算
-		return this._perspective_reader.read4Point(image, i_vertexs,this._edge.x,this._edge.y,this._resolution, this);
+		return this._perspective_reader.read4Point(image, i_vertexs,this._edge.x,this._edge.y,this._sample_per_pixel, this);
 	}
 
 }
