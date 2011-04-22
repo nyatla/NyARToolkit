@@ -61,7 +61,7 @@ class MarkerProcessor extends SingleNyIdMarkerProcesser
 	{
 		//アプリケーションフレームワークの初期化
 		super();
-		initInstance(i_cparam,new NyIdMarkerDataEncoder_RawBit(),100.0,i_raster_format);
+		initInstance(i_cparam,new NyIdMarkerDataEncoder_RawBitId(),100.0,i_raster_format);
 		return;
 	}
 	/**
@@ -69,17 +69,8 @@ class MarkerProcessor extends SingleNyIdMarkerProcesser
 	 */
 	protected void onEnterHandler(INyIdMarkerData i_code)
 	{
-		NyIdMarkerData_RawBit code=(NyIdMarkerData_RawBit)i_code;
-		if(code.length>4){
-			//4バイト以上の時はint変換しない。
-			this.current_id=-1;//undefined_id
-		}else{
-			this.current_id=0;
-			//最大4バイト繋げて１個のint値に変換
-			for(int i=0;i<code.length;i++){
-				this.current_id=(this.current_id<<8)|code.packet[i];
-			}
-		}
+		NyIdMarkerData_RawBitId code=(NyIdMarkerData_RawBitId)i_code;
+		this.current_id=(int)code.marker_id;
 	}
 	/**
 	 * アプリケーションフレームワークのハンドラ（マーカ消滅）

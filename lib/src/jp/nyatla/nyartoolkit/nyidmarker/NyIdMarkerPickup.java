@@ -187,6 +187,7 @@ final class PerspectivePixelReader
 	 * @param i_out_st
 	 * 格納バッファo_pixelの先頭のインデクス。
 	 * @param o_pixel
+	 * グレースケールのピクセルを格納するバッファ
 	 * @throws NyARException
 	 */
 	private boolean rectPixels(INyARRgbPixelReader i_reader,NyARIntSize i_raster_size,int i_lt_x,int i_lt_y,int i_step_x,int i_step_y,int i_width,int i_height,int i_out_st,int[] o_pixel)throws NyARException
@@ -1231,3 +1232,10 @@ class MarkerPattEncoder
 		return;
 	}	
 }
+/*
+//グレースケール読み取りドライバ
+class GsPixelReader
+{
+	void wrapRaster();
+}
+*/

@@ -208,6 +208,18 @@ public class NyARFrustum
 		return;
 	}
 	/**
+	 * カメラ座標系の点を、スクリーン座標の点へ変換します。
+	 * @param i_pos
+	 * カメラ座標系の点
+	 * @param o_pos2d
+	 * 結果を受け取るオブジェクトです。
+	 */
+	public final void project(NyARDoublePoint3d i_pos,NyARDoublePoint2d o_pos2d)
+	{
+		this.project(i_pos.x,i_pos.y,i_pos.z,o_pos2d);
+	}
+	
+	/**
 	 * 透視変換行列の参照値を返します。
 	 * この値は読出し専用です。変更しないでください。
 	 * @return

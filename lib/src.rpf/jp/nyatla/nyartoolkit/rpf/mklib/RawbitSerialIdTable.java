@@ -9,14 +9,13 @@ import jp.nyatla.nyartoolkit.rpf.realitysource.nyartk.NyARRealitySource;
 import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status.NyARRectTargetStatus;
 import jp.nyatla.nyartoolkit.nyidmarker.*;
 import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerDataEncoder_RawBit;
+import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerDataEncoder_RawBitId;
 import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerData_RawBit;
+import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerData_RawBitId;
 
 /**
  * このクラスは、簡易な同期型NyIdマーカのテーブルです。
- * マーカのID番号とメタデータを関連付けたテーブルを持ち、ID番号の検索機能を提供します。
- * このクラスは、RawBitフォーマットドメインのNyIdマーカのIdとメタデータセットテーブルを定義します。
- * SerialIDは、RawBitマーカのデータパケットを、[0][1]...[n]の順に並べて、64bitの整数値に変換した値です。
- * 判別できるNyIdマーカは、domain=0(rawbitドメイン),model&lt;5,mask=0のもののみです。
+ * マーカIdの生成には、{@link #NyIdMarkerDataEncoder_RawBitLong}を使います。
  * <p>使い方
  * <ol>
  * <li>ユーザは、このクラスにIDマーカのSerialNumberとそのサイズを登録します。
@@ -85,8 +84,8 @@ public class RawbitSerialIdTable
 	private NyIdMarkerPattern _temp_nyid_info=new NyIdMarkerPattern();
 	private NyIdMarkerParam _temp_nyid_param=new NyIdMarkerParam();
 	
-	private NyIdMarkerDataEncoder_RawBit _rb=new NyIdMarkerDataEncoder_RawBit();
-	private NyIdMarkerData_RawBit _rb_dest=new NyIdMarkerData_RawBit();
+	private NyIdMarkerDataEncoder_RawBitId _rb=new NyIdMarkerDataEncoder_RawBitId();
+	private NyIdMarkerData_RawBitId _rb_dest=new NyIdMarkerData_RawBitId();
 
 	/**
 	 * コンストラクタです。
@@ -176,41 +175,17 @@ public class RawbitSerialIdTable
 		{
 			return false;
 		}
-		//受け付けられるControlDomainは0のみ
-		if(this._temp_nyid_info.ctrl_domain!=0)
-		{
-			return false;
-		}
-		//受け入れられるMaskは0のみ
-		if(this._temp_nyid_info.ctrl_mask!=0)
-		{
-			return false;
-		}
-		//受け入れられるModelは5未満
-		if(this._temp_nyid_info.model>=5)
-		{
-			return false;
-		}
-
-		this._rb.createDataInstance();
 		if(!this._rb.encode(this._temp_nyid_info,this._rb_dest)){
 			return false;
 		}
-		//SerialIDの再構成
-		long s=0;
-        //最大4バイト繋げて１個のint値に変換
-        for (int i = 0; i < this._rb_dest.length; i++)
-        {
-            s= (s << 8) | this._rb_dest.packet[i];
-        }		
 		//SerialID引きする。
-        SerialTable.SerialTableRow d=this._table.getItembySerialId(s);
+        SerialTable.SerialTableRow d=this._table.getItembySerialId(this._rb_dest.marker_id);
 		if(d==null){
 			return false;
 		}
 		//戻り値を設定
 		o_result.marker_width=d.marker_width;
-		o_result.id=s;
+		o_result.id=this._rb_dest.marker_id;
 		o_result.artk_direction=this._temp_nyid_param.direction;
 		o_result.name=d.name;
 		return true;		

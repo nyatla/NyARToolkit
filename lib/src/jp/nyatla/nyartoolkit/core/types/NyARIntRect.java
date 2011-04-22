@@ -44,6 +44,28 @@ public class NyARIntRect
 	/** 矩形の高さ(Y)*/
 	public int h;
 	/**
+	 * コンストラクタです。
+	 * 未初期化のインスタンスを生成します。
+	 */
+	public NyARIntRect()
+	{
+	}	
+	/**
+	 * コンストラクタです。初期値を指定してインスタンスを生成します。
+	 * @param i_x
+	 * {@link #x}の値
+	 * @param i_y
+	 * {@link #y}の値
+	 * @param i_w
+	 * {@link #w}の値
+	 * @param i_h
+	 * {@link #h}の値
+	 */
+	public NyARIntRect(int i_x,int i_y,int i_w,int i_h)
+	{
+		this.setValue(i_x, i_y, i_w, i_h);
+	}
+	/**
 	 * この関数は、頂点集合を包括する矩形を計算して、インスタンスにセットします。
 	 * @param i_vertex
 	 * 頂点集合を格納した配列
@@ -271,6 +293,24 @@ public class NyARIntRect
 		this.y=i_source.y;
 		this.h=i_source.h;
 		this.w=i_source.w;
+	}
+	/**
+	 * この関数は、インスタンスに値をセットします。
+	 * @param i_x
+	 * 新しい{@link #x}の値
+	 * @param i_y
+	 * 新しい{@link #y}の値
+	 * @param i_w
+	 * 新しい{@link #w}の値
+	 * @param i_h
+	 * 新しい{@link #h}の値
+	 */
+	public final void setValue(int i_x,int i_y,int i_w,int i_h)
+	{
+		this.x=i_x;
+		this.y=i_y;
+		this.h=i_h;
+		this.w=i_w;
 	}
 
 }

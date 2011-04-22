@@ -56,7 +56,7 @@ public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresh
 	 * @param i_persentage
 	 * {@link NyARHistogramAnalyzer_SlidePTile#NyARHistogramAnalyzer_SlidePTile}へ渡す分析パラメータです。
 	 * @param i_raster_format
-	 * 分析するラスタの画素形式です。
+	 * 分析するラスタの画素形式です。対応状況は{@link NyARRasterAnalyzer_Histogram#NyARRasterAnalyzer_Histogram}を確認してください。
 	 * @param i_vertical_interval
 	 * ヒストグラム作成時の行スキップ数です。
 	 * @throws NyARException
@@ -75,9 +75,9 @@ public class NyARRasterThresholdAnalyzer_SlidePTile implements INyARRasterThresh
 	 * この関数は、インスタンスの初期化関数です。
 	 * 継承クラスを作るときには、この関数をオーバライドします。
 	 * @param i_raster_format
-	 * @see NyARRasterThresholdAnalyzer_SlidePTile#NyARRasterThresholdAnalyzer_SlidePTile(int, int, int)
+	 * {@link NyARRasterThresholdAnalyzer_SlidePTile#NyARRasterThresholdAnalyzer_SlidePTile(int, int, int)}を確認して下さい。
 	 * @param i_vertical_interval
-	 * @see NyARRasterThresholdAnalyzer_SlidePTile#NyARRasterThresholdAnalyzer_SlidePTile(int, int, int)
+	 * {@link NyARRasterThresholdAnalyzer_SlidePTile#NyARRasterThresholdAnalyzer_SlidePTile(int, int, int)}を確認して下さい。
 	 * @return
 	 * 初期化に成功すると、trueを返します。
 	 * @throws NyARException
