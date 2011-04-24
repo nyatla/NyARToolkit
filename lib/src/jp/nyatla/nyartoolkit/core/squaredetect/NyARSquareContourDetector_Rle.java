@@ -55,7 +55,8 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 		public Labeling(int i_width,int i_height) throws NyARException
 		{
 			super(i_width,i_height);
-			this.label_stack=new NyARRleLabelFragmentInfoPtrStack(i_width*i_height*2048/(320*240)+32);//検出可能な最大ラベル数
+			long t=(long)i_width*i_height*2048/(320*240)+32;//full HD support
+			this.label_stack=new NyARRleLabelFragmentInfoPtrStack((int)t);//検出可能な最大ラベル数
 			this._bottom=i_height-1;
 			this._right=i_width-1;
 			return;

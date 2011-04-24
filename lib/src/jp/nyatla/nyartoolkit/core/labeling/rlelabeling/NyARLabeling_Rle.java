@@ -82,7 +82,8 @@ public abstract class NyARLabeling_Rle
 	public NyARLabeling_Rle(int i_width,int i_height) throws NyARException
 	{
 		this._raster_size.setValue(i_width,i_height);
-		this._rlestack=new RleInfoStack(i_width*i_height*2048/(320*240)+32);
+		long t=(long)i_width*i_height*2048/(320*240)+32;//full HD support
+		this._rlestack=new RleInfoStack((int)t);
 		this._rle1 = RleElement.createArray(i_width/2+1);
 		this._rle2 = RleElement.createArray(i_width/2+1);
 		this._max_area=AR_AREA_MAX;
