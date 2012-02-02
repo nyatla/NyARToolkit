@@ -31,7 +31,7 @@
 package jp.nyatla.nyartoolkit.core.raster.rgb;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.rasterreader.INyARRgbPixelReader;
+import jp.nyatla.nyartoolkit.core.pixeldriver.INyARRgbPixelDriver;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
@@ -40,7 +40,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
  */
 public class NyARRgbRaster_Blank extends NyARRgbRaster_BasicClass
 {
-	private class PixelReader implements INyARRgbPixelReader
+	private class PixelReader implements INyARRgbPixelDriver
 	{
 		public void getPixel(int i_x, int i_y, int[] o_rgb)
 		{
@@ -70,14 +70,17 @@ public class NyARRgbRaster_Blank extends NyARRgbRaster_BasicClass
 		{
 			NyARException.notImplement();		
 		}
-		public void switchBuffer(Object i_ref_buffer) throws NyARException
+		public void switchRaster(INyARRgbRaster i_raster)throws NyARException
 		{
 			NyARException.notImplement();		
 		}		
-		
+		public boolean isCompatibleRaster(INyARRgbRaster i_raster)
+		{
+			return false;
+		}
 	}
 
-	private INyARRgbPixelReader _reader;
+	private INyARRgbPixelDriver _reader;
 	/**
 	 * コンストラクタです。
 	 * バッファの参照方法を指定して、インスタンスを生成します。
@@ -98,7 +101,7 @@ public class NyARRgbRaster_Blank extends NyARRgbRaster_BasicClass
 	 * オブジェクトの参照値
 	 * @throws NyARException
 	 */	
-	public INyARRgbPixelReader getRgbPixelReader() throws NyARException
+	public INyARRgbPixelDriver getRgbPixelDriver() throws NyARException
 	{
 		return this._reader;
 	}
@@ -125,5 +128,9 @@ public class NyARRgbRaster_Blank extends NyARRgbRaster_BasicClass
 	public void wrapBuffer(Object i_ref_buf) throws NyARException
 	{
 		NyARException.notImplement();
+	}
+	public Object createInterface(Class<?> iIid) throws NyARException
+	{
+		throw new NyARException();
 	}
 }

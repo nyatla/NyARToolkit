@@ -34,9 +34,10 @@ package jp.nyatla.nyartoolkit.utils.j2se;
 import java.awt.image.*;
 import java.awt.*;
 import jp.nyatla.nyartoolkit.*;
+import jp.nyatla.nyartoolkit.core.pixeldriver.INyARRgbPixelDriver;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.rasterreader.*;
+import jp.nyatla.nyartoolkit.core.rasterdriver.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
@@ -54,7 +55,7 @@ public class NyARRasterImageIO
 		assert i_in.getSize().isEqualSize(o_out.getWidth(), o_out.getHeight());
 		
 		//thisへ転写
-		INyARRgbPixelReader reader=i_in.getRgbPixelReader();
+		INyARRgbPixelDriver reader=i_in.getRgbPixelDriver();
 		int[] rgb=new int[3];
 
 		for(int y=o_out.getHeight()-1;y>=0;y--){
@@ -141,7 +142,7 @@ public class NyARRasterImageIO
 		assert o_out.getSize().isEqualSize(i_in.getWidth(), i_in.getHeight());
 		
 		//thisへ転写
-		INyARRgbPixelReader reader=o_out.getRgbPixelReader();
+		INyARRgbPixelDriver reader=o_out.getRgbPixelDriver();
 		int[] rgb=new int[3];
 		for(int y=i_in.getHeight()-1;y>=0;y--){
 			for(int x=i_in.getWidth()-1;x>=0;x--){

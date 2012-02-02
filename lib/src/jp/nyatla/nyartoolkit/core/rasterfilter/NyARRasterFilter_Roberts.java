@@ -26,6 +26,7 @@ package jp.nyatla.nyartoolkit.core.rasterfilter;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.rasterfilter.NyARRasterFilter_Rgb2Hsv.IFilter;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
@@ -41,97 +42,125 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
  * V=sqrt(X^2+Y+2)/2
  * </pre>
  */
-public class NyARRasterFilter_Roberts implements INyARRasterFilter
+public class NyARRasterFilter_Roberts
 {
-	private IdoFilterImpl _do_filter_impl;
+	/** 変換用ドライバのインタフェイス*/	
+	public interface IFilter
+	{
+		public boolean isSupport(INyARRaster i_in,INyARRaster i_out);
+		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException;
+	}	
+	private IFilter _do_filter_impl;
 	/**
 	 * コンストラクタです。
-	 * 入力/出力ラスタの形式を入力して、インスタンスを生成します。
-	 * @param i_raster_type
-	 * 入力/出力ラスタの画素形式。
 	 * @throws NyARException
-	 */	
-	public NyARRasterFilter_Roberts(int i_raster_type) throws NyARException
+	 */
+	public NyARRasterFilter_Roberts() throws NyARException
 	{
-		switch (i_raster_type) {
-		case NyARBufferType.INT1D_GRAY_8:
-			this._do_filter_impl=new IdoFilterImpl_GRAY_8();
-			break;
-		default:
-			throw new NyARException();
-		}
+		this._do_filter_impl=new RobertsFilter_Blank();
 	}
+	protected IFilter createFilter(INyARRaster i_in,INyARRaster i_out) throws NyARException
+	{
+		if(i_in.getBufferType()==NyARBufferType.INT1D_GRAY_8){
+			switch(i_out.getBufferType()){
+			case NyARBufferType.INT1D_GRAY_8:
+				return new RobertsFilter_GRAY_8();
+			default:
+				break;
+			}
+		}
+		throw new NyARException();
+	}	
 	/**
 	 * 入力ラスタのRoberts勾配を出力ラスタへ書込みます。
 	 * 画素形式は、コンストラクタに指定した形式に合せてください。
 	 */		
 	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException
 	{
-		this._do_filter_impl.doFilter(i_input,i_output,i_input.getSize());
-	}
-	/** 変換用ドライバのインタフェイス*/	
-	protected interface IdoFilterImpl
-	{
-		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException;
-	}
-	private class IdoFilterImpl_GRAY_8 implements IdoFilterImpl
-	{
-		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException
-		{
-			assert (i_input.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
-			assert (i_output.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
-			int[] in_ptr =(int[])i_input.getBuffer();
-			int[] out_ptr=(int[])i_output.getBuffer();
-			int width=i_size.w;
-			int idx=0;
-			int idx2=width;
-			int fx,fy;
-			int mod_p=(width-2)-(width-2)%8;
-			for(int y=i_size.h-2;y>=0;y--){
-				int p00=in_ptr[idx++];
-				int p10=in_ptr[idx2++];
-				int p01,p11;
-				int x=width-2;
-				for(;x>=mod_p;x--){
-					p01=in_ptr[idx++];p11=in_ptr[idx2++];
-					fx=p11-p00;fy=p10-p01;
-					out_ptr[idx-2]=((fx<0?-fx:fx)+(fy<0?-fy:fy))>>1;
-					p00=p01;
-					p10=p11;
-				}
-				for(;x>=0;x-=4){
-					p01=in_ptr[idx++];p11=in_ptr[idx2++];
-					fx=p11-p00;
-					fy=p10-p01;
-					out_ptr[idx-2]=((fx<0?-fx:fx)+(fy<0?-fy:fy))>>1;
-					p00=p01;p10=p11;
-
-					p01=in_ptr[idx++];p11=in_ptr[idx2++];
-					fx=p11-p00;
-					fy=p10-p01;
-					out_ptr[idx-2]=((fx<0?-fx:fx)+(fy<0?-fy:fy))>>1;
-					p00=p01;p10=p11;
-					p01=in_ptr[idx++];p11=in_ptr[idx2++];
-					
-					fx=p11-p00;
-					fy=p10-p01;
-					out_ptr[idx-2]=((fx<0?-fx:fx)+(fy<0?-fy:fy))>>1;
-					p00=p01;p10=p11;
-
-					p01=in_ptr[idx++];p11=in_ptr[idx2++];
-					fx=p11-p00;
-					fy=p10-p01;
-					out_ptr[idx-2]=((fx<0?-fx:fx)+(fy<0?-fy:fy))>>1;
-					p00=p01;p10=p11;
-
-				}
-				out_ptr[idx-1]=0;
-			}
-			for(int x=width-1;x>=0;x--){
-				out_ptr[idx++]=0;
-			}
-			return;
+		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
+		if(!this._do_filter_impl.isSupport(i_input,i_output)){
+			this._do_filter_impl=this.createFilter(i_input, i_output);
 		}
+		this._do_filter_impl.doFilter(i_input,i_output,i_input.getSize());
 	}
 }
 
+//
+//Raster driver
+//
+
+class RobertsFilter_Blank implements NyARRasterFilter_Roberts.IFilter
+{
+	public final boolean isSupport(INyARRaster i_in,INyARRaster i_out)
+	{
+		return false;
+	}
+	public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException
+	{
+		throw new NyARException();
+	}
+}
+
+class RobertsFilter_GRAY_8 implements NyARRasterFilter_Roberts.IFilter
+{
+	public final boolean isSupport(INyARRaster i_in,INyARRaster i_out)
+	{
+		return i_in.isEqualBufferType(NyARBufferType.INT1D_GRAY_8) && i_out.isEqualBufferType(NyARBufferType.INT1D_GRAY_8);
+	}	
+	public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException
+	{
+		assert (i_input.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
+		assert (i_output.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
+		int[] in_ptr =(int[])i_input.getBuffer();
+		int[] out_ptr=(int[])i_output.getBuffer();
+		int width=i_size.w;
+		int idx=0;
+		int idx2=width;
+		int fx,fy;
+		int mod_p=(width-2)-(width-2)%8;
+		for(int y=i_size.h-2;y>=0;y--){
+			int p00=in_ptr[idx++];
+			int p10=in_ptr[idx2++];
+			int p01,p11;
+			int x=width-2;
+			for(;x>=mod_p;x--){
+				p01=in_ptr[idx++];p11=in_ptr[idx2++];
+				fx=p11-p00;fy=p10-p01;
+				out_ptr[idx-2]=((fx<0?-fx:fx)+(fy<0?-fy:fy))>>1;
+				p00=p01;
+				p10=p11;
+			}
+			for(;x>=0;x-=4){
+				p01=in_ptr[idx++];p11=in_ptr[idx2++];
+				fx=p11-p00;
+				fy=p10-p01;
+				out_ptr[idx-2]=((fx<0?-fx:fx)+(fy<0?-fy:fy))>>1;
+				p00=p01;p10=p11;
+
+				p01=in_ptr[idx++];p11=in_ptr[idx2++];
+				fx=p11-p00;
+				fy=p10-p01;
+				out_ptr[idx-2]=((fx<0?-fx:fx)+(fy<0?-fy:fy))>>1;
+				p00=p01;p10=p11;
+				p01=in_ptr[idx++];p11=in_ptr[idx2++];
+				
+				fx=p11-p00;
+				fy=p10-p01;
+				out_ptr[idx-2]=((fx<0?-fx:fx)+(fy<0?-fy:fy))>>1;
+				p00=p01;p10=p11;
+
+				p01=in_ptr[idx++];p11=in_ptr[idx2++];
+				fx=p11-p00;
+				fy=p10-p01;
+				out_ptr[idx-2]=((fx<0?-fx:fx)+(fy<0?-fy:fy))>>1;
+				p00=p01;p10=p11;
+
+			}
+			out_ptr[idx-1]=0;
+		}
+		for(int x=width-1;x>=0;x--){
+			out_ptr[idx++]=0;
+		}
+		return;
+	}
+}

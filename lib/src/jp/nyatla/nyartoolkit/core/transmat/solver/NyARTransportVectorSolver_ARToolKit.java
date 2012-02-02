@@ -61,8 +61,8 @@ public class NyARTransportVectorSolver_ARToolKit implements INyARTransportVector
 	{
 		this._projection_mat=i_projection_mat_ref;
 		//aとb(aの転置行列)の固定部分を設定。
-		final double[][] mata = this._mat_a.getArray();
-		final double[][] matat = this._mat_at.getArray();
+		final double[][] mata = this._mat_a.refArray();
+		final double[][] matat = this._mat_at.refArray();
 
 		//変換用行列のcpara部分を先に作成
 		for (int i = 0; i < 4; i++) {
@@ -86,8 +86,8 @@ public class NyARTransportVectorSolver_ARToolKit implements INyARTransportVector
 		final double cpara02=this._projection_mat.m02;
 		final double cpara12=this._projection_mat.m12;		
 		final NyARMat mat_t=this._mat_t;
-		final double[][] mata = this._mat_a.getArray();
-		final double[][] matat= this._mat_at.getArray();
+		final double[][] mata = this._mat_a.refArray();
+		final double[][] matat= this._mat_at.refArray();
 		for (int i = 0; i < 4; i++){
 			cx[i]=i_ref_vertex_2d[i].x;
 			cy[i]=i_ref_vertex_2d[i].y;
@@ -96,8 +96,8 @@ public class NyARTransportVectorSolver_ARToolKit implements INyARTransportVector
 			mata[x2 + 1][2] = matat[2][x2 + 1] = cpara12 - i_ref_vertex_2d[i].y;// mat_a->m[j*6+5]=mat_b->m[num*4+j*2+1]=cpara[1][2]-pos2d[j][1];
 		}
 		//T(3x3行列)の作成
-		mat_t.matrixMul(this._mat_at, this._mat_a);
-		mat_t.matrixSelfInv();		
+		mat_t.mul(this._mat_at, this._mat_a);
+		mat_t.inverse();		
 		return;		
 	}
 	/**
@@ -106,7 +106,7 @@ public class NyARTransportVectorSolver_ARToolKit implements INyARTransportVector
 	 */
 	public void solveTransportVector(NyARDoublePoint3d[] i_vertex3d,NyARDoublePoint3d o_transfer) throws NyARException
 	{
-		final double[][] matc = this._mat_c.getArray();
+		final double[][] matc = this._mat_c.refArray();
 		final double cpara00=this._projection_mat.m00;
 		final double cpara01=this._projection_mat.m01;
 		final double cpara02=this._projection_mat.m02;
@@ -123,10 +123,10 @@ public class NyARTransportVectorSolver_ARToolKit implements INyARTransportVector
 			matc[x2][0] = point3d_ptr.z * cx[i] - cpara00 * point3d_ptr.x - cpara01 * point3d_ptr.y - cpara02 * point3d_ptr.z;// mat_c->m[j*2+0] = wz*pos2d[j][0]-cpara[0][0]*wx-cpara[0][1]*wy-cpara[0][2]*wz;
 			matc[x2 + 1][0] = point3d_ptr.z * cy[i] - cpara11 * point3d_ptr.y - cpara12 * point3d_ptr.z;// mat_c->m[j*2+1]= wz*pos2d[j][1]-cpara[1][1]*wy-cpara[1][2]*wz;
 		}
-		this._mat_e.matrixMul(this._mat_at,this._mat_c);
-		this._mat_f.matrixMul(this._mat_t, this._mat_e);
+		this._mat_e.mul(this._mat_at,this._mat_c);
+		this._mat_f.mul(this._mat_t, this._mat_e);
 		
-		final double[][] matf = this._mat_f.getArray();
+		final double[][] matf = this._mat_f.refArray();
 		o_transfer.x= matf[0][0];// trans[0] = mat_f->m[0];
 		o_transfer.y= matf[1][0];
 		o_transfer.z= matf[2][0];// trans[2] = mat_f->m[2];

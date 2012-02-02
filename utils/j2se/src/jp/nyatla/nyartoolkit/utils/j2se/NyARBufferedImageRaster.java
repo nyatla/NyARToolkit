@@ -6,13 +6,19 @@ import java.awt.color.ColorSpace;
 import java.awt.image.*;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.pixeldriver.INyARRgbPixelDriver;
+import jp.nyatla.nyartoolkit.core.pixeldriver.NyARRgbPixelDriverFactory;
+import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
+import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
-import jp.nyatla.nyartoolkit.core.rasterreader.INyARRgbPixelReader;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
+
 /**
  * このクラスは、BufferedImageをピクセルバッファに持つNyARToolKit互換のラスタクラスです。
+ * バッファタイプは、BufferedImageのタイプにより異なります。
+ * NyARToolKitと互換性が高い場合はメモリオブジェクトになりますが、そうでない場合はBufferedImageObjectになります。
  * BufferedImageインスタンスをラップしています。
  * 通常のJavaプログラムと相互運用する場合に便利です。
  * BufferedImageの形式はコンストラクタで指定できます。
@@ -20,152 +26,115 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 public class NyARBufferedImageRaster extends NyARRgbRaster
 {
 	private BufferedImage _buffered_image;
-	/**
-	 * この関数は、NyARRgbRasterに、NyARBufferedImageRasterの機能を追加します。
-	 */
-	protected boolean initInstance(NyARIntSize i_size,int i_raster_type,boolean i_is_alloc)
-	{
-		if(super.initInstance(i_size, i_raster_type, i_is_alloc)){
-			return true;
-		}
-		if(i_raster_type!=NyARBufferType.OBJECT_Java_BufferedImage)
-		{
-			return false;
-		}
-		//内部バッファは作れない。
-		if(i_is_alloc){
-			return false;
-		}
-		//Readerの作成。
-		this._reader=new NyARRgbPixelReader_OBJECT_Java_BufferedImage(null);
-		return true;
-	}
 
 	/**
 	 * コンストラクタです。
-	 * BufferedImage形式のバッファを持つラスタオブジェクトを作成します。
-	 * BufferedImageのピクセル形式には特色があります。i_raster_typeの説明を参考にして下さい。
+	 *　{@link BufferedImage}と互換性のあるラスタを構築します。
+	 *　BufferedImageをラップするには、i_is_alloc引数にfalseを設定して生成して、wrapImageでBitmapBufferをラップします。
 	 * @param i_width
 	 * ラスタの幅を指定します。
 	 * @param i_height
 	 * ラスタの高さを指定します。
-	 * @param i_raster_type
-	 * BufferedImageのバッファタイプを指定します。使用できるラスタタイプは次の種類です。
-	 * <ul>
-	 * <li>NyARBufferType.BYTE1D_R8G8B8_24(推奨)</li>
-	 * <li>NyARBufferType.BYTE1D_B8G8R8_24(推奨)</li>
-	 * <li>NyARBufferType.INT1D_X8R8G8B8_32</li>
-	 * <li>NyARBufferType.OBJECT_Java_BufferedImage</li>
-	 * </ul>
-	 * NyARBufferType.OBJECT_Java_BufferedImageは低速です。パフォーマンスが必要なシステムでは他のバッファタイプを指定してください。
-	 * NyARToolKitの入力・出力に使用する場合は、関数に最適なバッファタイプを使用するとパフォーマンスが向上します。詳細は関数のドキュメントを参照してください。
-	 * (NyARBufferType.OBJECT_Java_BufferedImageは全ての関数で低速であり、他のタイプは概ね高速に動作します。)
+	 * @param i_is_alloc
+	 * BufferedImageを内部生成するかのフラグ。trueの場合、インスタンスはバッファを所有します。
 	 * @throws NyARException
-	 */
-	public NyARBufferedImageRaster(int i_width,int i_height,int i_raster_type) throws NyARException
+	 */	
+	public NyARBufferedImageRaster(int i_width,int i_height,boolean i_is_alloc) throws NyARException
 	{
-		//一旦外部参照で作る。
-		super(i_width,i_height,i_raster_type,false);
-		//このラスタに合致したBufferedImageを作る。
-		BufferedImage ret;
-		switch(i_raster_type)
-		{
-		case NyARBufferType.BYTE1D_R8G8B8_24:{
-			byte[] b=new byte[3*i_width*i_height];
-			DataBufferByte d=new DataBufferByte(b,b.length);
-			int[] bof={0,1,2};
-			ret=new BufferedImage(
-				new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB),false,true,Transparency.OPAQUE,DataBuffer.TYPE_BYTE),
-				Raster.createWritableRaster(new ComponentSampleModel(d.getDataType(),i_width,i_height,3,3*i_width,bof),d,null),
-				true,null);
-			}
-			break;
-		case NyARBufferType.BYTE1D_B8G8R8_24:{
-			byte[] b=new byte[3*i_width*i_height];
-			DataBufferByte d=new DataBufferByte(b,b.length);
-			int[] bof={2,1,0};
-			ret=new BufferedImage(
-				new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB),false,true,Transparency.OPAQUE,DataBuffer.TYPE_BYTE),
-				Raster.createWritableRaster(new ComponentSampleModel(d.getDataType(),i_width,i_height,3,3*i_width,bof),d,null),
-				true,null);
-			}
-			break;
-		case NyARBufferType.INT1D_X8R8G8B8_32:{
-			int[] b=new int[i_width*i_height];
-			DataBufferInt d=new DataBufferInt(b,b.length);
-			int[] msk={0xff0000,0x00ff00,0x0000ff};
-			ret=new BufferedImage(
-				new DirectColorModel(24,msk[0],msk[1],msk[2]),
-				Raster.createWritableRaster(new SinglePixelPackedSampleModel(d.getDataType(),i_width,i_height,msk),d,null),
-				true,null);
-			}
-			break;
-		case NyARBufferType.OBJECT_Java_BufferedImage:{
-			ret=new BufferedImage(i_width,i_height,BufferedImage.TYPE_INT_RGB);
-			}
-			break;
-		default:
-			//このデータタイプのラスタは作れない。
-			throw new NyARException();
-		}
-		if(i_raster_type==NyARBufferType.OBJECT_Java_BufferedImage){
-			this.wrapBuffer(ret);
-			//低速インタフェイス警告
-			System.out.println("NyARToolKit Warning:"+this.getClass().getName()+":Low speed interface.");
-		}else{
-			//rastertype毎にDatabufferの実体の取得方法を変える。
-			switch(ret.getRaster().getDataBuffer().getDataType())
-			{
-			case DataBuffer.TYPE_BYTE:
-				this.wrapBuffer(((DataBufferByte)(ret.getRaster().getDataBuffer())).getData());
-				break;
-			case DataBuffer.TYPE_INT:
-				this.wrapBuffer(((DataBufferInt)(ret.getRaster().getDataBuffer())).getData());
-				break;
-			default:
-				throw new NyARException();
-			}
-		}
-		//内部参照に切り替える。
-		this._is_attached_buffer=true;
-		this._buffered_image=ret;
-		return;
+		//NyARToolkit互換のラスタを定義する。
+		super(i_width,i_height, NyARBufferType.INT1D_X8R8G8B8_32,i_is_alloc);
 	}
 	/**
-	 * この関数は、既にあるBufferedImageをラップしてラスタをつくります。BufferedImageの内容により、ラスタタイプは自動的に決定します。
-	 * @param i_bfi
-	 * ラップするbufferedImageを設定します。インスタンスが参照するのは、このインスタンスのデフォルトバンクのイメージです。
-	 * NyARToolKitと互換性が低いBufferedImageを指定すると、パフォーマンスが劣化することがあります。注意してください。
+	 * コンストラクタです。
+	 * {@link BufferedImage}を所有したラスタを構築します。
+	 * @param i_width
+	 * ラスタの幅を指定します。
+	 * @param i_height
+	 * ラスタの高さを指定します。
 	 * @throws NyARException
 	 */
-	public NyARBufferedImageRaster(BufferedImage i_bfi) throws NyARException
+	public NyARBufferedImageRaster(int i_width,int i_height) throws NyARException
 	{
-		//ラスタタイプを確定させて、一旦外部参照で作る。
-		super(i_bfi.getWidth(),i_bfi.getHeight(),getRasterTypeFromBufferedImage(i_bfi),false);
-		if(this.getBufferType()!=NyARBufferType.OBJECT_Java_BufferedImage)
-		{
-			//RawImage系のバッファが割り当てられていたら、設定。
-			switch(i_bfi.getRaster().getDataBuffer().getDataType())
-			{
-			case DataBuffer.TYPE_BYTE:
-				this.wrapBuffer(((DataBufferByte)(i_bfi.getRaster().getDataBuffer())).getData());
+		//NyARToolkit互換のラスタを定義する。
+		super(i_width,i_height, NyARBufferType.INT1D_X8R8G8B8_32,true);
+	}
+	public Object createInterface(Class<?> i_iid) throws NyARException
+	{
+		//アクセラレータインタフェイスはここに追加する。
+		return super.createInterface(i_iid);
+	}
+
+	/**
+	 * この関数は、NyARRgbRasterに、NyARBufferedImageRasterの機能を追加します。
+	 * @throws NyARException 
+	 */
+	protected boolean initInstance(NyARIntSize i_size,int i_raster_type,boolean i_is_alloc) throws NyARException
+	{
+		if(super.initInstance(i_size, i_raster_type, i_is_alloc)){
+			//成功した場合、i_is_allocがtrueなら、BufferedImageの構築
+			if(i_is_alloc){
+				//atacchされる場合は、必ずNyARBufferType.INT1D_X8R8G8B8_32
+				assert(i_raster_type==NyARBufferType.INT1D_X8R8G8B8_32);
+				int[] b=(int[])this._buf;
+				DataBufferInt d=new DataBufferInt(b,b.length);
+				int[] msk={0xff0000,0x00ff00,0x0000ff};
+				BufferedImage bfi=new BufferedImage(
+					new DirectColorModel(24,msk[0],msk[1],msk[2]),
+					Raster.createWritableRaster(new SinglePixelPackedSampleModel(d.getDataType(),i_size.w,i_size.h,msk),d,null),
+					true,null);
+				this._buffered_image=bfi;
+			}
+			return true;
+		}
+		//失敗した場合
+		return false;
+	}
+	/**
+	 * BitmapBufferをラップします。古いBitmapbufferへの参照は解除されます。
+	 * @param i_ref_bmi
+	 * ラップするBitmapBufferオブジェクト。このオブジェクトのサイズは、現在のラスタと一致している必要があります。
+	 * @throws NyARException
+	 */
+	public void wrapImage(BufferedImage i_ref_bmi) throws NyARException
+	{
+		assert(!this._is_attached_buffer);//バッファがアタッチされていたら機能しない。
+		assert(this._size.isEqualSize(i_ref_bmi.getWidth(),i_ref_bmi.getHeight()));//サイズ確認
+
+		//参照しているImageを切り替え
+		this._buffered_image=i_ref_bmi;
+		//バッファをセットする。
+		int raster_type=getRasterTypeFromBufferedImage(i_ref_bmi);
+		switch(raster_type){
+			case NyARBufferType.BYTE1D_R8G8B8_24:
+			case NyARBufferType.BYTE1D_B8G8R8_24:
+			case NyARBufferType.BYTE1D_B8G8R8X8_32:
+				this._buf=((DataBufferByte)(i_ref_bmi.getRaster().getDataBuffer())).getData();
 				break;
-			case DataBuffer.TYPE_INT:
-				this.wrapBuffer(((DataBufferInt)(i_bfi.getRaster().getDataBuffer())).getData());
+			case NyARBufferType.INT1D_X8R8G8B8_32:
+				this._buf=((DataBufferInt)(i_ref_bmi.getRaster().getDataBuffer())).getData();
+				break;
+			case NyARBufferType.OBJECT_Java_BufferedImage:
+				this._buf=i_ref_bmi;
 				break;
 			default:
 				throw new NyARException();
-			}
-		}else{
-			this.wrapBuffer(i_bfi);
-			//低速インタフェイス警告
-			System.out.println("NyARToolKit Warning:"+this.getClass().getName()+":Low speed interface.");
 		}
-		//内部参照に切り替える。
-		this._is_attached_buffer=true;
-		this._buffered_image=i_bfi;
-		return;
+		//ピクセルドライバの更新
+		if(raster_type==NyARBufferType.OBJECT_Java_BufferedImage){
+			this._rgb_pixel_driver=new NyARRgbPixelReader_OBJECT_Java_BufferedImage();
+		}else{
+			this._rgb_pixel_driver=NyARRgbPixelDriverFactory.createDriver(this);
+		}
+		//ピクセルリーダーの参照バッファを切り替える。
+		this._rgb_pixel_driver.switchRaster(this);
 	}
+	/**
+	 * この関数は使用できません。{@link BufferedImage}をセットするには、wrapImageを使用してください。
+	 */
+	public void wrapBuffer(Object i_ref_buf) throws NyARException
+	{
+		throw new NyARException();
+	}	
 	/**
 	 * この関数は、ラップしているBufferedImageを返します。
 	 * @return
@@ -184,7 +153,6 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 	{
 		return this._buffered_image.getGraphics();
 	}
-
 	/**
 	 * この関数は、BufferedImageを分析して、WriterbleRasterと互換性のあるNyARBufferTypeを調べます。
 	 * @param im
@@ -220,10 +188,8 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 				{
 					return NyARBufferType.BYTE1D_B8G8R8X8_32;
 				}
-			}
-			
-		}else if(sp instanceof SinglePixelPackedSampleModel)
-		{
+			}			
+		}else if(sp instanceof SinglePixelPackedSampleModel){
 			SinglePixelPackedSampleModel ssp=(SinglePixelPackedSampleModel)sp;
 			int data_type=ssp.getDataType();
 			int[] mask=ssp.getBitMasks();
@@ -239,20 +205,21 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 		//具体的なBufferが判らない。
 		return NyARBufferType.OBJECT_Java_BufferedImage;
 	}
+
 }
+//
+//ラスタドライバ
+//
 
 
 /**
  * このクラスは、BufferedImage用の低速なPixelReaderです。
  * BufferedImageの形式に依存しない代わりに、ピクセルへのアクセス速度が極端に低速です。
+ * 
  */
-final class NyARRgbPixelReader_OBJECT_Java_BufferedImage implements INyARRgbPixelReader
+final class NyARRgbPixelReader_OBJECT_Java_BufferedImage implements INyARRgbPixelDriver
 {
 	protected BufferedImage _ref_buf;
-	public NyARRgbPixelReader_OBJECT_Java_BufferedImage(BufferedImage _ref_buf)
-	{
-		this._ref_buf = _ref_buf;
-	}
 
 	public void getPixel(int i_x, int i_y, int[] o_rgb)
 	{
@@ -262,7 +229,6 @@ final class NyARRgbPixelReader_OBJECT_Java_BufferedImage implements INyARRgbPixe
 		o_rgb[2] = (p & 0xff);// B
 		return;
 	}
-
 	public void getPixelSet(int[] i_x, int[] i_y, int i_num, int[] o_rgb)
 	{
 		for (int i = i_num - 1; i >= 0; i--) {
@@ -285,8 +251,13 @@ final class NyARRgbPixelReader_OBJECT_Java_BufferedImage implements INyARRgbPixe
 	{
 		NyARException.notImplement();		
 	}
-	public void switchBuffer(Object i_ref_buffer) throws NyARException
+	public void switchRaster(INyARRgbRaster i_raster)throws NyARException
 	{
-		this._ref_buf=(BufferedImage)i_ref_buffer;
-	}	
+		this._ref_buf=(BufferedImage)i_raster.getBuffer();
+	}
+
+	public boolean isCompatibleRaster(INyARRgbRaster iRaster)
+	{
+		return iRaster.isEqualBufferType(NyARBufferType.OBJECT_Java_BufferedImage);
+	}
 }

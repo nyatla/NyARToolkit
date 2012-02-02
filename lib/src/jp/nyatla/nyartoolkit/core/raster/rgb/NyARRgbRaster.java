@@ -1,6 +1,9 @@
 package jp.nyatla.nyartoolkit.core.raster.rgb;
 
-import jp.nyatla.nyartoolkit.core.rasterreader.*;
+import jp.nyatla.nyartoolkit.core.match.NyARMatchPattDeviationColorData;
+import jp.nyatla.nyartoolkit.core.pixeldriver.INyARRgbPixelDriver;
+import jp.nyatla.nyartoolkit.core.pixeldriver.NyARRgbPixelDriverFactory;
+import jp.nyatla.nyartoolkit.core.rasterdriver.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.*;
 
@@ -23,7 +26,7 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 	/** バッファオブジェクト*/
 	protected Object _buf;
 	/** ピクセルリーダ*/
-	protected INyARRgbPixelReader _reader;
+	protected INyARRgbPixelDriver _rgb_pixel_driver;
 	/** バッファオブジェクトがアタッチされていればtrue*/
 	protected boolean _is_attached_buffer;
 	
@@ -82,38 +85,32 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 	 * 外部参照/内部バッファのフラグ
 	 * @return
 	 * 初期化が成功すると、trueです。
+	 * @throws NyARException 
 	 */
-	protected boolean initInstance(NyARIntSize i_size,int i_raster_type,boolean i_is_alloc)
+	protected boolean initInstance(NyARIntSize i_size,int i_raster_type,boolean i_is_alloc) throws NyARException
 	{
+		//バッファの構築
 		switch(i_raster_type)
 		{
 			case NyARBufferType.INT1D_X8R8G8B8_32:
 				this._buf=i_is_alloc?new int[i_size.w*i_size.h]:null;
-				this._reader=new NyARRgbPixelReader_INT1D_X8R8G8B8_32((int[])this._buf,i_size);
 				break;
 			case NyARBufferType.BYTE1D_B8G8R8X8_32:
-				this._buf=i_is_alloc?new byte[i_size.w*i_size.h*4]:null;
-				this._reader=new NyARRgbPixelReader_BYTE1D_B8G8R8X8_32((byte[])this._buf,i_size);
-				break;
-			case NyARBufferType.BYTE1D_R8G8B8_24:
-				this._buf=i_is_alloc?new byte[i_size.w*i_size.h*3]:null;
-				this._reader=new NyARRgbPixelReader_BYTE1D_R8G8B8_24((byte[])this._buf,i_size);
-				break;
-			case NyARBufferType.BYTE1D_B8G8R8_24:
-				this._buf=i_is_alloc?new byte[i_size.w*i_size.h*3]:null;
-				this._reader=new NyARRgbPixelReader_BYTE1D_B8G8R8_24((byte[])this._buf,i_size);
-				break;
 			case NyARBufferType.BYTE1D_X8R8G8B8_32:
 				this._buf=i_is_alloc?new byte[i_size.w*i_size.h*4]:null;
-				this._reader=new NyARRgbPixelReader_BYTE1D_X8R8G8B8_32((byte[])this._buf,i_size);
+				break;
+			case NyARBufferType.BYTE1D_R8G8B8_24:
+			case NyARBufferType.BYTE1D_B8G8R8_24:
+				this._buf=i_is_alloc?new byte[i_size.w*i_size.h*3]:null;
 				break;
 			case NyARBufferType.WORD1D_R5G6B5_16LE:
 				this._buf=i_is_alloc?new short[i_size.w*i_size.h]:null;
-				this._reader=new NyARRgbPixelReader_WORD1D_R5G6B5_16LE((short[])this._buf,i_size);
 				break;
 			default:
 				return false;
 		}
+		//readerの構築
+		this._rgb_pixel_driver=NyARRgbPixelDriverFactory.createDriver(this);
 		this._is_attached_buffer=i_is_alloc;
 		return true;
 	}
@@ -123,10 +120,10 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 	 * オブジェクトの参照値
 	 * @throws NyARException
 	 */	
-	public INyARRgbPixelReader getRgbPixelReader() throws NyARException
+	public INyARRgbPixelDriver getRgbPixelDriver() throws NyARException
 	{
-		return this._reader;
-	}
+		return this._rgb_pixel_driver;
+	}	
 	/**
 	 * この関数は、ラスタのバッファへの参照値を返します。
 	 * バッファの形式は、コンストラクタに指定した形式と同じです。
@@ -155,6 +152,16 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 		assert(!this._is_attached_buffer);//バッファがアタッチされていたら機能しない。
 		this._buf=i_ref_buf;
 		//ピクセルリーダーの参照バッファを切り替える。
-		this._reader.switchBuffer(i_ref_buf);
+		this._rgb_pixel_driver.switchRaster(this);
+	}
+	public Object createInterface(Class<?> iIid) throws NyARException
+	{
+		if(iIid==INyARPerspectiveCopy.class){
+			return NyARPerspectiveCopyFactory.createDriver(this);
+		}
+		if(iIid==NyARMatchPattDeviationColorData.IRasterDriver.class){
+			return NyARMatchPattDeviationColorData.RasterDriverFactory.createDriver(this);
+		}
+		throw new NyARException();
 	}
 }

@@ -177,5 +177,10 @@ public class NyARLabelingImage extends NyARRaster_BasicClass
 		}
 		//あれ？見つからないよ？
 		throw new NyARException();
-	}	
+	}
+	public Object createInterface(Class<?> iIid) throws NyARException
+	{
+		throw new NyARException();
+	}
+	
 }

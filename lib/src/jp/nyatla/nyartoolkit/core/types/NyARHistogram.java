@@ -155,5 +155,16 @@ public class NyARHistogram
 		}
 		return (int)(sum/this.total_of_data);
 	}
+	/**
+	 * この関数は、ヒストグラムを初期化します。
+	 */
+	public final void reset()
+	{
+		int[] d=this.data;
+		for(int i=this.length-1;i>=0;i--){
+			d[i]=0;
+		}
+		this.total_of_data=0;
+	}
 	
 }

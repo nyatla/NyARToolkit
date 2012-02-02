@@ -85,14 +85,16 @@ public class ASyncIdMarkerTable
 	/**
 	 * コンストラクタです。
 	 * 非同期Idマーカ探索オブジェクトを生成します。
+	 * @param i_in_raster_type
+	 * 入力ラスタのタイプ値。
 	 * @param i_listener
 	 * 非同期イベントを受け取るオブジェクトを指定します。
 	 * イベントは、このオブジェクトが作成するスレッドが呼び出します。
 	 * @throws NyARException
 	 */
-	public ASyncIdMarkerTable(IResultListener i_listener) throws NyARException
+	public ASyncIdMarkerTable(IResultListener i_listener,int i_in_raster_type) throws NyARException
 	{
-		this._mklib=new RawbitSerialIdTable(1);	
+		this._mklib=new RawbitSerialIdTable(1,i_in_raster_type);	
 		this._mklib.addAnyItem("ANY ID",40);
 		this._listener=i_listener;
 	}

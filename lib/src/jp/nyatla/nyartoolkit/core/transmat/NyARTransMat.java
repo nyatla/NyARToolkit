@@ -239,64 +239,6 @@ public class NyARTransMat implements INyARTransMat
 		return;
 	}
 
-/*	public double transMatContinue(NyARSquare i_square,NyARRectOffset i_offset,double i_prev_error,NyARDoublePoint3d io_angle,NyARDoublePoint3d io_trans) throws NyARException
-	{
-		final NyARDoublePoint3d trans=this.__transMat_trans;
-		
-		//最適化計算の閾値を決定
-		double err_threshold=makeErrThreshold(i_square.sqvertex);
-
-		
-		//平行移動量計算機に、2D座標系をセット
-		NyARDoublePoint2d[] vertex_2d=this.__transMat_vertex_2d;
-		NyARDoublePoint3d[] vertex_3d=this.__transMat_vertex_3d;
-		this._ref_dist_factor.ideal2ObservBatch(i_square.sqvertex, vertex_2d,4);		
-		this._transsolver.set2dVertex(vertex_2d,4);
-		
-		//回転行列を計算
-		this._rotmatrix.initRotByAngle(io_angle);
-		
-		//回転後の3D座標系から、平行移動量を計算
-		this._rotmatrix.getPoint3dBatch(i_offset.vertex,vertex_3d,4);
-		this._transsolver.solveTransportVector(vertex_3d,trans);
-
-		//現在のエラーレートを計算しておく
-		double min_err=errRate(this._rotmatrix,trans,i_offset.vertex, vertex_2d,4,vertex_3d);
-		NyARDoubleMatrix33 rot=this.__rot;
-		//エラーレートが前回のエラー値より閾値分大きかったらアゲイン
-		if(min_err<i_prev_error+err_threshold){
-			rot.setValue(this._rotmatrix);
-			//最適化してみる。
-			for (int i = 0;i<5; i++) {
-				//変換行列の最適化
-				this._mat_optimize.modifyMatrix(rot, trans, i_offset.vertex, vertex_2d, 4);
-				double err=errRate(rot,trans,i_offset.vertex, vertex_2d,4,vertex_3d);
-				//System.out.println("E:"+err);
-				if(min_err-err<err_threshold/2){
-					//System.out.println("BREAK");
-					break;
-				}
-				this._transsolver.solveTransportVector(vertex_3d, trans);
-				this._rotmatrix.setValue(rot);
-				min_err=err;
-			}
-			this.updateMatrixValue(this._rotmatrix,  trans,o_result_conv);
-		}else{
-			//回転行列を計算
-			this._rotmatrix.initRotBySquare(i_square.line,i_square.sqvertex);
-			
-			//回転後の3D座標系から、平行移動量を計算
-			this._rotmatrix.getPoint3dBatch(i_offset.vertex,vertex_3d,4);
-			this._transsolver.solveTransportVector(vertex_3d,trans);
-			
-			//計算結果の最適化(平行移動量と回転行列の最適化)
-			min_err=this.optimize(this._rotmatrix, trans, this._transsolver,i_offset.vertex, vertex_2d,err_threshold);
-			this.updateMatrixValue(this._rotmatrix, trans,o_result_conv);
-		}
-		return min_err;
-	}	
-	
-*/
 	/**
 	 * 
 	 * @param iw_rotmat

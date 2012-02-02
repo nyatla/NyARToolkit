@@ -147,4 +147,10 @@ public class NyARRaster extends NyARRaster_BasicClass
 		assert(!this._is_attached_buffer);//バッファがアタッチされていたら機能しない。
 		this._buf=i_ref_buf;
 	}
+	@Override
+	public Object createInterface(Class<?> iIid) throws NyARException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 }

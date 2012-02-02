@@ -31,8 +31,8 @@
 package jp.nyatla.nyartoolkit.core.raster.rgb;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.pixeldriver.INyARRgbPixelDriver;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
-import jp.nyatla.nyartoolkit.core.rasterreader.*;
 
 /**
  * このインタフェイスは、{@link INyARRaster}に、カラー画像へアクセスする機能を追加します。
@@ -46,5 +46,5 @@ public interface INyARRgbRaster extends INyARRaster
 	 * オブジェクトの参照値
 	 * @throws NyARException
 	 */
-	public INyARRgbPixelReader getRgbPixelReader() throws NyARException;
+	public INyARRgbPixelDriver getRgbPixelDriver() throws NyARException;
 }

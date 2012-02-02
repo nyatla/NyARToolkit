@@ -33,9 +33,10 @@ import com.sun.media.codec.video.colorspace.*;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
-import jp.nyatla.nyartoolkit.core.rasterreader.*;
+import jp.nyatla.nyartoolkit.core.rasterdriver.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.param.*;
+import jp.nyatla.nyartoolkit.core.pixeldriver.INyARRgbPixelDriver;
 
 
 
@@ -99,7 +100,7 @@ public class JmfNyARRaster_RGB implements INyARRgbRaster
 	{
 		return this._holder.buffer_type;
 	}
-	final public INyARRgbPixelReader getRgbPixelReader()
+	final public INyARRgbPixelDriver getRgbPixelDriver()
 	{
 		return this._holder;
 	}
@@ -132,7 +133,7 @@ public class JmfNyARRaster_RGB implements INyARRgbRaster
  * @author nyatla
  *
  */
-abstract class JmfRGB24RasterHolder implements INyARRgbPixelReader
+abstract class JmfRGB24RasterHolder implements INyARRgbPixelDriver
 {
 	public int buffer_type;
 	public byte[] buffer;
@@ -248,11 +249,10 @@ class NyARGLPixelReader_RGB24 extends JmfRGB24RasterHolder
 	{
 		NyARException.notImplement();		
 	}
-	public void switchBuffer(Object i_ref_object) throws NyARException
+	public void switchRaster(INyARRgbRaster i_raster)throws NyARException
 	{
 		NyARException.notImplement();		
 	}
-
 }
 
 
@@ -354,11 +354,10 @@ class NyARGLPixelReader_YUV extends JmfRGB24RasterHolder
 	public void setPixel(int iX, int iY, int iR, int iG, int iB)throws NyARException
 	{
 		NyARException.notImplement();		
-	}	
-	public void switchBuffer(Object i_ref_object) throws NyARException
+	}
+	public void switchRaster(INyARRgbRaster i_raster)throws NyARException
 	{
 		NyARException.notImplement();		
 	}
-
 }
 

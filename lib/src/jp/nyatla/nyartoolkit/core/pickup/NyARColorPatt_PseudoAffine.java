@@ -26,8 +26,10 @@ package jp.nyatla.nyartoolkit.core.pickup;
 
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.pixeldriver.INyARRgbPixelDriver;
+import jp.nyatla.nyartoolkit.core.pixeldriver.NyARRgbPixelDriverFactory;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
-import jp.nyatla.nyartoolkit.core.rasterreader.*;
+import jp.nyatla.nyartoolkit.core.rasterdriver.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 
@@ -39,7 +41,7 @@ import jp.nyatla.nyartoolkit.core.types.matrix.*;
 public class NyARColorPatt_PseudoAffine implements INyARColorPatt
 {
 	private int[] _patdata;
-	private NyARRgbPixelReader_INT1D_X8R8G8B8_32 _pixelreader;
+	private INyARRgbPixelDriver _pixelreader;
 	private NyARIntSize _size;
 	private static final int BUFFER_FORMAT=NyARBufferType.INT1D_X8R8G8B8_32;
 	/**
@@ -66,7 +68,7 @@ public class NyARColorPatt_PseudoAffine implements INyARColorPatt
 	/**
 	 * この関数は、ラスタの画素読み取りオブジェクトの参照値を返します。
 	 */	
-	public final INyARRgbPixelReader getRgbPixelReader()
+	public final INyARRgbPixelDriver getRgbPixelDriver()
 	{
 		return this._pixelreader;
 	}
@@ -114,12 +116,13 @@ public class NyARColorPatt_PseudoAffine implements INyARColorPatt
 	 * このラスタの幅
 	 * @param i_height
 	 * このラスタの高さ
+	 * @throws NyARException 
 	 */
-	public NyARColorPatt_PseudoAffine(int i_width, int i_height)
+	public NyARColorPatt_PseudoAffine(int i_width, int i_height) throws NyARException
 	{		
 		this._size=new NyARIntSize(i_width,i_height);
 		this._patdata = new int[i_height*i_width];
-		this._pixelreader=new NyARRgbPixelReader_INT1D_X8R8G8B8_32(this._patdata,this._size);
+		this._pixelreader=NyARRgbPixelDriverFactory.createDriver(this);
 		//疑似アフィン変換のパラメタマトリクスを計算します。
 		//長方形から計算すると、有効要素がm00,m01,m02,m03,m10,m11,m20,m23,m30になります。
 		final NyARDoubleMatrix44 mat=this._invmat;
@@ -191,7 +194,7 @@ public class NyARColorPatt_PseudoAffine implements INyARColorPatt
 		ry2=this._size.h;
 		int[] rgb_tmp=new int[3];
 
-		INyARRgbPixelReader reader=image.getRgbPixelReader();
+		INyARRgbPixelDriver reader=image.getRgbPixelDriver();
 		// 変形先領域の頂点を取得
 
 		//変換行列から現在の座標系への変換パラメタを作成
@@ -205,5 +208,10 @@ public class NyARColorPatt_PseudoAffine implements INyARColorPatt
 			}
 		}
 		return true;
+	}
+	@Override
+	public Object createInterface(Class<?> iIid) throws NyARException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

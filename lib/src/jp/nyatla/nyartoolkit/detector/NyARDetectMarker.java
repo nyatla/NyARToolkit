@@ -78,7 +78,7 @@ public class NyARDetectMarker
 		private NyARMatchPatt_Color_WITHOUT_PCA[] _match_patt;
 		private final NyARMatchPattResult __detectMarkerLite_mr=new NyARMatchPattResult();
 		private NyARCoord2Linear _coordline;
-
+		
 		public RleDetector(INyARColorPatt i_inst_patt,NyARCode[] i_ref_code,int i_num_of_code,NyARParam i_param) throws NyARException
 		{
 			super(i_param.getScreenSize());
@@ -225,7 +225,7 @@ public class NyARDetectMarker
 
 		this._transmat = new NyARTransMat(i_ref_param);
 		//NyARToolkitプロファイル
-		this._square_detect =new RleDetector(new NyARColorPatt_Perspective_O2(cw, ch,4,25,i_input_raster_type),i_ref_code,i_number_of_code,i_ref_param);
+		this._square_detect =new RleDetector(new NyARColorPatt_Perspective(cw, ch,4,25,i_input_raster_type),i_ref_code,i_number_of_code,i_ref_param);
 		this._tobin_filter=new NyARRasterFilter_ARToolkitThreshold(100,i_input_raster_type);
 
 		//実サイズ保存

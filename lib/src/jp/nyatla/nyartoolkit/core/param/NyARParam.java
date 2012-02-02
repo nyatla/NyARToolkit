@@ -54,6 +54,32 @@ public class NyARParam
 	private static final int SIZE_OF_PARAM_SET = 4 + 4 + (3 * 4 * 8) + (4 * 8);
 	private NyARCameraDistortionFactor _dist=new NyARCameraDistortionFactor();
 	private NyARPerspectiveProjectionMatrix _projection_matrix=new NyARPerspectiveProjectionMatrix();
+	/**
+	 * テストに使用するための、カメラパラメータ値をロードします。
+	 * このパラメータは、ARToolKit2.7に付属しているカメラパラメータファイルの値です。
+	 */
+	public void loadDefault()
+	{
+		double[] tmp={318.5,263.5,26.2,1.0127565206658486};
+		this._screen_size.setValue(640,480);
+		this._dist.setValue(tmp);
+		this._projection_matrix.m00=700.9514702992245;
+		this._projection_matrix.m01=0;
+		this._projection_matrix.m02=316.5;
+		this._projection_matrix.m03=0;
+		this._projection_matrix.m10=0;
+		this._projection_matrix.m11=726.0941816535367;
+		this._projection_matrix.m12=241.5;
+		this._projection_matrix.m13=0.0;
+		this._projection_matrix.m20=0.0;
+		this._projection_matrix.m21=0.0;
+		this._projection_matrix.m22=1.0;
+		this._projection_matrix.m23=0.0;
+		this._projection_matrix.m30=0.0;
+		this._projection_matrix.m31=0.0;
+		this._projection_matrix.m32=0.0;
+		this._projection_matrix.m33=1.0;
+	}
 
 	public NyARIntSize getScreenSize()
 	{

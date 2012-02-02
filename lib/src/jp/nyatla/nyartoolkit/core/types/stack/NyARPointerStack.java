@@ -137,6 +137,14 @@ public class NyARPointerStack<T>
 		return this._length;
 	}
 	/**
+	 * この関数は、配列の最大サイズを返します。
+	 * @return
+	 */
+	public final int getArraySize()
+	{
+		return this._items.length;
+	}
+	/**
 	 * この関数は、指定したインデクスの要素を配列から取り除きます。
 	 * 要素は、前方詰めで詰められます。
 	 * @param i_index

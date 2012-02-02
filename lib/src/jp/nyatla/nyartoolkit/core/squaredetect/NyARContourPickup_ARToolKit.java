@@ -14,6 +14,15 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
  */
 public class NyARContourPickup_ARToolKit extends NyARContourPickup
 {
+	/** 8方位探索の座標マップ*/
+	protected final static int[] _getContour_xdir = { 0, 1, 1, 1, 0,-1,-1,-1 , 0, 1, 1, 1, 0,-1,-1};
+	/** 8方位探索の座標マップ*/
+	protected final static int[] _getContour_ydir = {-1,-1, 0, 1, 1, 1, 0,-1 ,-1,-1, 0, 1, 1, 1, 0};
+	
+	protected NyARContourPickup_ARToolKit() throws NyARException
+	{
+		super();
+	}
 	/**
 	 * この関数は、ラスタの指定点を基点に、輪郭線を抽出します。
 	 * 開始点は、輪郭の一部である必要があります。

@@ -265,5 +265,17 @@ public class NyARDoublePoint2d
 		this.y=i_y;
 		return;
 	}
+	/**
+	 * この関数は、頂点を移動します。
+	 * @param i_tx
+	 * 移動する距離x
+	 * @param i_ty
+	 * 移動する距離y
+	 */
+	public void translate(double i_tx,double i_ty)
+	{
+		this.x+=i_tx;
+		this.y+=i_ty;
+	}
 	
 }

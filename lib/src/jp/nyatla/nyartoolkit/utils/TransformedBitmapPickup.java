@@ -6,7 +6,7 @@ import jp.nyatla.nyartoolkit.core.pickup.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core.rasterreader.*;
+import jp.nyatla.nyartoolkit.core.rasterdriver.*;
 
 /**
  * このクラスは、姿勢変換行列を使用してマーカの周辺領域からパターンを取得する機能を持つラスタです。
@@ -14,7 +14,7 @@ import jp.nyatla.nyartoolkit.core.rasterreader.*;
  * このクラスは試験的であり、異なる解像度のパターンを取得することや、異なる画素形式へ画像を出力する事ができません。
  * {@link NyARPerspectiveRasterReader}クラスの使用を検討してください。
  */
-class TransformedBitmapPickup extends NyARColorPatt_Perspective_O2
+class TransformedBitmapPickup extends NyARColorPatt_Perspective
 {
 	private NyARIntPoint2d[] _work_points = NyARIntPoint2d.createArray(4);
 	private NyARPerspectiveProjectionMatrix _ref_perspective;
@@ -30,8 +30,9 @@ class TransformedBitmapPickup extends NyARColorPatt_Perspective_O2
 	 * @param i_resolution
 	 * ピクセルあたりのサンプリング解像度。1なら出力1ピクセルにつき1ピクセル、2なら1ピクセルにつき4ピクセル(2x2)をサンプリングします。
 	 * 小さい画像では数値が大きいほど良い結果が得られますが、時間がかかります。
+	 * @throws NyARException 
 	 */
-	public TransformedBitmapPickup(NyARPerspectiveProjectionMatrix i_ref_cparam, int i_width, int i_height, int i_resolution)
+	public TransformedBitmapPickup(NyARPerspectiveProjectionMatrix i_ref_cparam, int i_width, int i_height, int i_resolution) throws NyARException
 	{
 		//ANYラスタで構築
 		super(i_width, i_height, i_resolution, 0,NyARBufferType.NULL_ALLZERO);

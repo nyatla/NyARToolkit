@@ -80,7 +80,7 @@ public class RawbitSerialIdTable
 	}
 
 	private SerialTable _table;
-	private final NyIdMarkerPickup _id_pickup = new NyIdMarkerPickup();
+	private final NyIdMarkerPickup _id_pickup;
 	private NyIdMarkerPattern _temp_nyid_info=new NyIdMarkerPattern();
 	private NyIdMarkerParam _temp_nyid_param=new NyIdMarkerParam();
 	
@@ -89,12 +89,15 @@ public class RawbitSerialIdTable
 
 	/**
 	 * コンストラクタです。
+	 * @param i_input_raster_type
+	 * 入力ラスタのタイプ値。
 	 * @param i_max
 	 * IDテーブルのサイズ。Idマーカ範囲の最大登録数です。
 	 * @throws NyARException 
 	 */
-	public RawbitSerialIdTable(int i_max) throws NyARException
+	public RawbitSerialIdTable(int i_max,int i_input_raster_type) throws NyARException
 	{
+		this._id_pickup=new NyIdMarkerPickup(i_input_raster_type);
 		this._table=new SerialTable(i_max);
 	}
 	/**

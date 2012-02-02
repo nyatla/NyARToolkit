@@ -27,7 +27,8 @@ package jp.nyatla.nyartoolkit.core.rasterfilter;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core.rasterreader.*;
+import jp.nyatla.nyartoolkit.core.rasterdriver.*;
+import jp.nyatla.nyartoolkit.core.rasterfilter.NyARRasterFilter_GaussianSmooth.IFilter;
 
 
 /**
@@ -36,25 +37,28 @@ import jp.nyatla.nyartoolkit.core.rasterreader.*;
  * <li>{@link NyARBufferType#INT1D_GRAY_8}
  * </p>
  */
-public class NyARRasterFilter_Reverse implements INyARRasterFilter
+public class NyARRasterFilter_Reverse
 {
-	private IdoFilterImpl _do_filter_impl;
+	private IFilter _do_filter_impl;
 	/**
 	 * コンストラクタです。
-	 * 入出力ラスタの形式を入力して、インスタンスを生成します。
-	 * @param i_raster_type
-	 * 入出力ラスタの画素形式。
 	 * @throws NyARException
 	 */	
 	public NyARRasterFilter_Reverse(int i_raster_type) throws NyARException
 	{
-		switch (i_raster_type) {
-		case NyARBufferType.INT1D_GRAY_8:
-			this._do_filter_impl=new IdoFilterImpl_GRAY_8();
-			break;
-		default:
-			throw new NyARException();
+		this._do_filter_impl=new Filter_Reverse_Blank();
+	}
+	protected IFilter createFilter(INyARRaster i_in,INyARRaster i_out) throws NyARException
+	{
+		if(i_in.getBufferType()==NyARBufferType.INT1D_GRAY_8){
+			switch(i_out.getBufferType()){
+			case NyARBufferType.INT1D_GRAY_8:
+				return new Filter_Reverse_GRAY_8();
+			default:
+				break;
+			}
 		}
+		throw new NyARException();
 	}
 	/**
 	 * 入力ラスタを反転して、画素を出力ラスタへ書込みます。
@@ -62,28 +66,51 @@ public class NyARRasterFilter_Reverse implements INyARRasterFilter
 	 */	
 	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException
 	{
+		if(!this._do_filter_impl.isSupport(i_input,i_output)){
+			this._do_filter_impl=this.createFilter(i_input, i_output);
+		}		
 		this._do_filter_impl.doFilter(i_input,i_output,i_input.getSize());
 	}
-	/** 変換用ドライバのインタフェイス*/	
-	protected interface IdoFilterImpl
+	public interface IFilter
 	{
-		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException;
-	}
-	private class IdoFilterImpl_GRAY_8 implements IdoFilterImpl
-	{
-		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException
-		{
-			assert (i_input.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
-			assert (i_output.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
-			int[] in_ptr =(int[])i_input.getBuffer();
-			int[] out_ptr=(int[])i_output.getBuffer();
+		public boolean isSupport(INyARRaster i_in,INyARRaster i_out);
+		public void doFilter(INyARRaster i_input,INyARRaster i_output,NyARIntSize i_size) throws NyARException;
+	}	
+}
 
-			
-			int number_of_pixel=i_size.h*i_size.w;
-			for(int i=0;i<number_of_pixel;i++){
-				out_ptr[i]=255-in_ptr[i];
-			}
-			return;
+//
+//フィルタ定義
+//
+class Filter_Reverse_Blank implements NyARRasterFilter_Reverse.IFilter
+{
+	public final boolean isSupport(INyARRaster i_in,INyARRaster i_out)
+	{
+		return false;
+	}
+	public final void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException
+	{
+		throw new NyARException();
+	}
+
+}
+class Filter_Reverse_GRAY_8 implements NyARRasterFilter_Reverse.IFilter
+{
+	public final boolean isSupport(INyARRaster i_in,INyARRaster i_out)
+	{
+		return i_in.isEqualBufferType(NyARBufferType.INT1D_GRAY_8) && i_out.isEqualBufferType(NyARBufferType.INT1D_GRAY_8);
+	}
+	public final void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException
+	{
+		assert (i_input.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
+		assert (i_output.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
+		int[] in_ptr =(int[])i_input.getBuffer();
+		int[] out_ptr=(int[])i_output.getBuffer();
+
+		
+		int number_of_pixel=i_size.h*i_size.w;
+		for(int i=0;i<number_of_pixel;i++){
+			out_ptr[i]=255-in_ptr[i];
 		}
+		return;
 	}
 }

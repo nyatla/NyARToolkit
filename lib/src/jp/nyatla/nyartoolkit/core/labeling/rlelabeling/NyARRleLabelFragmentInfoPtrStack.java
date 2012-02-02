@@ -27,8 +27,6 @@ package jp.nyatla.nyartoolkit.core.labeling.rlelabeling;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabel;
-import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabeling_ARToolKit;
-import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARPointerStack;
 
 /**

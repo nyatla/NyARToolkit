@@ -25,11 +25,10 @@
 package jp.nyatla.nyartoolkit.core.labeling.rlelabeling;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.pixeldriver.INyARGsPixelDriver;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
-
-
 
 
 /**
@@ -61,9 +60,66 @@ import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
  */
 public abstract class NyARLabeling_Rle
 {
+	/**
+	 * NyARLabeling_Rleクラスが使用するピクセルドライブインタフェイスです。
+	 */
+	public interface IRasterDriver
+	{
+		/**
+		 * 現在のラスタの指定点(x,y)から、幅i_lenの領域をRLE圧縮して返します。
+		 * @param i_x
+		 * @param i_y
+		 * @param i_len
+		 * @param i_out
+		 * @return
+		 */
+		public int xLineToRle(int i_x,int i_y,int i_len,int i_th,RleElement[] i_out) throws NyARException;
+	}
+	/**
+	 * Labeling用の画像ドライバを構築します。
+	 */
+	public static class RasterDriverFactory
+	{
+		/**
+		 * この関数はラスタから呼ばれる。
+		 * @param i_raster
+		 * @return
+		 */
+		public static NyARLabeling_Rle.IRasterDriver createDriver(INyARGrayscaleRaster i_raster) throws NyARException
+		{
+			switch(i_raster.getBufferType()){
+			case NyARBufferType.INT1D_GRAY_8:
+			case NyARBufferType.INT1D_BIN_8:
+				return new NyARRlePixelDriver_BIN_GS8(i_raster);
+			default:
+				if(i_raster instanceof INyARGrayscaleRaster){
+					return new NyARRlePixelDriver_GSReader((INyARGrayscaleRaster) i_raster);
+				}
+				throw new NyARException();
+			}
+		}		
+	}	
+	/**
+	 * このクラスは、{@link RleInfoStack}の要素です。
+	 * RLEフラグメントのパラメータを保持します。
+	 * ユーザが使うことはありません。
+	 */
+	public static class RleElement
+	{
+		public int l;
+		public int r;
+		int fid;
+		public static RleElement[] createArray(int i_length)
+		{
+			RleElement[] ret = new RleElement[i_length];
+			for (int i = 0; i < i_length; i++) {
+				ret[i] = new RleElement();
+			}
+			return ret;
+		}
+	}	
 	private static final int AR_AREA_MAX = 100000;// #define AR_AREA_MAX 100000
 	private static final int AR_AREA_MIN = 70;// #define AR_AREA_MIN 70
-	
 	private RleInfoStack _rlestack;
 	private RleElement[] _rle1;
 	private RleElement[] _rle2;
@@ -81,6 +137,11 @@ public abstract class NyARLabeling_Rle
 	 */
 	public NyARLabeling_Rle(int i_width,int i_height) throws NyARException
 	{
+		this.initInstance(i_width, i_height);
+	}
+
+	protected void initInstance(int i_width,int i_height) throws NyARException
+	{
 		this._raster_size.setValue(i_width,i_height);
 		long t=(long)i_width*i_height*2048/(320*240)+32;//full HD support
 		this._rlestack=new RleInfoStack((int)t);
@@ -88,7 +149,6 @@ public abstract class NyARLabeling_Rle
 		this._rle2 = RleElement.createArray(i_width/2+1);
 		this._max_area=AR_AREA_MAX;
 		this._min_area=AR_AREA_MIN;
-
 		return;
 	}
 	/**
@@ -106,73 +166,6 @@ public abstract class NyARLabeling_Rle
 		this._max_area=i_max;
 		this._min_area=i_min;
 		return;
-	}
-
-	/**
-	 * i_bin_bufのgsイメージをREL圧縮する。
-	 * @param i_bin_buf
-	 * @param i_st
-	 * @param i_len
-	 * @param i_out
-	 * @param i_th
-	 * BINラスタのときは0,GSラスタの時は閾値を指定する。
-	 * この関数は、閾値を暗点と認識します。
-	 * 暗点<=th<明点
-	 * @return
-	 */
-	private final int toRel(int[] i_bin_buf, int i_st, int i_len, RleElement[] i_out,int i_th)
-	{
-		int current = 0;
-		int r = -1;
-		// 行確定開始
-		int x = i_st;
-		final int right_edge = i_st + i_len - 1;
-		while (x < right_edge) {
-			// 暗点(0)スキャン
-			if (i_bin_buf[x] > i_th) {
-				x++;//明点
-				continue;
-			}
-			// 暗点発見→暗点長を調べる
-			r = (x - i_st);
-			i_out[current].l = r;
-			r++;// 暗点+1
-			x++;
-			while (x < right_edge) {
-				if (i_bin_buf[x] > i_th) {
-					// 明点(1)→暗点(0)配列終了>登録
-					i_out[current].r = r;
-					current++;
-					x++;// 次点の確認。
-					r = -1;// 右端の位置を0に。
-					break;
-				} else {
-					// 暗点(0)長追加
-					r++;
-					x++;
-				}
-			}
-		}
-		// 最後の1点だけ判定方法が少し違うの。
-		if (i_bin_buf[x] > i_th) {
-			// 明点→rカウント中なら暗点配列終了>登録
-			if (r >= 0) {
-				i_out[current].r = r;
-				current++;
-			}
-		} else {
-			// 暗点→カウント中でなければl1で追加
-			if (r >= 0) {
-				i_out[current].r = (r + 1);
-			} else {
-				// 最後の1点の場合
-				i_out[current].l = (i_len - 1);
-				i_out[current].r = (i_len);
-			}
-			current++;
-		}
-		// 行確定
-		return current;
 	}
 	/**
 	 * フラグメントをRLEスタックへ追加する。
@@ -205,68 +198,46 @@ public abstract class NyARLabeling_Rle
 		return true;
 	}
 	/**
-	 * この関数は、2値イメージの{@link NyARBinRaster}ラスタをラベリングします。
+	 * この関数は、ラスタを敷居値i_thで2値化して、ラベリングします。
 	 * 検出したラベルは、自己コールバック関数{@link #onLabelFound}で通知します。
 	 * @param i_bin_raster
 	 * 入力画像。対応する形式は、クラスの説明を参照してください。
+	 * @param i_th
+	 * 敷居値を指定します。2値画像の場合は、0を指定してください。
 	 * @throws NyARException
 	 */
-	public void labeling(NyARBinRaster i_bin_raster) throws NyARException
+	public void labeling(INyARGrayscaleRaster i_raster,int i_th) throws NyARException
 	{
-		assert(i_bin_raster.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
-		NyARIntSize size=i_bin_raster.getSize();
-		this.imple_labeling(i_bin_raster,0,0,0,size.w,size.h);
+		NyARIntSize size=i_raster.getSize();
+		this.imple_labeling(i_raster,0,0,0,size.w,size.h);
 	}
 	/**
-	 * この関数は、2値イメージの{@link NyARBinRaster}ラスタの指定範囲をラベリングします。
+	 * この関数は、ラスタを敷居値i_thで2値化して、ラベリングします。
 	 * 検出したラベルは、自己コールバック関数{@link #onLabelFound}で通知します。
 	 * @param i_bin_raster
 	 * 入力画像。対応する形式は、クラスの説明を参照してください。
 	 * @param i_area
 	 * ラべリングする画像内の範囲
-	 * @throws NyARException
-	 */
-	public void labeling(NyARBinRaster i_bin_raster,NyARIntRect i_area) throws NyARException
-	{
-		assert(i_bin_raster.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
-		this.imple_labeling(i_bin_raster,0,i_area.x,i_area.y,i_area.w,i_area.h);
-	}
-	/**
-	 * この関数は、2値イメージの{@link NyARBinRaster}ラスタをラベリングします。
-	 * 検出したラベルは、自己コールバック関数{@link #onLabelFound}で通知します。
-	 * @param i_gs_raster
-	 * 入力画像。対応する形式は、クラスの説明を参照してください。
 	 * @param i_th
-	 * 暗点を判定するための敷居値0から255の数値である事。
+	 * 敷居値
 	 * @throws NyARException
 	 */
-	public void labeling(NyARGrayscaleRaster i_gs_raster,int i_th) throws NyARException
+	public void labeling(INyARGrayscaleRaster i_raster,NyARIntRect i_area,int i_th) throws NyARException
 	{
-		assert(i_gs_raster.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
-		NyARIntSize size=i_gs_raster.getSize();
-		this.imple_labeling(i_gs_raster,i_th,0,0,size.w,size.h);
+		this.imple_labeling(i_raster,0,i_area.x,i_area.y,i_area.w,i_area.h);
 	}
-	/**
-	 * この関数は、2値イメージの{@link NyARBinRaster}ラスタの指定範囲をラベリングします。
-	 * 検出したラベルは、自己コールバック関数{@link #onLabelFound}で通知します。
-	 * @param i_gs_raster
-	 * 入力画像。対応する形式は、クラスの説明を参照してください。
-	 * @param i_area
-	 * ラべリングする画像内の範囲
-	 * @param i_th
-	 * 暗点を判定するための敷居値0から255の数値である事。
-	 * @throws NyARException
-	 */
-	public void labeling(NyARGrayscaleRaster i_gs_raster,NyARIntRect i_area,int i_th) throws NyARException
-	{
-		assert(i_gs_raster.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
-		this.imple_labeling(i_gs_raster,i_th,i_area.x,i_area.y,i_area.w,i_area.h);
-	}
+	private INyARRaster _last_input_raster=null;
+	private IRasterDriver _image_driver;
+
 	private void imple_labeling(INyARRaster i_raster,int i_th,int i_left,int i_top,int i_width, int i_height) throws NyARException
 	{
 		//ラスタのサイズを確認
 		assert(i_raster.getSize().isEqualSize(this._raster_size));
-		
+		//ラスタドライバのチェック
+		if(_last_input_raster!=i_raster){
+			this._image_driver=(IRasterDriver)i_raster.createInterface(IRasterDriver.class);
+		}
+		IRasterDriver pixdrv=this._image_driver;
 		RleElement[] rle_prev = this._rle1;
 		RleElement[] rle_current = this._rle2;
 		// リセット処理
@@ -277,18 +248,14 @@ public abstract class NyARLabeling_Rle
 		int len_prev = 0;
 		int len_current = 0;
 		final int bottom=i_top+i_height;
-		final int row_stride=this._raster_size.w;
-		int[] in_buf = (int[]) i_raster.getBuffer();
-
 		int id_max = 0;
 		int label_count=0;
-		int rle_top_index=i_left+row_stride*i_top;
+		int ypos=i_top;
 		// 初段登録
-
-		len_prev = toRel(in_buf, rle_top_index, i_width, rle_prev,i_th);
+		len_prev = pixdrv.xLineToRle(i_left,ypos,i_width,i_th,rle_prev);
 		for (int i = 0; i < len_prev; i++) {
 			// フラグメントID=フラグメント初期値、POS=Y値、RELインデクス=行
-			if(addFragment(rle_prev[i], id_max, i_top,rlestack)){
+			if(addFragment(rle_prev[i], id_max, ypos,rlestack)){
 				id_max++;
 				// nofの最大値チェック
 				label_count++;
@@ -298,8 +265,9 @@ public abstract class NyARLabeling_Rle
 		// 次段結合
 		for (int y = i_top + 1; y < bottom; y++) {
 			// カレント行の読込
-			rle_top_index+=row_stride;
-			len_current = toRel(in_buf,rle_top_index, i_width, rle_current,i_th);
+			
+			ypos++;
+			len_current = pixdrv.xLineToRle(i_left,ypos,i_width,i_th, rle_current);
 			int index_prev = 0;
 
 			SCAN_CUR: for (int i = 0; i < len_current; i++) {
@@ -461,7 +429,7 @@ public abstract class NyARLabeling_Rle
 }
 
 /**
- * このクラスは、{@link NyARLabeling_Rle}が内部的に使うRLEスタックです。
+ * このクラスは、{@link NyARLabeling_Rle_old}が内部的に使うRLEスタックです。
  * ユーザが使うことはありません。
  */
 class RleInfoStack extends NyARObjectStack<NyARRleLabelFragmentInfo>
@@ -478,23 +446,139 @@ class RleInfoStack extends NyARObjectStack<NyARRleLabelFragmentInfo>
 		return new NyARRleLabelFragmentInfo();
 	}
 }
-/**
- * このクラスは、{@link RleInfoStack}の要素です。
- * RLEフラグメントのパラメータを保持します。
- * ユーザが使うことはありません。
- */
-class RleElement
+
+//
+//画像ドライバ
+//
+
+class NyARRlePixelDriver_BIN_GS8 implements NyARLabeling_Rle.IRasterDriver
 {
-	int l;
-	int r;
-	int fid;
-	public static RleElement[] createArray(int i_length)
+	private INyARRaster _ref_raster;
+	public NyARRlePixelDriver_BIN_GS8(INyARRaster i_ref_raster)
 	{
-		RleElement[] ret = new RleElement[i_length];
-		for (int i = 0; i < i_length; i++) {
-			ret[i] = new RleElement();
+		this._ref_raster=i_ref_raster;
+	}
+	public int xLineToRle(int i_x,int i_y,int i_len,int i_th,NyARLabeling_Rle.RleElement[] i_out) throws NyARException
+	{
+		int[] buf=(int[])this._ref_raster.getBuffer();
+		int current = 0;
+		int r = -1;
+		// 行確定開始
+		int st=i_x+this._ref_raster.getWidth()*i_y;
+		int x = st;
+		final int right_edge = st + i_len - 1;
+		while (x < right_edge) {
+			// 暗点(0)スキャン
+			if (buf[x] > i_th) {
+				x++;//明点
+				continue;
+			}
+			// 暗点発見→暗点長を調べる
+			r = (x - st);
+			i_out[current].l = r;
+			r++;// 暗点+1
+			x++;
+			while (x < right_edge) {
+				if (buf[x] > i_th) {
+					// 明点(1)→暗点(0)配列終了>登録
+					i_out[current].r = r;
+					current++;
+					x++;// 次点の確認。
+					r = -1;// 右端の位置を0に。
+					break;
+				} else {
+					// 暗点(0)長追加
+					r++;
+					x++;
+				}
+			}
 		}
-		return ret;
+		// 最後の1点だけ判定方法が少し違うの。
+		if (buf[x] > i_th) {
+			// 明点→rカウント中なら暗点配列終了>登録
+			if (r >= 0) {
+				i_out[current].r = r;
+				current++;
+			}
+		} else {
+			// 暗点→カウント中でなければl1で追加
+			if (r >= 0) {
+				i_out[current].r = (r + 1);
+			} else {
+				// 最後の1点の場合
+				i_out[current].l = (i_len - 1);
+				i_out[current].r = (i_len);
+			}
+			current++;
+		}
+		// 行確定
+		return current;
 	}
 }
 
+/**
+ * GSPixelDriverを使ったクラス
+ */
+class NyARRlePixelDriver_GSReader implements NyARLabeling_Rle.IRasterDriver
+{
+	private INyARGsPixelDriver _ref_driver;
+	public NyARRlePixelDriver_GSReader(INyARGrayscaleRaster i_raster) throws NyARException
+	{
+		this._ref_driver=i_raster.getGsPixelDriver();
+	}
+	public int xLineToRle(int i_x,int i_y,int i_len,int i_th,NyARLabeling_Rle.RleElement[] i_out) throws NyARException
+	{
+		int current = 0;
+		int r = -1;
+		// 行確定開始
+		int st=i_x;
+		int x = st;
+		final int right_edge = st + i_len - 1;
+		while (x < right_edge) {
+			// 暗点(0)スキャン
+			if (this._ref_driver.getPixel(x,i_y) > i_th) {
+				x++;//明点
+				continue;
+			}
+			// 暗点発見→暗点長を調べる
+			r = (x - st);
+			i_out[current].l = r;
+			r++;// 暗点+1
+			x++;
+			while (x < right_edge) {
+				if (this._ref_driver.getPixel(x,i_y) > i_th) {
+					// 明点(1)→暗点(0)配列終了>登録
+					i_out[current].r = r;
+					current++;
+					x++;// 次点の確認。
+					r = -1;// 右端の位置を0に。
+					break;
+				} else {
+					// 暗点(0)長追加
+					r++;
+					x++;
+				}
+			}
+		}
+		// 最後の1点だけ判定方法が少し違うの。
+		if (this._ref_driver.getPixel(x,i_y) > i_th) {
+			// 明点→rカウント中なら暗点配列終了>登録
+			if (r >= 0) {
+				i_out[current].r = r;
+				current++;
+			}
+		} else {
+			// 暗点→カウント中でなければl1で追加
+			if (r >= 0) {
+				i_out[current].r = (r + 1);
+			} else {
+				// 最後の1点の場合
+				i_out[current].l = (i_len - 1);
+				i_out[current].r = (i_len);
+			}
+			current++;
+		}
+		// 行確定
+		return current;
+	}
+}

@@ -25,6 +25,7 @@
 package jp.nyatla.nyartoolkit.core.rasterfilter;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 
 /**
@@ -39,16 +40,14 @@ import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
  */
 public class NyARRasterFilter_ToneTable extends NyARRasterFilter_CustomToneTable
 {
+	private int[] table=new int[256];
 	/**
 	 * コンストラクタです。
-	 * 入力/出力ラスタの形式を入力して、インスタンスを生成します。
-	 * @param i_raster_type
-	 * 入力/出力ラスタの画素形式。
 	 * @throws NyARException
 	 */	
-	public NyARRasterFilter_ToneTable(int i_raster_type) throws NyARException
+	public NyARRasterFilter_ToneTable() throws NyARException
 	{
-		super(i_raster_type);
+		super();
 	}
 	/**
 	 * トーンテーブルに、点x,yを通過する、傾きi_aの直線を定義します。
@@ -122,5 +121,9 @@ public class NyARRasterFilter_ToneTable extends NyARRasterFilter_CustomToneTable
 		for(int i=0;i<256;i++){
 			this.table[i]=(int)(Math.pow((double)i/255.0,i_gamma)*255.0);
 		}
+	}
+	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException
+	{
+		super.doFilter(i_input,this.table, i_output);
 	}
 }

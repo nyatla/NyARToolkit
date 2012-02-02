@@ -51,12 +51,12 @@ public class NyARRotMatrix extends NyARDoubleMatrix33
 	 */
 	public NyARRotMatrix(NyARPerspectiveProjectionMatrix i_matrix) throws NyARException
 	{
-		this.__initRot_vec1=new NyARRotVector(i_matrix);
-		this.__initRot_vec2=new NyARRotVector(i_matrix);
+		this.__initRot_vec1=new NyARRotVectorV2(i_matrix);
+		this.__initRot_vec2=new NyARRotVectorV2(i_matrix);
 		return;
 	}
-	final private NyARRotVector __initRot_vec1;
-	final private NyARRotVector __initRot_vec2;
+	final private NyARRotVectorV2 __initRot_vec1;
+	final private NyARRotVectorV2 __initRot_vec2;
 	/**
 	 * この関数は、{@link NyARTransMatResult}の内容を、回転行列にセットします。
 	 * @param i_prev_result
@@ -91,8 +91,8 @@ public class NyARRotMatrix extends NyARDoubleMatrix33
 	 */
 	public void initRotBySquare(final NyARLinear[] i_linear,final NyARDoublePoint2d[] i_sqvertex) throws NyARException
 	{
-		final NyARRotVector vec1=this.__initRot_vec1;
-		final NyARRotVector vec2=this.__initRot_vec2;
+		final NyARRotVectorV2 vec1=this.__initRot_vec1;
+		final NyARRotVectorV2 vec2=this.__initRot_vec2;
 
 		//向かい合った辺から、２本のベクトルを計算
 		
@@ -105,7 +105,7 @@ public class NyARRotMatrix extends NyARDoubleMatrix33
 		vec2.checkVectorByVertex(i_sqvertex[3], i_sqvertex[0]);
 
 		//回転の最適化？
-		NyARRotVector.checkRotation(vec1,vec2);
+		NyARRotVectorV2.checkRotation(vec1,vec2);
 
 		this.m00 =vec1.v1;
 		this.m10 =vec1.v2;

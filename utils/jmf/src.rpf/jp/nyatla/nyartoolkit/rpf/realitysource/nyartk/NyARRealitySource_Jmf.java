@@ -4,8 +4,8 @@ import javax.media.format.VideoFormat;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
+import jp.nyatla.nyartoolkit.core.rasterdriver.NyARPerspectiveRasterReader;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve192;
-import jp.nyatla.nyartoolkit.core.rasterreader.NyARPerspectiveRasterReader;
 import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARTrackerSource;
 import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARTrackerSource_Reference;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfNyARRaster_RGB;

@@ -31,23 +31,18 @@
 package jp.nyatla.nyartoolkit.core.pickup;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.NyARMat;
+import jp.nyatla.nyartoolkit.core.*;
+import jp.nyatla.nyartoolkit.core.pixeldriver.INyARRgbPixelDriver;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
-import jp.nyatla.nyartoolkit.core.rasterreader.*;
+import jp.nyatla.nyartoolkit.core.rasterdriver.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 
 /**
- * このクラスは、{@link NyARColorPatt_O1}を展開して高速化したクラスです。
+ * このクラスは、{@link NyARColorPatt_Base}を展開して高速化したクラスです。
  */
-public class NyARColorPatt_O3 implements INyARColorPatt
+public class NyARColorPatt_O3 extends NyARColorPatt_Base
 {
-	private static final int AR_PATT_SAMPLE_NUM = 64;
-	private static final int BUFFER_FORMAT=NyARBufferType.INT1D_X8R8G8B8_32;
-
-	private int[] _patdata;
-	private NyARIntSize _size;
-	private NyARRgbPixelReader_INT1D_X8R8G8B8_32 _pixelreader;
 	/**
 	 * コンストラクタです。
 	 * 解像度を指定して、インスタンスを生成します。
@@ -55,76 +50,11 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 	 * ラスタのサイズ
 	 * @param i_height
 	 * ラスタのサイズ
+	 * @throws NyARException 
 	 */	
-	public NyARColorPatt_O3(int i_width, int i_height)
+	public NyARColorPatt_O3(int i_width, int i_height) throws NyARException
 	{
-		this._size=new NyARIntSize(i_width,i_height);
-		this._patdata = new int[i_height*i_width];
-		this._pixelreader=new NyARRgbPixelReader_INT1D_X8R8G8B8_32(this._patdata,this._size);
-	}
-	/**
-	 * この関数はラスタの幅を返します。
-	 */
-	public int getWidth()
-	{
-		return this._size.w;
-	}
-	/**
-	 * この関数はラスタの高さを返します。
-	 */	
-	public int getHeight()
-	{
-		return this._size.h;
-	}
-	/**
-	 * この関数はラスタのサイズの参照値を返します。
-	 */
-	public NyARIntSize getSize()
-	{
-		return 	this._size;
-	}
-	/**
-	 * この関数は、ラスタの画素読み取りオブジェクトの参照値を返します。
-	 */
-	public INyARRgbPixelReader getRgbPixelReader()
-	{
-		return this._pixelreader;
-	}
-	/**
-	 * この関数は、ラスタ画像のバッファを返します。
-	 * バッファ形式は、{@link NyARBufferType#INT1D_X8R8G8B8_32}(int[])です。
-	 */
-	public Object getBuffer()
-	{
-		return this._patdata;
-	}
-	/**
-	 * この関数は、インスタンスがバッファを所有しているかを返します。基本的にtrueです。
-	 */
-	public boolean hasBuffer()
-	{
-		return this._patdata!=null;
-	}
-	/**
-	 * この関数は使用不可能です。
-	 */
-	public void wrapBuffer(Object i_ref_buf) throws NyARException
-	{
-		NyARException.notImplement();
-	}
-	/**
-	 * この関数は、バッファタイプの定数を返します。
-	 */
-	final public int getBufferType()
-	{
-		return BUFFER_FORMAT;
-	}
-	/**
-	 * この関数は、インスタンスのバッファタイプが引数のものと一致しているか判定します。
-	 */
-	public final boolean isEqualBufferType(int i_type_value)
-	{
-		return BUFFER_FORMAT==i_type_value;
+		super(i_width,i_height);
 	}
 	private final NyARMat wk_get_cpara_a = new NyARMat(8, 8);
 	private final NyARMat wk_get_cpara_b = new NyARMat(8, 1);
@@ -138,13 +68,13 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 	 */
 	private boolean get_cpara(final NyARIntPoint2d[] i_vertex, NyARMat o_para)throws NyARException
 	{
-		int[][] world = wk_pickFromRaster_world;
+		double[][] world = CPARAM_WORLD;
 		NyARMat a = wk_get_cpara_a;// 次処理で値を設定するので、初期化不要// new NyARMat( 8, 8 );
-		double[][] a_array = a.getArray();
+		double[][] a_array = a.refArray();
 		NyARMat b = wk_get_cpara_b;// 次処理で値を設定するので、初期化不要// new NyARMat( 8, 1 );
-		double[][] b_array = b.getArray();
+		double[][] b_array = b.refArray();
 		double[] a_pt0, a_pt1;
-		int[] world_pti;
+		double[] world_pti;
 
 		for (int i = 0; i < 4; i++) {
 			a_pt0 = a_array[i * 2];
@@ -170,19 +100,13 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 			b_array[i * 2 + 0][0] = (double) i_vertex[i].x;// b->m[i*2+0] =vertex[i][0];
 			b_array[i * 2 + 1][0] = (double) i_vertex[i].y;// b->m[i*2+1] =vertex[i][1];
 		}
-		if (!a.matrixSelfInv()) {
+		if (!a.inverse()) {
 			return false;
 		}
 
-		o_para.matrixMul(a, b);
+		o_para.mul(a, b);
 		return true;
 	}
-
-	// private final double[] wk_pickFromRaster_para=new double[9];//[3][3];
-	private final static int[][] wk_pickFromRaster_world = {// double world[4][2];
-	{ 100, 100 }, { 100 + 10, 100 }, { 100 + 10, 100 + 10 }, { 100, 100 + 10 } };
-
-
 	/**
 	 * この関数は、ラスタのi_vertexsで定義される四角形からパターンを取得して、インスタンスに格納します。
 	 */
@@ -274,7 +198,7 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 		final int ydiv = i_ydiv2 / this._size.h;// ydiv = ydiv2/Config.AR_PATT_SIZE_Y;
 		final int xdiv_x_ydiv = xdiv * ydiv;
 		double reciprocal;
-		final double[][] para=i_cpara.getArray();
+		final double[][] para=i_cpara.refArray();
 		final double para00=para[0*3+0][0];
 		final double para01=para[0*3+1][0];
 		final double para02=para[0*3+2][0];
@@ -284,7 +208,7 @@ public class NyARColorPatt_O3 implements INyARColorPatt
 		final double para20=para[2*3+0][0];
 		final double para21=para[2*3+1][0];
 
-		INyARRgbPixelReader reader=image.getRgbPixelReader();
+		INyARRgbPixelDriver reader=image.getRgbPixelDriver();
 		final int img_width=image.getWidth();
 		final int img_height=image.getHeight();
 

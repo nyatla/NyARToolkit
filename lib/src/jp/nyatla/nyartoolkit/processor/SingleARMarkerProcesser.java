@@ -91,11 +91,11 @@ public abstract class SingleARMarkerProcesser
 			this._raster_type=i_raster_type;
 			return;
 		}
-		public void setNyARCodeTable(NyARCode[] i_ref_code,int i_code_resolution)
+		public void setNyARCodeTable(NyARCode[] i_ref_code,int i_code_resolution) throws NyARException
 		{
 			/*unmanagedで実装するときは、ここでリソース解放をすること。*/
 			this._deviation_data=new NyARMatchPattDeviationColorData(i_code_resolution,i_code_resolution);
-			this._inst_patt=new NyARColorPatt_Perspective_O2(i_code_resolution,i_code_resolution,4,25,this._raster_type);
+			this._inst_patt=new NyARColorPatt_Perspective(i_code_resolution,i_code_resolution,4,25,this._raster_type);
 			this._match_patt = new NyARMatchPatt_Color_WITHOUT_PCA[i_ref_code.length];
 			for(int i=0;i<i_ref_code.length;i++){
 				this._match_patt[i]=new NyARMatchPatt_Color_WITHOUT_PCA(i_ref_code[i]);
@@ -279,8 +279,9 @@ public abstract class SingleARMarkerProcesser
 	 * <p>メモ:
 	 * マーカを検出している状態で関数を実行すると、イベント通知なしに、認識中のマーカを見失います。
 	 * </p>
+	 * @throws NyARException 
 	 */
-	public void setARCodeTable(NyARCode[] i_ref_code_table, int i_code_resolution, double i_marker_width)
+	public void setARCodeTable(NyARCode[] i_ref_code_table, int i_code_resolution, double i_marker_width) throws NyARException
 	{
 		if (this._current_arcode_index != -1) {
 			// 強制リセット

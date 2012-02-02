@@ -30,65 +30,17 @@
  */
 package jp.nyatla.nyartoolkit.core.raster;
 
+import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARLabeling_Rle;
+import jp.nyatla.nyartoolkit.core.pixeldriver.NyARGsPixelDriverFactory;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARContourPickup;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.*;
 
 /**
- * このクラスは、２値画像を格納するラスタクラスです。
- * 外部バッファ、内部バッファの両方に対応します。
+ * このクラスは、0/ 255 の二値GrayscaleRasterです。
  */
-public class NyARBinRaster extends NyARRaster_BasicClass
+public class NyARBinRaster extends NyARGrayscaleRaster
 {
-	/** バッファオブジェクト。*/
-	protected Object _buf;
-	/** バッファオブジェクトがアタッチされていればtrue*/
-	protected boolean _is_attached_buffer;
-	/**
-	 * コンストラクタです。
-	 * 画像のサイズパラメータとバッファ形式を指定して、インスタンスを生成します。
-	 * @param i_width
-	 * ラスタのサイズ
-	 * @param i_height
-	 * ラスタのサイズ
-	 * @param i_raster_type
-	 * ラスタのバッファ形式。
-	 * {@link NyARBufferType}に定義された定数値を指定してください。指定できる値は、以下の通りです。
-	 * <ul>
-	 * <li>{@link NyARBufferType#INT2D_BIN_8}
-	 * <ul>
-	 * @param i_is_alloc
-	 * バッファを外部参照にするかのフラグ値。
-	 * trueなら内部バッファ、falseなら外部バッファを使用します。
-	 * falseの場合、初期のバッファはnullになります。インスタンスを生成したのちに、{@link #wrapBuffer}を使って割り当ててください。
-	 * @throws NyARException
-	 */
-	public NyARBinRaster(int i_width, int i_height,int i_raster_type,boolean i_is_alloc) throws NyARException
-	{
-		super(i_width,i_height,i_raster_type);
-		if(!initInstance(this._size,i_raster_type,i_is_alloc)){
-			throw new NyARException();
-		}
-	}
-	/**
-	 * コンストラクタです。
-	 * 画像のサイズパラメータを指定して、{@link NyARBufferType#INT2D_BIN_8}形式のバッファを持つインスタンスを生成します。
-	 * @param i_width
-	 * ラスタのサイズ
-	 * @param i_height
-	 * ラスタのサイズ
-	 * @param i_is_alloc
-	 * バッファを外部参照にするかのフラグ値。
-	 * trueなら内部バッファ、falseなら外部バッファを使用します。
-	 * falseの場合、初期のバッファはnullになります。インスタンスを生成したのちに、{@link #wrapBuffer}を使って割り当ててください。
-	 * @throws NyARException
-	 */
-	public NyARBinRaster(int i_width, int i_height,boolean i_is_alloc) throws NyARException
-	{
-		super(i_width,i_height,NyARBufferType.INT1D_BIN_8);
-		if(!initInstance(this._size,NyARBufferType.INT1D_BIN_8,i_is_alloc)){
-			throw new NyARException();
-		}
-	}
 	/**
 	 * コンストラクタです。
 	 * 画像のサイズパラメータを指定して、{@link NyARBufferType#INT2D_BIN_8}形式のバッファを持つインスタンスを生成します。
@@ -101,12 +53,9 @@ public class NyARBinRaster extends NyARRaster_BasicClass
 	 */
 	public NyARBinRaster(int i_width, int i_height) throws NyARException
 	{
-		super(i_width,i_height,NyARBufferType.INT1D_BIN_8);
-		if(!initInstance(this._size,NyARBufferType.INT1D_BIN_8,true)){
-			throw new NyARException();
-		}
+		super(i_width,i_height,NyARBufferType.INT1D_BIN_8,true);
 	}
-	/**
+	/*
 	 * この関数は、インスタンスの初期化シーケンスを実装します。
 	 * コンストラクタから呼び出します。
 	 * @param i_size
@@ -117,8 +66,9 @@ public class NyARBinRaster extends NyARRaster_BasicClass
 	 * 内部バッファ/外部バッファのフラグ
 	 * @return
 	 * 初期化に成功するとtrue
+	 * @throws NyARException 
 	 */
-	protected boolean initInstance(NyARIntSize i_size,int i_buf_type,boolean i_is_alloc)
+	protected void initInstance(NyARIntSize i_size,int i_buf_type,boolean i_is_alloc) throws NyARException
 	{
 		switch(i_buf_type)
 		{
@@ -126,35 +76,21 @@ public class NyARBinRaster extends NyARRaster_BasicClass
 				this._buf = i_is_alloc?new int[i_size.w*i_size.h]:null;
 				break;
 			default:
-				return false;
+				super.initInstance(i_size, i_buf_type, i_is_alloc);
+				return;
 		}
+		this._pixdrv=NyARGsPixelDriverFactory.createDriver(this);
 		this._is_attached_buffer=i_is_alloc;
-		return true;
+		return;
 	}
-	/**
-	 * この関数は、ラスタのバッファへの参照値を返します。
-	 * バッファの形式は、コンストラクタに指定した形式と同じです。
-	 */
-	public Object getBuffer()
+	public Object createInterface(Class<?> i_iid) throws NyARException
 	{
-		return this._buf;
+		if(i_iid==NyARLabeling_Rle.IRasterDriver.class){
+			return NyARLabeling_Rle.RasterDriverFactory.createDriver(this);
+		}
+		if(i_iid==NyARContourPickup.IRasterDriver.class){
+			return NyARContourPickup.ImageDriverFactory.createDriver(this);
+		}
+		throw new NyARException();
 	}
-	/**
-	 * この関数は、インスタンスがバッファを所有するかを返します。
-	 * 内部参照バッファの場合は、常にtrueです。
-	 * 外部参照バッファの場合は、バッファにアクセスする前に、このパラメタを確認してください。
-	 */	
-	public boolean hasBuffer()
-	{
-		return this._buf!=null;
-	}
-	/**
-	 * この関数は、ラスタに外部参照バッファをセットします。
-	 * 外部参照バッファを持つインスタンスでのみ使用できます。内部参照バッファを持つインスタンスでは使用できません。
-	 */
-	public void wrapBuffer(Object i_ref_buf)
-	{
-		assert(!this._is_attached_buffer);//バッファがアタッチされていたら機能しない。
-		this._buf=i_ref_buf;
-	}	
 }

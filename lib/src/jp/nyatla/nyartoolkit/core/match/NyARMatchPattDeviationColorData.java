@@ -32,10 +32,13 @@ package jp.nyatla.nyartoolkit.core.match;
 
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.pixeldriver.INyARRgbPixelDriver;
+import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
-import jp.nyatla.nyartoolkit.core.rasterreader.*;
+import jp.nyatla.nyartoolkit.core.rasterdriver.*;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+
 
 /**
  * このクラスは、RGBカラーの差分画像を格納します。
@@ -47,15 +50,41 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
  */
 public class NyARMatchPattDeviationColorData
 {
+	/**
+	 * Rasterからデータを生成するインタフェイス。
+	 */
+	public interface IRasterDriver
+	{
+		/**
+		 * この関数は、参照するラスタの差分画像データを取得する。
+		 * @param o_out
+		 * 差分画像データ
+		 * @return
+		 * pow値
+		 */
+		public double makeColorData(int[] o_out) throws NyARException;
+	}
+	public static class RasterDriverFactory
+	{
+		public static IRasterDriver createDriver(INyARRgbRaster i_raster)
+		{
+			switch(i_raster.getBufferType())
+			{
+			case NyARBufferType.INT1D_X8R8G8B8_32:
+				return new NyARMatchPattDeviationDataDriver_INT1D_X8R8G8B8_32(i_raster);
+			default:
+				break;
+			}
+			return new NyARMatchPattDeviationDataDriver_RGBAny(i_raster);
+		}
+	}
 	private int[] _data;
 	private double _pow;
 	private NyARIntSize _size;
-	//
-	private int _optimize_for_mod;
 	/**
 	 * この関数は、画素データを格納した配列を返します。
 	 * {@link NyARMatchPatt_Color_WITHOUT_PCA#evaluate}関数等から使います。
-	 * R,G,Bの順番で、直列にデータを格納します。
+	 * [R0,G0,B0],[R1,G1,B1]の順番で、直列にデータを格納します。
 	 */	
 	public int[] refData()
 	{
@@ -82,15 +111,14 @@ public class NyARMatchPattDeviationColorData
 	public NyARMatchPattDeviationColorData(int i_width,int i_height)
 	{
 		this._size=new NyARIntSize(i_width,i_height);
-		int number_of_pix=this._size.w*this._size.h;
-		this._data=new int[number_of_pix*3];
-		this._optimize_for_mod=number_of_pix-(number_of_pix%8);	
+		this._data=new int[this._size.w*this._size.h*3];
 		return;
 	}
 
-	
+	private INyARRaster _last_input_raster=null;
+	private IRasterDriver _last_drv;
 	/**
-	 * この関数は、ラスタから差分画像を生成して、格納します。
+	 * この関数は、ラスタから差分画像を生成して、インスタンスに格納します。
 	 * @param i_raster
 	 * 差分画像の元画像。サイズは、このインスタンスと同じである必要があります。
 	 * {@link NyARBufferType#INT1D_X8R8G8B8_32}形式のバッファを持つラスタの場合、他の形式よりも
@@ -98,16 +126,12 @@ public class NyARMatchPattDeviationColorData
 	 */
 	public void setRaster(INyARRgbRaster i_raster) throws NyARException
 	{
-		assert(i_raster.getSize().isEqualSize(this._size));
-		switch(i_raster.getBufferType())
-		{
-		case NyARBufferType.INT1D_X8R8G8B8_32:
-			this._pow=setRaster_INT1D_X8R8G8B8_32((int[])i_raster.getBuffer(),this._size.w*this._size.h,this._optimize_for_mod,this._data);
-			break;
-		default:
-			this._pow=setRaster_ANY(i_raster.getRgbPixelReader(),this._size,this._size.w*this._size.h,this._data);
-			break;
+		//ドライバの生成
+		if(this._last_input_raster!=i_raster){
+			this._last_drv=(IRasterDriver) i_raster.createInterface(IRasterDriver.class);
+			this._last_input_raster=i_raster;
 		}
+		this._pow=this._last_drv.makeColorData(this._data);
 		return;
 	}
 	/**
@@ -124,7 +148,7 @@ public class NyARMatchPattDeviationColorData
 		int width=this._size.w;
 		int height=this._size.h;
 		int i_number_of_pix=width*height;
-		INyARRgbPixelReader reader=i_raster.getRgbPixelReader();
+		INyARRgbPixelDriver reader=i_raster.getRgbPixelDriver();
 		int[] rgb=new int[3];
 		int[] dout=this._data;
 		int ave;//<PV/>
@@ -190,85 +214,89 @@ public class NyARMatchPattDeviationColorData
 		//<差分値計算(FORの1/8展開)/>
 		final double p=Math.sqrt((double) sum);
 		this._pow=(p!=0.0?p:0.0000001);
-	}	
-	
-	
-	
-	
-	
-	/**
-	 * INT1D_X8R8G8B8_32形式の入力ドライバ。
-	 * @param i_buf
-	 * @param i_number_of_pix
-	 * @param i_for_mod
-	 * @param o_out
-	 * pow値
-	 * @return
-	 */
-	private static final double setRaster_INT1D_X8R8G8B8_32(int[] i_buf,int i_number_of_pix,int i_for_mod,int[] o_out)
+	}
+}
+
+
+//
+//	画像ドライバ
+//
+
+class NyARMatchPattDeviationDataDriver_INT1D_X8R8G8B8_32 implements NyARMatchPattDeviationColorData.IRasterDriver
+{
+	private INyARRgbRaster _ref_raster;
+	public NyARMatchPattDeviationDataDriver_INT1D_X8R8G8B8_32(INyARRgbRaster i_raster)
+	{
+		this._ref_raster=i_raster;
+	}
+	public double makeColorData(int[] o_out) throws NyARException
 	{
 		//i_buffer[XRGB]→差分[R,G,B]変換			
 		int i;
-		int ave;//<PV/>
 		int rgb;//<PV/>
 		//<平均値計算(FORの1/8展開)>
-		ave = 0;
-		for(i=i_number_of_pix-1;i>=i_for_mod;i--){
-			rgb = i_buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);
+		int ave;//<PV/>
+		int[] buf=(int[])(this._ref_raster.getBuffer());
+		NyARIntSize size=this._ref_raster.getSize();
+		int number_of_pix=size.w*size.h;
+		int optimize_mod=number_of_pix-(number_of_pix%8);
+		ave=0;
+		for(i=number_of_pix-1;i>=optimize_mod;i--){
+			rgb = buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);
 		}
 		for (;i>=0;) {
-			rgb = i_buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);i--;
-			rgb = i_buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);i--;
-			rgb = i_buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);i--;
-			rgb = i_buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);i--;
-			rgb = i_buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);i--;
-			rgb = i_buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);i--;
-			rgb = i_buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);i--;
-			rgb = i_buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);i--;
+			rgb = buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);i--;
+			rgb = buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);i--;
+			rgb = buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);i--;
+			rgb = buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);i--;
+			rgb = buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);i--;
+			rgb = buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);i--;
+			rgb = buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);i--;
+			rgb = buf[i];ave += ((rgb >> 16) & 0xff) + ((rgb >> 8) & 0xff) + (rgb & 0xff);i--;
 		}
 		//<平均値計算(FORの1/8展開)/>
-		ave=i_number_of_pix*255*3-ave;
-		ave =255-(ave/ (i_number_of_pix * 3));//(255-R)-ave を分解するための事前計算
+		ave=number_of_pix*255*3-ave;
+		ave =255-(ave/ (number_of_pix * 3));//(255-R)-ave を分解するための事前計算
 
 		int sum = 0,w_sum;
-		int input_ptr=i_number_of_pix*3-1;
+		int input_ptr=number_of_pix*3-1;
 		//<差分値計算(FORの1/8展開)>
-		for (i = i_number_of_pix-1; i >= i_for_mod;i--) {
-			rgb = i_buf[i];
+		for (i = number_of_pix-1; i >=optimize_mod;i--) {
+			rgb = buf[i];
 			w_sum = (ave - (rgb & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
 			w_sum = (ave - ((rgb >> 8) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
 			w_sum = (ave - ((rgb >> 16) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
 		}
 		for (; i >=0;) {
-			rgb = i_buf[i];i--;
+			rgb = buf[i];i--;
 			w_sum = (ave - (rgb & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
 			w_sum = (ave - ((rgb >> 8) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
 			w_sum = (ave - ((rgb >> 16) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
-			rgb = i_buf[i];i--;
+			rgb = buf[i];i--;
 			w_sum = (ave - (rgb & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
 			w_sum = (ave - ((rgb >> 8) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
 			w_sum = (ave - ((rgb >> 16) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
-			rgb = i_buf[i];i--;
+			rgb = buf[i];i--;
 			w_sum = (ave - (rgb & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
 			w_sum = (ave - ((rgb >> 8) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
 			w_sum = (ave - ((rgb >> 16) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
-			rgb = i_buf[i];i--;
+			rgb = buf[i];i--;
 			w_sum = (ave - (rgb & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
 			w_sum = (ave - ((rgb >> 8) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
 			w_sum = (ave - ((rgb >> 16) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
-			rgb = i_buf[i];i--;
+			rgb = buf[i];i--;
 			w_sum = (ave - (rgb & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
 			w_sum = (ave - ((rgb >> 8) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
 			w_sum = (ave - ((rgb >> 16) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
-			rgb = i_buf[i];i--;
+			rgb = buf[i];i--;
 			w_sum = (ave - (rgb & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
 			w_sum = (ave - ((rgb >> 8) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
 			w_sum = (ave - ((rgb >> 16) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
-			rgb = i_buf[i];i--;
+			rgb = buf[i];i--;
 			w_sum = (ave - (rgb & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
 			w_sum = (ave - ((rgb >> 8) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
 			w_sum = (ave - ((rgb >> 16) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
-			rgb = i_buf[i];i--;
+			rgb = buf[i];i--;
 			w_sum = (ave - (rgb & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
 			w_sum = (ave - ((rgb >> 8) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
 			w_sum = (ave - ((rgb >> 16) & 0xff)) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
@@ -277,39 +305,40 @@ public class NyARMatchPattDeviationColorData
 		final double p=Math.sqrt((double) sum);
 		return p!=0.0?p:0.0000001;
 	}
-	/**
-	 * ANY形式の入力ドライバ。
-	 * @param i_buf
-	 * @param i_number_of_pix
-	 * @param i_for_mod
-	 * @param o_out
-	 * pow値
-	 * @return
-	 * @throws NyARException 
-	 */
-	private static final double setRaster_ANY(INyARRgbPixelReader i_reader,NyARIntSize i_size,int i_number_of_pix,int[] o_out) throws NyARException
+}
+class NyARMatchPattDeviationDataDriver_RGBAny implements NyARMatchPattDeviationColorData.IRasterDriver
+{
+	private INyARRgbRaster _ref_raster;
+	public NyARMatchPattDeviationDataDriver_RGBAny(INyARRgbRaster i_raster)
 	{
-		int width=i_size.w;
-		int[] rgb=new int[3];
-		int ave;//<PV/>
+		this._ref_raster=i_raster;
+	}
+	private int[] __rgb=new int[3];
+	public double makeColorData(int[] o_out) throws NyARException
+	{
+		NyARIntSize size=this._ref_raster.getSize();
+		INyARRgbPixelDriver pixdev=this._ref_raster.getRgbPixelDriver();
+		int[] rgb=this.__rgb;
+		int width=size.w;
 		//<平均値計算>
-		ave = 0;
-		for(int y=i_size.h-1;y>=0;y--){
+		int ave=0;//<PV/>
+		for(int y=size.h-1;y>=0;y--){
 			for(int x=width-1;x>=0;x--){
-				i_reader.getPixel(x,y,rgb);
+				pixdev.getPixel(x,y,rgb);
 				ave += rgb[0]+rgb[1]+rgb[2];
 			}
 		}
 		//<平均値計算>
-		ave=i_number_of_pix*255*3-ave;
-		ave =255-(ave/ (i_number_of_pix * 3));//(255-R)-ave を分解するための事前計算
+		int number_of_pix=size.w*size.h;
+		ave=number_of_pix*255*3-ave;
+		ave =255-(ave/ (number_of_pix * 3));//(255-R)-ave を分解するための事前計算
 
 		int sum = 0,w_sum;
-		int input_ptr=i_number_of_pix*3-1;
+		int input_ptr=number_of_pix*3-1;
 		//<差分値計算>
-		for(int y=i_size.h-1;y>=0;y--){
+		for(int y=size.h-1;y>=0;y--){
 			for(int x=width-1;x>=0;x--){
-				i_reader.getPixel(x,y,rgb);
+				pixdev.getPixel(x,y,rgb);
 				w_sum = (ave - rgb[2]) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//B
 				w_sum = (ave - rgb[1]) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//G
 				w_sum = (ave - rgb[0]) ;o_out[input_ptr--] = w_sum;sum += w_sum * w_sum;//R
@@ -318,5 +347,6 @@ public class NyARMatchPattDeviationColorData
 		//<差分値計算(FORの1/8展開)/>
 		final double p=Math.sqrt((double) sum);
 		return p!=0.0?p:0.0000001;
-	}	
+		
+	}
 }

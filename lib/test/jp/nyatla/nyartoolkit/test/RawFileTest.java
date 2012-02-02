@@ -37,7 +37,7 @@ import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
-import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
+import jp.nyatla.nyartoolkit.detector.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
@@ -91,24 +91,24 @@ public class RawFileTest
 		FileInputStream fs = new FileInputStream(data_file);
 		byte[] buf = new byte[(int) f.length()];
 		fs.read(buf);
-		INyARRgbRaster ra = new NyARRgbRaster_BGRA(320, 240,false);
+		INyARRgbRaster ra = new NyARRgbRaster(320, 240,NyARBufferType.BYTE1D_B8G8R8X8_32,false);
 		ra.wrapBuffer(buf);
 		// Blank_Raster ra=new Blank_Raster(320, 240);
 
 		// １パターンのみを追跡するクラスを作成
-		NyARSingleDetectMarker ar = new NyARSingleDetectMarker(
-				ap, code, 80.0,ra.getBufferType(),NyARSingleDetectMarker.PF_NYARTOOLKIT);
+		NyARSingleDetectMarker ar = NyARSingleDetectMarker.createInstance(
+			ap, code, 80.0,ra.getBufferType(),NyARSingleDetectMarker.PF_NYARTOOLKIT);
 		NyARTransMatResult result_mat = new NyARTransMatResult();
 		ar.setContinueMode(true);
 		ar.detectMarkerLite(ra, 100);
-		ar.getTransmationMatrix(result_mat);
+		ar.getTransmat(result_mat);
 
 		// マーカーを検出
 		Date d2 = new Date();
 		for (int i = 0; i < 1000; i++) {
 			// 変換行列を取得
 			ar.detectMarkerLite(ra, 100);
-			ar.getTransmationMatrix(result_mat);
+			ar.getTransmat(result_mat);
 		}
 		Date d = new Date();
 		NyARDoublePoint3d ang=new NyARDoublePoint3d();

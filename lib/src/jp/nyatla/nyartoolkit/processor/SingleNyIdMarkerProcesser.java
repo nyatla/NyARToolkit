@@ -74,7 +74,7 @@ public abstract class SingleNyIdMarkerProcesser
 		private INyARRgbRaster _ref_raster;
 		//所有インスタンス
 		private INyIdMarkerData _current_data;
-		private final NyIdMarkerPickup _id_pickup = new NyIdMarkerPickup();
+		private final NyIdMarkerPickup _id_pickup;
 		private NyARCoord2Linear _coordline;
 		private INyIdMarkerDataEncoder _encoder;
 
@@ -82,13 +82,14 @@ public abstract class SingleNyIdMarkerProcesser
 		private INyIdMarkerData _data_temp;
 		private INyIdMarkerData _prev_data;
 		
-		public RleDetector(NyARParam i_param,INyIdMarkerDataEncoder i_encoder) throws NyARException
+		public RleDetector(NyARParam i_param,INyIdMarkerDataEncoder i_encoder,NyIdMarkerPickup i_id_pickup) throws NyARException
 		{
 			super(i_param.getScreenSize());
 			this._coordline=new NyARCoord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
 			this._data_temp=i_encoder.createDataInstance();
 			this._current_data=i_encoder.createDataInstance();
 			this._encoder=i_encoder;
+			this._id_pickup=i_id_pickup;
 			return;
 		}
 		private NyARIntPoint2d[] __ref_vertex=new NyARIntPoint2d[4];
@@ -212,7 +213,10 @@ public abstract class SingleNyIdMarkerProcesser
 		
 		NyARIntSize scr_size = i_param.getScreenSize();
 		// 解析オブジェクトを作る
-		this._square_detect = new RleDetector(i_param,i_encoder);
+		this._square_detect = new RleDetector(
+			i_param,
+			i_encoder,
+			new NyIdMarkerPickup(i_raster_format));
 		this._transmat = new NyARTransMat(i_param);
 
 		// ２値画像バッファを作る

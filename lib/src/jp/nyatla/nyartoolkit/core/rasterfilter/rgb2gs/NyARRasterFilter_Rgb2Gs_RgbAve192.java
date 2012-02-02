@@ -35,6 +35,7 @@ import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.*;
 
+
 /**
  * このクラスは、RGBラスタをGrayScaleに変換するフィルタを作成します。
  * このクラスが出力するグレースケール値の範囲は、元画像の3/4（0-191）になります。
@@ -62,79 +63,68 @@ import jp.nyatla.nyartoolkit.core.types.*;
 public class NyARRasterFilter_Rgb2Gs_RgbAve192 implements INyARRasterFilter_Rgb2Gs
 {
 	/** 変換フィルタのインスタンス*/
-	protected IdoThFilterImpl _do_filter_impl;
+	private INyARRasterFilter_Rgb2Gs_RgbAve192_Filter _do_filter_impl;
 	/**
 	 * コンストラクタです。
 	 * 入力、出力ラスタの画素形式を指定して、フィルタを作成します。
-	 * @param i_in_raster_type
-	 * 入力ラスタの形式です。
-	 * @param i_out_raster_type
-	 * 出力ラスタの形式です。
 	 * @throws NyARException
 	 */	
-	public NyARRasterFilter_Rgb2Gs_RgbAve192(int i_in_raster_type,int i_out_raster_type) throws NyARException
+	public NyARRasterFilter_Rgb2Gs_RgbAve192() throws NyARException
 	{
-		if(!initInstance(i_in_raster_type,i_out_raster_type))
-		{
-			throw new NyARException();
-		}
+		this._do_filter_impl=new doThFilterImpl_Blank();
 	}
 	/**
-	 * コンストラクタです。
-	 * 入力ラスタの画素形式を指定して、フィルタを作成します。
-	 * 出力ラスタの形式は、{@link NyARBufferType#INT1D_GRAY_8}を選択します。
-	 * @param i_in_raster_type
-	 * 入力ラスタの形式です。
-	 * @throws NyARException
-	 */	
-	public NyARRasterFilter_Rgb2Gs_RgbAve192(int i_in_raster_type) throws NyARException
-	{
-		if(!initInstance(i_in_raster_type,NyARBufferType.INT1D_GRAY_8))
-		{
-			throw new NyARException();
-		}
-	}
-	/**
-	 * この関数は、クラスを初期化します。
-	 * コンストラクタから呼び出します。
-	 * @param i_in_raster_type
-	 * 入力ラスタの画素形式を指定します。
-	 * @param i_out_raster_type
-	 * 出力ラスタの画素形式を指定します。
-	 * @return
-	 * 初期化に成功すると、trueを返します。
+	 * 指定した画素タイプに最適なフィルタを返す。
+	 * 継承先でこの関数をオーバライドして、対応フォーマットを追加できます。
 	 */
-	protected boolean initInstance(int i_in_raster_type,int i_out_raster_type)
+	protected INyARRasterFilter_Rgb2Gs_RgbAve192_Filter createFilter(int i_in_raster_type,int i_out_raster_type)
 	{
+		//入出力画像の組み合わせが変わった。フィルタの切り替え
 		switch(i_out_raster_type){
 		case NyARBufferType.INT1D_GRAY_8:
 			switch (i_in_raster_type){
 			case NyARBufferType.BYTE1D_B8G8R8_24:
 			case NyARBufferType.BYTE1D_R8G8B8_24:
-				this._do_filter_impl=new doThFilterImpl_BYTE1D_B8G8R8_24();
-				break;
+				return new doThFilterImpl_BYTE1D_B8G8R8_24();
 			case NyARBufferType.BYTE1D_B8G8R8X8_32:
-				this._do_filter_impl=new doThFilterImpl_BYTE1D_B8G8R8X8_32();
-				break;
+				return this._do_filter_impl=new doThFilterImpl_BYTE1D_B8G8R8X8_32();
 			case NyARBufferType.INT1D_X8R8G8B8_32:
-				this._do_filter_impl=new doThFilterImpl_BUFFERFORMAT_INT1D_X8R8G8B8_32();
-				break;
+				return _do_filter_impl=new doThFilterImpl_BUFFERFORMAT_INT1D_X8R8G8B8_32();
 			default:
-				return false;
+				break;
 			}
 			break;
 		default:
-			return false;
+			break;
 		}
-		return true;
+		return null;
+	}
+	private void prepareDriver(INyARRgbRaster i_input, NyARGrayscaleRaster i_output) throws NyARException
+	{
+		//対応状況のチェック
+		if(this._do_filter_impl.isSupport(i_input, i_output)){
+			return;
+		}
+		INyARRasterFilter_Rgb2Gs_RgbAve192_Filter filter=this.createFilter(i_input.getBufferType(),i_output.getBufferType());
+		this._do_filter_impl=filter;
 	}
 	/**
 	 * この関数は、入力画像をグレースケール化して出力画像へ書込みます。
 	 * 入力画像と出力画像のサイズは同じである必要があります。
+	 * <p>
+	 * 関数は、入力値と、現在記録している入力/出力ラスタの組み合わせを評価し、それが異なるなら、使用するフィルタを再構築します。
+	 * 入力形式/出力形式を頻繁に切り替えると、速度が低下するので注意してください。
+	 * </p>
+	 * @param i_input
+	 * 入力ラスタを指定します。
+	 * @param i_input
+	 * 出力ラスタを指定します。
 	 */	
 	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output) throws NyARException
 	{
+		//サイズのチェック
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
+		this.prepareDriver(i_input, i_output);
 		NyARIntSize s=i_input.getSize();
 		this._do_filter_impl.doFilter(i_input,(int[])i_output.getBuffer(),0,0,s.w,s.h);
 		return;
@@ -142,6 +132,10 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve192 implements INyARRasterFilter_Rgb2
 	/**
 	 * この関数は、入力画像の一部分だけをグレースケール化して、出力画像の該当位置へ書込みます。
 	 * 入力画像と出力画像のサイズは同じである必要があります。
+	 * <p>
+	 * 関数は、入力値と、現在記録している入力/出力ラスタの組み合わせを評価し、それが異なるなら、使用するフィルタを再構築します。
+	 * 入力形式/出力形式を頻繁に切り替えると、速度が低下するので注意してください。
+	 * </p>
 	 * @param i_input
 	 * 入力画像
 	 * @param i_rect
@@ -153,11 +147,10 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve192 implements INyARRasterFilter_Rgb2
 	public void doFilter(INyARRgbRaster i_input,NyARIntRect i_rect, NyARGrayscaleRaster i_output) throws NyARException
 	{
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
+		this.prepareDriver(i_input, i_output);
 		this._do_filter_impl.doFilter(i_input,(int[])i_output.getBuffer(),i_rect.x,i_rect.y,i_rect.w,i_rect.h);
-		
+		return;
 	}
-	
-	
 	
 	/**
 	 * この関数は、入力画像の一部分をサンプリングしてからグレースケール化して、出力画像へ書込みます。
@@ -166,6 +159,10 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve192 implements INyARRasterFilter_Rgb2
 	 * <li>入力画像の幅   =出力画像の幅*i_skip+i_top
 	 * <li>入力画像の高さ=出力画像の幅*i_skip+i_left
 	 * </ul>
+	 * <p>
+	 * 関数は、入力値と、現在記録している入力/出力ラスタの組み合わせを評価し、それが異なるなら、使用するフィルタを再構築します。
+	 * 入力形式/出力形式を頻繁に切り替えると、速度が低下するので注意してください。
+	 * </p>
 	 * @param i_input
 	 * 入力画像です。
 	 * @param i_left
@@ -179,12 +176,21 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve192 implements INyARRasterFilter_Rgb2
 	 */
 	public void doCutFilter(INyARRgbRaster i_input,int i_left,int i_top,int i_skip,NyARGrayscaleRaster i_output) throws NyARException
 	{
+		//フィルタの準備
+		this.prepareDriver(i_input, i_output);
 		this._do_filter_impl.doCutFilter(i_input,i_left,i_top,i_skip,i_output);		
 	}
 
 	/** 変換関数のインタフェイス*/
-	protected interface IdoThFilterImpl
+	protected interface INyARRasterFilter_Rgb2Gs_RgbAve192_Filter
 	{
+		/**
+		 * 入力/出力形式に対応しているかを返す。
+		 * @param i_input
+		 * @param i_output
+		 * @return
+		 */
+		public boolean isSupport(INyARRaster i_input,INyARRaster i_output);
 		/**
 		 * 同一サイズのラスタ間での転送
 		 * @param i_input
@@ -205,9 +211,28 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve192 implements INyARRasterFilter_Rgb2
 		 */
 		public void doCutFilter(INyARRaster i_input, int l,int t,int i_st,NyARGrayscaleRaster o_output) throws NyARException;
 	}
-	
-	private class doThFilterImpl_BUFFERFORMAT_INT1D_X8R8G8B8_32 implements IdoThFilterImpl
+	private class doThFilterImpl_Blank implements INyARRasterFilter_Rgb2Gs_RgbAve192_Filter
 	{
+		public boolean isSupport(INyARRaster i_input,INyARRaster i_output)
+		{
+			return false;
+		}		
+		public void doCutFilter(INyARRaster i_input, int l,int t,int i_st,NyARGrayscaleRaster o_output) throws NyARException
+		{
+			throw new NyARException();
+		}
+		public void doFilter(INyARRaster i_input, int[] o_output,int l,int t,int w,int h)throws NyARException
+		{
+			throw new NyARException();
+		}
+	}
+	
+	private class doThFilterImpl_BUFFERFORMAT_INT1D_X8R8G8B8_32 implements INyARRasterFilter_Rgb2Gs_RgbAve192_Filter
+	{
+		public boolean isSupport(INyARRaster i_input,INyARRaster i_output)
+		{
+			return i_input.isEqualBufferType(NyARBufferType.INT1D_X8R8G8B8_32) && i_output.isEqualBufferType(NyARBufferType.INT1D_GRAY_8);
+		}		
 		public void doCutFilter(INyARRaster i_input, int l,int t,int i_st,NyARGrayscaleRaster o_output) throws NyARException
 		{
 			assert(i_input.isEqualBufferType(NyARBufferType.INT1D_X8R8G8B8_32));
@@ -288,22 +313,16 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve192 implements INyARRasterFilter_Rgb2
 			return;			
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	private class doThFilterImpl_BYTE1D_B8G8R8_24 implements IdoThFilterImpl
+
+	private class doThFilterImpl_BYTE1D_B8G8R8_24 implements INyARRasterFilter_Rgb2Gs_RgbAve192_Filter
 	{
+		public boolean isSupport(INyARRaster i_input,INyARRaster i_output)
+		{
+			return
+			(i_input.isEqualBufferType(NyARBufferType.BYTE1D_B8G8R8_24)|| i_input.isEqualBufferType(NyARBufferType.BYTE1D_R8G8B8_24))
+			&& i_output.isEqualBufferType(NyARBufferType.INT1D_GRAY_8);
+		}
+		
 		public void doCutFilter(INyARRaster i_input, int l,int t,int i_st,NyARGrayscaleRaster o_output) throws NyARException
 		{
 			assert(i_input.isEqualBufferType(NyARBufferType.BYTE1D_B8G8R8_24)||i_input.isEqualBufferType(NyARBufferType.BYTE1D_R8G8B8_24));
@@ -386,8 +405,13 @@ public class NyARRasterFilter_Rgb2Gs_RgbAve192 implements INyARRasterFilter_Rgb2
 			return;
 		}		
 	}
-	private class doThFilterImpl_BYTE1D_B8G8R8X8_32 implements IdoThFilterImpl
+	
+	private class doThFilterImpl_BYTE1D_B8G8R8X8_32 implements INyARRasterFilter_Rgb2Gs_RgbAve192_Filter
 	{
+		public boolean isSupport(INyARRaster i_input,INyARRaster i_output)
+		{
+			return i_input.isEqualBufferType(NyARBufferType.BYTE1D_B8G8R8X8_32) && i_output.isEqualBufferType(NyARBufferType.INT1D_GRAY_8);
+		}
 		public void doCutFilter(INyARRaster i_input, int l,int t,int i_st,NyARGrayscaleRaster o_output) throws NyARException
 		{
 			NyARException.notImplement();

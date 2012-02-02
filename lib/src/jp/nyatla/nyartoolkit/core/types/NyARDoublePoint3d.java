@@ -83,5 +83,21 @@ public class NyARDoublePoint3d
 		y=this.y-i_p1.y;
 		z=this.z-i_p1.z;
 		return x*x+y*y+z*z;
-	}	
+	}
+	/**
+	 * この関数は、頂点を移動します。
+	 * @param i_tx
+	 * 移動する距離x
+	 * @param i_ty
+	 * 移動する距離y
+	 * @param i_tz
+	 * 移動する距離z
+	 */
+	public void translate(double i_tx,double i_ty,double i_tz)
+	{
+		this.x+=i_tx;
+		this.y+=i_ty;
+		this.z+=i_tz;
+	}
+		
 }

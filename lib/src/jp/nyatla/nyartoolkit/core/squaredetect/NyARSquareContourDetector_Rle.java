@@ -31,10 +31,9 @@
 package jp.nyatla.nyartoolkit.core.squaredetect;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.labeling.NyARLabelOverlapChecker;
+import jp.nyatla.nyartoolkit.core.labeling.*;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.*;
-import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
-import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
@@ -43,7 +42,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
  * 継承クラスで自己コールバック関数{@link #onSquareDetect}を実装する必要があります。
  */
 public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
-{
+{	
 	/** label_stackにソート後の結果を蓄積するクラス*/
 	private class Labeling extends NyARLabeling_Rle
 	{
@@ -61,7 +60,7 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 			this._right=i_width-1;
 			return;
 		}
-		public void labeling(NyARGrayscaleRaster i_raster,NyARIntRect i_area,int i_th) throws NyARException
+		public void labeling(INyARGrayscaleRaster i_raster,NyARIntRect i_area,int i_th) throws NyARException
 		{
 			//配列初期化
 			this.label_stack.clear();
@@ -70,12 +69,12 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 			//ソート
 			this.label_stack.sortByArea();
 		}
-		public void labeling(NyARBinRaster i_bin_raster) throws NyARException
+		public void labeling(INyARGrayscaleRaster i_raster,int i_th) throws NyARException
 		{
 			//配列初期化
 			this.label_stack.clear();
 			//ラベルの検出
-			super.labeling(i_bin_raster);
+			super.labeling(i_raster,i_th);
 			//ソート
 			this.label_stack.sortByArea();			
 		}
@@ -91,19 +90,12 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 			}
 			this.label_stack.push(i_label);
 		}
-		
 	}
 	
-	private final int _width;
-	private final int _height;
-
-	private final Labeling _labeling;
-
+	private Labeling _labeling;
 	private final NyARLabelOverlapChecker<NyARRleLabelFragmentInfo> _overlap_checker = new NyARLabelOverlapChecker<NyARRleLabelFragmentInfo>(32,NyARRleLabelFragmentInfo.class);
-	private final NyARContourPickup _cpickup=new NyARContourPickup();
-
+	private NyARContourPickup _cpickup=new NyARContourPickup();
 	private final NyARCoord2SquareVertexIndexes _coord2vertex=new NyARCoord2SquareVertexIndexes();
-	
 	private final NyARIntCoordinates _coord;
 	/**
 	 * コンストラクタです。
@@ -112,35 +104,38 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 	 * 入力画像のサイズ
 	 */
 	public NyARSquareContourDetector_Rle(NyARIntSize i_size) throws NyARException
+	{ 
+		this.setupImageDriver(i_size);
+		//ラベリングのサイズを指定したいときはsetAreaRangeを使ってね。
+		this._coord = new NyARIntCoordinates((i_size.w + i_size.h) * 2);
+		return;
+	}
+	/**
+	 * 画像処理オブジェクトの切り替え関数。切り替える場合は、この関数を上書きすること。
+	 * @param i_size
+	 * @throws NyARException
+	 */
+	protected void setupImageDriver(NyARIntSize i_size) throws NyARException
 	{
 		//特性確認
 		assert(NyARLabeling_Rle._sf_label_array_safe_reference);
-		this._width = i_size.w;
-		this._height = i_size.h;
-		//ラベリングのサイズを指定したいときはsetAreaRangeを使ってね。
-		this._labeling = new Labeling(this._width,this._height);		
-
-		// 輪郭の最大長は画面に映りうる最大の長方形サイズ。
-		int number_of_coord = (this._width + this._height) * 2;
-
-		// 輪郭バッファ
-		this._coord = new NyARIntCoordinates(number_of_coord);
-		return;
-	}
+		this._labeling=new Labeling(i_size.w,i_size.h);
+		this._cpickup=new NyARContourPickup();
+	}	
 
 	private final int[] __detectMarker_mkvertex = new int[4];
 	/**
 	 * この関数は、ラスタから矩形を検出して、自己コールバック関数{@link #onSquareDetect}で通知します。
 	 * @param i_raster
 	 * 検出元のラスタ画像
-	 * 入力できるラスタの画素形式は、{@link NyARLabeling_Rle#labeling(NyARGrayscaleRaster, int)}と同じです。
+	 * 入力できるラスタの画素形式は、{@link NyARLabeling_Rle#labeling(INyARRaster, int)}と同じです。
 	 * @param i_area
 	 * 検出する範囲。検出元のラスタの内側である必要があります。
 	 * @param i_th
 	 * ラベルと判定する敷居値
 	 * @throws NyARException
 	 */
-	public void detectMarker(NyARGrayscaleRaster i_raster,NyARIntRect i_area,int i_th) throws NyARException
+	public void detectMarker(INyARGrayscaleRaster i_raster,NyARIntRect i_area,int i_th) throws NyARException
 	{
 		assert(i_area.w*i_area.h>0);
 		
@@ -195,15 +190,20 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 	/**
 	 * この関数は、ラスタから矩形を検出して、自己コールバック関数{@link #onSquareDetect}で通知します。
 	 * ARToolKitのarDetectMarker2を基にしています。
+	 * @param i_raster
+	 * 検出元のラスタ画像
+	 * 入力できるラスタの画素形式は、{@link NyARLabeling_Rle#labeling(NyARGrayscaleRaster, int)}と同じです。
+	 * @param i_th
+	 * 画素の二値判定敷居値です。この値は、ラベリングと、輪郭線追跡時に使われます。
 	 */
-	public void detectMarker(NyARBinRaster i_raster) throws NyARException
+	public void detectMarker(INyARGrayscaleRaster i_raster,int i_th) throws NyARException
 	{
 		final NyARRleLabelFragmentInfoPtrStack flagment=this._labeling.label_stack;
 		final NyARLabelOverlapChecker<NyARRleLabelFragmentInfo> overlap = this._overlap_checker;
 
 		// ラベル数が0ならここまで
 		flagment.clear();
-		this._labeling.labeling(i_raster);
+		this._labeling.labeling(i_raster,i_th);
 		final int label_num=flagment.getLength();
 		if (label_num < 1) {
 			return;
@@ -229,9 +229,8 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 				// 重なっているようだ。
 				continue;
 			}
-			
 			//輪郭を取得
-			if(!this._cpickup.getContour(i_raster,label_pt.entry_x,label_pt.clip_t,coord)){
+			if(!this._cpickup.getContour(i_raster,i_th,label_pt.entry_x,label_pt.clip_t,coord)){
 				continue;
 			}
 			//輪郭線をチェックして、矩形かどうかを判定。矩形ならばmkvertexに取得
@@ -248,17 +247,11 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 		}
 		return;
 	}
-	/**
-	 * デバック用API
-	 * @return
-	 * オブジェクト配列
-	 */
-	public Object[] _probe()
-	{
-		Object[] ret=new Object[10];
-		return ret;
-	}
-
+	@Override
+	public void detectMarker(NyARBinRaster iRaster) throws NyARException {
+		// TODO Auto-generated method stub
+		
+	}	
 }
 
 

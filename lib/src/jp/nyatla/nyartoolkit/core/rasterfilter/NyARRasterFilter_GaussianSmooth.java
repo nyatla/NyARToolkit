@@ -26,6 +26,7 @@ package jp.nyatla.nyartoolkit.core.rasterfilter;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.rasterfilter.NyARRasterFilter_CustomToneTable.IFilter;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
@@ -36,9 +37,9 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
  * <li>{@link NyARBufferType#INT1D_GRAY_8}
  * </p>
  */
-public class NyARRasterFilter_GaussianSmooth implements INyARRasterFilter
+public class NyARRasterFilter_GaussianSmooth
 {
-	private IdoFilterImpl _do_filter_impl;
+	protected IFilter _do_filter_impl;
 	/**
 	 * コンストラクタです。
 	 * 入出力ラスタの形式を入力して、インスタンスを生成します。
@@ -46,16 +47,23 @@ public class NyARRasterFilter_GaussianSmooth implements INyARRasterFilter
 	 * 入出力ラスタの画素形式。
 	 * @throws NyARException
 	 */	
-	public NyARRasterFilter_GaussianSmooth(int i_raster_type) throws NyARException
+	public NyARRasterFilter_GaussianSmooth() throws NyARException
 	{
-		switch (i_raster_type) {
-		case NyARBufferType.INT1D_GRAY_8:
-			this._do_filter_impl=new IdoFilterImpl_GRAY_8();
-			break;
-		default:
-			throw new NyARException();
-		}
+		this._do_filter_impl=new IdoFilterImpl_Blank();
 	}
+	protected IFilter createFilter(INyARRaster i_in,INyARRaster i_out) throws NyARException
+	{
+		if(i_in.getBufferType()==NyARBufferType.INT1D_GRAY_8){
+			switch(i_out.getBufferType()){
+			case NyARBufferType.INT1D_GRAY_8:
+				return new IdoFilterImpl_GRAY_8();
+			default:
+				break;
+			}
+		}
+		throw new NyARException();
+	}	
+	
 	/**
 	 * 入力ラスタにGaussianフィルタを適応した画素を出力ラスタへ書込みます。
 	 * 画素形式は、コンストラクタに指定した形式に合せてください。
@@ -63,73 +71,94 @@ public class NyARRasterFilter_GaussianSmooth implements INyARRasterFilter
 	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException
 	{
 		assert (i_input!=i_output);
+		if(!this._do_filter_impl.isSupport(i_input,i_output)){
+			this._do_filter_impl=this.createFilter(i_input, i_output);
+		}		
 		this._do_filter_impl.doFilter(i_input,i_output,i_input.getSize());
 	}
 	/** 変換用ドライバのインタフェイス*/
-	protected interface IdoFilterImpl
+	protected interface IFilter
 	{
+		public boolean isSupport(INyARRaster i_in,INyARRaster i_out);
 		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException;
 	}
-	private class IdoFilterImpl_GRAY_8 implements IdoFilterImpl
+}
+
+class IdoFilterImpl_Blank implements NyARRasterFilter_GaussianSmooth.IFilter
+{
+	public boolean isSupport(INyARRaster i_in,INyARRaster i_out)
 	{
-		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException
-		{
-			assert (i_input.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
-			assert (i_output.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
-			int[] in_ptr =(int[])i_input.getBuffer();
-			int[] out_ptr=(int[])i_output.getBuffer();
-			int width=i_size.w;
-			int height=i_size.h;
-			int col0,col1,col2;
-			int bptr=0;
-			//1行目
-			col1=in_ptr[bptr  ]*2+in_ptr[bptr+width  ];
+		return false;
+	}
+	public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException
+	{
+		throw new NyARException();
+	}
+	
+}
+class IdoFilterImpl_GRAY_8 implements NyARRasterFilter_GaussianSmooth.IFilter
+{
+	public boolean isSupport(INyARRaster i_in,INyARRaster i_out)
+	{
+		return i_in.isEqualBufferType(NyARBufferType.INT1D_GRAY_8) && i_out.isEqualBufferType(NyARBufferType.INT1D_GRAY_8);
+	}
+	public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException
+	{
+		assert (i_input.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
+		assert (i_output.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
+		int[] in_ptr =(int[])i_input.getBuffer();
+		int[] out_ptr=(int[])i_output.getBuffer();
+		int width=i_size.w;
+		int height=i_size.h;
+		int col0,col1,col2;
+		int bptr=0;
+		//1行目
+		col1=in_ptr[bptr  ]*2+in_ptr[bptr+width  ];
+		col2=in_ptr[bptr+1]*2+in_ptr[bptr+width+1];
+		out_ptr[bptr]=(col1*2+col2)/9;
+		bptr++;
+		for(int x=0;x<width-2;x++){
+			col0=col1;
+			col1=col2;
 			col2=in_ptr[bptr+1]*2+in_ptr[bptr+width+1];
-			out_ptr[bptr]=(col1*2+col2)/9;
+			out_ptr[bptr]=(col0+col1*2+col2)/12;
+			bptr++;
+		}			
+		out_ptr[bptr]=(col1+col2)/9;
+		bptr++;
+		//2行目-末行-1
+
+		for(int y=0;y<height-2;y++){
+			//左端
+			col1=in_ptr[bptr  ]*2+in_ptr[bptr-width  ]+in_ptr[bptr+width  ];
+			col2=in_ptr[bptr+1]*2+in_ptr[bptr-width+1]+in_ptr[bptr+width+1];
+			out_ptr[bptr]=(col1+col2)/12;
 			bptr++;
 			for(int x=0;x<width-2;x++){
 				col0=col1;
 				col1=col2;
-				col2=in_ptr[bptr+1]*2+in_ptr[bptr+width+1];
-				out_ptr[bptr]=(col0+col1*2+col2)/12;
-				bptr++;
-			}			
-			out_ptr[bptr]=(col1+col2)/9;
-			bptr++;
-			//2行目-末行-1
-
-			for(int y=0;y<height-2;y++){
-				//左端
-				col1=in_ptr[bptr  ]*2+in_ptr[bptr-width  ]+in_ptr[bptr+width  ];
 				col2=in_ptr[bptr+1]*2+in_ptr[bptr-width+1]+in_ptr[bptr+width+1];
-				out_ptr[bptr]=(col1+col2)/12;
-				bptr++;
-				for(int x=0;x<width-2;x++){
-					col0=col1;
-					col1=col2;
-					col2=in_ptr[bptr+1]*2+in_ptr[bptr-width+1]+in_ptr[bptr+width+1];
-					out_ptr[bptr]=(col0+col1*2+col2)/16;
-					bptr++;
-				}
-				//右端
-				out_ptr[bptr]=(col1*2+col2)/12;
+				out_ptr[bptr]=(col0+col1*2+col2)/16;
 				bptr++;
 			}
-			//末行目
-			col1=in_ptr[bptr  ]*2+in_ptr[bptr-width  ];
-			col2=in_ptr[bptr+1]*2+in_ptr[bptr-width+1];
-			out_ptr[bptr]=(col1+col2)/9;
+			//右端
+			out_ptr[bptr]=(col1*2+col2)/12;
 			bptr++;
-			for(int x=0;x<width-2;x++){
-				col0=col1;
-				col1=col2;
-				col2=in_ptr[bptr+1]*2+in_ptr[bptr-width+1];
-				out_ptr[bptr]=(col0+col1*2+col2)/12;
-				bptr++;
-			}			
-			out_ptr[bptr]=(col1*2+col2)/9;
-			bptr++;
-			return;
 		}
+		//末行目
+		col1=in_ptr[bptr  ]*2+in_ptr[bptr-width  ];
+		col2=in_ptr[bptr+1]*2+in_ptr[bptr-width+1];
+		out_ptr[bptr]=(col1+col2)/9;
+		bptr++;
+		for(int x=0;x<width-2;x++){
+			col0=col1;
+			col1=col2;
+			col2=in_ptr[bptr+1]*2+in_ptr[bptr-width+1];
+			out_ptr[bptr]=(col0+col1*2+col2)/12;
+			bptr++;
+		}			
+		out_ptr[bptr]=(col1*2+col2)/9;
+		bptr++;
+		return;
 	}
 }

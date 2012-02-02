@@ -100,4 +100,10 @@ public interface INyARRaster
 	 * 切り替える外部参照バッファオブジェクト。
 	 */
 	public void wrapBuffer(Object i_ref_buf) throws NyARException;
+	/**
+	 * ARTKに必要なラスタドライバインタフェイスを返す。
+	 * @return
+	 */
+	public Object createInterface(Class<?> i_iid)throws NyARException;
+
 }

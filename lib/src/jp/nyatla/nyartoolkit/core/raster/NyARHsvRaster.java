@@ -70,6 +70,7 @@ public final class NyARHsvRaster extends NyARRaster_BasicClass
 	{
 		return true;
 	}
+
 	/**
 	 * この関数は、ラスタに外部参照バッファをセットします。
 	 * 外部参照バッファを持つインスタンスでのみ使用できます。内部参照バッファを持つインスタンスでは使用できません。
@@ -77,5 +78,10 @@ public final class NyARHsvRaster extends NyARRaster_BasicClass
 	public void wrapBuffer(Object i_ref_buf) throws NyARException
 	{
 		NyARException.notImplement();
+	}
+	@Override
+	public Object createInterface(Class<?> iIid) throws NyARException
+	{
+		throw new NyARException();
 	}	
 }

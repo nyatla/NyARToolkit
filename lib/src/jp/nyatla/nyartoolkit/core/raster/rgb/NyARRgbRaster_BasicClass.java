@@ -31,7 +31,7 @@
 package jp.nyatla.nyartoolkit.core.raster.rgb;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.rasterreader.INyARRgbPixelReader;
+import jp.nyatla.nyartoolkit.core.pixeldriver.INyARRgbPixelDriver;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
@@ -105,8 +105,8 @@ public abstract class NyARRgbRaster_BasicClass implements INyARRgbRaster
 		int width=i_input.getWidth();
 		int height=i_input.getHeight();
 		int[] rgb=new int[3];
-		INyARRgbPixelReader inr=i_input.getRgbPixelReader();
-		INyARRgbPixelReader outr=o_output.getRgbPixelReader();
+		INyARRgbPixelDriver inr=i_input.getRgbPixelDriver();
+		INyARRgbPixelDriver outr=o_output.getRgbPixelDriver();
 		for(int i=height-1;i>=0;i--){
 			for(int i2=width-1;i2>=0;i2--){
 				inr.getPixel(i2,i,rgb);

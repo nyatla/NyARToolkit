@@ -35,11 +35,14 @@ import jp.nyatla.nyartoolkit.core.types.NyARHistogram;
  * <p>対応している画素形式は以下の通りです。
  * <li>{@link NyARBufferType#INT1D_GRAY_8}
  * </p>
+ * 継承して対応画像を増やす場合には、{@link #createFilter}と{@link #createImageDriver}の二つの関数をオーバライドします。
  */
 public class NyARRasterFilter_EqualizeHist extends NyARRasterFilter_CustomToneTable
 {
 	private NyARRasterAnalyzer_Histogram _hist_analyzer;
 	private NyARHistogram _histogram=new NyARHistogram(256);
+	private int[] _hist=new int[256];
+
 	/**
 	 * コンストラクタです。
 	 * 入出力ラスタの形式と、ヒストグラムのサンプリングパラメータを入力して、インスタンスを生成します。
@@ -50,10 +53,19 @@ public class NyARRasterFilter_EqualizeHist extends NyARRasterFilter_CustomToneTa
 	 * 1以上の数値を指定してください。
 	 * @throws NyARException
 	 */
-	public NyARRasterFilter_EqualizeHist(int i_raster_type,int i_sample_interval) throws NyARException
+	public NyARRasterFilter_EqualizeHist(int i_sample_interval) throws NyARException
 	{
-		super(i_raster_type);
-		this._hist_analyzer=new NyARRasterAnalyzer_Histogram(i_raster_type,i_sample_interval);
+		this.createImageDriver(i_sample_interval);
+	}
+	/**
+	 * 画像ドライバを拡張する場合は、この関数をオーバライドします。
+	 * this._hist_analyzerに値を割り当ててください。
+	 * @param i_sample_interval
+	 * @throws NyARException
+	 */
+	protected void createImageDriver(int i_sample_interval) throws NyARException
+	{
+		this._hist_analyzer=new NyARRasterAnalyzer_Histogram(i_sample_interval);
 	}
 	/**
 	 * 入力ラスタにトーンフィルタを適応した画素を出力ラスタへ書込みます。
@@ -71,9 +83,9 @@ public class NyARRasterFilter_EqualizeHist extends NyARRasterFilter_CustomToneTa
 		int sum=0;
 		for(int i=0;i<hist_size;i++){
 			sum+=hist.data[i];
-			this.table[i]=(int)((sum-min)*(hist_size-1)/((hist_total-min)));
+			this._hist[i]=(int)((sum-min)*(hist_size-1)/((hist_total-min)));
 		}
 		//変換
-		super.doFilter(i_input, i_output);
+		super.doFilter(i_input,this._hist,i_output);
 	}
 }

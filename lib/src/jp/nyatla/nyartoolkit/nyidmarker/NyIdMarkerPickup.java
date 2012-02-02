@@ -25,8 +25,10 @@
 package jp.nyatla.nyartoolkit.nyidmarker;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.rgb.*;
-import jp.nyatla.nyartoolkit.core.rasterreader.*;
+import jp.nyatla.nyartoolkit.core.pixeldriver.INyARGsPixelDriver;
+import jp.nyatla.nyartoolkit.core.pixeldriver.NyARGsPixelDriverFactory;
+import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.utils.*;
 
@@ -44,8 +46,9 @@ public class NyIdMarkerPickup
 
 	/**
 	 * コンストラクタです。インスタンスを生成します。
+	 * @throws NyARException 
 	 */
-	public NyIdMarkerPickup()
+	public NyIdMarkerPickup() throws NyARException
 	{
 		this._perspective_reader=new PerspectivePixelReader();
 		return;
@@ -64,7 +67,7 @@ public class NyIdMarkerPickup
 	 * 抽出に成功するとtrue.失敗するとfalseです。
 	 * @throws NyARException
 	 */
-	public final boolean pickFromRaster(INyARRgbRaster image, NyARDoublePoint2d[] i_vertex,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
+	public final boolean pickFromRaster(INyARGrayscaleRaster image, NyARDoublePoint2d[] i_vertex,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
 	{
 		//遠近法のパラメータを計算
 		if(!this._perspective_reader.setSourceSquare(i_vertex)){
@@ -86,7 +89,7 @@ public class NyIdMarkerPickup
 	 * 抽出に成功するとtrue.失敗するとfalseです。
 	 * @throws NyARException
 	 */
-	public final boolean pickFromRaster(INyARRgbRaster image, NyARIntPoint2d[] i_vertex,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
+	public final boolean pickFromRaster(INyARGrayscaleRaster image, NyARIntPoint2d[] i_vertex,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
 	{
 		if(!this._perspective_reader.setSourceSquare(i_vertex)){
 			return false;
@@ -104,17 +107,16 @@ public class NyIdMarkerPickup
 	 * @return
 	 * @throws NyARException
 	 */
-	private final boolean _pickFromRaster(INyARRgbRaster image, NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
+	private final boolean _pickFromRaster(INyARGrayscaleRaster image, NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
 	{
-		INyARRgbPixelReader reader=image.getRgbPixelReader();
 		NyARIntSize raster_size=image.getSize();
 
 		final PerspectivePixelReader.TThreshold th=this.__pickFromRaster_th;
 		final MarkerPattEncoder encoder=this.__pickFromRaster_encoder;
 		//マーカパラメータを取得
-		this._perspective_reader.detectThresholdValue(reader,raster_size,th);
+		this._perspective_reader.detectThresholdValue(image.getGsPixelDriver(),raster_size,th);
 
-		if(!this._perspective_reader.readDataBits(reader,raster_size,th, encoder)){
+		if(!this._perspective_reader.readDataBits(image.getGsPixelDriver(),raster_size,th, encoder)){
 			return false;
 		}
 		final int d=encoder.encode(o_data);
@@ -127,9 +129,13 @@ public class NyIdMarkerPickup
 		return true;
 	}
 }
+/** GSピクセルのReader*/
 
 
-
+class GsPixelReader_RGB
+{
+	
+}
 
 
 /**
@@ -190,7 +196,7 @@ final class PerspectivePixelReader
 	 * グレースケールのピクセルを格納するバッファ
 	 * @throws NyARException
 	 */
-	private boolean rectPixels(INyARRgbPixelReader i_reader,NyARIntSize i_raster_size,int i_lt_x,int i_lt_y,int i_step_x,int i_step_y,int i_width,int i_height,int i_out_st,int[] o_pixel)throws NyARException
+	private boolean rectPixels(INyARGsPixelDriver i_reader,NyARIntSize i_raster_size,int i_lt_x,int i_lt_y,int i_step_x,int i_step_y,int i_width,int i_height,int i_out_st,int[] o_pixel)throws NyARException
 	{
 		final double[] cpara=this._cparam;
 		final int[] ref_x=this._ref_x;
@@ -225,14 +231,8 @@ final class PerspectivePixelReader
 				ref_y[pt]=y;
 				pt++;
 			}
-			//1行分のピクセルを取得(場合によっては専用アクセサを書いた方がいい)
-			i_reader.getPixelSet(ref_x,ref_y,i_width,pixcel_temp);
-			//グレースケールにしながら、line→mapへの転写
-			for(int i2=0;i2<i_width;i2++){
-				int index=i2*3;
-				o_pixel[out_index]=(pixcel_temp[index+0]+pixcel_temp[index+1]+pixcel_temp[index+2])/3;
-				out_index++;
-			}			
+			//GS値を配列に取得
+			i_reader.getPixelSet(ref_x,ref_y,i_width,pixcel_temp,out_index);			
 		}
 		return true;
 	}
@@ -303,8 +303,8 @@ final class PerspectivePixelReader
 
 	private final int[] _ref_x=new int[108];
 	private final int[] _ref_y=new int[108];
-	//(model+1)*4*3とTHRESHOLD_PIXEL*3のどちらか大きい方
-	private int[] _pixcel_temp=new int[108*3];
+	//(model+1)*4とTHRESHOLD_PIXELのどちらか大きい方
+	private int[] _pixcel_temp=new int[108];
 	
 	private final int[] _freq_count_table=new int[MAX_FREQ];
 	private final int[] _freq_table=new int[(MAX_FREQ*2-1)*MAX_FREQ*2/2];
@@ -326,7 +326,7 @@ final class PerspectivePixelReader
 	 * 周波数の値。失敗すると-1
 	 * @throws NyARException
 	 */
-	public int getRowFrequency(INyARRgbPixelReader i_reader,NyARIntSize i_raster_size,int i_y1,int i_th_h,int i_th_l,int[] o_edge_index)throws NyARException
+	public int getRowFrequency(INyARGsPixelDriver i_reader,NyARIntSize i_raster_size,int i_y1,int i_th_h,int i_th_l,int[] o_edge_index)throws NyARException
 	{
 		//3,4,5,6,7,8,9,10
 		final int[] freq_count_table=this._freq_count_table;
@@ -375,7 +375,7 @@ final class PerspectivePixelReader
 			}
 			
 			//ピクセルを取得(入力画像を多様化するならここから先を調整すること)
-			i_reader.getPixelSet(ref_x,ref_y,FRQ_POINTS,pixcel_temp);
+			i_reader.getPixelSet(ref_x,ref_y,FRQ_POINTS,pixcel_temp,0);
 
 			//o_edge_indexを一時的に破壊して調査する
 			final int freq_t=getFreqInfo(pixcel_temp,i_th_h,i_th_l,o_edge_index);			
@@ -414,7 +414,7 @@ final class PerspectivePixelReader
 	 * 周波数の値。失敗すると-1
 	 * @throws NyARException
 	 */
-	public int getColFrequency(INyARRgbPixelReader i_reader,NyARIntSize i_raster_size,int i_x1,int i_th_h,int i_th_l,int[] o_edge_index)throws NyARException
+	public int getColFrequency(INyARGsPixelDriver i_reader,NyARIntSize i_raster_size,int i_x1,int i_th_h,int i_th_l,int[] o_edge_index)throws NyARException
 	{
 		final double[] cpara=this._cparam;
 		final int[] ref_x=this._ref_x;
@@ -463,7 +463,7 @@ final class PerspectivePixelReader
 			}		
 		
 			//ピクセルを取得(入力画像を多様化するならここを調整すること)
-			i_reader.getPixelSet(ref_x,ref_y,FRQ_POINTS,pixcel_temp);
+			i_reader.getPixelSet(ref_x,ref_y,FRQ_POINTS,pixcel_temp,0);
 			
 			final int freq_t=getFreqInfo(pixcel_temp,i_th_h,i_th_l,o_edge_index);
 			//周期は3-10であること
@@ -486,13 +486,13 @@ final class PerspectivePixelReader
 
 	/**
 	 * デバックすんだらstaticにしておｋ
-	 * @param i_pixcels
+	 * @param i_gs_pixels
 	 * @param i_th_h
 	 * @param i_th_l
 	 * @param o_edge_index
 	 * @return
 	 */
-	private static int getFreqInfo(int[] i_pixcels,int i_th_h,int i_th_l,int[] o_edge_index)
+	private static int getFreqInfo(int[] i_gs_pixels,int i_th_h,int i_th_l,int[] o_edge_index)
 	{
 		//トークンを解析して、周波数を計算
 		int i=0;
@@ -501,9 +501,9 @@ final class PerspectivePixelReader
 		while(i<FRQ_POINTS){
 			//L->Hトークンを検出する
 			while(i<FRQ_POINTS){
-				final int index=i*3;
-				final int pix=(i_pixcels[index+0]+i_pixcels[index+1]+i_pixcels[index+2])/3;
-				if(pix>i_th_h){
+//				final int index=i*3;
+//				final int pix=(i_gs_pixels[index+0]+i_gs_pixels[index+1]+i_gs_pixels[index+2])/3;
+				if(i_gs_pixels[i]>i_th_h){
 					//トークン発見
 					o_edge_index[frq_l2h+frq_h2l]=i;
 					frq_l2h++;
@@ -514,9 +514,9 @@ final class PerspectivePixelReader
 			i++;
 			//L->Hトークンを検出する
 			while(i<FRQ_POINTS){
-				final int index=i*3;
-				final int pix=(i_pixcels[index+0]+i_pixcels[index+1]+i_pixcels[index+2])/3;
-				if(pix<=i_th_l){
+//				final int index=i*3;
+//				final int pix=(i_gs_pixels[index+0]+i_gs_pixels[index+1]+i_gs_pixels[index+2])/3;
+				if(i_gs_pixels[i]<=i_th_l){
 					//トークン発見
 					o_edge_index[frq_l2h+frq_h2l]=i;
 					frq_h2l++;
@@ -630,7 +630,7 @@ final class PerspectivePixelReader
 	 * 敷居値を受け取るオブジェクト
 	 * @throws NyARException
 	 */
-	public void detectThresholdValue(INyARRgbPixelReader i_reader,NyARIntSize i_raster_size,TThreshold o_threshold)throws NyARException
+	public void detectThresholdValue(INyARGsPixelDriver i_reader,NyARIntSize i_raster_size,TThreshold o_threshold)throws NyARException
 	{
 		final int[] th_pixels=this._th_pixels;
 
@@ -731,7 +731,7 @@ final class PerspectivePixelReader
 	}
 	private int[] __detectDataBitsIndex_freq_index1=new int[FRQ_POINTS];
 	private int[] __detectDataBitsIndex_freq_index2=new int[FRQ_POINTS];
-	private int detectDataBitsIndex(INyARRgbPixelReader i_reader,NyARIntSize i_raster_size,PerspectivePixelReader.TThreshold i_th,double[] o_index_row,double[] o_index_col) throws NyARException
+	private int detectDataBitsIndex(INyARGsPixelDriver i_reader,NyARIntSize i_raster_size,PerspectivePixelReader.TThreshold i_th,double[] o_index_row,double[] o_index_col) throws NyARException
 	{
 		//周波数を測定
 		final int[] freq_index1=this.__detectDataBitsIndex_freq_index1;
@@ -807,7 +807,7 @@ final class PerspectivePixelReader
 	 * 成功するとtrue
 	 * @throws NyARException
 	 */
-	public boolean readDataBits(INyARRgbPixelReader i_reader,NyARIntSize i_raster_size,PerspectivePixelReader.TThreshold i_th,MarkerPattEncoder o_bitbuffer)throws NyARException
+	public boolean readDataBits(INyARGsPixelDriver i_reader,NyARIntSize i_raster_size,PerspectivePixelReader.TThreshold i_th,MarkerPattEncoder o_bitbuffer)throws NyARException
 	{
 		final int raster_width=i_raster_size.w;
 		final int raster_height=i_raster_size.h;
@@ -907,14 +907,14 @@ final class PerspectivePixelReader
 				pt++;
 			}
 			//1行分のピクセルを取得(場合によっては専用アクセサを書いた方がいい)
-			i_reader.getPixelSet(ref_x,ref_y,resolution*4,pixcel_temp);
+			i_reader.getPixelSet(ref_x,ref_y,resolution*4,pixcel_temp,0);
 			//グレースケールにしながら、line→mapへの転写
 			for(int i2=0;i2<resolution;i2++){
 				int index=i2*3*4;
-				int pixel=(	pixcel_temp[index+0]+pixcel_temp[index+1]+pixcel_temp[index+2]+
-							pixcel_temp[index+3]+pixcel_temp[index+4]+pixcel_temp[index+5]+
-							pixcel_temp[index+6]+pixcel_temp[index+7]+pixcel_temp[index+8]+
-							pixcel_temp[index+9]+pixcel_temp[index+10]+pixcel_temp[index+11])/(4*3);
+				int pixel=(	pixcel_temp[index+0]+pixcel_temp[index+1]+pixcel_temp[index+2]+pixcel_temp[index+3])/4;
+//				+pixcel_temp[index+4]+pixcel_temp[index+5]+
+//							pixcel_temp[index+6]+pixcel_temp[index+7]+pixcel_temp[index+8]+
+//							pixcel_temp[index+9]+pixcel_temp[index+10]+pixcel_temp[index+11])/(4*3);
 				//暗点を1、明点を0で表現します。
 				o_bitbuffer.setBitByBitIndex(p,pixel>th?0:1);
 				p++;
