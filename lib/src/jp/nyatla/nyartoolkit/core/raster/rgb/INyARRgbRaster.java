@@ -47,4 +47,5 @@ public interface INyARRgbRaster extends INyARRaster
 	 * @throws NyARException
 	 */
 	public INyARRgbPixelDriver getRgbPixelDriver() throws NyARException;
+
 }

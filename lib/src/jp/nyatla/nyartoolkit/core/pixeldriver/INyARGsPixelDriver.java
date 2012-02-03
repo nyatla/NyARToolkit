@@ -34,3 +34,4 @@ public interface INyARGsPixelDriver
 	 */
 	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intgs) throws NyARException;	
 }
+

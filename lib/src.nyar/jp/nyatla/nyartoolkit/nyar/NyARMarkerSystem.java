@@ -31,6 +31,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.nyidmarker.NyIdMarkerParam;
 import jp.nyatla.nyartoolkit.nyidmarker.NyIdMarkerPattern;
@@ -42,15 +43,17 @@ import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerData_RawBitId;
 
 public class NyARMarkerSystem
 {
+	private int lost_th=5;
 	private RleDetector _rledetect;
 	
-	public NyARMarkerSystem(NyARSensor i_sensor,NyARRender i_render) throws NyARException
+	public NyARMarkerSystem(NyARParam i_ref_param) throws NyARException
 	{
-		this.createImageDriver(i_sensor);
+		this.createRasterDriver(i_ref_param);
 	}
-	protected void createImageDriver(NyARSensor i_sensor) throws NyARException
+	protected void createRasterDriver(NyARParam i_ref_param) throws NyARException
 	{
-		this._rledetect=new RleDetector(i_sensor.refARParam());
+		this._rledetect=new RleDetector(i_ref_param);
+		this._hist_th=null;
 	}
 	
 	public int addNyIdMarker(int i_id,double i_marker_size) throws NyARException
@@ -59,7 +62,7 @@ public class NyARMarkerSystem
 		if(!this._rledetect._idmk_list.add(target)){
 			throw new NyARException();
 		}
-		return this._rledetect._idmk_list.size();
+		return (this._rledetect._idmk_list.size()-1);
 	}
 	public int addARMarker(InputStream i_stream,int i_patt_resolution,int i_patt_edge_percentage,double i_marker_size) throws NyARException
 	{
@@ -67,22 +70,48 @@ public class NyARMarkerSystem
 		if(!this._rledetect._armk_list.add(target)){
 			throw new NyARException();
 		}
-		return this._rledetect._armk_list.size()|0x0001000;
+		return (this._rledetect._armk_list.size()-1)|0x0001000;
 	}
 	
 	/** マーカがあるか取得*/
-	public void isExistMarker(int i_id){}
+	public boolean isExistMarker(int i_id)
+	{
+		if((i_id & 0x0001000)!=0){
+			//ARマーカ
+			return this._rledetect._armk_list.get(i_id &0x00000fff).lost_count<this.lost_th;
+		}else{
+			//Idマーカ
+			return this._rledetect._idmk_list.get(i_id &0x00000fff).lost_count<this.lost_th;
+		}
+	}
 	/** NyId取得*/
 	public void getNyId(){}
 	/** ARマーカの一致度*/
-	public void getConfidence(){}
+	public double getConfidence(int i_id) throws NyARException
+	{
+		if((i_id & 0x0001000)!=0){
+			//ARマーカ
+			return this._rledetect._armk_list.get(i_id &0x00000fff).cf;
+		}
+		//Idマーカ？
+		throw new NyARException();
+	}
 	/** マーカ表面の画像取得*/
 	public void getMarkerPlaneImage(){}
 	/** マーカ表面の画像取得*/
 	public void getMarkerPlaneImageRect(){}
 	/** */
 	public void getMarkerVertex2d(){}
-	public void getMarkerTransMat(){}
+	public NyARDoubleMatrix44 refMarkerTransMat(int i_id)
+	{
+		if((i_id & 0x0001000)!=0){
+			//ARマーカ
+			return this._rledetect._armk_list.get(i_id &0x00000fff).tmat;
+		}else{
+			//Idマーカ
+			return this._rledetect._idmk_list.get(i_id &0x00000fff).tmat;
+		}
+	}
 	/** スクリーン座標をマーカ座標に変換*/
 //	public void screen2MarkerPos(){}
 	/** マーカ座標をスクリーン座標に変換*/
@@ -99,24 +128,22 @@ public class NyARMarkerSystem
 	}
 	
 	private long _time_stamp=-1;
-	private NyARSensor _sensor;
 	private INyARHistogramAnalyzer_Threshold _hist_th;
 	/**
 	 * 状況を更新する。
 	 * @throws NyARException 
 	 */
-	public void update() throws NyARException
+	public void update(NyARSensor i_sensor) throws NyARException
 	{
-		long time_stamp=this._sensor.getTimeStamp();
+		long time_stamp=i_sensor.getTimeStamp();
 		//センサのタイムスタンプが変化していなければ何もしない。
 		if(this._time_stamp==time_stamp){
 			return;
 		}
-		int th=this._hist_th.getThreshold(this._sensor.getGsHistogram());
-		//センサをロック
+//		int th=this._hist_th.getThreshold(i_sensor.getGsHistogram());
 
 		//解析器にかけてマーカを抽出。
-		this._rledetect.detectMarker(this._sensor.refGsImage(),th);
+		this._rledetect.detectMarker(i_sensor, time_stamp, 102);
 		//タイムスタンプを更新
 		this._time_stamp=time_stamp;
 	}
@@ -145,8 +172,8 @@ class MultiResolutionPattPickup
 			while(i_resolution*r<64){
 				r*=2;
 			}				
-			this._patt_d=new NyARMatchPattDeviationColorData(i_resolution,i_resolution);
 			this._pickup=new NyARColorPatt_Perspective(i_resolution,i_resolution,r,i_edge_percentage);
+			this._patt_d=new NyARMatchPattDeviationColorData(i_resolution,i_resolution);
 			this._patt_edge=i_edge_percentage;
 		}
 	}
@@ -232,7 +259,7 @@ class RleDetector extends NyARSquareContourDetector_Rle
 		//他のタイプはここで。
 	}
 	
-	public void detectMarker(INyARGrayscaleRaster i_raster,long i_time_stamp,int i_th,ARMarkerList i_ar_out,NyIdList i_id_out) throws NyARException
+	public void detectMarker(NyARSensor i_sensor,long i_time_stamp,int i_th) throws NyARException
 	{
 		//準備
 		for(int i=this._idmk_list.size()-1;i>=0;i--){
@@ -244,7 +271,9 @@ class RleDetector extends NyARSquareContourDetector_Rle
 		this._idmk_list.prepare();
 		this._armk_list.prepare();
 		//検出処理
-		super.detectMarker(i_raster,i_th);
+		this._ref_input_rfb=i_sensor.refSourceImage();
+		this._ref_input_gs=i_sensor.refGsImage();
+		super.detectMarker(this._ref_input_gs,i_th);
 		//検出結果の反映処理
 		this._armk_list.finish();
 
@@ -254,14 +283,14 @@ class RleDetector extends NyARSquareContourDetector_Rle
 				MarkerInfoARMarker target=this._armk_list.get(i);
 				if(target.lost_count==0){
 					target.time_stamp=i_time_stamp;
-					this._transmat.transMat(target.sq,null,target.tmat);
+					this._transmat.transMat(target.sq,target.marker_offset,target.tmat);
 				}
 			}
 			for(int i=this._idmk_list.size()-1;i>=0;i--){
 				MarkerInfoNyId target=this._idmk_list.get(i);
 				if(target.lost_count==0){
 					target.time_stamp=i_time_stamp;
-					this._transmat.transMat(target.sq,null,target.tmat);
+					this._transmat.transMat(target.sq,target.marker_offset,target.tmat);
 				}
 			}
 		}else{
@@ -281,11 +310,7 @@ class RleDetector extends NyARSquareContourDetector_Rle
 			}
 		}
 	}
-	@Override
-	public void detectMarker(NyARBinRaster iRaster) throws NyARException {
-		// TODO Auto-generated method stub
-		
-	}
+
 }
 
 class ARMarkerList extends ArrayList<MarkerInfoARMarker>
@@ -327,6 +352,7 @@ class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 			}
 			ptr.next=this._llitems;
 			this._llitems.prev=ptr;
+			this._num_of_llitem=i_num_of_item;
 		}
 		public class LLItem{
 			int id;
@@ -416,9 +442,9 @@ class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 			{
 				if(ptr.id<0){
 				}else if(ptr.id==i_item.id){
-					ptr.id=0;
+					ptr.id=-1;
 				}else if(ptr.ref_sq==i_item.ref_sq){
-					ptr.id=0;
+					ptr.id=-1;
 				}
 				ptr=ptr.next;
 			}
@@ -431,6 +457,10 @@ class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 		{
 			super.initInstance(i_length,NyARSquare.class);
 		}
+		protected NyARSquare createElement() throws NyARException
+		{
+			return new NyARSquare();
+		}		
 	}
 	/**
 	 * マーカの一致敷居値を設定する。
@@ -499,7 +529,7 @@ class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 	public void prepare()
 	{
 		//ARマーカのマッチテーブルのサイズを調整
-		if(this._mkmap._num_of_llitem<=this.size()){
+		if(this._mkmap._num_of_llitem<this.size()){
 			//不足してるなら作っておく。
 			this._mkmap=new ARMarkerMap(this.size());
 		}
@@ -531,6 +561,7 @@ class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 			target.sq.rotateVertexL(4-top_item.dir);
 			//基準アイテムと重複するアイテムを削除する。
 			this._mkmap.disableSameItem(top_item);
+			top_item=this._mkmap.getTopItem();
 		}
 	}
 }

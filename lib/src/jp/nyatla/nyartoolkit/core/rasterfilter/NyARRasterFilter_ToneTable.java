@@ -38,7 +38,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
  * 0未満、256以上の数値はクリッピングされます。
  * </p>
  */
-public class NyARRasterFilter_ToneTable extends NyARRasterFilter_CustomToneTable
+public class NyARRasterFilter_ToneTable extends INyARGsToneTableFilter
 {
 	private int[] table=new int[256];
 	/**

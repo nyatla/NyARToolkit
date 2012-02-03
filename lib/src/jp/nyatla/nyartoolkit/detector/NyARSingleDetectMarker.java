@@ -371,7 +371,7 @@ class NyARSingleDetectMarker_NyARTK extends NyARSingleDetectMarker
 		protected void onSquareDetect(NyARIntCoordinates i_coord,int[] i_vertex_index) throws NyARException
 		{
 			this._parent.updateSquareInfo(i_coord, i_vertex_index);
-		}	
+		}
 	}
 	
 	public NyARSingleDetectMarker_NyARTK(NyARParam i_ref_param,NyARCode i_ref_code,double i_marker_width,int i_input_raster_type) throws NyARException

@@ -4,6 +4,11 @@ import jp.nyatla.nyartoolkit.core.match.NyARMatchPattDeviationColorData;
 import jp.nyatla.nyartoolkit.core.pixeldriver.INyARRgbPixelDriver;
 import jp.nyatla.nyartoolkit.core.pixeldriver.NyARRgbPixelDriverFactory;
 import jp.nyatla.nyartoolkit.core.rasterdriver.*;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilter;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilterRgbAve;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilterRgbCube;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilterYCbCr;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRgb2GsFilterFactory;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.*;
 
@@ -161,6 +166,16 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 		}
 		if(iIid==NyARMatchPattDeviationColorData.IRasterDriver.class){
 			return NyARMatchPattDeviationColorData.RasterDriverFactory.createDriver(this);
+		}
+		if(iIid==INyARRgb2GsFilter.class){
+			//デフォルトのインタフェイス
+			return NyARRgb2GsFilterFactory.createRgbAveDriver(this);
+		}else if(iIid==INyARRgb2GsFilterRgbAve.class){
+			return NyARRgb2GsFilterFactory.createRgbAveDriver(this);
+		}else if(iIid==INyARRgb2GsFilterRgbCube.class){
+			return NyARRgb2GsFilterFactory.createRgbCubeDriver(this);
+		}else if(iIid==INyARRgb2GsFilterYCbCr.class){
+			return NyARRgb2GsFilterFactory.createYCbCrDriver(this);
 		}
 		throw new NyARException();
 	}

@@ -29,7 +29,6 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.pixeldriver.INyARRgbPixelDriver;
 import jp.nyatla.nyartoolkit.core.pixeldriver.NyARRgbPixelDriverFactory;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
-import jp.nyatla.nyartoolkit.core.rasterdriver.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 

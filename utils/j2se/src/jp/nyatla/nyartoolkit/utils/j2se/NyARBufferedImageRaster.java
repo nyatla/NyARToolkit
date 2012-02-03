@@ -4,6 +4,10 @@ import java.awt.Graphics;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.image.*;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.pixeldriver.INyARRgbPixelDriver;
@@ -58,6 +62,27 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 		//NyARToolkit互換のラスタを定義する。
 		super(i_width,i_height, NyARBufferType.INT1D_X8R8G8B8_32,true);
 	}
+	/**
+	 * この関数は、画像ファイルからBufferedImageRasterを生成します。
+	 * @param i_file
+	 * @return
+	 * @throws IOException
+	 * @throws NyARException 
+	 */
+	public static NyARBufferedImageRaster createFromFile(String i_file) throws NyARException
+	{
+		BufferedImage img;
+		try{
+			img = ImageIO.read(new File(i_file));
+		}catch(Exception e){
+			throw new NyARException();
+		}
+		//画像フォーマットの解析
+		NyARBufferedImageRaster ra=new NyARBufferedImageRaster(img.getWidth(),img.getHeight(),false);
+		ra.wrapBuffer(img);
+		return ra;
+	}
+	
 	public Object createInterface(Class<?> i_iid) throws NyARException
 	{
 		//アクセラレータインタフェイスはここに追加する。
@@ -102,7 +127,7 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 
 		//参照しているImageを切り替え
 		this._buffered_image=i_ref_bmi;
-		//バッファをセットする。
+		//ラスタタイプの決定
 		int raster_type=getRasterTypeFromBufferedImage(i_ref_bmi);
 		switch(raster_type){
 			case NyARBufferType.BYTE1D_R8G8B8_24:

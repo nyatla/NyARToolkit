@@ -52,6 +52,4 @@ public interface INyARColorPatt extends INyARRgbRaster
 	 * @throws NyARException
 	 */
 	public boolean pickFromRaster(INyARRgbRaster image, NyARIntPoint2d[] i_vertexs) throws NyARException;
-//	public copyMarkerPattTo();
-//	public setEdgePercentage();
 }

@@ -209,7 +209,7 @@ public abstract class NyARLabeling_Rle
 	public void labeling(INyARGrayscaleRaster i_raster,int i_th) throws NyARException
 	{
 		NyARIntSize size=i_raster.getSize();
-		this.imple_labeling(i_raster,0,0,0,size.w,size.h);
+		this.imple_labeling(i_raster,i_th,0,0,size.w,size.h);
 	}
 	/**
 	 * この関数は、ラスタを敷居値i_thで2値化して、ラベリングします。

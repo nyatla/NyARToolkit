@@ -41,14 +41,6 @@ import jp.nyatla.nyartoolkit.core.types.*;
 public abstract class NyARSquareContourDetector
 {
 	/**
-	 * この関数は、ラスタから矩形を検出して、自己コールバック関数{@link #onSquareDetect}で通知します。
-	 * 実装クラスでは、矩形検出処理をして、結果を通知する処理を実装してください。
-	 * @param i_raster
-	 * 検出元のラスタ画像
-	 * @throws NyARException
-	 */
-	public abstract void detectMarker(NyARBinRaster i_raster) throws NyARException;
-	/**
 	 * この関数は、自己コールバック関数です。{@link #detectMarker}が検出矩形を通知するために使います。
 	 * 実装クラスでは、ここに矩形の発見時の処理を記述してください。
 	 * @param i_coord

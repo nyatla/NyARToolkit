@@ -1,12 +1,6 @@
 /* 
- * PROJECT: NyARToolkit
+ * PROJECT: NyARToolkit(Extension)
  * --------------------------------------------------------------------------------
- * This work is based on the original ARToolKit developed by
- *   Hirokazu Kato
- *   Mark Billinghurst
- *   HITLab, University of Washington, Seattle
- * http://www.hitl.washington.edu/artoolkit/
- *
  * The NyARToolkit is Java edition ARToolKit class library.
  * Copyright (C)2008-2009 Ryo Iizuka
  *
@@ -28,26 +22,39 @@
  *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs;
+package jp.nyatla.nyartoolkit.core.rasterfilter;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.pixeldriver.INyARGsPixelDriver;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
+import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
- * このインタフェイスは、RGBラスタをグレースケールラスタに変換する関数を定義します。
- *
+ * このインタフェイスは、色調フィルタ関数を提供します。
  */
-public interface INyARRasterFilter_Rgb2Gs
+public interface INyARGsToneTableFilter
 {
-	/**
-	 * この関数は、入力画像をグレースケールにして出力画像へ書込みます。
-	 * 実装クラスでは、RGB画像をグレースケール画像に変換する処理を書いてください。
-	 * @param i_input
-	 * 入力画像
-	 * @param i_output
-	 * 出力画像
-	 * @throws NyARException
-	 */
-	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output) throws NyARException;
+	public void doFilter(int[] i_tone_table,INyARGrayscaleRaster i_output) throws NyARException;	
+}
+
+class NyARGsToneTableFilter_Any implements INyARGsToneTableFilter
+{
+	private INyARGrayscaleRaster _raster;
+	protected NyARGsToneTableFilter_Any(INyARGrayscaleRaster i_ref_raster) throws NyARException
+	{
+		this._raster=i_ref_raster;
+	}
+	public void doFilter(int[] i_tone_table,INyARGrayscaleRaster i_output) throws NyARException
+	{
+		INyARGsPixelDriver outd= i_output.getGsPixelDriver();
+		INyARGsPixelDriver ind= this._raster.getGsPixelDriver();
+		NyARIntSize s=this._raster.getSize();
+		for(int y=s.h-1;y>=0;y--)
+		{
+			for(int x=s.w-1;x>=0;x--)
+			{
+				outd.setPixel(x, y,i_tone_table[ind.getPixel(x,y)]);
+			}
+		}
+	}
 }

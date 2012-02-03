@@ -28,7 +28,7 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.rasterdriver.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.NyARRasterFilter_GaussianSmooth.IFilter;
+import jp.nyatla.nyartoolkit.core.rasterfilter.INyARGsGaussianSmoothFilter.IFilter;
 
 
 /**

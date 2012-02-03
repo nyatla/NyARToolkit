@@ -108,7 +108,7 @@ public class RawFileTest
 		for (int i = 0; i < 1000; i++) {
 			// 変換行列を取得
 			ar.detectMarkerLite(ra, 100);
-			ar.getTransmat(result_mat);
+//			ar.getTransmat(result_mat);
 		}
 		Date d = new Date();
 		NyARDoublePoint3d ang=new NyARDoublePoint3d();

@@ -58,7 +58,7 @@ public class NyARParam
 	 * テストに使用するための、カメラパラメータ値をロードします。
 	 * このパラメータは、ARToolKit2.7に付属しているカメラパラメータファイルの値です。
 	 */
-	public void loadDefault()
+	public void loadDefaultParameter()
 	{
 		double[] tmp={318.5,263.5,26.2,1.0127565206658486};
 		this._screen_size.setValue(640,480);

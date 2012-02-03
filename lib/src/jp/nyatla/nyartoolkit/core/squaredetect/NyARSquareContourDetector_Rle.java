@@ -247,11 +247,7 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 		}
 		return;
 	}
-	@Override
-	public void detectMarker(NyARBinRaster iRaster) throws NyARException {
-		// TODO Auto-generated method stub
-		
-	}	
+	
 }
 
 

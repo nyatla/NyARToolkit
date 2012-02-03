@@ -17,6 +17,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
  * <li>{@link INyARGrayscaleRaster}の継承ラスタ</li>
  * <li>{@link INyARRgbRaster}の継承ラスタ</li>
  * <li>{@link NyARBufferType#INT1D_GRAY_8}形式のバッファを持つもの<li>
+ * <li>{@link NyARBufferType#INT1D_BIN_8}形式のバッファを持つもの<li>
  */
 public class NyARHistogramFromRasterFactory
 {
@@ -24,6 +25,7 @@ public class NyARHistogramFromRasterFactory
 	{
 		switch(i_raster.getBufferType()){
 		case NyARBufferType.INT1D_GRAY_8:
+		case NyARBufferType.INT1D_BIN_8:
 			return new NyARHistogramFromRaster_INTGS8(i_raster);
 		default:
 			if(i_raster instanceof INyARGrayscaleRaster){
