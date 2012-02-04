@@ -42,7 +42,7 @@ public interface INyARGsEqualizeHistFilter
 
 class NyARGsEqualizeHistFilter_Any implements INyARGsEqualizeHistFilter
 {
-	private INyARGsToneTableFilter _tone_table;
+	private INyARGsCustomToneTableFilter _tone_table;
 	private INyARHistogramFromRaster _histdrv;
 	private NyARHistogram _histogram=new NyARHistogram(256);
 	private int[] _hist=new int[256];

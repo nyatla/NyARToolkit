@@ -27,34 +27,35 @@ package jp.nyatla.nyartoolkit.core.rasterfilter;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.pixeldriver.INyARGsPixelDriver;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+import jp.nyatla.nyartoolkit.core.types.*;
+
 
 /**
- * このインタフェイスは、色調フィルタ関数を提供します。
+ * このインタフェイスは、ネガポジ反転機能を提供します。
+ * <p>対応している画素形式は以下の通りです。
+ * <li>{@link NyARBufferType#INT1D_GRAY_8}
+ * </p>
  */
-public interface INyARGsToneTableFilter
+public interface INyARGsReverseFilter
 {
-	public void doFilter(int[] i_tone_table,INyARGrayscaleRaster i_output) throws NyARException;	
+	public void doFilter(INyARGrayscaleRaster i_output) throws NyARException;
 }
-
-class NyARGsToneTableFilter_Any implements INyARGsToneTableFilter
+class NyARGsReverseFilter_Any implements INyARGsReverseFilter
 {
 	private INyARGrayscaleRaster _raster;
-	protected NyARGsToneTableFilter_Any(INyARGrayscaleRaster i_ref_raster) throws NyARException
+	public NyARGsReverseFilter_Any(INyARGrayscaleRaster i_raster)
 	{
-		this._raster=i_ref_raster;
+		this._raster=i_raster;
 	}
-	public void doFilter(int[] i_tone_table,INyARGrayscaleRaster i_output) throws NyARException
+	public final void doFilter(INyARGrayscaleRaster i_output) throws NyARException
 	{
-		INyARGsPixelDriver outd= i_output.getGsPixelDriver();
-		INyARGsPixelDriver ind= this._raster.getGsPixelDriver();
+		INyARGsPixelDriver ind=this._raster.getGsPixelDriver();
+		INyARGsPixelDriver outd=i_output.getGsPixelDriver();
 		NyARIntSize s=this._raster.getSize();
-		for(int y=s.h-1;y>=0;y--)
-		{
-			for(int x=s.w-1;x>=0;x--)
-			{
-				outd.setPixel(x, y,i_tone_table[ind.getPixel(x,y)]);
+		for(int y=s.h-1;y>=0;y--){
+			for(int x=s.w-1;x>=0;x--){
+				outd.setPixel(x,y,255-ind.getPixel(x,y));
 			}
 		}
-	}
+	}	
 }
