@@ -68,10 +68,21 @@ public class NyARRotMatrix_ARToolKit extends NyARRotMatrix
 	 * @return
 	 * [read only]角度値
 	 */
-	public final NyARDoublePoint3d refAngle()
+	public final NyARDoublePoint3d getAngle()
 	{
 		return this._angle;
 	}
+	/**
+	 * i_bufに{@link #getAngle()}の結果をコピーして返します。
+	 * @return
+	 * 複製した{@link #getAngle()}の値
+	 */
+	public final NyARDoublePoint3d getAngle(NyARDoublePoint3d i_buf)
+	{
+		i_buf.setValue(this._angle);
+		return i_buf;
+	}
+	
 	/**
 	 * ARToolKitスタイルの角度値を、行列にセットします。
 	 * @param i_x

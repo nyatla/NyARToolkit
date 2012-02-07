@@ -1,8 +1,6 @@
 package jp.nyatla.nyartoolkit.utils.j2se;
 
 import java.awt.Graphics;
-import java.awt.Transparency;
-import java.awt.color.ColorSpace;
 import java.awt.image.*;
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +10,6 @@ import javax.imageio.ImageIO;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.pixeldriver.INyARRgbPixelDriver;
 import jp.nyatla.nyartoolkit.core.pixeldriver.NyARRgbPixelDriverFactory;
-import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
@@ -30,6 +27,18 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 public class NyARBufferedImageRaster extends NyARRgbRaster
 {
 	private BufferedImage _buffered_image;
+	/**
+	 * BufferedImageを外部参照したラスタを構築します。
+	 * @param i_img
+	 * 参照するラスタ
+	 * @throws NyARException
+	 */
+	public NyARBufferedImageRaster(BufferedImage i_img) throws NyARException
+	{
+		//NyARToolkit互換のラスタを定義する。
+		super(i_img.getWidth(),i_img.getHeight(),getRasterTypeFromBufferedImage(i_img),false);
+		this.wrapImage(i_img);
+	}
 
 	/**
 	 * コンストラクタです。
@@ -109,6 +118,8 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 					true,null);
 				this._buffered_image=bfi;
 			}
+			//ピクセルドライバの生成
+			this._rgb_pixel_driver=NyARRgbPixelDriverFactory.createDriver(this);
 			return true;
 		}
 		//失敗した場合
@@ -117,18 +128,24 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 	/**
 	 * BitmapBufferをラップします。古いBitmapbufferへの参照は解除されます。
 	 * @param i_ref_bmi
-	 * ラップするBitmapBufferオブジェクト。このオブジェクトのサイズは、現在のラスタと一致している必要があります。
+	 * ラップするBitmapBufferオブジェクト。このオブジェクトは、現在のラスタと同じフォーマットである必要があります。
 	 * @throws NyARException
 	 */
 	public void wrapImage(BufferedImage i_ref_bmi) throws NyARException
 	{
 		assert(!this._is_attached_buffer);//バッファがアタッチされていたら機能しない。
 		assert(this._size.isEqualSize(i_ref_bmi.getWidth(),i_ref_bmi.getHeight()));//サイズ確認
-
-		//参照しているImageを切り替え
-		this._buffered_image=i_ref_bmi;
 		//ラスタタイプの決定
 		int raster_type=getRasterTypeFromBufferedImage(i_ref_bmi);
+		//フォーマット確認
+		if(!this.isEqualBufferType(raster_type)){
+			throw new NyARException();
+		}
+		//参照しているImageを切り替え
+		this._buffered_image=i_ref_bmi;
+		//ピクセルドライバを更新
+		this._rgb_pixel_driver.switchRaster(this);
+		//バッファの切替
 		switch(raster_type){
 			case NyARBufferType.BYTE1D_R8G8B8_24:
 			case NyARBufferType.BYTE1D_B8G8R8_24:
@@ -144,14 +161,6 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 			default:
 				throw new NyARException();
 		}
-		//ピクセルドライバの更新
-		if(raster_type==NyARBufferType.OBJECT_Java_BufferedImage){
-			this._rgb_pixel_driver=new NyARRgbPixelReader_OBJECT_Java_BufferedImage();
-		}else{
-			this._rgb_pixel_driver=NyARRgbPixelDriverFactory.createDriver(this);
-		}
-		//ピクセルリーダーの参照バッファを切り替える。
-		this._rgb_pixel_driver.switchRaster(this);
 	}
 	/**
 	 * この関数は使用できません。{@link BufferedImage}をセットするには、wrapImageを使用してください。

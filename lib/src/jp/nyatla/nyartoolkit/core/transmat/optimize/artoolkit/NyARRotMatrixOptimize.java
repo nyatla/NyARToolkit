@@ -142,7 +142,7 @@ public class NyARRotMatrixOptimize implements INyARRotMatrixOptimize
 		double wsin, wcos;
 		
 		//現在の角度を確保
-		final NyARDoublePoint3d angle = io_rot.refAngle();
+		final NyARDoublePoint3d angle = io_rot.getAngle();
 		a2 = angle.x;
 		b2 = angle.y;
 		c2 = angle.z;

@@ -37,11 +37,9 @@ import jp.nyatla.nyartoolkit.core.match.NyARMatchPattResult;
 import jp.nyatla.nyartoolkit.core.match.NyARMatchPatt_Color_WITHOUT_PCA;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.pickup.INyARColorPatt;
-import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
-
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilter_ARToolkitThreshold;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilterArtkTh;
 import jp.nyatla.nyartoolkit.core.squaredetect.*;
 import jp.nyatla.nyartoolkit.core.pickup.*;
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -125,6 +123,9 @@ public abstract class NyARSingleDetectMarker
 		this.getTransmat(o_result);
 		return;
 	}
+	/** 参照インスタンス*/
+	private INyARRgbRaster _last_input_raster=null;
+	private INyARRgb2GsFilterArtkTh _bin_filter=null;
 	/**
 	 * この関数は、画像から登録済のマーカ検出を行います。
 	 * マーカの検出に成功すると、thisのプロパティにマーカの二次元位置を記録します。
@@ -143,16 +144,17 @@ public abstract class NyARSingleDetectMarker
 		if(!this._bin_raster.getSize().isEqualSize(i_raster.getSize())){
 			throw new NyARException();
 		}
-		//ラスタをGS画像に変換
-		
-
+		//最終入力ラスタを更新
+		if(this._last_input_raster!=i_raster){
+			this._bin_filter=(INyARRgb2GsFilterArtkTh)i_raster.createInterface(INyARRgb2GsFilterArtkTh.class);
+			this._last_input_raster=i_raster;
+		}
 		//ラスタを２値イメージに変換する.
-		this._tobin_filter.setThreshold(i_th);
-		this._tobin_filter.doFilter(i_raster,this._bin_raster);
+		this._bin_filter.doFilter(i_th,this._bin_raster);
 
 		//コールバックハンドラの準備
 		this._confidence=0;
-		this._ref_raster=i_raster;
+		this._last_input_raster=i_raster;
 		//
 		//マーカ検出器をコール
 		this.execDetectMarker();
@@ -172,14 +174,11 @@ public abstract class NyARSingleDetectMarker
 	private NyARMatchPatt_Color_WITHOUT_PCA _match_patt;
 	private NyARCoord2Linear _coordline;	
 	protected NyARBinRaster _bin_raster;
-	private NyARRasterFilter_ARToolkitThreshold _tobin_filter;	
 	/** 一致率*/
 	private double _confidence=0;
 	/** 認識矩形の記録用*/
 	protected NyARSquare _square=new NyARSquare();
 	
-	/** 参照インスタンス*/
-	private INyARRgbRaster _ref_raster;
 
 	protected boolean _is_continue = false;
 	private final NyARMatchPattResult __detectMarkerLite_mr=new NyARMatchPattResult();
@@ -206,7 +205,7 @@ public abstract class NyARSingleDetectMarker
 		vertex[3]=i_coord.items[i_vertex_index[3]];
 	
 		//画像を取得
-		if (!this._inst_patt.pickFromRaster(this._ref_raster,vertex)){
+		if (!this._inst_patt.pickFromRaster(this._last_input_raster,vertex)){
 			return;
 		}
 		//取得パターンをカラー差分データに変換して評価する。
@@ -234,7 +233,7 @@ public abstract class NyARSingleDetectMarker
 			}
 		}
 	}
-	protected NyARSingleDetectMarker(NyARParam i_ref_param,NyARCode i_ref_code,double i_marker_width,int i_input_raster_type) throws NyARException
+	protected NyARSingleDetectMarker(NyARParam i_ref_param,NyARCode i_ref_code,double i_marker_width) throws NyARException
 	{
 		this._deviation_data=new NyARMatchPattDeviationColorData(i_ref_code.getWidth(),i_ref_code.getHeight());
 		this._match_patt=new NyARMatchPatt_Color_WITHOUT_PCA(i_ref_code);		
@@ -244,7 +243,6 @@ public abstract class NyARSingleDetectMarker
 		//２値画像バッファを作る		
 		NyARIntSize s=i_ref_param.getScreenSize();
 		this._bin_raster=new NyARBinRaster(s.w,s.h);
-		this._tobin_filter=new NyARRasterFilter_ARToolkitThreshold(100,i_input_raster_type);
 	}
 	protected abstract void execDetectMarker() throws NyARException;	
 	
@@ -277,20 +275,23 @@ public abstract class NyARSingleDetectMarker
 	 * @throws NyARException 
 	 * @throws NyARException
 	 */	
-	public static NyARSingleDetectMarker createInstance(NyARParam i_param, NyARCode i_code, double i_marker_width,int i_input_raster_type,int i_profile_id) throws NyARException
+	public static NyARSingleDetectMarker createInstance(NyARParam i_param, NyARCode i_code, double i_marker_width,int i_profile_id) throws NyARException
 	{
 		switch(i_profile_id){
 		case PF_ARTOOLKIT_COMPATIBLE:
-			return new NyARSingleDetectMarker_ARTKv2(i_param,i_code,i_marker_width,i_input_raster_type);
+			return new NyARSingleDetectMarker_ARTKv2(i_param,i_code,i_marker_width);
 		case PF_NYARTOOLKIT_ARTOOLKIT_FITTING:
-			return new NyARSingleDetectMarker_NyARTK_FITTING_ARTKv2(i_param,i_code,i_marker_width,i_input_raster_type);
+			return new NyARSingleDetectMarker_NyARTK_FITTING_ARTKv2(i_param,i_code,i_marker_width);
 		case PF_NYARTOOLKIT://default
-			return new NyARSingleDetectMarker_NyARTK(i_param,i_code,i_marker_width,i_input_raster_type);
+			return new NyARSingleDetectMarker_NyARTK(i_param,i_code,i_marker_width);
 		default:
 			throw new NyARException();
 		}		
 	}
-	
+	public static NyARSingleDetectMarker createInstance(NyARParam i_param, NyARCode i_code, double i_marker_width) throws NyARException
+	{
+		return createInstance(i_param,i_code,i_marker_width,PF_NYARTOOLKIT);
+	}
 	
 }
 
@@ -319,9 +320,9 @@ class NyARSingleDetectMarker_ARTKv2 extends NyARSingleDetectMarker
 			this._parent.updateSquareInfo(i_coord, i_vertex_index);
 		}	
 	}
-	public NyARSingleDetectMarker_ARTKv2(NyARParam i_ref_param,NyARCode i_ref_code,double i_marker_width,int i_input_raster_type) throws NyARException
+	public NyARSingleDetectMarker_ARTKv2(NyARParam i_ref_param,NyARCode i_ref_code,double i_marker_width) throws NyARException
 	{
-		super(i_ref_param,i_ref_code,i_marker_width,i_input_raster_type);
+		super(i_ref_param,i_ref_code,i_marker_width);
 		this._inst_patt=new NyARColorPatt_O3(i_ref_code.getWidth(), i_ref_code.getHeight());
 		this._transmat=new NyARTransMat_ARToolKit(i_ref_param);
 		this._square_detect=new ARTKDetector(this,i_ref_param.getScreenSize());
@@ -336,9 +337,9 @@ class NyARSingleDetectMarker_ARTKv2 extends NyARSingleDetectMarker
 class NyARSingleDetectMarker_NyARTK_FITTING_ARTKv2 extends NyARSingleDetectMarker
 {
 	protected ARTKDetector _square_detect;	
-	public NyARSingleDetectMarker_NyARTK_FITTING_ARTKv2(NyARParam i_ref_param,NyARCode i_ref_code,double i_marker_width,int i_input_raster_type) throws NyARException
+	public NyARSingleDetectMarker_NyARTK_FITTING_ARTKv2(NyARParam i_ref_param,NyARCode i_ref_code,double i_marker_width) throws NyARException
 	{
-		super(i_ref_param,i_ref_code,i_marker_width,i_input_raster_type);
+		super(i_ref_param,i_ref_code,i_marker_width);
 		this._inst_patt=new NyARColorPatt_Perspective(i_ref_code.getWidth(), i_ref_code.getHeight(),4,25);
 		this._transmat=new NyARTransMat_ARToolKit(i_ref_param);
 		this._square_detect=new NyARSingleDetectMarker_ARTKv2.ARTKDetector(this,i_ref_param.getScreenSize());
@@ -374,9 +375,9 @@ class NyARSingleDetectMarker_NyARTK extends NyARSingleDetectMarker
 		}
 	}
 	
-	public NyARSingleDetectMarker_NyARTK(NyARParam i_ref_param,NyARCode i_ref_code,double i_marker_width,int i_input_raster_type) throws NyARException
+	public NyARSingleDetectMarker_NyARTK(NyARParam i_ref_param,NyARCode i_ref_code,double i_marker_width) throws NyARException
 	{
-		super(i_ref_param,i_ref_code,i_marker_width,i_input_raster_type);
+		super(i_ref_param,i_ref_code,i_marker_width);
 		this._inst_patt=new NyARColorPatt_Perspective(i_ref_code.getWidth(), i_ref_code.getHeight(),4,25);
 		this._transmat=new NyARTransMat(i_ref_param);
 		this._square_detect=new RleDetector(this,i_ref_param.getScreenSize());

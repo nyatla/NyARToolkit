@@ -41,7 +41,7 @@ public abstract class NyARRgbRaster_BasicClass implements INyARRgbRaster
 {
 	/** ラスタのサイズを格納します。*/
 	protected final NyARIntSize _size;
-	private int _buffer_type;
+	protected int _buffer_type;
 	/**
 	 * コンストラクタです。
 	 * @param i_width

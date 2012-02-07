@@ -38,6 +38,7 @@ import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.transmat.*;
+import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.processor.*;
 /**
@@ -76,7 +77,7 @@ public class SingleARMarkerTest
 		{
 			//アプリケーションフレームワークの初期化
 			super();
-			initInstance(i_cparam,i_raster_format);
+			initInstance(i_cparam);
 			return;
 		}
         /**
@@ -148,7 +149,7 @@ public class SingleARMarkerTest
 		byte[] buf = new byte[(int) f.length()];
 		fs.read(buf);		
 
-        NyARRgbRaster_BGRA ra = new NyARRgbRaster_BGRA(320, 240,false);
+        NyARRgbRaster ra = new NyARRgbRaster(320, 240,NyARBufferType.BYTE1D_B8G8R8X8_32,false);
         ra.wrapBuffer(buf);
 
         MarkerProcessor pr = new MarkerProcessor(ap, ra.getBufferType());

@@ -61,8 +61,8 @@ public class NyARTransportVectorSolver_ARToolKit implements INyARTransportVector
 	{
 		this._projection_mat=i_projection_mat_ref;
 		//aとb(aの転置行列)の固定部分を設定。
-		final double[][] mata = this._mat_a.refArray();
-		final double[][] matat = this._mat_at.refArray();
+		final double[][] mata = this._mat_a.getArray();
+		final double[][] matat = this._mat_at.getArray();
 
 		//変換用行列のcpara部分を先に作成
 		for (int i = 0; i < 4; i++) {
@@ -86,8 +86,8 @@ public class NyARTransportVectorSolver_ARToolKit implements INyARTransportVector
 		final double cpara02=this._projection_mat.m02;
 		final double cpara12=this._projection_mat.m12;		
 		final NyARMat mat_t=this._mat_t;
-		final double[][] mata = this._mat_a.refArray();
-		final double[][] matat= this._mat_at.refArray();
+		final double[][] mata = this._mat_a.getArray();
+		final double[][] matat= this._mat_at.getArray();
 		for (int i = 0; i < 4; i++){
 			cx[i]=i_ref_vertex_2d[i].x;
 			cy[i]=i_ref_vertex_2d[i].y;
@@ -106,7 +106,7 @@ public class NyARTransportVectorSolver_ARToolKit implements INyARTransportVector
 	 */
 	public void solveTransportVector(NyARDoublePoint3d[] i_vertex3d,NyARDoublePoint3d o_transfer) throws NyARException
 	{
-		final double[][] matc = this._mat_c.refArray();
+		final double[][] matc = this._mat_c.getArray();
 		final double cpara00=this._projection_mat.m00;
 		final double cpara01=this._projection_mat.m01;
 		final double cpara02=this._projection_mat.m02;
@@ -126,7 +126,7 @@ public class NyARTransportVectorSolver_ARToolKit implements INyARTransportVector
 		this._mat_e.mul(this._mat_at,this._mat_c);
 		this._mat_f.mul(this._mat_t, this._mat_e);
 		
-		final double[][] matf = this._mat_f.refArray();
+		final double[][] matf = this._mat_f.getArray();
 		o_transfer.x= matf[0][0];// trans[0] = mat_f->m[0];
 		o_transfer.y= matf[1][0];
 		o_transfer.z= matf[2][0];// trans[2] = mat_f->m[2];

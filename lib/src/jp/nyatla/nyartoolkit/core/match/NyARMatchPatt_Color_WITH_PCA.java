@@ -88,7 +88,7 @@ public class NyARMatchPatt_Color_WITH_PCA extends NyARMatchPatt_Color_WITHOUT_PC
 	 */	
 	public boolean evaluate(NyARMatchPattDeviationColorData i_patt,NyARMatchPattResult o_result) throws NyARException
 	{
-		final int[] linput = i_patt.refData();
+		final int[] linput = i_patt.getData();
 		int sum;
 		double max = 0.0;
 		int res = NyARMatchPattResult.DIRECTION_UNKNOWN;
@@ -119,7 +119,7 @@ public class NyARMatchPatt_Color_WITH_PCA extends NyARMatchPatt_Color_WITHOUT_PC
 			}
 		}
 		sum=0;
-		final int[] code_data=this._code_patt.getColorData(res).refData();
+		final int[] code_data=this._code_patt.getColorData(res).getData();
 		for (int i = 0; i < this._rgbpixels; i++) {// for(int
 			sum += linput[i] * code_data[i];// sum +=input[i][i2][i3]*pat[res2][res][i][i2][i3];
 		}

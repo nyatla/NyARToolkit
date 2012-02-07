@@ -149,9 +149,9 @@ public class NyARColorPatt_Base implements INyARColorPatt
 	{
 		double[][] world = CPARAM_WORLD;
 		NyARMat a = new NyARMat(8, 8);// 次処理で値を設定するので、初期化不要// new NyARMat( 8, 8 );
-		double[][] a_array = a.refArray();
+		double[][] a_array = a.getArray();
 		NyARMat b = new NyARMat(8, 1);// 次処理で値を設定するので、初期化不要// new NyARMat( 8, 1 );
-		double[][] b_array = b.refArray();
+		double[][] b_array = b.getArray();
 		double[] a_pt0, a_pt1;
 		double[] world_pti;
 
@@ -196,7 +196,7 @@ public class NyARColorPatt_Base implements INyARColorPatt
 		if (!get_cpara(i_vertexs, cpara)) {
 			return false;
 		}
-		final double[][] para=cpara.refArray();
+		final double[][] para=cpara.getArray();
 		final double para00=para[0*3+0][0];
 		final double para01=para[0*3+1][0];
 		final double para02=para[0*3+2][0];

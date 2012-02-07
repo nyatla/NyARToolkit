@@ -50,10 +50,10 @@ public class NyARMatchPattDeviationBlackWhiteData
 	//
 	private int _number_of_pixels;
 	/**
-	 * この関数は、画素データを格納した配列を返します。
+	 * [readonly]この関数は、画素データを格納した配列を返します。
 	 * {@link NyARMatchPatt_BlackWhite#evaluate}関数から使います。
 	 */
-	public int[] refData()
+	public int[] getData()
 	{
 		return this._data;
 	}

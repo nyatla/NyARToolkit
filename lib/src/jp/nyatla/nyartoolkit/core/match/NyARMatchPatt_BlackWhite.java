@@ -99,7 +99,7 @@ public class NyARMatchPatt_BlackWhite implements INyARMatchPatt
 	{
 		assert this._ref_code_patt!=null;
 
-		final int[] linput = i_patt.refData();
+		final int[] linput = i_patt.getData();
 		int sum;
 		double max = 0.0;
 		int res = NyARMatchPattResult.DIRECTION_UNKNOWN;
@@ -109,7 +109,7 @@ public class NyARMatchPatt_BlackWhite implements INyARMatchPatt
 			//合計値初期化
 			sum=0;
 			final NyARMatchPattDeviationBlackWhiteData code_patt=this._ref_code_patt.getBlackWhiteData(j);
-			final int[] pat_j = code_patt.refData();
+			final int[] pat_j = code_patt.getData();
 			//<全画素について、比較(FORの1/16展開)/>
 			int i;
 			for(i=this._pixels-1;i>=0;i--){

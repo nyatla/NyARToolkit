@@ -225,7 +225,7 @@ public class NyARFrustum
 	 * @return
 	 * [read only]透視変換行列を格納したオブジェクト
 	 */
-	public final NyARDoubleMatrix44 refMatrix()
+	public final NyARDoubleMatrix44 getMatrix()
 	{
 		return this._frustum_rh;
 	}
@@ -235,7 +235,7 @@ public class NyARFrustum
 	 * @return
 	 * [read only]透視変換行列の逆行列を格納したオブジェクト
 	 */
-	public final NyARDoubleMatrix44 refInvMatrix()
+	public final NyARDoubleMatrix44 getInvMatrix()
 	{
 		return this._inv_frustum_rh;
 	}

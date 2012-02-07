@@ -69,9 +69,9 @@ public class NyARColorPatt_O3 extends NyARColorPatt_Base
 	{
 		double[][] world = CPARAM_WORLD;
 		NyARMat a = wk_get_cpara_a;// 次処理で値を設定するので、初期化不要// new NyARMat( 8, 8 );
-		double[][] a_array = a.refArray();
+		double[][] a_array = a.getArray();
 		NyARMat b = wk_get_cpara_b;// 次処理で値を設定するので、初期化不要// new NyARMat( 8, 1 );
-		double[][] b_array = b.refArray();
+		double[][] b_array = b.getArray();
 		double[] a_pt0, a_pt1;
 		double[] world_pti;
 
@@ -197,7 +197,7 @@ public class NyARColorPatt_O3 extends NyARColorPatt_Base
 		final int ydiv = i_ydiv2 / this._size.h;// ydiv = ydiv2/Config.AR_PATT_SIZE_Y;
 		final int xdiv_x_ydiv = xdiv * ydiv;
 		double reciprocal;
-		final double[][] para=i_cpara.refArray();
+		final double[][] para=i_cpara.getArray();
 		final double para00=para[0*3+0][0];
 		final double para01=para[0*3+1][0];
 		final double para02=para[0*3+2][0];

@@ -59,7 +59,7 @@ class NyARGsPixelDriver_INT1D_GRAY_8 implements INyARGsPixelDriver
 		final int[] b = this._ref_buf;
 		for (int i = i_n - 1; i >= 0; i--) {
 			bp = (i_x[i] + i_y[i] * w);
-			o_buf[i] = (b[bp + 2]);
+			o_buf[i_st_buf+i] = (b[bp]);
 		}
 		return;	
 	}
@@ -104,7 +104,7 @@ class NyARGsPixelDriver_RGBX implements INyARGsPixelDriver
 		int[] tmp=this._tmp;
 		for (int i = i_n - 1; i >= 0; i--){
 			r.getPixel(i_x[i], i_y[i],tmp);
-			o_buf[i] =(tmp[0]+tmp[1]+tmp[2])/3;
+			o_buf[i_st_buf+i] =(tmp[0]+tmp[1]+tmp[2])/3;
 		}
 		return;
 	}

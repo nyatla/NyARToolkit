@@ -50,7 +50,7 @@ public class NyARRealityGl extends NyARReality
 	{
 		super(i_param,i_near,i_far,i_max_known_target,i_max_unknown_target);
 		//カメラパラメータを取得しておく。
-		this._frustum.refMatrix().getValueT(this._gl_frustum_rh);
+		this._frustum.getMatrix().getValueT(this._gl_frustum_rh);
 	}
 	/**
 	 * この関数は、透視投影行列と視錐体パラメータを元に、インスタンスを作成します。
@@ -74,7 +74,7 @@ public class NyARRealityGl extends NyARReality
 	{
 		super(i_screen_size,i_near,i_far,i_prjmat,null,i_max_known_target,i_max_unknown_target);
 		//カメラパラメータを取得しておく。
-		this._frustum.refMatrix().getValueT(this._gl_frustum_rh);
+		this._frustum.getMatrix().getValueT(this._gl_frustum_rh);
 	}
 	
 	private double[] _temp=new double[16];

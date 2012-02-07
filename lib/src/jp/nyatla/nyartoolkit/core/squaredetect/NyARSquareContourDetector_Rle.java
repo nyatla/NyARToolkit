@@ -44,7 +44,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
 public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 {	
 	/** label_stackにソート後の結果を蓄積するクラス*/
-	private class Labeling extends NyARLabeling_Rle
+	protected class Labeling extends NyARLabeling_Rle
 	{
 		public NyARRleLabelFragmentInfoPtrStack label_stack;
 		int _right;
@@ -92,7 +92,7 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 		}
 	}
 	
-	private Labeling _labeling;
+	protected Labeling _labeling;
 	private final NyARLabelOverlapChecker<NyARRleLabelFragmentInfo> _overlap_checker = new NyARLabelOverlapChecker<NyARRleLabelFragmentInfo>(32,NyARRleLabelFragmentInfo.class);
 	private NyARContourPickup _cpickup=new NyARContourPickup();
 	private final NyARCoord2SquareVertexIndexes _coord2vertex=new NyARCoord2SquareVertexIndexes();

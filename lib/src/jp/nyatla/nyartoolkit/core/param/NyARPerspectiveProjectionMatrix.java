@@ -111,8 +111,8 @@ final public class NyARPerspectiveProjectionMatrix extends NyARDoubleMatrix44
 			c23=-this.m23;
 		}
 
-		double[][] cpara = o_cpara.refArray();
-		double[][] trans = o_trans.refArray();
+		double[][] cpara = o_cpara.getArray();
+		double[][] trans = o_trans.getArray();
 		for (int r = 0; r < 3; r++) {
 			for (int c = 0; c < 4; c++) {
 				cpara[r][c] = 0.0;// cpara[r][c] = 0.0;
@@ -264,8 +264,8 @@ final public class NyARPerspectiveProjectionMatrix extends NyARDoubleMatrix44
 		
 		this.decompMat(icpara_mat, trans_mat);
 
-		double[][] icpara = icpara_mat.refArray();
-		double[][] trans = trans_mat.refArray();
+		double[][] icpara = icpara_mat.getArray();
+		double[][] trans = trans_mat.getArray();
 		for (i = 0; i < 4; i++) {
 			icpara[1][i] = (i_screen_height - 1) * (icpara[2][i]) - icpara[1][i];
 		}

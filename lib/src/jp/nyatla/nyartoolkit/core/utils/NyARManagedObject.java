@@ -80,7 +80,7 @@ public class NyARManagedObject
 	 * @return
 	 * このオブジェクトの参照値。
 	 */
-	public final NyARManagedObject refObject()
+	public final NyARManagedObject referenceObject()
 	{
 		assert(this._count>0);
 		this._count++;

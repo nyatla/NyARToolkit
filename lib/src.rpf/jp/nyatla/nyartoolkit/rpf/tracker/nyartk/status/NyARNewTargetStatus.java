@@ -48,7 +48,7 @@ public final class NyARNewTargetStatus extends NyARTargetStatus
 			this.current_sampleout.releaseObject();
 		}
 		if(i_src!=null){
-			this.current_sampleout=(LowResolutionLabelingSamplerOut.Item)i_src.refObject();
+			this.current_sampleout=(LowResolutionLabelingSamplerOut.Item)i_src.referenceObject();
 		}else{
 			this.current_sampleout=null;
 		}

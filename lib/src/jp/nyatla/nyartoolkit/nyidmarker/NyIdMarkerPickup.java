@@ -201,7 +201,6 @@ final class PerspectivePixelReader
 		final double[] cpara=this._cparam;
 		final int[] ref_x=this._ref_x;
 		final int[] ref_y=this._ref_y;
-		final int[] pixcel_temp=this._pixcel_temp;
 		final int raster_width=i_raster_size.w;
 		final int raster_height=i_raster_size.h;
 
@@ -232,7 +231,8 @@ final class PerspectivePixelReader
 				pt++;
 			}
 			//GS値を配列に取得
-			i_reader.getPixelSet(ref_x,ref_y,i_width,pixcel_temp,out_index);			
+			i_reader.getPixelSet(ref_x,ref_y,i_width,o_pixel,out_index);
+			out_index+=i_width;
 		}
 		return true;
 	}
@@ -910,7 +910,7 @@ final class PerspectivePixelReader
 			i_reader.getPixelSet(ref_x,ref_y,resolution*4,pixcel_temp,0);
 			//グレースケールにしながら、line→mapへの転写
 			for(int i2=0;i2<resolution;i2++){
-				int index=i2*3*4;
+				int index=i2*4;
 				int pixel=(	pixcel_temp[index+0]+pixcel_temp[index+1]+pixcel_temp[index+2]+pixcel_temp[index+3])/4;
 //				+pixcel_temp[index+4]+pixcel_temp[index+5]+
 //							pixcel_temp[index+6]+pixcel_temp[index+7]+pixcel_temp[index+8]+

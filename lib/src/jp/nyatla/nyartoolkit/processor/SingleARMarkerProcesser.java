@@ -26,14 +26,15 @@ package jp.nyatla.nyartoolkit.processor;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.*;
-import jp.nyatla.nyartoolkit.core.analyzer.raster.threshold.*;
+import jp.nyatla.nyartoolkit.core.analyzer.histogram.NyARHistogramAnalyzer_SlidePTile;
 import jp.nyatla.nyartoolkit.core.match.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.pickup.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
+import jp.nyatla.nyartoolkit.core.rasterdriver.INyARHistogramFromRaster;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilter;
 import jp.nyatla.nyartoolkit.core.transmat.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilter_ARToolkitThreshold;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.*;
 
@@ -81,21 +82,19 @@ public abstract class SingleARMarkerProcesser
 		private NyARMatchPatt_Color_WITHOUT_PCA[] _match_patt;
 		private final NyARMatchPattResult __detectMarkerLite_mr=new NyARMatchPattResult();
 		private NyARCoord2Linear _coordline;
-		private int _raster_type;
 		
-		public DetectSquare(NyARParam i_param,int i_raster_type) throws NyARException
+		public DetectSquare(NyARParam i_param) throws NyARException
 		{
 			super(i_param.getScreenSize());
 			this._match_patt=null;
 			this._coordline=new NyARCoord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
-			this._raster_type=i_raster_type;
 			return;
 		}
 		public void setNyARCodeTable(NyARCode[] i_ref_code,int i_code_resolution) throws NyARException
 		{
 			/*unmanagedで実装するときは、ここでリソース解放をすること。*/
 			this._deviation_data=new NyARMatchPattDeviationColorData(i_code_resolution,i_code_resolution);
-			this._inst_patt=new NyARColorPatt_Perspective(i_code_resolution,i_code_resolution,4,25,this._raster_type);
+			this._inst_patt=new NyARColorPatt_Perspective(i_code_resolution,i_code_resolution,4,25);
 			this._match_patt = new NyARMatchPatt_Color_WITHOUT_PCA[i_ref_code.length];
 			for(int i=0;i<i_ref_code.length;i++){
 				this._match_patt[i]=new NyARMatchPatt_Color_WITHOUT_PCA(i_ref_code[i]);
@@ -210,15 +209,12 @@ public abstract class SingleARMarkerProcesser
 	protected INyARTransMat _transmat;
 
 	private NyARRectOffset _offset; 
-	private int _threshold = 110;
 	// [AR]検出結果の保存用
-	private NyARBinRaster _bin_raster;
+	private NyARGrayscaleRaster _gs_raster;
 
-	private NyARRasterFilter_ARToolkitThreshold _tobin_filter;
 
 	protected int _current_arcode_index = -1;
 
-	private NyARRasterThresholdAnalyzer_SlidePTile _threshold_detect;
 
 	/**
 	 * デフォルトコンストラクタ。
@@ -235,12 +231,9 @@ public abstract class SingleARMarkerProcesser
 	 * 継承先のクラスから呼び出してください。
 	 * @param i_param
 	 * カメラパラメータオブジェクト。このサイズは、{@link #detectMarker}に入力する画像と同じサイズである必要があります。
-	 * @param i_raster_type
-	 * {@link #detectMarker}関数に入力する画像のフォーマット。
-	 * この値には、{@link INyARRgbRaster#getBufferType}関数の戻り値を利用します。
 	 * @throws NyARException
 	 */
-	protected void initInstance(NyARParam i_param,int i_raster_type) throws NyARException
+	protected void initInstance(NyARParam i_param) throws NyARException
 	{
 		//初期化済？
 		assert(this._initialized==false);
@@ -248,24 +241,16 @@ public abstract class SingleARMarkerProcesser
 		NyARIntSize scr_size = i_param.getScreenSize();
 		// 解析オブジェクトを作る
 		this._transmat = new NyARTransMat(i_param);
-		this._tobin_filter=new NyARRasterFilter_ARToolkitThreshold(110,i_raster_type);
+		this._thdetect=new NyARHistogramAnalyzer_SlidePTile(15);
 
 		// ２値画像バッファを作る
-		this._bin_raster = new NyARBinRaster(scr_size.w, scr_size.h);
-		this._threshold_detect=new NyARRasterThresholdAnalyzer_SlidePTile(15,i_raster_type,4);
+		this._gs_raster = new NyARGrayscaleRaster(scr_size.w, scr_size.h);
 		this._initialized=true;
 		//コールバックハンドラ
-		this._detectmarker=new DetectSquare(i_param,i_raster_type);
+		this._detectmarker=new DetectSquare(i_param);
 		this._offset=new NyARRectOffset();
 		return;
 	}
-
-	/*自動・手動の設定が出来ないので、コメントアウト
-	public void setThreshold(int i_threshold)
-	{
-		this._threshold = i_threshold;
-		return;
-	}*/
 
 	/**
 	 * この関数は、検出するマーカパターンテーブルの配列を指定します。 
@@ -309,6 +294,14 @@ public abstract class SingleARMarkerProcesser
 		return;
 	}
 	private DetectSquare _detectmarker;
+	
+	private INyARRaster _last_input_raster=null;
+	
+	private INyARRgb2GsFilter _togs_filter;
+	private INyARHistogramFromRaster _histmaker;
+	private NyARHistogramAnalyzer_SlidePTile _thdetect;
+	private NyARHistogram _hist=new NyARHistogram(256);
+	
 	/**
 	 * この関数は、画像を処理して、適切なマーカ検出イベントハンドラを呼び出します。
 	 * イベントハンドラの呼び出しは、この関数を呼び出したスレッドが、この関数が終了するまでに行います。
@@ -319,24 +312,23 @@ public abstract class SingleARMarkerProcesser
 	public void detectMarker(INyARRgbRaster i_raster) throws NyARException
 	{
 		// サイズチェック
-		assert(this._bin_raster.getSize().isEqualSize(i_raster.getSize().w, i_raster.getSize().h));
+		assert(this._gs_raster.getSize().isEqualSize(i_raster.getSize().w, i_raster.getSize().h));
+		if(this._last_input_raster!=i_raster){
+			this._histmaker=(INyARHistogramFromRaster) this._gs_raster.createInterface(INyARHistogramFromRaster.class);
+			this._togs_filter=(INyARRgb2GsFilter) i_raster.createInterface(INyARRgb2GsFilter.class);
+			this._last_input_raster=i_raster;
+		}
 
-		//BINイメージへの変換
-		this._tobin_filter.setThreshold(this._threshold);
-		this._tobin_filter.doFilter(i_raster, this._bin_raster);
+		//GSイメージへの変換とヒストグラムの生成
+		this._togs_filter.convert(this._gs_raster);
+		this._histmaker.createHistogram(4,this._hist);
 
 		// スクエアコードを探す
 		this._detectmarker.init(i_raster,this._current_arcode_index);
-		this._detectmarker.detectMarker(this._bin_raster);
+		this._detectmarker.detectMarker(this._gs_raster,this._thdetect.getThreshold(this._hist));
 		
 		// 認識状態を更新
-		final boolean is_id_found=this.updateStatus(this._detectmarker.square,this._detectmarker.code_index);
-		//閾値フィードバック(detectExistMarkerにもあるよ)
-		if(!is_id_found){
-			//マーカがなければ、探索+DualPTailで基準輝度検索
-			int th=this._threshold_detect.analyzeRaster(i_raster);
-			this._threshold=(this._threshold+th)/2;
-		}
+		this.updateStatus(this._detectmarker.square,this._detectmarker.code_index);
 		return;
 	}
 	/**

@@ -46,7 +46,7 @@ public class ClassTestcase
 			System.out.println(d.getTime() - d2.getTime());
 
 			if(s.isExistMarker(aid)){
-				NyARDoubleMatrix44 mat=s.refMarkerTransMat(aid);
+				NyARDoubleMatrix44 mat=s.getMarkerTransMat(aid);
 				System.out.println(s.getConfidence(aid));
 			}
 		}catch(Exception e){

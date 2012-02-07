@@ -5,9 +5,11 @@ import jp.nyatla.nyartoolkit.core.pixeldriver.INyARRgbPixelDriver;
 import jp.nyatla.nyartoolkit.core.pixeldriver.NyARRgbPixelDriverFactory;
 import jp.nyatla.nyartoolkit.core.rasterdriver.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilter;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilterArtkTh;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilterRgbAve;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilterRgbCube;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilterYCbCr;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRgb2GsFilterArtkThFactory;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRgb2GsFilterFactory;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.*;
@@ -176,6 +178,9 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 			return NyARRgb2GsFilterFactory.createRgbCubeDriver(this);
 		}else if(iIid==INyARRgb2GsFilterYCbCr.class){
 			return NyARRgb2GsFilterFactory.createYCbCrDriver(this);
+		}
+		if(iIid==INyARRgb2GsFilterArtkTh.class){
+			return NyARRgb2GsFilterArtkThFactory.createDriver(this);
 		}
 		throw new NyARException();
 	}

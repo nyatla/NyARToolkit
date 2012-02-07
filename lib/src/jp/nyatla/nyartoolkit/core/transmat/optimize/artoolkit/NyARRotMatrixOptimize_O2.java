@@ -116,7 +116,7 @@ public class NyARRotMatrixOptimize_O2 implements INyARRotMatrixOptimize
 		double w, w2;
 		double wsin, wcos;
 		
-		final NyARDoublePoint3d angle = io_rot.refAngle();
+		final NyARDoublePoint3d angle = io_rot.getAngle();
 		a2 = angle.x;
 		b2 = angle.y;
 		c2 = angle.z;

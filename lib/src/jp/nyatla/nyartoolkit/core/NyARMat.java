@@ -287,7 +287,7 @@ public class NyARMat
 	 * @return
 	 * 行列のバッファ
 	 */
-	public double[][] refArray()
+	public double[][] getArray()
 	{
 		return _m;
 	}

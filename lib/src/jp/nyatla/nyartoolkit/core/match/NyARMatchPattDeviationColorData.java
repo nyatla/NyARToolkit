@@ -86,9 +86,20 @@ public class NyARMatchPattDeviationColorData
 	 * {@link NyARMatchPatt_Color_WITHOUT_PCA#evaluate}関数等から使います。
 	 * [R0,G0,B0],[R1,G1,B1]の順番で、直列にデータを格納します。
 	 */	
-	public int[] refData()
+	public int[] getData()
 	{
 		return this._data;
+	}
+	/**
+	 * この関数は、i_bufに画素データをコピーして返します。
+	 * @param i_buf
+	 * 複製先の領域。パターンの幅*高さ*3の領域を用意すること。
+	 * @return
+	 */
+	public int[] getData(int[] i_buf)
+	{
+		System.arraycopy(this._data,0,i_buf,0,this._data.length);
+		return i_buf;
 	}
 	/**
 	 * この関数は、差分画像の強度値を返します。

@@ -25,12 +25,13 @@
 package jp.nyatla.nyartoolkit.processor;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.analyzer.raster.threshold.*;
+import jp.nyatla.nyartoolkit.core.analyzer.histogram.NyARHistogramAnalyzer_SlidePTile;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilter_ARToolkitThreshold;
+import jp.nyatla.nyartoolkit.core.rasterdriver.INyARHistogramFromRaster;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilter;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.nyidmarker.*;
 import jp.nyatla.nyartoolkit.nyidmarker.data.*;
@@ -68,17 +69,13 @@ public abstract class SingleNyIdMarkerProcesser
 		public final NyARSquare square=new NyARSquare();
 		public INyIdMarkerData marker_data;
 		public int threshold;
-
-		
 		//参照
-		private INyARRgbRaster _ref_raster;
+		private INyARGrayscaleRaster _ref_raster;
 		//所有インスタンス
 		private INyIdMarkerData _current_data;
 		private final NyIdMarkerPickup _id_pickup;
 		private NyARCoord2Linear _coordline;
 		private INyIdMarkerDataEncoder _encoder;
-
-		
 		private INyIdMarkerData _data_temp;
 		private INyIdMarkerData _prev_data;
 		
@@ -96,7 +93,7 @@ public abstract class SingleNyIdMarkerProcesser
 		/**
 		 * Initialize call back handler.
 		 */
-		public void init(INyARRgbRaster i_raster,INyIdMarkerData i_prev_data)
+		public void init(INyARGrayscaleRaster i_raster,INyIdMarkerData i_prev_data)
 		{
 			this.marker_data=null;
 			this._prev_data=i_prev_data;
@@ -178,11 +175,11 @@ public abstract class SingleNyIdMarkerProcesser
 	private boolean _is_active;
 	private int _current_threshold=110;
 	// [AR]検出結果の保存用
-	private NyARBinRaster _bin_raster;
-	private NyARRasterFilter_ARToolkitThreshold _tobin_filter;
+	private NyARGrayscaleRaster _gs_raster;
 	private INyIdMarkerData _data_current;
-
-
+	private NyARHistogramAnalyzer_SlidePTile _threshold_detect;
+	private NyARHistogram _hist=new NyARHistogram(256);
+	private INyARHistogramFromRaster _histmaker;
 	/**
 	 * デフォルトコンストラクタ。
 	 * クラスを継承するときは、このコンストラクタを呼び出した後に、{@link #initInstance}関数でインスタンスの初期化処理を実装します。
@@ -201,12 +198,9 @@ public abstract class SingleNyIdMarkerProcesser
 	 * IDマーカの値エンコーダを指定します。
 	 * @param i_marker_width
 	 * マーカの物理縦横サイズをmm単位で指定します。
-	 * @param i_raster_format
-	 * {@link #detectMarker}関数に入力する画像の画素形式。
-	 * この値には、{@link INyARRgbRaster#getBufferType}関数の戻り値を利用します。
 	 * @throws NyARException
 	 */
-	protected void initInstance(NyARParam i_param,INyIdMarkerDataEncoder i_encoder,double i_marker_width,int i_raster_format) throws NyARException
+	protected void initInstance(NyARParam i_param,INyIdMarkerDataEncoder i_encoder,double i_marker_width) throws NyARException
 	{
 		//初期化済？
 		assert(this._initialized==false);
@@ -216,15 +210,15 @@ public abstract class SingleNyIdMarkerProcesser
 		this._square_detect = new RleDetector(
 			i_param,
 			i_encoder,
-			new NyIdMarkerPickup(i_raster_format));
+			new NyIdMarkerPickup());
 		this._transmat = new NyARTransMat(i_param);
 
 		// ２値画像バッファを作る
-		this._bin_raster = new NyARBinRaster(scr_size.w, scr_size.h);
+		this._gs_raster = new NyARGrayscaleRaster(scr_size.w, scr_size.h);
+		this._histmaker=(INyARHistogramFromRaster) this._gs_raster.createInterface(INyARHistogramFromRaster.class);
 		//ワーク用のデータオブジェクトを２個作る
 		this._data_current=i_encoder.createDataInstance();
-		this._tobin_filter =new NyARRasterFilter_ARToolkitThreshold(110,i_raster_format);
-		this._threshold_detect=new NyARRasterThresholdAnalyzer_SlidePTile(15,i_raster_format,4);
+		this._threshold_detect=new NyARHistogramAnalyzer_SlidePTile(15);
 		this._initialized=true;
 		this._is_active=false;
 		this._offset=new NyARRectOffset();
@@ -258,6 +252,9 @@ public abstract class SingleNyIdMarkerProcesser
 		this._is_active=false;
 		return;
 	}
+	private INyARRgbRaster _last_input_raster;
+	private INyARRgb2GsFilter _togs_filter;
+	
 	/**
 	 * この関数は、画像を処理して、適切なマーカ検出イベントハンドラを呼び出します。
 	 * イベントハンドラの呼び出しは、この関数を呼び出したスレッドが、この関数が終了するまでに行います。
@@ -268,16 +265,19 @@ public abstract class SingleNyIdMarkerProcesser
 	public void detectMarker(INyARRgbRaster i_raster) throws NyARException
 	{
 		// サイズチェック
-		if (!this._bin_raster.getSize().isEqualSize(i_raster.getSize().w, i_raster.getSize().h)) {
+		if (!this._gs_raster.getSize().isEqualSize(i_raster.getSize().w, i_raster.getSize().h)) {
 			throw new NyARException();
 		}
-		// ラスタを２値イメージに変換する.
-		this._tobin_filter.setThreshold(this._current_threshold);
-		this._tobin_filter.doFilter(i_raster, this._bin_raster);
+		// ラスタをGSへ変換する。
+		if(this._last_input_raster!=i_raster){
+			this._togs_filter=(INyARRgb2GsFilter) i_raster.createInterface(INyARRgb2GsFilter.class);
+			this._last_input_raster=i_raster;
+		}
+		this._togs_filter.convert(this._gs_raster);
 
 		// スクエアコードを探す(第二引数に指定したマーカ、もしくは新しいマーカを探す。)
-		this._square_detect.init(i_raster,this._is_active?this._data_current:null);
-		this._square_detect.detectMarker(this._bin_raster);
+		this._square_detect.init(this._gs_raster,this._is_active?this._data_current:null);
+		this._square_detect.detectMarker(this._gs_raster,this._current_threshold);
 
 		// 認識状態を更新(マーカを発見したなら、current_dataを渡すかんじ)
 		final boolean is_id_found=updateStatus(this._square_detect.square,this._square_detect.marker_data);
@@ -288,14 +288,14 @@ public abstract class SingleNyIdMarkerProcesser
 			this._current_threshold=(this._current_threshold+this._square_detect.threshold)/2;
 		}else{
 			//マーカがなければ、探索+DualPTailで基準輝度検索
-			int th=this._threshold_detect.analyzeRaster(i_raster);
+			this._histmaker.createHistogram(4,this._hist);
+			int th=this._threshold_detect.getThreshold(this._hist);
 			this._current_threshold=(this._current_threshold+th)/2;
 		}		
 		return;
 	}
 
 	
-	private NyARRasterThresholdAnalyzer_SlidePTile _threshold_detect;
 	private NyARTransMatResult __NyARSquare_result = new NyARTransMatResult();
 
 	/**オブジェクトのステータスを更新し、必要に応じて自己コールバック関数を駆動します。

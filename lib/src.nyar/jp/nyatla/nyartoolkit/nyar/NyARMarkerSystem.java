@@ -8,6 +8,7 @@ import java.util.List;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARCode;
 import jp.nyatla.nyartoolkit.core.analyzer.histogram.INyARHistogramAnalyzer_Threshold;
+import jp.nyatla.nyartoolkit.core.analyzer.histogram.NyARHistogramAnalyzer_SlidePTile;
 import jp.nyatla.nyartoolkit.core.match.NyARMatchPattDeviationColorData;
 import jp.nyatla.nyartoolkit.core.match.NyARMatchPattResult;
 import jp.nyatla.nyartoolkit.core.match.NyARMatchPatt_Color_WITHOUT_PCA;
@@ -43,17 +44,23 @@ import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerData_RawBitId;
 
 public class NyARMarkerSystem
 {
+	private static int MASK_IDTYPE=0xfffff000;
+	private static int MASK_IDNUM =0x00000fff;
+	private static int IDTYPE_ARTK=0x00000000;
+	private static int IDTYPE_NYID=0x00001000;
 	private int lost_th=5;
 	private RleDetector _rledetect;
+	protected NyARParam _ref_param;
 	
 	public NyARMarkerSystem(NyARParam i_ref_param) throws NyARException
 	{
+		this._ref_param=i_ref_param;
 		this.createRasterDriver(i_ref_param);
 	}
 	protected void createRasterDriver(NyARParam i_ref_param) throws NyARException
 	{
 		this._rledetect=new RleDetector(i_ref_param);
-		this._hist_th=null;
+		this._hist_th=new NyARHistogramAnalyzer_SlidePTile(15);
 	}
 	
 	public int addNyIdMarker(int i_id,double i_marker_size) throws NyARException
@@ -64,24 +71,37 @@ public class NyARMarkerSystem
 		}
 		return (this._rledetect._idmk_list.size()-1);
 	}
-	public int addARMarker(InputStream i_stream,int i_patt_resolution,int i_patt_edge_percentage,double i_marker_size) throws NyARException
+	public int addARMarker(NyARCode i_code,int i_patt_edge_percentage,double i_marker_size) throws NyARException
 	{
-		MarkerInfoARMarker target=new MarkerInfoARMarker(i_stream,i_patt_resolution,i_patt_edge_percentage,i_marker_size);
+		MarkerInfoARMarker target=new MarkerInfoARMarker(i_code,i_patt_edge_percentage,i_marker_size);
 		if(!this._rledetect._armk_list.add(target)){
 			throw new NyARException();
 		}
-		return (this._rledetect._armk_list.size()-1)|0x0001000;
+		return (this._rledetect._armk_list.size()-1)| IDTYPE_ARTK;
+	}
+	
+	public int addARMarker(InputStream i_stream,int i_patt_resolution,int i_patt_edge_percentage,double i_marker_size) throws NyARException
+	{
+		NyARCode c=new NyARCode(i_patt_resolution,i_patt_resolution);
+		c.loadARPatt(i_stream);
+		return this.addARMarker(c, i_patt_edge_percentage, i_marker_size);
+	}
+	public int addARMarker(String i_file_name,int i_patt_resolution,int i_patt_edge_percentage,double i_marker_size) throws NyARException
+	{
+		NyARCode c=new NyARCode(i_patt_resolution,i_patt_resolution);
+		c.loadARPattFromFile(i_file_name);
+		return this.addARMarker(c,i_patt_edge_percentage, i_marker_size);
 	}
 	
 	/** マーカがあるか取得*/
 	public boolean isExistMarker(int i_id)
 	{
-		if((i_id & 0x0001000)!=0){
+		if((i_id & MASK_IDTYPE)==IDTYPE_ARTK){
 			//ARマーカ
-			return this._rledetect._armk_list.get(i_id &0x00000fff).lost_count<this.lost_th;
+			return this._rledetect._armk_list.get(i_id & MASK_IDNUM).lost_count<this.lost_th;
 		}else{
 			//Idマーカ
-			return this._rledetect._idmk_list.get(i_id &0x00000fff).lost_count<this.lost_th;
+			return this._rledetect._idmk_list.get(i_id & MASK_IDNUM).lost_count<this.lost_th;
 		}
 	}
 	/** NyId取得*/
@@ -89,9 +109,9 @@ public class NyARMarkerSystem
 	/** ARマーカの一致度*/
 	public double getConfidence(int i_id) throws NyARException
 	{
-		if((i_id & 0x0001000)!=0){
+		if((i_id & MASK_IDTYPE)==IDTYPE_ARTK){
 			//ARマーカ
-			return this._rledetect._armk_list.get(i_id &0x00000fff).cf;
+			return this._rledetect._armk_list.get(i_id &MASK_IDNUM).cf;
 		}
 		//Idマーカ？
 		throw new NyARException();
@@ -102,14 +122,14 @@ public class NyARMarkerSystem
 	public void getMarkerPlaneImageRect(){}
 	/** */
 	public void getMarkerVertex2d(){}
-	public NyARDoubleMatrix44 refMarkerTransMat(int i_id)
+	public NyARDoubleMatrix44 getMarkerTransMat(int i_id)
 	{
-		if((i_id & 0x0001000)!=0){
+		if((i_id & MASK_IDTYPE)==IDTYPE_ARTK){
 			//ARマーカ
-			return this._rledetect._armk_list.get(i_id &0x00000fff).tmat;
+			return this._rledetect._armk_list.get(i_id &MASK_IDNUM).tmat;
 		}else{
 			//Idマーカ
-			return this._rledetect._idmk_list.get(i_id &0x00000fff).tmat;
+			return this._rledetect._idmk_list.get(i_id &MASK_IDNUM).tmat;
 		}
 	}
 	/** スクリーン座標をマーカ座標に変換*/
@@ -140,10 +160,10 @@ public class NyARMarkerSystem
 		if(this._time_stamp==time_stamp){
 			return;
 		}
-//		int th=this._hist_th.getThreshold(i_sensor.getGsHistogram());
+		int th=this._hist_th.getThreshold(i_sensor.getGsHistogram());
 
 		//解析器にかけてマーカを抽出。
-		this._rledetect.detectMarker(i_sensor, time_stamp, 102);
+		this._rledetect.detectMarker(i_sensor, time_stamp, th);
 		//タイムスタンプを更新
 		this._time_stamp=time_stamp;
 	}
@@ -166,14 +186,15 @@ class MultiResolutionPattPickup
 		private NyARColorPatt_Perspective _pickup;
 		private NyARMatchPattDeviationColorData _patt_d;
 		private int _patt_edge;
-		public Item(int i_resolution,int i_edge_percentage) throws NyARException
+		public Item(int i_patt_w,int i_patt_h,int i_edge_percentage) throws NyARException
 		{
 			int r=1;
-			while(i_resolution*r<64){
+			//解像度は幅を基準にする。
+			while(i_patt_w*r<64){
 				r*=2;
 			}				
-			this._pickup=new NyARColorPatt_Perspective(i_resolution,i_resolution,r,i_edge_percentage);
-			this._patt_d=new NyARMatchPattDeviationColorData(i_resolution,i_resolution);
+			this._pickup=new NyARColorPatt_Perspective(i_patt_w,i_patt_h,r,i_edge_percentage);
+			this._patt_d=new NyARMatchPattDeviationColorData(i_patt_w,i_patt_h);
 			this._patt_edge=i_edge_percentage;
 		}
 	}
@@ -182,18 +203,17 @@ class MultiResolutionPattPickup
 	 */
 	private ArrayList<Item> items=new ArrayList<Item>();
 	/**
-	 * マーカにマッチした{@link NyARMatchPattDeviationColorData}インスタンスを得る。
+	 * [readonly]マーカにマッチした{@link NyARMatchPattDeviationColorData}インスタンスを得る。
 	 * @throws NyARException 
 	 */
 	
-	public NyARMatchPattDeviationColorData refDeviationColorData(MarkerInfoARMarker i_marker,INyARRgbRaster i_raster, NyARIntPoint2d[] i_vertex) throws NyARException
+	public NyARMatchPattDeviationColorData getDeviationColorData(MarkerInfoARMarker i_marker,INyARRgbRaster i_raster, NyARIntPoint2d[] i_vertex) throws NyARException
 	{
-		int mk_resolution=i_marker.patt_resolution;
 		int mk_edge=i_marker.patt_edge_percentage;
 		for(int i=this.items.size()-1;i>=0;i--)
 		{
 			Item ptr=this.items.get(i);
-			if(!ptr._pickup.getSize().isEqualSize(mk_resolution,mk_resolution) || ptr._patt_edge!=mk_edge)
+			if(!ptr._pickup.getSize().isEqualSize(i_marker.patt_w,i_marker.patt_h) || ptr._patt_edge!=mk_edge)
 			{
 				//サイズとエッジサイズが合致しない物はスルー
 				continue;
@@ -204,7 +224,7 @@ class MultiResolutionPattPickup
 			return ptr._patt_d;
 		}
 		//無い。新しく生成
-		Item item=new Item(mk_resolution,mk_edge);
+		Item item=new Item(i_marker.patt_w,i_marker.patt_h,mk_edge);
 		//タイムスタンプの更新とデータの生成
 		item._pickup.pickFromRaster(i_raster,i_vertex);
 		item._patt_d.setRaster(item._pickup);
@@ -271,8 +291,8 @@ class RleDetector extends NyARSquareContourDetector_Rle
 		this._idmk_list.prepare();
 		this._armk_list.prepare();
 		//検出処理
-		this._ref_input_rfb=i_sensor.refSourceImage();
-		this._ref_input_gs=i_sensor.refGsImage();
+		this._ref_input_rfb=i_sensor.getSourceImage();
+		this._ref_input_gs=i_sensor.getGsImage();
 		super.detectMarker(this._ref_input_gs,i_th);
 		//検出結果の反映処理
 		this._armk_list.finish();
@@ -484,7 +504,7 @@ class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 		for(int i=this.size()-1;i>=0;i--){
 			MarkerInfoARMarker target=this.get(i);
 			//解像度に一致する画像を取得
-			NyARMatchPattDeviationColorData diff=this._mpickup.refDeviationColorData(target, i_raster, i_vertex);
+			NyARMatchPattDeviationColorData diff=this._mpickup.getDeviationColorData(target, i_raster, i_vertex);
 			//マーカのパターン解像度に一致したサンプリング画像と比較する。
 			if(!target.matchpatt.evaluate(diff,this._patt_result)){
 				continue;
@@ -665,19 +685,18 @@ class MarkerInfoARMarker extends TMarkerData
 	public final NyARMatchPatt_Color_WITHOUT_PCA matchpatt;
 	/** MK_ARの情報。検出した矩形の格納変数。マーカの一致度を格納します。*/
 	public double cf;
-	/** MK_ARの情報。パターンの解像度。*/
-	public final int patt_resolution;
+	public int patt_w;
+	public int patt_h;
 	/** MK_ARの情報。パターンのエッジ割合。*/
 	public final int patt_edge_percentage;
 	/** */
-	public MarkerInfoARMarker(InputStream i_patt,int i_patt_resolution,int i_patt_edge_percentage,double i_patt_size) throws NyARException
+	public MarkerInfoARMarker(NyARCode i_patt,int i_patt_edge_percentage,double i_patt_size) throws NyARException
 	{
-		NyARCode c=new NyARCode(i_patt_resolution,i_patt_resolution);
-		c.loadARPatt(i_patt);
-		this.matchpatt=new NyARMatchPatt_Color_WITHOUT_PCA(c);
-		this.patt_resolution=i_patt_resolution;
+		this.matchpatt=new NyARMatchPatt_Color_WITHOUT_PCA(i_patt);
 		this.patt_edge_percentage=i_patt_edge_percentage;
 		this.marker_offset.setSquare(i_patt_size);
+		this.patt_w=i_patt.getWidth();
+		this.patt_h=i_patt.getHeight();
 		return;
 	}		
 }

@@ -128,13 +128,5 @@ public interface INyARRgbPixelDriver {
 	 * @throws NyARException
 	 */
 	public void switchRaster(INyARRgbRaster i_raster) throws NyARException;
-
-	/**
-	 * この関数は、指定したラスタがこのドライバと互換性があるかを返します。
-	 * 
-	 * @return
-	 */
-	public boolean isCompatibleRaster(INyARRgbRaster i_raster);
-
 }
 

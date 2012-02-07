@@ -160,7 +160,7 @@ public class NyARRotMatrixOptimize_Base implements INyARRotMatrixOptimize
 		double err, minerr = 0;
 		int i,i2;
 		int best_idx=0;
-		angle.setValue(io_rot.refAngle());// arGetAngle( rot, &a, &b, &c );
+		angle.setValue(io_rot.getAngle());// arGetAngle( rot, &a, &b, &c );
 		factor = 10.0 * Math.PI / 180.0;
 		for (int j = 0; j < 10; j++){
 			minerr = 1000000000.0;

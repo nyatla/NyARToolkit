@@ -2,7 +2,6 @@ package jp.nyatla.nyartoolkit.nyar;
 
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.analyzer.raster.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
@@ -98,7 +97,7 @@ public class NyARSensor
 	 * ARToolkitのパラメータオブジェクトの参照値を返します。
 	 * @return
 	 */
-	public NyARParam refARParam()
+	public NyARParam getARParam()
 	{
 		return this._ref_param;
 	}
@@ -107,7 +106,7 @@ public class NyARSensor
 	 * @return
 	 * @throws NyARException 
 	 */
-	public INyARGrayscaleRaster refGsImage() throws NyARException
+	public INyARGrayscaleRaster getGsImage() throws NyARException
 	{
 		//必要に応じてグレースケール画像の生成
 		if(this._src_ts!=this._gs_id_ts){
@@ -134,7 +133,7 @@ public class NyARSensor
 	 * 現在の入力画像の参照値を返します。
 	 * @return
 	 */
-	public INyARRgbRaster refSourceImage()
+	public INyARRgbRaster getSourceImage()
 	{
 		return this._ref_raster;
 	}

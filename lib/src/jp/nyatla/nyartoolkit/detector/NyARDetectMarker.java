@@ -39,6 +39,8 @@ import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilter;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilterArtkTh;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARCoord2Linear;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector_Rle;
@@ -184,14 +186,11 @@ public class NyARDetectMarker
 	 * 正方形マーカの物理サイズをmm単位で指定します。
 	 * @param i_number_of_code
 	 * i_codeの有効な個数を指定します。
-	 * @param i_input_raster_type
-	 * {@link #detectMarkerLite}に入力するラスタの画素形式を指定します。
-	 * この値は、{@link INyARRgbRaster#getBufferType}関数の戻り値を利用します。
 	 * @throws NyARException
 	 */
-	public NyARDetectMarker(NyARParam i_param,NyARCode[] i_code,double[] i_marker_width, int i_number_of_code,int i_input_raster_type) throws NyARException
+	public NyARDetectMarker(NyARParam i_param,NyARCode[] i_code,double[] i_marker_width, int i_number_of_code) throws NyARException
 	{
-		initInstance(i_param,i_code,i_marker_width,i_number_of_code,i_input_raster_type);
+		initInstance(i_param,i_code,i_marker_width,i_number_of_code);
 		return;
 	}
 	/**
@@ -214,8 +213,7 @@ public class NyARDetectMarker
 		NyARParam	i_ref_param,
 		NyARCode[]	i_ref_code,
 		double[]	i_marker_width,
-		int			i_number_of_code,
-		int i_input_raster_type) throws NyARException
+		int			i_number_of_code) throws NyARException
 	{
 
 		final NyARIntSize scr_size=i_ref_param.getScreenSize();
@@ -225,8 +223,7 @@ public class NyARDetectMarker
 
 		this._transmat = new NyARTransMat(i_ref_param);
 		//NyARToolkitプロファイル
-		this._square_detect =new RleDetector(new NyARColorPatt_Perspective(cw, ch,4,25,i_input_raster_type),i_ref_code,i_number_of_code,i_ref_param);
-		this._tobin_filter=new NyARRasterFilter_ARToolkitThreshold(100,i_input_raster_type);
+		this._square_detect =new RleDetector(new NyARColorPatt_Perspective(cw, ch,4,25),i_ref_code,i_number_of_code,i_ref_param);
 
 		//実サイズ保存
 		this._offset = NyARRectOffset.createArray(i_number_of_code);
@@ -240,7 +237,8 @@ public class NyARDetectMarker
 	
 	private NyARBinRaster _bin_raster;
 
-	private INyARRasterFilter_Rgb2Bin _tobin_filter;
+	private INyARRgb2GsFilterArtkTh _tobin_filter;
+	private INyARRgbRaster _last_input_raster=null;
 
 	/**
 	 * この関数は、画像からマーカを検出します。
@@ -259,14 +257,14 @@ public class NyARDetectMarker
 		if (!this._bin_raster.getSize().isEqualSize(i_raster.getSize())) {
 			throw new NyARException();
 		}
-
-		// ラスタを２値イメージに変換する.
-		((NyARRasterFilter_ARToolkitThreshold)this._tobin_filter).setThreshold(i_threshold);
-		this._tobin_filter.doFilter(i_raster, this._bin_raster);
-
+		if(this._last_input_raster!=i_raster){
+			this._tobin_filter=(INyARRgb2GsFilterArtkTh) i_raster.createInterface(INyARRgb2GsFilterArtkTh.class);
+			this._last_input_raster=i_raster;
+		}
+		this._tobin_filter.doFilter(i_threshold,this._bin_raster);
 		//detect
 		this._square_detect.init(i_raster);
-		this._square_detect.detectMarker(this._bin_raster);
+		this._square_detect.detectMarker(this._bin_raster,0);
 
 		//見付かった数を返す。
 		return this._square_detect.result_stack.getLength();

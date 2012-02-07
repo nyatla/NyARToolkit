@@ -104,7 +104,7 @@ public class NyARMatchPatt_Color_WITHOUT_PCA implements INyARMatchPatt
 	{
 		assert this._code_patt!=null;
 		//
-		final int[] linput = i_patt.refData();
+		final int[] linput = i_patt.getData();
 		int sum;
 		double max = Double.MIN_VALUE;
 		int res = NyARMatchPattResult.DIRECTION_UNKNOWN;
@@ -113,7 +113,7 @@ public class NyARMatchPatt_Color_WITHOUT_PCA implements INyARMatchPatt
 			//合計値初期化
 			sum=0;
 			final NyARMatchPattDeviationColorData code_patt=this._code_patt.getColorData(j);
-			final int[] pat_j = code_patt.refData();
+			final int[] pat_j = code_patt.getData();
 			//<全画素について、比較(FORの1/16展開)>
 			int i;
 			for(i=this._rgbpixels-1;i>=for_mod;i--){

@@ -49,7 +49,7 @@ public class NyARPca2d_MatrixPCA implements INyARPca2d
 		final NyARMatPca input = this.__pca_input;// 次処理で初期化される。		
 		// pcaの準備
 		input.realloc(i_number_of_point, 2);
-		final double[][] input_array=input.refArray();
+		final double[][] input_array=input.getArray();
 		for(int i=0;i<i_number_of_point;i++){
 			input_array[i][0]=i_v1[i];
 			input_array[i][1]=i_v2[i];
@@ -57,7 +57,7 @@ public class NyARPca2d_MatrixPCA implements INyARPca2d
 		// 主成分分析
 		input.pca(this.__pca_evec, this.__pca_ev, this.__pca_mean);
 		final double[] mean_array = this.__pca_mean.getArray();
-		final double[][] evec_array = this.__pca_evec.refArray();
+		final double[][] evec_array = this.__pca_evec.getArray();
 		final double[] ev_array=this.__pca_ev.getArray();
 		o_evec.m00=evec_array[0][0];
 		o_evec.m01=evec_array[0][1];
