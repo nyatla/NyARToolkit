@@ -303,6 +303,7 @@ class RleDetector extends NyARSquareContourDetector_Rle
 				MarkerInfoARMarker target=this._armk_list.get(i);
 				if(target.lost_count==0){
 					target.time_stamp=i_time_stamp;
+					System.out.print(target.tmat.m00);
 					this._transmat.transMat(target.sq,target.marker_offset,target.tmat);
 				}
 			}
@@ -335,7 +336,7 @@ class RleDetector extends NyARSquareContourDetector_Rle
 
 class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 {
-	private final static int INITIAL_MARKER_STACK_SIZE=100;
+	private final static int INITIAL_MARKER_STACK_SIZE=10;
 	private NyARCoord2Linear _ref_coordline;		
 	private double _configense_th;
 	private final NyARMatchPattResult _patt_result=new NyARMatchPattResult();;
@@ -396,10 +397,11 @@ class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 			LLItem ptr=_llitems;
 			//先頭の場合
 			if(ptr.cf<i_cf){
+				ptr=ptr.prev;
 				ptr.cf=i_cf;
 				ptr.dir=i_dir;
 				ptr.id=i_id;
-				this._llitems=ptr.prev;
+				this._llitems=ptr;
 				return ptr;
 			}
 			//それ以降
@@ -407,20 +409,22 @@ class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 			for(int i=this._num_of_llitem-2;i>=0;i--)
 			{
 				if(ptr.cf<i_cf){
-					//最後尾を切り離す。
 					LLItem n=this._llitems.prev;
-					this._llitems.prev=n.prev;
-					n.prev.next=this._llitems.prev;
-					//現在の場所に切り離した要素を挿入
-					n.next=ptr;
-					n.prev=ptr.prev;
-					ptr.prev=n;
-					n.prev.next=n;
+					if(ptr!=this._llitems.prev){
+						//必要に応じて差し替え
+						this._llitems.prev=n.prev;
+						n.prev.next=this._llitems;
+						//切り離した要素をptrの前に挿入
+						n.prev=ptr.prev;
+						n.next=ptr;
+						ptr.prev.next=n;
+						ptr.prev=n;
+					}
 					//nに値を保存
 					n.cf=i_cf;
 					n.dir=i_dir;
 					n.id=i_id;
-					return ptr;
+					return n;
 				}
 				ptr=ptr.next;
 			}
@@ -433,6 +437,8 @@ class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 			{
 				ptr.cf=0;
 				ptr.id=-1;
+				ptr.ref_sq=null;
+				ptr=ptr.next;
 			}
 			
 		}
@@ -539,6 +545,7 @@ class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 			}
 			//マーカマップアイテムの矩形に参照値を設定する。
 			llitem.ref_sq=sq_tmp;
+
 		}
 		return sq_tmp!=null;
 	}		
@@ -549,13 +556,14 @@ class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 	public void prepare()
 	{
 		//ARマーカのマッチテーブルのサイズを調整
-		if(this._mkmap._num_of_llitem<this.size()){
+		if(this._mkmap._num_of_llitem<this.size()*this.size()){
 			//不足してるなら作っておく。
-			this._mkmap=new ARMarkerMap(this.size());
+			this._mkmap=new ARMarkerMap(this.size()*this.size());
 		}
 		//マッチングテーブルをリセット
 		this._mkmap.reset();
 		//必要ならスタックサイズの調整もやってね。
+		this._sq_stack.clear();
 		
 		//検出のために初期値設定
 		for(int i=this.size()-1;i>=0;i--){

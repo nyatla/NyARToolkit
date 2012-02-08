@@ -24,6 +24,16 @@ import com.sun.opengl.util.j2d.TextRenderer;
 public class NyARGLDrawUtil
 {
 	private static TextRenderer _tr=new TextRenderer(new Font("SansSerif", Font.PLAIN, 10));
+	private static float[][] COLORCUBE_COLOR= new float[][] { { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 1.0f }, { 1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } };
+	private static float[][] CUBE_VERTICES = new float[][] { { 1.0f, 1.0f, 1.0f }, { 1.0f, -1.0f, 1.0f }, { -1.0f, -1.0f, 1.0f }, { -1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, -1.0f }, { 1.0f, -1.0f, -1.0f }, { -1.0f, -1.0f, -1.0f }, { -1.0f, 1.0f, -1.0f } };
+	private static short[][] CUBE_FACE = new short[][] { { 3, 2, 1, 0 }, { 2, 3, 7, 6 }, { 0, 1, 5, 4 }, { 3, 0, 4, 7 }, { 1, 2, 6, 5 }, { 4, 5, 6, 7 } };
+	public static void drawCube(GL i_gl,float i_size_per_mm,float i_r,float i_g,float i_b)
+	{
+		float v[]={i_r,i_g,i_b};
+		float vs[][]={v,v,v,v,v,v,v,v};
+		drawColorCube(i_gl,i_size_per_mm,vs);
+	}
+	
 	/**
 	 * この関数は、指定サイズの立方体を現在のビューポートへ描画します。
 	 * ARToolKitのサンプルで使われているカラーキューブを描画します。
@@ -35,14 +45,15 @@ public class NyARGLDrawUtil
 	 */
 	public static void drawColorCube(GL i_gl,float i_size_per_mm)
 	{
+		drawColorCube(i_gl,i_size_per_mm,COLORCUBE_COLOR);
+	}
+	private static void drawColorCube(GL i_gl,float i_size_per_mm,float[][] i_color)
+	{
 		// Colour cube data.
 		int polyList = 0;
 		float fSize =i_size_per_mm/2f;
 		int f, i;
-		float[][] cube_vertices = new float[][] { { 1.0f, 1.0f, 1.0f }, { 1.0f, -1.0f, 1.0f }, { -1.0f, -1.0f, 1.0f }, { -1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, -1.0f }, { 1.0f, -1.0f, -1.0f }, { -1.0f, -1.0f, -1.0f }, { -1.0f, 1.0f, -1.0f } };
-		float[][] cube_vertex_colors = new float[][] { { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 1.0f }, { 1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } };
 		int cube_num_faces = 6;
-		short[][] cube_faces = new short[][] { { 3, 2, 1, 0 }, { 2, 3, 7, 6 }, { 0, 1, 5, 4 }, { 3, 0, 4, 7 }, { 1, 2, 6, 5 }, { 4, 5, 6, 7 } };
 
 		if (polyList == 0) {
 			polyList = i_gl.glGenLists(1);
@@ -50,21 +61,22 @@ public class NyARGLDrawUtil
 			i_gl.glBegin(GL.GL_QUADS);
 			for (f = 0; f < cube_num_faces; f++)
 				for (i = 0; i < 4; i++) {
-					i_gl.glColor3f(cube_vertex_colors[cube_faces[f][i]][0], cube_vertex_colors[cube_faces[f][i]][1], cube_vertex_colors[cube_faces[f][i]][2]);
-					i_gl.glVertex3f(cube_vertices[cube_faces[f][i]][0] * fSize, cube_vertices[cube_faces[f][i]][1] * fSize, cube_vertices[cube_faces[f][i]][2] * fSize);
+					i_gl.glColor3f(i_color[CUBE_FACE[f][i]][0], i_color[CUBE_FACE[f][i]][1], i_color[CUBE_FACE[f][i]][2]);
+					i_gl.glVertex3f(CUBE_VERTICES[CUBE_FACE[f][i]][0] * fSize, CUBE_VERTICES[CUBE_FACE[f][i]][1] * fSize, CUBE_VERTICES[CUBE_FACE[f][i]][2] * fSize);
 				}
 			i_gl.glEnd();
 			i_gl.glColor3f(0.0f, 0.0f, 0.0f);
 			for (f = 0; f < cube_num_faces; f++) {
 				i_gl.glBegin(GL.GL_LINE_LOOP);
 				for (i = 0; i < 4; i++)
-					i_gl.glVertex3f(cube_vertices[cube_faces[f][i]][0] * fSize, cube_vertices[cube_faces[f][i]][1] * fSize, cube_vertices[cube_faces[f][i]][2] * fSize);
+					i_gl.glVertex3f(CUBE_VERTICES[CUBE_FACE[f][i]][0] * fSize, CUBE_VERTICES[CUBE_FACE[f][i]][1] * fSize, CUBE_VERTICES[CUBE_FACE[f][i]][2] * fSize);
 				i_gl.glEnd();
 			}
 			i_gl.glEndList();
 		}
-		i_gl.glCallList(polyList); // Draw the cube.
+		i_gl.glCallList(polyList); // Draw the cube.		
 	}
+	
 	/**
 	 * この関数は、{@link NyARGLDrawUtil}の描画する文字列の、フォントカラーを設定します。
 	 * フォントカラーはOpenGL固有のものではなく、{@link NyARGLDrawUtil}固有のものです。

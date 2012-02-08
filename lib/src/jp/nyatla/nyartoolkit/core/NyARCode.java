@@ -156,9 +156,7 @@ public class NyARCode
 	private NyARMatchPattDeviationBlackWhiteData[] _bw_pat=new NyARMatchPattDeviationBlackWhiteData[4];
 	private int _width;
 	private int _height;
-	public static NyARCode createFromARPattFile(String filename,int i_width,int i_height){
-		
-	}
+
 	/**
 	 * 指定したdirection(方位)の{@link NyARMatchPattDeviationColorData}オブジェクトの参照値を返します。
 	 * @param i_index
@@ -202,6 +200,8 @@ public class NyARCode
 	{
 		return _height;
 	}
+
+	
 	/**
 	 * コンストラクタです。
 	 * 空のNyARCodeオブジェクトを作成します。
