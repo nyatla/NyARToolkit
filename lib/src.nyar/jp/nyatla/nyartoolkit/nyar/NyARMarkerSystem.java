@@ -2,7 +2,6 @@ package jp.nyatla.nyartoolkit.nyar;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 
 import jp.nyatla.nyartoolkit.NyARException;
@@ -15,10 +14,7 @@ import jp.nyatla.nyartoolkit.core.match.NyARMatchPatt_Color_WITHOUT_PCA;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.pickup.NyARColorPatt_Perspective;
 import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
-import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
-import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
-import jp.nyatla.nyartoolkit.core.rasterdriver.NyARPerspectiveCopyFactory;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARCoord2Linear;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector_Rle;
@@ -26,12 +22,9 @@ import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
 import jp.nyatla.nyartoolkit.core.transmat.NyARRectOffset;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
-import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntCoordinates;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
-import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
-import jp.nyatla.nyartoolkit.core.types.NyARLinear;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.nyidmarker.NyIdMarkerParam;
@@ -177,9 +170,9 @@ public class NyARMarkerSystem
 
 
 /**
- * 複数の解像度の比較画像を保持するクラス。
+ * このクラスは、複数の異なる解像度の比較画像を保持します。
  */
-class MultiResolutionPattPickup
+class MultiResolutionPattProvider
 {
 	private class Item
 	{
@@ -206,7 +199,6 @@ class MultiResolutionPattPickup
 	 * [readonly]マーカにマッチした{@link NyARMatchPattDeviationColorData}インスタンスを得る。
 	 * @throws NyARException 
 	 */
-	
 	public NyARMatchPattDeviationColorData getDeviationColorData(MarkerInfoARMarker i_marker,INyARRgbRaster i_raster, NyARIntPoint2d[] i_vertex) throws NyARException
 	{
 		int mk_edge=i_marker.patt_edge_percentage;
@@ -353,7 +345,96 @@ class VertexSortList extends SortLinkedList<VertexSortList.Item>
 		return null;		
 	}
 }
-
+class ARMarkerSortList extends SortLinkedList<ARMarkerSortList.LLItem>
+{
+	public class LLItem extends SortLinkedList.Item{
+		int id;
+		double cf;
+		int dir;
+		SquareStack.Item ref_sq;
+	};
+	/**
+	 * 指定個数のリンクリストを生成。
+	 * @param i_num_of_item
+	 */
+	public ARMarkerSortList(int i_num_of_item)
+	{
+		super(i_num_of_item);
+	}
+	protected LLItem createElement()
+	{
+		return new LLItem();
+	}
+	/**
+	 * 挿入ポイントを返す。挿入ポイントは、i_sd_point(距離点数)が
+	 * 登録済のポイントより小さい場合のみ返却する。
+	 * @return
+	 */
+	public LLItem getInsertPoint(double i_cf)
+	{
+		LLItem ptr=_llitems;
+		//先頭の場合
+		if(ptr.cf<i_cf){
+			return ptr;
+		}
+		//それ以降
+		ptr=(LLItem) ptr.next;
+		for(int i=this._num_of_llitem-2;i>=0;i--)
+		{
+			if(ptr.cf<i_cf){
+				return ptr;
+			}
+			ptr=(LLItem) ptr.next;
+		}
+		//対象外。
+		return null;		
+	}		
+	public void reset()
+	{
+		LLItem ptr=this._llitems;
+		for(int i=this._num_of_llitem-1;i>=0;i--)
+		{
+			ptr.cf=0;
+			ptr.id=-1;
+			ptr.ref_sq=null;
+			ptr=(LLItem) ptr.next;
+		}
+		
+	}
+	/**
+	 * リストから最も高い一致率のアイテムを取得する。
+	 */
+	public LLItem getTopItem()
+	{
+		LLItem ptr=this._llitems;
+		for(int i=this._num_of_llitem-1;i>=0;i--)
+		{
+			if(ptr.id<0){
+				ptr=(LLItem) ptr.next;
+				continue;
+			}
+			return ptr;
+		}
+		return null;
+	}
+	/**
+	 * リスト中の、i_itemと同じマーカIDか、同じ矩形情報を参照しているものを無効に(ptr.idを-1)する。
+	 */
+	public void disableSameItem(LLItem i_item)
+	{
+		LLItem ptr=this._llitems;
+		for(int i=this._num_of_llitem-1;i>=0;i--)
+		{
+			if(ptr.id<0){
+			}else if(ptr.id==i_item.id){
+				ptr.id=-1;
+			}else if(ptr.ref_sq==i_item.ref_sq){
+				ptr.id=-1;
+			}
+			ptr=(LLItem) ptr.next;
+		}
+	}
+}
 	
 
 
@@ -582,163 +663,22 @@ class SquareStack extends NyARObjectStack<SquareStack.Item>
 }
 class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private double _configense_th;
 	private final NyARMatchPattResult _patt_result=new NyARMatchPattResult();;
-	private final MultiResolutionPattPickup _mpickup=new MultiResolutionPattPickup();
-	private ARMarkerMap _mkmap;
+	private final MultiResolutionPattProvider _mpickup=new MultiResolutionPattProvider();
+	private ARMarkerSortList _mkmap;
 	public ARMarkerList() throws NyARException
 	{
-		this._mkmap=new ARMarkerMap(1);//初期値1マーカ
+		this._mkmap=new ARMarkerSortList(1);//初期値1マーカ
 		return;
 	}
 
-	/**
-	 * マーカごとの一致率のマッピングテーブル
-	 */
-	private class ARMarkerMap
-	{
-		/**
-		 * 指定個数のリンクリストを生成。
-		 * @param i_num_of_item
-		 */
-		public ARMarkerMap(int i_num_of_item)
-		{
-			this._llitems=new LLItem();
-			LLItem ptr=this._llitems;
-			for(int i=1;i<i_num_of_item;i++){
-				LLItem n=new LLItem();
-				ptr.next=n;
-				n.prev=ptr;
-				ptr=n;
-			}
-			ptr.next=this._llitems;
-			this._llitems.prev=ptr;
-			this._num_of_llitem=i_num_of_item;
-		}
-		public class LLItem{
-			int id;
-			double cf;
-			int dir;
-			LLItem prev;
-			LLItem next;
-			SquareStack.Item ref_sq;
-		};
-		private LLItem _llitems;
-		private int _num_of_llitem;
-		/**
-		 * リストへの加算対象であるか調べる。
-		 * @param i_cf
-		 * @return
-		 */
-		public boolean canAdd(double i_cf)
-		{
-			LLItem ptr=_llitems;
-			//先頭の場合
-			if(ptr.cf<i_cf){
-				return true;
-			}
-			//それ以降
-			ptr=ptr.next;
-			for(int i=this._num_of_llitem-2;i>=0;i--)
-			{
-				if(ptr.cf<i_cf){
-					return true;
-				}
-				ptr=ptr.next;
-			}
-			return false;
-		}		
-		/**
-		 * 降順リストへ、最大_num_of_llitem個のアイテムを登録する。
-		 * @param i_id
-		 * @param i_cf
-		 * @param i_dir
-		 * @return
-		 */
-		public LLItem add(int i_id,double i_cf,int i_dir)
-		{
-			LLItem ptr=_llitems;
-			//先頭の場合
-			if(ptr.cf<i_cf){
-				ptr=ptr.prev;
-				ptr.cf=i_cf;
-				ptr.dir=i_dir;
-				ptr.id=i_id;
-				this._llitems=ptr;
-				return ptr;
-			}
-			//それ以降
-			ptr=ptr.next;
-			for(int i=this._num_of_llitem-2;i>=0;i--)
-			{
-				if(ptr.cf<i_cf){
-					LLItem n=this._llitems.prev;
-					if(ptr!=this._llitems.prev){
-						//必要に応じて差し替え
-						this._llitems.prev=n.prev;
-						n.prev.next=this._llitems;
-						//切り離した要素をptrの前に挿入
-						n.prev=ptr.prev;
-						n.next=ptr;
-						ptr.prev.next=n;
-						ptr.prev=n;
-					}
-					//nに値を保存
-					n.cf=i_cf;
-					n.dir=i_dir;
-					n.id=i_id;
-					return n;
-				}
-				ptr=ptr.next;
-			}
-			return null;
-		}
-		public void reset()
-		{
-			LLItem ptr=this._llitems;
-			for(int i=this._num_of_llitem-1;i>=0;i--)
-			{
-				ptr.cf=0;
-				ptr.id=-1;
-				ptr.ref_sq=null;
-				ptr=ptr.next;
-			}
-			
-		}
-		/**
-		 * リストから最も高い一致率のアイテムを取得する。
-		 */
-		public LLItem getTopItem()
-		{
-			LLItem ptr=this._llitems;
-			for(int i=this._num_of_llitem-1;i>=0;i--)
-			{
-				if(ptr.id<0){
-					ptr=ptr.next;
-					continue;
-				}
-				return ptr;
-			}
-			return null;
-		}
-		/**
-		 * リスト中の、i_itemと同じマーカIDか、同じ矩形情報を参照しているものを無効に(ptr.idを-1)する。
-		 */
-		public void disableSameItem(LLItem i_item)
-		{
-			LLItem ptr=this._llitems;
-			for(int i=this._num_of_llitem-1;i>=0;i--)
-			{
-				if(ptr.id<0){
-				}else if(ptr.id==i_item.id){
-					ptr.id=-1;
-				}else if(ptr.ref_sq==i_item.ref_sq){
-					ptr.id=-1;
-				}
-				ptr=ptr.next;
-			}
-		}
-	}
+
+
 
 	/**
 	 * マーカの一致敷居値を設定する。
@@ -773,12 +713,16 @@ class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 				continue;
 			}
 			//マーカマップへの追加対象か調べる。
-			if(!this._mkmap.canAdd(this._patt_result.confidence)){
+			ARMarkerSortList.LLItem ip=this._mkmap.getInsertPoint(this._patt_result.confidence);
+			if(ip==null){
 				continue;
 			}
-			ARMarkerMap.LLItem llitem=this._mkmap.add(i,this._patt_result.confidence,this._patt_result.direction);
 			//マーカマップアイテムの矩形に参照値を設定する。
-			llitem.ref_sq=i_sq;
+			ip=this._mkmap.insertFromTailBefore(ip);
+			ip.cf=this._patt_result.confidence;
+			ip.dir=this._patt_result.direction;
+			ip.id=i;
+			ip.ref_sq=i_sq;
 			is_ganalated_sq=true;
 		}
 		return is_ganalated_sq;
@@ -792,7 +736,7 @@ class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 		//ARマーカのマッチテーブルのサイズを調整
 		if(this._mkmap._num_of_llitem<this.size()*this.size()){
 			//不足してるなら作っておく。
-			this._mkmap=new ARMarkerMap(this.size()*this.size());
+			this._mkmap=new ARMarkerSortList(this.size()*this.size());
 		}
 		//マッチングテーブルをリセット
 		this._mkmap.reset();
@@ -810,7 +754,7 @@ class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 	public void finish()
 	{
 		//一致率の最も高いアイテムを得る。
-		ARMarkerMap.LLItem top_item=this._mkmap.getTopItem();
+		ARMarkerSortList.LLItem top_item=this._mkmap.getTopItem();
 		//アイテムを検出できなくなるまで、一致率が高い順にアイテムを得る。
 		while(top_item!=null){
 			//検出したアイテムのARmarkerIndexのデータをセット
@@ -828,6 +772,8 @@ class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 		}
 	}
 }
+
+
 class NyIdList extends ArrayList<MarkerInfoNyId>
 {
 	private static final long serialVersionUID = -6446466460932931830L;
