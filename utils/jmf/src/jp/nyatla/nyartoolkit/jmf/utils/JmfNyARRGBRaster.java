@@ -40,7 +40,7 @@ import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.pixeldriver.INyARRgbPixelDriver;
 
 
-public class JmfNyARRaster_RGB extends NyARRgbRaster
+public class JmfNyARRGBRaster extends NyARRgbRaster
 {
 
 	/**
@@ -49,7 +49,7 @@ public class JmfNyARRaster_RGB extends NyARRgbRaster
 	 * @param i_fmt
 	 * @throws NyARException
 	 */
-	public JmfNyARRaster_RGB(VideoFormat i_fmt) throws NyARException
+	public JmfNyARRGBRaster(VideoFormat i_fmt) throws NyARException
 	{
 		super(i_fmt.getSize().width,i_fmt.getSize().height,fmt2RasterType(i_fmt));
 		if(i_fmt instanceof YUVFormat){
@@ -100,9 +100,9 @@ public class JmfNyARRaster_RGB extends NyARRgbRaster
 	}	
 	private class RGBBufferAdapter implements IBufferAdapter
 	{
-		private JmfNyARRaster_RGB _raster;
+		private JmfNyARRGBRaster _raster;
 		boolean _is_flipped;
-		public RGBBufferAdapter(JmfNyARRaster_RGB i_raster,RGBFormat i_vfm)
+		public RGBBufferAdapter(JmfNyARRGBRaster i_raster,RGBFormat i_vfm)
 		{
 			this._raster=i_raster;
 			this._is_flipped=i_vfm.getFlipped()!=0?true:false;
@@ -132,8 +132,8 @@ public class JmfNyARRaster_RGB extends NyARRgbRaster
 	{
 		private Buffer _rgb_buf=new javax.media.Buffer();
 		private YUVToRGB _yuv2rgb;
-		private JmfNyARRaster_RGB _raster;
-		public YuvBufferAdapter(JmfNyARRaster_RGB i_raster,YUVFormat i_vfm) throws NyARException
+		private JmfNyARRGBRaster _raster;
+		public YuvBufferAdapter(JmfNyARRGBRaster i_raster,YUVFormat i_vfm) throws NyARException
 		{
 			this._yuv2rgb=new YUVToRGB();
 			//24bit-BGRフォーマットのものを探す

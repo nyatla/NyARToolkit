@@ -26,7 +26,6 @@ package jp.nyatla.nyartoolkit.rpf.tracker.nyartk;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.INyARRasterFilter;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
@@ -43,7 +42,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
  * V=(sqrt(X^2+Y+2)>>4);V=V>255?255:V;
  * </pre>
  */
-public class NegativeSqRoberts implements INyARRasterFilter
+public class NegativeSqRoberts
 {
 	private IdoFilterImpl _do_filter_impl; 
 	/**

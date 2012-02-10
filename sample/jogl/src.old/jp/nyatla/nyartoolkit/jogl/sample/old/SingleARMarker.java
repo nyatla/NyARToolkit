@@ -99,7 +99,7 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 	
 	
 	private Animator _animator;
-	private JmfNyARRaster_RGB _cap_image;
+	private JmfNyARRGBRaster _cap_image;
 	private JmfCaptureDevice _capture;
 
 	private GL _gl;
@@ -126,7 +126,7 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 			throw new NyARException();
 		}
 		this._capture.setOnCapture(this);
-		this._cap_image = new JmfNyARRaster_RGB(this._capture.getCaptureFormat());	
+		this._cap_image = new JmfNyARRGBRaster(this._capture.getCaptureFormat());	
 
 		this._code_table[0]=new NyARCode(16,16);
 		this._code_table[0].loadARPattFromFile(CARCODE_FILE1);

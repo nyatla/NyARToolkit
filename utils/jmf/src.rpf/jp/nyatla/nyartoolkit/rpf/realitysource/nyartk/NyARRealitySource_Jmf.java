@@ -4,11 +4,12 @@ import javax.media.format.VideoFormat;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
-import jp.nyatla.nyartoolkit.core.rasterdriver.NyARPerspectiveRasterReader;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve192;
+import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
+import jp.nyatla.nyartoolkit.core.rasterdriver.INyARPerspectiveCopy;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilter;
 import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARTrackerSource;
 import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARTrackerSource_Reference;
-import jp.nyatla.nyartoolkit.jmf.utils.JmfNyARRaster_RGB;
+import jp.nyatla.nyartoolkit.jmf.utils.JmfNyARRGBRaster;
 
 /**
  * このクラスは、JMFと互換性のあるNyARRealitySourceです。
@@ -17,7 +18,7 @@ import jp.nyatla.nyartoolkit.jmf.utils.JmfNyARRaster_RGB;
  */
 public class NyARRealitySource_Jmf extends NyARRealitySource
 {
-	protected NyARRasterFilter_Rgb2Gs_RgbAve192 _filter;
+	protected INyARRgb2GsFilter _filter;
 	/**
 	 * コンストラクタです。
 	 * @param i_fmt
@@ -32,10 +33,10 @@ public class NyARRealitySource_Jmf extends NyARRealitySource
 	 * @throws NyARException
 	 */
 	public NyARRealitySource_Jmf(VideoFormat i_fmt,NyARCameraDistortionFactor i_ref_raster_distortion,int i_depth,int i_number_of_sample) throws NyARException
-	{
-		this._rgb_source=new JmfNyARRaster_RGB(i_fmt);
-		this._filter=new NyARRasterFilter_Rgb2Gs_RgbAve192(this._rgb_source.getBufferType());
-		this._source_perspective_reader=new NyARPerspectiveRasterReader(_rgb_source.getBufferType());
+	{		
+		this._rgb_source=new JmfNyARRGBRaster(i_fmt);
+		this._filter=(INyARRgb2GsFilter) this._rgb_source.createInterface(INyARRgb2GsFilter.class);
+		this._source_perspective_reader=(INyARPerspectiveCopy)this._rgb_source.createInterface(INyARPerspectiveCopy.class);
 		this._tracksource=new NyARTrackerSource_Reference(i_number_of_sample,i_ref_raster_distortion,i_fmt.getSize().width,i_fmt.getSize().height,i_depth,true);
 		return;
 	}
@@ -47,21 +48,21 @@ public class NyARRealitySource_Jmf extends NyARRealitySource
 	 */
 	public void setImage(javax.media.Buffer i_buffer) throws NyARException
 	{
-		((JmfNyARRaster_RGB)(this._rgb_source)).setBuffer(i_buffer);
+		((JmfNyARRGBRaster)(this._rgb_source)).setBuffer(i_buffer);
 		return;
 	}
 	public final boolean isReady()
 	{
-		return ((JmfNyARRaster_RGB)this._rgb_source).hasBuffer();
+		return ((JmfNyARRGBRaster)this._rgb_source).hasBuffer();
 	}
 	public final void syncResource() throws NyARException
 	{
-		this._filter.doFilter(this._rgb_source,this._tracksource.refBaseRaster());
+		this._filter.convert(this._tracksource.refBaseRaster());
 		super.syncResource();
 	}
 	public final NyARTrackerSource makeTrackSource() throws NyARException
 	{
-		this._filter.doFilter(this._rgb_source,this._tracksource.refBaseRaster());		
+		this._filter.convert(this._tracksource.refBaseRaster());		
 		return this._tracksource;
 	}
 }

@@ -98,7 +98,7 @@ class MarkerProcessor extends SingleNyIdMarkerProcesser
 public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 {
 	private Animator _animator;
-	private JmfNyARRaster_RGB _cap_image;
+	private JmfNyARRGBRaster _cap_image;
 	private JmfCaptureDevice _capture;
 
 	private GL _gl;
@@ -121,7 +121,7 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 			throw new NyARException();
 		}
 		this._capture.setOnCapture(this);
-		this._cap_image = new JmfNyARRaster_RGB(this._capture.getCaptureFormat());	
+		this._cap_image = new JmfNyARRGBRaster(this._capture.getCaptureFormat());	
 		
 		//OpenGLフレームの準備（OpenGLリソースの初期化、カメラの撮影開始は、initコールバック関数内で実行）
 		Frame frame = new Frame("NyARToolkit["+this.getClass().getName()+"]");

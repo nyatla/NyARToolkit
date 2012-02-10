@@ -633,7 +633,7 @@ public class NyARReality
 	 */
 	public final boolean getRgbPatt2d(NyARRealitySource i_src,NyARIntPoint2d[] i_vertex,int i_resolution,INyARRgbRaster o_raster) throws NyARException
 	{
-		return i_src.refPerspectiveRasterReader().read4Point(i_src.refRgbSource(),i_vertex,0,0,i_resolution, o_raster);
+		return i_src.refPerspectiveRasterReader().copyPatt(i_vertex,0,0,i_resolution, o_raster);
 	}
 	/**
 	 * この関数は、画面座標系の4頂点でかこまれる領域を遠近法で自由変形して、o_rasterにRGB画像を取得します。
@@ -650,7 +650,7 @@ public class NyARReality
 	 */
 	public final boolean getRgbPatt2d(NyARRealitySource i_src,NyARDoublePoint2d[] i_vertex,int i_resolution,INyARRgbRaster o_raster) throws NyARException
 	{
-		return i_src.refPerspectiveRasterReader().read4Point(i_src.refRgbSource(),i_vertex,0,0,i_resolution, o_raster);
+		return i_src.refPerspectiveRasterReader().copyPatt(i_vertex,0,0,i_resolution, o_raster);
 	}
 	/**
 	 * この関数は、RTターゲットの３次元座標系で定義される4頂点でかこまれる領域から、o_rasterにRGB画像を取得します。
@@ -686,6 +686,6 @@ public class NyARReality
 			}
 		}
 		//パターンの取得
-		return i_src.refPerspectiveRasterReader().read4Point(i_src.refRgbSource(),vx,0,0,i_resolution, o_raster);
+		return i_src.refPerspectiveRasterReader().copyPatt(vx,0,0,i_resolution, o_raster);
 	}
 }

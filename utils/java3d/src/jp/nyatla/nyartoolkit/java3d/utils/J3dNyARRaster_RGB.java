@@ -42,7 +42,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
  * このクラスは、Java3Dと互換性のあるNyARToolkitのラスタイメージを保持します。
  *
  */
-public class J3dNyARRaster_RGB extends JmfNyARRaster_RGB
+public class J3dNyARRaster_RGB extends JmfNyARRGBRaster
 {
 	private ImageComponent2D imc2d;
 

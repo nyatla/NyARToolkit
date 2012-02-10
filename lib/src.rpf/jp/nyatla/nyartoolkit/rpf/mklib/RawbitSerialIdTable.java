@@ -157,7 +157,9 @@ public class RawbitSerialIdTable
 		}
 		d.setValue(i_name,0,Long.MAX_VALUE,i_width);
 		return true;
-	}	
+	}
+	private INyARRgbRaster _last_input_raster=null;
+	private INyARPerspectiveCopy _id_pickup;
 	/**
 	 * この関数は、任意の四角形をIdマーカとして検査し、一致するメタデータを返します。
 	 * i_rasterからi_vertexの頂点で定義される四角形のパターンを取得し、NyAIdマーカとして評価し、一致するID値をテーブルから取得します。

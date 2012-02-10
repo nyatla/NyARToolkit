@@ -53,7 +53,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 
 	private Animator _animator;
 
-	private JmfNyARRaster_RGB _cap_image;
+	private JmfNyARRGBRaster _cap_image;
 
 	private JmfCaptureDevice _capture;
 
@@ -82,7 +82,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 		}
 		this._capture.setOnCapture(this);
 		//JMFラスタオブジェクト
-		this._cap_image = new JmfNyARRaster_RGB(this._capture.getCaptureFormat());
+		this._cap_image = new JmfNyARRGBRaster(this._capture.getCaptureFormat());
 		
 		// NyARToolkitの準備
 		this._nya = NyARSingleDetectMarker.createInstance(this._ar_param, i_ar_code, 80.0);

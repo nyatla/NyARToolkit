@@ -37,6 +37,11 @@ public class NyARGsPixelDriverFactory
 		ret.switchRaster(i_ref_raster);
 		return ret;
 	}
+	public static INyARGsPixelDriver createDriver(INyARRgbRaster i_ref_raster) throws NyARException
+	{
+		//RGBRasterインタフェイスがある場合
+		return new NyARGsPixelDriver_RGBX();
+	}	
 }
 //
 //	ピクセルドライバの定義

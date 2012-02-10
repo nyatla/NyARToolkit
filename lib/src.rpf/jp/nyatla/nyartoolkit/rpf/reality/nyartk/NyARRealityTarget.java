@@ -303,7 +303,7 @@ public class NyARRealityTarget extends NyARManagedObject
 			}
 		}
 		//パターンの取得
-		return i_src.refPerspectiveRasterReader().read4Point(i_src.refRgbSource(),da4,0,0,i_resolution, o_raster);
+		return i_src.refPerspectiveRasterReader().copyPatt(da4,0,0,i_resolution, o_raster);
 	}
 	/**
 	 * RTターゲット座標系の4頂点で定義する矩形から、RGB画像をo_rasterに取得します。

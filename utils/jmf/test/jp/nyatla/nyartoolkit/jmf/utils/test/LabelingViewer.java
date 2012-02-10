@@ -73,7 +73,7 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 	private JmfCaptureDevice _capture;
 
 
-	private JmfNyARRaster_RGB _raster;
+	private JmfNyARRGBRaster _raster;
 
 	public LabelingViewer() throws NyARException
 	{
@@ -99,7 +99,7 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 		NyARParam ar_param = new NyARParam();
 		ar_param.loadARParamFromFile(PARAM_FILE);
 		ar_param.changeScreenSize(320, 240);
-		this._raster = new JmfNyARRaster_RGB(this._capture.getCaptureFormat());
+		this._raster = new JmfNyARRGBRaster(this._capture.getCaptureFormat());
 		this._detect=new SquareDetector(ar_param.getScreenSize());
 		this._filter= (INyARRgb2GsFilter) this._raster.createInterface(INyARRgb2GsFilter.class);
 		//キャプチャイメージ用のラスタを準備

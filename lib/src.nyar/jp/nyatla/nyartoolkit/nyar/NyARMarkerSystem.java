@@ -238,45 +238,268 @@ class MultiResolutionPattPickup
 // protected class
 //
 
+
+/**
+ * 頂点マッピング用のテーブル
+ */
+abstract class SortLinkedList<T extends SortLinkedList.Item>
+{
+	static class Item{
+		Item next;
+		Item prev;
+	};	
+	protected abstract T createElement();
+	protected int _num_of_llitem;
+	protected T _llitems;
+	/**
+	 * 指定個数のリンクリストを生成。
+	 * @param i_num_of_item
+	 */
+	public SortLinkedList(int i_num_of_item)
+	{
+		this._llitems=this.createElement();
+		T ptr=this._llitems;
+		for(int i=1;i<i_num_of_item;i++){
+			T n=this.createElement();
+			ptr.next=n;
+			n.prev=ptr;
+			ptr=n;
+		}
+		ptr.next=this._llitems;
+		this._llitems.prev=ptr;
+		this._num_of_llitem=i_num_of_item;
+	}
+
+	/**
+	 * 最後尾のリストを削除して、リストのi_itemの直前に要素を追加する。
+	 * @param i_id
+	 * @param i_cf
+	 * @param i_dir
+	 * @return
+	 */
+	public T insertFromTailBefore(T i_item)
+	{
+		T ptr=this._llitems;
+		//先頭の場合
+		if(ptr==i_item){
+			//リストを後方にシフトする。
+			ptr=(T) ptr.prev;
+			this._llitems=(T)ptr;
+			return this._llitems;
+		}
+		//最後尾なら、そのまま返す
+		if(i_item==this._llitems.prev){
+			return i_item;
+		}
+		//最後尾切り離し
+		T n=(T) this._llitems.prev;
+		n.prev.next=this._llitems;
+		this._llitems.prev=n.prev;
+		
+		n.next=i_item;
+		n.prev=i_item.prev;
+		i_item.prev=n;
+		n.prev.next=n;
+		return n;
+	}
+}
+
+class VertexSortList extends SortLinkedList<VertexSortList.Item>
+{
+	static class Item extends SortLinkedList.Item
+	{
+		int sq_dist;
+		int mk_id;
+	};
+	public VertexSortList(int iNumOfItem)
+	{
+		super(iNumOfItem);
+	}
+	final protected Item createElement()
+	{
+		return new Item();
+	}
+	public void reset()
+	{
+		Item ptr=this._llitems;
+		for(int i=this._num_of_llitem-1;i>=0;i--)
+		{
+			ptr.sq_dist=Integer.MAX_VALUE;
+			ptr=(Item) ptr.next;
+		}
+	}
+	/**
+	 * 挿入ポイントを返す。挿入ポイントは、i_sd_point(距離点数)が
+	 * 登録済のポイントより小さい場合のみ返却する。
+	 * @return
+	 */
+	public Item getInsertPoint(int i_sd_point)
+	{
+		Item ptr=_llitems;
+		//先頭の場合
+		if(ptr.sq_dist>i_sd_point){
+			return ptr;
+		}
+		//それ以降
+		ptr=(Item) ptr.next;
+		for(int i=this._num_of_llitem-2;i>=0;i--)
+		{
+			if(ptr.sq_dist>i_sd_point){
+				return ptr;
+			}
+			ptr=(Item) ptr.next;
+		}
+		//対象外。
+		return null;		
+	}
+}
+
+	
+
+
 /**
  * {@link MultiMarker}向けの矩形検出器です。
  */
 class RleDetector extends NyARSquareContourDetector_Rle
 {
+	private final static int INITIAL_MARKER_STACK_SIZE=10;
+	private NyARCoord2Linear _coordline;		
+	
+	private SquareStack _sq_stack;
+	
 	public ARMarkerList _armk_list;
 	
 	public NyIdList _idmk_list;
 	public INyARTransMat _transmat;
-	private final NyARIntPoint2d[] _vertexs=new NyARIntPoint2d[4];
 	private INyARRgbRaster _ref_input_rfb;
 	private INyARGrayscaleRaster _ref_input_gs;
 	public RleDetector(NyARParam i_param) throws NyARException
 	{
 		super(i_param.getScreenSize());
-		NyARCoord2Linear coordliner=new NyARCoord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
-		this._armk_list=new ARMarkerList(coordliner);
-		this._idmk_list=new NyIdList(coordliner);
+		this._coordline=new NyARCoord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
+		this._armk_list=new ARMarkerList();
+		this._idmk_list=new NyIdList(this._coordline);
 		this._transmat=new NyARTransMat(i_param);
+		//同時に判定待ちにできる矩形の数
+		this._sq_stack=new SquareStack(INITIAL_MARKER_STACK_SIZE);
+	}
+	class VertexComp
+	{
+		public int sqdest;
+		public int shift_l;
+	    /**
+	     * この関数は、頂点セット同士のシフト量を計算して、インスタンスに結果をセットします。
+	     * 並びが同じである頂点セット同士の最低の移動量を計算して、その時のシフト量と二乗移動量の合計を返します。
+	     * @param i_square
+	     * 比較対象の矩形
+	     * @return
+	     * {@link #shift_l}にシフト量を返します。
+	     * {@link #sqdest}に頂点移動距離の合計の二乗値を返します。
+	     * シフト量はthis-i_squareです。1の場合、i_v1[0]とi_v2[1]が対応点になる(shift量1)であることを示します。
+	     */
+	    public void compareVertexSet(NyARIntPoint2d[] i_v1,NyARIntPoint2d[] i_v2)
+	    {
+	    	//3-0番目
+	    	int min_dist=Integer.MAX_VALUE;
+	    	int min_index=0;
+	    	int xd,yd;
+	    	for(int i=3;i>=0;i--){
+	    		int d=0;
+	    		for(int i2=3;i2>=0;i2--){
+	    			xd= (int)(i_v1[i2].x-i_v2[(i2+i)%4].x);
+	    			yd= (int)(i_v1[i2].y-i_v2[(i2+i)%4].y);
+	    			d+=xd*xd+yd*yd;
+	    		}
+	    		if(min_dist>d){
+	    			min_dist=d;
+	    			min_index=i;
+	    		}
+	    	}
+	    	this.shift_l=min_index;
+	    	this.sqdest=min_dist;
+	    }	
+		
+	}
+	
+	
+	private void tracking(SquareStack.Item i_new_sq)
+	{
+		int new_area=i_new_sq.rect_area;
+		int new_sq_dist=i_new_sq.vertex_area.getDiagonalSqDist();
+		for(int i=0;i<this._armk_list.size();i++)
+		{
+			TMarkerData target=this._armk_list.get(i);
+//			int cd=target.tl_center.sqDist(i_new_sq.center2d);
+			//面積比が急激0.8-1.2倍以外の変動なら無視
+			int a_rate=new_area*100/target.tl_rect_area;
+			if(a_rate<80 || 120<a_rate){
+				continue;
+			}
+			//移動距離の二乗が対角線距離の二乗の1/(2^2)以上なら無視
+			int sq_move=target.tl_center.sqDist(i_new_sq.center2d);
+			if(sq_move*10/new_sq_dist>4){
+				continue;
+			}
+			//頂点移動距離の合計を計算
+			VertexComp vc=new VertexComp();
+			vc.compareVertexSet(i_new_sq.ob_vertex,target.tl_vertex);
+			//頂点移動距離の合計が、中心点移動距離の8倍を超えてたらNG
+			if(vc.sqdest>sq_move*8){
+				continue;
+			}
+			//対象。距離評価数をマーカidと共に登録。
+		}
 	}
 	protected void onSquareDetect(NyARIntCoordinates i_coord,int[] i_vertex_index) throws NyARException
 	{
-		//画像取得配列の生成
+		//とりあえずSquareスタックを予約
+		SquareStack.Item sq_tmp=this._sq_stack.prePush();
+		//観測座標点の記録
 		for(int i2=0;i2<4;i2++){
-			this._vertexs[i2]=i_coord.items[i_vertex_index[i2]];
+			sq_tmp.ob_vertex[i2].setValue(i_coord.items[i_vertex_index[i2]]);
 		}
-		//nyIdマーカの特定(IDマーカの特定はここで完結する。)
-		if(this._idmk_list.size()>0){
-			if(this._idmk_list.update(this._ref_input_gs,i_coord, i_vertex_index, this._vertexs)){
-				return;//idマーカを特定
+		//頂点分布を計算
+		sq_tmp.vertex_area.setAreaRect(sq_tmp.ob_vertex,4);
+		//頂点座標の中心を計算
+		sq_tmp.center2d.setCenterPos(sq_tmp.ob_vertex,4);
+		//矩形面積
+		sq_tmp.rect_area=sq_tmp.vertex_area.w*sq_tmp.vertex_area.h;
+
+		boolean is_target_marker=false;
+		for(;;){
+			//現在検出中のマーカと同じような場所にあるか確認
+	//		tracking(sq_tmp);
+	//		//nyIdマーカの特定(IDマーカの特定はここで完結する。)
+	//		if(this._idmk_list.size()>0){
+	//			if(this._idmk_list.update(this._ref_input_gs,i_coord, i_vertex_index, this._vertexs)){
+	//				return;//idマーカを特定
+	//			}
+	//		}
+			//ARマーカの特定
+			if(this._armk_list.size()>0){
+				if(this._armk_list.update(this._ref_input_rfb,sq_tmp)){
+					is_target_marker=true;
+					break;
+				}
 			}
+			break;
 		}
-		//ARマーカの特定
-		if(this._armk_list.size()>0){
-			if(this._armk_list.update(this._ref_input_rfb,i_coord, i_vertex_index,this._vertexs)){
-				return;
+		//この矩形が検出対象なら、矩形情報を精密に再計算
+		if(is_target_marker){
+			//矩形は検出対象にマークされている。
+			for(int i2=0;i2<4;i2++){
+				this._coordline.coord2Line(i_vertex_index[i2],i_vertex_index[(i2+1)%4],i_coord,sq_tmp.line[i2]);
 			}
+			for (int i2 = 0; i2 < 4; i2++) {
+				//直線同士の交点計算
+				if(!sq_tmp.line[i2].crossPos(sq_tmp.line[(i2 + 3) % 4],sq_tmp.sqvertex[i2])){
+					throw new NyARException();//まずない。ありえない。
+				}
+			}
+		}else{
+			//この矩形は検出対象にマークされなかったので、解除
+			this._sq_stack.pop();
 		}
-		//他のタイプはここで。
 	}
 	
 	public void detectMarker(NyARSensor i_sensor,long i_time_stamp,int i_th) throws NyARException
@@ -288,6 +511,8 @@ class RleDetector extends NyARSquareContourDetector_Rle
 				target.lost_count++;
 			}
 		}
+		this._sq_stack.clear();//矩形情報の保持スタック初期化
+		
 		this._idmk_list.prepare();
 		this._armk_list.prepare();
 		//検出処理
@@ -334,20 +559,35 @@ class RleDetector extends NyARSquareContourDetector_Rle
 
 }
 
+class SquareStack extends NyARObjectStack<SquareStack.Item>
+{
+	public class Item extends NyARSquare
+	{
+		NyARIntPoint2d center2d=new NyARIntPoint2d();
+		/** 検出座標系の値*/
+		NyARIntPoint2d[] ob_vertex=NyARIntPoint2d.createArray(4);
+		/** 頂点の分布範囲*/
+		NyARIntRect vertex_area=new NyARIntRect();
+		/** rectの面積*/
+		int rect_area;
+	}
+	public SquareStack(int i_length) throws NyARException
+	{
+		super.initInstance(i_length,SquareStack.Item.class);
+	}
+	protected SquareStack.Item createElement() throws NyARException
+	{
+		return new SquareStack.Item();
+	}		
+}
 class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 {
-	private final static int INITIAL_MARKER_STACK_SIZE=10;
-	private NyARCoord2Linear _ref_coordline;		
 	private double _configense_th;
 	private final NyARMatchPattResult _patt_result=new NyARMatchPattResult();;
 	private final MultiResolutionPattPickup _mpickup=new MultiResolutionPattPickup();
 	private ARMarkerMap _mkmap;
-	private SquareStack _sq_stack;
-	public ARMarkerList(NyARCoord2Linear i_ref_coodline) throws NyARException
+	public ARMarkerList() throws NyARException
 	{
-		this._ref_coordline=i_ref_coodline;
-		//同時に判定待ちにできる矩形の数
-		this._sq_stack=new SquareStack(INITIAL_MARKER_STACK_SIZE);
 		this._mkmap=new ARMarkerMap(1);//初期値1マーカ
 		return;
 	}
@@ -381,10 +621,33 @@ class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 			int dir;
 			LLItem prev;
 			LLItem next;
-			NyARSquare ref_sq;
+			SquareStack.Item ref_sq;
 		};
 		private LLItem _llitems;
 		private int _num_of_llitem;
+		/**
+		 * リストへの加算対象であるか調べる。
+		 * @param i_cf
+		 * @return
+		 */
+		public boolean canAdd(double i_cf)
+		{
+			LLItem ptr=_llitems;
+			//先頭の場合
+			if(ptr.cf<i_cf){
+				return true;
+			}
+			//それ以降
+			ptr=ptr.next;
+			for(int i=this._num_of_llitem-2;i>=0;i--)
+			{
+				if(ptr.cf<i_cf){
+					return true;
+				}
+				ptr=ptr.next;
+			}
+			return false;
+		}		
 		/**
 		 * 降順リストへ、最大_num_of_llitem個のアイテムを登録する。
 		 * @param i_id
@@ -475,19 +738,8 @@ class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 				ptr=ptr.next;
 			}
 		}
-		
 	}
-	private class SquareStack extends NyARObjectStack<NyARSquare>
-	{
-		public SquareStack(int i_length) throws NyARException
-		{
-			super.initInstance(i_length,NyARSquare.class);
-		}
-		protected NyARSquare createElement() throws NyARException
-		{
-			return new NyARSquare();
-		}		
-	}
+
 	/**
 	 * マーカの一致敷居値を設定する。
 	 */
@@ -503,14 +755,14 @@ class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 	 * @return
 	 * @throws NyARException 
 	 */
-	public boolean update(INyARRgbRaster i_raster,NyARIntCoordinates i_coord,int[] i_vertex_index,NyARIntPoint2d[] i_vertex) throws NyARException
+	public boolean update(INyARRgbRaster i_raster,SquareStack.Item i_sq) throws NyARException
 	{
-		//このパターンに最も一致するARマーカを探す
-		NyARSquare sq_tmp=null;
+		//sq_tmpに値を生成したかのフラグ
+		boolean is_ganalated_sq=false;
 		for(int i=this.size()-1;i>=0;i--){
 			MarkerInfoARMarker target=this.get(i);
 			//解像度に一致する画像を取得
-			NyARMatchPattDeviationColorData diff=this._mpickup.getDeviationColorData(target, i_raster, i_vertex);
+			NyARMatchPattDeviationColorData diff=this._mpickup.getDeviationColorData(target, i_raster,i_sq.ob_vertex);
 			//マーカのパターン解像度に一致したサンプリング画像と比較する。
 			if(!target.matchpatt.evaluate(diff,this._patt_result)){
 				continue;
@@ -520,34 +772,16 @@ class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 			{
 				continue;
 			}
-			//マーカマップへ登録を試行
-			ARMarkerMap.LLItem llitem=this._mkmap.add(i,this._patt_result.confidence,this._patt_result.direction);
-			if(llitem==null){
-				//出来なければ何もしない。
+			//マーカマップへの追加対象か調べる。
+			if(!this._mkmap.canAdd(this._patt_result.confidence)){
 				continue;
 			}
-			//必要に応じて矩形情報を生成。
-			if(sq_tmp==null){
-				//最大数を超えるとにんしきしないお
-				sq_tmp=this._sq_stack.prePush();
-				if(sq_tmp==null){
-					continue;
-				}
-				for(int i2=0;i2<4;i2++){
-					this._ref_coordline.coord2Line(i_vertex_index[i2],i_vertex_index[(i2+1)%4],i_coord,sq_tmp.line[i2]);
-				}
-				for (int i2 = 0; i2 < 4; i2++) {
-					//直線同士の交点計算
-					if(!sq_tmp.line[i2].crossPos(sq_tmp.line[(i2 + 3) % 4],sq_tmp.sqvertex[i2])){
-						throw new NyARException();//まずない。ありえない。
-					}
-				}
-			}
+			ARMarkerMap.LLItem llitem=this._mkmap.add(i,this._patt_result.confidence,this._patt_result.direction);
 			//マーカマップアイテムの矩形に参照値を設定する。
-			llitem.ref_sq=sq_tmp;
-
+			llitem.ref_sq=i_sq;
+			is_ganalated_sq=true;
 		}
-		return sq_tmp!=null;
+		return is_ganalated_sq;
 	}		
 	/**
 	 * @param i_num_of_markers
@@ -562,8 +796,6 @@ class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 		}
 		//マッチングテーブルをリセット
 		this._mkmap.reset();
-		//必要ならスタックサイズの調整もやってね。
-		this._sq_stack.clear();
 		
 		//検出のために初期値設定
 		for(int i=this.size()-1;i>=0;i--){
@@ -587,6 +819,9 @@ class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 			target.lost_count=0;
 			target.sq=top_item.ref_sq;
 			target.sq.rotateVertexL(4-top_item.dir);
+			//トラッキング用のログをコピー。
+			NyARIntPoint2d.copyArray(top_item.ref_sq.ob_vertex,target.tl_vertex);
+			target.tl_center.setValue(top_item.ref_sq.center2d);
 			//基準アイテムと重複するアイテムを削除する。
 			this._mkmap.disableSameItem(top_item);
 			top_item=this._mkmap.getTopItem();
@@ -680,7 +915,11 @@ class TMarkerData
 	/** 検出した矩形の格納変数。マーカの姿勢行列を格納します。*/
 	public final NyARTransMatResult tmat=new NyARTransMatResult();
 	/** 矩形の検出状態の格納変数。 連続して見失った回数を格納します。*/
-	public int lost_count=Integer.MAX_VALUE;	
+	public int lost_count=Integer.MAX_VALUE;
+	/** トラッキングログ用の領域*/
+	public NyARIntPoint2d[] tl_vertex=NyARIntPoint2d.createArray(4);
+	public NyARIntPoint2d   tl_center=new NyARIntPoint2d();
+	public int tl_rect_area;
 }	
 
 /**

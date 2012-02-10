@@ -73,6 +73,22 @@ public class NyARIntPoint2d
 		}
 		return;
 	}
+
+	/**
+	 * この関数は、頂点集合から、中央値(Σp[n]/n)を求めます。
+	 * @param i_points
+	 * 頂点集合を格納した配列です。
+	 * @param i_number_of_data
+	 * 配列中の有効な頂点数です。
+	 * @param o_out
+	 * 中央値を受け取るオブジェクトです。
+	 * @deprecated
+	 * {@link #setCenterPos(NyARIntPoint2d[], int)を使用してください。
+	 */
+	public final static void makeCenter(NyARIntPoint2d[] i_points,int i_number_of_data,NyARIntPoint2d o_out)
+	{
+		o_out.setCenterPos(i_points,i_number_of_data);
+	}	
 	/**
 	 * この関数は、インスタンスの座標と、指定点との距離の２乗値を返します。
 	 * @param i_p1

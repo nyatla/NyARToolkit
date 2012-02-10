@@ -5,8 +5,9 @@ package jp.nyatla.nyartoolkit.rpf.realitysource.nyartk;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
+import jp.nyatla.nyartoolkit.core.rasterdriver.INyARPerspectiveCopy;
+import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilter;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve192;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.*;
 import jp.nyatla.nyartoolkit.rpf.reality.nyartk.*;
@@ -24,7 +25,7 @@ import jp.nyatla.nyartoolkit.rpf.reality.nyartk.*;
 public class NyARRealitySource_Reference extends NyARRealitySource
 {
 	/** 二値化用のフィルタオジェクト。*/
-	protected NyARRasterFilter_Rgb2Gs_RgbAve192 _filter;
+	protected INyARRgb2GsFilter _filter;
 	/**
 	 * コンストラクタです。
 	 * thisが所有するラスタの情報と、トラッカの特性値を指定して、インスタンスを生成します。
@@ -51,8 +52,8 @@ public class NyARRealitySource_Reference extends NyARRealitySource
 	public NyARRealitySource_Reference(int i_width,int i_height,NyARCameraDistortionFactor i_ref_raster_distortion,int i_depth,int i_number_of_sample,int i_raster_type) throws NyARException
 	{
 		this._rgb_source=new NyARRgbRaster(i_width,i_height,i_raster_type);
-		this._filter=new NyARRasterFilter_Rgb2Gs_RgbAve192(this._rgb_source.getBufferType());
-		this._source_perspective_reader=new NyARPerspectiveRasterReader(_rgb_source.getBufferType());
+		this._filter=(INyARRgb2GsFilter) this._rgb_source.createInterface(INyARRgb2GsFilter.class);
+		this._source_perspective_reader=(INyARPerspectiveCopy)this._rgb_source.createInterface(INyARPerspectiveCopy.class);
 		this._tracksource=new NyARTrackerSource_Reference(i_number_of_sample,i_ref_raster_distortion,i_width,i_height,i_depth,true);
 		return;
 	}
@@ -70,7 +71,7 @@ public class NyARRealitySource_Reference extends NyARRealitySource
 	 */
 	public final void syncResource() throws NyARException
 	{
-		this._filter.doFilter(this._rgb_source,this._tracksource.refBaseRaster());
+		this._filter.convert(this._tracksource.refBaseRaster());
 		super.syncResource();
 	}
 	/**
@@ -79,7 +80,7 @@ public class NyARRealitySource_Reference extends NyARRealitySource
 	 */
 	public final NyARTrackerSource makeTrackSource() throws NyARException
 	{
-		this._filter.doFilter(this._rgb_source,this._tracksource.refBaseRaster());		
+		this._filter.convert(this._tracksource.refBaseRaster());		
 		return this._tracksource;
 	}
 
