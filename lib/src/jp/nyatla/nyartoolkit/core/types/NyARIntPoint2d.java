@@ -73,7 +73,24 @@ public class NyARIntPoint2d
 		}
 		return;
 	}
-
+	public static void shiftCopy(NyARDoublePoint2d[] i_src,NyARIntPoint2d[] i_dst,int i_shift)
+	{
+		int l=i_src.length;
+		for(int i=l-1;i>=0;i--){
+			int n=(i+i_shift)%l;
+			i_dst[i].x=(int)i_src[n].x;
+			i_dst[i].y=(int)i_src[n].y;
+		}		
+	}
+	public static void shiftCopy(NyARIntPoint2d[] i_src,NyARIntPoint2d[] i_dst,int i_shift)
+	{
+		int l=i_src.length;
+		for(int i=l-1;i>=0;i--){
+			int n=(i+i_shift)%l;
+			i_dst[i].x=i_src[n].x;
+			i_dst[i].y=i_src[n].y;
+		}		
+	}
 	/**
 	 * この関数は、頂点集合から、中央値(Σp[n]/n)を求めます。
 	 * @param i_points

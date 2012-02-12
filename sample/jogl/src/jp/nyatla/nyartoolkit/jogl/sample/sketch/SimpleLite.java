@@ -25,7 +25,8 @@ public class SimpleLite extends GlSketch
 		param.changeScreenSize(640,480);
 		this.camera=new NyARJmfCamera(param,30.0f);//create sensor system
 		this.nyar=new NyARGlMarkerSystem(param);   //create MarkerSystem
-		this.ids[0]=this.nyar.addARMarker(ARCODE_FILE2,16,25,80);
+//		this.ids[0]=this.nyar.addARMarker(ARCODE_FILE2,16,25,80);
+		this.ids[0]=this.nyar.addNyIdMarker(50,80);
 		this.ids[1]=this.nyar.addARMarker(ARCODE_FILE,16,25,80);
 		gl.glMatrixMode(GL.GL_PROJECTION);
 		gl.glLoadMatrixd(this.nyar.getGlProjectionMatrix(),0);
