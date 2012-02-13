@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.nyar.utils;
+package jp.nyatla.nyartoolkit.markerar.utils;
 
 import jp.nyatla.nyartoolkit.NyARException;
 

@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.nyar;
+package jp.nyatla.nyartoolkit.markerar;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
-import jp.nyatla.nyartoolkit.nyar.utils.*;
+import jp.nyatla.nyartoolkit.markerar.utils.*;
 import jp.nyatla.nyartoolkit.nyidmarker.*;
 import jp.nyatla.nyartoolkit.nyidmarker.data.*;
 
@@ -835,7 +835,7 @@ class NyIdList extends ArrayList<MarkerInfoNyId>
 	}
 	public boolean update(INyARGrayscaleRaster i_raster,SquareStack.Item i_sq) throws NyARException
 	{
-		if(!this._id_pickup.pickFromRaster(i_raster,i_sq.ob_vertex, this._id_patt, this._id_param))
+		if(!this._id_pickup.pickFromRaster(i_raster.getGsPixelDriver(),i_sq.ob_vertex, this._id_patt, this._id_param))
 		{
 			return false;
 		}
