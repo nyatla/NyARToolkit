@@ -10,7 +10,7 @@ import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
-import jp.nyatla.nyartoolkit.nyar.NyARMarkerSystem;
+import jp.nyatla.nyartoolkit.markerar.NyARMarkerSystem;
 
 
 /**

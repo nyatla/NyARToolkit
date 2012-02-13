@@ -42,7 +42,14 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
  * このインタフェイスは、画素アクセサとして高頻度でコールされることが予想されます。そのため、画素形式のマッチング等は排除するようにしてください。
  * </p>
  */
-public interface INyARRgbPixelDriver {
+public interface INyARRgbPixelDriver
+{
+	/**
+	 * この関数は、ピクセルドライバの参照するラスタのサイズを返します。
+	 * @return
+	 * [readonly]
+	 */
+	public NyARIntSize getSize();
 	/**
 	 * この関数は、指定した座標の1ピクセル分のRGBデータを、配列に格納して返します。
 	 * 実装クラスでは、バッファから指定した座標のRGB値を取得する処理を実装してください。

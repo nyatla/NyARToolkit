@@ -59,7 +59,10 @@ final class NyARRgbPixelDriver_BYTE1D_B8G8R8_24 implements INyARRgbPixelDriver {
 	/** 参照する外部バッファ */
 	protected byte[] _ref_buf;
 	private NyARIntSize _ref_size;
-
+	public NyARIntSize getSize()
+	{
+		return this._ref_size;
+	}
 	/**
 	 * この関数は、指定した座標の1ピクセル分のRGBデータを、配列に格納して返します。
 	 */
@@ -134,7 +137,10 @@ final class NyARRgbPixelDriver_BYTE1D_B8G8R8X8_32 implements
 	/** 参照する外部バッファ */
 	protected byte[] _ref_buf;
 	private NyARIntSize _ref_size;
-
+	public NyARIntSize getSize()
+	{
+		return this._ref_size;
+	}
 	/**
 	 * この関数は、指定した座標の1ピクセル分のRGBデータを、配列に格納して返します。
 	 */
@@ -209,7 +215,10 @@ final class NyARRgbPixelDriver_BYTE1D_R8G8B8_24 implements INyARRgbPixelDriver {
 	protected byte[] _ref_buf;
 
 	private NyARIntSize _ref_size;
-
+	public NyARIntSize getSize()
+	{
+		return this._ref_size;
+	}
 	/**
 	 * この関数は、指定した座標の1ピクセル分のRGBデータを、配列に格納して返します。
 	 */
@@ -284,7 +293,10 @@ final class NyARRgbPixelDriver_BYTE1D_X8R8G8B8_32 implements
 	protected byte[] _ref_buf;
 
 	private NyARIntSize _ref_size;
-
+	public NyARIntSize getSize()
+	{
+		return this._ref_size;
+	}
 	/**
 	 * この関数は、指定した座標の1ピクセル分のRGBデータを、配列に格納して返します。
 	 */
@@ -350,7 +362,10 @@ final class NyARRgbPixelDriver_INT1D_GRAY_8 implements INyARRgbPixelDriver {
 	protected int[] _ref_buf;
 
 	private NyARIntSize _ref_size;
-
+	public NyARIntSize getSize()
+	{
+		return this._ref_size;
+	}
 	/**
 	 * この関数は、指定した座標の1ピクセル分のRGBデータを、配列に格納して返します。
 	 */
@@ -410,7 +425,10 @@ final class NyARRgbPixelDriver_INT1D_X8R8G8B8_32 implements INyARRgbPixelDriver 
 	protected int[] _ref_buf;
 
 	private NyARIntSize _ref_size;
-
+	public NyARIntSize getSize()
+	{
+		return this._ref_size;
+	}
 	/**
 	 * この関数は、指定した座標の1ピクセル分のRGBデータを、配列に格納して返します。
 	 */
@@ -478,7 +496,10 @@ final class NyARRgbPixelDriver_WORD1D_R5G6B5_16LE implements
 	protected short[] _ref_buf;
 
 	private NyARIntSize _ref_size;
-
+	public NyARIntSize getSize()
+	{
+		return this._ref_size;
+	}
 	/**
 	 * この関数は、指定した座標の1ピクセル分のRGBデータを、配列に格納して返します。
 	 */
@@ -538,40 +559,5 @@ final class NyARRgbPixelDriver_WORD1D_R5G6B5_16LE implements
 	public void switchRaster(INyARRgbRaster i_raster) throws NyARException {
 		this._ref_buf = (short[]) i_raster.getBuffer();
 		this._ref_size = i_raster.getSize();
-	}
-}
-
-class NyARRgbPixelDriver_NULL_ALLZERO implements INyARRgbPixelDriver {
-	public void getPixel(int i_x, int i_y, int[] o_rgb) {
-		o_rgb[0] = 0;// R
-		o_rgb[1] = 0;// G
-		o_rgb[2] = 0;// B
-		return;
-	}
-
-	public void getPixelSet(int[] i_x, int[] i_y, int i_num, int[] o_rgb) {
-		for (int i = i_num - 1; i >= 0; i--) {
-			o_rgb[i * 3 + 0] = 0;// R
-			o_rgb[i * 3 + 1] = 0;// G
-			o_rgb[i * 3 + 2] = 0;// B
-		}
-	}
-
-	public void setPixel(int i_x, int i_y, int i_r, int i_g, int i_b)
-			throws NyARException {
-		NyARException.notImplement();
-	}
-
-	public void setPixel(int i_x, int i_y, int[] i_rgb) throws NyARException {
-		NyARException.notImplement();
-	}
-
-	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intrgb)
-			throws NyARException {
-		NyARException.notImplement();
-	}
-
-	public void switchRaster(INyARRgbRaster i_raster) throws NyARException {
-		NyARException.notImplement();
 	}
 }

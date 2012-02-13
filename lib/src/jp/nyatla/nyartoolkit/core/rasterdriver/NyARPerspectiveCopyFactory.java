@@ -66,6 +66,26 @@ abstract class PerspectiveCopy_Base implements INyARPerspectiveCopy
 	{
 		this._perspective_gen=new NyARPerspectiveParamGenerator_O1(LOCAL_LT,LOCAL_LT);		
 	}
+	public boolean copyPatt(NyARDoublePoint2d[] i_vertex,int i_edge_x,int i_edge_y,int i_resolution,INyARRgbRaster i_out) throws NyARException
+	{
+		NyARIntSize out_size=i_out.getSize();
+		int xe=out_size.w*i_edge_x/50;
+		int ye=out_size.h*i_edge_y/50;
+
+		//サンプリング解像度で分岐
+		if(i_resolution==1){
+			if (!this._perspective_gen.getParam((xe*2+out_size.w),(ye*2+out_size.h),i_vertex, this.__pickFromRaster_cpara)) {
+				return false;
+			}
+			this.onePixel(xe+LOCAL_LT,ye+LOCAL_LT,this.__pickFromRaster_cpara,i_out);
+		}else{
+			if (!this._perspective_gen.getParam((xe*2+out_size.w)*i_resolution,(ye*2+out_size.h)*i_resolution,i_vertex, this.__pickFromRaster_cpara)) {
+				return false;
+			}
+			this.multiPixel(xe*i_resolution+LOCAL_LT,ye*i_resolution+LOCAL_LT,this.__pickFromRaster_cpara,i_resolution,i_out);
+		}
+		return true;
+	}
 	public boolean copyPatt(NyARIntPoint2d[] i_vertex,int i_edge_x,int i_edge_y,int i_resolution,INyARRgbRaster i_out) throws NyARException
 	{
 		NyARIntSize out_size=i_out.getSize();

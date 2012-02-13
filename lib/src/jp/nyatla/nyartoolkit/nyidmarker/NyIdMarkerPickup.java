@@ -26,9 +26,8 @@ package jp.nyatla.nyartoolkit.nyidmarker;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.pixeldriver.INyARGsPixelDriver;
-import jp.nyatla.nyartoolkit.core.pixeldriver.NyARGsPixelDriverFactory;
 import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
-import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
+import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.utils.*;
 
@@ -53,50 +52,41 @@ public class NyIdMarkerPickup
 		this._perspective_reader=new PerspectivePixelReader();
 		return;
 	}
+
 	/**
-	 * この関数は、ラスタからNyIdマーカの情報を読み出します。
-	 * @param image
-	 * NyIdマーカが撮影されている（見込みのある）ラスタ
+	 * この関数は、ラスタドライバから画像を読み出します。
+	 * @param i_pix_drv
+	 * @param i_size
 	 * @param i_vertex
-	 * マーカの頂点位置を示す配列。4要素である事。
 	 * @param o_data
-	 * 抽出したパターンデータを格納するオブジェクト。
 	 * @param o_param
-	 * 抽出したパターンパラメータを格納するオブジェクト。
 	 * @return
-	 * 抽出に成功するとtrue.失敗するとfalseです。
 	 * @throws NyARException
 	 */
-	public final boolean pickFromRaster(INyARGrayscaleRaster image, NyARDoublePoint2d[] i_vertex,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
-	{
-		//遠近法のパラメータを計算
-		if(!this._perspective_reader.setSourceSquare(i_vertex)){
-			return false;
-		}
-		return this._pickFromRaster(image,o_data,o_param);
-	}
-	/**
-	 * この関数は、ラスタからNyIdマーカの情報を読み出します。
-	 * @param image
-	 * NyIdマーカが撮影されている（見込みのある）ラスタ
-	 * @param i_vertex
-	 * マーカの頂点位置を示す配列。4要素である事。
-	 * @param o_data
-	 * 抽出したパターンデータを格納するオブジェクト。
-	 * @param o_param
-	 * 抽出したパターンパラメータを格納するオブジェクト。
-	 * @return
-	 * 抽出に成功するとtrue.失敗するとfalseです。
-	 * @throws NyARException
-	 */
-	public final boolean pickFromRaster(INyARGrayscaleRaster image, NyARIntPoint2d[] i_vertex,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
+	public final boolean pickFromRaster(INyARGsPixelDriver i_pix_drv,NyARIntPoint2d[] i_vertex,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
 	{
 		if(!this._perspective_reader.setSourceSquare(i_vertex)){
 			return false;
 		}
-		return this._pickFromRaster(image,o_data,o_param);
+		return this._pickFromRaster(i_pix_drv,o_data,o_param);
 	}
-	
+	/**
+	 * この関数は、ラスタドライバから画像を読み出します。
+	 * @param i_pix_drv
+	 * @param i_size
+	 * @param i_vertex
+	 * @param o_data
+	 * @param o_param
+	 * @return
+	 * @throws NyARException
+	 */
+	public final boolean pickFromRaster(INyARGsPixelDriver i_pix_drv,NyARDoublePoint2d[] i_vertex,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
+	{
+		if(!this._perspective_reader.setSourceSquare(i_vertex)){
+			return false;
+		}
+		return this._pickFromRaster(i_pix_drv,o_data,o_param);
+	}	
 	/**
 	 * i_imageから、idマーカを読みだします。
 	 * o_dataにはマーカデータ、o_paramにはマーカのパラメータを返却します。
@@ -107,16 +97,14 @@ public class NyIdMarkerPickup
 	 * @return
 	 * @throws NyARException
 	 */
-	private final boolean _pickFromRaster(INyARGrayscaleRaster image, NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
+	private final boolean _pickFromRaster(INyARGsPixelDriver i_pix_drv,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
 	{
-		NyARIntSize raster_size=image.getSize();
-
 		final PerspectivePixelReader.TThreshold th=this.__pickFromRaster_th;
 		final MarkerPattEncoder encoder=this.__pickFromRaster_encoder;
 		//マーカパラメータを取得
-		this._perspective_reader.detectThresholdValue(image.getGsPixelDriver(),raster_size,th);
+		this._perspective_reader.detectThresholdValue(i_pix_drv,th);
 
-		if(!this._perspective_reader.readDataBits(image.getGsPixelDriver(),raster_size,th, encoder)){
+		if(!this._perspective_reader.readDataBits(i_pix_drv,i_pix_drv.getSize(),th, encoder)){
 			return false;
 		}
 		final int d=encoder.encode(o_data);
@@ -129,13 +117,7 @@ public class NyIdMarkerPickup
 		return true;
 	}
 }
-/** GSピクセルのReader*/
 
-
-class GsPixelReader_RGB
-{
-	
-}
 
 
 /**
@@ -630,21 +612,21 @@ final class PerspectivePixelReader
 	 * 敷居値を受け取るオブジェクト
 	 * @throws NyARException
 	 */
-	public void detectThresholdValue(INyARGsPixelDriver i_reader,NyARIntSize i_raster_size,TThreshold o_threshold)throws NyARException
+	public void detectThresholdValue(INyARGsPixelDriver i_reader,TThreshold o_threshold)throws NyARException
 	{
 		final int[] th_pixels=this._th_pixels;
-
+		NyARIntSize size=i_reader.getSize();
 		//左上のピックアップ領域からピクセルを得る(00-24)
-		rectPixels(i_reader,i_raster_size,THRESHOLD_SAMPLE_LT,THRESHOLD_SAMPLE_LT,THRESHOLD_STEP,THRESHOLD_STEP,THRESHOLD_PIXEL,THRESHOLD_PIXEL,0,th_pixels);
+		rectPixels(i_reader,size,THRESHOLD_SAMPLE_LT,THRESHOLD_SAMPLE_LT,THRESHOLD_STEP,THRESHOLD_STEP,THRESHOLD_PIXEL,THRESHOLD_PIXEL,0,th_pixels);
 		
 		//左下のピックアップ領域からピクセルを得る(25-49)
-		rectPixels(i_reader,i_raster_size,THRESHOLD_SAMPLE_LT,THRESHOLD_SAMPLE_RB,THRESHOLD_STEP,THRESHOLD_STEP,THRESHOLD_PIXEL,THRESHOLD_PIXEL,THRESHOLD_SAMPLE,th_pixels);
+		rectPixels(i_reader,size,THRESHOLD_SAMPLE_LT,THRESHOLD_SAMPLE_RB,THRESHOLD_STEP,THRESHOLD_STEP,THRESHOLD_PIXEL,THRESHOLD_PIXEL,THRESHOLD_SAMPLE,th_pixels);
 		
 		//右上のピックアップ領域からピクセルを得る(50-74)
-		rectPixels(i_reader,i_raster_size,THRESHOLD_SAMPLE_RB,THRESHOLD_SAMPLE_LT,THRESHOLD_STEP,THRESHOLD_STEP,THRESHOLD_PIXEL,THRESHOLD_PIXEL,THRESHOLD_SAMPLE*2,th_pixels);
+		rectPixels(i_reader,size,THRESHOLD_SAMPLE_RB,THRESHOLD_SAMPLE_LT,THRESHOLD_STEP,THRESHOLD_STEP,THRESHOLD_PIXEL,THRESHOLD_PIXEL,THRESHOLD_SAMPLE*2,th_pixels);
 
 		//右下のピックアップ領域からピクセルを得る(75-99)
-		rectPixels(i_reader,i_raster_size,THRESHOLD_SAMPLE_RB,THRESHOLD_SAMPLE_RB,THRESHOLD_STEP,THRESHOLD_STEP,THRESHOLD_PIXEL,THRESHOLD_PIXEL,THRESHOLD_SAMPLE*3,th_pixels);
+		rectPixels(i_reader,size,THRESHOLD_SAMPLE_RB,THRESHOLD_SAMPLE_RB,THRESHOLD_STEP,THRESHOLD_STEP,THRESHOLD_PIXEL,THRESHOLD_PIXEL,THRESHOLD_SAMPLE*3,th_pixels);
 
 		final THighAndLow hl=this.__detectThresholdValue_hl;
 		//Ptailで求めたピクセル平均

@@ -2,9 +2,16 @@ package jp.nyatla.nyartoolkit.core.pixeldriver;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 public interface INyARGsPixelDriver
 {
+	/**
+	 * この関数は、ピクセルドライバの参照する画像のサイズを返します。
+	 * @return
+	 * [readonly]
+	 */
+	public NyARIntSize getSize();
 	public void getPixelSet(int[] i_x,int[] i_y,int i_n,int[] o_buf,int i_st_buf) throws NyARException;
 	public int getPixel(int i_x,int i_y) throws NyARException;
 	public void switchRaster(INyARRaster i_ref_raster) throws NyARException;

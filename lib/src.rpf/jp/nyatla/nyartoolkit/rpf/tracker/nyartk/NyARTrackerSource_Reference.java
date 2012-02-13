@@ -6,6 +6,8 @@ import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.rpf.sampler.lrlabel.LowResolutionLabelingSampler;
 import jp.nyatla.nyartoolkit.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
+import jp.nyatla.nyartoolkit.rpf.utils.INyARGsRasterGraphics;
+import jp.nyatla.nyartoolkit.rpf.utils.NyARGsRasterGraphicsFactory;
 
 /**
  * このクラスは、NyARTrackerSourceのリファレンス実装です。
@@ -28,6 +30,7 @@ public class NyARTrackerSource_Reference extends NyARTrackerSource
 	private LowResolutionLabelingSampler _sampler;
 	private NyARGrayscaleRaster _rb_source;
 	private NegativeSqRoberts _rfilter=new NegativeSqRoberts(NyARBufferType.INT1D_GRAY_8);
+	private INyARGsRasterGraphics _gs_graphics;
 	/**
 	 * コンストラクタです。
 	 * ヒント画像
@@ -55,6 +58,7 @@ public class NyARTrackerSource_Reference extends NyARTrackerSource
 		int div=this._rob_resolution;
 		//主GSラスタ
 		this._base_raster=new NyARGrayscaleRaster(i_width,i_height,NyARBufferType.INT1D_GRAY_8,i_is_alloc);
+		this._gs_graphics=NyARGsRasterGraphicsFactory.createDriver(this._base_raster);
 		//Roberts変換ラスタ
 		this._rb_source=new NyARGrayscaleRaster(i_width/div,i_height/div,NyARBufferType.INT1D_GRAY_8, true);
 		//Robertsラスタは最も解像度の低いラスタと同じ
@@ -82,7 +86,7 @@ public class NyARTrackerSource_Reference extends NyARTrackerSource
 	public void syncResource() throws NyARException
 	{
 		//内部状態の同期
-		this._base_raster.copyTo(0,0,this._rob_resolution,this._rb_source);
+		this._gs_graphics.copyTo(0,0,this._rob_resolution,this._rb_source);
 		this._rfilter.doFilter(this._rb_source,this._rbraster);
 	}
 	/**

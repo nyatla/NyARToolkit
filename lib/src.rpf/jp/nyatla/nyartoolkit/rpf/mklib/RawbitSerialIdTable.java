@@ -1,6 +1,9 @@
 package jp.nyatla.nyartoolkit.rpf.mklib;
 
 import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.pixeldriver.INyARGsPixelDriver;
+import jp.nyatla.nyartoolkit.core.pixeldriver.NyARGsPixelDriverFactory;
+import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
@@ -97,7 +100,7 @@ public class RawbitSerialIdTable
 	 */
 	public RawbitSerialIdTable(int i_max,int i_input_raster_type) throws NyARException
 	{
-		this._id_pickup=new NyIdMarkerPickup(i_input_raster_type);
+		this._id_pickup=new NyIdMarkerPickup();
 		this._table=new SerialTable(i_max);
 	}
 	/**
@@ -158,8 +161,8 @@ public class RawbitSerialIdTable
 		d.setValue(i_name,0,Long.MAX_VALUE,i_width);
 		return true;
 	}
-	private INyARRgbRaster _last_input_raster=null;
-	private INyARPerspectiveCopy _id_pickup;
+	private INyARRaster _last_laster=null;
+	private INyARGsPixelDriver _gs_pix_reader;
 	/**
 	 * この関数は、任意の四角形をIdマーカとして検査し、一致するメタデータを返します。
 	 * i_rasterからi_vertexの頂点で定義される四角形のパターンを取得し、NyAIdマーカとして評価し、一致するID値をテーブルから取得します。
@@ -176,7 +179,11 @@ public class RawbitSerialIdTable
 	 */
 	public final boolean identifyId(NyARDoublePoint2d[] i_vertex,INyARRgbRaster i_raster,IdentifyIdResult o_result) throws NyARException
 	{
-		if(!this._id_pickup.pickFromRaster(i_raster,i_vertex,this._temp_nyid_info,this._temp_nyid_param))
+		if(this._last_laster!=i_raster){
+			this._gs_pix_reader=NyARGsPixelDriverFactory.createDriver(i_raster);
+			this._last_laster=i_raster;
+		}
+		if(!this._id_pickup.pickFromRaster(this._gs_pix_reader,i_vertex,this._temp_nyid_info,this._temp_nyid_param))
 		{
 			return false;
 		}

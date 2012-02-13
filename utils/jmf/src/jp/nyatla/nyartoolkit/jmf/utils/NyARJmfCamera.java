@@ -5,7 +5,7 @@ import javax.media.Buffer;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
-import jp.nyatla.nyartoolkit.nyar.NyARSensor;
+import jp.nyatla.nyartoolkit.markerar.NyARSensor;
 
 /**
  * このクラスは、画像入力にJMFカメラを使用する{@link #NyARSensor}です。

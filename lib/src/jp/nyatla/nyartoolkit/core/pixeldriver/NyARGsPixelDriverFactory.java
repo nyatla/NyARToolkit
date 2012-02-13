@@ -56,7 +56,10 @@ class NyARGsPixelDriver_INT1D_GRAY_8 implements INyARGsPixelDriver
 {
 	protected int[] _ref_buf;
 	private NyARIntSize _ref_size;
-
+	public NyARIntSize getSize()
+	{
+		return this._ref_size;
+	}
 	public void getPixelSet(int[] i_x,int[] i_y,int i_n,int[] o_buf,int i_st_buf)
 	{
 		int bp;
@@ -102,7 +105,10 @@ class NyARGsPixelDriver_RGBX implements INyARGsPixelDriver
 {
 	private INyARRgbPixelDriver _rgbd;
 	private int[] _tmp=new int[3];
-
+	public NyARIntSize getSize()
+	{
+		return this._rgbd.getSize();
+	}
 	public void getPixelSet(int[] i_x,int[] i_y,int i_n,int[] o_buf,int i_st_buf) throws NyARException
 	{
 		INyARRgbPixelDriver r=this._rgbd;

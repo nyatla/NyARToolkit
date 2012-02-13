@@ -4,6 +4,7 @@ import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARCode;
 import jp.nyatla.nyartoolkit.core.match.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
+import jp.nyatla.nyartoolkit.core.rasterdriver.INyARPerspectiveCopy;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.rpf.reality.nyartk.*;
@@ -218,8 +219,8 @@ public class ARTKMarkerTable
 	{
 		//パターン抽出
 		NyARMatchPattResult tmp_patt_result=this.__tmp_patt_result;
-		NyARPerspectiveRasterReader r=i_rtsorce.refPerspectiveRasterReader();
-		r.read4Point(i_rtsorce.refRgbSource(),i_target.refTargetVertex(),this._edge_x,this._edge_y,this._sample_per_pix,this._tmp_raster);
+		INyARPerspectiveCopy r=i_rtsorce.refPerspectiveRasterReader();
+		r.copyPatt(i_target.refTargetVertex(),this._edge_x,this._edge_y,this._sample_per_pix,this._tmp_raster);
 		//比較パターン生成
 		this._deviation_data.setRaster(this._tmp_raster);
 		int ret=-1;

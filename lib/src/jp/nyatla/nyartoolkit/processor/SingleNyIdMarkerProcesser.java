@@ -122,7 +122,7 @@ public abstract class SingleNyIdMarkerProcesser
 			NyIdMarkerParam param=this._marker_param;
 			NyIdMarkerPattern patt_data  =this._marker_data;			
 			// 評価基準になるパターンをイメージから切り出す
-			if (!this._id_pickup.pickFromRaster(this._ref_raster,vertex, patt_data, param)){
+			if (!this._id_pickup.pickFromRaster(this._ref_raster.getGsPixelDriver(),vertex, patt_data, param)){
 				return;
 			}
 			//エンコード
