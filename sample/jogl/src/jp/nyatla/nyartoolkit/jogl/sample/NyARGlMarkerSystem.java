@@ -48,7 +48,7 @@ public class NyARGlMarkerSystem extends NyARMarkerSystem
 	 */
 	public double[] getGlMarkerTransMat(int i_id,double[] i_buf)
 	{
-		NyARGLUtil.toCameraViewRH(this.getMarkerTransMat(i_id),1,i_buf);
+		NyARGLUtil.toCameraViewRH(this.getMarkerMatrix(i_id),1,i_buf);
 		return i_buf;
 	}
 	

@@ -11,7 +11,9 @@ public class TMarkerData
 {
 	/** 最後に認識したタイムスタンプ。*/
 	public long time_stamp;
-	/** ライフ値*/
+	/** ライフ値
+	 * マーカ検出時にリセットされ、1フレームごとに1づつインクリメントされる値です。
+	 */
 	public long life;
 	/** MK情報。マーカのオフセット位置。*/
 	public final NyARRectOffset marker_offset=new NyARRectOffset();			
@@ -25,4 +27,8 @@ public class TMarkerData
 	public NyARIntPoint2d[] tl_vertex=NyARIntPoint2d.createArray(4);
 	public NyARIntPoint2d   tl_center=new NyARIntPoint2d();
 	public int tl_rect_area;
+	protected TMarkerData()
+	{
+		this.life=0;
+	}
 }	

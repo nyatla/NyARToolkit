@@ -22,6 +22,7 @@ public class MarkerInfoARMarker extends TMarkerData
 	/** */
 	public MarkerInfoARMarker(NyARCode i_patt,int i_patt_edge_percentage,double i_patt_size) throws NyARException
 	{
+		super();
 		this.matchpatt=new NyARMatchPatt_Color_WITHOUT_PCA(i_patt);
 		this.patt_edge_percentage=i_patt_edge_percentage;
 		this.marker_offset.setSquare(i_patt_size);

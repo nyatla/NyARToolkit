@@ -1,13 +1,16 @@
 package jp.nyatla.nyartoolkit.markerar;
 
 
+
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterdriver.INyARHistogramFromRaster;
+import jp.nyatla.nyartoolkit.core.rasterdriver.INyARPerspectiveCopy;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.*;
 import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 
 //javaImage対応のRgbAveを作ること。
 
@@ -56,9 +59,19 @@ public class NyARSensor
 		this._gs_id_ts=0;
 		this._gs_hist_ts=0;
 	}
-	
+	/**
+	 * キャッシュしている射影変換ドライバを返します。
+	 * この関数は、内部処理向けの関数です。
+	 * @return
+	 * [readonly]
+	 */
+	public INyARPerspectiveCopy getPerspectiveCopy()
+	{
+		return this._pcopy;
+	}	
 	private INyARHistogramFromRaster _hist_drv=null;	
 	private INyARRaster _last_input_rasster=null;
+	private INyARPerspectiveCopy _pcopy;
 	private INyARRgb2GsFilter _rgb2gs=null;
 	/**
 	 * この関数は、入力画像を元に、インスタンスの状態を更新します。
@@ -71,6 +84,7 @@ public class NyARSensor
 		//ラスタドライバの準備
 		if(this._last_input_rasster!=i_input){
 			this._rgb2gs=(INyARRgb2GsFilter) i_input.createInterface(INyARRgb2GsFilter.class);
+			this._pcopy=(INyARPerspectiveCopy) i_input.createInterface(INyARPerspectiveCopy.class);
 			this._last_input_rasster=i_input;
 		}
 		//RGB画像の差し替え
@@ -137,11 +151,28 @@ public class NyARSensor
 	{
 		return this._ref_raster;
 	}
+	
 	/**
-	 * 4頂点からRGBパターンを取得します。
+	 * 任意の4頂点領域を射影変換して取得します。
+	 * @param i_x1
+	 * @param i_y1
+	 * @param i_x2
+	 * @param i_y2
+	 * @param i_x3
+	 * @param i_y3
+	 * @param i_x4
+	 * @param i_y4
+	 * @return
+	 * @throws NyARException 
 	 */
-	public void getRgbPatt(int i_x,int i_y,INyARRaster i_out)
+	public INyARRgbRaster getPerspectiveImage(
+	    int i_x1,int i_y1,
+	    int i_x2,int i_y2,
+	    int i_x3,int i_y3,
+	    int i_x4,int i_y4,
+	    INyARRgbRaster i_raster) throws NyARException
 	{
-		
-	}	
+		this._pcopy.copyPatt(i_x1, i_y1, i_x2, i_y2, i_x3, i_y3, i_x4, i_y4,0,0,1, i_raster);
+		return i_raster;
+	}
 }

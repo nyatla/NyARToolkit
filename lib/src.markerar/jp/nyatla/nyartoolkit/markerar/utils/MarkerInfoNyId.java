@@ -21,8 +21,9 @@ public class MarkerInfoNyId extends TMarkerData
 	 * @param i_patt_size
 	 * @throws NyARException
 	 */
-	public MarkerInfoNyId(int i_nyid_range_s,int i_nyid_range_e,double i_patt_size)
+	public MarkerInfoNyId(long i_nyid_range_s,long i_nyid_range_e,double i_patt_size)
 	{
+		super();
 		this.marker_offset.setSquare(i_patt_size);
 		this.nyid_range_s=i_nyid_range_s;
 		this.nyid_range_e=i_nyid_range_e;
