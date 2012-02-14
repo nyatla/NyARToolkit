@@ -48,13 +48,22 @@ public class NyARMarkerSystem
 	{
 		this._ref_param=i_ref_param;
 		this._frustum=new NyARFrustum();
+		this.initInstance(i_ref_param);
 		this.setProjectionMatrixClipping(FRUSTUM_DEFAULT_NEAR_CLIP, FRUSTUM_DEFAULT_FAR_CLIP);
-		this.createRasterDriver(i_ref_param);
 	}
-	protected void createRasterDriver(NyARParam i_ref_param) throws NyARException
+	protected void initInstance(NyARParam i_ref_param) throws NyARException
 	{
 		this._rledetect=new RleDetector(i_ref_param);
 		this._hist_th=new NyARHistogramAnalyzer_SlidePTile(15);
+	}
+	/**
+	 * 現在のフラスタムを返します。
+	 * @return
+	 * [readonly]
+	 */
+	public NyARFrustum getFrustum()
+	{
+		return this._frustum;
 	}
 	/**
 	 * 射影変換行列の視錐台パラメータを設定します。
@@ -341,7 +350,7 @@ public class NyARMarkerSystem
 		for(int i=3;i>=0;i--){
 			this._frustum.project(pos[i],pos2[i]);
 		}
-		return i_sensor.getPerspectiveImage(i_x1, i_y1, i_x2, i_y2, i_x3, i_y3, i_x4, i_y4,i_raster);
+		return i_sensor.getPerspectiveImage(pos2[0].x, pos2[0].y,pos2[1].x, pos2[1].y,pos2[2].x, pos2[2].y,pos2[3].x, pos2[3].y,i_raster);
 	}
 	/**
 	 * この関数は、マーカ平面上の任意の４点で囲まれる領域から、画像を射影変換して返します。

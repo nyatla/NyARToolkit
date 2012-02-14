@@ -82,6 +82,22 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 		}
 	}
 	/**
+	 * コンストラクタです。
+	 * 画像サイズを指定してインスタンスを生成します。
+	 * @param i_width
+	 * ラスタのサイズ
+	 * @param i_height
+	 * ラスタのサイズ
+	 * @throws NyARException
+	 */
+	public NyARRgbRaster(int i_width, int i_height) throws NyARException
+	{
+		super(i_width,i_height,NyARBufferType.INT1D_X8R8G8B8_32);
+		if(!initInstance(this._size,NyARBufferType.INT1D_X8R8G8B8_32,true)){
+			throw new NyARException();
+		}
+	}	
+	/**
 	 * Readerとbufferを初期化する関数です。コンストラクタから呼び出します。
 	 * 継承クラスでこの関数を拡張することで、対応するバッファタイプの種類を増やせます。
 	 * @param i_size

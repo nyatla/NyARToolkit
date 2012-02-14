@@ -92,13 +92,11 @@ public class RawbitSerialIdTable
 
 	/**
 	 * コンストラクタです。
-	 * @param i_input_raster_type
-	 * 入力ラスタのタイプ値。
 	 * @param i_max
 	 * IDテーブルのサイズ。Idマーカ範囲の最大登録数です。
 	 * @throws NyARException 
 	 */
-	public RawbitSerialIdTable(int i_max,int i_input_raster_type) throws NyARException
+	public RawbitSerialIdTable(int i_max) throws NyARException
 	{
 		this._id_pickup=new NyIdMarkerPickup();
 		this._table=new SerialTable(i_max);

@@ -175,4 +175,14 @@ public class NyARSensor
 		this._pcopy.copyPatt(i_x1, i_y1, i_x2, i_y2, i_x3, i_y3, i_x4, i_y4,0,0,1, i_raster);
 		return i_raster;
 	}
+	public INyARRgbRaster getPerspectiveImage(
+		    double i_x1,double i_y1,
+		    double i_x2,double i_y2,
+		    double i_x3,double i_y3,
+		    double i_x4,double i_y4,
+		    INyARRgbRaster i_raster) throws NyARException
+		{
+			this._pcopy.copyPatt(i_x1, i_y1, i_x2, i_y2, i_x3, i_y3, i_x4, i_y4,0,0,1, i_raster);
+			return i_raster;
+		}	
 }

@@ -254,6 +254,7 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 final class NyARRgbPixelReader_OBJECT_Java_BufferedImage implements INyARRgbPixelDriver
 {
 	protected BufferedImage _ref_buf;
+	private NyARIntSize _ref_size;
 
 	public void getPixel(int i_x, int i_y, int[] o_rgb)
 	{
@@ -288,10 +289,14 @@ final class NyARRgbPixelReader_OBJECT_Java_BufferedImage implements INyARRgbPixe
 	public void switchRaster(INyARRgbRaster i_raster)throws NyARException
 	{
 		this._ref_buf=(BufferedImage)i_raster.getBuffer();
+		this._ref_size=i_raster.getSize();
 	}
 
 	public boolean isCompatibleRaster(INyARRgbRaster iRaster)
 	{
 		return iRaster.isEqualBufferType(NyARBufferType.OBJECT_Java_BufferedImage);
+	}
+	public NyARIntSize getSize() {
+		return this._ref_size;
 	}
 }

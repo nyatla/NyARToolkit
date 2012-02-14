@@ -10,15 +10,15 @@ import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
-import jp.nyatla.nyartoolkit.markerar.NyARMarkerSystem;
 
 
 /**
  * JMFからの映像入力からマーカを検出し、そこに立方体を重ねます。
+ * 動作は、スケッチサンプル{@link SimpleLiteM}と同じです。
  * スケッチシステムを使わない、新しいマーカシステムのサンプルです。
- * ARマーカには、patt.hiroを使用して下さい。
+ * ARマーカには、patt.hiro/patt_kanjiを使用して下さい。
  */
-public class RealtimeMarkerSystem implements GLEventListener
+public class SimpleLiteMStandard implements GLEventListener
 {
 	// NyARToolkit関係
 	private NyARJmfCamera _camera;
@@ -26,7 +26,7 @@ public class RealtimeMarkerSystem implements GLEventListener
 	private final static String ARCODE_FILE = "../../Data/patt.hiro";
 	private final static String ARCODE_FILE2 = "../../Data/patt.kanji";
 	private int[] ids=new int[2];
-	public RealtimeMarkerSystem(NyARParam i_param) throws NyARException
+	public SimpleLiteMStandard(NyARParam i_param) throws NyARException
 	{		
 		this._camera=new NyARJmfCamera(i_param,30.0f);//create sensor system
 		this._nyar=new NyARGlMarkerSystem(i_param);   //create MarkerSystem
@@ -84,14 +84,14 @@ public class RealtimeMarkerSystem implements GLEventListener
 				if(this._nyar.isExistMarker(this.ids[0])){
 					gl.glMatrixMode(GL.GL_MODELVIEW);
 					gl.glPushMatrix();
-					gl.glLoadMatrixd(this._nyar.getGlMarkerTransMat(this.ids[0]),0);
+					gl.glLoadMatrixd(this._nyar.getGlMarkerMatrix(this.ids[0]),0);
 					NyARGLDrawUtil.drawColorCube(gl,40);
 					gl.glPopMatrix();
 				}
 				if(this._nyar.isExistMarker(this.ids[1])){
 					gl.glMatrixMode(GL.GL_MODELVIEW);
 					gl.glPushMatrix();
-					gl.glLoadMatrixd(this._nyar.getGlMarkerTransMat(this.ids[1]),0);
+					gl.glLoadMatrixd(this._nyar.getGlMarkerMatrix(this.ids[1]),0);
 					NyARGLDrawUtil.drawColorCube(gl,40);
 					gl.glPopMatrix();
 				}
@@ -115,7 +115,7 @@ public class RealtimeMarkerSystem implements GLEventListener
 			NyARParam param = new NyARParam();
 			param.loadARParamFromFile(PARAM_FILE);
 			param.changeScreenSize(SCREEN_X, SCREEN_Y);
-			new RealtimeMarkerSystem(param);
+			new SimpleLiteMStandard(param);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -1,51 +1,40 @@
-package jp.nyatla.nyartoolkit.jogl.sample.sketch;
+package jp.nyatla.nyartoolkit.utils.j2se;
 
 import java.awt.Frame;
 import java.awt.Insets;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLCanvas;
-import javax.media.opengl.GLEventListener;
+
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
-import com.sun.opengl.util.Animator;
 
-/**
- * このクラスは、Joglに対応した簡易スケッチシステムです。
- * 単一のウインドウに1つのOpenGLCanvasを定義します。
- * 継承して、{@link #draw(GL)}と{@link #setup(GL)}関数を実装して、スケッチを完成させます。
- */
-public abstract class GlSketch implements GLEventListener, MouseListener ,MouseMotionListener 
+public class J2SeSketch
 {
 	private Frame _frame;
-	protected GLCanvas _canvas;
-	boolean _is_setup_done=false;
-	public GlSketch()
+	public J2SeSketch()
 	{
-		this._frame= new Frame("NyARTK Sketch");
+		this._frame= new Frame("NyARTK J2SE Sketch");
 		this._frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e)
 			{
 				System.exit(0);
 			}
 		});
-		this._canvas = new GLCanvas();
+		
+		this._canvas = new Canvas();
 		this._canvas.addGLEventListener(this);
-		this._canvas.addMouseListener(this);
-		this._canvas.addMouseMotionListener(this);		
 		Insets ins = this._frame.getInsets();
 		this._frame.setSize(320 + ins.left + ins.right,240 + ins.top + ins.bottom);		
 		this._canvas.setBounds(ins.left, ins.top,320,240);
 		this._frame.add(this._canvas);
 		this._frame.setVisible(true);
+	}
+	public void fps(int i_fps)
+	{
+		
 	}
 	public void size(NyARIntSize i_s)
 	{
@@ -91,13 +80,12 @@ public abstract class GlSketch implements GLEventListener, MouseListener ,MouseM
 	public void displayChanged(GLAutoDrawable arg0, boolean arg1, boolean arg2)
 	{
 	}
-	public void mouseClicked(MouseEvent arg0) {}
-	public void mouseEntered(MouseEvent arg0) {}
-	public void mouseExited(MouseEvent arg0) {}
-	public void mousePressed(MouseEvent arg0) {}
-	public void mouseReleased(MouseEvent arg0) {}
-	public void mouseDragged(MouseEvent arg0) {}
-	public void mouseMoved(MouseEvent arg0) {}	
-	public abstract void setup(GL i_gl) throws NyARException;
-	public abstract void draw(GL i_gl);
+	public void setup(GL i_gl) throws NyARException
+	{
+		
+	}
+	public void draw(GL i_gl)
+	{
+		
+	}
 }

@@ -9,6 +9,7 @@ import javax.media.opengl.GL;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
+import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
@@ -175,7 +176,57 @@ public class NyARGLDrawUtil
 		}
 		i_gl.glEnd();
 	}
-
+	/**
+	 * この関数は、指定したラスタを現在の座標系の平面に描画します。
+	 * @param i_gl
+	 * @param i_x
+	 * @param i_y
+	 * @param i_raster
+	 * @throws NyARException
+	 */
+	public static void drawRaster(GL i_gl,INyARRgbRaster i_raster) throws NyARException
+	{
+		NyARIntSize s=i_raster.getSize();
+		int[] n=new int[1];
+		float[] color=new float[3];
+		boolean old_is_texture_2d=i_gl.glIsEnabled(GL.GL_TEXTURE_2D);
+		i_gl.glGetFloatv(GL.GL_CURRENT_COLOR,color,0);//カラーの退避
+		i_gl.glColor3f(1,1,1);
+		i_gl.glEnable(GL.GL_TEXTURE_2D);
+		i_gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
+		i_gl.glGenTextures(1,n,0);
+		i_gl.glTexParameteri(GL.GL_TEXTURE_2D,GL.GL_TEXTURE_MAG_FILTER,GL.GL_LINEAR);
+		i_gl.glTexParameteri(GL.GL_TEXTURE_2D,GL.GL_TEXTURE_MIN_FILTER,GL.GL_LINEAR);
+		switch(i_raster.getBufferType())
+		{
+		case NyARBufferType.BYTE1D_R8G8B8_24:
+			i_gl.glTexImage2D(GL.GL_TEXTURE_2D,0, GL.GL_RGB,s.w,s.h,0,GL.GL_RGB,GL.GL_UNSIGNED_BYTE, ByteBuffer.wrap((byte[])i_raster.getBuffer()));
+			break;
+		case NyARBufferType.BYTE1D_B8G8R8_24:
+			i_gl.glTexImage2D(GL.GL_TEXTURE_2D,0, GL.GL_RGB,s.w,s.h,0,GL.GL_BGR,GL.GL_UNSIGNED_BYTE, ByteBuffer.wrap((byte[])i_raster.getBuffer()));
+			break;
+		case NyARBufferType.BYTE1D_B8G8R8X8_32:
+			i_gl.glTexImage2D(GL.GL_TEXTURE_2D,0, GL.GL_RGB,s.w,s.h,0,GL.GL_BGRA,GL.GL_UNSIGNED_BYTE, ByteBuffer.wrap((byte[])i_raster.getBuffer()));
+			break;
+		case NyARBufferType.INT1D_X8R8G8B8_32:
+			i_gl.glTexImage2D(GL.GL_TEXTURE_2D,0, GL.GL_RGB,s.w,s.h,0,GL.GL_BGRA,GL.GL_UNSIGNED_BYTE, IntBuffer.wrap((int[])i_raster.getBuffer()));
+			break;
+		default:
+			throw new NyARException();
+		}
+		i_gl.glBegin(GL.GL_QUADS);
+		i_gl.glBindTexture(GL.GL_TEXTURE_2D,n[0]);
+		i_gl.glTexCoord2f(0,0);i_gl.glVertex3f(0,0,0);
+		i_gl.glTexCoord2f(1,0);i_gl.glVertex3f(s.w,0,0);
+		i_gl.glTexCoord2f(1,1);i_gl.glVertex3f(s.w,s.h,0);
+		i_gl.glTexCoord2f(0,1);i_gl.glVertex3f(0,s.h,0);
+		i_gl.glEnd();
+		i_gl.glDeleteTextures(1,n,0);
+		if(!old_is_texture_2d){
+			i_gl.glDisable(GL.GL_TEXTURE_2D);
+		}
+		i_gl.glColor3fv(color,0);//カラーの復帰
+	}
 	/**
 	 * arglDispImageStateful関数モドキ
 	 * @param image
@@ -203,9 +254,12 @@ public class NyARGLDrawUtil
 		case NyARBufferType.BYTE1D_B8G8R8X8_32:
 			gl.glDrawPixels(i_size.w,i_size.h,GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, ByteBuffer.wrap((byte[])i_buffer));
 			break;
+		case NyARBufferType.INT1D_X8R8G8B8_32:
+			gl.glDrawPixels(i_size.w,i_size.h,GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, IntBuffer.wrap((int[])i_buffer));
+			break;
 		case NyARBufferType.INT1D_GRAY_8:
-			/** @bug don't work*/
-			gl.glDrawPixels(i_size.w,i_size.h,GL.GL_LUMINANCE, GL.GL_UNSIGNED_INT, IntBuffer.wrap((int[])i_buffer));
+			/** @bug RED screen*/
+			gl.glDrawPixels(i_size.w,i_size.h,GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, IntBuffer.wrap((int[])i_buffer));
 			break;
 		default:
 			throw new NyARException();
