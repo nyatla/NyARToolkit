@@ -1,5 +1,7 @@
 package jp.nyatla.nyartoolkit.rpf.mklib;
 
+import java.io.InputStream;
+
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARCode;
 import jp.nyatla.nyartoolkit.core.match.*;
@@ -174,8 +176,8 @@ public class ARTKMarkerTable
 	}
 	/**
 	 * テーブル操作関数です。ARToolkit準拠のパターンファイルを読み込み、テーブルへ追加します。
-	 * @param i_filename
-	 * パターンファイルのファイルパスを指定します。
+	 * @param i_stream
+	 * パターンファイルを読み込むストリームを指定します。
 	 * @param i_id
 	 * このマーカを識別するユーザ定義のID値です。任意の値を指定できます。不要な場合は0を指定してください。
 	 * @param i_name
@@ -188,14 +190,14 @@ public class ARTKMarkerTable
 	 * 登録に成功すると、trueを返します。
 	 * @throws NyARException
 	 */
-	public boolean addMarkerFromARPattFile(String i_filename,int i_id,String i_name,double i_width,double i_height) throws NyARException
+	public boolean addMarkerFromARPatt(InputStream i_stream,int i_id,String i_name,double i_width,double i_height) throws NyARException
 	{
 		MarkerTable.SerialTableRow d=this._table.prePush();
 		if(d==null){
 			return false;
 		}
 		NyARCode c=new NyARCode(this._resolution_width,this._resolution_height);
-		c.loadARPattFromFile(i_filename);
+		c.loadARPatt(i_stream);
 		d.setValue(c,i_id,i_name,i_width,i_height);
 		return true;
 	}	
