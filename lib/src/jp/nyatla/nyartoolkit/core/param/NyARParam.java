@@ -154,23 +154,6 @@ public class NyARParam
 		return;
 	}	
 
-	/**
-	 * この関数は、ARToolKit形式のカメラパラメータファイルから、1個目の設定をロードします。
-	 * @param i_filename
-	 * パラメータファイルのファイルパス
-	 * @throws NyARException
-	 */
-	public void loadARParamFromFile(String i_filename) throws NyARException
-	{
-		try {
-			loadARParam(new FileInputStream(i_filename));
-		} catch (Exception e) {
-			throw new NyARException(e);
-		}
-	}
-
-	
-
 
 	/**
 	 * この関数は、ストリームからARToolKit形式のカメラパラメーを1個目の設定をロードします。

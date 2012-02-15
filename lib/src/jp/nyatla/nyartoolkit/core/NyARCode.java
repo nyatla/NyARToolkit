@@ -223,22 +223,6 @@ public class NyARCode
 		return;
 	}
 	/**
-	 * ARToolKit形式のパターンデータをファイルからロードします。
-	 * ロードするパターンデータの縦横解像度は、このインスタンスの値と同じである必要があります。
-	 * @param filename
-	 * ARToolKit形式のパターンデータファイルのパス名
-	 * @throws NyARException
-	 */
-	public void loadARPattFromFile(String filename) throws NyARException
-	{
-		try {
-			loadARPatt(new FileInputStream(filename));
-		} catch (Exception e) {
-			throw new NyARException(e);
-		}
-		return;
-	}
-	/**
 	 * inputStreamから、ARToolKit形式のパターンデータをロードします。
 	 * ロードするパターンデータの縦横解像度は、このインスタンスの値と同じである必要があります。
 	 * @param i_stream
