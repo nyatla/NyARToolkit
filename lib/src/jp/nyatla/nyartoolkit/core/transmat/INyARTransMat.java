@@ -52,7 +52,7 @@ public interface INyARTransMat
 	 * 結果を格納するオブジェクトです。
 	 * @throws NyARException
 	 */
-	public void transMat(NyARSquare i_square,NyARRectOffset i_offset, NyARTransMatResult o_result) throws NyARException;
+	public boolean transMat(NyARSquare i_square,NyARRectOffset i_offset, NyARTransMatResult o_result) throws NyARException;
 	/**
 	 * この関数は、理想座標系の四角系を元に、位置姿勢変換行列を求めます。
 	 * 位置姿勢変換行列は、オフセット位置を基準とした変換行列です。
@@ -72,5 +72,5 @@ public interface INyARTransMat
 	 * 結果を格納するオブジェクトです。
 	 * @throws NyARException
 	 */
-	public void transMatContinue(NyARSquare i_square,NyARRectOffset i_offset,NyARTransMatResult i_prev_result,NyARTransMatResult o_result) throws NyARException;
+	public boolean transMatContinue(NyARSquare i_square,NyARRectOffset i_offset,NyARTransMatResult i_prev_result,NyARTransMatResult o_result) throws NyARException;
 }

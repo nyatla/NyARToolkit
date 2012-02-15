@@ -134,7 +134,7 @@ public class NyARTransMat implements INyARTransMat
 	 * ARToolKitのarGetTransMatに該当します。
 	 * @see INyARTransMat#transMatContinue
 	 */
-	public void transMat(NyARSquare i_square,NyARRectOffset i_offset, NyARTransMatResult o_result_conv) throws NyARException
+	public boolean transMat(NyARSquare i_square,NyARRectOffset i_offset, NyARTransMatResult o_result_conv) throws NyARException
 	{
 		final NyARDoublePoint3d trans=this.__transMat_trans;
 		double err_threshold=makeErrThreshold(i_square.sqvertex);
@@ -161,7 +161,7 @@ public class NyARTransMat implements INyARTransMat
 		
 		//計算結果の最適化(平行移動量と回転行列の最適化)
 		this.optimize(this._rotmatrix, trans, this._transsolver,i_offset.vertex, vertex_2d,err_threshold,o_result_conv);
-		return;
+		return true;
 	}
 
 	/**
@@ -169,13 +169,13 @@ public class NyARTransMat implements INyARTransMat
 	 * 計算に過去の履歴を使う点が、{@link #transMat}と異なります。
 	 * @see INyARTransMat#transMatContinue
 	 */
-	public final void transMatContinue(NyARSquare i_square,NyARRectOffset i_offset,NyARTransMatResult i_prev_result,NyARTransMatResult o_result) throws NyARException
+	public final boolean transMatContinue(NyARSquare i_square,NyARRectOffset i_offset,NyARTransMatResult i_prev_result,NyARTransMatResult o_result) throws NyARException
 	{
 		final NyARDoublePoint3d trans=this.__transMat_trans;
 		// io_result_convが初期値なら、transMatで計算する。
 		if (!i_prev_result.has_value) {
 			this.transMat(i_square,i_offset, o_result);
-			return;
+			return true;
 		}
 		//過去のエラーレートを記録(ここれやるのは、i_prev_resultとo_resultに同じインスタンスを指定できるようにするため)
 		double last_error=i_prev_result.last_error;
@@ -236,7 +236,7 @@ public class NyARTransMat implements INyARTransMat
 			//計算結果の最適化(平行移動量と回転行列の最適化)
 			this.optimize(rot,trans, this._transsolver,i_offset.vertex, vertex_2d,err_threshold,o_result);
 		}
-		return;
+		return true;
 	}
 
 	/**

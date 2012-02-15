@@ -35,7 +35,7 @@ import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat;
 
 public class NyARMarkerSystemConfig implements INyARMarkerSystemConfig
 {
-	private NyARParam _param;
+	protected NyARParam _param;
 	public NyARMarkerSystemConfig(NyARParam i_param)
 	{
 		this._param=i_param;

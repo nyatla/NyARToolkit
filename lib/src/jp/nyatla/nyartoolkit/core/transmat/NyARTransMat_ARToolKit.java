@@ -113,7 +113,7 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 	 * ARToolKitのarGetTransMatに該当します。
 	 * @see INyARTransMat#transMatContinue
 	 */
-	public final void transMat(NyARSquare i_square,NyARRectOffset i_offset, NyARTransMatResult o_result_conv) throws NyARException
+	public final boolean transMat(NyARSquare i_square,NyARRectOffset i_offset, NyARTransMatResult o_result_conv) throws NyARException
 	{
 		final NyARDoublePoint3d trans=this.__transMat_trans;
 		
@@ -141,21 +141,21 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 		
 		// マトリクスの保存
 		o_result_conv.setValue(this._rotmatrix,trans,err);
-		return;
+		return true;
 	}
 	/**
 	 * この関数は、理想座標系の四角系を元に、位置姿勢変換行列を求めます。
 	 * 計算に過去の履歴を使う点が、{@link #transMat}と異なります。
 	 * @see INyARTransMat#transMatContinue
 	 */
-	public final void transMatContinue(NyARSquare i_square,NyARRectOffset i_offset,NyARTransMatResult i_prev_result,NyARTransMatResult o_result) throws NyARException
+	public final boolean transMatContinue(NyARSquare i_square,NyARRectOffset i_offset,NyARTransMatResult i_prev_result,NyARTransMatResult o_result) throws NyARException
 	{
 		final NyARDoublePoint3d trans=this.__transMat_trans;
 
 		// i_prev_resultが初期値なら、transMatで計算する。
 		if (!i_prev_result.has_value) {
 			this.transMat(i_square, i_offset, o_result);
-			return;
+			return true;
 		}
 		
 		//平行移動量計算機に、2D座標系をセット
@@ -201,7 +201,7 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 			err=err2;
 		}
 		//エラー値保存
-		return;
+		return true;
 	}
 	private double optimize(NyARRotMatrix_ARToolKit io_rotmat,NyARDoublePoint3d io_transvec,INyARTransportVectorSolver i_solver,NyARDoublePoint3d[] i_offset_3d,NyARDoublePoint2d[] i_2d_vertex) throws NyARException
 	{

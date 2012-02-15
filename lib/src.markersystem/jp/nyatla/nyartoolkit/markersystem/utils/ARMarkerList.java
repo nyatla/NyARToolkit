@@ -39,7 +39,7 @@ public class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private double _configense_th=0.5;
+	private double _configense_th=0.7;
 	private final NyARMatchPattResult _patt_result=new NyARMatchPattResult();;
 	private final MultiResolutionPattProvider _mpickup=new MultiResolutionPattProvider();
 	private ARMarkerSortList _mkmap;
@@ -122,8 +122,6 @@ public class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 			if(target.life>0){
 				target.lost_count++;
 			}
-			//検出に利用する一致率のリセット
-			target.cf=0;
 		}			
 	}
 	public void finish()

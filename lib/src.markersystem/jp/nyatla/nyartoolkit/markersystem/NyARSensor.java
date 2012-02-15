@@ -35,9 +35,11 @@ import jp.nyatla.nyartoolkit.core.rasterdriver.INyARPerspectiveCopy;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
-//javaImage対応のRgbAveを作ること。
 
 
+/**
+ * MarkerSystemの入力データを管理するベースクラスです。生データのスナップショット管理を行います。
+ */
 public class NyARSensor
 {
 	protected NyARHistogram _gs_hist;
@@ -198,6 +200,20 @@ public class NyARSensor
 		this._pcopy.copyPatt(i_x1, i_y1, i_x2, i_y2, i_x3, i_y3, i_x4, i_y4,0,0,1, i_raster);
 		return i_raster;
 	}
+	/**
+	 * 任意の4頂点領域を射影変換して取得します。
+	 * @param i_x1
+	 * @param i_y1
+	 * @param i_x2
+	 * @param i_y2
+	 * @param i_x3
+	 * @param i_y3
+	 * @param i_x4
+	 * @param i_y4
+	 * @param i_raster
+	 * @return
+	 * @throws NyARException
+	 */
 	public INyARRgbRaster getPerspectiveImage(
 		    double i_x1,double i_y1,
 		    double i_x2,double i_y2,
