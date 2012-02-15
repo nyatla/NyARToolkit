@@ -42,6 +42,7 @@ import jp.nyatla.nyartoolkit.jogl.utils.*;
 import javax.imageio.*;
 import java.awt.image.*;
 import java.io.*;
+
 import jp.nyatla.nyartoolkit.utils.j2se.*;
 
 /**
@@ -178,9 +179,9 @@ public class JavaSimpleLite_ImageSource implements GLEventListener
 	{
 		try {
 			NyARParam param = new NyARParam();
-			param.loadARParamFromFile(PARAM_FILE);
+			param.loadARParam(new FileInputStream(PARAM_FILE));
 			NyARCode code = new NyARCode(16, 16);
-			code.loadARPattFromFile(CARCODE_FILE);
+			code.loadARPatt(new FileInputStream(CARCODE_FILE));
 			BufferedImage src_image = ImageIO.read(new File(SAMPLE_FILES));
 
 			new JavaSimpleLite_ImageSource(param, code,src_image);

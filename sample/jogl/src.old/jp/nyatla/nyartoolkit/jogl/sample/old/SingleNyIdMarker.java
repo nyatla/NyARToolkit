@@ -30,6 +30,7 @@ import jp.nyatla.nyartoolkit.nyidmarker.data.*;
 
 import java.awt.event.*;
 import java.awt.*;
+import java.io.FileInputStream;
 import java.util.Date;
 
 import javax.media.Buffer;
@@ -255,7 +256,7 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 	{
 		try{
 			NyARParam cparam= new NyARParam();
-			cparam.loadARParamFromFile(PARAM_FILE);
+			cparam.loadARParam(new FileInputStream(PARAM_FILE));
 			cparam.changeScreenSize(SCREEN_X, SCREEN_Y);		
 			new SingleNyIdMarker(cparam);
 		}catch(Exception e){

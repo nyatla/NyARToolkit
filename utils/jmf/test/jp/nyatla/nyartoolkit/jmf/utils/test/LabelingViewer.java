@@ -37,6 +37,7 @@ import jp.nyatla.nyartoolkit.jmf.utils.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.FileInputStream;
 
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfo;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfoPtrStack;
@@ -75,7 +76,7 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 
 	private JmfNyARRGBRaster _raster;
 
-	public LabelingViewer() throws NyARException
+	public LabelingViewer() throws NyARException,Exception
 	{
 		setTitle("JmfCaptureTest");
 		setBounds(0, 0, 320 + 64, 240 + 64);
@@ -97,7 +98,7 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 		});
 		//NyARToolkitの準備
 		NyARParam ar_param = new NyARParam();
-		ar_param.loadARParamFromFile(PARAM_FILE);
+		ar_param.loadARParam(new FileInputStream(PARAM_FILE));
 		ar_param.changeScreenSize(320, 240);
 		this._raster = new JmfNyARRGBRaster(this._capture.getCaptureFormat());
 		this._detect=new SquareDetector(ar_param.getScreenSize());
@@ -126,7 +127,7 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 			Graphics g = getGraphics();
 			
 			NyARParam param=new NyARParam();
-			param.loadARParamFromFile(PARAM_FILE);
+			param.loadARParam(new FileInputStream(PARAM_FILE));
 			param.changeScreenSize(320,240);
 			try{
 				NyARIntRect rect=new NyARIntRect();

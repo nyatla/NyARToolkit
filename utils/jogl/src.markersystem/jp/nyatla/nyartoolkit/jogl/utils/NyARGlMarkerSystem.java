@@ -1,20 +1,21 @@
-package jp.nyatla.nyartoolkit.jogl.sample;
+package jp.nyatla.nyartoolkit.jogl.utils;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.jogl.utils.NyARGLUtil;
-import jp.nyatla.nyartoolkit.markerar.NyARMarkerSystem;
+import jp.nyatla.nyartoolkit.markersystem.INyARMarkerSystemConfig;
+import jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystem;
 
 public class NyARGlMarkerSystem extends NyARMarkerSystem
 {
 	
-	public NyARGlMarkerSystem(NyARParam iRefParam) throws NyARException
+	public NyARGlMarkerSystem(INyARMarkerSystemConfig i_config) throws NyARException
 	{
-		super(iRefParam);
+		super(i_config);
 	}
-	protected void initInstance(NyARParam i_ref_param) throws NyARException
+	protected void initInstance(INyARMarkerSystemConfig i_config) throws NyARException
 	{
-		super.initInstance(i_ref_param);
+		super.initInstance(i_config);
 		this._projection_mat=new double[16];
 	}
 

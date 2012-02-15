@@ -8,8 +8,10 @@ import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
-import jp.nyatla.nyartoolkit.jogl.sample.NyARGlMarkerSystem;
-import jp.nyatla.nyartoolkit.jogl.sample.NyARGlRender;
+import jp.nyatla.nyartoolkit.jogl.sketch.GlSketch;
+import jp.nyatla.nyartoolkit.jogl.utils.NyARGlMarkerSystem;
+import jp.nyatla.nyartoolkit.jogl.utils.NyARGlRender;
+import jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystemConfig;
 
 
 
@@ -26,11 +28,9 @@ public class MarkerPlane extends GlSketch
 	public void setup(GL gl)throws NyARException
 	{
 		this.size(640,480);
-		NyARParam param=new NyARParam();
-		param.loadDefaultParameter();
-		param.changeScreenSize(640,480);
-		this.camera=new NyARJmfCamera(param,30.0f);//create sensor system
-		this.nyar=new NyARGlMarkerSystem(param);   //create MarkerSystem
+		NyARMarkerSystemConfig config = new NyARMarkerSystemConfig(640,480);
+		this.camera=new NyARJmfCamera(config,30.0f);//create sensor system
+		this.nyar=new NyARGlMarkerSystem(config);   //create MarkerSystem
 		this.render=new NyARGlRender(this.nyar);
 		this.ids[0]=this.nyar.addARMarker(ARCODE_FILE,16,25,80);
 		gl.glEnable(GL.GL_DEPTH_TEST);

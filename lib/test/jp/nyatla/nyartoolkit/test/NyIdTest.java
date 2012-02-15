@@ -33,6 +33,7 @@ package jp.nyatla.nyartoolkit.test;
 import java.io.*;
 
 
+import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
@@ -151,7 +152,7 @@ public class NyIdTest
     {
         //AR用カメラパラメタファイルをロード
         NyARParam ap = new NyARParam();
-        ap.loadARParamFromFile(camera_file);
+        ap.loadARParam(new FileInputStream(camera_file));
         ap.changeScreenSize(320, 240);
 
 		// 試験イメージの読み出し(320x240 BGRAのRAWデータ)

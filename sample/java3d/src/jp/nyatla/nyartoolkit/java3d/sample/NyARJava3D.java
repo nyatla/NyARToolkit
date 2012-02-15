@@ -33,6 +33,7 @@ import com.sun.j3d.utils.universe.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.FileInputStream;
 
 import javax.swing.JFrame;
 import javax.vecmath.*;
@@ -109,9 +110,9 @@ public class NyARJava3D extends JFrame implements NyARSingleMarkerBehaviorListen
 		});
 		//NyARToolkitの準備
 		NyARCode ar_code = new NyARCode(16, 16);
-		ar_code.loadARPattFromFile(CARCODE_FILE);
+		ar_code.loadARPatt(new FileInputStream(CARCODE_FILE));
 		ar_param = new J3dNyARParam();
-		ar_param.loadARParamFromFile(PARAM_FILE);
+		ar_param.loadARParam(new FileInputStream(PARAM_FILE));
 		ar_param.changeScreenSize(320, 240);
 
 		//localeの作成とlocateとviewの設定

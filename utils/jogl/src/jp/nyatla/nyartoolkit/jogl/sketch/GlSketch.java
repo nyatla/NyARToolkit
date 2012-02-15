@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.jogl.sample.sketch;
+package jp.nyatla.nyartoolkit.jogl.sketch;
 
 import java.awt.Frame;
 import java.awt.Insets;

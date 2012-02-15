@@ -227,7 +227,7 @@ public class Test_RealityTarget extends Frame implements MouseListener
 //		this._input_source=new ImageSource(SAMPLE_FILES);
 		addMouseListener(this);
 		this._mklib= new ARTKMarkerTable(10,16,16,25,25,4);
-		this._mklib.addMarkerFromARPattFile(PATT_HIRO,0,"HIRO",80,80);
+		this._mklib.addMarkerFromARPatt(PATT_HIRO,0,"HIRO",80,80);
 		return;
 	}	
 

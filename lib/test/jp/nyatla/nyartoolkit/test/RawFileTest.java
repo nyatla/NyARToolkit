@@ -79,12 +79,12 @@ public class RawFileTest
 	{
 		// AR用カメラパラメタファイルをロード
 		NyARParam ap = new NyARParam();
-		ap.loadARParamFromFile(camera_file);
+		ap.loadARParam(new FileInputStream(camera_file));
 		ap.changeScreenSize(320, 240);
 
 		// AR用のパターンコードを読み出し
 		NyARCode code = new NyARCode(16, 16);
-		code.loadARPattFromFile(code_file);
+		code.loadARPatt(new FileInputStream(code_file));
 
 		// 試験イメージの読み出し(320x240 BGRAのRAWデータ)
 		File f = new File(data_file);

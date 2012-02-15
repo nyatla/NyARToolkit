@@ -32,6 +32,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.FileInputStream;
 
 import javax.media.Buffer;
 import javax.media.opengl.*;
@@ -286,7 +287,7 @@ public class Test_NyARRealityGl_ScreenPos implements GLEventListener, JmfCapture
 	{
 		try {
 			NyARParam param = new NyARParam();
-			param.loadARParamFromFile(PARAM_FILE);
+			param.loadARParam(new FileInputStream(PARAM_FILE));
 			new Test_NyARRealityGl_ScreenPos(param);
 		} catch (Exception e) {
 			e.printStackTrace();

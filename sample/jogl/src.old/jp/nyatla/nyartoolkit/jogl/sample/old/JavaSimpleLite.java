@@ -28,6 +28,8 @@ package jp.nyatla.nyartoolkit.jogl.sample.old;
 
 import java.awt.event.*;
 import java.awt.*;
+import java.io.FileInputStream;
+
 import javax.media.Buffer;
 import javax.media.opengl.*;
 
@@ -207,11 +209,11 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 	{
 		try {
 			NyARParam param = new NyARParam();
-			param.loadARParamFromFile(PARAM_FILE);
+			param.loadARParam(new FileInputStream(PARAM_FILE));
 			param.changeScreenSize(SCREEN_X, SCREEN_Y);
 
 			NyARCode code = new NyARCode(16, 16);
-			code.loadARPattFromFile(CARCODE_FILE);
+			code.loadARPatt(new FileInputStream(CARCODE_FILE));
 
 			new JavaSimpleLite(param, code);
 		} catch (Exception e) {

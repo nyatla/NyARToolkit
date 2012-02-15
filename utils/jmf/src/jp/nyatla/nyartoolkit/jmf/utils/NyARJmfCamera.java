@@ -5,7 +5,8 @@ import javax.media.Buffer;
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
-import jp.nyatla.nyartoolkit.markerar.NyARSensor;
+import jp.nyatla.nyartoolkit.markersystem.INyARMarkerSystemConfig;
+import jp.nyatla.nyartoolkit.markersystem.NyARSensor;
 
 /**
  * このクラスは、画像入力にJMFカメラを使用する{@link #NyARSensor}です。
@@ -18,12 +19,12 @@ public class NyARJmfCamera extends NyARSensor implements JmfCaptureListener
 {
 	private JmfCaptureDevice _cdev;
 	private JmfNyARRGBRaster _raster;
-	public NyARJmfCamera(NyARParam i_param,float i_fps) throws NyARException
+	public NyARJmfCamera(INyARMarkerSystemConfig i_config,float i_fps) throws NyARException
 	{
-		super(i_param);
+		super(i_config);
 		JmfCaptureDeviceList devlist = new JmfCaptureDeviceList();
 		JmfCaptureDevice d = devlist.getDevice(0);
-		NyARIntSize s=i_param.getScreenSize();
+		NyARIntSize s=i_config.getNyARParam().getScreenSize();
 		if (!d.setCaptureFormat(s.w,s.h,i_fps)) {
 			throw new NyARException();
 		}

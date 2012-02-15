@@ -32,6 +32,8 @@ import java.awt.Frame;
 import java.awt.Insets;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 import javax.media.Buffer;
 import javax.media.opengl.*;
@@ -79,7 +81,7 @@ public class Test_NyARRealityGl_ARMarker implements GLEventListener, JmfCaptureL
 	NyARRealitySource_Jmf _src;
 	ARTKMarkerTable _mklib;
 
-	public Test_NyARRealityGl_ARMarker(NyARParam i_param) throws NyARException
+	public Test_NyARRealityGl_ARMarker(NyARParam i_param) throws NyARException, FileNotFoundException
 	{
 		Frame frame = new Frame("NyARToolkit+RPF["+this.getClass().getName()+"]");
 		
@@ -100,8 +102,8 @@ public class Test_NyARRealityGl_ARMarker implements GLEventListener, JmfCaptureL
 		//マーカライブラリ(ARTKId)の構築
 		this._mklib= new ARTKMarkerTable(10,16,16,25,25,4);
 		//マーカテーブルの作成（２種類）
-		this._mklib.addMarkerFromARPattFile(PATT_HIRO,0,"HIRO",80,80);
-		this._mklib.addMarkerFromARPattFile(PATT_KANJI,1,"KANJI",80,80);
+		this._mklib.addMarkerFromARPatt(new FileInputStream(PATT_HIRO),0,"HIRO",80,80);
+		this._mklib.addMarkerFromARPatt(new FileInputStream(PATT_KANJI),1,"KANJI",80,80);
 				
 		// 3Dを描画するコンポーネント
 		GLCanvas canvas = new GLCanvas();
@@ -274,7 +276,7 @@ public class Test_NyARRealityGl_ARMarker implements GLEventListener, JmfCaptureL
 	{
 		try {
 			NyARParam param = new NyARParam();
-			param.loadARParamFromFile(PARAM_FILE);
+			param.loadARParam(new FileInputStream(PARAM_FILE));
 			new Test_NyARRealityGl_ARMarker(param);
 		} catch (Exception e) {
 			e.printStackTrace();

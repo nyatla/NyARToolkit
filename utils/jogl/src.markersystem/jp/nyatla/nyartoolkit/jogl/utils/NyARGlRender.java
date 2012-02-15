@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.jogl.sample;
+package jp.nyatla.nyartoolkit.jogl.utils;
 
 import javax.media.opengl.GL;
 

@@ -2,6 +2,8 @@ package jp.nyatla.nyartoolkit.jogl.sample;
 
 import java.awt.event.*;
 import java.awt.*;
+import java.io.FileInputStream;
+
 import javax.media.opengl.*;
 
 import com.sun.opengl.util.*;
@@ -10,12 +12,15 @@ import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
+import jp.nyatla.nyartoolkit.markersystem.INyARMarkerSystemConfig;
+import jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystemConfig;
 
 
 /**
- * JMFからの映像入力からマーカを検出し、そこに立方体を重ねます。
+ * このプログラムは、JMFからの映像入力からマーカを検出し、そこに立方体を重ねます。
+ * 新しいSimpleLiteのサンプルです。
+ * スケッチシステム/レンダリングクラスを使わずに、OpenGLAPIをそのまま使用します。
  * 動作は、スケッチサンプル{@link SimpleLiteM}と同じです。
- * スケッチシステムを使わない、新しいマーカシステムのサンプルです。
  * ARマーカには、patt.hiro/patt_kanjiを使用して下さい。
  */
 public class SimpleLiteMStandard implements GLEventListener
@@ -26,10 +31,10 @@ public class SimpleLiteMStandard implements GLEventListener
 	private final static String ARCODE_FILE = "../../Data/patt.hiro";
 	private final static String ARCODE_FILE2 = "../../Data/patt.kanji";
 	private int[] ids=new int[2];
-	public SimpleLiteMStandard(NyARParam i_param) throws NyARException
+	public SimpleLiteMStandard(INyARMarkerSystemConfig i_config) throws NyARException
 	{		
-		this._camera=new NyARJmfCamera(i_param,30.0f);//create sensor system
-		this._nyar=new NyARGlMarkerSystem(i_param);   //create MarkerSystem
+		this._camera=new NyARJmfCamera(i_config,30.0f);//create sensor system
+		this._nyar=new NyARGlMarkerSystem(i_config);   //create MarkerSystem
 		this.ids[0]=this._nyar.addARMarker(ARCODE_FILE2,16,25,80);
 		this.ids[1]=this._nyar.addARMarker(ARCODE_FILE,16,25,80);
 		
@@ -43,7 +48,7 @@ public class SimpleLiteMStandard implements GLEventListener
 		GLCanvas canvas = new GLCanvas();
 		frame.add(canvas);
 		canvas.addGLEventListener(this);
-		NyARIntSize s=i_param.getScreenSize();
+		NyARIntSize s=i_config.getNyARParam().getScreenSize();
 
 		frame.setVisible(true);
 		Insets ins = frame.getInsets();
@@ -112,10 +117,8 @@ public class SimpleLiteMStandard implements GLEventListener
 	public static void main(String[] args)
 	{
 		try {
-			NyARParam param = new NyARParam();
-			param.loadARParamFromFile(PARAM_FILE);
-			param.changeScreenSize(SCREEN_X, SCREEN_Y);
-			new SimpleLiteMStandard(param);
+			NyARMarkerSystemConfig config = new NyARMarkerSystemConfig(new FileInputStream(PARAM_FILE),SCREEN_X, SCREEN_Y);
+			new SimpleLiteMStandard(config);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

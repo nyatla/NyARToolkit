@@ -29,6 +29,7 @@ package jp.nyatla.nyartoolkit.jogl.sample.old;
 
 import java.awt.event.*;
 import java.awt.*;
+import java.io.FileInputStream;
 
 import javax.media.*;
 import javax.media.opengl.*;
@@ -107,16 +108,16 @@ public class JavaSimpleLite2 implements GLEventListener, JmfCaptureListener
 			_capture.setOnCapture(this);			
 			//NyARToolkitの準備
 			_ar_param = new NyARParam();
-			_ar_param.loadARParamFromFile(PARAM_FILE);
+			_ar_param.loadARParam(new FileInputStream(PARAM_FILE));
 			_ar_param.changeScreenSize(SCREEN_X, SCREEN_Y);
 
 			//ARコードを2個ロード
 			double[] width = new double[] { 80.0, 80.0 };
 			NyARCode[] ar_codes = new NyARCode[2];
 			ar_codes[0] = new NyARCode(16, 16);
-			ar_codes[0].loadARPattFromFile(CARCODE_FILE1);
+			ar_codes[0].loadARPatt(new FileInputStream(CARCODE_FILE1));
 			ar_codes[1] = new NyARCode(16, 16);
-			ar_codes[1].loadARPattFromFile(CARCODE_FILE2);
+			ar_codes[1].loadARPatt(new FileInputStream(CARCODE_FILE2));
 			//JMFラスタオブジェクト
 			this._cap_image = new JmfNyARRGBRaster(this._capture.getCaptureFormat());
 

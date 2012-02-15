@@ -37,6 +37,7 @@ import jp.nyatla.nyartoolkit.jmf.utils.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.FileInputStream;
 
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
@@ -63,7 +64,7 @@ public class NyarToolkitLinkTest extends Frame implements JmfCaptureListener
 
 	private NyARTransMatResult _trans_mat_result = new NyARTransMatResult();
 
-	public NyarToolkitLinkTest() throws NyARException
+	public NyarToolkitLinkTest() throws Exception
 	{
 		setTitle("JmfCaptureTest");
 		setBounds(0, 0, 320 + 64, 240 + 64);
@@ -86,11 +87,11 @@ public class NyarToolkitLinkTest extends Frame implements JmfCaptureListener
 		//NyARToolkitの準備
 		NyARParam ar_param = new NyARParam();
 		NyARCode ar_code = new NyARCode(16, 16);
-		ar_param.loadARParamFromFile(PARAM_FILE);
+		ar_param.loadARParam(new FileInputStream(PARAM_FILE));
 		ar_param.changeScreenSize(320, 240);
 		this._raster = new JmfNyARRGBRaster(this._capture.getCaptureFormat());
 		this._nya = NyARSingleDetectMarker.createInstance(ar_param, ar_code, 80.0);
-		ar_code.loadARPattFromFile(CARCODE_FILE);
+		ar_code.loadARPatt(new FileInputStream(CARCODE_FILE));
 		//キャプチャイメージ用のラスタを準備
 		return;
 	}

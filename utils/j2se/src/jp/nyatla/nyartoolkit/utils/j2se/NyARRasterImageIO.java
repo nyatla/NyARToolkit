@@ -37,11 +37,11 @@ import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.pixeldriver.INyARRgbPixelDriver;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.rasterdriver.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
  * BufferdImageとRasterイメージ間で、ビットマップをコピーします。
+ * @deprecated
  */
 public class NyARRasterImageIO
 {
