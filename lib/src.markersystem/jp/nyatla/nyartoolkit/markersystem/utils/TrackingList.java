@@ -1,3 +1,27 @@
+/* 
+ * PROJECT: NyARToolkit(Extension)
+ * --------------------------------------------------------------------------------
+ * The NyARToolkit is Java edition ARToolKit class library.
+ * Copyright (C)2008-2009 Ryo Iizuka
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * For further information please contact.
+ *	http://nyatla.jp/nyatoolkit/
+ *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
+ * 
+ */
 package jp.nyatla.nyartoolkit.markersystem.utils;
 
 import java.util.ArrayList;
@@ -35,19 +59,19 @@ public class TrackingList extends ArrayList<TMarkerData>
 			}
 			//面積比が急激0.8-1.2倍以外の変動なら無視
 			int a_rate=new_area*100/target.tl_rect_area;
-			if(a_rate<80 || 120<a_rate){
+			if(a_rate<50 || 150<a_rate){
 				continue;
 			}
-			//移動距離^2の二乗が対角線距離^2の2倍以上なら無視
+			//移動距離^2の二乗が対角線距離^2の4倍以上なら無視
 			long sq_move=target.tl_center.sqDist(i_new_sq.center2d);
-			if(sq_move*2/new_sq_dist>0){
+			if(sq_move*4/new_sq_dist>0){
 				continue;
 			}
 			compareVertexSet(i_new_sq.ob_vertex,target.tl_vertex,ret);
 			int sqdist=ret[1];
 			int shift=ret[0];
-			//頂点移動距離の合計が、(中心点移動距離+1)の8倍を超えてたらNG <-
-			if(sqdist>(sq_move+1)*8){
+			//頂点移動距離の合計が、(中心点移動距離+4)の10倍を超えてたらNG <-
+			if(sqdist>(sq_move+4)*10){
 				continue;
 			}
 			//登録可能か確認

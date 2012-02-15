@@ -3,7 +3,6 @@ package jp.nyatla.nyartoolkit.jmf.utils;
 import javax.media.Buffer;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.markersystem.INyARMarkerSystemConfig;
 import jp.nyatla.nyartoolkit.markersystem.NyARSensor;

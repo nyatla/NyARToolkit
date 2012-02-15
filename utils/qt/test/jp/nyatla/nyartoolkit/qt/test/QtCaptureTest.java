@@ -28,10 +28,7 @@ package jp.nyatla.nyartoolkit.qt.test;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.qt.utils.*;
-import jp.nyatla.nyartoolkit.core.types.*;
-
 import java.awt.*;
-import java.awt.image.*;
 /**
  * QuickTimeキャプチャプログラム
  *
@@ -65,23 +62,14 @@ public class QtCaptureTest extends Frame implements QtCaptureListener
 	public void onUpdateBuffer(byte[] pixels)
 	{
 		try{
-			this.raster.wrapBuffer(pixels);
+			this.raster.setQtImage(pixels);
 		}catch(Exception e){
 			e.printStackTrace();
 			return;
 		}
-		//Imageに変換してみよう！
-
-		
-		NyARIntSize s=raster.getSize();
-		WritableRaster wr = WritableRaster.createInterleavedRaster(DataBuffer.TYPE_BYTE, s.w,s.h, s.w * 3, 3, new int[] { 0, 1, 2 }, null);
-		BufferedImage  bi = new BufferedImage(s.w, s.h, BufferedImage.TYPE_3BYTE_BGR);
-
-		wr.setDataElements(0, 0, s.w, s.h,raster.getBuffer());
-		bi.setData(wr);
-		
+		//QtNyARRaster_RGBはBitmapdataと互換性があります。
 		Graphics g = getGraphics();
-		g.drawImage(bi, 32, 32, this);
+		g.drawImage(raster.getBufferedImage(), 32, 32, this);
 	}
 
 	private void startCapture()

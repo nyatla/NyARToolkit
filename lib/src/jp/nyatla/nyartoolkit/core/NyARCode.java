@@ -8,7 +8,7 @@
  * http://www.hitl.washington.edu/artoolkit/
  *
  * The NyARToolkit is Java edition ARToolKit class library.
- * Copyright (C)2008-2009 Ryo Iizuka
+ * Copyright (C)2008-2012 Ryo Iizuka
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,6 @@
  */
 package jp.nyatla.nyartoolkit.core;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;

@@ -28,19 +28,15 @@ package jp.nyatla.nyartoolkit.jmf.utils;
 
 import javax.media.format.*;
 import javax.media.*;
-import java.awt.Dimension;
 import com.sun.media.codec.video.colorspace.*;
 
 import jp.nyatla.nyartoolkit.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
-import jp.nyatla.nyartoolkit.core.rasterdriver.*;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core.param.*;
-import jp.nyatla.nyartoolkit.core.pixeldriver.INyARRgbPixelDriver;
+import jp.nyatla.nyartoolkit.utils.j2se.NyARBufferedImageRaster;
 
 
-public class JmfNyARRGBRaster extends NyARRgbRaster
+public class JmfNyARRGBRaster extends NyARBufferedImageRaster
 {
 
 	/**
@@ -51,7 +47,7 @@ public class JmfNyARRGBRaster extends NyARRgbRaster
 	 */
 	public JmfNyARRGBRaster(VideoFormat i_fmt) throws NyARException
 	{
-		super(i_fmt.getSize().width,i_fmt.getSize().height,fmt2RasterType(i_fmt));
+		super(i_fmt.getSize().width,i_fmt.getSize().height,fmt2RasterType(i_fmt),true);
 		if(i_fmt instanceof YUVFormat){
 			this._buf_adapter=new YuvBufferAdapter(this,(YUVFormat) i_fmt);
 		}else{

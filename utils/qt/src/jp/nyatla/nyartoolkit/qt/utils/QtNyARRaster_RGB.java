@@ -27,72 +27,35 @@ package jp.nyatla.nyartoolkit.qt.utils;
 
 import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
-import jp.nyatla.nyartoolkit.core.rasterreader.*;
 import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.utils.j2se.NyARBufferedImageRaster;
 
 /**
  * RGB形式のbyte配列をラップするNyARRasterです。
  * 保持したデータからBufferedImageを出力する機能も持ちます。
  */
-public class QtNyARRaster_RGB implements INyARRgbRaster
+public class QtNyARRaster_RGB extends NyARBufferedImageRaster
 {
-	private NyARIntSize _size;
-	private byte[] _buffer;
-	private NyARRgbPixelReader_BYTE1D_R8G8B8_24 _reader;
-	private int _buffer_type;
-
 	/**
 	 * QuickTimeオブジェクトからイメージを取得するラスタオブジェクトを作ります。
 	 * この
 	 * @param i_width
 	 * @param i_height
+	 * @throws NyARException 
 	 */
-	public QtNyARRaster_RGB(int i_width, int i_height)
+	public QtNyARRaster_RGB(int i_width, int i_height) throws NyARException
 	{
-		this._size=new NyARIntSize(i_width,i_height);
-		this._buffer= null;
-		this._buffer_type=NyARBufferType.BYTE1D_R8G8B8_24;
-		this._reader = new NyARRgbPixelReader_BYTE1D_R8G8B8_24(null,this._size);
+		super(i_width,i_height,NyARBufferType.BYTE1D_R8G8B8_24,true);
 	}
-	
-	final public int getWidth()
+	public void setQtImage(byte[] i_img)
 	{
-		return this._size.w;
+		System.arraycopy(i_img,0,(byte[])this._buf,0,((byte[])this._buf).length);
 	}
-
-	final public int getHeight()
-	{
-		return this._size.h;
-	}
-
-	final public NyARIntSize getSize()
-	{
-		return this._size;
-	}
-	final public int getBufferType()
-	{
-		return this._buffer_type;
-	}
-	final public INyARRgbPixelReader getRgbPixelReader()
-	{
-		return this._reader;
-	}
-	final public boolean hasBuffer()
-	{
-		return this._buffer!=null;
-	}
-	final public Object getBuffer()
-	{
-		assert(this._buffer!=null);
-		return this._buffer;
-	}
-	final public boolean isEqualBufferType(int i_type_value)
-	{
-		return this._buffer_type==i_type_value;
-	}
+	/**
+	 * この関数は使えません。{@link #setQtImage}を使用します。
+	 */
 	final public void wrapBuffer(Object i_ref_buf) throws NyARException
 	{
-		this._buffer=(byte[])i_ref_buf;
-		this._reader.switchBuffer(i_ref_buf);
+		throw new NyARException();
 	}
 }

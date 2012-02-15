@@ -1,5 +1,5 @@
 /* 
- * Capture Test NyARToolkitサンプルプログラム
+ * PROJECT: NyARToolkit(Extension)
  * --------------------------------------------------------------------------------
  * The NyARToolkit is Java edition ARToolKit class library.
  * Copyright (C)2008-2009 Ryo Iizuka
