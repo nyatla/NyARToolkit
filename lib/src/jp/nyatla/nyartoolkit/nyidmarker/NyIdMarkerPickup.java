@@ -97,7 +97,7 @@ public class NyIdMarkerPickup
 	 * @return
 	 * @throws NyARException
 	 */
-	private final boolean _pickFromRaster(INyARGsPixelDriver i_pix_drv,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
+	private boolean _pickFromRaster(INyARGsPixelDriver i_pix_drv,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
 	{
 		final PerspectivePixelReader.TThreshold th=this.__pickFromRaster_th;
 		final MarkerPattEncoder encoder=this.__pickFromRaster_encoder;

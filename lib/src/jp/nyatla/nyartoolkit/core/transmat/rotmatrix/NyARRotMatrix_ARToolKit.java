@@ -56,7 +56,7 @@ public class NyARRotMatrix_ARToolKit extends NyARRotMatrix
 	final protected NyARDoublePoint3d _angle;
 	
 	//override
-	public final void initRotBySquare(final NyARLinear[] i_linear,final NyARDoublePoint2d[] i_sqvertex) throws NyARException
+	public final void initRotBySquare(NyARLinear[] i_linear,NyARDoublePoint2d[] i_sqvertex) throws NyARException
 	{
 		super.initRotBySquare(i_linear,i_sqvertex);
 		//Matrixからangleをロード
@@ -92,7 +92,7 @@ public class NyARRotMatrix_ARToolKit extends NyARRotMatrix
 	 * @param i_z
 	 * Z軸の回転量。
 	 */
-	public void setAngle(final double i_x, final double i_y, final double i_z)
+	public void setAngle(double i_x, double i_y, double i_z)
 	{
 		final double sina = Math.sin(i_x);
 		final double cosa = Math.cos(i_x);

@@ -81,7 +81,7 @@ public class NyARRgbPixelDriverFactory
 */
 final class NyARRgbPixelDriver_BYTE1D_B8G8R8_24 implements INyARRgbPixelDriver {
 	/** 参照する外部バッファ */
-	protected byte[] _ref_buf;
+	private byte[] _ref_buf;
 	private NyARIntSize _ref_size;
 	public NyARIntSize getSize()
 	{
@@ -159,7 +159,7 @@ final class NyARRgbPixelDriver_BYTE1D_B8G8R8_24 implements INyARRgbPixelDriver {
 final class NyARRgbPixelDriver_BYTE1D_B8G8R8X8_32 implements
 		INyARRgbPixelDriver {
 	/** 参照する外部バッファ */
-	protected byte[] _ref_buf;
+	private byte[] _ref_buf;
 	private NyARIntSize _ref_size;
 	public NyARIntSize getSize()
 	{
@@ -236,7 +236,7 @@ final class NyARRgbPixelDriver_BYTE1D_B8G8R8X8_32 implements
 */
 final class NyARRgbPixelDriver_BYTE1D_R8G8B8_24 implements INyARRgbPixelDriver {
 	/** 参照する外部バッファ */
-	protected byte[] _ref_buf;
+	private byte[] _ref_buf;
 
 	private NyARIntSize _ref_size;
 	public NyARIntSize getSize()
@@ -314,7 +314,7 @@ final class NyARRgbPixelDriver_BYTE1D_R8G8B8_24 implements INyARRgbPixelDriver {
 final class NyARRgbPixelDriver_BYTE1D_X8R8G8B8_32 implements
 		INyARRgbPixelDriver {
 	/** 参照する外部バッファ */
-	protected byte[] _ref_buf;
+	private byte[] _ref_buf;
 
 	private NyARIntSize _ref_size;
 	public NyARIntSize getSize()
@@ -383,7 +383,7 @@ final class NyARRgbPixelDriver_BYTE1D_X8R8G8B8_32 implements
 */
 final class NyARRgbPixelDriver_INT1D_GRAY_8 implements INyARRgbPixelDriver {
 	/** 参照する外部バッファ */
-	protected int[] _ref_buf;
+	private int[] _ref_buf;
 
 	private NyARIntSize _ref_size;
 	public NyARIntSize getSize()
@@ -446,7 +446,7 @@ final class NyARRgbPixelDriver_INT1D_GRAY_8 implements INyARRgbPixelDriver {
 */
 final class NyARRgbPixelDriver_INT1D_X8R8G8B8_32 implements INyARRgbPixelDriver {
 	/** 参照する外部バッファ */
-	protected int[] _ref_buf;
+	private int[] _ref_buf;
 
 	private NyARIntSize _ref_size;
 	public NyARIntSize getSize()
@@ -517,7 +517,7 @@ final class NyARRgbPixelDriver_INT1D_X8R8G8B8_32 implements INyARRgbPixelDriver 
 final class NyARRgbPixelDriver_WORD1D_R5G6B5_16LE implements
 		INyARRgbPixelDriver {
 	/** 参照する外部バッファ */
-	protected short[] _ref_buf;
+	private short[] _ref_buf;
 
 	private NyARIntSize _ref_size;
 	public NyARIntSize getSize()

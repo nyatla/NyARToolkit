@@ -107,7 +107,7 @@ class NyARGsPixelDriver_INT1D_GRAY_8 implements INyARGsPixelDriver
 	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intgs) throws NyARException
 	{
 		int w=this._ref_size.w;
-		int r[]=this._ref_buf;
+		int[] r=this._ref_buf;
 		for (int i = i_num - 1; i >= 0; i--){
 			r[(i_x[i] + i_y[i] * w)]=i_intgs[i];
 		}

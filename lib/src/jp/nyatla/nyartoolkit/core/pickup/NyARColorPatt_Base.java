@@ -145,7 +145,7 @@ public class NyARColorPatt_Base implements INyARColorPatt
 	 * 計算に成功するとtrueです。
 	 * @throws NyARException
 	 */
-	private final boolean get_cpara(final NyARIntPoint2d[] i_vertex, NyARMat o_para)throws NyARException
+	private boolean get_cpara(final NyARIntPoint2d[] i_vertex, NyARMat o_para)throws NyARException
 	{
 		double[][] world = CPARAM_WORLD;
 		NyARMat a = new NyARMat(8, 8);// 次処理で値を設定するので、初期化不要// new NyARMat( 8, 8 );

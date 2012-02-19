@@ -53,7 +53,7 @@ public class NyARRotMatrix_ARToolKit_O2 extends NyARRotMatrix_ARToolKit
 		return;
 	}
 	//override
-	public final void setAngle(final double i_x, final double i_y, final double i_z)
+	public final void setAngle(double i_x, double i_y, double i_z)
 	{
 		final double sina = Math.sin(i_x);
 		final double cosa = Math.cos(i_x);

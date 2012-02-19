@@ -89,7 +89,7 @@ public class NyARRotMatrix extends NyARDoubleMatrix33
 	 * 矩形の３次元オフセット座標。4要素である必要があります。
 	 * @throws NyARException
 	 */
-	public void initRotBySquare(final NyARLinear[] i_linear,final NyARDoublePoint2d[] i_sqvertex) throws NyARException
+	public void initRotBySquare(NyARLinear[] i_linear,NyARDoublePoint2d[] i_sqvertex) throws NyARException
 	{
 		final NyARRotVectorV2 vec1=this.__initRot_vec1;
 		final NyARRotVectorV2 vec2=this.__initRot_vec2;
@@ -140,7 +140,7 @@ public class NyARRotMatrix extends NyARDoubleMatrix33
 	 * @param i_out_point
 	 * 回転した三次元座標
 	 */
-	public final void getPoint3d(final NyARDoublePoint3d i_in_point,final NyARDoublePoint3d i_out_point)
+	public final void getPoint3d(NyARDoublePoint3d i_in_point,NyARDoublePoint3d i_out_point)
 	{
 		final double x=i_in_point.x;
 		final double y=i_in_point.y;
@@ -159,7 +159,7 @@ public class NyARRotMatrix extends NyARDoubleMatrix33
 	 * @param i_number_of_vertex
 	 * 回転する座標の個数
 	 */
-	public final void getPoint3dBatch(final NyARDoublePoint3d[] i_in_point,NyARDoublePoint3d[] i_out_point,int i_number_of_vertex)
+	public final void getPoint3dBatch(NyARDoublePoint3d[] i_in_point,NyARDoublePoint3d[] i_out_point,int i_number_of_vertex)
 	{
 		for(int i=i_number_of_vertex-1;i>=0;i--){
 			final NyARDoublePoint3d out_ptr=i_out_point[i];

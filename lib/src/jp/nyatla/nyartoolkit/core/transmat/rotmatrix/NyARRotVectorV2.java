@@ -93,7 +93,7 @@ public class NyARRotVectorV2 extends NyARRotVector
 	 * 終了位置？
 	 * @throws NyARException
 	 */
-	public void checkVectorByVertex(final NyARDoublePoint2d i_start_vertex, final NyARDoublePoint2d i_end_vertex) throws NyARException
+	public void checkVectorByVertex(NyARDoublePoint2d i_start_vertex,NyARDoublePoint2d i_end_vertex) throws NyARException
 	{
 		double h;
 		NyARDoubleMatrix44 inv_cpara = this._inv_cpara;

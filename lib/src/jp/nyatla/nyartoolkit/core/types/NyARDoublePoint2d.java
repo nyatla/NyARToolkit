@@ -90,7 +90,7 @@ public class NyARDoublePoint2d
 	 * @return
 	 * 外積の値
 	 */
-	public final static double crossProduct3Point(NyARDoublePoint2d p1,NyARDoublePoint2d p2,NyARDoublePoint2d p3)
+	public static double crossProduct3Point(NyARDoublePoint2d p1,NyARDoublePoint2d p2,NyARDoublePoint2d p3)
 	{
 		return (p2.x-p1.x)*(p3.y-p2.y)-(p2.y-p1.y)*(p3.x-p2.x);
 	}
@@ -108,7 +108,7 @@ public class NyARDoublePoint2d
 	 * @return
 	 * 外積の値
 	 */
-	public final static double crossProduct3Point(NyARDoublePoint2d p1,NyARDoublePoint2d p2,double p3_x,double p3_y)
+	public static double crossProduct3Point(NyARDoublePoint2d p1,NyARDoublePoint2d p2,double p3_x,double p3_y)
 	{
 		return (p2.x-p1.x)*(p3_y-p2.y)-(p2.y-p1.y)*(p3_x-p2.x);
 	}
@@ -121,7 +121,7 @@ public class NyARDoublePoint2d
 	 * @param o_out
 	 * 中央値を受け取るオブジェクトです。
 	 */
-	public final static void makeCenter(NyARDoublePoint2d[] i_points,int i_number_of_data,NyARDoublePoint2d o_out)
+	public static void makeCenter(NyARDoublePoint2d[] i_points,int i_number_of_data,NyARDoublePoint2d o_out)
 	{
 		double x,y;
 		x=y=0;

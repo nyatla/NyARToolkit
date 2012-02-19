@@ -58,6 +58,7 @@ public class NyARHistogramFromRasterFactory
 			if(i_raster instanceof INyARRgbRaster){
 				return new NyARHistogramFromRaster_AnyRgb((INyARRgbRaster)i_raster);
 			}
+			break;
 		}
 		throw new NyARException();
 	}

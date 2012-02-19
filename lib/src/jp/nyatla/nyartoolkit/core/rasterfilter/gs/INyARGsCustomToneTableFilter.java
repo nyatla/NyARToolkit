@@ -40,7 +40,7 @@ public interface INyARGsCustomToneTableFilter
 class NyARGsCustomToneTableFilter_Any implements INyARGsCustomToneTableFilter
 {
 	private INyARGrayscaleRaster _raster;
-	protected NyARGsCustomToneTableFilter_Any(INyARGrayscaleRaster i_ref_raster) throws NyARException
+	public NyARGsCustomToneTableFilter_Any(INyARGrayscaleRaster i_ref_raster) throws NyARException
 	{
 		this._raster=i_ref_raster;
 	}

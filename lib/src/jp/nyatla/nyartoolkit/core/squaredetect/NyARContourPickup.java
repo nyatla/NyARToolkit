@@ -146,7 +146,7 @@ abstract class NyARContourPickup_Base implements NyARContourPickup.IRasterDriver
 	protected final static int[] _getContour_xdir = { 0, 1, 1, 1, 0,-1,-1,-1 , 0, 1, 1, 1, 0,-1,-1};
 	/** 8方位探索の座標マップ*/
 	protected final static int[] _getContour_ydir = {-1,-1, 0, 1, 1, 1, 0,-1 ,-1,-1, 0, 1, 1, 1, 0};
-	
+	public abstract boolean getContour(int i_l, int i_t, int i_r, int i_b, int i_entry_x, int i_entry_y, int i_th, NyARIntCoordinates o_coord) throws NyARException;	
 }
 
 

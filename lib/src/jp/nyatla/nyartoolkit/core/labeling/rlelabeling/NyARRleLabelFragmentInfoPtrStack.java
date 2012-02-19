@@ -45,7 +45,7 @@ public class NyARRleLabelFragmentInfoPtrStack  extends NyARPointerStack<NyARRleL
 	/**
 	 * この関数は、配列を{@link NyARLabelingLabel#area}でソートします。
 	 */
-	final public void sortByArea()
+	public final void sortByArea()
 	{
 		int len=this._length;
 		if(len<1){

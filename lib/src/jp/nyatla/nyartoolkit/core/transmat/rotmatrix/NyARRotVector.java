@@ -59,7 +59,7 @@ public class NyARRotVector
 	 * 詳細は不明です。(2つのベクトルの関係を調整？)
 	 * @throws NyARException
 	 */
-	public final static void checkRotation(NyARRotVector io_vec1, NyARRotVector io_vec2) throws NyARException
+	public static void checkRotation(NyARRotVector io_vec1, NyARRotVector io_vec2) throws NyARException
 	{
 		double w;
 		int f;

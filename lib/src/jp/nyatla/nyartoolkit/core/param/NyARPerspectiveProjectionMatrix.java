@@ -55,13 +55,13 @@ final public class NyARPerspectiveProjectionMatrix extends NyARDoubleMatrix44
 	/*
 	 * static double dot( double a1, double a2, double a3,double b1, double b2,double b3 )
 	 */
-	private final static double dot(double a1, double a2, double a3, double b1,double b2, double b3)
+	private static double dot(double a1, double a2, double a3, double b1,double b2, double b3)
 	{
 		return (a1 * b1 + a2 * b2 + a3 * b3);
 	}
 
 	/* static double norm( double a, double b, double c ) */
-	private final static double norm(double a, double b, double c)
+	private static double norm(double a, double b, double c)
 	{
 		return Math.sqrt(a * a + b * b + c * c);
 	}

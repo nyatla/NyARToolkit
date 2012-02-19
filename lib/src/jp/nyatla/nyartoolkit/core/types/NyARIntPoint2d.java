@@ -102,7 +102,7 @@ public class NyARIntPoint2d
 	 * @deprecated
 	 * {@link #setCenterPos(NyARIntPoint2d[], int)を使用してください。
 	 */
-	public final static void makeCenter(NyARIntPoint2d[] i_points,int i_number_of_data,NyARIntPoint2d o_out)
+	public static void makeCenter(NyARIntPoint2d[] i_points,int i_number_of_data,NyARIntPoint2d o_out)
 	{
 		o_out.setCenterPos(i_points,i_number_of_data);
 	}	

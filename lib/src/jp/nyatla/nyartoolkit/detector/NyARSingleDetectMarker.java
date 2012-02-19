@@ -302,12 +302,12 @@ public abstract class NyARSingleDetectMarker
 
 class NyARSingleDetectMarker_ARTKv2 extends NyARSingleDetectMarker
 {
-	protected ARTKDetector _square_detect;	
+	private ARTKDetector _square_detect;	
 	
 	/**
 	 * ARTKラべリングを使った矩形検出機へのブリッジ
 	 */
-	static class ARTKDetector extends NyARSquareContourDetector_ARToolKit
+	public static class ARTKDetector extends NyARSquareContourDetector_ARToolKit
 	{
 		private NyARSingleDetectMarker _parent;
 		public ARTKDetector(NyARSingleDetectMarker i_parent,NyARIntSize i_size) throws NyARException
@@ -336,7 +336,7 @@ class NyARSingleDetectMarker_ARTKv2 extends NyARSingleDetectMarker
 }
 class NyARSingleDetectMarker_NyARTK_FITTING_ARTKv2 extends NyARSingleDetectMarker
 {
-	protected ARTKDetector _square_detect;	
+	protected NyARSingleDetectMarker_ARTKv2.ARTKDetector _square_detect;	
 	public NyARSingleDetectMarker_NyARTK_FITTING_ARTKv2(NyARParam i_ref_param,NyARCode i_ref_code,double i_marker_width) throws NyARException
 	{
 		super(i_ref_param,i_ref_code,i_marker_width);

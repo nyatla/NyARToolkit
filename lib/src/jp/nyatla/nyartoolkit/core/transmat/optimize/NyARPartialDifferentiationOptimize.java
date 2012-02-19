@@ -38,8 +38,6 @@ import jp.nyatla.nyartoolkit.core.types.matrix.*;
 import jp.nyatla.nyartoolkit.core.utils.*;
 
 class TSinCosValue{
-	public double cos_val;
-	public double sin_val;
 	public static TSinCosValue[] createArray(int i_size)
 	{
 		TSinCosValue[] result=new TSinCosValue[i_size];

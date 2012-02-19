@@ -108,7 +108,7 @@ public abstract class NyARLabeling_Rle
 	{
 		public int l;
 		public int r;
-		int fid;
+		public int fid;
 		public static RleElement[] createArray(int i_length)
 		{
 			RleElement[] ret = new RleElement[i_length];

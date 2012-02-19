@@ -108,5 +108,10 @@ public abstract class NyARRgbRaster_BasicClass implements INyARRgbRaster
 			}
 		}
 	}
-	
+	// abstract functions
+    public abstract boolean hasBuffer();
+    public abstract INyARRgbPixelDriver getRgbPixelDriver() throws NyARException;
+    public abstract void wrapBuffer(Object i_ref_buf)throws NyARException;
+    public abstract Object createInterface(Class<?> i_iid)throws NyARException;
+    public abstract Object getBuffer();	
 }

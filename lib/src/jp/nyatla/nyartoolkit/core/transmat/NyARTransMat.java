@@ -70,7 +70,7 @@ public class NyARTransMat implements INyARTransMat
 	 * @param i_projmat
 	 * @throws NyARException
 	 */
-	private final void initInstance(NyARCameraDistortionFactor i_distfactor,NyARPerspectiveProjectionMatrix i_projmat) throws NyARException
+	private void initInstance(NyARCameraDistortionFactor i_distfactor,NyARPerspectiveProjectionMatrix i_projmat) throws NyARException
 	{
 		this._transsolver=new NyARTransportVectorSolver(i_projmat,4);
 		//互換性が重要な時は、NyARRotMatrix_ARToolKitを使うこと。

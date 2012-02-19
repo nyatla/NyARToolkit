@@ -49,7 +49,7 @@ public class NyARContourPickup_ARToolKit extends NyARContourPickup
 	/** 8方位探索の座標マップ*/
 	protected final static int[] _getContour_ydir = {-1,-1, 0, 1, 1, 1, 0,-1 ,-1,-1, 0, 1, 1, 1, 0};
 	
-	protected NyARContourPickup_ARToolKit() throws NyARException
+	public NyARContourPickup_ARToolKit() throws NyARException
 	{
 		super();
 	}

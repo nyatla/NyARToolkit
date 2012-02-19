@@ -70,7 +70,7 @@ public class NyARMath
 	 * @return
 	 * 二乗距離値
 	 */
-	public static final double sqNorm(double i_p1x,double i_p1y,double i_p2x,double i_p2y)
+	public static double sqNorm(double i_p1x,double i_p1y,double i_p2x,double i_p2y)
 	{
 		double x,y;
 		x=i_p2x-i_p1x;
