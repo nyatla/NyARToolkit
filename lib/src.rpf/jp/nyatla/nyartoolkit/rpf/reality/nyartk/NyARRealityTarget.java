@@ -24,8 +24,8 @@
  */
 package jp.nyatla.nyartoolkit.rpf.reality.nyartk;
 
-import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.INyARDisposable;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.transmat.NyARRectOffset;

@@ -34,6 +34,7 @@ package jp.nyatla.nyartoolkit.utils.j2se;
 import java.awt.image.*;
 import java.awt.*;
 import jp.nyatla.nyartoolkit.*;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.pixeldriver.INyARRgbPixelDriver;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.raster.*;

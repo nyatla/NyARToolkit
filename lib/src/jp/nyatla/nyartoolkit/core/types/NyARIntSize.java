@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.types;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 
 /**
  * このクラスは、整数型の距離値を格納します。

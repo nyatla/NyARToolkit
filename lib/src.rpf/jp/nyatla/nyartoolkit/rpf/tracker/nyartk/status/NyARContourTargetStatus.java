@@ -24,7 +24,7 @@
  */
 package jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.rpf.sampler.lrlabel.LowResolutionLabelingSamplerOut;
 import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.INyARVectorReader;
 import jp.nyatla.nyartoolkit.rpf.utils.VecLinearCoordinates;

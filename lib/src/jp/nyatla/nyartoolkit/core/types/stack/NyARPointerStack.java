@@ -26,7 +26,7 @@ package jp.nyatla.nyartoolkit.core.types.stack;
 
 import java.lang.reflect.Array;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 
 /**
  * このクラスは、オブジェクトの参照値を格納する可変長配列です。

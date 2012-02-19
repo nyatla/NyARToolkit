@@ -32,7 +32,7 @@ import javax.media.format.VideoFormat;
 import javax.media.j3d.ImageComponent;
 import javax.media.j3d.ImageComponent2D;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;

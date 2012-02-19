@@ -29,10 +29,10 @@ package jp.nyatla.nyartoolkit.jogl.sample.sketch;
 
 import javax.media.opengl.*;
 import jp.nyatla.nyartoolkit.*;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.sketch.GlSketch;
-import jp.nyatla.nyartoolkit.jogl.utils.NyARGlMarkerSystem;
-import jp.nyatla.nyartoolkit.jogl.utils.NyARGlRender;
+import jp.nyatla.nyartoolkit.jogl.utils.*;
 import jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystemConfig;
 /**
  * JMFからの映像入力からマーカ1種を検出し、そこに立方体を重ねます。
@@ -84,6 +84,4 @@ public class SimpleLite extends GlSketch
 		}
 		return;
 	}
-
-
 }

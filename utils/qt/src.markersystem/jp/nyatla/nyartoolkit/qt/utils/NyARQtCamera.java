@@ -1,6 +1,6 @@
 package jp.nyatla.nyartoolkit.qt.utils;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.markersystem.INyARMarkerSystemConfig;
 import jp.nyatla.nyartoolkit.markersystem.NyARSensor;

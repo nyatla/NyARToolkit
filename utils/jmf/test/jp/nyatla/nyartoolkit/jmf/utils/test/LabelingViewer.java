@@ -31,7 +31,6 @@ import javax.media.*;
 import javax.media.util.BufferToImage;
 import javax.media.format.*;
 
-import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 
 import java.awt.*;
@@ -39,6 +38,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.FileInputStream;
 
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfo;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfoPtrStack;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;

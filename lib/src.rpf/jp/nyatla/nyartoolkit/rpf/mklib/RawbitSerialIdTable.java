@@ -24,7 +24,7 @@
  */
 package jp.nyatla.nyartoolkit.rpf.mklib;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.pixeldriver.INyARGsPixelDriver;
 import jp.nyatla.nyartoolkit.core.pixeldriver.NyARGsPixelDriverFactory;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;

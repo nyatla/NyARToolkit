@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.transmat;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 
 

@@ -24,7 +24,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterfilter.gs;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
 
 public class NyARGsFilterFactory

@@ -30,7 +30,6 @@
  */
 package jp.nyatla.nyartoolkit.detector;
 
-import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.match.NyARMatchPattDeviationColorData;
 import jp.nyatla.nyartoolkit.core.match.NyARMatchPattResult;

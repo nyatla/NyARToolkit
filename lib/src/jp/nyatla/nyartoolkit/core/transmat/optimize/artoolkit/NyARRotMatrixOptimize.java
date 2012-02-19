@@ -31,7 +31,7 @@
 package jp.nyatla.nyartoolkit.core.transmat.optimize.artoolkit;
 
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.*;
 import jp.nyatla.nyartoolkit.core.transmat.solver.INyARTransportVectorSolver;

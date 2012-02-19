@@ -24,7 +24,7 @@
  */
 package jp.nyatla.nyartoolkit.rpf.tracker.nyartk;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.utils.NyARManagedObjectPool;
 
 /**

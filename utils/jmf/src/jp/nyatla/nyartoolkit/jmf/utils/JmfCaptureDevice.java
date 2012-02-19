@@ -7,6 +7,7 @@ import javax.media.control.*;
 import javax.media.format.*;
 import javax.media.protocol.*;
 import jp.nyatla.nyartoolkit.*;
+import jp.nyatla.nyartoolkit.core.NyARException;
 
 /**
  * 1個のキャプチャデバイスを管理するクラスです。

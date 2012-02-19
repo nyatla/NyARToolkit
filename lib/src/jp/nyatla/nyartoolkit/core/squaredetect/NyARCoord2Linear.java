@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.squaredetect;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.param.NyARObserv2IdealMap;
 import jp.nyatla.nyartoolkit.core.pca2d.INyARPca2d;

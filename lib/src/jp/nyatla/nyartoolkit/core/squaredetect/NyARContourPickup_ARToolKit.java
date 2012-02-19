@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.squaredetect;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingImage;
 import jp.nyatla.nyartoolkit.core.types.NyARIntCoordinates;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;

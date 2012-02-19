@@ -9,7 +9,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.pixeldriver.INyARRgbPixelDriver;
 import jp.nyatla.nyartoolkit.core.pixeldriver.NyARRgbPixelDriverFactory;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;

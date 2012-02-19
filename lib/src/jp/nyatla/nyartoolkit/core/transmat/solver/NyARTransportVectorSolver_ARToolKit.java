@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.transmat.solver;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARMat;
 import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;

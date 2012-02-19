@@ -8,6 +8,7 @@ import javax.media.CaptureDeviceManager;
 import javax.media.Format;
 import javax.media.format.*;
 import jp.nyatla.nyartoolkit.*;
+import jp.nyatla.nyartoolkit.core.NyARException;
 
 
 

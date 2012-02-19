@@ -9,13 +9,13 @@ import javax.media.*;
 import javax.media.util.BufferToImage;
 import javax.media.format.*;
 
-import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.utils.j2se.LabelingBufferdImage;
 
 
 import java.awt.*;
 
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.analyzer.raster.threshold.INyARRasterThresholdAnalyzer;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingImage;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabeling_ARToolKit;

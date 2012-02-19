@@ -33,7 +33,7 @@ package jp.nyatla.nyartoolkit.core.param;
 import java.io.*;
 import java.nio.*;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 

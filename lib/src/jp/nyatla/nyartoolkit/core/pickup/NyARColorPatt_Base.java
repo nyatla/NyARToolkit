@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.pickup;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.NyARMat;
 import jp.nyatla.nyartoolkit.core.pixeldriver.INyARRgbPixelDriver;
 import jp.nyatla.nyartoolkit.core.pixeldriver.NyARRgbPixelDriverFactory;

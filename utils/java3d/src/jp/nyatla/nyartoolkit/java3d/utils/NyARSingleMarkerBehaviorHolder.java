@@ -32,7 +32,6 @@ import javax.media.Buffer;
 import javax.media.j3d.*;
 import javax.vecmath.*;
 
-import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;

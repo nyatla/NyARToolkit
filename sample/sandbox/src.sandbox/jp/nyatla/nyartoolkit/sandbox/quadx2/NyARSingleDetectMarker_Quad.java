@@ -31,7 +31,6 @@
  */
 package jp.nyatla.nyartoolkit.sandbox.quadx2;
 
-import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.match.*;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;

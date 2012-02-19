@@ -24,7 +24,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
 
 public interface INyARRgb2GsFilter

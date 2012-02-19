@@ -24,7 +24,7 @@
  */
 package jp.nyatla.nyartoolkit.markersystem.utils;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 
 
 

@@ -2,7 +2,7 @@ package jp.nyatla.nyartoolkit.rpf.reality.nyartk.gl;
 
 import javax.media.opengl.GL;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;

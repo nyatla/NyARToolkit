@@ -24,7 +24,6 @@
  */
 package jp.nyatla.nyartoolkit.sandbox.x2;
 
-import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.analyzer.threshold.NyARRasterThresholdAnalyzerBuilder_Threshold;
 import jp.nyatla.nyartoolkit.core.match.*;

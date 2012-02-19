@@ -34,6 +34,7 @@ import javax.media.opengl.*;
 
 import com.sun.opengl.util.*;
 import jp.nyatla.nyartoolkit.*;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.jmf.utils.*;

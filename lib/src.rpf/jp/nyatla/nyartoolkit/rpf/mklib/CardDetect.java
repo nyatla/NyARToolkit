@@ -25,6 +25,7 @@
 package jp.nyatla.nyartoolkit.rpf.mklib;
 
 import jp.nyatla.nyartoolkit.*;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.rpf.reality.nyartk.*;
 /**

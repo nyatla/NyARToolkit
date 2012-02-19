@@ -1,6 +1,6 @@
 package jp.nyatla.nyartoolkit.sandbox.qrcode;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingImage;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabel;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabelStack;

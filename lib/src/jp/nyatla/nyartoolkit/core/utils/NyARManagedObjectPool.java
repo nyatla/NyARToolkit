@@ -26,7 +26,7 @@ package jp.nyatla.nyartoolkit.core.utils;
 
 import java.lang.reflect.Array;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 
 
 

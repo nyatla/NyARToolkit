@@ -25,6 +25,7 @@
 package jp.nyatla.nyartoolkit.core.utils;
 
 import jp.nyatla.nyartoolkit.*;
+import jp.nyatla.nyartoolkit.core.NyARException;
 
 /**
  * このクラスには、方程式を解く関数を定義します。

@@ -24,6 +24,7 @@
  */
 package jp.nyatla.nyartoolkit.core.raster;
 
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARLabeling_Rle;
 import jp.nyatla.nyartoolkit.core.pixeldriver.NyARGsPixelDriverFactory;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARContourPickup;

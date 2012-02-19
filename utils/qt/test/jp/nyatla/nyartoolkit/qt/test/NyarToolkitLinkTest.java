@@ -28,7 +28,6 @@
 
 package jp.nyatla.nyartoolkit.qt.test;
 
-import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.qt.utils.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;

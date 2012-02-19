@@ -30,7 +30,6 @@
  */
 package jp.nyatla.nyartoolkit.core;
 
-import jp.nyatla.nyartoolkit.NyARException;
 
 /**
  * このクラスは、NyARMatに主成分機能を追加します。

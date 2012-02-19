@@ -33,7 +33,6 @@ package jp.nyatla.nyartoolkit.test;
 import java.io.*;
 
 
-import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;

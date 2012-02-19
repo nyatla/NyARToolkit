@@ -17,7 +17,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Date;
 
-import jp.nyatla.nyartoolkit.NyARException;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.detector.*;
 import jp.nyatla.nyartoolkit.nyidmarker.NyIdMarkerPickup;

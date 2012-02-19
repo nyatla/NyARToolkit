@@ -1,6 +1,6 @@
 package jp.nyatla.nyartoolkit.jogl.utils;
 
-import jp.nyatla.nyartoolkit.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.jogl.utils.NyARGLUtil;
 import jp.nyatla.nyartoolkit.markersystem.INyARMarkerSystemConfig;
 import jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystem;
