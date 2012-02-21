@@ -6,8 +6,8 @@ import javax.media.*;
 import javax.media.control.*;
 import javax.media.format.*;
 import javax.media.protocol.*;
-import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
  * 1個のキャプチャデバイスを管理するクラスです。
@@ -139,7 +139,17 @@ public class JmfCaptureDevice
 		}
 		return false;
 	}
-
+	/**
+	 * {@link #setCaptureFormat(int, int, float)}のラッパーです。
+	 * @param i_size
+	 * @param i_rate
+	 * @return
+	 * @throws NyARException
+	 */
+	public boolean setCaptureFormat(NyARIntSize i_size, float i_rate) throws NyARException
+	{
+		return this.setCaptureFormat(i_size.w,i_size.h, i_rate);
+	}
 	
 	
 	/**

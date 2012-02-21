@@ -46,7 +46,7 @@ public class TrackingList extends ArrayList<TMarkerData>
 	private int[] __ret=new int[2];
 	public boolean update(SquareStack.Item i_new_sq) throws NyARException
 	{
-		int ret[]=this.__ret;
+		int[] ret=this.__ret;
 		int new_area=i_new_sq.rect_area;
 		//頂点の対角距離
 		int new_sq_dist=i_new_sq.vertex_area.getDiagonalSqDist();

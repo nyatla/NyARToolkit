@@ -30,12 +30,12 @@ import jp.nyatla.nyartoolkit.core.utils.NyARLinkList;
 
 public class VertexSortTable extends NyARLinkList<VertexSortTable.Item>
 {
-	static class Item extends NyARLinkList.Item
+	public class Item extends NyARLinkList.Item
 	{
-		int sq_dist;
-		TMarkerData marker;
-		int shift;
-		SquareStack.Item ref_sq;
+		public int sq_dist;
+		public TMarkerData marker;
+		public int shift;
+		public SquareStack.Item ref_sq;
 	};
 	public VertexSortTable(int iNumOfItem)
 	{

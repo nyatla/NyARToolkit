@@ -60,7 +60,10 @@ public class SimpleLiteMStandard implements GLEventListener
 	private int[] ids=new int[2];
 	public SimpleLiteMStandard(INyARMarkerSystemConfig i_config) throws NyARException
 	{		
-		this._camera=new NyARJmfCamera(i_config,30.0f);//create sensor system
+		JmfCaptureDeviceList devlist = new JmfCaptureDeviceList();
+		JmfCaptureDevice d = devlist.getDevice(0);
+		d.setCaptureFormat(i_config.getScreenSize(),30.0f);
+		this._camera=new NyARJmfCamera(d);//create sensor system
 		this._nyar=new NyARGlMarkerSystem(i_config);   //create MarkerSystem
 		this.ids[0]=this._nyar.addARMarker(ARCODE_FILE2,16,25,80);
 		this.ids[1]=this._nyar.addARMarker(ARCODE_FILE,16,25,80);

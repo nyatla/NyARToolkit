@@ -32,6 +32,7 @@ import jp.nyatla.nyartoolkit.core.analyzer.histogram.NyARHistogramAnalyzer_Slide
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat;
+import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 public class NyARMarkerSystemConfig implements INyARMarkerSystemConfig
 {
@@ -57,6 +58,13 @@ public class NyARMarkerSystemConfig implements INyARMarkerSystemConfig
 		this._param=new NyARParam();
 		this._param.loadDefaultParameter();
 		this._param.changeScreenSize(i_width,i_height);		
+	}
+	/**
+	 * スクリーンサイズを返します。
+	 */
+	public final NyARIntSize getScreenSize()
+	{
+		return this._param.getScreenSize();
 	}
 	public INyARTransMat createTransmatAlgorism() throws NyARException
 	{

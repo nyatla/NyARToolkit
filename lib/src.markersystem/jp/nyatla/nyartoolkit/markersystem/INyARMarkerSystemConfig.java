@@ -28,6 +28,7 @@ import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.analyzer.histogram.INyARHistogramAnalyzer_Threshold;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
+import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
  * このインタフェイスは、NyARMarkerSystemのコンフィギュレーションインタフェイスを定義します。
@@ -53,4 +54,10 @@ public interface INyARMarkerSystemConfig
 	 * [readonly]
 	 */
 	public NyARParam getNyARParam();
+	/**
+	 * コンフィギュレーションのスクリーンサイズを返します。
+	 * @return
+	 * [readonly]
+	 */
+	public NyARIntSize getScreenSize();
 }

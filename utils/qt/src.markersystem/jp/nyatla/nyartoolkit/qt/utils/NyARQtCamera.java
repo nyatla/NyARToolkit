@@ -1,8 +1,6 @@
 package jp.nyatla.nyartoolkit.qt.utils;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
-import jp.nyatla.nyartoolkit.markersystem.INyARMarkerSystemConfig;
 import jp.nyatla.nyartoolkit.markersystem.NyARSensor;
 
 /**
@@ -16,14 +14,14 @@ public class NyARQtCamera extends NyARSensor implements QtCaptureListener
 {
 	private QtCameraCapture _cdev;
 	private QtNyARRaster_RGB _raster;
-	public NyARQtCamera(INyARMarkerSystemConfig i_config,float i_fps) throws NyARException
+	public NyARQtCamera(QtCameraCapture i_capture) throws NyARException
 	{
-		super(i_config);
-		NyARIntSize s=i_config.getNyARParam().getScreenSize();
-		this._cdev = new QtCameraCapture(s.w,s.h,i_fps);
+		super(i_capture.getSize());
+		this._cdev=i_capture;
 		this._cdev.setCaptureListener(this);
 		//RGBラスタの生成
-		this._raster = new QtNyARRaster_RGB(s.w,s.h);
+		this._raster = new QtNyARRaster_RGB(i_capture.getSize().w,i_capture.getSize().h);
+		
 		//ラスタのセット
 		this.update(this._raster);
 	}

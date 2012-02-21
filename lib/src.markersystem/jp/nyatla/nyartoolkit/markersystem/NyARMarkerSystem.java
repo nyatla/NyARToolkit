@@ -118,7 +118,9 @@ public class NyARMarkerSystem
 		if(!this._rledetect._idmk_list.add(target)){
 			throw new NyARException();
 		}
-		this._rledetect._tracking_list.add(target);
+		if(!this._rledetect._tracking_list.add(target)){
+			throw new NyARException();
+		}
 		return (this._rledetect._idmk_list.size()-1)|IDTYPE_NYID;
 	}
 	/**

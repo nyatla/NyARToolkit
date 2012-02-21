@@ -47,7 +47,10 @@ public class SimpleLite extends GlSketch
 	{
 		this.size(640,480);
 		NyARMarkerSystemConfig config = new NyARMarkerSystemConfig(640,480);
-		this.camera=new NyARJmfCamera(config,30.0f);//create sensor system
+		JmfCaptureDeviceList devlist = new JmfCaptureDeviceList();
+		JmfCaptureDevice d = devlist.getDevice(0);
+		d.setCaptureFormat(config.getScreenSize(),30.0f);
+		this.camera=new NyARJmfCamera(d);//create sensor system
 		this.nyar=new NyARGlMarkerSystem(config);   //create MarkerSystem
 		this.render=new NyARGlRender(this.nyar);
 		

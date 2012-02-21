@@ -42,10 +42,10 @@ public class MultiResolutionPattProvider
 {
 	private class Item
 	{
-		private INyARRgbRaster _patt;
-		private NyARMatchPattDeviationColorData _patt_d;
-		private int _patt_edge;
-		private int _patt_resolution;
+		public INyARRgbRaster _patt;
+		public NyARMatchPattDeviationColorData _patt_d;
+		public int _patt_edge;
+		public int _patt_resolution;
 		public Item(int i_patt_w,int i_patt_h,int i_edge_percentage) throws NyARException
 		{
 			int r=1;

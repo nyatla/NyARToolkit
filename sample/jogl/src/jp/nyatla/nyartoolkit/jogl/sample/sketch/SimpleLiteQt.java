@@ -30,11 +30,15 @@ package jp.nyatla.nyartoolkit.jogl.sample.sketch;
 import javax.media.opengl.*;
 import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDevice;
+import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDeviceList;
+import jp.nyatla.nyartoolkit.jmf.utils.NyARJmfCamera;
 import jp.nyatla.nyartoolkit.jogl.sketch.GlSketch;
 import jp.nyatla.nyartoolkit.jogl.utils.NyARGlMarkerSystem;
 import jp.nyatla.nyartoolkit.jogl.utils.NyARGlRender;
 import jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystemConfig;
 import jp.nyatla.nyartoolkit.qt.utils.NyARQtCamera;
+import jp.nyatla.nyartoolkit.qt.utils.QtCameraCapture;
 /**
  * JMFからではなく、QuickTimeからの映像入力からマーカ1種を検出し、そこに立方体を重ねます。
  * このサンプルの実行には、QuickTimeのインストールが必要です。
@@ -49,7 +53,7 @@ public class SimpleLiteQt extends GlSketch
 	{
 		this.size(640,480);
 		NyARMarkerSystemConfig config = new NyARMarkerSystemConfig(640,480);
-		this.camera=new NyARQtCamera(config,30.0f);//create sensor system
+		this.camera=new NyARQtCamera(new QtCameraCapture(config.getScreenSize(),30.0f));//create sensor system		
 		this.nyar=new NyARGlMarkerSystem(config);   //create MarkerSystem
 		this.render=new NyARGlRender(this.nyar);
 		

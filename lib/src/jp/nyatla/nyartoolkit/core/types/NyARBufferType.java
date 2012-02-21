@@ -147,12 +147,15 @@ public class NyARBufferType
 	/** AS3プラットフォーム固有オブジェクトのドメインです。*/
 	public static final int OBJECT_AS3 = T_OBJECT|0x0300;
 	
-	/**
+    /**
+     * RGB形式。バッファは、C#のBitmap型オブジェクト
+     */
+    public static int OBJECT_CS_Bitmap = OBJECT_CS | 0x01;
+    /**
 	 * RGB形式。バッファは、JavaのBufferedImage型オブジェクト
 	 */
 	public static final int OBJECT_Java_BufferedImage= OBJECT_Java|0x01;
-	
-	
+		
 	/**
 	 * RGB形式。バッファは、ActionScript3のBitmapData型オブジェクト
 	 */

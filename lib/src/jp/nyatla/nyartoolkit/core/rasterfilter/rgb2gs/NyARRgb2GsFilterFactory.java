@@ -260,7 +260,7 @@ class NyARRgb2GsFilterRgbAve_INT1D_X8R8G8B8_32 implements INyARRgb2GsFilterRgbAv
 		final int row_padding_src=row_padding_dst;
 		final int pix_count=w;
 		final int pix_mod_part=pix_count-(pix_count%8);
-		int dst_ptr=t*size.w+l;
+		int src_ptr=t*size.w+l;
 		int[] in_buf = (int[]) this._ref_raster.getBuffer();
 		switch(o_raster.getBufferType()){
 		case NyARBufferType.INT1D_GRAY_8:
@@ -269,27 +269,27 @@ class NyARRgb2GsFilterRgbAve_INT1D_X8R8G8B8_32 implements INyARRgb2GsFilterRgbAv
 			for (int y = t; y < b; y++) {
 				int x=0;
 				for (x = pix_count-1; x >=pix_mod_part; x--){
-					v=in_buf[dst_ptr++];out_buf[bp++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))>>2;
+					v=in_buf[src_ptr++];out_buf[bp++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))>>2;
 				}
 				for (;x>=0;x-=8){
-					v=in_buf[dst_ptr++];out_buf[bp++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))/3;
-					v=in_buf[dst_ptr++];out_buf[bp++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))/3;
-					v=in_buf[dst_ptr++];out_buf[bp++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))/3;
-					v=in_buf[dst_ptr++];out_buf[bp++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))/3;
-					v=in_buf[dst_ptr++];out_buf[bp++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))/3;
-					v=in_buf[dst_ptr++];out_buf[bp++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))/3;
-					v=in_buf[dst_ptr++];out_buf[bp++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))/3;
-					v=in_buf[dst_ptr++];out_buf[bp++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))/3;
+					v=in_buf[src_ptr++];out_buf[bp++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))/3;
+					v=in_buf[src_ptr++];out_buf[bp++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))/3;
+					v=in_buf[src_ptr++];out_buf[bp++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))/3;
+					v=in_buf[src_ptr++];out_buf[bp++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))/3;
+					v=in_buf[src_ptr++];out_buf[bp++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))/3;
+					v=in_buf[src_ptr++];out_buf[bp++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))/3;
+					v=in_buf[src_ptr++];out_buf[bp++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))/3;
+					v=in_buf[src_ptr++];out_buf[bp++]=(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))/3;
 				}
-				bp+=row_padding_src;
-				dst_ptr+=row_padding_dst;
+				bp+=row_padding_dst;
+				src_ptr+=row_padding_src;
 			}
 			return;
 		default:
 			INyARGsPixelDriver out_drv=o_raster.getGsPixelDriver();
 			for (int y = t; y < b; y++) {
 				for (int x = 0; x<pix_count; x++){
-					v=in_buf[dst_ptr++];
+					v=in_buf[src_ptr++];
 					out_drv.setPixel(x,y,(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))/3);
 				}
 			}

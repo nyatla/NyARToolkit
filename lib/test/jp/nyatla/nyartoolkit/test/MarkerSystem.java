@@ -53,7 +53,7 @@ public class MarkerSystem
 			ra.wrapBuffer(buf);
 			//Configurationの生成
 			NyARMarkerSystemConfig config = new NyARMarkerSystemConfig(320,240);
-			NyARSensor sensor=new NyARSensor(config);
+			NyARSensor sensor=new NyARSensor(config.getScreenSize());
 			//マーカシステムの起動
 			NyARMarkerSystem s=new NyARMarkerSystem(config);
 			int aid=s.addARMarker(new FileInputStream(code_file),16,25,80);

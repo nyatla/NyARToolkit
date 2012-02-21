@@ -1,5 +1,7 @@
 package jp.nyatla.nyartoolkit.jmf.utils;
 
+import java.awt.Dimension;
+
 import javax.media.Buffer;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
@@ -18,21 +20,26 @@ public class NyARJmfCamera extends NyARSensor implements JmfCaptureListener
 {
 	private JmfCaptureDevice _cdev;
 	private JmfNyARRGBRaster _raster;
-	public NyARJmfCamera(INyARMarkerSystemConfig i_config,float i_fps) throws NyARException
+	private static NyARIntSize dimension2NyARSize(Dimension d)
 	{
-		super(i_config);
-		JmfCaptureDeviceList devlist = new JmfCaptureDeviceList();
-		JmfCaptureDevice d = devlist.getDevice(0);
-		NyARIntSize s=i_config.getNyARParam().getScreenSize();
-		if (!d.setCaptureFormat(s.w,s.h,i_fps)) {
-			throw new NyARException();
-		}
+		return new NyARIntSize(d.width,d.height);
+	}
+	/**
+	 * キャプチャデバイスをバインド下MarkerSystemのセンサシステムを構築します。バインドしたキャプチャデバイスは、このインスタンスが操作します。
+	 * 直接操作しないでください。
+	 * @param i_config
+	 * @param i_capdev
+	 * @throws NyARException
+	 */
+	public NyARJmfCamera(JmfCaptureDevice i_capdev) throws NyARException
+	{
+		super(dimension2NyARSize(i_capdev.getCaptureFormat().getSize()));
 		//RGBラスタの生成
-		this._raster = new JmfNyARRGBRaster(d.getCaptureFormat());
+		this._raster = new JmfNyARRGBRaster(i_capdev.getCaptureFormat());
 		//ラスタのセット
 		this.update(this._raster);
-		d.setOnCapture(this);
-		this._cdev=d;
+		i_capdev.setOnCapture(this);
+		this._cdev=i_capdev;
 	}
 	/**
 	 * この関数は、JMFの非同期更新を停止します。

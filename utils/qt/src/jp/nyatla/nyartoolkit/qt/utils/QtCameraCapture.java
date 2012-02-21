@@ -47,6 +47,7 @@ import quicktime.std.sg.SequenceGrabber;
 import quicktime.util.RawEncodedImage;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
  * QuickTimeキャプチャクラス
@@ -55,7 +56,7 @@ import jp.nyatla.nyartoolkit.core.NyARException;
 public class QtCameraCapture implements ActionListener
 {
 
-	private Dimension image_size;
+	private NyARIntSize image_size;
 
 	private QtCaptureListener capture_listener;
 
@@ -86,11 +87,16 @@ public class QtCameraCapture implements ActionListener
 
 	public QtCameraCapture(int i_width, int i_height, float i_rate)
 	{
-		image_size = new Dimension(i_width, i_height);
+		image_size = new NyARIntSize(i_width, i_height);
+		fps = i_rate;
+	}
+	public QtCameraCapture(NyARIntSize i_size, float i_rate)
+	{
+		image_size = new NyARIntSize(i_size);
 		fps = i_rate;
 	}
 
-	public Dimension getSize()
+	public NyARIntSize getSize()
 	{
 		return image_size;
 	}
@@ -119,7 +125,7 @@ public class QtCameraCapture implements ActionListener
 	public void prepSetInput(Object input) throws QTException
 	{
 		QTSession.open();
-		bounds = new QDRect(image_size.width, image_size.height);
+		bounds = new QDRect(image_size.w, image_size.h);
 		graphics = new QDGraphics(quicktime.util.EndianOrder.isNativeLittleEndian() ? QDConstants.k32BGRAPixelFormat : QDGraphics.kDefaultPixelFormat, bounds);
 		if (input != null && input.getClass().equals(File.class)) {
 			movie = quicktime.std.movies.Movie.fromDataRef(new DataRef(new QTFile((File) input)), StdQTConstants.newMovieActive);
@@ -173,9 +179,9 @@ public class QtCameraCapture implements ActionListener
 			PixMap pixmap = graphics.getPixMap();
 			rawEncodedImage = pixmap.getPixelData();
 
-			image_size.width = rawEncodedImage.getRowBytes() / 4;
-			pixels = new byte[image_size.width * image_size.height * 3];
-			pixels_int = new int[image_size.width * image_size.height];
+			image_size.w = rawEncodedImage.getRowBytes() / 4;
+			pixels = new byte[image_size.w * image_size.h * 3];
+			pixels_int = new int[image_size.w * image_size.h];
 		} catch (QTException e) {
 			QTSession.close();
 			throw new NyARException(e);
@@ -214,7 +220,7 @@ public class QtCameraCapture implements ActionListener
 
 		// バイト列を生成する
 		int idx_byte = 0;
-		for (int idx = 0; idx < image_size.width * image_size.height; idx++) {
+		for (int idx = 0; idx < image_size.w * image_size.h; idx++) {
 			pixels[idx_byte++] = (byte) (pixels_int[idx] >> 16);
 			pixels[idx_byte++] = (byte) (pixels_int[idx] >> 8 & 0xff);
 			pixels[idx_byte++] = (byte) (pixels_int[idx] & 0xff);

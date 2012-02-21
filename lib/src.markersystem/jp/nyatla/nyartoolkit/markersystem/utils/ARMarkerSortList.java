@@ -32,10 +32,10 @@ public class ARMarkerSortList extends NyARLinkList<ARMarkerSortList.Item>
 {
 	public class Item extends NyARLinkList.Item
 	{
-		MarkerInfoARMarker marker;
-		double cf;
-		int dir;
-		SquareStack.Item ref_sq;
+		public MarkerInfoARMarker marker;
+		public double cf;
+		public int dir;
+		public SquareStack.Item ref_sq;
 	};
 	/**
 	 * 指定個数のリンクリストを生成。

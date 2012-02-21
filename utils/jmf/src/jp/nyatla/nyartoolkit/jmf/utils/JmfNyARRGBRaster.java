@@ -77,6 +77,11 @@ public class JmfNyARRGBRaster extends NyARBufferedImageRaster
 			throw new NyARException();
 		}		
 	}
+	/**
+	 * JMFバッファをインスタンスにセットします。
+	 * @param i_buffer
+	 * @throws NyARException
+	 */
 	public void setBuffer(javax.media.Buffer i_buffer) throws NyARException
 	{
 		this._buf_adapter.setBuffer(i_buffer);

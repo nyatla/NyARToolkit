@@ -48,10 +48,9 @@ public class NyARSensor
 	private long _src_ts;
 	private long _gs_id_ts;
 	private long _gs_hist_ts;
-	private NyARParam _ref_param;
-	public NyARSensor(INyARMarkerSystemConfig i_config) throws NyARException
+	public NyARSensor(NyARIntSize i_size) throws NyARException
 	{
-		this.initInstance(i_config.getNyARParam());
+		this.initInstance(i_size);
 		this._hist_drv=(INyARHistogramFromRaster) this._gs_raster.createInterface(INyARHistogramFromRaster.class);
 	}
 	/**
@@ -65,20 +64,14 @@ public class NyARSensor
 		this._gs_raster=new NyARGrayscaleRaster(s.w,s.h,NyARBufferType.INT1D_GRAY_8,true);
 	}
 	/**
-	 * 共通初期化関数。
-	 * @param i_param
-	 * @param i_drv_factory
-	 * ラスタドライバのファクトリ。
-	 * @param i_gs_type
-	 * @param i_rgb_type
-	 * @return
+	 * 
+	 * @param i_size
 	 * @throws NyARException
 	 */
-	private void initInstance(NyARParam i_param) throws NyARException
+	private void initInstance(NyARIntSize i_size) throws NyARException
 	{
 		//リソースの生成
-		this.initResource(i_param.getScreenSize());
-		this._ref_param=i_param;
+		this.initResource(i_size);
 		this._gs_hist=new NyARHistogram(256);
 		this._src_ts=0;
 		this._gs_id_ts=0;
@@ -131,14 +124,6 @@ public class NyARSensor
 	public long getTimeStamp()
 	{
 		return this._src_ts;
-	}
-	/**
-	 * ARToolkitのパラメータオブジェクトの参照値を返します。
-	 * @return
-	 */
-	public NyARParam getARParam()
-	{
-		return this._ref_param;
 	}
 	/**
 	 * この関数は、グレースケールに変換した現在の画像を返します。
