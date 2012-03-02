@@ -88,7 +88,7 @@ public class ImagePickup extends GlSketch
 					}
 					this.render.polygon(gl,this.nyar.getMarkerVertex2D(ids[i]));					
 					this.nyar.getMarkerPlaneImage(ids[i],this.camera,-40,-40,80,80,this._raster);
-					this.render.drawRaster(gl,i*64,0,this._raster);
+					this.render.drawImage(gl,i*64,0,this._raster);
 				}
 				gl.glPopMatrix();
 				Thread.sleep(1);

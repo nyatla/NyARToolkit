@@ -26,51 +26,73 @@
  */
 package jp.nyatla.nyartoolkit.jogl.sample.sketch;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 
+import javax.imageio.ImageIO;
 import javax.media.opengl.*;
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.sketch.GlSketch;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
 import jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystemConfig;
+
 /**
- * JMFからの映像入力からマーカ1種を検出し、そこに立方体を重ねます。
- * ARマーカには、patt.hiroを使用して下さい。
+ * BufferedImageをベースにしたImagePickupです。以下の２点が標準のImagePickupと異なります。
+ * マーカパターンにPNG画像を使うことに特徴があります。また、画像取得にBufferedImageを使っています。
  */
-public class SimpleLite extends GlSketch
+public class ImagePickupJ2se extends GlSketch
 {
 	private NyARJmfCamera camera;
 	private NyARGlMarkerSystem nyar;
-	private NyARGlRender render;	
+	private NyARGlRender render;
+	private final static String PNGPATT = "../../Data/hiro.png";
 	public void setup(GL gl)throws NyARException
 	{
-		this.size(640,480);
-		NyARMarkerSystemConfig config = new NyARMarkerSystemConfig(640,480);
-		JmfCaptureDeviceList devlist = new JmfCaptureDeviceList();
-		JmfCaptureDevice d = devlist.getDevice(0);
-		d.setCaptureFormat(config.getScreenSize(),30.0f);
-		this.camera=new NyARJmfCamera(d);//create sensor system
-		this.nyar=new NyARGlMarkerSystem(config);   //create MarkerSystem
-		this.render=new NyARGlRender(this.nyar);
-		
-		this.id=this.nyar.addARMarker(ARCODE_FILE,16,25,80);
-		gl.glEnable(GL.GL_DEPTH_TEST);
-		this.camera.start();
+		try{
+			this.size(640,480);
+			NyARMarkerSystemConfig config = new NyARMarkerSystemConfig(640,480);
+			JmfCaptureDeviceList devlist = new JmfCaptureDeviceList();
+			JmfCaptureDevice d = devlist.getDevice(0);
+			d.setCaptureFormat(config.getScreenSize(),30.0f);
+			this.camera=new NyARJmfCamera(d);//create sensor system
+			this.nyar=new NyARGlMarkerSystem(config);   //create MarkerSystem
+			this.render=new NyARGlRender(this.nyar);
+			//regist a marker from PNG
+			this.ids[0]=this.nyar.addARMarker(ImageIO.read(new File(PNGPATT)),16,25,80);
+			this._pat=new BufferedImage(64,64,BufferedImage.TYPE_INT_RGB);
+			gl.glEnable(GL.GL_DEPTH_TEST);
+			//start camera
+			this.camera.start();
+		}catch(Exception e){
+			throw new NyARException(e);
+		}
 	}
-	private final static String ARCODE_FILE = "../../Data/patt.hiro";
-	private int id;
-	
+
+	private int[] ids=new int[1];
+	//temporary
+	private BufferedImage _pat;
 	public void draw(GL gl)
 	{
-		synchronized(this.camera){
-			try {
-				this.render.drawBackground(gl, this.camera.getSourceImage());
-				this.render.loadARProjectionMatrix(gl);
+		//lock async update.
+		synchronized(this.camera)
+		{
+			try{
 				this.nyar.update(this.camera);
-				if(this.nyar.isExistMarker(this.id)){
-					this.render.loadMarkerMatrix(gl,this.id);
-					this.render.colorCube(gl,40,0,0,20);
+				this.render.drawBackground(gl,this.camera.getSourceImage());
+				gl.glPushMatrix();
+				this.render.loadScreenProjectionMatrix(gl,640,480);
+				this.render.setStrokeWeight(gl,1.0f);
+				this.render.setColor(gl,255,255,0);
+				for(int i=0;i<ids.length;i++){
+					if(!this.nyar.isExistMarker(ids[i])){
+						continue;
+					}
+					this.render.polygon(gl,this.nyar.getMarkerVertex2D(ids[i]));					
+					this.nyar.getMarkerPlaneImage(ids[i],this.camera,-40,-40,80,80,this._pat);
+					this.render.drawImage(gl,i*64,0,this._pat);
 				}
+				gl.glPopMatrix();
 				Thread.sleep(1);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -80,7 +102,7 @@ public class SimpleLite extends GlSketch
 	public static void main(String[] args)
 	{
 		try {
-			new SimpleLite();
+			new ImagePickupJ2se();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

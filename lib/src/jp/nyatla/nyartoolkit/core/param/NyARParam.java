@@ -136,6 +136,15 @@ public class NyARParam
 		return;
 	}
 	/**
+	 * この関数は、現在のスクリーンサイズを変更します。
+	 * {@link #changeScreenSize(int, int)のラッパーです。
+	 * @param i_s
+	 */
+	public void changeScreenSize(NyARIntSize i_s)
+	{
+		this.changeScreenSize(i_s.w,i_s.h);
+	}
+	/**
 	 * この関数は、カメラパラメータから右手系の視錐台を作ります。
 	 * <p>注意 -
 	 * この処理は低速です。繰り返しの使用はできるだけ避けてください。

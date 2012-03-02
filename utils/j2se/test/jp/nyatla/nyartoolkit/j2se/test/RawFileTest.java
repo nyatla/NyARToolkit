@@ -1,3 +1,4 @@
+package jp.nyatla.nyartoolkit.j2se.test;
 /* 
  * PROJECT: NyARToolkit
  * --------------------------------------------------------------------------------
@@ -28,16 +29,21 @@
  *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.test;
+
 
 import java.io.*;
 import java.util.*;
 
+import javax.imageio.ImageIO;
+
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
+import jp.nyatla.nyartoolkit.core.rasterdriver.INyARPerspectiveCopy;
+import jp.nyatla.nyartoolkit.core.rasterdriver.NyARPerspectiveCopyFactory;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.detector.*;
+import jp.nyatla.nyartoolkit.utils.j2se.NyARBufferedImageRaster;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
@@ -55,11 +61,11 @@ import jp.nyatla.nyartoolkit.core.types.*;
  */
 public class RawFileTest
 {
-	private final String code_file = "../Data/patt.hiro";
+	private final String code_file = "../../Data/patt.hiro";
 
-	private final String data_file = "../Data/320x240ABGR.raw";
+	private final String data_file = "../../Data/staticimage_sample.png";
 
-	private final String camera_file = "../Data/camera_para.dat";
+	private final String camera_file = "../../Data/camera_para.dat";
 
 	/**
 	 * コンストラクタです。
@@ -77,22 +83,23 @@ public class RawFileTest
 	 */
 	public void Test_arDetectMarkerLite() throws Exception
 	{
+		// 試験イメージの読み出し(320x240 BGRAのデータ)
+		INyARRgbRaster ra=new NyARBufferedImageRaster(ImageIO.read(new File(data_file)));		
 		// AR用カメラパラメタファイルをロード
 		NyARParam ap = new NyARParam();
 		ap.loadARParam(new FileInputStream(camera_file));
-		ap.changeScreenSize(320, 240);
+		ap.changeScreenSize(ra.getSize());
 
-		// AR用のパターンコードを読み出し
+		//マーカパターンをBitmapから作る。
 		NyARCode code = new NyARCode(16, 16);
-		code.loadARPatt(new FileInputStream(code_file));
+		INyARRgbRaster im=new NyARBufferedImageRaster(ImageIO.read(new File("../../Data/pngmarker.png")));
+		NyARIntSize s=im.getSize();
+		INyARPerspectiveCopy pc=(INyARPerspectiveCopy)im.createInterface(INyARPerspectiveCopy.class);
+		NyARRgbRaster tr=new NyARRgbRaster(16,16);
+		pc.copyPatt(0,0,s.w,0,s.w,s.h,0,s.h,25, 25,4, tr);		
+		code.setRaster(tr);
 
-		// 試験イメージの読み出し(320x240 BGRAのRAWデータ)
-		File f = new File(data_file);
-		FileInputStream fs = new FileInputStream(data_file);
-		byte[] buf = new byte[(int) f.length()];
-		fs.read(buf);
-		INyARRgbRaster ra = new NyARRgbRaster(320, 240,NyARBufferType.BYTE1D_B8G8R8X8_32,false);
-		ra.wrapBuffer(buf);
+
 		// Blank_Raster ra=new Blank_Raster(320, 240);
 
 		// １パターンのみを追跡するクラスを作成

@@ -194,6 +194,7 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 			default:
 				throw new NyARException();
 		}
+		this._rgb_pixel_driver.switchRaster(this);
 	}
 	/**
 	 * この関数は使用できません。{@link BufferedImage}をセットするには、wrapImageを使用してください。

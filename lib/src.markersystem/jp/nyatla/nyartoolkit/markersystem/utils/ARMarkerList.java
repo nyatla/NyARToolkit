@@ -39,7 +39,7 @@ public class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private double _configense_th=0.7;
+	private double _configense_th=0.5;//RGB比較をしなければ0.7くらいでいいのだけど。
 	private final NyARMatchPattResult _patt_result=new NyARMatchPattResult();;
 	private final MultiResolutionPattProvider _mpickup=new MultiResolutionPattProvider();
 	private ARMarkerSortList _mkmap;

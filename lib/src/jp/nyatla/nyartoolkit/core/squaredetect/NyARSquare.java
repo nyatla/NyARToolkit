@@ -96,7 +96,7 @@ public class NyARSquare
      */
     public void rotateVertexL(int i_shift)
     {
-    	assert(i_shift<4);
+//    	assert(i_shift<4);
     	NyARDoublePoint2d vertext;
     	NyARLinear linet;
     	if(i_shift==0){

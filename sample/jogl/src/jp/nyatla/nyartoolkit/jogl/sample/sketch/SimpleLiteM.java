@@ -27,7 +27,6 @@
 package jp.nyatla.nyartoolkit.jogl.sample.sketch;
 
 import javax.media.opengl.*;
-import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.sketch.GlSketch;

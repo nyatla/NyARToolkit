@@ -34,7 +34,9 @@ import jp.nyatla.nyartoolkit.core.param.NyARFrustum;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
+import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.INyARPerspectiveCopy;
+import jp.nyatla.nyartoolkit.core.rasterdriver.NyARPerspectiveCopyFactory;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARCoord2Linear;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector_Rle;
 import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
@@ -207,6 +209,35 @@ public class NyARMarkerSystem
 		}
 		return this.addARMarker(c,i_patt_edge_percentage, i_marker_size);
 	}
+	/**
+	 * 画像からマーカパターンを生成して登録します。
+	 * ビットマップ等の画像から生成したパターンは、撮影画像から生成したパターンファイルと比較して、撮影画像の色調変化に弱くなるので注意してください。
+	 * @param i_raster
+	 * マーカ画像を格納したラスタオブジェクト
+	 * @param i_patt_resolution
+	 * マーカの解像度
+	 * @param i_patt_edge_percentage
+	 * マーカのエッジ領域のサイズ。マーカパターンは、i_rasterからエッジ領域を除いたパターンから生成します。
+	 * @param i_marker_size
+	 * マーカの平方サイズ[mm]
+	 * @return
+	 * マーカid
+	 * @throws NyARException
+	 */
+	public int addARMarker(INyARRgbRaster i_raster,int i_patt_resolution,int i_patt_edge_percentage,double i_marker_size) throws NyARException
+	{
+		NyARCode c=new NyARCode(i_patt_resolution,i_patt_resolution);
+		NyARIntSize s=i_raster.getSize();
+		//ラスタからマーカパターンを切り出す。
+		INyARPerspectiveCopy pc=(INyARPerspectiveCopy)i_raster.createInterface(INyARPerspectiveCopy.class);
+		NyARRgbRaster tr=new NyARRgbRaster(i_patt_resolution,i_patt_resolution);
+		pc.copyPatt(0,0,s.w,0,s.w,s.h,0,s.h,i_patt_edge_percentage, i_patt_edge_percentage,4, tr);
+		//切り出したパターンをセット
+		c.setRaster(tr);
+		this.addARMarker(c,i_patt_edge_percentage,i_marker_size);
+		return 0;
+	}
+	
 	
 	/**
 	 * この関数は、 マーカIDのマーカが検出されているかを返します。
@@ -350,13 +381,21 @@ public class NyARMarkerSystem
 	 * @param i_sensor
 	 * 画像を取得するセンサオブジェクト。通常は{@link #update(NyARSensor)}関数に入力したものと同じものを指定します。
 	 * @param i_x1
+	 * 頂点1
 	 * @param i_y1
+	 * 頂点1
 	 * @param i_x2
+	 * 頂点2
 	 * @param i_y2
+	 * 頂点2
 	 * @param i_x3
+	 * 頂点3
 	 * @param i_y3
+	 * 頂点3
 	 * @param i_x4
+	 * 頂点4
 	 * @param i_y4
+	 * 頂点4
 	 * @param i_raster
 	 * 出力先のオブジェクト
 	 * @return

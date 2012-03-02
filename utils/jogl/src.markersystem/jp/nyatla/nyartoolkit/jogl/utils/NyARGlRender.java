@@ -1,5 +1,7 @@
 package jp.nyatla.nyartoolkit.jogl.utils;
 
+import java.awt.image.BufferedImage;
+
 import javax.media.opengl.GL;
 
 import com.sun.opengl.util.texture.Texture;
@@ -12,6 +14,7 @@ import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.jogl.utils.NyARGLDrawUtil;
+import jp.nyatla.nyartoolkit.utils.j2se.NyARBufferedImageRaster;
 
 /**
  * この関数は、{@link NyARGlmarkerSystem}クラスの出力する値を、OpenGL関数へショートカットする関数を定義します。
@@ -157,7 +160,15 @@ public class NyARGlRender
 		i_gl.glEnd();
 		i_gl.glMatrixMode(old_mode);
 	}
-	public void drawRaster(GL i_gl,double i_x, double i_y, NyARRgbRaster i_raster) throws NyARException
+	/**
+	 * ラスタを現在の表面に描画します。
+	 * @param i_gl
+	 * @param i_x
+	 * @param i_y
+	 * @param i_raster
+	 * @throws NyARException
+	 */
+	public void drawImage(GL i_gl,double i_x, double i_y, NyARRgbRaster i_raster) throws NyARException
 	{
 		i_gl.glPushMatrix();
 		try{
@@ -167,5 +178,20 @@ public class NyARGlRender
 			i_gl.glPopMatrix();
 		}
 	}
+	/**
+	 * {@link #drawImage(GL, double, double, NyARRgbRaster)}のラッパーです。引数はこの関数を参照してください。
+	 * 
+	 * @param i_gl
+	 * @param i_x
+	 * @param i_y
+	 * @param i_bitmap
+	 * @throws NyARException
+	 */
+	
+	public void drawImage(GL i_gl,double i_x, double i_y, BufferedImage i_bitmap) throws NyARException
+	{
+		this.drawImage(i_gl, i_x, i_y,new NyARBufferedImageRaster(i_bitmap));
+	}
+
 	
 }
