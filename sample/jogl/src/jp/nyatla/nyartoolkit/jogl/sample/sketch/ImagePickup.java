@@ -27,9 +27,7 @@
 package jp.nyatla.nyartoolkit.jogl.sample.sketch;
 
 import javax.media.opengl.*;
-import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.sketch.GlSketch;
@@ -88,7 +86,7 @@ public class ImagePickup extends GlSketch
 					}
 					this.render.polygon(gl,this.nyar.getMarkerVertex2D(ids[i]));					
 					this.nyar.getMarkerPlaneImage(ids[i],this.camera,-40,-40,80,80,this._raster);
-					this.render.drawImage(gl,i*64,0,this._raster);
+					this.render.drawImage2d(gl,i*64,0,this._raster);
 				}
 				gl.glPopMatrix();
 				Thread.sleep(1);

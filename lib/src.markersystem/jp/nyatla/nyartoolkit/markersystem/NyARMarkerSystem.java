@@ -36,7 +36,6 @@ import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.INyARPerspectiveCopy;
-import jp.nyatla.nyartoolkit.core.rasterdriver.NyARPerspectiveCopyFactory;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARCoord2Linear;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector_Rle;
 import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
@@ -93,6 +92,15 @@ public class NyARMarkerSystem
 	{
 		return this._frustum;
 	}
+    /**
+     * 現在のパラメータを返します。
+     * @return
+     * [readonly]
+     */
+    public NyARParam getARParam()
+    {
+        return this._ref_param;
+    }	
 	/**
 	 * 射影変換行列の視錐台パラメータを設定します。
 	 * @param i_near
@@ -585,6 +593,8 @@ class RleDetector extends NyARSquareContourDetector_Rle
 				is_target_marker=true;
 				break;
 			}
+			//@todo 複数マーカ時に、トラッキング済のarmarkerを探索対象外に出来ない？
+			
 			//nyIdマーカの特定(IDマーカの特定はここで完結する。)
 			if(this._idmk_list.size()>0){
 				if(this._idmk_list.update(this._ref_input_gs,sq_tmp)){
@@ -621,13 +631,6 @@ class RleDetector extends NyARSquareContourDetector_Rle
 	
 	public void detectMarker(NyARSensor i_sensor,long i_time_stamp,int i_th) throws NyARException
 	{
-		//準備(ミスカウンタを+1する。)
-		for(int i=this._idmk_list.size()-1;i>=0;i--){
-			MarkerInfoNyId target=this._idmk_list.get(i);
-			if(target.lost_count<Integer.MAX_VALUE){
-				target.lost_count++;
-			}
-		}
 		this._sq_stack.clear();//矩形情報の保持スタック初期化
 		this._tracking_list.prepare();
 		this._idmk_list.prepare();

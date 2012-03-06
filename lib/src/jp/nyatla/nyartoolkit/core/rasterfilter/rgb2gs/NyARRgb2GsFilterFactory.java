@@ -52,7 +52,7 @@ public class NyARRgb2GsFilterFactory
 			return new NyARRgb2GsFilterRgbAve_BYTE1D_B8G8R8X8_32(i_raster);
 		case NyARBufferType.BYTE1D_B8G8R8_24:
 			return new NyARRgb2GsFilterRgbAve_BYTE1D_C8C8C8_24(i_raster);
-		case NyARBufferType.BYTE1D_X8R8G8B8_32:
+		case NyARBufferType.INT1D_X8R8G8B8_32:
 			return new NyARRgb2GsFilterRgbAve_INT1D_X8R8G8B8_32(i_raster);
 		default:
 			return new NyARRgb2GsFilterRgbAve_Any(i_raster);

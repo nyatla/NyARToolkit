@@ -54,6 +54,7 @@ public class SimpleLite extends GlSketch
 		this.render=new NyARGlRender(this.nyar);
 		
 		this.id=this.nyar.addARMarker(ARCODE_FILE,16,25,80);
+//		this.id=this.nyar.addNyIdMarker(0,80); //for NyIdmarker #0
 		gl.glEnable(GL.GL_DEPTH_TEST);
 		this.camera.start();
 	}

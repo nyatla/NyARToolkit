@@ -53,7 +53,7 @@ public class NyARGsPixelDriverFactory
 		default:
 			//RGBRasterインタフェイスがある場合
 			if(i_ref_raster instanceof INyARRgbRaster){
-				ret=new NyARGsPixelDriver_RGBX();
+				ret=new NyARGsPixelDriver_RGBX((INyARRgbRaster)i_ref_raster);
 				break;
 			}
 			throw new NyARException();
@@ -64,7 +64,7 @@ public class NyARGsPixelDriverFactory
 	public static INyARGsPixelDriver createDriver(INyARRgbRaster i_ref_raster) throws NyARException
 	{
 		//RGBRasterインタフェイスがある場合
-		return new NyARGsPixelDriver_RGBX();
+		return new NyARGsPixelDriver_RGBX(i_ref_raster);
 	}	
 }
 //
@@ -129,6 +129,10 @@ class NyARGsPixelDriver_RGBX implements INyARGsPixelDriver
 {
 	private INyARRgbPixelDriver _rgbd;
 	private int[] _tmp=new int[3];
+    public NyARGsPixelDriver_RGBX(INyARRgbRaster i_raster) throws NyARException
+    {
+        this._rgbd = i_raster.getRgbPixelDriver();
+    }	
 	public NyARIntSize getSize()
 	{
 		return this._rgbd.getSize();

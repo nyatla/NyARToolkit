@@ -71,7 +71,7 @@ public class TrackingList extends ArrayList<TMarkerData>
 			int sqdist=ret[1];
 			int shift=ret[0];
 			//頂点移動距離の合計が、(中心点移動距離+4)の10倍を超えてたらNG <-
-			if(sqdist>(sq_move+4)*10){
+			if(sqdist>(sq_move+8)*10){
 				continue;
 			}
 			//登録可能か確認

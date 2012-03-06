@@ -32,6 +32,7 @@ import java.io.File;
 import javax.imageio.ImageIO;
 import javax.media.opengl.*;
 import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.sketch.GlSketch;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
@@ -90,7 +91,8 @@ public class ImagePickupJ2se extends GlSketch
 					}
 					this.render.polygon(gl,this.nyar.getMarkerVertex2D(ids[i]));					
 					this.nyar.getMarkerPlaneImage(ids[i],this.camera,-40,-40,80,80,this._pat);
-					this.render.drawImage(gl,i*64,0,this._pat);
+					this.render.loadMarkerMatrix(gl,ids[i]);
+					this.render.drawImage2d(gl,i*64,0,this._pat);
 				}
 				gl.glPopMatrix();
 				Thread.sleep(1);

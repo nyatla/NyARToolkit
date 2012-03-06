@@ -168,10 +168,12 @@ public class NyARGlRender
 	 * @param i_raster
 	 * @throws NyARException
 	 */
-	public void drawImage(GL i_gl,double i_x, double i_y, NyARRgbRaster i_raster) throws NyARException
+	public void drawImage2d(GL i_gl,double i_x, double i_y, NyARRgbRaster i_raster) throws NyARException
 	{
 		i_gl.glPushMatrix();
 		try{
+			i_gl.glMatrixMode(GL.GL_MODELVIEW);
+			i_gl.glLoadIdentity();
 			i_gl.glTranslated(i_x,i_y,0);
 			NyARGLDrawUtil.drawRaster(i_gl, i_raster);
 		}finally{
@@ -179,7 +181,7 @@ public class NyARGlRender
 		}
 	}
 	/**
-	 * {@link #drawImage(GL, double, double, NyARRgbRaster)}のラッパーです。引数はこの関数を参照してください。
+	 * {@link #drawImage2d(GL, double, double, NyARRgbRaster)}のラッパーです。引数はこの関数を参照してください。
 	 * 
 	 * @param i_gl
 	 * @param i_x
@@ -188,9 +190,9 @@ public class NyARGlRender
 	 * @throws NyARException
 	 */
 	
-	public void drawImage(GL i_gl,double i_x, double i_y, BufferedImage i_bitmap) throws NyARException
+	public void drawImage2d(GL i_gl,double i_x, double i_y, BufferedImage i_bitmap) throws NyARException
 	{
-		this.drawImage(i_gl, i_x, i_y,new NyARBufferedImageRaster(i_bitmap));
+		this.drawImage2d(i_gl, i_x, i_y,new NyARBufferedImageRaster(i_bitmap));
 	}
 
 	

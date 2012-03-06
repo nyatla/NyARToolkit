@@ -6,7 +6,6 @@ import javax.media.Buffer;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
-import jp.nyatla.nyartoolkit.markersystem.INyARMarkerSystemConfig;
 import jp.nyatla.nyartoolkit.markersystem.NyARSensor;
 
 /**
