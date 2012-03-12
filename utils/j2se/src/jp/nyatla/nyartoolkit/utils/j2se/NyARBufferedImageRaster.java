@@ -183,6 +183,7 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 			case NyARBufferType.BYTE1D_R8G8B8_24:
 			case NyARBufferType.BYTE1D_B8G8R8_24:
 			case NyARBufferType.BYTE1D_B8G8R8X8_32:
+			case NyARBufferType.BYTE1D_X8B8G8R8_32:
 				this._buf=((DataBufferByte)(i_ref_bmi.getRaster().getDataBuffer())).getData();
 				break;
 			case NyARBufferType.INT1D_X8R8G8B8_32:
@@ -252,10 +253,16 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 				}
 			}else if(data_type==DataBuffer.TYPE_BYTE && band_num==4&& scan_stride==w*4 && pix_stride==4 && indices[0]==0 && indices[1]==0 && indices[2]==0)
 			{
-				if(band_offset[0]==3 && band_offset[1]==2 && band_offset[2]==1)
+				//B0G1R2X
+				//R2,G1,B0
+				if(band_offset[0]==2 && band_offset[1]==1 && band_offset[2]==0)
 				{
 					return NyARBufferType.BYTE1D_B8G8R8X8_32;
 				}
+				if(band_offset[0]==3 && band_offset[1]==2 && band_offset[2]==1)
+				{
+					return NyARBufferType.BYTE1D_X8B8G8R8_32;
+				}				
 			}			
 		}else if(sp instanceof SinglePixelPackedSampleModel){
 			SinglePixelPackedSampleModel ssp=(SinglePixelPackedSampleModel)sp;

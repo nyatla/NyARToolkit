@@ -37,7 +37,6 @@ import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilterYCbCr;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRgb2GsFilterArtkThFactory;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRgb2GsFilterFactory;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.*;
 
 /**
  * このクラスは、指定形式のバッファを持つRGBラスタです。
@@ -145,6 +144,7 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 				break;
 			case NyARBufferType.BYTE1D_B8G8R8X8_32:
 			case NyARBufferType.BYTE1D_X8R8G8B8_32:
+			case NyARBufferType.BYTE1D_X8B8G8R8_32:
 				this._buf=i_is_alloc?new byte[i_size.w*i_size.h*4]:null;
 				break;
 			case NyARBufferType.BYTE1D_R8G8B8_24:

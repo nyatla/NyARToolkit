@@ -55,6 +55,8 @@ public class NyARRgbPixelDriverFactory
 			break;
 		case NyARBufferType.BYTE1D_X8R8G8B8_32:
 			ret=new NyARRgbPixelDriver_BYTE1D_X8R8G8B8_32();
+		case NyARBufferType.BYTE1D_X8B8G8R8_32:
+			ret=new NyARRgbPixelDriver_BYTE1D_X8B8G8R8_32();
 			break;
 		case NyARBufferType.INT1D_GRAY_8:
 			ret=new NyARRgbPixelDriver_INT1D_GRAY_8();
@@ -386,6 +388,88 @@ final class NyARRgbPixelDriver_BYTE1D_X8R8G8B8_32 implements
 		this._ref_size = i_raster.getSize();
 	}
 }
+
+/**
+* このクラスは、{@link NyARBufferType#BYTE1D_X8B8G8R8_32}形式のラスタバッファに対応する、ピクセルリーダです。
+*/
+final class NyARRgbPixelDriver_BYTE1D_X8B8G8R8_32 implements
+		INyARRgbPixelDriver {
+	/** 参照する外部バッファ */
+	private byte[] _ref_buf;
+
+	private NyARIntSize _ref_size;
+	public NyARIntSize getSize()
+	{
+		return this._ref_size;
+	}
+	/**
+	 * この関数は、指定した座標の1ピクセル分のRGBデータを、配列に格納して返します。
+	 */
+	public void getPixel(int i_x, int i_y, int[] o_rgb) {
+		final byte[] ref_buf = this._ref_buf;
+		final int bp = (i_x + i_y * this._ref_size.w) * 4;
+		o_rgb[0] = (ref_buf[bp + 3] & 0xff);// R
+		o_rgb[1] = (ref_buf[bp + 2] & 0xff);// G
+		o_rgb[2] = (ref_buf[bp + 1] & 0xff);// B
+		return;
+	}
+
+	/**
+	 * この関数は、座標群から、ピクセルごとのRGBデータを、配列に格納して返します。
+	 */
+	public void getPixelSet(int[] i_x, int[] i_y, int i_num, int[] o_rgb) {
+		int bp;
+		final int width = this._ref_size.w;
+		final byte[] ref_buf = this._ref_buf;
+		for (int i = i_num - 1; i >= 0; i--) {
+			bp = (i_x[i] + i_y[i] * width) * 4;
+			o_rgb[i * 3 + 0] = (ref_buf[bp + 3] & 0xff);// R
+			o_rgb[i * 3 + 1] = (ref_buf[bp + 2] & 0xff);// G
+			o_rgb[i * 3 + 2] = (ref_buf[bp + 1] & 0xff);// B
+		}
+		return;
+	}
+    public void setPixel(int i_x, int i_y, int[] i_rgb)
+    {
+        byte[] ref_buf = this._ref_buf;
+        int bp = (i_x + i_y * this._ref_size.w) * 4;
+        ref_buf[bp + 3] = (byte)i_rgb[0];
+        ref_buf[bp + 2] = (byte)i_rgb[1];
+        ref_buf[bp + 1] = (byte)i_rgb[2];
+    }
+
+
+    public void setPixel(int i_x, int i_y, int i_r, int i_g, int i_b)
+    {
+        byte[] ref_buf = this._ref_buf;
+        int bp = (i_x + i_y * this._ref_size.w) * 4;
+        ref_buf[bp + 3] = (byte)i_r;
+        ref_buf[bp + 2] = (byte)i_g;
+        ref_buf[bp + 1] = (byte)i_b;
+    }
+
+
+    public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intrgb)
+    {
+        byte[] ref_buf = this._ref_buf;
+        for (int i = i_num - 1; i >= 0; i--)
+        {
+            int bp = (i_x[i] + i_y[i] * this._ref_size.w) * 4;
+            ref_buf[bp + 3] = (byte)i_intrgb[3 * i + 0];
+            ref_buf[bp + 2] = (byte)i_intrgb[3 * i + 1];
+            ref_buf[bp + 1] = (byte)i_intrgb[3 * i + 2];
+        }
+    }
+
+	public void switchRaster(INyARRgbRaster i_raster) throws NyARException
+	{
+		this._ref_buf = (byte[]) i_raster.getBuffer();
+		this._ref_size = i_raster.getSize();
+	}
+}
+
+
+
 
 /**
 * このクラスは、{@link NyARBufferType#INT1D_GRAY_8}形式のラスタバッファに対応する、ピクセルリーダです。

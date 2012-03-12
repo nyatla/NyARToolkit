@@ -29,8 +29,6 @@ import jp.nyatla.nyartoolkit.core.pixeldriver.INyARRgbPixelDriver;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core.utils.NyARPerspectiveParamGenerator;
-import jp.nyatla.nyartoolkit.core.utils.NyARPerspectiveParamGenerator_O1;
 
 public class NyARPerspectiveCopyFactory
 {

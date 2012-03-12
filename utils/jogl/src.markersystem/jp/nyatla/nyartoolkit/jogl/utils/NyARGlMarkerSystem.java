@@ -44,25 +44,26 @@ public class NyARGlMarkerSystem extends NyARMarkerSystem
 		NyARGLUtil.toCameraFrustumRH(this._ref_param,1,i_near,i_far,this._projection_mat);
 	}
 	/**
+	 * この関数は、i_bufに指定idのOpenGL形式の姿勢変換行列を設定して返します。
+	 * @param i_id
+	 * @param i_buf
+	 * @return
+	 */
+	public void getMarkerMatrix(int i_id,double[] i_buf)
+	{
+		NyARGLUtil.toCameraViewRH(this.getMarkerMatrix(i_id),1,i_buf);
+	}
+	/**
 	 * この関数はOpenGL形式の姿勢変換行列を新規に割り当てて返します。
 	 * @param i_buf
 	 * @return
 	 */
 	public double[] getGlMarkerMatrix(int i_id)
 	{
-		return this.getGlMarkerMatrix(i_id,new double[16]);
-	}
-	/**
-	 * この関数は、i_bufに指定idのOpenGL形式の姿勢変換行列を設定して返します。
-	 * @param i_id
-	 * @param i_buf
-	 * @return
-	 */
-	public double[] getGlMarkerMatrix(int i_id,double[] i_buf)
-	{
-		NyARGLUtil.toCameraViewRH(this.getMarkerMatrix(i_id),1,i_buf);
-		return i_buf;
-	}
+		double[] b=new double[16];
+		this.getMarkerMatrix(i_id,b);
+		return b;
+	}	
 	//
 	// This reogion may be moved to NyARJ2seMarkerSystem.
 	//
@@ -108,7 +109,7 @@ public class NyARGlMarkerSystem extends NyARMarkerSystem
 	 * @return
 	 * @throws NyARException
 	 */
-	public BufferedImage getMarkerPlaneImage(
+	public void getMarkerPlaneImage(
 		int i_id,
 		NyARSensor i_sensor,
 	    int i_x1,int i_y1,
@@ -119,7 +120,7 @@ public class NyARGlMarkerSystem extends NyARMarkerSystem
 		{
 			NyARBufferedImageRaster bmr=new NyARBufferedImageRaster(i_img);
 			super.getMarkerPlaneImage(i_id, i_sensor, i_x1, i_y1, i_x2, i_y2, i_x3, i_y3, i_x4, i_y4,bmr);
-			return i_img;
+			return;
 		}
 	/**
 	 * この関数は、{@link #getMarkerPlaneImage(int, NyARSensor, int, int, int, int, INyARRgbRaster)}
@@ -134,11 +135,9 @@ public class NyARGlMarkerSystem extends NyARMarkerSystem
 	 * @param i_h
 	 * @param i_raster
 	 * 出力先のオブジェクト
-	 * @return
-	 * 結果を格納したi_rasterオブジェクト
 	 * @throws NyARException
 	 */
-	public BufferedImage getMarkerPlaneImage(
+	public void getMarkerPlaneImage(
 		int i_id,
 		NyARSensor i_sensor,
 	    int i_l,int i_t,
@@ -148,7 +147,7 @@ public class NyARGlMarkerSystem extends NyARMarkerSystem
 		NyARBufferedImageRaster bmr=new NyARBufferedImageRaster(i_img);
 		super.getMarkerPlaneImage(i_id, i_sensor, i_l, i_t, i_w, i_h, bmr);
 		this.getMarkerPlaneImage(i_id,i_sensor,i_l+i_w-1,i_t+i_h-1,i_l,i_t+i_h-1,i_l,i_t,i_l+i_w-1,i_t,bmr);
-		return i_img;
+		return;
     }
 	
 }

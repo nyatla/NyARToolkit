@@ -85,6 +85,8 @@ public class NyARBufferType
 	/** RGB形式。byte[4]で、X8R8G8B8の32ビットの画素形式。
 	 */
 	public static final int BYTE1D_X8R8G8B8_32 = T_BYTE1D|0x0102;
+	
+	public static final int BYTE1D_X8B8G8R8_32 = T_BYTE1D|0x0103;
 
 	/**　RGB形式。byte[2]で、RGB565の16ビット(little endian)の画素形式。
 	 */

@@ -39,7 +39,8 @@ public class NyARRgb2GsFilterArtkThFactory
 		case NyARBufferType.BYTE1D_B8G8R8X8_32:
 			return new NyARRgb2GsFilterArtkTh_BYTE1D_B8G8R8X8_32(i_raster);
 		case NyARBufferType.BYTE1D_X8R8G8B8_32:
-			return new NyARRgb2GsFilterArtkTh_BYTE1D_X8R8G8B8_32(i_raster);
+		case NyARBufferType.BYTE1D_X8B8G8R8_32:
+			return new NyARRgb2GsFilterArtkTh_BYTE1D_X8C8C8C8_32(i_raster);
 		case NyARBufferType.INT1D_X8R8G8B8_32:
 			return new NyARRgb2GsFilterArtkTh_INT1D_X8R8G8B8_32(i_raster);
 		case NyARBufferType.WORD1D_R5G6B5_16LE:

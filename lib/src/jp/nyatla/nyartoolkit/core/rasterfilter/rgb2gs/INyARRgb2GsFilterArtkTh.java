@@ -170,11 +170,10 @@ class NyARRgb2GsFilterArtkTh_BYTE1D_B8G8R8X8_32 extends NyARRgb2GsFilterArtkTh_B
 
 
 
-class NyARRgb2GsFilterArtkTh_BYTE1D_X8R8G8B8_32 extends NyARRgb2GsFilterArtkTh_Base
+class NyARRgb2GsFilterArtkTh_BYTE1D_X8C8C8C8_32 extends NyARRgb2GsFilterArtkTh_Base
 {
-	public NyARRgb2GsFilterArtkTh_BYTE1D_X8R8G8B8_32(INyARRgbRaster i_raster)
+	public NyARRgb2GsFilterArtkTh_BYTE1D_X8C8C8C8_32(INyARRgbRaster i_raster)
 	{
-		assert(i_raster.isEqualBufferType(NyARBufferType.BYTE1D_X8R8G8B8_32));
 		this._raster=i_raster;
 	}
 	public void doFilter(int i_l,int i_t,int i_w,int i_h,int i_th,INyARGrayscaleRaster i_gsraster) throws NyARException

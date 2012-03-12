@@ -63,8 +63,9 @@ public class RawFileTest
 {
 	private final String code_file = "../../Data/patt.hiro";
 
-	private final String data_file = "../../Data/staticimage_sample.png";
-
+	private final String data_file = "../../Data/320x240ABGR.png";
+	private final String raw_file = "../../Data/320x240ABGR.raw";
+	
 	private final String camera_file = "../../Data/camera_para.dat";
 
 	/**
@@ -85,14 +86,22 @@ public class RawFileTest
 	{
 		// 試験イメージの読み出し(320x240 BGRAのデータ)
 		INyARRgbRaster ra=new NyARBufferedImageRaster(ImageIO.read(new File(data_file)));		
-		// AR用カメラパラメタファイルをロード
+/*		File f = new File(raw_file);
+		FileInputStream fs = new FileInputStream(raw_file);
+		byte[] buf = new byte[(int) f.length()];
+		fs.read(buf);
+		INyARRgbRaster ra = new NyARRgbRaster(320, 240,NyARBufferType.BYTE1D_B8G8R8X8_32,false);
+		ra.wrapBuffer(buf);
+*/		// AR用カメラパラメタファイルをロード
 		NyARParam ap = new NyARParam();
 		ap.loadARParam(new FileInputStream(camera_file));
 		ap.changeScreenSize(ra.getSize());
 
 		//マーカパターンをBitmapから作る。
 		NyARCode code = new NyARCode(16, 16);
-		INyARRgbRaster im=new NyARBufferedImageRaster(ImageIO.read(new File("../../Data/pngmarker.png")));
+//		code.loadARPatt(new FileInputStream(code_file));
+		
+		INyARRgbRaster im=new NyARBufferedImageRaster(ImageIO.read(new File("../../Data/hiro.png")));
 		NyARIntSize s=im.getSize();
 		INyARPerspectiveCopy pc=(INyARPerspectiveCopy)im.createInterface(INyARPerspectiveCopy.class);
 		NyARRgbRaster tr=new NyARRgbRaster(16,16);
@@ -115,7 +124,7 @@ public class RawFileTest
 		for (int i = 0; i < 1000; i++) {
 			// 変換行列を取得
 			ar.detectMarkerLite(ra, 100);
-//			ar.getTransmat(result_mat);
+			ar.getTransmat(result_mat);
 		}
 		Date d = new Date();
 		NyARDoublePoint3d ang=new NyARDoublePoint3d();

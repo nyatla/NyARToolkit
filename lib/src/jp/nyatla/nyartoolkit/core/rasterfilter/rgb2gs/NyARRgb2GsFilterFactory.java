@@ -52,6 +52,9 @@ public class NyARRgb2GsFilterFactory
 			return new NyARRgb2GsFilterRgbAve_BYTE1D_B8G8R8X8_32(i_raster);
 		case NyARBufferType.BYTE1D_B8G8R8_24:
 			return new NyARRgb2GsFilterRgbAve_BYTE1D_C8C8C8_24(i_raster);
+		case NyARBufferType.BYTE1D_X8R8G8B8_32:
+		case NyARBufferType.BYTE1D_X8B8G8R8_32:
+			return new NyARRgb2GsFilterRgbAve_BYTE1D_X8C8C8C8_32(i_raster);
 		case NyARBufferType.INT1D_X8R8G8B8_32:
 			return new NyARRgb2GsFilterRgbAve_INT1D_X8R8G8B8_32(i_raster);
 		default:
@@ -166,6 +169,80 @@ class NyARRgb2GsFilterRgbAve_BYTE1D_B8G8R8X8_32 implements INyARRgb2GsFilterRgbA
 		}
 	}
 }
+
+class NyARRgb2GsFilterRgbAve_BYTE1D_X8C8C8C8_32 implements INyARRgb2GsFilterRgbAve
+{
+	private INyARRaster _ref_raster;
+	public NyARRgb2GsFilterRgbAve_BYTE1D_X8C8C8C8_32(INyARRaster i_ref_raster)
+	{
+		this._ref_raster=i_ref_raster;
+	}
+	public void convert(INyARGrayscaleRaster i_raster) throws NyARException
+	{
+		NyARIntSize s=this._ref_raster.getSize();
+		this.convertRect(0,0,s.w,s.h,i_raster);
+	}
+	public void convertRect(int l,int t,int w,int h,INyARGrayscaleRaster o_raster) throws NyARException
+	{
+		NyARIntSize size=this._ref_raster.getSize();
+		int bp = (l+t*size.w)*4;
+		final int b=t+h;
+		final int row_padding_dst=(size.w-w);
+		final int row_padding_src=row_padding_dst*4;
+		final int pix_count=w;
+		final int pix_mod_part=pix_count-(pix_count%8);
+		int dst_ptr=t*size.w+l;
+		byte[] in_buf = (byte[]) this._ref_raster.getBuffer();
+		switch(o_raster.getBufferType()){
+		case NyARBufferType.INT1D_GRAY_8:
+			int[] out_buf=(int[])o_raster.getBuffer();
+			for (int y = t; y < b; y++) {
+				
+				int x=0;
+				for (x = pix_count-1; x >=pix_mod_part; x--){
+					out_buf[dst_ptr++] = ((in_buf[bp+1] & 0xff) + (in_buf[bp+2] & 0xff) + (in_buf[bp+3] & 0xff)) /3;					
+					bp+=4;
+				}
+				for (;x>=0;x-=8){
+					out_buf[dst_ptr++] = ((in_buf[bp+1] & 0xff) + (in_buf[bp+2] & 0xff) + (in_buf[bp+3] & 0xff)) /3;					
+					bp+=4;
+					out_buf[dst_ptr++] = ((in_buf[bp+1] & 0xff) + (in_buf[bp+2] & 0xff) + (in_buf[bp+3] & 0xff)) /3;					
+					bp+=4;
+					out_buf[dst_ptr++] = ((in_buf[bp+1] & 0xff) + (in_buf[bp+2] & 0xff) + (in_buf[bp+3] & 0xff)) /3;					
+					bp+=4;
+					out_buf[dst_ptr++] = ((in_buf[bp+1] & 0xff) + (in_buf[bp+2] & 0xff) + (in_buf[bp+3] & 0xff)) /3;					
+					bp+=4;
+					out_buf[dst_ptr++] = ((in_buf[bp+1] & 0xff) + (in_buf[bp+2] & 0xff) + (in_buf[bp+3] & 0xff)) /3;					
+					bp+=4;
+					out_buf[dst_ptr++] = ((in_buf[bp+1] & 0xff) + (in_buf[bp+2] & 0xff) + (in_buf[bp+3] & 0xff)) /3;					
+					bp+=4;
+					out_buf[dst_ptr++] = ((in_buf[bp+1] & 0xff) + (in_buf[bp+2] & 0xff) + (in_buf[bp+3] & 0xff)) /3;					
+					bp+=4;
+					out_buf[dst_ptr++] = ((in_buf[bp+1] & 0xff) + (in_buf[bp+2] & 0xff) + (in_buf[bp+3] & 0xff)) /3;					
+					bp+=4;
+				}
+				bp+=row_padding_src;
+				dst_ptr+=row_padding_dst;
+			}
+			return;
+		default:
+			INyARGsPixelDriver out_drv=o_raster.getGsPixelDriver();
+			for (int y = t; y < b; y++) {
+				for (int x = 0; x<pix_count; x++){
+					out_drv.setPixel(x,y,((in_buf[bp+1] & 0xff) + (in_buf[bp+2] & 0xff) + (in_buf[bp+3] & 0xff)) /3);
+					bp+=4;
+				}
+				bp+=row_padding_src;
+			}
+			return;
+		}
+	}
+}
+
+
+
+
+
 
 
 class NyARRgb2GsFilterRgbAve_BYTE1D_C8C8C8_24 implements INyARRgb2GsFilterRgbAve
