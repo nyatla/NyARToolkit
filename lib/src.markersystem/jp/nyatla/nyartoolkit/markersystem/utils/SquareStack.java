@@ -30,7 +30,9 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
-
+/**
+ * このクラスは、拡張した{@link NyARSquare}クラスのスタックです。
+ */
 public class SquareStack extends NyARObjectStack<SquareStack.Item>
 {
 	public class Item extends NyARSquare

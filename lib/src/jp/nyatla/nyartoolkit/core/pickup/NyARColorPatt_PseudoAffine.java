@@ -208,7 +208,6 @@ public class NyARColorPatt_PseudoAffine implements INyARColorPatt
 		}
 		return true;
 	}
-	@Override
 	public Object createInterface(Class<?> iIid) throws NyARException {
 		// TODO Auto-generated method stub
 		return null;

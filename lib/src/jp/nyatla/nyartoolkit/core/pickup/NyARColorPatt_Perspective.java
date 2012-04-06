@@ -191,7 +191,6 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 		return this._raster_driver.copyPatt(i_vertexs,this._edge.x,this._edge.y,this._sample_per_pixel, this);
 	}
 
-	@Override
 	public Object createInterface(Class<?> iIid) throws NyARException
 	{
 		if(iIid==INyARPerspectiveCopy.class){

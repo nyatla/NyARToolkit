@@ -33,8 +33,6 @@ package jp.nyatla.nyartoolkit.core;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
-
-import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.match.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
@@ -147,6 +145,7 @@ class NyARCodeFileReader
 
 /**
  * このクラスは、ARToolKitのマーカーパターン1個のデータを格納します。
+ * メンバ変数に、マーカパターン1個分の、カラー、グレースケールの色差分ラスタ４枚を持ちます。
  * マーカーパターンのプロパティと、データのロード機能を提供します。
  */
 public class NyARCode
@@ -161,8 +160,10 @@ public class NyARCode
 	 * @param i_index
 	 * 方位インデクスの値を指定します。
 	 * 範囲は、0&lt;=n&lt;=3の数値です。
+	 * 値については、{@link NyARMatchPattResult#direction}を参照してください。
 	 * @return
-	 * 指定した方位の{@link NyARMatchPattDeviationColorData}オブジェクトを返します。
+	 * [readonly]
+	 * 方位に対応する、{@link NyARMatchPattDeviationColorData}オブジェクトを返します。
 	 */
 	public NyARMatchPattDeviationColorData getColorData(int i_index)
 	{
@@ -173,8 +174,10 @@ public class NyARCode
 	 * @param i_index
 	 * 方位インデクスの値を指定します。
 	 * 範囲は、0&lt;=n&lt;=3の数値です。
+	 * 値については、{@link NyARMatchPattResult#direction}を参照してください。
 	 * @return
-	 * 指定した方位の{@link NyARMatchPattDeviationBlackWhiteData}オブジェクトを返します。
+	 * [readonly]
+	 * 方位に対応する、{@link NyARMatchPattDeviationBlackWhiteData}オブジェクトを返します。
 	 */
 	public NyARMatchPattDeviationBlackWhiteData getBlackWhiteData(int i_index)
 	{
@@ -183,7 +186,7 @@ public class NyARCode
 	/**
 	 * ARマーカの横解像度を返します。
 	 * @return
-	 * 解像度値
+	 * 解像度値[pixel]
 	 */
 	public int getWidth()
 	{
@@ -193,7 +196,7 @@ public class NyARCode
 	/**
 	 * ARマーカの縦解像度を返します。
 	 * @return
-	 * 解像度値
+	 * 解像度値[pixel]
 	 */
 	public int getHeight()
 	{
@@ -205,9 +208,9 @@ public class NyARCode
 	 * コンストラクタです。
 	 * 空のNyARCodeオブジェクトを作成します。
 	 * @param i_width
-	 * 作成するマーカパターンの横解像度
+	 * 作成するマーカパターンの横解像度[pixel]
 	 * @param i_height
-	 * 作成するマーカパターンの縦解像度
+	 * 作成するマーカパターンの縦解像度[pixel]
 	 * @throws NyARException
 	 */
 	public NyARCode(int i_width, int i_height) throws NyARException

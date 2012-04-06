@@ -251,7 +251,7 @@ public class ARTKMarkerTable
 		this._deviation_data.setRaster(this._tmp_raster);
 		int ret=-1;
 		int dir=-1;
-		double cf=Double.MIN_VALUE;
+		double cf=0;
 		for(int i=this._table.getLength()-1;i>=0;i--){
 			this._match_patt.setARCode(this._table.getItem(i).code);
 			this._match_patt.evaluate(this._deviation_data, tmp_patt_result);

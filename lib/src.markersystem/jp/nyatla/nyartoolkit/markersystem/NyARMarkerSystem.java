@@ -51,14 +51,23 @@ import jp.nyatla.nyartoolkit.markersystem.utils.*;
 
 
 
+/**
+ * このクラスは、マーカベースARの制御クラスです。
+ * 複数のARマーカとNyIDの検出情報の管理機能、撮影画像の取得機能を提供します。
+ * このクラスは、ARToolKit固有の座標系を出力します。他の座標系を出力するときには、継承クラスで変換してください。
+ * レンダリングシステム毎にクラスを派生させて使います。Javaの場合には、OpenGL用の{@link NyARGlMarkerSystem}クラスがあります。
+ */
 public class NyARMarkerSystem
 {
-	/**
-	 * 定数値。敷居値を自動決定します。 
-	 */
-	public static int THLESHOLD_AUTO=0xffffffff;
-	public static double FRUSTUM_DEFAULT_FAR_CLIP=10000;
-	public static double FRUSTUM_DEFAULT_NEAR_CLIP=10;
+	/**　定数値。自動敷居値を示す値です。　*/
+	public final static int THLESHOLD_AUTO=0xffffffff;
+	/** 定数値。視錐台のFARパラメータの初期値[mm]です。*/
+	public final static double FRUSTUM_DEFAULT_FAR_CLIP=10000;
+	/** 定数値。視錐台のNEARパラメータの初期値[mm]です。*/
+	public final static double FRUSTUM_DEFAULT_NEAR_CLIP=10;
+	/** マーカ消失時の、消失までのﾃﾞｨﾚｲ(フレーム数)の初期値です。*/
+	public final static int LOST_DELAY_DEFAULT=5;
+	
 	
 	private static int MASK_IDTYPE=0xfffff000;
 	private static int MASK_IDNUM =0x00000fff;
@@ -71,6 +80,12 @@ public class NyARMarkerSystem
 	private int _last_gs_th;
 	private int _bin_threshold=THLESHOLD_AUTO;
 	
+	/**
+	 * コンストラクタです。{@link INyARMarkerSystemConfig}を元に、インスタンスを生成します。
+	 * @param i_config
+	 * 初期化済の{@link MarkerSystem}を指定します。
+	 * @throws NyARException
+	 */
 	public NyARMarkerSystem(INyARMarkerSystemConfig i_config) throws NyARException
 	{
 		this._ref_param=i_config.getNyARParam();
@@ -84,7 +99,7 @@ public class NyARMarkerSystem
 		this._hist_th=i_ref_config.createAutoThresholdArgorism();
 	}
 	/**
-	 * 現在のフラスタムを返します。
+	 * 現在のフラスタムオブジェクトを返します。
 	 * @return
 	 * [readonly]
 	 */
@@ -93,7 +108,7 @@ public class NyARMarkerSystem
 		return this._frustum;
 	}
     /**
-     * 現在のパラメータを返します。
+     * 現在のカメラパラメータオブジェクトを返します。
      * @return
      * [readonly]
      */
@@ -102,9 +117,11 @@ public class NyARMarkerSystem
         return this._ref_param;
     }	
 	/**
-	 * 射影変換行列の視錐台パラメータを設定します。
+	 * 視錐台パラメータを設定します。
 	 * @param i_near
+	 * 新しいNEARパラメータ
 	 * @param i_far
+	 * 新しいFARパラメータ
 	 */
 	public void setProjectionMatrixClipping(double i_near,double i_far)
 	{
@@ -112,14 +129,14 @@ public class NyARMarkerSystem
 		this._frustum.setValue(this._ref_param.getPerspectiveProjectionMatrix(),s.w,s.h,i_near,i_far);
 	}
 	/**
-	 * この関数は、1個のIdマーカをシステムに登録します。
-	 * インスタンスは、idに一致するNyIdマーカを検出します。
+	 * この関数は、1個のIdマーカをシステムに登録して、検出可能にします。
+	 * 関数はマーカに対応したID値（ハンドル値）を返します。
 	 * @param i_id
 	 * 登録するNyIdマーカのid値
 	 * @param i_marker_size
 	 * マーカの四方サイズ[mm]
 	 * @return
-	 * マーカID
+	 * マーカID（ハンドル）値。この値はIDの値ではなく、マーカのハンドル値です。
 	 * @throws NyARException
 	 */
 	public int addNyIdMarker(long i_id,double i_marker_size) throws NyARException
@@ -134,9 +151,10 @@ public class NyARMarkerSystem
 		return (this._rledetect._idmk_list.size()-1)|IDTYPE_NYID;
 	}
 	/**
-	 * この関数は、1個の範囲を持つidマーカをシステムに登録します。
+	 * この関数は、1個の範囲を持つidマーカをシステムに登録して、検出可能にします。
 	 * インスタンスは、i_id_s<=n<=i_id_eの範囲にあるマーカを検出します。
 	 * 例えば、1番から5番までのマーカを検出する場合に使います。
+	 * 関数はマーカに対応したID値（ハンドル値）を返します。
 	 * @param i_id_s
 	 * Id範囲の開始値
 	 * @param i_id_e
@@ -144,7 +162,7 @@ public class NyARMarkerSystem
 	 * @param i_marker_size
 	 * マーカの四方サイズ[mm]
 	 * @return
-	 * マーカID
+	 * マーカID（ハンドル）値。この値はNyIDの値ではなく、マーカのハンドル値です。
 	 * @throws NyARException
 	 */
 	public int addNyIdMarker(long i_id_s,long i_id_e,double i_marker_size) throws NyARException
@@ -159,13 +177,13 @@ public class NyARMarkerSystem
 	/**
 	 * この関数は、ARToolKitスタイルのマーカーを登録します。
 	 * @param i_code
-	 * 登録するマーカオブジェクト
+	 * 登録するマーカパターンオブジェクト
 	 * @param i_patt_edge_percentage
 	 * エッジ割合。ARToolkitと同じ場合は25を指定します。
 	 * @param i_marker_size
 	 * マーカの平方サイズ[mm]
 	 * @return
-	 * マーカID
+	 * マーカID（ハンドル）値。
 	 * @throws NyARException
 	 */
 	public int addARMarker(NyARCode i_code,int i_patt_edge_percentage,double i_marker_size) throws NyARException
@@ -186,7 +204,7 @@ public class NyARMarkerSystem
 	 * @param i_marker_size
 	 * マーカの平方サイズ[mm]
 	 * @return
-	 * マーカID
+	 * マーカID（ハンドル）値。
 	 * @throws NyARException
 	 */
 	public int addARMarker(InputStream i_stream,int i_patt_resolution,int i_patt_edge_percentage,double i_marker_size) throws NyARException
@@ -204,7 +222,7 @@ public class NyARMarkerSystem
 	 * @param i_marker_size
 	 * マーカの平方サイズ[mm]
 	 * @return
-	 * マーカID
+	 * マーカID（ハンドル）値。
 	 * @throws NyARException
 	 */
 	public int addARMarker(String i_file_name,int i_patt_resolution,int i_patt_edge_percentage,double i_marker_size) throws NyARException
@@ -218,18 +236,20 @@ public class NyARMarkerSystem
 		return this.addARMarker(c,i_patt_edge_percentage, i_marker_size);
 	}
 	/**
-	 * 画像からマーカパターンを生成して登録します。
-	 * ビットマップ等の画像から生成したパターンは、撮影画像から生成したパターンファイルと比較して、撮影画像の色調変化に弱くなるので注意してください。
+	 * この関数は、画像からARマーカパターンを生成して、登録します。
+	 * ビットマップ等の画像から生成したパターンは、撮影画像から生成したパターンファイルと比較して、撮影画像の色調変化に弱くなります。
+	 * 注意してください。
 	 * @param i_raster
 	 * マーカ画像を格納したラスタオブジェクト
 	 * @param i_patt_resolution
 	 * マーカの解像度
 	 * @param i_patt_edge_percentage
 	 * マーカのエッジ領域のサイズ。マーカパターンは、i_rasterからエッジ領域を除いたパターンから生成します。
+	 * ARToolKitスタイルの画像を用いる場合は、25を指定します。
 	 * @param i_marker_size
 	 * マーカの平方サイズ[mm]
 	 * @return
-	 * マーカid
+	 * マーカID（ハンドル）値。
 	 * @throws NyARException
 	 */
 	public int addARMarker(INyARRgbRaster i_raster,int i_patt_resolution,int i_patt_edge_percentage,double i_marker_size) throws NyARException
@@ -248,11 +268,11 @@ public class NyARMarkerSystem
 	
 	
 	/**
-	 * この関数は、 マーカIDのマーカが検出されているかを返します。
+	 * この関数は、 マーカIDに対応するマーカが検出されているかを返します。
 	 * @param i_id
-	 * マーカID
+	 * マーカID（ハンドル）値。
 	 * @return
-	 * マーカを認識していればtrue
+	 * マーカを検出していればtrueを返します。
 	 */
 	public boolean isExistMarker(int i_id)
 	{
@@ -261,9 +281,9 @@ public class NyARMarkerSystem
 	/**
 	 * この関数は、ARマーカの最近の一致度を返します。
 	 * {@link #isExistMarker(int)}がtrueの時にだけ使用できます。
-	 * 値は初期一致度であり、トラッキング中は変動しません。
+	 * 値は初期の一致度であり、トラッキング中は変動しません。
 	 * @param i_id
-	 * マーカID
+	 * マーカID（ハンドル）値。
 	 * @return
 	 * 0&lt;n&lt;1の一致度。
 	 */
@@ -278,11 +298,11 @@ public class NyARMarkerSystem
 	}
 	/**
 	 * この関数は、NyIdマーカのID値を返します。
-	 * 範囲指定で検出したマーカの、実際のIDを得る場合などに遣います。
+	 * 範囲指定で登録したNyIdマーカから、実際のIDを得るために使います。
 	 * @param i_id
-	 * マーカID
+	 * マーカID（ハンドル）値。
 	 * @return
-	 * nyIdのID値
+	 * 現在のNyIdの値
 	 * @throws NyARException
 	 */
 	public long getNyId(int i_id) throws NyARException
@@ -296,7 +316,7 @@ public class NyARMarkerSystem
 	}
 	/**
 	 * この関数は、現在の２値化敷居値を返します。
-	 * 自動敷居値を選択している場合は、直近の敷居値を返します。
+	 * 自動敷居値を選択している場合は、直近に検出した敷居値を返します。
 	 * @return
 	 * 敷居値(0-255)
 	 */
@@ -305,11 +325,12 @@ public class NyARMarkerSystem
 		return this._last_gs_th;
 	}
 	/**
-	 * この関数は、マーカIDのライフ値を返します。
-	 * ライフ値については、{@link TMarkerData#life}を参照してください。
+	 * この関数は、マーカのライフ値を返します。
+	 * ライフ値は、フレーム毎に加算される寿命値です。
 	 * @param i_id
-	 * マーカID
+	 * マーカID（ハンドル）値。
 	 * @return
+	 * ライフ値
 	 */
 	public long getLife(int i_id)
 	{
@@ -322,9 +343,10 @@ public class NyARMarkerSystem
 		}
 	}
 	/**
-	 * この関数は、マーカIDから消失カウンタの値を返します。
+	 * この関数は、マーカの消失カウンタの値を返します。
+	 * 消失カウンタの値は、マーカを一時的にロストした時に加算される値です。再度検出した時に0にリセットされます。
 	 * @param i_id
-	 * マーカID
+	 * マーカID（ハンドル）値。
 	 * @return
 	 * 消失カウンタの値
 	 */
@@ -340,7 +362,9 @@ public class NyARMarkerSystem
 	}
 	/**
 	 * この関数は、スクリーン座標点をマーカ平面の点に変換します。
+	 * {@link #isExistMarker(int)}がtrueの時にだけ使用できます。
 	 * @param i_id
+	 * マーカID（ハンドル）値。
 	 * @param i_x
 	 * 変換元のスクリーン座標
 	 * @param i_y
@@ -357,9 +381,10 @@ public class NyARMarkerSystem
 	}
 	private NyARDoublePoint3d _wk_3dpos=new NyARDoublePoint3d();
 	/**
-	 * この関数は、idで示されるマーカ座標系の点をスクリーン座標へ変換します。
+	 * この関数は、マーカ座標系の点をスクリーン座標へ変換します。
+	 * {@link #isExistMarker(int)}がtrueの時にだけ使用できます。
 	 * @param i_id
-	 * マーカidを指定します。
+	 * マーカID（ハンドル）値。
 	 * @param i_x
 	 * マーカ座標系のX座標
 	 * @param i_y
@@ -384,28 +409,29 @@ public class NyARMarkerSystem
 	
 	/**
 	 * この関数は、マーカ平面上の任意の４点で囲まれる領域から、画像を射影変換して返します。
-	 * 画像は、最後に入力した入力画像から取得します。
+	 * {@link #isExistMarker(int)}がtrueの時にだけ使用できます。
 	 * @param i_id
+	 * マーカID（ハンドル）値。
 	 * @param i_sensor
 	 * 画像を取得するセンサオブジェクト。通常は{@link #update(NyARSensor)}関数に入力したものと同じものを指定します。
 	 * @param i_x1
-	 * 頂点1
+	 * 頂点1[mm]
 	 * @param i_y1
-	 * 頂点1
+	 * 頂点1[mm]
 	 * @param i_x2
-	 * 頂点2
+	 * 頂点2[mm]
 	 * @param i_y2
-	 * 頂点2
+	 * 頂点2[mm]
 	 * @param i_x3
-	 * 頂点3
+	 * 頂点3[mm]
 	 * @param i_y3
-	 * 頂点3
+	 * 頂点3[mm]
 	 * @param i_x4
-	 * 頂点4
+	 * 頂点4[mm]
 	 * @param i_y4
-	 * 頂点4
+	 * 頂点4[mm]
 	 * @param i_raster
-	 * 出力先のオブジェクト
+	 * 取得した画像を格納するオブジェクト
 	 * @return
 	 * 結果を格納したi_rasterオブジェクト
 	 * @throws NyARException
@@ -432,16 +458,20 @@ public class NyARMarkerSystem
 		return i_sensor.getPerspectiveImage(pos2[0].x, pos2[0].y,pos2[1].x, pos2[1].y,pos2[2].x, pos2[2].y,pos2[3].x, pos2[3].y,i_raster);
 	}
 	/**
-	 * この関数は、マーカ平面上の任意の４点で囲まれる領域から、画像を射影変換して返します。
-	 * 画像は、最後に入力した入力画像から取得します。
+	 * この関数は、マーカ平面上の任意の矩形で囲まれる領域から、画像を射影変換して返します。
+	 * {@link #isExistMarker(int)}がtrueの時にだけ使用できます。
 	 * @param i_id
-	 * マーカid
+	 * マーカID（ハンドル）値。
 	 * @param i_sensor
 	 * 画像を取得するセンサオブジェクト。通常は{@link #update(NyARSensor)}関数に入力したものと同じものを指定します。
 	 * @param i_l
+	 * 矩形の左上点です。
 	 * @param i_t
+	 * 矩形の左上点です。
 	 * @param i_w
+	 * 矩形の幅です。
 	 * @param i_h
+	 * 矩形の幅です。
 	 * @param i_raster
 	 * 出力先のオブジェクト
 	 * @return
@@ -459,10 +489,10 @@ public class NyARMarkerSystem
     }
 	/**
 	 * この関数は、マーカの姿勢変換行列を返します。
-	 * @param i_id
-	 * マーカid
+	 * マーカID（ハンドル）値。
 	 * @return
 	 * [readonly]
+	 * 姿勢行列を格納したオブジェクト。座標系は、ARToolKit座標系です。
 	 */
 	public NyARDoubleMatrix44 getMarkerMatrix(int i_id)
 	{
@@ -475,9 +505,9 @@ public class NyARMarkerSystem
 		}
 	}
 	/**
-	 * この関数は、マーカ頂点の二次元座標を返します。
+	 * この関数は、マーカの4頂点の、スクリーン上の二次元座標を返します。
 	 * @param i_id
-	 * マーカID
+	 * マーカID（ハンドル）値。
 	 * @return
 	 * [readonly]
 	 */
@@ -501,7 +531,8 @@ public class NyARMarkerSystem
 		this._bin_threshold=i_th;
 	}
 	/**
-	 * ARマーカの一致敷居値を設定します。
+	 * この関数は、ARマーカ検出の、敷居値を設定します。
+	 * ここで設定した値以上の一致度のマーカを検出します。
 	 * @param i_val
 	 * 敷居値。0.0&lt;n&lt;1.0の値を指定すること。
 	 */
@@ -509,11 +540,24 @@ public class NyARMarkerSystem
 	{
 		this._rledetect._armk_list.setConficenceTh(i_val);
 	}
-	
+	/**
+	 * この関数は、消失時のディレイ値を指定します。
+	 * デフォルト値は、{@link NyARMarkerSystem#LOST_DELAY_DEFAULT}です。
+	 * MarkerSystemは、ここで指定した回数を超えて連続でマーカを検出できないと、マーカが消失したと判定します。
+	 * @param i_delay
+	 * 回数を指定します。
+	 */
+	public void setLostDelay(int i_delay)
+	{
+		this._rledetect.lost_th=i_delay;
+	}
 	private long _time_stamp=-1;
 	private INyARHistogramAnalyzer_Threshold _hist_th;
 	/**
-	 * 状況を更新する。
+	 * この関数は、入力したセンサ入力値から、インスタンスの状態を更新します。
+	 * 関数は、センサオブジェクトから画像を取得して、マーカ検出、一致判定、トラッキング処理を実行します。
+	 * @param i_sensor
+	 * {@link MarkerSystem}に入力する画像を含むセンサオブジェクト。
 	 * @throws NyARException 
 	 */
 	public void update(NyARSensor i_sensor) throws NyARException
@@ -543,7 +587,7 @@ public class NyARMarkerSystem
 
 
 /**
- * {@link MultiMarker}向けの矩形検出器です。
+ * {@link NyARMarkerSystem}が使う矩形検出器です。
  */
 class RleDetector extends NyARSquareContourDetector_Rle
 {

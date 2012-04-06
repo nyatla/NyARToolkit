@@ -72,8 +72,11 @@ public class NyARMat
 	 * 配列i_mをラップしてインスタンスを生成します。
 	 * 
 	 * @param i_row
+	 * 行列の行数です。
 	 * @param i_clm
+	 * 行列の列数です。
 	 * @param i_m
+	 * 行列の　バッファです。double[i_row][i_clm]の配列を指定します。
 	 * @param i_is_attached_buffer
 	 * i_mをインスタンスが管理するかを示します。trueの場合、i_mの所有権はインスタンスに移ります。
 	 */
@@ -303,12 +306,9 @@ public class NyARMat
 		}
 	}
 	/**
-	 * i_srcの転置行列をdestに得ます。
-	 * この関数は未チェックの為、実行すると例外が発生します。
-	 * @param dest
-	 * 出力先のオブジェクト
-	 * @param source
-	 * 入力元のオブジェクト
+	 * i_srcの転置行列をインスタンスにセットします。
+	 * @param i_src
+	 * 入力元のオブジェクト。(i_src.row == this.clm)&&(i_src.clm == this.row)でなければなりません。
 	 */
 	public void transpose(NyARMat i_src) throws NyARException
 	{
@@ -323,7 +323,7 @@ public class NyARMat
 	}
 
 	/**
-	 * ARToolKitの、arMatrixUnit関数と同等な関数です。unitを単位行列に初期化します。
+	 * ARToolKitのarMatrixUnit関数と同等な関数です。unitを単位行列に初期化します。
 	 * この関数は未チェックの為、実行すると例外が発生します。
 	 * @param unit
 	 * 操作するオブジェクト。

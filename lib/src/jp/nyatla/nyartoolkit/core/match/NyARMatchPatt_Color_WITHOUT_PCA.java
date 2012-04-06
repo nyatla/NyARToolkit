@@ -105,7 +105,7 @@ public class NyARMatchPatt_Color_WITHOUT_PCA implements INyARMatchPatt
 		//
 		final int[] linput = i_patt.getData();
 		int sum;
-		double max = Double.MIN_VALUE;
+		double max = 0;
 		int res = NyARMatchPattResult.DIRECTION_UNKNOWN;
 		final int for_mod=this._optimize_for_mod;
 		for (int j = 0; j < 4; j++) {

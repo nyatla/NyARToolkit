@@ -28,7 +28,9 @@ import jp.nyatla.nyartoolkit.core.NyARException;
 
 
 
-
+/**
+ * このクラスは、NyIdマーカの検出結果を保存するデータクラスです。
+ */
 public class MarkerInfoNyId extends TMarkerData
 {
 	/** MK_NyIdの情報。 反応するidの開始レンジ*/

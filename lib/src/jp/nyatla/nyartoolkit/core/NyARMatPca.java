@@ -32,12 +32,18 @@ package jp.nyatla.nyartoolkit.core;
 
 
 /**
- * このクラスは、NyARMatに主成分機能を追加します。
+ * このクラスは、主成分機能を追加した{@param NyARMat}です。
  */
 public class NyARMatPca extends NyARMat
 {
 	private final NyARVec wk_PCA_QRM_ev = new NyARVec(1);
 	private NyARMatPca wk_PCA_PCA_u = null;
+	/**
+	 * コンストラクタです。
+	 * i_r * i_cの行列を作成します。
+	 * @param i_r
+	 * @param i_c
+	 */
 	public NyARMatPca(int i_r,int i_c)
 	{
 		super(i_r,i_c);

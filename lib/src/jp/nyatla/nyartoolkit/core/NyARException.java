@@ -32,7 +32,7 @@ package jp.nyatla.nyartoolkit.core;
 
 /**
  * NyARToolkitライブラリが生成するExceptionのクラスです。
- * このクラスは、NyARToolkitライブラリでのみ使用します。
+ * このクラスは、NyARToolkitで発生する例外を通知します。
  */
 public class NyARException extends Exception
 {

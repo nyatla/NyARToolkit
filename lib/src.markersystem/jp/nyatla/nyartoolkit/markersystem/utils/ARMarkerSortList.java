@@ -27,7 +27,9 @@ package jp.nyatla.nyartoolkit.markersystem.utils;
 import jp.nyatla.nyartoolkit.core.utils.NyARLinkList;
 
 
-
+/**
+ * このクラスは、ARマーカの検出結果をマッピングするためのリストです。
+ */
 public class ARMarkerSortList extends NyARLinkList<ARMarkerSortList.Item>
 {
 	public class Item extends NyARLinkList.Item

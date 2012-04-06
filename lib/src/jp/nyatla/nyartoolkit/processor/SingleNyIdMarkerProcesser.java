@@ -37,13 +37,14 @@ import jp.nyatla.nyartoolkit.nyidmarker.*;
 import jp.nyatla.nyartoolkit.nyidmarker.data.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.*;
 /**
- * このクラスは、1個のNyARマーカを検出する処理を、イベントドリブンにするシーケンスを定義します。
- * マーカの出現・移動・消滅を、自己コールバック関数で通知することができます。
- * クラスにはNyIdマーカのエンコーダを指定できます。エンコーダの種類を変えることで、異なる種類のNyIdマーカを同じクラスで
- * 取り扱うことができます。（同時に取り扱うことはできません。）
+ * このクラスは、1個のNyARマーカの検出処理を管理します。このクラスを継承してアプリケーションを作成することで、
+ * マーカの状態変化に対応するイベントドリブンなアプリケーションを構築できます。
+ * クラスは、マーカの出現・移動・消滅を、自己コールバック関数（イベントハンドラ）により通知します。イベントハンドラは、
+ * 引数に状態変化の詳細を与えるので、アプリケーションではそれに応じた処理を実装します。
+ * 拡張機能として、独自のNyIdマーカのデコーダを指定することができます。デコーダの種類を変えることで、異なる種類のNyIdマーカを同じクラスで
+ * 取り扱うことができます。
  * <p>自己コールバック関数の説明-
- * このクラスには、３個の自己コールバック関数があります。{@link SingleARMarkerProcesser}は、以下のタイミングでこれらを呼び出します。
- * ユーザは継承クラスでこれらの関数に実装を行い、イベント駆動のアプリケーションを作成できます。
+ * このクラスには、３個の自己コールバック関数（イベントハンドラ）があります。{@link SingleARMarkerProcesser}は、以下のタイミングでこれらを呼び出します。
  * <ul>
  * <li>　{@link #onEnterHandler} - 登録したマーカが初めて見つかった時に呼び出されます。ここに、発見したマーカに対応した初期処理を書きます。
  * <li>　{@link #onLeaveHandler} - 検出中のマーカが消失した時に呼び出されます。ここに、マーカの終期処理を書きます。
@@ -57,6 +58,7 @@ import jp.nyatla.nyartoolkit.core.squaredetect.*;
  * <li>複数の同一IDのNyIdマーカが画像にある場合は、区別できません。
  * </ul>
  * </p>
+ * このクラスの定義は古いため、特別な事情が無い限り、{@link jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystem}を使うべきです。
  */
 public abstract class SingleNyIdMarkerProcesser
 {
@@ -160,7 +162,7 @@ public abstract class SingleNyIdMarkerProcesser
 	}	
 
 	
-	/**　ユーザーが自由に使えるタグ変数です。*/
+	/**　ユーザーが自由に使えるタグ変数です。イベントハンドラの中で生成したオブジェクト等を、一時的に所有させたい場合などに使います。*/
 	public Object tag;
 
 	/**

@@ -27,7 +27,6 @@ package jp.nyatla.nyartoolkit.markersystem;
 
 
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterdriver.INyARHistogramFromRaster;
@@ -38,7 +37,10 @@ import jp.nyatla.nyartoolkit.core.types.*;
 
 
 /**
- * MarkerSystemの入力データを管理するベースクラスです。生データのスナップショット管理を行います。
+ * このクラスは、{@link NyARMarkerSystem}へ入力するセンサ情報（画像）を管理します。
+ * センサ情報のスナップショットに対するアクセサ、形式変換機能を提供します。
+ * 管理している情報は、元画像（カラー）、グレースケール画像、ヒストグラムです。
+ * このインスタンスは{@link NyARMarkerSystem#update(NyARSensor)}関数により、{@link NyARMarkerSystem}に入力します。
  */
 public class NyARSensor
 {
@@ -48,13 +50,19 @@ public class NyARSensor
 	private long _src_ts;
 	private long _gs_id_ts;
 	private long _gs_hist_ts;
+	/**
+	 * 画像サイズ（スクリーンサイズ）を指定して、インスタンスを生成します。
+	 * @param i_size
+	 * 画像のサイズ。
+	 * @throws NyARException
+	 */
 	public NyARSensor(NyARIntSize i_size) throws NyARException
 	{
 		this.initInstance(i_size);
 		this._hist_drv=(INyARHistogramFromRaster) this._gs_raster.createInterface(INyARHistogramFromRaster.class);
 	}
 	/**
-	 * 画像ドライバに依存するインスタンスの生成。
+	 * この関数は、画像ドライバに依存するインスタンスを生成する。
 	 * 継承クラスで上書きする。
 	 * @param s
 	 * @throws NyARException
@@ -78,10 +86,11 @@ public class NyARSensor
 		this._gs_hist_ts=0;
 	}
 	/**
-	 * キャッシュしている射影変換ドライバを返します。
+	 * この関数は、現在のカラー画像の射影変換ドライバを返します。
 	 * この関数は、内部処理向けの関数です。
 	 * @return
 	 * [readonly]
+	 * 射影変換ドライバのオブジェクト。
 	 */
 	public INyARPerspectiveCopy getPerspectiveCopy()
 	{
@@ -95,6 +104,8 @@ public class NyARSensor
 	 * この関数は、入力画像を元に、インスタンスの状態を更新します。
 	 * この関数は、タイムスタンプをインクリメントします。
 	 * @param i_input
+	 * カラー画像。画像のサイズは、コンストラクタに設定したスクリーンサイズと同じである必要があります。
+	 * この画像は、次回の{@link #update}まで、インスタンスから参照されます。
 	 * @throws NyARException 
 	 */
 	public void update(INyARRgbRaster i_input) throws NyARException
@@ -118,8 +129,11 @@ public class NyARSensor
 		this._src_ts++;
 	}
 	/**
-	 * 現在のタイムスタンプを返します。
+	 * この関数は、現在のタイムスタンプを返します。
+	 * タイムスタンプは0から始まる整数値で、{@link #update(INyARRgbRaster)},{@link #updateTimeStamp()}
+	 * 関数をコールするごとにインクリメントされます。
 	 * @return
+	 * タイムスタンプ値
 	 */
 	public long getTimeStamp()
 	{
@@ -128,6 +142,8 @@ public class NyARSensor
 	/**
 	 * この関数は、グレースケールに変換した現在の画像を返します。
 	 * @return
+	 * [readonly]
+	 * グレースケールに変換した現在の画像
 	 * @throws NyARException 
 	 */
 	public INyARGrayscaleRaster getGsImage() throws NyARException
@@ -142,6 +158,9 @@ public class NyARSensor
 	}
 	/**
 	 * この関数は、現在のGS画像のﾋｽﾄｸﾞﾗﾑを返します。
+	 * @return
+	 * [readonly]
+	 * 256スケールのヒストグラム。
 	 * @throws NyARException 
 	 */
 	public NyARHistogram getGsHistogram() throws NyARException
@@ -154,8 +173,10 @@ public class NyARSensor
 		return this._gs_hist;
 	}
 	/**
-	 * 現在の入力画像の参照値を返します。
+	 * この関数は、現在の入力画像の参照値を返します。
 	 * @return
+	 * [readonly]
+	 * {@link #update}に最後に入力した画像。一度も{@link #update}をコールしなかったときは未定。
 	 */
 	public INyARRgbRaster getSourceImage()
 	{
@@ -163,7 +184,9 @@ public class NyARSensor
 	}
 	
 	/**
-	 * 任意の4頂点領域を射影変換して取得します。
+	 * この関数は、RGB画像の任意の4頂点領域を、射影変換してi_raster取得します。
+	 * {@link #getPerspectiveImage(double, double, double, double, double, double, double, double, INyARRgbRaster)}
+	 * のint引数版です。
 	 * @param i_x1
 	 * @param i_y1
 	 * @param i_x2
@@ -172,6 +195,7 @@ public class NyARSensor
 	 * @param i_y3
 	 * @param i_x4
 	 * @param i_y4
+	 * @param i_raster
 	 * @return
 	 * @throws NyARException 
 	 */
@@ -186,18 +210,29 @@ public class NyARSensor
 		return i_raster;
 	}
 	/**
-	 * 任意の4頂点領域を射影変換して取得します。
+	 * この関数は、RGB画像の任意の4頂点領域を、射影変換してi_raster取得します。
+	 * 出力画像の解像度は、i_rasterに一致します。
 	 * @param i_x1
+	 * 頂点1[pixel]
 	 * @param i_y1
+	 * 頂点1[pixel]
 	 * @param i_x2
+	 * 頂点2[pixel]
 	 * @param i_y2
+	 * 頂点2[pixel]
 	 * @param i_x3
+	 * 頂点3[pixel]
 	 * @param i_y3
+	 * 頂点3[pixel]
 	 * @param i_x4
+	 * 頂点4[pixel]
 	 * @param i_y4
+	 * 頂点4[pixel]
 	 * @param i_raster
+	 * 射影変換した画像を受け取るオブジェクト
 	 * @return
-	 * @throws NyARException
+	 * 結果を格納したi_rasterオブジェクト。
+	 * @throws NyARException 
 	 */
 	public INyARRgbRaster getPerspectiveImage(
 		    double i_x1,double i_y1,

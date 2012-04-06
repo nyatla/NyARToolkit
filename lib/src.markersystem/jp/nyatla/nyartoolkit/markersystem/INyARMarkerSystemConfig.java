@@ -31,33 +31,37 @@ import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
- * このインタフェイスは、NyARMarkerSystemのコンフィギュレーションインタフェイスを定義します。
- *
+ * このインタフェイスは、NyARMarkerSystemのコンフィギュレーションオブジェクトに使用します。
+ * {@link NyARMarkerSystem}は、このインタフェイスを継承したクラスから、動作に必要なオブジェクトや定数を取得します。
  */
 public interface INyARMarkerSystemConfig
 {
 	/**
-	 * 姿勢変換アルゴリズムクラスのオブジェクトを生成して返します。
+	 * 姿勢行列計算クラスを生成して返します。
 	 * @return
+	 * 新しいオブジェクト。
 	 * @throws NyARException
 	 */
 	public INyARTransMat createTransmatAlgorism() throws NyARException;
 	/**
 	 * 敷居値決定クラスを生成して返します。
 	 * @return
+	 * 新しいオブジェクト
 	 * @throws NyARException
 	 */
 	public INyARHistogramAnalyzer_Threshold createAutoThresholdArgorism() throws NyARException;
 	/**
-	 * ARToolKitパラメータオブジェクトを返します。
+	 * ARToolKitのカメラパラメータのオブジェクトを返します。
 	 * @return
 	 * [readonly]
+	 * 参照値です。
 	 */
 	public NyARParam getNyARParam();
 	/**
-	 * コンフィギュレーションのスクリーンサイズを返します。
+	 * このコンフィギュレーションのスクリーンサイズを返します。
 	 * @return
 	 * [readonly]
+	 * 参照値です。
 	 */
 	public NyARIntSize getScreenSize();
 }

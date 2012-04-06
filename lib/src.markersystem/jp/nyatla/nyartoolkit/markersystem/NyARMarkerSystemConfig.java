@@ -34,13 +34,35 @@ import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
+/**
+ * このクラスは、NyARToolkitの姿勢推定アルゴリズムに調整したコンフィギュレーションクラスです。
+ *
+ */
 public class NyARMarkerSystemConfig implements INyARMarkerSystemConfig
 {
 	protected NyARParam _param;
+	/**
+	 * コンストラクタです。
+	 * 初期化済カメラパラメータからコンフィギュレーションを生成します。
+	 * @param i_param
+	 * 初期化に使うカメラパラメータオブジェクト。インスタンスの所有権は、インスタンスに移ります。
+	 */
 	public NyARMarkerSystemConfig(NyARParam i_param)
 	{
 		this._param=i_param;
 	}
+	/**
+	 * コンストラクタです。
+	 * i_ar_parama_streamからカメラパラメータファイルを読み出して、スクリーンサイズをi_width,i_heightに変形してから、
+	 * コンフィギュレーションを生成します。
+	 * @param i_ar_param_stream
+	 * カメラパラメータファイルを読み出すストリーム
+	 * @param i_width
+	 * スクリーンサイズ
+	 * @param i_height
+	 * スクリーンサイズ
+	 * @throws NyARException
+	 */
 	public NyARMarkerSystemConfig(InputStream i_ar_param_stream,int i_width,int i_height) throws NyARException
 	{
 		this._param=new NyARParam();
@@ -48,9 +70,12 @@ public class NyARMarkerSystemConfig implements INyARMarkerSystemConfig
 		this._param.changeScreenSize(i_width,i_height);
 	}
 	/**
-	 * コンストラクタです。カメラパラメータにサンプル値(../Data/camera_para.dat)をロードして、コンフィギュレーションを生成します。
+	 * コンストラクタです。カメラパラメータにサンプル値(../Data/camera_para.dat)の値をロードして、
+	 * コンフィギュレーションを生成します。
 	 * @param i_width
+	 * スクリーンサイズ
 	 * @param i_height
+	 * スクリーンサイズ
 	 * @throws NyARException
 	 */
 	public NyARMarkerSystemConfig(int i_width,int i_height) throws NyARException
@@ -60,20 +85,29 @@ public class NyARMarkerSystemConfig implements INyARMarkerSystemConfig
 		this._param.changeScreenSize(i_width,i_height);		
 	}
 	/**
-	 * スクリーンサイズを返します。
+	 * この値は、カメラパラメータのスクリーンサイズです。
 	 */
 	public final NyARIntSize getScreenSize()
 	{
 		return this._param.getScreenSize();
 	}
+	/**
+	 * @Override
+	 */
 	public INyARTransMat createTransmatAlgorism() throws NyARException
 	{
 		return new NyARTransMat(this._param);
 	}
+	/**
+	 * @Override
+	 */
 	public INyARHistogramAnalyzer_Threshold createAutoThresholdArgorism()
 	{
 		return new NyARHistogramAnalyzer_SlidePTile(15);
 	}
+	/**
+	 * @Override
+	 */
 	public NyARParam getNyARParam()
 	{
 		return 	this._param;

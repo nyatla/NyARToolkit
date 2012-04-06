@@ -29,7 +29,9 @@ import java.util.ArrayList;
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 
-
+/**
+ * このクラスは。近距離頂点トラッキングの判定と、そこで検出した結果を保持します。
+ */
 public class TrackingList extends ArrayList<TMarkerData>
 {
 	private static final long serialVersionUID = -6446466460932931830L;

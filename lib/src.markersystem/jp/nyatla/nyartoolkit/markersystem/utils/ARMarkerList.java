@@ -32,7 +32,9 @@ import jp.nyatla.nyartoolkit.core.match.NyARMatchPattResult;
 import jp.nyatla.nyartoolkit.core.rasterdriver.INyARPerspectiveCopy;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 
-
+/**
+ * このクラスは、ARマーカの検出状態を保持するリストです。
+ */
 public class ARMarkerList extends ArrayList<MarkerInfoARMarker>
 {
 	/**

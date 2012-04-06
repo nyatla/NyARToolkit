@@ -29,7 +29,7 @@ import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 
 /**
- * マーカ情報を格納するためのクラスです。
+ * このクラスは、マーカ情報を格納するためのクラスです。
  */
 public class TMarkerData
 {

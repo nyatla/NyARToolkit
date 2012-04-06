@@ -37,6 +37,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 
 /**
  * このクラスは、複数の異なる解像度の比較画像を保持します。
+ * ARマーカの検出に使用します。
  */
 public class MultiResolutionPattProvider
 {

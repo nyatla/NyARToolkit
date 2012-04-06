@@ -30,8 +30,7 @@ import jp.nyatla.nyartoolkit.core.match.NyARMatchPatt_Color_WITHOUT_PCA;
 
 
 /**
- * sqメンバは、参照です。
- *
+ * このクラスは、ARマーカの検出結果を保存するデータクラスです。
  */
 public class MarkerInfoARMarker extends TMarkerData
 {
