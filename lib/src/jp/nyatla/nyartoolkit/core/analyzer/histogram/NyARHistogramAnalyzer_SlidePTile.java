@@ -29,7 +29,11 @@ import jp.nyatla.nyartoolkit.core.types.NyARHistogram;
 
 /**
  * このクラスは、明点・暗点のPTail法で求めた敷居値を合算して、敷居値を計算します。
- * <p>敷居値決定のアルゴリズム - 明点・暗点両側からPTail法を用いて一定割合の画素を取り除き、その中間値を求めます。</p>
+ * <p>
+ * 敷居値決定のアルゴリズム -
+ * 明点・暗点両側からPTail法を用いて一定割合の画素を取り除き、その中間値を求めます。
+ * 例えば15%の場合、明領域15%(10)と、暗領域15%(200)の中間点95が敷居値として選択されます。
+ * </p>
  */
 public class NyARHistogramAnalyzer_SlidePTile implements INyARHistogramAnalyzer_Threshold
 {

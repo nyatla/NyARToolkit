@@ -27,7 +27,7 @@ package jp.nyatla.nyartoolkit.core.analyzer.histogram;
 import jp.nyatla.nyartoolkit.core.types.NyARHistogram;
 
 /**
- * このクラスは、判別法を用いて敷居値を求める機能を提供します。
+ * このクラスは、判別法を用いて敷居値を求めます。
  * <p>memo:画素数が2048^2に満たない場合は、fixedint(24-8)で計算できます。</p>
  */
 public class NyARHistogramAnalyzer_DiscriminantThreshold implements INyARHistogramAnalyzer_Threshold
