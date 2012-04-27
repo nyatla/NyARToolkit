@@ -37,16 +37,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 import jp.nyatla.nyartoolkit.core.utils.*;
 
-class TSinCosValue{
-	public static TSinCosValue[] createArray(int i_size)
-	{
-		TSinCosValue[] result=new TSinCosValue[i_size];
-		for(int i=0;i<i_size;i++){
-			result[i]=new TSinCosValue();
-		}
-		return result;
-	}
-}
+
 
 /**
  * このクラスは、NyARToolkit方式の姿勢行列Optimizerです。

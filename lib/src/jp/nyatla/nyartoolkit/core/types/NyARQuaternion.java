@@ -24,22 +24,22 @@ public class NyARQuaternion
 			this.z = ((i_mat.m02 + i_mat.m20) * mult);
 			this.w = ((i_mat.m21 - i_mat.m12) * mult);
 		}else if(elem1>elem2 && elem1>elem3){
-		    double v = Math.sqrt(elem1) * 0.5f;
+		    double v = Math.sqrt(elem1) * 0.5;
 		    double mult = 0.25 / v;
 		    this.x = ((i_mat.m10 + i_mat.m01) * mult);
 		    this.y = (v);
 		    this.z = ((i_mat.m21 + i_mat.m12) * mult);
 		    this.w = ((i_mat.m02 - i_mat.m20) * mult);
 		}else if(elem2>elem3){
-		    double v = Math.sqrt(elem2) * 0.5f;
-		    double mult = 0.25f / v;
+		    double v = Math.sqrt(elem2) * 0.5;
+		    double mult = 0.25 / v;
 		    this.x =((i_mat.m02 + i_mat.m20) * mult);
 		    this.y =((i_mat.m21 + i_mat.m12) * mult);
 		    this.z =(v);
 		    this.w =((i_mat.m10 - i_mat.m01) * mult);
 		}else{
-		    double v = Math.sqrt(elem3) * 0.5f;
-		    double mult = 0.25f / v;
+		    double v = Math.sqrt(elem3) * 0.5;
+		    double mult = 0.25 / v;
 		    this.x =((i_mat.m21 - i_mat.m12) * mult);
 		    this.y =((i_mat.m02 - i_mat.m20) * mult);
 		    this.z =((i_mat.m10 - i_mat.m01) * mult);

@@ -55,6 +55,7 @@ public class NyARRgbPixelDriverFactory
 			break;
 		case NyARBufferType.BYTE1D_X8R8G8B8_32:
 			ret=new NyARRgbPixelDriver_BYTE1D_X8R8G8B8_32();
+			break;
 		case NyARBufferType.BYTE1D_X8B8G8R8_32:
 			ret=new NyARRgbPixelDriver_BYTE1D_X8B8G8R8_32();
 			break;
