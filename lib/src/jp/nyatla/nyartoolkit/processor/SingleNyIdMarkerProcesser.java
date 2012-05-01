@@ -65,7 +65,7 @@ public abstract class SingleNyIdMarkerProcesser
 	/**
 	 * Rle矩形Detectorのブリッジ
 	 */
-	private class RleDetector extends NyARSquareContourDetector_Rle
+	private class RleDetector extends NyARSquareContourDetector_Rle implements NyARSquareContourDetector.CbHandler
 	{
 		//公開プロパティ
 		public final NyARSquare square=new NyARSquare();
@@ -108,7 +108,7 @@ public abstract class SingleNyIdMarkerProcesser
 		 * 矩形が見付かるたびに呼び出されます。
 		 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
 		 */
-		protected void onSquareDetect(NyARIntCoordinates i_coord,int[] i_vertex_index)  throws NyARException
+		public void detectMarkerCallback(NyARIntCoordinates i_coord,int[] i_vertex_index)  throws NyARException
 		{
 			//既に発見済なら終了
 			if(this.marker_data!=null){
@@ -279,7 +279,7 @@ public abstract class SingleNyIdMarkerProcesser
 
 		// スクエアコードを探す(第二引数に指定したマーカ、もしくは新しいマーカを探す。)
 		this._square_detect.init(this._gs_raster,this._is_active?this._data_current:null);
-		this._square_detect.detectMarker(this._gs_raster,this._current_threshold);
+		this._square_detect.detectMarker(this._gs_raster,this._current_threshold,this._square_detect);
 
 		// 認識状態を更新(マーカを発見したなら、current_dataを渡すかんじ)
 		final boolean is_id_found=updateStatus(this._square_detect.square,this._square_detect.marker_data);

@@ -45,11 +45,11 @@ import jp.nyatla.nyartoolkit.core.types.*;
 public class NyARSensor
 {
 	protected NyARHistogram _gs_hist;
-	private INyARRgbRaster _ref_raster;
+	protected INyARRgbRaster _ref_raster;
 	protected INyARGrayscaleRaster _gs_raster;
-	private long _src_ts;
-	private long _gs_id_ts;
-	private long _gs_hist_ts;
+	protected long _src_ts;
+	protected long _gs_id_ts;
+	protected long _gs_hist_ts;
 	/**
 	 * 画像サイズ（スクリーンサイズ）を指定して、インスタンスを生成します。
 	 * @param i_size

@@ -40,6 +40,7 @@ import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilterArtkTh;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARCoord2Linear;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
+import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector_Rle;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
@@ -65,7 +66,7 @@ import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 public class NyARDetectMarker
 {
 	/** 矩形検出器のブリッジ*/
-	private class RleDetector extends NyARSquareContourDetector_Rle
+	private class RleDetector extends NyARSquareContourDetector_Rle implements NyARSquareContourDetector.CbHandler
 	{
 		//公開プロパティ
 		public NyARDetectMarkerResultStack result_stack=new NyARDetectMarkerResultStack(NyARDetectMarker.AR_SQUARE_MAX);
@@ -103,7 +104,7 @@ public class NyARDetectMarker
 		 * 矩形が見付かるたびに呼び出されます。
 		 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
 		 */
-		protected void onSquareDetect(NyARIntCoordinates i_coord,int[] i_vertex_index) throws NyARException
+		public void detectMarkerCallback(NyARIntCoordinates i_coord,int[] i_vertex_index) throws NyARException
 		{
 			NyARMatchPattResult mr=this.__detectMarkerLite_mr;
 			//輪郭座標から頂点リストに変換
@@ -261,7 +262,7 @@ public class NyARDetectMarker
 		this._tobin_filter.doFilter(i_threshold,this._bin_raster);
 		//detect
 		this._square_detect.init(i_raster);
-		this._square_detect.detectMarker(this._bin_raster,0);
+		this._square_detect.detectMarker(this._bin_raster,0,this._square_detect);
 
 		//見付かった数を返す。
 		return this._square_detect.result_stack.getLength();

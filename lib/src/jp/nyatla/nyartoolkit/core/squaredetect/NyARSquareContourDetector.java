@@ -31,24 +31,29 @@
 package jp.nyatla.nyartoolkit.core.squaredetect;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
  * このクラスは、矩形検出器のベースクラスです。
  * 矩形検出機能を提供する関数を定義します。
  */
-public abstract class NyARSquareContourDetector
+public abstract class NyARSquareContourDetector 
 {
 	/**
-	 * この関数は、自己コールバック関数です。{@link #detectMarker}が検出矩形を通知するために使います。
-	 * 実装クラスでは、ここに矩形の発見時の処理を記述してください。
-	 * @param i_coord
-	 * 輪郭線オブジェクト
-	 * @param i_vertex_index
-	 * 矩形の４頂点に対応する、輪郭線オブジェクトのインデクス番号。
-	 * @throws NyARException
+	 * {@link #NyARSquareContourDetector}クラスのコールバック関数のハンドラインタフェイス。
 	 */
-	protected abstract void onSquareDetect(NyARIntCoordinates i_coord,int[] i_vertex_index)  throws NyARException;
+	public interface CbHandler
+	{
+		/**
+		 * この関数は、自己コールバック関数です。{@link #detectMarker}が検出矩形を通知するために使います。
+		 * 実装クラスでは、ここに矩形の発見時の処理を記述してください。
+		 * @param i_coord
+		 * 輪郭線オブジェクト
+		 * @param i_vertex_index
+		 * 矩形の４頂点に対応する、輪郭線オブジェクトのインデクス番号。
+		 * @throws NyARException
+		 */
+		public void detectMarkerCallback(NyARIntCoordinates i_coord,int[] i_vertex_index)  throws NyARException;
+	}
 }
 

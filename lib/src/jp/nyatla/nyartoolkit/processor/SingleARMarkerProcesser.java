@@ -65,7 +65,7 @@ public abstract class SingleARMarkerProcesser
 	/**
 	 * detectMarkerのコールバック関数
 	 */
-	private class DetectSquare extends NyARSquareContourDetector_Rle
+	private class DetectSquare extends NyARSquareContourDetector_Rle implements NyARSquareContourDetector.CbHandler
 	{
 		//公開プロパティ
 		public final NyARSquare square=new NyARSquare();
@@ -117,7 +117,7 @@ public abstract class SingleARMarkerProcesser
 		 * 矩形が見付かるたびに呼び出されます。
 		 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
 		 */
-		protected void onSquareDetect(NyARIntCoordinates i_coord,int[] i_vertex_index)  throws NyARException
+		public void detectMarkerCallback(NyARIntCoordinates i_coord,int[] i_vertex_index)  throws NyARException
 		{
 			if (this._match_patt==null) {
 				return;
@@ -199,6 +199,7 @@ public abstract class SingleARMarkerProcesser
 				}
 			}
 		}
+
 	}	
 	/**　ユーザーが自由に使えるタグ変数です。*/
 	public Object tag;
@@ -325,7 +326,7 @@ public abstract class SingleARMarkerProcesser
 
 		// スクエアコードを探す
 		this._detectmarker.init(i_raster,this._current_arcode_index);
-		this._detectmarker.detectMarker(this._gs_raster,this._thdetect.getThreshold(this._hist));
+		this._detectmarker.detectMarker(this._gs_raster,this._thdetect.getThreshold(this._hist),this._detectmarker);
 		
 		// 認識状態を更新
 		this.updateStatus(this._detectmarker.square,this._detectmarker.code_index);

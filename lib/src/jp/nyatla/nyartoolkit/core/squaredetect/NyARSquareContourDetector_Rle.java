@@ -41,7 +41,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
  * 検出した矩形を、自己コールバック関数{@link #onSquareDetect}へ通知します。
  * 継承クラスで自己コールバック関数{@link #onSquareDetect}を実装する必要があります。
  */
-public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
+public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 {	
 	/** label_stackにソート後の結果を蓄積するクラス*/
 	protected class Labeling extends NyARLabeling_Rle
@@ -90,6 +90,7 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 			}
 			this.label_stack.push(i_label);
 		}
+		
 	}
 	
 	protected Labeling _labeling;
@@ -135,7 +136,7 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 	 * ラベルと判定する敷居値
 	 * @throws NyARException
 	 */
-	public void detectMarker(INyARGrayscaleRaster i_raster,NyARIntRect i_area,int i_th) throws NyARException
+	public void detectMarker(INyARGrayscaleRaster i_raster,NyARIntRect i_area,int i_th,NyARSquareContourDetector.CbHandler i_cb) throws NyARException
 	{
 		assert(i_area.w*i_area.h>0);
 		
@@ -179,7 +180,7 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 				continue;
 			}
 			//矩形を発見したことをコールバック関数で通知
-			this.onSquareDetect(coord,mkvertex);
+			i_cb.detectMarkerCallback(coord,mkvertex);
 
 			// 検出済の矩形の属したラベルを重なりチェックに追加する。
 			overlap.push(label_pt);
@@ -196,7 +197,7 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 	 * @param i_th
 	 * 画素の二値判定敷居値です。この値は、ラベリングと、輪郭線追跡時に使われます。
 	 */
-	public void detectMarker(INyARGrayscaleRaster i_raster,int i_th) throws NyARException
+	public void detectMarker(INyARGrayscaleRaster i_raster,int i_th,NyARSquareContourDetector.CbHandler i_cb) throws NyARException
 	{
 		final NyARRleLabelFragmentInfoPtrStack flagment=this._labeling.label_stack;
 		final NyARLabelOverlapChecker<NyARRleLabelFragmentInfo> overlap = this._overlap_checker;
@@ -239,7 +240,7 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 				continue;
 			}
 			//矩形を発見したことをコールバック関数で通知
-			this.onSquareDetect(coord,mkvertex);
+			i_cb.detectMarkerCallback(coord,mkvertex);
 
 			// 検出済の矩形の属したラベルを重なりチェックに追加する。
 			overlap.push(label_pt);
@@ -247,7 +248,6 @@ public abstract class NyARSquareContourDetector_Rle extends NyARSquareContourDet
 		}
 		return;
 	}
-	
 }
 
 
