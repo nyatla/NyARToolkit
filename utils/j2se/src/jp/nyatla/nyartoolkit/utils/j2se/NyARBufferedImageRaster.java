@@ -176,8 +176,6 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 		}
 		//参照しているImageを切り替え
 		this._buffered_image=i_ref_bmi;
-		//ピクセルドライバを更新
-		this._rgb_pixel_driver.switchRaster(this);
 		//バッファの切替
 		switch(raster_type){
 			case NyARBufferType.BYTE1D_R8G8B8_24:
@@ -195,6 +193,7 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 			default:
 				throw new NyARException();
 		}
+		//ピクセルドライバを更新
 		this._rgb_pixel_driver.switchRaster(this);
 	}
 	/**
