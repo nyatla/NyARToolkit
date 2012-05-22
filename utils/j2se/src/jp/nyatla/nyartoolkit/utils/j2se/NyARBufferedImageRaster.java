@@ -109,54 +109,51 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 	 * この関数は、NyARRgbRasterに、NyARBufferedImageRasterの機能を追加します。
 	 * @throws NyARException 
 	 */
-	protected boolean initInstance(NyARIntSize i_size,int i_raster_type,boolean i_is_alloc) throws NyARException
+	protected void initInstance(NyARIntSize i_size,int i_raster_type,boolean i_is_alloc) throws NyARException
 	{
-		if(super.initInstance(i_size, i_raster_type, i_is_alloc)){
-			//成功した場合、i_is_allocがtrueなら、BufferedImageの構築
-			if(i_is_alloc){
-				BufferedImage bfi;
-				switch(i_raster_type){
-				case NyARBufferType.BYTE1D_R8G8B8_24:{
-					byte[] b=(byte[])this._buf;
-					DataBufferByte d=new DataBufferByte(b,b.length);
-					int[] bof={0,1,2};
-					bfi=new BufferedImage(
-						new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB),false,true,Transparency.OPAQUE,DataBuffer.TYPE_BYTE),
-						Raster.createWritableRaster(new ComponentSampleModel(d.getDataType(),i_size.w,i_size.h,3,3*i_size.w,bof),d,null),
-						true,null);
-					}
-					break;
-				case NyARBufferType.BYTE1D_B8G8R8_24:{
-					byte[] b=(byte[])this._buf;
-					DataBufferByte d=new DataBufferByte(b,b.length);
-					int[] bof={2,1,0};
-					bfi=new BufferedImage(
-						new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB),false,true,Transparency.OPAQUE,DataBuffer.TYPE_BYTE),
-						Raster.createWritableRaster(new ComponentSampleModel(d.getDataType(),i_size.w,i_size.h,3,3*i_size.w,bof),d,null),
-						true,null);
-					}
-					break;
-				case NyARBufferType.INT1D_X8R8G8B8_32:{
-					int[] b=(int[])this._buf;
-					DataBufferInt d=new DataBufferInt(b,b.length);
-					int[] msk={0xff0000,0x00ff00,0x0000ff};
-					bfi=new BufferedImage(
-						new DirectColorModel(24,msk[0],msk[1],msk[2]),
-						Raster.createWritableRaster(new SinglePixelPackedSampleModel(d.getDataType(),i_size.w,i_size.h,msk),d,null),
-						true,null);
-					}
-					break;
-				default:
-					throw new NyARException();
+		super.initInstance(i_size, i_raster_type, i_is_alloc);
+		//成功した場合、i_is_allocがtrueなら、BufferedImageの構築
+		if(i_is_alloc){
+			BufferedImage bfi;
+			switch(i_raster_type){
+			case NyARBufferType.BYTE1D_R8G8B8_24:{
+				byte[] b=(byte[])this._buf;
+				DataBufferByte d=new DataBufferByte(b,b.length);
+				int[] bof={0,1,2};
+				bfi=new BufferedImage(
+					new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB),false,true,Transparency.OPAQUE,DataBuffer.TYPE_BYTE),
+					Raster.createWritableRaster(new ComponentSampleModel(d.getDataType(),i_size.w,i_size.h,3,3*i_size.w,bof),d,null),
+					true,null);
 				}
-				this._buffered_image=bfi;
+				break;
+			case NyARBufferType.BYTE1D_B8G8R8_24:{
+				byte[] b=(byte[])this._buf;
+				DataBufferByte d=new DataBufferByte(b,b.length);
+				int[] bof={2,1,0};
+				bfi=new BufferedImage(
+					new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB),false,true,Transparency.OPAQUE,DataBuffer.TYPE_BYTE),
+					Raster.createWritableRaster(new ComponentSampleModel(d.getDataType(),i_size.w,i_size.h,3,3*i_size.w,bof),d,null),
+					true,null);
+				}
+				break;
+			case NyARBufferType.INT1D_X8R8G8B8_32:{
+				int[] b=(int[])this._buf;
+				DataBufferInt d=new DataBufferInt(b,b.length);
+				int[] msk={0xff0000,0x00ff00,0x0000ff};
+				bfi=new BufferedImage(
+					new DirectColorModel(24,msk[0],msk[1],msk[2]),
+					Raster.createWritableRaster(new SinglePixelPackedSampleModel(d.getDataType(),i_size.w,i_size.h,msk),d,null),
+					true,null);
+				}
+				break;
+			default:
+				throw new NyARException();
 			}
-			//ピクセルドライバの生成
-			this._rgb_pixel_driver=NyARRgbPixelDriverFactory.createDriver(this);
-			return true;
+			this._buffered_image=bfi;
 		}
-		//失敗した場合
-		return false;
+		//ピクセルドライバの生成
+		this._rgb_pixel_driver=NyARRgbPixelDriverFactory.createDriver(this);
+		return;
 	}
 	/**
 	 * BitmapBufferをラップします。古いBitmapbufferへの参照は解除されます。

@@ -7,7 +7,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolKit"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolkit.utils.jmf"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolkit.utils.jogl"/>
-	<classpathentry kind="lib" path="C:/Program Files (x86)/Java/jre6/lib/ext/jogl.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files (x86)/JMF2.1.1e/lib/jmf.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolkit.utils.j2se"/>
 	<classpathentry kind="output" path="bin"/>
