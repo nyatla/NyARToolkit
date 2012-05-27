@@ -456,10 +456,10 @@ public class NyARMarkerSystem
 	public INyARRgbRaster getMarkerPlaneImage(
 		int i_id,
 		NyARSensor i_sensor,
-	    int i_x1,int i_y1,
-	    int i_x2,int i_y2,
-	    int i_x3,int i_y3,
-	    int i_x4,int i_y4,
+		double i_x1,double i_y1,
+		double i_x2,double i_y2,
+		double i_x3,double i_y3,
+		double i_x4,double i_y4,
 	    INyARRgbRaster i_raster) throws NyARException
 	{
 		NyARDoublePoint3d[] pos  = this.__pos3d;
@@ -498,8 +498,8 @@ public class NyARMarkerSystem
 	public INyARRgbRaster getMarkerPlaneImage(
 		int i_id,
 		NyARSensor i_sensor,
-	    int i_l,int i_t,
-	    int i_w,int i_h,
+	    double i_l,double i_t,
+	    double i_w,double i_h,
 	    INyARRgbRaster i_raster) throws NyARException
     {
 		return this.getMarkerPlaneImage(i_id,i_sensor,i_l+i_w-1,i_t+i_h-1,i_l,i_t+i_h-1,i_l,i_t,i_l+i_w-1,i_t,i_raster);
