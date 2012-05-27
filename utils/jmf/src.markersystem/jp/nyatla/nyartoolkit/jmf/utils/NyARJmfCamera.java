@@ -68,7 +68,7 @@ public class NyARJmfCamera extends NyARSensor implements JmfCaptureListener
 		synchronized(this){
 			try{
 				this._raster.setBuffer(i_buffer);
-				this.updateTimeStamp();
+				this.update(this._raster);
 			}catch(Exception e){
 				e.printStackTrace();
 			}
