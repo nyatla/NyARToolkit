@@ -60,23 +60,25 @@ public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 			this._right=i_width-1;
 			return;
 		}
-		public void labeling(INyARGrayscaleRaster i_raster,NyARIntRect i_area,int i_th) throws NyARException
+		public boolean labeling(INyARGrayscaleRaster i_raster,NyARIntRect i_area,int i_th) throws NyARException
 		{
 			//配列初期化
 			this.label_stack.clear();
 			//ラベルの検出
-			super.labeling(i_raster, i_area, i_th);
+			boolean ret=super.labeling(i_raster, i_area, i_th);
 			//ソート
 			this.label_stack.sortByArea();
+			return ret;
 		}
-		public void labeling(INyARGrayscaleRaster i_raster,int i_th) throws NyARException
+		public boolean labeling(INyARGrayscaleRaster i_raster,int i_th) throws NyARException
 		{
 			//配列初期化
 			this.label_stack.clear();
 			//ラベルの検出
-			super.labeling(i_raster,i_th);
+			boolean ret=super.labeling(i_raster,i_th);
 			//ソート
-			this.label_stack.sortByArea();			
+			this.label_stack.sortByArea();
+			return ret;
 		}
 		
 		protected void onLabelFound(NyARRleLabelFragmentInfo i_label)
@@ -143,8 +145,11 @@ public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 		final NyARRleLabelFragmentInfoPtrStack flagment=this._labeling.label_stack;
 		final NyARLabelOverlapChecker<NyARRleLabelFragmentInfo> overlap = this._overlap_checker;
 
+		//ラベルの生成エラーならここまで
+		if(!this._labeling.labeling(i_raster, i_area, i_th)){
+			return;
+		}
 		// ラベル数が0ならここまで
-		this._labeling.labeling(i_raster, i_area, i_th);
 		final int label_num=flagment.getLength();
 		if (label_num < 1) {
 			return;
