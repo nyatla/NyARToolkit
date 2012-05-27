@@ -24,7 +24,6 @@
  */
 package jp.nyatla.nyartoolkit.core.utils;
 
-import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.NyARException;
 
 /**

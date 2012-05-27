@@ -31,9 +31,9 @@
 package jp.nyatla.nyartoolkit.core.transmat.rotmatrix;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core.types.matrix.*;
 import jp.nyatla.nyartoolkit.core.param.*;
+import jp.nyatla.nyartoolkit.core.types.matrix.*;
+import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
  * このクラスは、{@link NyARRotMatrix}クラスに、ベクトル(直線)から回転行列を計算する機能を追加します。

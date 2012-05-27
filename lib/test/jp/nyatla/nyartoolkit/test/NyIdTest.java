@@ -30,16 +30,19 @@
  */
 package jp.nyatla.nyartoolkit.test;
 
-import java.io.*;
-
+import java.io.File;
+import java.io.FileInputStream;
 
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
-import jp.nyatla.nyartoolkit.core.raster.rgb.*;
+import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
-import jp.nyatla.nyartoolkit.core.transmat.*;
+import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
-import jp.nyatla.nyartoolkit.nyidmarker.data.*;
-import jp.nyatla.nyartoolkit.processor.*;
+import jp.nyatla.nyartoolkit.nyidmarker.data.INyIdMarkerData;
+import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerDataEncoder_RawBitId;
+import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerData_RawBit;
+import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerData_RawBitId;
+import jp.nyatla.nyartoolkit.processor.SingleNyIdMarkerProcesser;
 
 /**
  * このプログラムは、NyIdマーカ検出クラス{@link SingleNyIdMarkerProcesser}の動作チェックプログラムです。

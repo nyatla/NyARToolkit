@@ -29,7 +29,6 @@ import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARLabeling_Rle;
 import jp.nyatla.nyartoolkit.core.pixeldriver.NyARGsPixelDriverFactory;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARContourPickup;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.*;
 
 /**
  * このクラスは、0/ 255 の二値GrayscaleRasterです。

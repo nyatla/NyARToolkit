@@ -24,7 +24,6 @@
  */
 package jp.nyatla.nyartoolkit.rpf.sampler.lrlabel;
 
-import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.*;
 import jp.nyatla.nyartoolkit.core.raster.*;

@@ -32,8 +32,10 @@ import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.INyARPerspectiveCopy;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilter;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
-import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.*;
 import jp.nyatla.nyartoolkit.rpf.reality.nyartk.*;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARTrackerSource;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARTrackerSource_Reference;
+
 /**
  * このクラスは、入力ソースに{@link NyARRgbRaster}クラスを使う{@link NyARRealitySource}です。
  * 環境に依存しない、基本機能のみを実装しています。

@@ -28,10 +28,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Date;
 
-import jp.nyatla.nyartoolkit.core.raster.rgb.*;
+import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
-import jp.nyatla.nyartoolkit.markersystem.*;
+import jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystem;
+import jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystemConfig;
+import jp.nyatla.nyartoolkit.markersystem.NyARSensor;
 
 
 public class MarkerSystem

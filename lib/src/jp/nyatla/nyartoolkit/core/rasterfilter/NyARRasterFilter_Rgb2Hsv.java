@@ -27,8 +27,7 @@ package jp.nyatla.nyartoolkit.core.rasterfilter;
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
-import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
-import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
  * このクラスは、RGB画像をHSV画像に変換するフィルタです。

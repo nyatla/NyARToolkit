@@ -34,8 +34,7 @@ import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
-
+import jp.nyatla.nyartoolkit.core.types.matrix.*;
 /**
  * このクラスは、回転行列を計算する行列クラスです。
  * 通常は、ユーザが使用することはありません。

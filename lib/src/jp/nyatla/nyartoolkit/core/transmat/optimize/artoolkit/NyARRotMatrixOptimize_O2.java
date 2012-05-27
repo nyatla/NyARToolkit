@@ -34,8 +34,7 @@ package jp.nyatla.nyartoolkit.core.transmat.optimize.artoolkit;
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.*;
-import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
-import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
+import jp.nyatla.nyartoolkit.core.types.*;
 /**
  * このクラスは、高速化したARToolKit由来の姿勢行列最適化処理を実装します。
  */

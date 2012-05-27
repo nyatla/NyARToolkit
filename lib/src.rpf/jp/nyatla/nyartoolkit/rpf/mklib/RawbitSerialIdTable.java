@@ -35,10 +35,7 @@ import jp.nyatla.nyartoolkit.rpf.reality.nyartk.NyARRealityTarget;
 import jp.nyatla.nyartoolkit.rpf.realitysource.nyartk.NyARRealitySource;
 import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status.NyARRectTargetStatus;
 import jp.nyatla.nyartoolkit.nyidmarker.*;
-import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerDataEncoder_RawBit;
-import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerDataEncoder_RawBitId;
-import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerData_RawBit;
-import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerData_RawBitId;
+import jp.nyatla.nyartoolkit.nyidmarker.data.*;
 
 /**
  * このクラスは、簡易な同期型NyIdマーカのテーブルです。

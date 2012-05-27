@@ -24,16 +24,9 @@
  */
 package jp.nyatla.nyartoolkit.rpf.mklib;
 
-import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.rpf.reality.nyartk.*;
-/**
- * 未知の矩形を認識するサンプル。
- * 絶対的な寸法は求められないので、矩形の辺比率を推定して返します。
- * 
- *
- */
 
 /**
  * このクラスは、未知の寸法、未知の縦横比率の矩形を認識するサンプルです。

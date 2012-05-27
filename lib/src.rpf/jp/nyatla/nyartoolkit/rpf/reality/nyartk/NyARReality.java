@@ -36,7 +36,9 @@ import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 import jp.nyatla.nyartoolkit.rpf.realitysource.nyartk.NyARRealitySource;
-import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.*;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARTarget;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARTargetList;
+import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARTracker;
 import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status.NyARRectTargetStatus;
 import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status.NyARTargetStatus;
 

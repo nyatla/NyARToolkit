@@ -30,15 +30,18 @@
  */
 package jp.nyatla.nyartoolkit.test;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.Date;
 
-import jp.nyatla.nyartoolkit.core.*;
+import jp.nyatla.nyartoolkit.core.NyARCode;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
-import jp.nyatla.nyartoolkit.core.raster.rgb.*;
-import jp.nyatla.nyartoolkit.core.transmat.*;
-import jp.nyatla.nyartoolkit.detector.*;
-import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
+import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
+import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
+import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
+import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
 
 /**
  * このサンプルは、{@link NyARSingleDetectMarker}クラスの動作チェック＆ベンチマークプログラムです。

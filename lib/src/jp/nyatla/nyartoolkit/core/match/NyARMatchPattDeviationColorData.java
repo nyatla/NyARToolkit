@@ -32,12 +32,10 @@ package jp.nyatla.nyartoolkit.core.match;
 
 
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.pixeldriver.INyARRgbPixelDriver;
+import jp.nyatla.nyartoolkit.core.pixeldriver.*;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
-import jp.nyatla.nyartoolkit.core.rasterdriver.*;
-import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
-import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+import jp.nyatla.nyartoolkit.core.types.*;
 
 
 /**
