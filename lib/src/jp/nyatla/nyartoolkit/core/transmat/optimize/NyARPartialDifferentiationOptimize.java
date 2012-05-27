@@ -307,6 +307,10 @@ public class NyARPartialDifferentiationOptimize
 	 */
 	private double getMinimumErrorAngleFromParam(double iL,double iJ, double iK, double iM, double iN, double iO, double i_hint_angle) throws NyARException
 	{
+		//iLが0の時は誤差修正しない。
+		if (iL == 0) {
+			return 0;
+		}		
 		double[] sin_table = this.__sin_table;
 
 		double M = (iN - iM)/iL;
