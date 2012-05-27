@@ -30,7 +30,6 @@
  */
 package jp.nyatla.nyartoolkit.core.types;
 
-import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 /**
  * このクラスは、バッファの形式を表す定数を定義します。
  * 定数は、主に{@link INyARRaster}で使用する画素形式として使います。
