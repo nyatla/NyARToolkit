@@ -209,7 +209,10 @@ public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 
 		// ラベル数が0ならここまで
 		flagment.clear();
-		this._labeling.labeling(i_raster,i_th);
+		//ラベルの生成エラーならここまで
+		if(!this._labeling.labeling(i_raster, i_th)){
+			return;
+		}
 		final int label_num=flagment.getLength();
 		if (label_num < 1) {
 			return;
