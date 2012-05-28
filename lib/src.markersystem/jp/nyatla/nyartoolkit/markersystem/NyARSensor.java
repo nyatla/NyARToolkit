@@ -119,8 +119,6 @@ public class NyARSensor
 			this._pcopy=(INyARPerspectiveCopy) i_input.createInterface(INyARPerspectiveCopy.class);
 			this._ref_raster=i_input;
 		}
-		//RGB画像の差し替え
-		this._ref_raster=i_input;
 		//ソースidのインクリメント
 		this._src_ts++;
 	}

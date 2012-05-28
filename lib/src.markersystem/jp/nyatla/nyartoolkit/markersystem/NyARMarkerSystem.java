@@ -61,7 +61,7 @@ import jp.nyatla.nyartoolkit.markersystem.utils.*;
 public class NyARMarkerSystem
 {
 	/**　定数値。自動敷居値を示す値です。　*/
-	public final static int THLESHOLD_AUTO=0xffffffff;
+	public final static int THLESHOLD_AUTO=0x7fffffff;
 	/** 定数値。視錐台のFARパラメータの初期値[mm]です。*/
 	public final static double FRUSTUM_DEFAULT_FAR_CLIP=10000;
 	/** 定数値。視錐台のNEARパラメータの初期値[mm]です。*/
@@ -70,7 +70,7 @@ public class NyARMarkerSystem
 	public final static int LOST_DELAY_DEFAULT=5;
 	
 	
-	private static int MASK_IDTYPE=0xfffff000;
+	private static int MASK_IDTYPE=0x7ffff000;
 	private static int MASK_IDNUM =0x00000fff;
 	private static int IDTYPE_ARTK=0x00000000;
 	private static int IDTYPE_NYID=0x00001000;
