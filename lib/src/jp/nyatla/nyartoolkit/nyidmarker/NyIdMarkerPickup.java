@@ -26,8 +26,6 @@ package jp.nyatla.nyartoolkit.nyidmarker;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.pixeldriver.INyARGsPixelDriver;
-import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
-import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.utils.*;
 
@@ -124,6 +122,15 @@ public class NyIdMarkerPickup
  * {@link NyIdMarkerPickup}がラスタからPerspective変換して読みだすためのクラス
  * 画像処理全般を担当します。
  * ユーザがこのクラスを使うことはありません。
+ * 
+ * このクラスは、100x100の解像度で射影変換したパターン画像を処理します。
+ * 認識の手順は次のとおりです。
+ * <ol>
+ * <li>エッジから10,10だけ内側から10x10の領域を4点取得して、敷居値を検出。</li>
+ * <li>トラッキングパターンを検出5,10から周波数計測</li>
+ * <li>トラッキングパターンをからパターン位置を検出</li>
+ * </ol>
+ * 敷居値はマーカのトラッキングパターンから計算します。
  *
  */
 final class PerspectivePixelReader
@@ -273,7 +280,7 @@ final class PerspectivePixelReader
 		
 	
 	//タイミングパターン用のパラメタ(FRQ_POINTS*FRQ_STEPが100を超えないようにすること)
-	private static final int FRQ_EDGE=5;
+	private static final int FRQ_EDGE=5;//タイミングエッジの交替割合
 	private static final int FRQ_STEP=2;
 	private static final int FRQ_POINTS=(100-(FRQ_EDGE*2))/FRQ_STEP;
 	
@@ -853,8 +860,8 @@ final class PerspectivePixelReader
 				ref_y[pt]=yy=(int)((cpx3_0+cpy0_45)/d);
 				if(xx<0 || xx>=raster_width || yy<0 || yy>=raster_height)
 				{
-					ref_x[pt]=xx<0?0:(xx>=raster_width?raster_width-1:raster_width);
-					ref_y[pt]=yy<0?0:(yy>=raster_height?raster_height-1:raster_height);
+					ref_x[pt]=xx<0?0:(xx>=raster_width?raster_width-1:xx);
+					ref_y[pt]=yy<0?0:(yy>=raster_height?raster_height-1:yy);
 				}
 				pt++;
 
@@ -863,8 +870,8 @@ final class PerspectivePixelReader
 				ref_y[pt]=yy=(int)((cpx3_0+cpy1_45)/d);
 				if(xx<0 || xx>=raster_width || yy<0 || yy>=raster_height)
 				{
-					ref_x[pt]=xx<0?0:(xx>=raster_width?raster_width-1:raster_width);
-					ref_y[pt]=yy<0?0:(yy>=raster_height?raster_height-1:raster_height);
+					ref_x[pt]=xx<0?0:(xx>=raster_width?raster_width-1:xx);
+					ref_y[pt]=yy<0?0:(yy>=raster_height?raster_height-1:yy);
 				}
 				pt++;
 
@@ -873,8 +880,8 @@ final class PerspectivePixelReader
 				ref_y[pt]=yy=(int)((cpx3_1+cpy0_45)/d);
 				if(xx<0 || xx>=raster_width || yy<0 || yy>=raster_height)
 				{
-					ref_x[pt]=xx<0?0:(xx>=raster_width?raster_width-1:raster_width);
-					ref_y[pt]=yy<0?0:(yy>=raster_height?raster_height-1:raster_height);
+					ref_x[pt]=xx<0?0:(xx>=raster_width?raster_width-1:xx);
+					ref_y[pt]=yy<0?0:(yy>=raster_height?raster_height-1:yy);
 				}
 				pt++;
 
@@ -883,8 +890,8 @@ final class PerspectivePixelReader
 				ref_y[pt]=yy=(int)((cpx3_1+cpy1_45)/d);
 				if(xx<0 || xx>=raster_width || yy<0 || yy>=raster_height)
 				{
-					ref_x[pt]=xx<0?0:(xx>=raster_width?raster_width-1:raster_width);
-					ref_y[pt]=yy<0?0:(yy>=raster_height?raster_height-1:raster_height);
+					ref_x[pt]=xx<0?0:(xx>=raster_width?raster_width-1:xx);
+					ref_y[pt]=yy<0?0:(yy>=raster_height?raster_height-1:yy);
 				}
 				pt++;
 			}

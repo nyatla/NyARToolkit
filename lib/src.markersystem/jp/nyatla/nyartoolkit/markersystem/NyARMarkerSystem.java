@@ -70,10 +70,11 @@ public class NyARMarkerSystem
 	public final static int LOST_DELAY_DEFAULT=5;
 	
 	
-	private static int MASK_IDTYPE=0x7ffff000;
-	private static int MASK_IDNUM =0x00000fff;
-	private static int IDTYPE_ARTK=0x00000000;
-	private static int IDTYPE_NYID=0x00001000;
+	private static final int MASK_IDTYPE=0x7ffff000;
+	private static final int MASK_IDNUM =0x00000fff;
+	private static final int IDTYPE_ARTK=0x00000000;
+	private static final int IDTYPE_NYID=0x00001000;
+	private static final int IDTYPE_PSID=0x00002000;
 
 	protected INyARMarkerSystemSquareDetect _sqdetect;
 	protected NyARParam _ref_param;
@@ -83,6 +84,7 @@ public class NyARMarkerSystem
 	private TrackingList _tracking_list;
 	private ARMarkerList _armk_list;
 	private NyIdList _idmk_list;
+	private ARPlayCardList _psmk_list;
 	private int lost_th=5;
 	private INyARTransMat _transmat;
 	private final static int INITIAL_MARKER_STACK_SIZE=10;
@@ -104,11 +106,12 @@ public class NyARMarkerSystem
 		
 		this._armk_list=new ARMarkerList();
 		this._idmk_list=new NyIdList();
+		this._psmk_list=new ARPlayCardList();
 		this._tracking_list=new TrackingList();
 		this._transmat=i_config.createTransmatAlgorism();
 		//同時に判定待ちにできる矩形の数
 		this._sq_stack=new SquareStack(INITIAL_MARKER_STACK_SIZE);			
-		this._on_sq_handler=new OnSquareDetect(i_config,this._armk_list,this._idmk_list,this._tracking_list,this._sq_stack);
+		this._on_sq_handler=new OnSquareDetect(i_config,this._armk_list,this._idmk_list,this._psmk_list,this._tracking_list,this._sq_stack);
 	}
 	protected void initInstance(INyARMarkerSystemConfig i_ref_config) throws NyARException
 	{
@@ -158,14 +161,7 @@ public class NyARMarkerSystem
 	 */
 	public int addNyIdMarker(long i_id,double i_marker_size) throws NyARException
 	{
-		MarkerInfoNyId target=new MarkerInfoNyId(i_id,i_id,i_marker_size);
-		if(!this._idmk_list.add(target)){
-			throw new NyARException();
-		}
-		if(!this._tracking_list.add(target)){
-			throw new NyARException();
-		}
-		return (this._idmk_list.size()-1)|IDTYPE_NYID;
+		return this.addNyIdMarker(i_id,i_id, i_marker_size);
 	}
 	/**
 	 * この関数は、1個の範囲を持つidマーカをシステムに登録して、検出可能にします。
@@ -184,13 +180,54 @@ public class NyARMarkerSystem
 	 */
 	public int addNyIdMarker(long i_id_s,long i_id_e,double i_marker_size) throws NyARException
 	{
-		MarkerInfoNyId target=new MarkerInfoNyId(i_id_s,i_id_e,i_marker_size);
+		NyIdList.Item target=new NyIdList.Item(i_id_s,i_id_e,i_marker_size);
 		if(!this._idmk_list.add(target)){
 			throw new NyARException();
 		}
 		this._tracking_list.add(target);
 		return (this._idmk_list.size()-1)|IDTYPE_NYID;
 	}
+	/**
+	 * この関数は、1個の範囲を持つARプレイマーカをシステムに登録して、検出可能にします。
+	 * インスタンスは、i_id_s<=n<=i_id_eの範囲にあるマーカを検出します。
+	 * 例えば、1番から5番までのマーカを検出する場合に使います。
+	 * 関数はマーカに対応したID値（ハンドル値）を返します。
+	 * @param i_id_s
+	 * Id範囲の開始値 (1<=n<=6)
+	 * @param i_id_e
+	 * Id範囲の終了値 (1<=n<=6)
+	 * @param i_marker_size
+	 * マーカの四方サイズ[mm]
+	 * @return
+	 * マーカID（ハンドル）値。この値はIDの値ではなく、マーカのハンドル値です。
+	 * @throws NyARException
+	 */
+	public int addPsARPlayCard(int i_id_s,int i_id_e,double i_marker_size) throws NyARException
+	{
+		assert(i_id_s>0 && i_id_s<=6);
+		assert(i_id_e>0 && i_id_e<=6);
+		ARPlayCardList.Item target=new ARPlayCardList.Item(i_id_s,i_id_e,i_marker_size);
+		if(!this._psmk_list.add(target)){
+			throw new NyARException();
+		}
+		this._tracking_list.add(target);
+		return (this._psmk_list.size()-1)|IDTYPE_PSID;
+	}
+	/**
+	 * この関数は、1個のARプレイマーカをシステムに登録して、検出可能にします。
+	 * 関数はマーカに対応したID値（ハンドル値）を返します。
+	 * @param i_id
+	 * PSARプレイマーカのID。1-6までの数値です。
+	 * @param i_marker_size
+	 * マーカの四方サイズ[mm]
+	 * @return
+	 * マーカID（ハンドル）値。この値はIDの値ではなく、マーカのハンドル値です。
+	 * @throws NyARException
+	 */
+	public int addPsARPlayCard(int i_id,double i_marker_size) throws NyARException
+	{
+		return this.addPsARPlayCard(i_id,i_id,i_marker_size);
+	}	
 	/**
 	 * この関数は、ARToolKitスタイルのマーカーを登録します。
 	 * @param i_code
@@ -205,7 +242,7 @@ public class NyARMarkerSystem
 	 */
 	public int addARMarker(NyARCode i_code,int i_patt_edge_percentage,double i_marker_size) throws NyARException
 	{
-		MarkerInfoARMarker target=new MarkerInfoARMarker(i_code,i_patt_edge_percentage,i_marker_size);
+		ARMarkerList.Item target=new ARMarkerList.Item(i_code,i_patt_edge_percentage,i_marker_size);
 		if(!this._armk_list.add(target)){
 			throw new NyARException();
 		}
@@ -290,8 +327,9 @@ public class NyARMarkerSystem
 	 * マーカID（ハンドル）値。
 	 * @return
 	 * マーカを検出していればtrueを返します。
+	 * @throws NyARException 
 	 */
-	public boolean isExistMarker(int i_id)
+	public boolean isExistMarker(int i_id) throws NyARException
 	{
 		return this.getLife(i_id)>0;
 	}
@@ -349,14 +387,18 @@ public class NyARMarkerSystem
 	 * @return
 	 * ライフ値
 	 */
-	public long getLife(int i_id)
+	public long getLife(int i_id) throws NyARException
 	{
-		if((i_id & MASK_IDTYPE)==IDTYPE_ARTK){
-			//ARマーカ
+		switch(i_id & MASK_IDTYPE)
+		{
+		case IDTYPE_ARTK:
 			return this._armk_list.get(i_id & MASK_IDNUM).life;
-		}else{
-			//Idマーカ
+		case IDTYPE_NYID:
 			return this._idmk_list.get(i_id & MASK_IDNUM).life;
+		case IDTYPE_PSID:
+			return this._psmk_list.get(i_id & MASK_IDNUM).life;
+		default:
+			throw new NyARException();
 		}
 	}
 	/**
@@ -366,15 +408,21 @@ public class NyARMarkerSystem
 	 * マーカID（ハンドル）値。
 	 * @return
 	 * 消失カウンタの値
+	 * @throws NyARException 
 	 */
-	public long getLostCount(int i_id)
+	public long getLostCount(int i_id) throws NyARException
 	{
-		if((i_id & MASK_IDTYPE)==IDTYPE_ARTK){
-			//ARマーカ
+		switch(i_id & MASK_IDTYPE)
+		{
+		case IDTYPE_ARTK:
 			return this._armk_list.get(i_id & MASK_IDNUM).lost_count;
-		}else{
-			//Idマーカ
+		case IDTYPE_NYID:
 			return this._idmk_list.get(i_id & MASK_IDNUM).lost_count;
+		case IDTYPE_PSID:
+			return this._psmk_list.get(i_id & MASK_IDNUM).lost_count;
+		default:
+			throw new NyARException();
+
 		}
 	}
 	/**
@@ -391,7 +439,7 @@ public class NyARMarkerSystem
 	 * @return
 	 * 結果を格納したi_outに設定したオブジェクト
 	 */
-	public NyARDoublePoint3d getMarkerPlanePos(int i_id,int i_x,int i_y,NyARDoublePoint3d i_out)
+	public NyARDoublePoint3d getMarkerPlanePos(int i_id,int i_x,int i_y,NyARDoublePoint3d i_out) throws NyARException
 	{
 		this._frustum.unProjectOnMatrix(i_x, i_y,this.getMarkerMatrix(i_id),i_out);
 		return i_out;
@@ -413,7 +461,7 @@ public class NyARMarkerSystem
 	 * @return
 	 * 結果を格納したi_outに設定したオブジェクト
 	 */
-	public NyARDoublePoint2d getScreenPos(int i_id,double i_x,double i_y,double i_z,NyARDoublePoint2d i_out)
+	public NyARDoublePoint2d getScreenPos(int i_id,double i_x,double i_y,double i_z,NyARDoublePoint2d i_out) throws NyARException
 	{
 		NyARDoublePoint3d _wk_3dpos=this._wk_3dpos;
 		this.getMarkerMatrix(i_id).transform3d(i_x, i_y, i_z,_wk_3dpos);
@@ -511,15 +559,19 @@ public class NyARMarkerSystem
 	 * [readonly]
 	 * 姿勢行列を格納したオブジェクト。座標系は、ARToolKit座標系です。
 	 */
-	public NyARDoubleMatrix44 getMarkerMatrix(int i_id)
+	public NyARDoubleMatrix44 getMarkerMatrix(int i_id) throws NyARException
 	{
-		if((i_id & MASK_IDTYPE)==IDTYPE_ARTK){
-			//ARマーカ
+		switch(i_id & MASK_IDTYPE)
+		{
+		case IDTYPE_ARTK:
 			return this._armk_list.get(i_id &MASK_IDNUM).tmat;
-		}else{
-			//Idマーカ
+		case IDTYPE_NYID:
 			return this._idmk_list.get(i_id &MASK_IDNUM).tmat;
-		}
+		case IDTYPE_PSID:
+			return this._psmk_list.get(i_id &MASK_IDNUM).tmat;
+		default:
+			throw new NyARException();
+		}		
 	}
 	/**
 	 * この関数は、マーカの4頂点の、スクリーン上の二次元座標を返します。
@@ -528,15 +580,19 @@ public class NyARMarkerSystem
 	 * @return
 	 * [readonly]
 	 */
-	public NyARIntPoint2d[] getMarkerVertex2D(int i_id)
+	public NyARIntPoint2d[] getMarkerVertex2D(int i_id) throws NyARException
 	{
-		if((i_id & MASK_IDTYPE)==IDTYPE_ARTK){
-			//ARマーカ
+		switch(i_id & MASK_IDTYPE)
+		{
+		case IDTYPE_ARTK:
 			return this._armk_list.get(i_id &MASK_IDNUM).tl_vertex;
-		}else{
-			//Idマーカ
+		case IDTYPE_NYID:
 			return this._idmk_list.get(i_id &MASK_IDNUM).tl_vertex;
-		}
+		case IDTYPE_PSID:
+			return this._psmk_list.get(i_id &MASK_IDNUM).tl_vertex;
+		default:
+			throw new NyARException();
+		}		
 	}
 	/**
 	 * この関数は、2値化敷居値を設定します。
@@ -591,9 +647,11 @@ public class NyARMarkerSystem
 		this._tracking_list.prepare();
 		this._idmk_list.prepare();
 		this._armk_list.prepare();
+		this._psmk_list.prepare();
 		//検出処理
 		this._on_sq_handler._ref_input_rfb=i_sensor.getPerspectiveCopy();
 		this._on_sq_handler._ref_input_gs=i_sensor.getGsImage();
+		this._on_sq_handler._ref_th=th;
 		//検出
 		this._sqdetect.detectMarkerCb(i_sensor,th,this._on_sq_handler);
 
@@ -601,6 +659,7 @@ public class NyARMarkerSystem
 		this._tracking_list.finish();
 		this._armk_list.finish();
 		this._idmk_list.finish();
+		this._psmk_list.finish();
 		//期限切れチェック
 		for(int i=this._tracking_list.size()-1;i>=0;i--){
 			TMarkerData item=this._tracking_list.get(i);
@@ -610,14 +669,21 @@ public class NyARMarkerSystem
 		}
 		//各ターゲットの更新
 		for(int i=this._armk_list.size()-1;i>=0;i--){
-			MarkerInfoARMarker target=this._armk_list.get(i);
+			TMarkerData target=this._armk_list.get(i);
 			if(target.lost_count==0){
 				target.time_stamp=time_stamp;
 				this._transmat.transMatContinue(target.sq,target.marker_offset,target.tmat,target.tmat);
 			}
 		}
 		for(int i=this._idmk_list.size()-1;i>=0;i--){
-			MarkerInfoNyId target=this._idmk_list.get(i);
+			TMarkerData target=this._idmk_list.get(i);
+			if(target.lost_count==0){
+				target.time_stamp=time_stamp;
+				this._transmat.transMatContinue(target.sq,target.marker_offset,target.tmat,target.tmat);
+			}
+		}
+		for(int i=this._psmk_list.size()-1;i>=0;i--){
+			TMarkerData target=this._psmk_list.get(i);
 			if(target.lost_count==0){
 				target.time_stamp=time_stamp;
 				this._transmat.transMatContinue(target.sq,target.marker_offset,target.tmat,target.tmat);
@@ -640,16 +706,22 @@ class OnSquareDetect implements NyARSquareContourDetector.CbHandler
 	private TrackingList _ref_tracking_list;
 	private ARMarkerList _ref_armk_list;
 	private NyIdList _ref_idmk_list;
+	private ARPlayCardList _ref_psmk_list;
 	private SquareStack _ref_sq_stack;
 	public INyARPerspectiveCopy _ref_input_rfb;
-	public INyARGrayscaleRaster _ref_input_gs;	
+	public INyARGrayscaleRaster _ref_input_gs;
+	public int _ref_th;
 	
 	private NyARCoord2Linear _coordline;		
-	public OnSquareDetect(INyARMarkerSystemConfig i_config,ARMarkerList i_armk_list,NyIdList i_idmk_list,TrackingList i_tracking_list,SquareStack i_ref_sq_stack)
+	public OnSquareDetect(
+		INyARMarkerSystemConfig i_config,
+		ARMarkerList i_armk_list,NyIdList i_idmk_list,ARPlayCardList i_psmk_list,
+		TrackingList i_tracking_list,SquareStack i_ref_sq_stack)
 	{
 		this._coordline=new NyARCoord2Linear(i_config.getNyARParam().getScreenSize(),i_config.getNyARParam().getDistortionFactor());
 		this._ref_armk_list=i_armk_list;
 		this._ref_idmk_list=i_idmk_list;
+		this._ref_psmk_list=i_psmk_list;
 		this._ref_tracking_list=i_tracking_list;
 		//同時に判定待ちにできる矩形の数
 		this._ref_sq_stack=i_ref_sq_stack;
@@ -686,8 +758,16 @@ class OnSquareDetect implements NyARSquareContourDetector.CbHandler
 					break;//idマーカを特定
 				}
 			}
+			//PSARマーカの特定(IDマーカの特定はここで完結する。)
+			if(this._ref_psmk_list.size()>0){
+				if(this._ref_psmk_list.update(this._ref_input_gs,sq_tmp)){
+					is_target_marker=true;
+					break;//idマーカを特定
+				}
+			}			
 			//ARマーカの特定
 			if(this._ref_armk_list.size()>0){
+				//敷居値により1個のマーカに対して複数の候補が見つかることもある。
 				if(this._ref_armk_list.update(this._ref_input_rfb,sq_tmp)){
 					is_target_marker=true;
 					break;

@@ -35,8 +35,33 @@ import jp.nyatla.nyartoolkit.nyidmarker.data.*;
 /**
  * このクラスは、NyIdの検出結果をマッピングします。
  */
-public class NyIdList extends ArrayList<MarkerInfoNyId>
+public class NyIdList extends ArrayList<NyIdList.Item>
 {
+	public static class Item extends TMarkerData
+	{
+		/** MK_NyIdの情報。 反応するidの開始レンジ*/
+		public final long nyid_range_s;
+		/** MK_NyIdの情報。 反応するidの終了レンジ*/
+		public final long nyid_range_e;
+		/** MK_NyIdの情報。 実際のid値*/
+		public long nyid;
+		public int dir;
+		/**
+		 * コンストラクタです。初期値から、Idマーカのインスタンスを生成します。
+		 * @param i_range_s
+		 * @param i_range_e
+		 * @param i_patt_size
+		 * @throws NyARException
+		 */
+		public Item(long i_nyid_range_s,long i_nyid_range_e,double i_patt_size)
+		{
+			super();
+			this.marker_offset.setSquare(i_patt_size);
+			this.nyid_range_s=i_nyid_range_s;
+			this.nyid_range_e=i_nyid_range_e;
+			return;
+		}		
+	}	
 	private static final long serialVersionUID = -6446466460932931830L;
 	/**輪郭推定器*/
 	private NyIdMarkerPickup _id_pickup;
@@ -51,7 +76,7 @@ public class NyIdList extends ArrayList<MarkerInfoNyId>
 	public void prepare()
 	{
 		for(int i=this.size()-1;i>=0;i--){
-			MarkerInfoNyId target=this.get(i);
+			Item target=this.get(i);
 			if(target.life>0){
 				target.lost_count++;
 			}
@@ -70,7 +95,7 @@ public class NyIdList extends ArrayList<MarkerInfoNyId>
 		//IDを検出
 		long s=this._id_data.marker_id;
 		for(int i=this.size()-1;i>=0;i--){
-			MarkerInfoNyId target=this.get(i);
+			Item target=this.get(i);
 			if(target.nyid_range_s>s || s>target.nyid_range_e)
 			{
 				continue;
@@ -91,7 +116,7 @@ public class NyIdList extends ArrayList<MarkerInfoNyId>
 	{
 		for(int i=this.size()-1;i>=0;i--)
 		{
-			MarkerInfoNyId target=this.get(i);
+			Item target=this.get(i);
 			if(target.sq==null){
 				continue;
 			}

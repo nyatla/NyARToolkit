@@ -34,7 +34,7 @@ public class ARMarkerSortList extends NyARLinkList<ARMarkerSortList.Item>
 {
 	public class Item extends NyARLinkList.Item
 	{
-		public MarkerInfoARMarker marker;
+		public ARMarkerList.Item marker;
 		public double cf;
 		public int dir;
 		public SquareStack.Item ref_sq;

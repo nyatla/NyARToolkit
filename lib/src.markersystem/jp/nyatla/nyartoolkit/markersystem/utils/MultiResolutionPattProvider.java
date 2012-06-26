@@ -68,7 +68,7 @@ public class MultiResolutionPattProvider
 	 * [readonly]マーカにマッチした{@link NyARMatchPattDeviationColorData}インスタンスを得る。
 	 * @throws NyARException 
 	 */
-	public NyARMatchPattDeviationColorData getDeviationColorData(MarkerInfoARMarker i_marker,INyARPerspectiveCopy i_pix_drv, NyARIntPoint2d[] i_vertex) throws NyARException
+	public NyARMatchPattDeviationColorData getDeviationColorData(ARMarkerList.Item i_marker,INyARPerspectiveCopy i_pix_drv, NyARIntPoint2d[] i_vertex) throws NyARException
 	{
 		int mk_edge=i_marker.patt_edge_percentage;
 		for(int i=this.items.size()-1;i>=0;i--)
