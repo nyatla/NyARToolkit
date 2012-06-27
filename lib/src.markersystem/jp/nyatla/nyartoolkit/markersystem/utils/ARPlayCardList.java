@@ -39,9 +39,9 @@ public class ARPlayCardList extends ArrayList<ARPlayCardList.Item>
 	public static class Item extends TMarkerData
 	{
 		/** Idの情報。 反応するidの開始レンジ*/
-		public final long nyid_range_s;
+		public final int nyid_range_s;
 		/** Idの情報。 反応するidの終了レンジ*/
-		public final long nyid_range_e;
+		public final int nyid_range_e;
 		/** Idの情報。 実際のid値*/
 		public long id;
 		public int dir;
@@ -52,7 +52,7 @@ public class ARPlayCardList extends ArrayList<ARPlayCardList.Item>
 		 * @param i_patt_size
 		 * @throws NyARException
 		 */
-		public Item(long i_id_range_s,long i_id_range_e,double i_patt_size)
+		public Item(int i_id_range_s,int i_id_range_e,double i_patt_size)
 		{
 			super();
 			this.marker_offset.setSquare(i_patt_size);

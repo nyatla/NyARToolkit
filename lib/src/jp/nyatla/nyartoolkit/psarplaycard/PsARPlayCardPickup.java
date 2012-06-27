@@ -280,11 +280,7 @@ final class PerspectivePixelReader
 				pt++;
 			}
 			//1行分のピクセルを取得(場合によっては専用アクセサを書いた方がいい)
-			try{
 			i_reader.getPixelSet(ref_x,ref_y,resolution*4,pixcel_temp,0);
-			}catch(Exception e){
-				e.printStackTrace();
-			}
 			//グレースケールにしながら、line→mapへの転写
 			for(int i2=0;i2<resolution;i2++){
 				int index=i2*4;
