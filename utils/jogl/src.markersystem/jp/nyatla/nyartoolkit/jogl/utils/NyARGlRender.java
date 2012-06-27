@@ -65,8 +65,9 @@ public class NyARGlRender
 	 * i_glに、i_matをロードします。
 	 * @param i_gl
 	 * @param i_id
+	 * @throws NyARException 
 	 */
-	public void loadMarkerMatrix(GL i_gl,int i_id)
+	public void loadMarkerMatrix(GL i_gl,int i_id) throws NyARException
 	{
 		int old_mode=this.getGlMatrixMode(i_gl);
 		if(old_mode!=GL.GL_MODELVIEW){

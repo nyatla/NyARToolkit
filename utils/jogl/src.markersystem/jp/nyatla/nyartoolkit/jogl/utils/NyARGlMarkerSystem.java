@@ -48,8 +48,9 @@ public class NyARGlMarkerSystem extends NyARMarkerSystem
 	 * @param i_id
 	 * @param i_buf
 	 * @return
+	 * @throws NyARException 
 	 */
-	public void getMarkerMatrix(int i_id,double[] i_buf)
+	public void getMarkerMatrix(int i_id,double[] i_buf) throws NyARException
 	{
 		NyARGLUtil.toCameraViewRH(this.getMarkerMatrix(i_id),1,i_buf);
 	}
@@ -57,8 +58,9 @@ public class NyARGlMarkerSystem extends NyARMarkerSystem
 	 * この関数はOpenGL形式の姿勢変換行列を新規に割り当てて返します。
 	 * @param i_buf
 	 * @return
+	 * @throws NyARException 
 	 */
-	public double[] getGlMarkerMatrix(int i_id)
+	public double[] getGlMarkerMatrix(int i_id) throws NyARException
 	{
 		double[] b=new double[16];
 		this.getMarkerMatrix(i_id,b);
