@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 
 import jp.nyatla.nyartoolkit.core.NyARCode;
 import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.param.NyARFrustum;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.INyARPerspectiveCopy;
@@ -23,26 +24,24 @@ public class NyARGlMarkerSystem extends NyARMarkerSystem
 	protected void initInstance(INyARMarkerSystemConfig i_config) throws NyARException
 	{
 		super.initInstance(i_config);
-		this._projection_mat=new double[16];
 	}
 
-	private double[] _projection_mat;
 
 	/**
 	 * OpenGLスタイルのProjectionMatrixを返します。
 	 * @param i_gl
 	 * @return
 	 * [readonly]
+	 * @deprecated {@link #_projection_mat}と共に削除します。使用するべきではありません。
 	 */
 	public double[] getGlProjectionMatrix()
 	{
-		return this._projection_mat;
+		double[] d=new double[16];
+		NyARFrustum.FrustumParam f=this.getFrustum().getFrustumParam(new NyARFrustum.FrustumParam());		
+		NyARGLUtil.toCameraFrustumRH(this._ref_param,1,f.near,f.far,d);
+		return d;
 	}
-	public void setProjectionMatrixClipping(double i_near,double i_far)
-	{
-		super.setProjectionMatrixClipping(i_near,i_far);
-		NyARGLUtil.toCameraFrustumRH(this._ref_param,1,i_near,i_far,this._projection_mat);
-	}
+
 	/**
 	 * この関数は、i_bufに指定idのOpenGL形式の姿勢変換行列を設定して返します。
 	 * @param i_id

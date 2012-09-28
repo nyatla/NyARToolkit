@@ -154,6 +154,25 @@ public class NyARCode
 	private NyARMatchPattDeviationBlackWhiteData[] _bw_pat=new NyARMatchPattDeviationBlackWhiteData[4];
 	private int _width;
 	private int _height;
+	/**
+	 * inputStreamからARToolKit形式のパターンデータを指定サイズで読み出して、格納したインスタンスを生成します。
+	 * ロードするパターンデータの縦横解像度は、このインスタンスの値と同じである必要があります。
+	 * @param i_stream
+	 * 読出し元のStreamオブジェクト
+	 * @param i_width
+	 * パターンの幅pixel数。データの内容と一致している必要があります。
+	 * @param i_height
+	 * パターンの幅pixel数。データの内容と一致している必要があります。
+	 * @throws NyARException
+	 */	
+	public static NyARCode createFromARPattFile(InputStream i_stream,int i_width,int i_height) throws NyARException
+	{
+		//ラスタにパターンをロードする。
+		NyARCode ret=new NyARCode(i_width,i_height);
+		NyARCodeFileReader.loadFromARToolKitFormFile(i_stream,ret);
+		return ret;
+		
+	}
 
 	/**
 	 * 指定したdirection(方位)の{@link NyARMatchPattDeviationColorData}オブジェクトの参照値を返します。
@@ -202,11 +221,8 @@ public class NyARCode
 	{
 		return _height;
 	}
-
-	
 	/**
-	 * コンストラクタです。
-	 * 空のNyARCodeオブジェクトを作成します。
+	 * コンストラクタです。空のNyARCodeオブジェクトを作成します。
 	 * @param i_width
 	 * 作成するマーカパターンの横解像度[pixel]
 	 * @param i_height
@@ -224,19 +240,8 @@ public class NyARCode
 		}
 		return;
 	}
-	/**
-	 * inputStreamから、ARToolKit形式のパターンデータをロードします。
-	 * ロードするパターンデータの縦横解像度は、このインスタンスの値と同じである必要があります。
-	 * @param i_stream
-	 * 読出し元のStreamオブジェクト
-	 * @throws NyARException
-	 */
-	public void loadARPatt(InputStream i_stream) throws NyARException
-	{
-		//ラスタにパターンをロードする。
-		NyARCodeFileReader.loadFromARToolKitFormFile(i_stream,this);
-		return;
-	}	
+
+
 	/**
 	 * 4枚のラスタオブジェクトから、マーカーパターンを生成して格納します。
 	 * @param i_raster

@@ -286,8 +286,7 @@ public class Test_NyARRealityGl_ScreenPos implements GLEventListener, JmfCapture
 	public static void main(String[] args)
 	{
 		try {
-			NyARParam param = new NyARParam();
-			param.loadARParam(new FileInputStream(PARAM_FILE));
+			NyARParam param = NyARParam.createFromARParamFile(new FileInputStream(PARAM_FILE));
 			new Test_NyARRealityGl_ScreenPos(param);
 		} catch (Exception e) {
 			e.printStackTrace();

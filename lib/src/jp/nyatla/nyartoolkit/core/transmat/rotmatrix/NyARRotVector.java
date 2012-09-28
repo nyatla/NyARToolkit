@@ -59,7 +59,7 @@ public class NyARRotVector
 	 * 詳細は不明です。(2つのベクトルの関係を調整？)
 	 * @throws NyARException
 	 */
-	public static void checkRotation(NyARRotVector io_vec1, NyARRotVector io_vec2) throws NyARException
+	public static boolean checkRotation(NyARRotVector io_vec1, NyARRotVector io_vec2)
 	{
 		double w;
 		int f;
@@ -75,8 +75,9 @@ public class NyARRotVector
 		double vec31 = vec12 * vec20 - vec10 * vec22;
 		double vec32 = vec10 * vec21 - vec11 * vec20;
 		w = Math.sqrt(vec30 * vec30 + vec31 * vec31 + vec32 * vec32);
-		if (w == 0.0) {
-			throw new NyARException();
+		if (w == 0.0)
+		{
+			return false;
 		}
 		vec30 /= w;
 		vec31 /= w;
@@ -102,7 +103,7 @@ public class NyARRotVector
 			}
 		}
 		if (vec31 * vec10 - vec11 * vec30 == 0.0) {
-			throw new NyARException();
+			return false;
 		}
 		
 		double k1,k2,k3,k4;
@@ -124,7 +125,7 @@ public class NyARRotVector
 
 		d = b * b - a * c;
 		if (d < 0) {
-			throw new NyARException();
+			return false;
 		}
 		r1 = (-b + Math.sqrt(d)) / a;
 		p1 = k1 * r1 + k2;
@@ -161,7 +162,7 @@ public class NyARRotVector
 			}
 		}
 		if (vec31 * vec20 - vec21 * vec30 == 0.0) {
-			throw new NyARException();
+			return false;
 		}
 		k1 = (vec21 * vec32 - vec31 * vec22) / (vec31 * vec20 - vec21 * vec30);
 		k2 = (vec31 * ca) / (vec31 * vec20 - vec21 * vec30);
@@ -174,7 +175,7 @@ public class NyARRotVector
 
 		d = b * b - a * c;
 		if (d < 0) {
-			throw new NyARException();
+			return false;
 		}
 		r3 = (-b + Math.sqrt(d)) / a;
 		p3 = k1 * r3 + k2;
@@ -282,6 +283,6 @@ public class NyARRotVector
 				}
 			}
 		}
-		return;
+		return true;
 	}	
 }

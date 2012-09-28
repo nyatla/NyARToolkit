@@ -4,24 +4,24 @@ import java.awt.image.BufferedImage;
 
 import javax.media.opengl.GL;
 
-import com.sun.opengl.util.texture.Texture;
-import com.sun.opengl.util.texture.TextureIO;
-
 import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.param.NyARFrustum;
 import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.jogl.utils.NyARGLDrawUtil;
+import jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystem;
 import jp.nyatla.nyartoolkit.utils.j2se.NyARBufferedImageRaster;
 
 /**
- * この関数は、{@link NyARGlmarkerSystem}クラスの出力する値を、OpenGL関数へショートカットする関数を定義します。
+ * このクラスは、{@link NyARGlmarkerSystem}クラスの出力する値を、OpenGL関数へショートカットする関数を定義します。
+ * {@link MarkerSystem}からの通知を受け取ります。
  */
-public class NyARGlRender
+public class NyARGlRender implements NyARMarkerSystem.IObserver
 {
-	private NyARGlMarkerSystem _ms;
+	private NyARMarkerSystem _ms;
 	private int[] __wk=new int[1];
 	private final int getGlMatrixMode(GL i_gl)
 	{
@@ -32,10 +32,35 @@ public class NyARGlRender
 	 * コンストラクタです。マーカシステムに対応したレンダラを構築します。
 	 * @param i_ms
 	 */
-	public NyARGlRender(NyARGlMarkerSystem i_ms)
+	public NyARGlRender(NyARMarkerSystem i_ms)
 	{
-		this._ms=i_ms;		
+		this._ms=i_ms;
+		this._ms.addObserver(this);		
+		syncMarkerSystem();
 	}
+	/**
+	 * {@link NyARMarkerSystem}からの通知を受け取ります。
+	 */
+	public void notify(Object i_ms,int i_id)
+	{
+		if(i_ms instanceof NyARMarkerSystem){
+			if(i_id==NyARMarkerSystem.EV_UPDATE){
+				syncMarkerSystem();
+			}
+		}
+	}
+	private void syncMarkerSystem()
+	{
+		NyARFrustum.FrustumParam f=this._ms.getFrustum().getFrustumParam(new NyARFrustum.FrustumParam());
+		NyARGLUtil.toCameraFrustumRH(this._ms.getARParam(),1,f.near,f.far,this._projection_mat);
+	}
+	
+	/**
+	 * OpenGLスタイルカメラパラメータのワーク変数
+	 */
+	private double[] _projection_mat=new double[16];
+	
+	
 	/**
 	 * i_glにAR向けのprojectionMatrixを、PROJECTIONスタックへロードします。
 	 * @param i_gl
@@ -44,7 +69,7 @@ public class NyARGlRender
 	{
 		int old_mode=this.getGlMatrixMode(i_gl);
 		i_gl.glMatrixMode(GL.GL_PROJECTION);
-		i_gl.glLoadMatrixd(this._ms.getGlProjectionMatrix(), 0);
+		i_gl.glLoadMatrixd(this._projection_mat, 0);
 		i_gl.glMatrixMode(GL.GL_MODELVIEW);
 		i_gl.glLoadIdentity();
 		i_gl.glMatrixMode(old_mode);
@@ -60,7 +85,11 @@ public class NyARGlRender
 		i_gl.glMatrixMode(old_mode);
 		return;		
 	}
-
+	/**
+	 * OpenGLスタイルカメラパラメータのワーク変数
+	 */
+	private double[] _mv_mat=new double[16];
+	
 	/**
 	 * i_glに、i_matをロードします。
 	 * @param i_gl
@@ -72,10 +101,12 @@ public class NyARGlRender
 		int old_mode=this.getGlMatrixMode(i_gl);
 		if(old_mode!=GL.GL_MODELVIEW){
 			i_gl.glMatrixMode(GL.GL_MODELVIEW);
-			i_gl.glLoadMatrixd(this._ms.getGlMarkerMatrix(i_id), 0);
+			NyARGLUtil.toCameraViewRH(this._ms.getMarkerMatrix(i_id),1,this._mv_mat);			
+			i_gl.glLoadMatrixd(this._mv_mat, 0);
 			i_gl.glMatrixMode(old_mode);
 		}else{
-			i_gl.glLoadMatrixd(this._ms.getGlMarkerMatrix(i_id), 0);
+			NyARGLUtil.toCameraViewRH(this._ms.getMarkerMatrix(i_id),1,this._mv_mat);
+			i_gl.glLoadMatrixd(this._mv_mat, 0);
 		}
 	}
 	//
@@ -195,6 +226,7 @@ public class NyARGlRender
 	{
 		this.drawImage2d(i_gl, i_x, i_y,new NyARBufferedImageRaster(i_bitmap));
 	}
+
 
 	
 }

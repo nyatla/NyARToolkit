@@ -275,8 +275,7 @@ public class Test_NyARRealityGl_ARMarker implements GLEventListener, JmfCaptureL
 	public static void main(String[] args)
 	{
 		try {
-			NyARParam param = new NyARParam();
-			param.loadARParam(new FileInputStream(PARAM_FILE));
+			NyARParam param = NyARParam.createFromARParamFile(new FileInputStream(PARAM_FILE));
 			new Test_NyARRealityGl_ARMarker(param);
 		} catch (Exception e) {
 			e.printStackTrace();

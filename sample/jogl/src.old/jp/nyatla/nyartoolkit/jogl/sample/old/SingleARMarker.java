@@ -36,7 +36,6 @@ import javax.media.Buffer;
 import javax.media.opengl.*;
 
 import com.sun.opengl.util.*;
-import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
@@ -129,10 +128,8 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 		this._capture.setOnCapture(this);
 		this._cap_image = new JmfNyARRGBRaster(this._capture.getCaptureFormat());	
 
-		this._code_table[0]=new NyARCode(16,16);
-		this._code_table[0].loadARPatt(new FileInputStream(CARCODE_FILE1));
-		this._code_table[1]=new NyARCode(16,16);
-		this._code_table[1].loadARPatt(new FileInputStream(CARCODE_FILE2));
+		this._code_table[0]=NyARCode.createFromARPattFile(new FileInputStream(CARCODE_FILE1),16,16);
+		this._code_table[1]=NyARCode.createFromARPattFile(new FileInputStream(CARCODE_FILE2),16,16);
 		
 		//OpenGLフレームの準備（OpenGLリソースの初期化、カメラの撮影開始は、initコールバック関数内で実行）
 		Frame frame = new Frame("NyARToolkit["+this.getClass().getName()+"]");
@@ -266,8 +263,7 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 	public static void main(String[] args)
 	{
 		try{
-			NyARParam cparam= new NyARParam();
-			cparam.loadARParam(new FileInputStream(PARAM_FILE));
+			NyARParam cparam= NyARParam.createFromARParamFile(new FileInputStream(PARAM_FILE));
 			cparam.changeScreenSize(SCREEN_X, SCREEN_Y);		
 			new SingleARMarker(cparam);
 		}catch(Exception e){

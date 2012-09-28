@@ -261,5 +261,31 @@ public class NyARDoubleMatrix33 implements INyARDoubleMatrix
 		o_out.y=this.m10*i_x+this.m11*i_y+this.m12*i_z;
 		o_out.z=this.m20*i_x+this.m21*i_y+this.m22*i_z;
 		return;
+	}
+	/**
+	 * この関数は、行列同士の掛け算をして、インスタンスに格納します。
+	 *　i_mat_lとi_mat_rには、thisを指定しないでください。
+	 * @param i_mat_l
+	 * 左成分の行列
+	 * @param i_mat_r
+	 * 右成分の行列
+	 */
+	public void mul(NyARDoubleMatrix33 i_mat_l,NyARDoubleMatrix33 i_mat_r)
+	{
+		//assert(this!=i_mat_l);
+		//assert(this!=i_mat_r);
+		this.m00=i_mat_l.m00*i_mat_r.m00 + i_mat_l.m01*i_mat_r.m10 + i_mat_l.m02*i_mat_r.m20;
+		this.m01=i_mat_l.m00*i_mat_r.m01 + i_mat_l.m01*i_mat_r.m11 + i_mat_l.m02*i_mat_r.m21;
+		this.m02=i_mat_l.m00*i_mat_r.m02 + i_mat_l.m01*i_mat_r.m12 + i_mat_l.m02*i_mat_r.m22;
+
+		this.m10=i_mat_l.m10*i_mat_r.m00 + i_mat_l.m11*i_mat_r.m10 + i_mat_l.m12*i_mat_r.m20;
+		this.m11=i_mat_l.m10*i_mat_r.m01 + i_mat_l.m11*i_mat_r.m11 + i_mat_l.m12*i_mat_r.m21;
+		this.m12=i_mat_l.m10*i_mat_r.m02 + i_mat_l.m11*i_mat_r.m12 + i_mat_l.m12*i_mat_r.m22;
+
+		this.m20=i_mat_l.m20*i_mat_r.m00 + i_mat_l.m21*i_mat_r.m10 + i_mat_l.m22*i_mat_r.m20;
+		this.m21=i_mat_l.m20*i_mat_r.m01 + i_mat_l.m21*i_mat_r.m11 + i_mat_l.m22*i_mat_r.m21;
+		this.m22=i_mat_l.m20*i_mat_r.m02 + i_mat_l.m21*i_mat_r.m12 + i_mat_l.m22*i_mat_r.m22;
+
+		return;
 	}	
 }

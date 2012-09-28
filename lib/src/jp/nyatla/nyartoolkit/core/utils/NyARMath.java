@@ -30,6 +30,7 @@ package jp.nyatla.nyartoolkit.core.utils;
  */
 public class NyARMath
 {
+	public final static double DBL_EPSILON=2.2204460492503131e-016;
 	/** 定数値。40^2*/
 	public final static int SQ_40=40*40;
 	/** 定数値。20^2*/

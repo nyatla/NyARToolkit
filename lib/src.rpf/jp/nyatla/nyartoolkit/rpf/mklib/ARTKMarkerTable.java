@@ -220,8 +220,7 @@ public class ARTKMarkerTable
 		if(d==null){
 			return false;
 		}
-		NyARCode c=new NyARCode(this._resolution_width,this._resolution_height);
-		c.loadARPatt(i_stream);
+		NyARCode c=NyARCode.createFromARPattFile(i_stream,this._resolution_width,this._resolution_height);
 		d.setValue(c,i_id,i_name,i_width,i_height);
 		return true;
 	}	

@@ -98,8 +98,7 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 			}
 		});
 		//NyARToolkitの準備
-		NyARParam ar_param = new NyARParam();
-		ar_param.loadARParam(new FileInputStream(PARAM_FILE));
+		NyARParam ar_param = NyARParam.createFromARParamFile(new FileInputStream(PARAM_FILE));
 		ar_param.changeScreenSize(320, 240);
 		this._raster = new JmfNyARRGBRaster(this._capture.getCaptureFormat());
 		this._detect=new SquareDetector(ar_param.getScreenSize());
@@ -127,8 +126,7 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 
 			Graphics g = getGraphics();
 			
-			NyARParam param=new NyARParam();
-			param.loadARParam(new FileInputStream(PARAM_FILE));
+			NyARParam param=NyARParam.createFromARParamFile(new FileInputStream(PARAM_FILE));
 			param.changeScreenSize(320,240);
 			try{
 				NyARIntRect rect=new NyARIntRect();

@@ -78,8 +78,7 @@ public class RpfTest
 	{
 
 		try {
-			NyARParam param=new NyARParam();
-			param.loadARParam(new FileInputStream(PARAM_FILE));
+			NyARParam param=NyARParam.createFromARParamFile(new FileInputStream(PARAM_FILE));
 			param.changeScreenSize(320,240);
 			NyARReality reality=new NyARReality(param.getScreenSize(),10,1000,param.getPerspectiveProjectionMatrix(),null,10,10);
 			NyARRealitySource reality_in=new NyARRealitySource_Reference(320,240,null,2,100,NyARBufferType.BYTE1D_B8G8R8X8_32);

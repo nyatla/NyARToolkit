@@ -114,7 +114,6 @@ public class NyARCameraDistortionFactor
 		//this.f3=this.f3;// newparam->dist_factor[3] =source->dist_factor[3];
 		return;
 	}
-	
 	/**
 	 * この関数は、座標点を理想座標系から観察座標系へ変換します。
 	 * @param i_in
@@ -124,16 +123,7 @@ public class NyARCameraDistortionFactor
 	 */
 	public final void ideal2Observ(NyARDoublePoint2d i_in, NyARDoublePoint2d o_out)
 	{
-		final double x = (i_in.x - this._f0) * this._f3;
-		final double y = (i_in.y - this._f1) * this._f3;
-		if (x == 0.0 && y == 0.0) {
-			o_out.x = this._f0;
-			o_out.y = this._f1;
-		} else {
-			final double d = 1.0 - this._f2 / 100000000.0 * (x * x + y * y);
-			o_out.x = x * d + this._f0;
-			o_out.y = y * d + this._f1;
-		}
+		this.ideal2Observ(i_in.x,i_in.y, o_out);
 		return;
 	}
 	
@@ -149,6 +139,28 @@ public class NyARCameraDistortionFactor
 		this.ideal2Observ(i_in.x,i_in.y,o_out);
 		return;
 	}
+	
+	/**
+	 * この関数は、座標点を理想座標系から観察座標系へ変換します。
+	 * @param i_in
+	 * 変換元の座標
+	 * @param o_out
+	 * 変換後の座標を受け取るオブジェクト
+	 */
+	public final void ideal2Observ(double i_x,double i_y, NyARDoublePoint2d o_out)
+	{
+		final double x = (i_x - this._f0) * this._f3;
+		final double y = (i_y - this._f1) * this._f3;
+		if (x == 0.0 && y == 0.0) {
+			o_out.x = this._f0;
+			o_out.y = this._f1;
+		} else {
+			final double d = 1.0 - this._f2 / 100000000.0 * (x * x + y * y);
+			o_out.x = x * d + this._f0;
+			o_out.y = y * d + this._f1;
+		}
+		return;
+	}	
 	
 	/**
 	 * この関数は、座標点を理想座標系から観察座標系へ変換します。
@@ -279,6 +291,16 @@ public class NyARCameraDistortionFactor
 		o_point.y = py / this._f3 + d1;
 		return;
 	}
+	/**
+	 * {@link #observ2Ideal(double, double, NyARDoublePoint2d)}のラッパーです。
+	 * @param i_in
+	 * @param o_point
+	 */
+	
+	public final void observ2Ideal(NyARDoublePoint2d i_in, NyARDoublePoint2d o_point)
+	{
+		this.observ2Ideal(i_in.x,i_in.y,o_point);
+	}
 
 	/**
 	 * この関数は、座標を観察座標系から理想座標系へ変換します。
@@ -288,6 +310,8 @@ public class NyARCameraDistortionFactor
 	 * 変換元の座標
 	 * @param o_veclinear
 	 * 変換後の座標を受け取るオブジェクト。{@link NyARVecLinear2d#x}と{@link NyARVecLinear2d#y}のみに値をセットします。
+	 * @deprecated
+	 * この関数は{@link NyARVectorReader_INT1D_GRAY_8}へ移動予定です。使わないでください。
 	 */
 	public void observ2Ideal(double ix, double iy, NyARVecLinear2d o_veclinear)
 	{

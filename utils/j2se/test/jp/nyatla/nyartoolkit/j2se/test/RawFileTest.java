@@ -93,8 +93,7 @@ public class RawFileTest
 		INyARRgbRaster ra = new NyARRgbRaster(320, 240,NyARBufferType.BYTE1D_B8G8R8X8_32,false);
 		ra.wrapBuffer(buf);
 */		// AR用カメラパラメタファイルをロード
-		NyARParam ap = new NyARParam();
-		ap.loadARParam(new FileInputStream(camera_file));
+		NyARParam ap = NyARParam.createFromARParamFile(new FileInputStream(camera_file));
 		ap.changeScreenSize(ra.getSize());
 
 		//マーカパターンをBitmapから作る。

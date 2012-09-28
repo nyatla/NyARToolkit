@@ -41,8 +41,9 @@ public interface INyARRgb2GsFilter
 	 */
 	public void convertRect(int l,int t,int w,int h,INyARGrayscaleRaster i_raster) throws NyARException;
 	/**
-	 * 同一サイズの画像にグレースケール画像を生成します。
+	 * i_rasterへグレースケール画像を生成します。
 	 * @param i_raster
+	 * 出力先のラスタオブジェクト。同一サイズである必要があります。
 	 * @throws NyARException
 	 */
 	public void convert(INyARGrayscaleRaster i_raster) throws NyARException;

@@ -32,7 +32,6 @@ import java.awt.*;
 import javax.media.opengl.*;
 
 import com.sun.opengl.util.*;
-import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
@@ -178,10 +177,8 @@ public class JavaSimpleLite_ImageSource implements GLEventListener
 	public static void main(String[] args)
 	{
 		try {
-			NyARParam param = new NyARParam();
-			param.loadARParam(new FileInputStream(PARAM_FILE));
-			NyARCode code = new NyARCode(16, 16);
-			code.loadARPatt(new FileInputStream(CARCODE_FILE));
+			NyARParam param = NyARParam.createFromARParamFile(new FileInputStream(PARAM_FILE));
+			NyARCode code = NyARCode.createFromARPattFile(new FileInputStream(CARCODE_FILE),16, 16);
 			BufferedImage src_image = ImageIO.read(new File(SAMPLE_FILES));
 
 			new JavaSimpleLite_ImageSource(param, code,src_image);

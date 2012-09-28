@@ -152,7 +152,9 @@ public class NyARTransMat implements INyARTransMat
 		this._transsolver.set2dVertex(vertex_2d,4);
 
 		//回転行列を計算
-		this._rotmatrix.initRotBySquare(i_square.line,i_square.sqvertex);
+		if(!this._rotmatrix.initRotBySquare(i_square.line,i_square.sqvertex)){
+			return false;
+		}
 		
 		//回転後の3D座標系から、平行移動量を計算
 		NyARDoublePoint3d[] vertex_3d=this.__transMat_vertex_3d;
@@ -227,7 +229,9 @@ public class NyARTransMat implements INyARTransMat
 		}else{
 //			System.out.println("TR:again");
 			//回転行列を計算
-			rot.initRotBySquare(i_square.line,i_square.sqvertex);
+			if(!rot.initRotBySquare(i_square.line,i_square.sqvertex)){
+				return false;
+			}
 			
 			//回転後の3D座標系から、平行移動量を計算
 			rot.getPoint3dBatch(i_offset.vertex,vertex_3d,4);

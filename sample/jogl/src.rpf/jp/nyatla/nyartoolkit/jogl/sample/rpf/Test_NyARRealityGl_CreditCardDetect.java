@@ -333,8 +333,7 @@ public class Test_NyARRealityGl_CreditCardDetect implements GLEventListener, Jmf
 	public static void main(String[] args)
 	{
 		try {
-			NyARParam param = new NyARParam();
-			param.loadARParam(new FileInputStream(PARAM_FILE));
+			NyARParam param = NyARParam.createFromARParamFile(new FileInputStream(PARAM_FILE));
 			new Test_NyARRealityGl_CreditCardDetect(param);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -279,8 +279,7 @@ public class Test_NyARRealityGl_AsyncIdMarker implements GLEventListener, JmfCap
 	public static void main(String[] args)
 	{
 		try {
-			NyARParam param = new NyARParam();
-			param.loadARParam(new FileInputStream(PARAM_FILE));
+			NyARParam param = NyARParam.createFromARParamFile(new FileInputStream(PARAM_FILE));
 			new Test_NyARRealityGl_AsyncIdMarker(param);
 		} catch (Exception e) {
 			e.printStackTrace();

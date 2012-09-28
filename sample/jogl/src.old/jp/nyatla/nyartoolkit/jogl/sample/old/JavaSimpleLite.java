@@ -34,7 +34,6 @@ import javax.media.Buffer;
 import javax.media.opengl.*;
 
 import com.sun.opengl.util.*;
-import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
@@ -208,12 +207,10 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 	public static void main(String[] args)
 	{
 		try {
-			NyARParam param = new NyARParam();
-			param.loadARParam(new FileInputStream(PARAM_FILE));
+			NyARParam param = NyARParam.createFromARParamFile(new FileInputStream(PARAM_FILE));
 			param.changeScreenSize(SCREEN_X, SCREEN_Y);
 
-			NyARCode code = new NyARCode(16, 16);
-			code.loadARPatt(new FileInputStream(CARCODE_FILE));
+			NyARCode code = NyARCode.createFromARPattFile(new FileInputStream(CARCODE_FILE),16, 16);
 
 			new JavaSimpleLite(param, code);
 		} catch (Exception e) {

@@ -56,12 +56,14 @@ public class NyARRotMatrix_ARToolKit extends NyARRotMatrix
 	final protected NyARDoublePoint3d _angle;
 	
 	//override
-	public final void initRotBySquare(NyARLinear[] i_linear,NyARDoublePoint2d[] i_sqvertex) throws NyARException
+	public final boolean initRotBySquare(NyARLinear[] i_linear,NyARDoublePoint2d[] i_sqvertex)
 	{
-		super.initRotBySquare(i_linear,i_sqvertex);
-		//Matrixからangleをロード
-		this.updateAngleFromMatrix();
-		return;
+		boolean ret=super.initRotBySquare(i_linear,i_sqvertex);
+		if(ret){
+			//Matrixからangleをロード
+			this.updateAngleFromMatrix();
+		}
+		return ret;
 	}
 	/**
 	 * ARToolKitスタイルの角度値の参照値を返します。

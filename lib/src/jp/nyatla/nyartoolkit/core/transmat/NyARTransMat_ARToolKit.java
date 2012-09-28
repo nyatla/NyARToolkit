@@ -129,7 +129,9 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 		}
 		this._transsolver.set2dVertex(vertex_2d,4);
 		//回転行列を計算
-		this._rotmatrix.initRotBySquare(i_square.line,i_square.sqvertex);
+		if(!this._rotmatrix.initRotBySquare(i_square.line,i_square.sqvertex)){
+			return false;
+		}
 		
 		//回転後の3D座標系から、平行移動量を計算
 		NyARDoublePoint3d[] vertex_3d=this.__transMat_vertex_3d;
@@ -187,7 +189,9 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 		// エラー値が許容範囲でなければTransMatをやり直し
 		if (err > AR_GET_TRANS_CONT_MAT_MAX_FIT_ERROR) {
 			// rotationを矩形情報で初期化
-			this._rotmatrix.initRotBySquare(i_square.line,i_square.sqvertex);
+			if(!this._rotmatrix.initRotBySquare(i_square.line,i_square.sqvertex)){
+				return false;
+			}
 			//回転行列の平行移動量の計算
 			this._rotmatrix.getPoint3dBatch(i_offset.vertex,vertex_3d,4);
 			this._transsolver.solveTransportVector(vertex_3d,trans);

@@ -251,7 +251,7 @@ public class NyARFrustum
 		o_value.top=(mat.m12+1)*near/mat.m11;
 		return o_value;
 	}
-	public class FrustumParam
+	public static class FrustumParam
 	{
 		public double far;
 		public double near;
@@ -269,7 +269,7 @@ public class NyARFrustum
 		o_value.fovy=2*Math.atan(1/(mat.m00*o_value.aspect));
 		return o_value;
 	}
-	public class PerspectiveParam
+	public static class PerspectiveParam
 	{
 		public double far;
 		public double near;

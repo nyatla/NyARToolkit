@@ -109,10 +109,8 @@ public class NyARJava3D extends JFrame implements NyARSingleMarkerBehaviorListen
 			}
 		});
 		//NyARToolkitの準備
-		NyARCode ar_code = new NyARCode(16, 16);
-		ar_code.loadARPatt(new FileInputStream(CARCODE_FILE));
-		ar_param = new J3dNyARParam();
-		ar_param.loadARParam(new FileInputStream(PARAM_FILE));
+		NyARCode ar_code = NyARCode.createFromARPattFile(new FileInputStream(CARCODE_FILE),16, 16);
+		ar_param = J3dNyARParam.loadARParamFile(new FileInputStream(PARAM_FILE));
 		ar_param.changeScreenSize(320, 240);
 
 		//localeの作成とlocateとviewの設定

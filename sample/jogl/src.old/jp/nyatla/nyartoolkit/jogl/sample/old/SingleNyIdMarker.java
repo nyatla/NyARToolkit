@@ -37,7 +37,6 @@ import javax.media.Buffer;
 import javax.media.opengl.*;
 
 import com.sun.opengl.util.*;
-import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
@@ -256,8 +255,7 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 	public static void main(String[] args)
 	{
 		try{
-			NyARParam cparam= new NyARParam();
-			cparam.loadARParam(new FileInputStream(PARAM_FILE));
+			NyARParam cparam= NyARParam.createFromARParamFile(new FileInputStream(PARAM_FILE));
 			cparam.changeScreenSize(SCREEN_X, SCREEN_Y);		
 			new SingleNyIdMarker(cparam);
 		}catch(Exception e){

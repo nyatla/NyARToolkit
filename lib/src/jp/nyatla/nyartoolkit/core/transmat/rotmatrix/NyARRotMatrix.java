@@ -86,9 +86,8 @@ public class NyARRotMatrix extends NyARDoubleMatrix33
 	 * 直線式。4要素である必要があります。
 	 * @param i_sqvertex
 	 * 矩形の３次元オフセット座標。4要素である必要があります。
-	 * @throws NyARException
 	 */
-	public void initRotBySquare(NyARLinear[] i_linear,NyARDoublePoint2d[] i_sqvertex) throws NyARException
+	public boolean initRotBySquare(NyARLinear[] i_linear,NyARDoublePoint2d[] i_sqvertex)
 	{
 		final NyARRotVectorV2 vec1=this.__initRot_vec1;
 		final NyARRotVectorV2 vec2=this.__initRot_vec2;
@@ -97,14 +96,20 @@ public class NyARRotMatrix extends NyARDoubleMatrix33
 		
 		//軸１
 		vec1.exteriorProductFromLinear(i_linear[0], i_linear[2]);
-		vec1.checkVectorByVertex(i_sqvertex[0], i_sqvertex[1]);
+		if(!vec1.checkVectorByVertex(i_sqvertex[0], i_sqvertex[1])){
+			return false;
+		}
 
 		//軸２
 		vec2.exteriorProductFromLinear(i_linear[1], i_linear[3]);
-		vec2.checkVectorByVertex(i_sqvertex[3], i_sqvertex[0]);
+		if(!vec2.checkVectorByVertex(i_sqvertex[3], i_sqvertex[0])){
+			return false;
+		}
 
 		//回転の最適化？
-		NyARRotVectorV2.checkRotation(vec1,vec2);
+		if(!NyARRotVectorV2.checkRotation(vec1,vec2)){
+			return false;
+		}
 
 		this.m00 =vec1.v1;
 		this.m10 =vec1.v2;
@@ -121,7 +126,7 @@ public class NyARRotMatrix extends NyARDoubleMatrix33
 		this.m02 = w02/w;
 		this.m12 = w12/w;
 		this.m22 = w22/w;
-		return;
+		return true;
 	}
 	/**
 	 * この関数は、ZXY系の角度値を、回転行列にセットします。

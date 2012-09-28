@@ -26,7 +26,9 @@
  */
 package jp.nyatla.nyartoolkit.java3d.utils;
 
-import jp.nyatla.nyartoolkit.core.*;
+import java.io.InputStream;
+
+import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 
@@ -37,10 +39,31 @@ import javax.media.j3d.Transform3D;
 public class J3dNyARParam extends NyARParam
 {
 	private double view_distance_min = 0.01;//1cm～10.0m
-
 	private double view_distance_max = 10.0;
-
 	private Transform3D m_projection = null;
+	/**
+	 * テストパラメータを格納したインスタンスを生成する。
+	 * @return
+	 */
+	public static NyARParam loadDefaultParameter()
+	{
+		J3dNyARParam ret=new J3dNyARParam();
+		ret.initByDefaultParametor();
+		return ret;
+	}
+	/**
+	 * i_streamからARToolkitのカメラパラメータを読み出して、インスタンスに格納して返します。
+	 * @param i_stream
+	 * @return
+	 * @throws NyARException
+	 */
+	public static J3dNyARParam loadARParamFile(InputStream i_stream) throws NyARException
+	{
+		J3dNyARParam ret=new J3dNyARParam();
+		ret.initByARParam(i_stream);
+		return ret;
+	}
+	
 
 	/**
 	 * 視体積の近い方をメートルで指定

@@ -262,8 +262,7 @@ public class Test_NyARRealityGl_IdMarker implements GLEventListener, JmfCaptureL
 	public static void main(String[] args)
 	{
 		try {
-			NyARParam param = new NyARParam();
-			param.loadARParam(new FileInputStream(PARAM_FILE));
+			NyARParam param = NyARParam.createFromARParamFile(new FileInputStream(PARAM_FILE));
 			new Test_NyARRealityGl_IdMarker(param);
 		} catch (Exception e) {
 			e.printStackTrace();
