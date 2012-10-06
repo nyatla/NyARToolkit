@@ -26,7 +26,6 @@ package jp.nyatla.nyartoolkit.markersystem;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
-
 import jp.nyatla.nyartoolkit.core.NyARCode;
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.analyzer.histogram.*;
@@ -46,6 +45,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntCoordinates;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
+import jp.nyatla.nyartoolkit.core.types.stack.NyARPointerStack;
 import jp.nyatla.nyartoolkit.markersystem.utils.*;
 
 
@@ -88,7 +88,9 @@ public class NyARMarkerSystem
 	private int lost_th=5;
 	private INyARTransMat _transmat;
 	private final static int INITIAL_MARKER_STACK_SIZE=10;
-	private SquareStack _sq_stack;	
+	private SquareStack _sq_stack;
+	
+
 	
 	
 	/**
@@ -101,6 +103,7 @@ public class NyARMarkerSystem
 	{
 		this._ref_param=i_config.getNyARParam();
 		this._frustum=new NyARFrustum();
+		this._observer=new ObserverList(10);
 		this.initInstance(i_config);
 		this.setProjectionMatrixClipping(FRUSTUM_DEFAULT_NEAR_CLIP, FRUSTUM_DEFAULT_FAR_CLIP);
 		
@@ -138,6 +141,7 @@ public class NyARMarkerSystem
     }	
 	/**
 	 * 視錐台パラメータを設定します。
+	 * この関数は、値を更新後、登録済の{@link IObserver}オブジェクトへ、{@link #EV_UPDATE}通知を送信します。
 	 * @param i_near
 	 * 新しいNEARパラメータ
 	 * @param i_far
@@ -147,6 +151,8 @@ public class NyARMarkerSystem
 	{
 		NyARIntSize s=this._ref_param.getScreenSize();
 		this._frustum.setValue(this._ref_param.getPerspectiveProjectionMatrix(),s.w,s.h,i_near,i_far);
+		//イベントの通知
+		this._observer.invokeNotify(this,EV_UPDATE);
 	}
 	/**
 	 * この関数は、1個のIdマーカをシステムに登録して、検出可能にします。
@@ -263,8 +269,7 @@ public class NyARMarkerSystem
 	 */
 	public int addARMarker(InputStream i_stream,int i_patt_resolution,int i_patt_edge_percentage,double i_marker_size) throws NyARException
 	{
-		NyARCode c=new NyARCode(i_patt_resolution,i_patt_resolution);
-		c.loadARPatt(i_stream);
+		NyARCode c=NyARCode.createFromARPattFile(i_stream,i_patt_resolution,i_patt_resolution);
 		return this.addARMarker(c, i_patt_edge_percentage, i_marker_size);
 	}
 	/**
@@ -281,13 +286,12 @@ public class NyARMarkerSystem
 	 */
 	public int addARMarker(String i_file_name,int i_patt_resolution,int i_patt_edge_percentage,double i_marker_size) throws NyARException
 	{
-		NyARCode c=new NyARCode(i_patt_resolution,i_patt_resolution);
 		try{
-			c.loadARPatt(new FileInputStream(i_file_name));
+			NyARCode c=NyARCode.createFromARPattFile(new FileInputStream(i_file_name),i_patt_resolution,i_patt_resolution);
+			return this.addARMarker(c,i_patt_edge_percentage, i_marker_size);
 		}catch(Exception e){
 			throw new NyARException(e);
 		}
-		return this.addARMarker(c,i_patt_edge_percentage, i_marker_size);
 	}
 	/**
 	 * この関数は、画像からARマーカパターンを生成して、登録します。
@@ -694,7 +698,42 @@ public class NyARMarkerSystem
 		this._time_stamp=time_stamp;
 		this._last_gs_th=th;
 	}
+	//
+	//	イベント通知系
+	//
+	public final static int EV_NULL=0;
+	public final static int EV_UPDATE=0x1000000;
+	/**
+	 * MarkerSystemのステータス変更を通知するインタフェイス。
+	 * オブジェクト状態を通知する。
+	 *
+	 */
+	public interface IObserver
+	{
+		public void notify(Object i_ms,int i_id);
+	}
 
+	private class ObserverList extends NyARPointerStack<IObserver>
+	{
+		public ObserverList(int i_length) throws NyARException{
+			super.initInstance(i_length,IObserver.class);
+		}
+		public void invokeNotify(Object i_caller,int i_id)
+		{
+			for(int i=0;i<this._length;i++){
+				this._items[i].notify(i_caller,i_id);
+			}
+		}
+	}
+	private ObserverList _observer;
+	/**
+	 * 通知リストへオブザーバを追加します。
+	 * @param i_observer
+	 */
+	public void addObserver(IObserver i_observer)
+	{
+		this._observer.pushAssert(i_observer);
+	}
 }
 
 /**
@@ -791,7 +830,7 @@ class OnSquareDetect implements NyARSquareContourDetector.CbHandler
 			//この矩形は検出対象にマークされなかったので、解除
 			this._ref_sq_stack.pop();
 		}
-	}
+	}	
 }
 
 
