@@ -320,8 +320,7 @@ public class NyARMarkerSystem
 		pc.copyPatt(0,0,s.w,0,s.w,s.h,0,s.h,i_patt_edge_percentage, i_patt_edge_percentage,4, tr);
 		//切り出したパターンをセット
 		c.setRaster(tr);
-		this.addARMarker(c,i_patt_edge_percentage,i_marker_size);
-		return 0;
+		return this.addARMarker(c,i_patt_edge_percentage,i_marker_size);
 	}
 	
 	
