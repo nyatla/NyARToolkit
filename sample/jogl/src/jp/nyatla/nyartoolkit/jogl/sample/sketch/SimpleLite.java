@@ -42,7 +42,7 @@ public class SimpleLite extends GlSketch
 	private NyARJmfCamera camera;
 	private NyARGlMarkerSystem nyar;
 	private NyARGlRender render;	
-	public void setup(GL gl)throws NyARException
+	public void setup(GL gl)throws Exception
 	{
 		this.size(640,480);
 		NyARMarkerSystemConfig config = new NyARMarkerSystemConfig(640,480);
@@ -61,7 +61,7 @@ public class SimpleLite extends GlSketch
 	private final static String ARCODE_FILE = "../../Data/patt.hiro";
 	private int id;
 	
-	public void draw(GL gl)
+	public void draw(GL gl)throws Exception
 	{
 		synchronized(this.camera){
 			try {
@@ -80,11 +80,7 @@ public class SimpleLite extends GlSketch
 	}	
 	public static void main(String[] args)
 	{
-		try {
-			new SimpleLite();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		new SimpleLite();
 		return;
 	}
 }

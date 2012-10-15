@@ -50,7 +50,7 @@ public class MarkerPlane extends GlSketch
 	private NyARJmfCamera camera;
 	private NyARGlMarkerSystem nyar;
 	private NyARGlRender render;	
-	public void setup(GL gl)throws NyARException
+	public void setup(GL gl)throws Exception
 	{
 		this.size(640,480);
 		NyARMarkerSystemConfig config = new NyARMarkerSystemConfig(640,480);
@@ -68,7 +68,7 @@ public class MarkerPlane extends GlSketch
 	private final static String ARCODE_FILE = "../../Data/patt.hiro";
 	private int[] ids=new int[1];
 	private Point mp=new Point();
-	public void draw(GL gl)
+	public void draw(GL gl)throws Exception
 	{
 		synchronized(this.camera)
 		{
@@ -94,11 +94,7 @@ public class MarkerPlane extends GlSketch
 	}
 	public static void main(String[] args)
 	{
-		try {
-			new MarkerPlane();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		new MarkerPlane();
 		return;
 	}
 }

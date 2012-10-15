@@ -43,8 +43,9 @@ public class SimpleLiteM extends GlSketch
 {
 	private NyARJmfCamera camera;
 	private NyARGlMarkerSystem nyar;
-	private NyARGlRender render;	
-	public void setup(GL gl)throws NyARException
+	private NyARGlRender render;
+
+	public void setup(GL gl)throws Exception
 	{
 		this.size(640,480);
 		NyARMarkerSystemConfig config = new NyARMarkerSystemConfig(640,480);
@@ -64,7 +65,7 @@ public class SimpleLiteM extends GlSketch
 	private final static String ARCODE_FILE2 = "../../Data/patt.kanji";
 	private int[] ids=new int[2];
 	
-	public void draw(GL gl)
+	public void draw(GL gl)throws Exception
 	{
 		synchronized(this.camera){
 			try {
@@ -87,11 +88,7 @@ public class SimpleLiteM extends GlSketch
 	}	
 	public static void main(String[] args)
 	{
-		try {
-			new SimpleLiteM();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		new SimpleLiteM();
 		return;
 	}
 

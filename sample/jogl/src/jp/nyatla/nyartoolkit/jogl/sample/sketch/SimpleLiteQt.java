@@ -25,34 +25,6 @@
  * 
  */
 package jp.nyatla.nyartoolkit.jogl.sample.sketch;
-
-
-/* 
- * PROJECT: NyARToolkit JOGL sample program.
- * --------------------------------------------------------------------------------
- * The MIT License
- * Copyright (c) 2011 nyatla
- * airmail(at)ebony.plala.or.jp
- * http://nyatla.jp/nyartoolkit/
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- * 
- */
 import javax.media.opengl.*;
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.jogl.sketch.GlSketch;
@@ -71,7 +43,7 @@ public class SimpleLiteQt extends GlSketch
 	private NyARQtCamera camera;
 	private NyARGlMarkerSystem nyar;
 	private NyARGlRender render;	
-	public void setup(GL gl)throws NyARException
+	public void setup(GL gl)throws Exception
 	{
 		this.size(640,480);
 		NyARMarkerSystemConfig config = new NyARMarkerSystemConfig(640,480);
@@ -86,7 +58,7 @@ public class SimpleLiteQt extends GlSketch
 	private final static String ARCODE_FILE = "../../Data/patt.hiro";
 	private int id;
 	
-	public void draw(GL gl)
+	public void draw(GL gl)throws Exception
 	{
 		synchronized(this.camera)
 		{
@@ -106,11 +78,7 @@ public class SimpleLiteQt extends GlSketch
 	}	
 	public static void main(String[] args)
 	{
-		try {
-			new SimpleLiteQt();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		new SimpleLiteQt();
 		return;
 	}
 

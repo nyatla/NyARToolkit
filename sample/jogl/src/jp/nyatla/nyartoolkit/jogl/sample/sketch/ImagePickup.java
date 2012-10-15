@@ -46,7 +46,7 @@ public class ImagePickup extends GlSketch
 	private NyARGlRender render;
 	private final static String ARCODE_FILE = "../../Data/patt.hiro";
 	private final static String ARCODE_FILE2 = "../../Data/patt.kanji";
-	public void setup(GL gl)throws NyARException
+	public void setup(GL gl)throws Exception
 	{
 		this.size(640,480);
 		NyARMarkerSystemConfig config = new NyARMarkerSystemConfig(640,480);
@@ -68,7 +68,7 @@ public class ImagePickup extends GlSketch
 	private int[] ids=new int[2];
 	//temporary
 	private NyARRgbRaster _raster;
-	public void draw(GL gl)
+	public void draw(GL gl)throws Exception
 	{
 		//lock async update.
 		synchronized(this.camera)
@@ -97,11 +97,7 @@ public class ImagePickup extends GlSketch
 	}	
 	public static void main(String[] args)
 	{
-		try {
-			new ImagePickup();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		new ImagePickup();
 		return;
 	}
 }

@@ -47,7 +47,7 @@ public class ImagePickupJ2se extends GlSketch
 	private NyARGlMarkerSystem nyar;
 	private NyARGlRender render;
 	private final static String PNGPATT = "../../Data/hiro.png";
-	public void setup(GL gl)throws NyARException
+	public void setup(GL gl)throws Exception
 	{
 		try{
 			this.size(640,480);
@@ -72,7 +72,7 @@ public class ImagePickupJ2se extends GlSketch
 	private int[] ids=new int[1];
 	//temporary
 	private BufferedImage _pat;
-	public void draw(GL gl)
+	public void draw(GL gl)throws Exception
 	{
 		//lock async update.
 		synchronized(this.camera)
@@ -102,11 +102,7 @@ public class ImagePickupJ2se extends GlSketch
 	}	
 	public static void main(String[] args)
 	{
-		try {
-			new ImagePickupJ2se();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		new ImagePickupJ2se();
 		return;
 	}
 }

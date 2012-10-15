@@ -213,4 +213,27 @@ public class NyARPointerStack<T>
 	{
 		this._length = 0;
 	}
+	/**
+	 * 配列の長さを変更します。
+	 * @param i_length
+	 */
+	public void setLength(int i_length)
+	{
+		this._length=i_length;
+	}
+	/**
+	 * インスタンスの配列の内容を、o_destへコピーします。
+	 * @param o_dest
+	 *//*
+	protected void copyTo(NyARPointerStack<T> o_dest)
+	{
+		assert(o_dest._items.length>this._length);
+		T[] s=this._items;
+		T[] d=o_dest._items;
+		
+		o_dest._length=this._length;
+		for(int i=this._length-1;i>=0;i--){
+			d[i]=s[i];
+		}
+	}*/
 }

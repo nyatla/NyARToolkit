@@ -65,7 +65,7 @@ public abstract class GlSketch implements GLEventListener, MouseListener ,MouseM
 			Animator animator = new Animator(drawable);
 			animator.start();
 			this._is_setup_done=true;
-		} catch (NyARException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -98,6 +98,6 @@ public abstract class GlSketch implements GLEventListener, MouseListener ,MouseM
 	public void mouseReleased(MouseEvent arg0) {}
 	public void mouseDragged(MouseEvent arg0) {}
 	public void mouseMoved(MouseEvent arg0) {}	
-	public abstract void setup(GL i_gl) throws NyARException;
-	public abstract void draw(GL i_gl);
+	public abstract void setup(GL i_gl) throws Exception;
+	public abstract void draw(GL i_gl) throws Exception;
 }
