@@ -165,9 +165,8 @@ public class NyARObjectStack<T> extends NyARPointerStack<T>
 			//要素をシフト
 			super.remove(i_index);
 			//外したオブジェクトを末端に取り付ける
-			this._items[i_index]=item;
+			this._items[this._length]=item;
 		}
-		this._length--;
 	}
 	//override
 	public final void removeIgnoreOrder(int i_index)
