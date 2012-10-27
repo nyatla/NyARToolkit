@@ -43,15 +43,15 @@ public class NyARGlMarkerSystem extends NyARMarkerSystem
 	}
 
 	/**
-	 * この関数は、i_bufに指定idのOpenGL形式の姿勢変換行列を設定して返します。
+	 * この関数は、o_bufに指定idのOpenGL形式の姿勢変換行列を設定して返します。
 	 * @param i_id
-	 * @param i_buf
+	 * @param o_buf
 	 * @return
 	 * @throws NyARException 
 	 */
-	public void getMarkerMatrix(int i_id,double[] i_buf) throws NyARException
+	public void getMarkerMatrix(int i_id,double[] o_buf) throws NyARException
 	{
-		NyARGLUtil.toCameraViewRH(this.getMarkerMatrix(i_id),1,i_buf);
+		NyARGLUtil.toCameraViewRH(this.getMarkerMatrix(i_id),1,o_buf);
 	}
 	/**
 	 * この関数はOpenGL形式の姿勢変換行列を新規に割り当てて返します。

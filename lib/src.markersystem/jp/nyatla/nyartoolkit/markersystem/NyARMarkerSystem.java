@@ -58,14 +58,10 @@ import jp.nyatla.nyartoolkit.markersystem.utils.*;
  * このクラスは、ARToolKit固有の座標系を出力します。他の座標系を出力するときには、継承クラスで変換してください。
  * レンダリングシステム毎にクラスを派生させて使います。Javaの場合には、OpenGL用の{@link NyARGlMarkerSystem}クラスがあります。
  */
-public class NyARMarkerSystem
+public class NyARMarkerSystem extends NyARSingleCameraSystem
 {
 	/**　定数値。自動敷居値を示す値です。　*/
 	public final static int THLESHOLD_AUTO=0x7fffffff;
-	/** 定数値。視錐台のFARパラメータの初期値[mm]です。*/
-	public final static double FRUSTUM_DEFAULT_FAR_CLIP=10000;
-	/** 定数値。視錐台のNEARパラメータの初期値[mm]です。*/
-	public final static double FRUSTUM_DEFAULT_NEAR_CLIP=10;
 	/** マーカ消失時の、消失までのﾃﾞｨﾚｲ(フレーム数)の初期値です。*/
 	public final static int LOST_DELAY_DEFAULT=5;
 	
@@ -77,8 +73,6 @@ public class NyARMarkerSystem
 	private static final int IDTYPE_PSID=0x00002000;
 
 	protected INyARMarkerSystemSquareDetect _sqdetect;
-	protected NyARParam _ref_param;
-	protected NyARFrustum _frustum;
 	private int _last_gs_th;
 	private int _bin_threshold=THLESHOLD_AUTO;
 	private TrackingList _tracking_list;
@@ -101,11 +95,8 @@ public class NyARMarkerSystem
 	 */
 	public NyARMarkerSystem(INyARMarkerSystemConfig i_config) throws NyARException
 	{
-		this._ref_param=i_config.getNyARParam();
-		this._frustum=new NyARFrustum();
-		this._observer=new ObserverList(10);
+		super(i_config.getNyARParam());
 		this.initInstance(i_config);
-		this.setProjectionMatrixClipping(FRUSTUM_DEFAULT_NEAR_CLIP, FRUSTUM_DEFAULT_FAR_CLIP);
 		
 		this._armk_list=new ARMarkerList();
 		this._idmk_list=new NyIdList();
@@ -121,39 +112,8 @@ public class NyARMarkerSystem
 		this._sqdetect=new SquareDetect(i_ref_config);
 		this._hist_th=i_ref_config.createAutoThresholdArgorism();
 	}
-	/**
-	 * 現在のフラスタムオブジェクトを返します。
-	 * @return
-	 * [readonly]
-	 */
-	public NyARFrustum getFrustum()
-	{
-		return this._frustum;
-	}
-    /**
-     * 現在のカメラパラメータオブジェクトを返します。
-     * @return
-     * [readonly]
-     */
-    public NyARParam getARParam()
-    {
-        return this._ref_param;
-    }	
-	/**
-	 * 視錐台パラメータを設定します。
-	 * この関数は、値を更新後、登録済の{@link IObserver}オブジェクトへ、{@link #EV_UPDATE}通知を送信します。
-	 * @param i_near
-	 * 新しいNEARパラメータ
-	 * @param i_far
-	 * 新しいFARパラメータ
-	 */
-	public void setProjectionMatrixClipping(double i_near,double i_far)
-	{
-		NyARIntSize s=this._ref_param.getScreenSize();
-		this._frustum.setValue(this._ref_param.getPerspectiveProjectionMatrix(),s.w,s.h,i_near,i_far);
-		//イベントの通知
-		this._observer.invokeNotify(this,EV_UPDATE);
-	}
+	
+
 	/**
 	 * この関数は、1個のIdマーカをシステムに登録して、検出可能にします。
 	 * 関数はマーカに対応したID値（ハンドル値）を返します。
@@ -696,42 +656,6 @@ public class NyARMarkerSystem
 		//タイムスタンプを更新
 		this._time_stamp=time_stamp;
 		this._last_gs_th=th;
-	}
-	//
-	//	イベント通知系
-	//
-	public final static int EV_NULL=0;
-	public final static int EV_UPDATE=0x1000000;
-	/**
-	 * MarkerSystemのステータス変更を通知するインタフェイス。
-	 * オブジェクト状態を通知する。
-	 *
-	 */
-	public interface IObserver
-	{
-		public void notify(Object i_ms,int i_id);
-	}
-
-	private class ObserverList extends NyARPointerStack<IObserver>
-	{
-		public ObserverList(int i_length) throws NyARException{
-			super.initInstance(i_length,IObserver.class);
-		}
-		public void invokeNotify(Object i_caller,int i_id)
-		{
-			for(int i=0;i<this._length;i++){
-				this._items[i].notify(i_caller,i_id);
-			}
-		}
-	}
-	private ObserverList _observer;
-	/**
-	 * 通知リストへオブザーバを追加します。
-	 * @param i_observer
-	 */
-	public void addObserver(IObserver i_observer)
-	{
-		this._observer.pushAssert(i_observer);
 	}
 }
 

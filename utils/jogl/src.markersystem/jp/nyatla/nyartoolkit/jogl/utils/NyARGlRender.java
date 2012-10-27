@@ -5,25 +5,26 @@ import java.awt.image.BufferedImage;
 import javax.media.opengl.GL;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.param.NyARFrustum;
+import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.jogl.utils.NyARGLDrawUtil;
-import jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystem;
+import jp.nyatla.nyartoolkit.markersystem.INyARSingleCameraSystemObserver;
+import jp.nyatla.nyartoolkit.markersystem.NyARSingleCameraSystem;
 import jp.nyatla.nyartoolkit.utils.j2se.NyARBufferedImageRaster;
 
 /**
  * このクラスは、{@link NyARGlmarkerSystem}クラスの出力する値を、OpenGL関数へショートカットする関数を定義します。
  * {@link MarkerSystem}からの通知を受け取ります。
  */
-public class NyARGlRender implements NyARMarkerSystem.IObserver
+public class NyARGlRender implements INyARSingleCameraSystemObserver
 {
-	private NyARMarkerSystem _ms;
+//	private NyARMarkerSystem _ms;
 	private int[] __wk=new int[1];
-	private final int getGlMatrixMode(GL i_gl)
+	protected final int getGlMatrixMode(GL i_gl)
 	{
 		i_gl.glGetIntegerv(GL.GL_MATRIX_MODE,this.__wk,0);
 		return this.__wk[0];
@@ -32,40 +33,30 @@ public class NyARGlRender implements NyARMarkerSystem.IObserver
 	 * コンストラクタです。マーカシステムに対応したレンダラを構築します。
 	 * @param i_ms
 	 */
-	public NyARGlRender(NyARMarkerSystem i_ms)
+	public NyARGlRender(NyARSingleCameraSystem i_eventp)
 	{
-		this._ms=i_ms;
-		this._ms.addObserver(this);		
-		syncMarkerSystem();
+		this._projection_mat=new double[16];//先に初期化しておいて。observerが初期イベントをコールするから。
+		i_eventp.addObserver(this);
 	}
 	/**
-	 * {@link NyARMarkerSystem}からの通知を受け取ります。
+	 * Observerのイベントハンドラ
 	 */
-	public void notify(Object i_ms,int i_id)
+	public void onUpdateCameraParametor(NyARParam i_param, double i_near, double i_far)
 	{
-		if(i_ms instanceof NyARMarkerSystem){
-			if(i_id==NyARMarkerSystem.EV_UPDATE){
-				syncMarkerSystem();
-			}
-		}
-	}
-	private void syncMarkerSystem()
-	{
-		NyARFrustum.FrustumParam f=this._ms.getFrustum().getFrustumParam(new NyARFrustum.FrustumParam());
-		NyARGLUtil.toCameraFrustumRH(this._ms.getARParam(),1,f.near,f.far,this._projection_mat);
+		NyARGLUtil.toCameraFrustumRH(i_param,1,i_near,i_far,this._projection_mat);
 	}
 	
 	/**
-	 * OpenGLスタイルカメラパラメータのワーク変数
+	 * OpenGLスタイルカメラパラメータのワーク変数。
 	 */
-	private double[] _projection_mat=new double[16];
+	protected double[] _projection_mat;
 	
 	
 	/**
 	 * i_glにAR向けのprojectionMatrixを、PROJECTIONスタックへロードします。
 	 * @param i_gl
 	 */
-	public void loadARProjectionMatrix(GL i_gl)
+	public final void loadARProjectionMatrix(GL i_gl)
 	{
 		int old_mode=this.getGlMatrixMode(i_gl);
 		i_gl.glMatrixMode(GL.GL_PROJECTION);
@@ -74,7 +65,7 @@ public class NyARGlRender implements NyARMarkerSystem.IObserver
 		i_gl.glLoadIdentity();
 		i_gl.glMatrixMode(old_mode);
 	}
-	public void loadScreenProjectionMatrix(GL i_gl,int i_width,int i_height)
+	public final void loadScreenProjectionMatrix(GL i_gl,int i_width,int i_height)
 	{
 		int old_mode=this.getGlMatrixMode(i_gl);
 		i_gl.glMatrixMode(GL.GL_PROJECTION);
@@ -85,39 +76,17 @@ public class NyARGlRender implements NyARMarkerSystem.IObserver
 		i_gl.glMatrixMode(old_mode);
 		return;		
 	}
-	/**
-	 * OpenGLスタイルカメラパラメータのワーク変数
-	 */
-	private double[] _mv_mat=new double[16];
-	
-	/**
-	 * i_glに、i_matをロードします。
-	 * @param i_gl
-	 * @param i_id
-	 * @throws NyARException 
-	 */
-	public void loadMarkerMatrix(GL i_gl,int i_id) throws NyARException
-	{
-		int old_mode=this.getGlMatrixMode(i_gl);
-		if(old_mode!=GL.GL_MODELVIEW){
-			i_gl.glMatrixMode(GL.GL_MODELVIEW);
-			NyARGLUtil.toCameraViewRH(this._ms.getMarkerMatrix(i_id),1,this._mv_mat);			
-			i_gl.glLoadMatrixd(this._mv_mat, 0);
-			i_gl.glMatrixMode(old_mode);
-		}else{
-			NyARGLUtil.toCameraViewRH(this._ms.getMarkerMatrix(i_id),1,this._mv_mat);
-			i_gl.glLoadMatrixd(this._mv_mat, 0);
-		}
-	}
+
+
 	//
 	// Graphics toolkit
 	//
-	public void drawBackground(GL i_gl,INyARRgbRaster i_bg_image) throws NyARException
+	public final void drawBackground(GL i_gl,INyARRgbRaster i_bg_image) throws NyARException
 	{
 		i_gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
 		NyARGLDrawUtil.drawBackGround(i_gl,i_bg_image, 1.0);
 	}
-	public void drawBackground(GL i_gl,INyARGrayscaleRaster i_bg_image) throws NyARException
+	public final void drawBackground(GL i_gl,INyARGrayscaleRaster i_bg_image) throws NyARException
 	{
 		i_gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
 		NyARGLDrawUtil.drawBackGround(i_gl,i_bg_image, 1.0);
@@ -131,7 +100,7 @@ public class NyARGlRender implements NyARMarkerSystem.IObserver
 	 * @param i_y
 	 * @param i_z
 	 */
-	public void colorCube(GL i_gl,float i_size_per_mm,double i_x,double i_y,double i_z)
+	public final void colorCube(GL i_gl,float i_size_per_mm,double i_x,double i_y,double i_z)
 	{
 		int old_mode=this.getGlMatrixMode(i_gl);
 		i_gl.glMatrixMode(GL.GL_MODELVIEW);
@@ -142,11 +111,11 @@ public class NyARGlRender implements NyARMarkerSystem.IObserver
 		i_gl.glMatrixMode(old_mode);
 	}
 	
-	public void setColor(GL i_gl,float r,float g,float b)
+	public final void setColor(GL i_gl,float r,float g,float b)
 	{
 		i_gl.glColor3f(r,g,b);
 	}
-	public void setStrokeWeight(GL i_gl,float i_width)
+	public final void setStrokeWeight(GL i_gl,float i_width)
 	{
 		i_gl.glLineWidth(i_width);
 	}
@@ -158,7 +127,7 @@ public class NyARGlRender implements NyARMarkerSystem.IObserver
 	 * @param i_x2
 	 * @param i_y2
 	 */
-	public void line(GL i_gl,float i_x,double i_y,double i_x2,double i_y2)
+	public final void line(GL i_gl,float i_x,double i_y,double i_x2,double i_y2)
 	{
 		int old_mode=this.getGlMatrixMode(i_gl);
 		i_gl.glMatrixMode(GL.GL_MODELVIEW);
@@ -168,7 +137,7 @@ public class NyARGlRender implements NyARMarkerSystem.IObserver
 		i_gl.glEnd();
 		i_gl.glMatrixMode(old_mode);
 	}
-	public void polygon(GL i_gl,NyARDoublePoint2d[] i_vertex)
+	public final void polygon(GL i_gl,NyARDoublePoint2d[] i_vertex)
 	{
 		int old_mode=this.getGlMatrixMode(i_gl);
 		i_gl.glMatrixMode(GL.GL_MODELVIEW);
@@ -180,7 +149,7 @@ public class NyARGlRender implements NyARMarkerSystem.IObserver
 		i_gl.glEnd();
 		i_gl.glMatrixMode(old_mode);
 	}
-	public void polygon(GL i_gl,NyARIntPoint2d[] i_vertex)
+	public final void polygon(GL i_gl,NyARIntPoint2d[] i_vertex)
 	{
 		int old_mode=this.getGlMatrixMode(i_gl);
 		i_gl.glMatrixMode(GL.GL_MODELVIEW);
@@ -200,7 +169,7 @@ public class NyARGlRender implements NyARMarkerSystem.IObserver
 	 * @param i_raster
 	 * @throws NyARException
 	 */
-	public void drawImage2d(GL i_gl,double i_x, double i_y, NyARRgbRaster i_raster) throws NyARException
+	public final void drawImage2d(GL i_gl,double i_x, double i_y, NyARRgbRaster i_raster) throws NyARException
 	{
 		i_gl.glPushMatrix();
 		try{
@@ -222,10 +191,11 @@ public class NyARGlRender implements NyARMarkerSystem.IObserver
 	 * @throws NyARException
 	 */
 	
-	public void drawImage2d(GL i_gl,double i_x, double i_y, BufferedImage i_bitmap) throws NyARException
+	public final void drawImage2d(GL i_gl,double i_x, double i_y, BufferedImage i_bitmap) throws NyARException
 	{
 		this.drawImage2d(i_gl, i_x, i_y,new NyARBufferedImageRaster(i_bitmap));
 	}
+
 
 
 	

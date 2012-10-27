@@ -43,7 +43,7 @@ public class SimpleLiteM extends GlSketch
 {
 	private NyARJmfCamera camera;
 	private NyARGlMarkerSystem nyar;
-	private NyARGlRender render;
+	private NyARGlMarkerSystemRender render;
 
 	public void setup(GL gl)throws Exception
 	{
@@ -54,7 +54,7 @@ public class SimpleLiteM extends GlSketch
 		d.setCaptureFormat(config.getScreenSize(),30.0f);
 		this.camera=new NyARJmfCamera(d);//create sensor system
 		this.nyar=new NyARGlMarkerSystem(config);   //create MarkerSystem
-		this.render=new NyARGlRender(this.nyar);
+		this.render=new NyARGlMarkerSystemRender(this.nyar);
 		
 		this.ids[0]=this.nyar.addARMarker(ARCODE_FILE2,16,25,80);
 		this.ids[1]=this.nyar.addARMarker(ARCODE_FILE,16,25,80);
