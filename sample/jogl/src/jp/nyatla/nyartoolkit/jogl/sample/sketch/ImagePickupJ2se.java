@@ -102,7 +102,7 @@ public class ImagePickupJ2se extends GlSketch
 	}	
 	public static void main(String[] args)
 	{
-		new ImagePickupJ2se();
+		new ImagePickupJ2se().run();
 		return;
 	}
 }

@@ -88,7 +88,7 @@ public class SimpleLiteM extends GlSketch
 	}	
 	public static void main(String[] args)
 	{
-		new SimpleLiteM();
+		new SimpleLiteM().run();
 		return;
 	}
 

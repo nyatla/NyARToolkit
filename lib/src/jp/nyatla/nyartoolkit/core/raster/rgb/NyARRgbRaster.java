@@ -195,6 +195,18 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 		//ピクセルリーダーの参照バッファを切り替える。
 		this._rgb_pixel_driver.switchRaster(this);
 	}
+	/**
+	 * サポートしているインタフェイスは以下の通りです。
+	 * <ul>
+	 * <li>{@link INyARPerspectiveCopy}
+	 * <li>{@link NyARMatchPattDeviationColorData.IRasterDriver}
+	 * <li>{@link INyARRgb2GsFilter}
+	 * <li>{@link INyARRgb2GsFilterRgbAve}
+	 * <li>{@link INyARRgb2GsFilterRgbCube}
+	 * <li>{@link INyARRgb2GsFilterYCbCr}
+	 * <li>{@link INyARRgb2GsFilterArtkTh}
+	 * </ul>
+	 */
 	public Object createInterface(Class<?> iIid) throws NyARException
 	{
 		if(iIid==INyARPerspectiveCopy.class){

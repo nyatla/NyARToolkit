@@ -94,7 +94,7 @@ public class MarkerPlane extends GlSketch
 	}
 	public static void main(String[] args)
 	{
-		new MarkerPlane();
+		new MarkerPlane().run();
 		return;
 	}
 }

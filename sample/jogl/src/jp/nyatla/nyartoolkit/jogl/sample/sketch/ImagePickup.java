@@ -97,7 +97,7 @@ public class ImagePickup extends GlSketch
 	}	
 	public static void main(String[] args)
 	{
-		new ImagePickup();
+		new ImagePickup().run();
 		return;
 	}
 }

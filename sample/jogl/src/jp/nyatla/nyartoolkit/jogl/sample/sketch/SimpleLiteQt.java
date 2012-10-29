@@ -78,7 +78,7 @@ public class SimpleLiteQt extends GlSketch
 	}	
 	public static void main(String[] args)
 	{
-		new SimpleLiteQt();
+		new SimpleLiteQt().run();
 		return;
 	}
 

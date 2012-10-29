@@ -13,12 +13,38 @@ import java.awt.image.Raster;
 import java.awt.image.SinglePixelPackedSampleModel;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 public class NyARBufferedImageIo
 {
+	/**
+	 * i_rasterとバッファを共有するBufferedImageを生成します。
+	 * 
+	 * @param i_raster
+	 * @return
+	 * @throws NyARException
+	 */
+	public static BufferedImage createWrappedBufferedImage(INyARGrayscaleRaster i_raster) throws NyARException {
+		BufferedImage bfi;
+		NyARIntSize s = i_raster.getSize();
+		switch (i_raster.getBufferType()) {
+		case NyARBufferType.INT1D_GRAY_8: {
+			int[] b = (int[]) i_raster.getBuffer();
+			DataBufferInt d = new DataBufferInt(b, b.length);
+			int[] msk = { 0x0000ff, 0x0000ff, 0x0000ff };
+			bfi = new BufferedImage(new DirectColorModel(24, msk[0], msk[1], msk[2]), Raster.createWritableRaster(
+					new SinglePixelPackedSampleModel(d.getDataType(), s.w, s.h, msk), d, null), true, null);
+
+		}
+			break;
+		default:
+			throw new NyARException();
+		}
+		return bfi;
+	}	
 	/**
 	 * i_rasterとバッファを共有するBufferedImageを生成します。
 	 * 

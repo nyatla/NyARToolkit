@@ -30,6 +30,12 @@ public abstract class GlSketch implements GLEventListener, MouseListener ,MouseM
 	boolean _is_setup_done=false;
 	public GlSketch()
 	{
+	}
+	/**
+	 * スケッチを開始するにはこの関数をコールしてください。
+	 */
+	public void run()
+	{
 		this._frame= new Frame("NyARTK Sketch");
 		this._frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e)
@@ -47,6 +53,10 @@ public abstract class GlSketch implements GLEventListener, MouseListener ,MouseM
 		this._frame.add(this._canvas);
 		this._frame.setVisible(true);
 	}
+	public void title(String i_title)
+	{
+		this._frame.setTitle(i_title);
+	}	
 	public void size(NyARIntSize i_s)
 	{
 		this.size(i_s.w,i_s.h);

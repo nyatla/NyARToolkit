@@ -80,7 +80,7 @@ public class SimpleLite extends GlSketch
 	}	
 	public static void main(String[] args)
 	{
-		new SimpleLite();
+		new SimpleLite().run();
 		return;
 	}
 }
