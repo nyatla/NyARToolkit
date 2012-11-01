@@ -414,8 +414,8 @@ public abstract class SingleARMarkerProcesser
 	 * 引数の値の有効期間は、関数が終了するまでです。
 	 * @param i_square
 	 * 現在のマーカ検出位置です。
-	 * @param _transmat_result2
+	 * @param o_result
 	 * 現在の姿勢変換行列です。
 	 */
-	protected abstract void onUpdateHandler(NyARSquare i_square, NyARDoubleMatrix44 _transmat_result2);
+	protected abstract void onUpdateHandler(NyARSquare i_square, NyARDoubleMatrix44 o_result);
 }

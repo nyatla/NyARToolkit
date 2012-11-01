@@ -24,7 +24,7 @@
  */
 package jp.nyatla.nyartoolkit.core.types.matrix;
 
-import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
+
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 
 
