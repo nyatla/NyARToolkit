@@ -294,7 +294,7 @@ public class NyARReality
 					setSquare(((NyARRectTargetStatus)(tar._ref_tracktarget._ref_status)).vertex,tar._screen_square);
 					//3d座標計算
 //					this._transmat.transMat(tar._screen_square,tar._offset,tar._transform_matrix);
-					this._transmat.transMatContinue(tar._screen_square,tar._offset,tar._transform_matrix,tar._transform_matrix);
+					this._transmat.transMatContinue(tar._screen_square,tar._offset,tar._transform_matrix,tar._result_param.last_error,tar._transform_matrix,tar._result_param);
 					continue;
 				case NyARRealityTarget.RT_UNKNOWN:
 					continue;
@@ -466,7 +466,9 @@ public class NyARReality
 			i_item._screen_square.line[i].makeLinearWithNormalize(vx[i],vx[(i+1)%4]);
 		}
 		//3d座標計算
-		this._transmat.transMat(i_item._screen_square,i_item._offset,i_item._transform_matrix);
+		if(!this._transmat.transMat(i_item._screen_square,i_item._offset,i_item._transform_matrix,i_item._result_param)){
+			return false;
+		}
 		
 		//数の調整
 		this._number_of_unknown--;

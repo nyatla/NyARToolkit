@@ -45,6 +45,7 @@ import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.detector.*;
 import jp.nyatla.nyartoolkit.utils.j2se.NyARBufferedImageRaster;
 import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 
 /**
  * このサンプルは、{@link NyARSingleDetectMarker}クラスの動作チェック＆ベンチマークプログラムです。
@@ -113,7 +114,7 @@ public class RawFileTest
 		// １パターンのみを追跡するクラスを作成
 		NyARSingleDetectMarker ar = NyARSingleDetectMarker.createInstance(
 			ap, code, 80.0,NyARSingleDetectMarker.PF_NYARTOOLKIT);
-		NyARTransMatResult result_mat = new NyARTransMatResult();
+		NyARDoubleMatrix44 result_mat = new NyARDoubleMatrix44();
 		ar.setContinueMode(true);
 		ar.detectMarkerLite(ra, 100);
 		ar.getTransmat(result_mat);

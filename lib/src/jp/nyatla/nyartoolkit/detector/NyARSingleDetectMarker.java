@@ -42,6 +42,7 @@ import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilterArtkTh;
 import jp.nyatla.nyartoolkit.core.squaredetect.*;
 import jp.nyatla.nyartoolkit.core.pickup.*;
 import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 
 /**
@@ -95,28 +96,37 @@ public abstract class NyARSingleDetectMarker
 	{
 		this._is_continue = i_is_continue;
 	}
+	private NyARDoubleMatrix44 _last_input_mat;
+	private NyARTransMatResultParam _last_result_param=new NyARTransMatResultParam();
+
 	/**
 	 * この関数は、検出したマーカーの変換行列を計算して、o_resultへ値を返します。
 	 * 直前に実行した{@link #detectMarkerLite}が成功していないと使えません。
 	 * @param o_result
-	 * 変換行列を受け取るオブジェクト。
+	 * 変換行列を受け取るオブジェクト。{@link #setContinueMode}でtrueを設定した場合は、履歴行列としても使われます。
 	 * @throws NyARException
 	 */
-	public void getTransmat(NyARTransMatResult o_result) throws NyARException
+	public void getTransmat(NyARDoubleMatrix44 o_result) throws NyARException
 	{
 		// 一番一致したマーカーの位置とかその辺を計算
-		if (this._is_continue) {
-			this._transmat.transMatContinue(this._square,this._offset,o_result, o_result);
-		} else {
-			this._transmat.transMat(this._square,this._offset, o_result);
+		if (this._is_continue){
+			//履歴が使えそうか判定
+			if(this._last_input_mat==o_result){
+				if(this._transmat.transMatContinue(this._square,this._offset,o_result, this._last_result_param.last_error,o_result, this._last_result_param)){
+					return;
+				}
+			}
 		}
+		//履歴使えないor継続認識失敗
+		this._transmat.transMat(this._square,this._offset,o_result,this._last_result_param);
+		this._last_input_mat=o_result;
 		return;
 	}
 	/**
 	 * @deprecated
 	 * {@link #getTransmat}
 	 */
-	public void getTransmationMatrix(NyARTransMatResult o_result) throws NyARException
+	public void getTransmationMatrix(NyARDoubleMatrix44 o_result) throws NyARException
 	{
 		this.getTransmat(o_result);
 		return;

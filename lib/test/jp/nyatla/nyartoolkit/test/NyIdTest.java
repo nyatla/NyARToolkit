@@ -36,8 +36,8 @@ import java.io.FileInputStream;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
-import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.nyidmarker.data.INyIdMarkerData;
 import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerDataEncoder_RawBitId;
 import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerData_RawBit;
@@ -70,7 +70,7 @@ public class NyIdTest
     {
         private Object _sync_object = new Object();
         /** {@link #onUpdateHandler}関数で得た姿勢行列のポインタ*/
-        public NyARTransMatResult transmat = null;
+        public NyARDoubleMatrix44 transmat = null;
         /** {@link #onEnterHandler}関数で得た姿勢行列のポインタ*/
         public int current_id = -1;
         /**
@@ -127,7 +127,7 @@ public class NyIdTest
          * 
          * このサンプルでは、引数で通知されたマーカの姿勢を、メンバ変数に保存しています。
          */
-        protected void onUpdateHandler(NyARSquare i_square, NyARTransMatResult result)
+        protected void onUpdateHandler(NyARSquare i_square, NyARDoubleMatrix44 result)
         {
         	synchronized (this._sync_object)
             {

@@ -32,6 +32,7 @@ package jp.nyatla.nyartoolkit.core.transmat;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 
 
 /**
@@ -50,9 +51,11 @@ public interface INyARTransMat
 	 * カメラ座標系での、矩形のオフセット位置です。通常、原点中心のマーカ座標になります。
 	 * @param o_result
 	 * 結果を格納するオブジェクトです。
+	 * @param o_param
+	 * 結果パラメータを格納するオブジェクトです。nullの場合無視します。
 	 * @throws NyARException
 	 */
-	public boolean transMat(NyARSquare i_square,NyARRectOffset i_offset, NyARTransMatResult o_result) throws NyARException;
+	public boolean transMat(NyARSquare i_square,NyARRectOffset i_offset, NyARDoubleMatrix44 o_result,NyARTransMatResultParam o_param) throws NyARException;
 	/**
 	 * この関数は、理想座標系の四角系を元に、位置姿勢変換行列を求めます。
 	 * 位置姿勢変換行列は、オフセット位置を基準とした変換行列です。
@@ -70,7 +73,11 @@ public interface INyARTransMat
 	 * 参照する過去のオブジェクトです。このオブジェクトとo_resultには同じものを指定できます。
 	 * @param o_result
 	 * 結果を格納するオブジェクトです。
+	 * @param o_param
+	 * 結果パラメータを格納するオブジェクトです。nullの場合無視します。
+	 * @return
+	 * トラッキングに失敗した場合はfalseを返します。その場合は{@link #transMat}からやり直してください。
 	 * @throws NyARException
 	 */
-	public boolean transMatContinue(NyARSquare i_square,NyARRectOffset i_offset,NyARTransMatResult i_prev_result,NyARTransMatResult o_result) throws NyARException;
+	public boolean transMatContinue(NyARSquare i_square,NyARRectOffset i_offset, NyARDoubleMatrix44 i_prev_result,double i_prev_err,NyARDoubleMatrix44 o_result,NyARTransMatResultParam o_param) throws NyARException;
 }

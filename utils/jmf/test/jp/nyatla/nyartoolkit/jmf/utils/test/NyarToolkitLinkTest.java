@@ -41,6 +41,7 @@ import java.io.FileInputStream;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.transmat.*;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
 
 /**
@@ -61,7 +62,7 @@ public class NyarToolkitLinkTest extends Frame implements JmfCaptureListener
 
 	private JmfNyARRGBRaster _raster;
 
-	private NyARTransMatResult _trans_mat_result = new NyARTransMatResult();
+	private NyARDoubleMatrix44 _trans_mat_result = new NyARDoubleMatrix44();
 
 	public NyarToolkitLinkTest() throws Exception
 	{

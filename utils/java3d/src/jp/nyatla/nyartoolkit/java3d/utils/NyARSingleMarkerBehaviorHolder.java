@@ -35,9 +35,9 @@ import javax.vecmath.*;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
-import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.detector.*;
 import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 
 /**
  * NyARToolkitと連動したBehaviorを返却するクラスです。
@@ -137,7 +137,7 @@ public class NyARSingleMarkerBehaviorHolder implements JmfCaptureListener
 
 class NyARBehavior extends Behavior
 {
-	private NyARTransMatResult trans_mat_result = new NyARTransMatResult();
+	private NyARDoubleMatrix44 trans_mat_result = new NyARDoubleMatrix44();
 
 	private NyARSingleDetectMarker related_nya;
 
@@ -211,7 +211,7 @@ class NyARBehavior extends Behavior
 					is_marker_exist = related_nya.detectMarkerLite(raster, 100);
 					if (is_marker_exist)
 					{
-						final NyARTransMatResult src = this.trans_mat_result;
+						final NyARDoubleMatrix44 src = this.trans_mat_result;
 						related_nya.getTransmationMatrix(src);
 //						Matrix4d matrix = new Matrix4d(src.m00, -src.m10, -src.m20, 0, -src.m01, src.m11, src.m21, 0, -src.m02, src.m12, src.m22, 0, -src.m03, src.m13, src.m23, 1);
 /*						Matrix4d matrix = new Matrix4d(

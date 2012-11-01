@@ -32,7 +32,6 @@ package jp.nyatla.nyartoolkit.core.transmat.rotmatrix;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
-import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 /**
@@ -61,7 +60,7 @@ public class NyARRotMatrix extends NyARDoubleMatrix33
 	 * @param i_prev_result
 	 * セットする姿勢変換行列。
 	 */
-	public final void initRotByPrevResult(NyARTransMatResult i_prev_result)
+	public final void initRotByPrevResult(NyARDoubleMatrix44 i_prev_result)
 	{
 
 		this.m00=i_prev_result.m00;

@@ -34,7 +34,7 @@ import javax.media.opengl.*;
 import com.sun.opengl.util.*;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.param.*;
-import jp.nyatla.nyartoolkit.core.transmat.*;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.detector.*;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
 
@@ -124,13 +124,13 @@ public class JavaSimpleLite_ImageSource implements GLEventListener
 	}
 
 	private boolean _is_marker_exist=false;
-	private NyARTransMatResult __display_transmat_result = new NyARTransMatResult();
+	private NyARDoubleMatrix44 __display_transmat_result = new NyARDoubleMatrix44();
 
 	private double[] __display_wk = new double[16];
 
 	public void display(GLAutoDrawable drawable)
 	{
-		NyARTransMatResult transmat_result = __display_transmat_result;
+		NyARDoubleMatrix44 transmat_result = __display_transmat_result;
 		// 背景を書く
 		this._gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
 		try{

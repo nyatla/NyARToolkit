@@ -102,6 +102,7 @@ public class NyARVectorReader_INT1D_GRAY_8 extends NyARVectorReader_Base
 //		//歪み補正どうするの？
 //	}
 
+	private NyARDoublePoint2d __tmp=new NyARDoublePoint2d();
 	/**
 	 * この関数は、元画像の矩形領域を集計して、その領域内のエッジ中心と、エッジの方位ベクトルを返します。 画素の集計には、3x3のカーネルを使います。 矩形領域は、例えば取得元の画像が320*240の場合、(x>=0 && x<=320 x+w>=0 && x+w<=320),(y>=0 && y<=240 y+h>=0 && y+h<=240)です。 
 	 */
@@ -160,7 +161,9 @@ public class NyARVectorReader_INT1D_GRAY_8 extends NyARVectorReader_Base
 		}
 		//必要なら歪みを解除
 		if(this._factor!=null){
-			this._factor.observ2Ideal(xx, yy, o_posvec);
+			this._factor.observ2Ideal(xx, yy,this.__tmp);
+			  o_posvec.x=this.__tmp.x;
+			  o_posvec.y=this.__tmp.y;
 		}else{
 			o_posvec.x=xx;
 			o_posvec.y=yy;
@@ -168,6 +171,10 @@ public class NyARVectorReader_INT1D_GRAY_8 extends NyARVectorReader_Base
 		//加重平均の分母を返却
 		return sum_wx+sum_wy;
 	}
+	
+	
+	
+	
 	/**
 	 * この関数は、元画像の矩形領域を集計して、その領域内のエッジ中心と、エッジの方位ベクトルを返します。 画素の集計には、2x2のカーネルを使います。 矩形領域は、例えば取得元の画像が320*240の場合、(x>=0 && x<=320 x+w>=0 && x+w<=320),(y>=0 && y<=240 y+h>=0 && y+h<=240)です。 
 	 */	
@@ -227,7 +234,9 @@ public class NyARVectorReader_INT1D_GRAY_8 extends NyARVectorReader_Base
 		}
 		//必要なら歪みを解除
 		if(this._factor!=null){
-			this._factor.observ2Ideal(xx, yy, o_posvec);
+			this._factor.observ2Ideal(xx, yy,this.__tmp);
+			o_posvec.x=this.__tmp.x;
+			o_posvec.y=this.__tmp.y;
 		}else{
 			o_posvec.x=xx;
 			o_posvec.y=yy;

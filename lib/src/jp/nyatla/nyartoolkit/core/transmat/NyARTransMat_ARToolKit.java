@@ -38,6 +38,7 @@ import jp.nyatla.nyartoolkit.core.transmat.optimize.artoolkit.INyARRotMatrixOpti
 import jp.nyatla.nyartoolkit.core.transmat.optimize.artoolkit.NyARRotMatrixOptimize_O2;
 import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.*;
 import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 
 
 /**
@@ -113,7 +114,7 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 	 * ARToolKitのarGetTransMatに該当します。
 	 * @see INyARTransMat#transMatContinue
 	 */
-	public final boolean transMat(NyARSquare i_square,NyARRectOffset i_offset, NyARTransMatResult o_result_conv) throws NyARException
+	public boolean transMat(NyARSquare i_square,NyARRectOffset i_offset, NyARDoubleMatrix44 o_result,NyARTransMatResultParam o_param) throws NyARException
 	{
 		final NyARDoublePoint3d trans=this.__transMat_trans;
 		
@@ -142,23 +143,19 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 		double err=this.optimize(this._rotmatrix, trans, this._transsolver,i_offset.vertex, vertex_2d);
 		
 		// マトリクスの保存
-		o_result_conv.setValue(this._rotmatrix,trans,err);
+		o_result.setValue(this._rotmatrix,trans);
+		if(o_param!=null){
+			o_param.last_error=err;
+		}
 		return true;
 	}
 	/**
-	 * この関数は、理想座標系の四角系を元に、位置姿勢変換行列を求めます。
-	 * 計算に過去の履歴を使う点が、{@link #transMat}と異なります。
+	 * ARToolkitと同じ結果を返します。i_prev_err引数は無視されますので、0を指定してください。
 	 * @see INyARTransMat#transMatContinue
 	 */
-	public final boolean transMatContinue(NyARSquare i_square,NyARRectOffset i_offset,NyARTransMatResult i_prev_result,NyARTransMatResult o_result) throws NyARException
+	public boolean transMatContinue(NyARSquare i_square,NyARRectOffset i_offset, NyARDoubleMatrix44 i_prev_result,double i_prev_err,NyARDoubleMatrix44 o_result,NyARTransMatResultParam o_param) throws NyARException
 	{
 		final NyARDoublePoint3d trans=this.__transMat_trans;
-
-		// i_prev_resultが初期値なら、transMatで計算する。
-		if (!i_prev_result.has_value) {
-			this.transMat(i_square, i_offset, o_result);
-			return true;
-		}
 		
 		//平行移動量計算機に、2D座標系をセット
 		NyARDoublePoint2d[] vertex_2d;
@@ -183,28 +180,15 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 		//計算結果の最適化(平行移動量と回転行列の最適化)
 		double err=this.optimize(this._rotmatrix, trans, this._transsolver,i_offset.vertex, vertex_2d);
 		
-		// マトリクスの保存
-		o_result.setValue(this._rotmatrix,  trans, err);
-		
-		// エラー値が許容範囲でなければTransMatをやり直し
 		if (err > AR_GET_TRANS_CONT_MAT_MAX_FIT_ERROR) {
-			// rotationを矩形情報で初期化
-			if(!this._rotmatrix.initRotBySquare(i_square.line,i_square.sqvertex)){
-				return false;
-			}
-			//回転行列の平行移動量の計算
-			this._rotmatrix.getPoint3dBatch(i_offset.vertex,vertex_3d,4);
-			this._transsolver.solveTransportVector(vertex_3d,trans);
-			//計算結果の最適化(this._rotmatrix,trans)
-			final double err2=this.optimize(this._rotmatrix, trans, this._transsolver,i_offset.vertex, vertex_2d);
-			//エラー値が低かったら値を差換え
-			if (err2 < err) {
-				// 良い値が取れたら、差換え
-				o_result.setValue(this._rotmatrix, trans, err2);
-			}
-			err=err2;
+			return false;
 		}
+		// マトリクスの保存
+		o_result.setValue(this._rotmatrix,  trans);
 		//エラー値保存
+		if(o_param!=null){
+			o_param.last_error=err;
+		}
 		return true;
 	}
 	private double optimize(NyARRotMatrix_ARToolKit io_rotmat,NyARDoublePoint3d io_transvec,INyARTransportVectorSolver i_solver,NyARDoublePoint3d[] i_offset_3d,NyARDoublePoint2d[] i_2d_vertex) throws NyARException

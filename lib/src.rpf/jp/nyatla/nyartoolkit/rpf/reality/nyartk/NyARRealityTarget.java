@@ -29,7 +29,7 @@ import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.transmat.NyARRectOffset;
-import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
+import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResultParam;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
@@ -114,8 +114,8 @@ public class NyARRealityTarget extends NyARManagedObject
 	/** 内部向けのメンバ変数です。{@link #getSerialId}を使ってください。*/
 	public long _serial;
 	/** 内部向けのメンバ変数です。{@link #refTransformMatrix}を使ってください。*/
-	public NyARTransMatResult _transform_matrix=new NyARTransMatResult();
-
+	public NyARDoubleMatrix44 _transform_matrix=new NyARDoubleMatrix44();
+	public NyARTransMatResultParam _result_param=new NyARTransMatResultParam();
 	/** ターゲットの種類。Unknownステータスであることを示します。*/
 	public final static int RT_UNKNOWN   =0;
 	/** ターゲットの種類。Knownステータスである事を示します。*/
@@ -145,7 +145,7 @@ public class NyARRealityTarget extends NyARManagedObject
 	 * @return
 	 * [READ ONLY]姿勢変換行列の参照値。
 	 */
-	public final NyARTransMatResult refTransformMatrix()
+	public final NyARDoubleMatrix44 refTransformMatrix()
 	{
 		assert(this._target_type==RT_KNOWN);
 		return this._transform_matrix;

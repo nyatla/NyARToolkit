@@ -39,7 +39,7 @@ import com.sun.opengl.util.*;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
-import jp.nyatla.nyartoolkit.core.transmat.*;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
 import jp.nyatla.nyartoolkit.processor.*;
@@ -84,7 +84,7 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 		/**
 		 * i_square,resultの有効期間は、この関数の終了までです。
 		 */
-		protected void onUpdateHandler(NyARSquare i_square, NyARTransMatResult result)
+		protected void onUpdateHandler(NyARSquare i_square, NyARDoubleMatrix44 result)
 		{
 			try{
 				NyARGLUtil.toCameraViewRH(result,1.0, this.gltransmat);

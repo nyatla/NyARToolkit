@@ -35,6 +35,7 @@ import jp.nyatla.nyartoolkit.core.rasterdriver.INyARHistogramFromRaster;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilter;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.core.squaredetect.*;
 
 /**
@@ -347,14 +348,14 @@ public abstract class SingleARMarkerProcesser
 		this._detectmarker.cf_threshold_new=i_new_cf;
 	}
 
-	private NyARTransMatResult __NyARSquare_result = new NyARTransMatResult();
+	private NyARDoubleMatrix44 _transmat_result = new NyARDoubleMatrix44();
+	private NyARTransMatResultParam _last_result_param = new NyARTransMatResultParam();
 
 	/**	オブジェクトのステータスを更新し、必要に応じて自己コールバック関数を駆動します。
 	 * 	戻り値は、「実際にマーカを発見する事ができたか」を示す真偽値です。クラスの状態とは異なります。
 	 */
 	private boolean updateStatus(NyARSquare i_square, int i_code_index)  throws NyARException
 	{
-		NyARTransMatResult result = this.__NyARSquare_result;
 		if (this._current_arcode_index < 0) {// 未認識中
 			if (i_code_index < 0) {// 未認識から未認識の遷移
 				// なにもしないよーん。
@@ -365,9 +366,9 @@ public abstract class SingleARMarkerProcesser
 				// OnEnter
 				this.onEnterHandler(i_code_index);
 				// 変換行列を作成
-				this._transmat.transMat(i_square, this._offset, result);
+				this._transmat.transMat(i_square, this._offset, this._transmat_result,this._last_result_param);
 				// OnUpdate
-				this.onUpdateHandler(i_square, result);
+				this.onUpdateHandler(i_square,this._transmat_result);
 				this._lost_delay_count = 0;
 				return true;
 			}
@@ -383,9 +384,11 @@ public abstract class SingleARMarkerProcesser
 			} else if (i_code_index == this._current_arcode_index) {// 同じARCodeの再認識
 				// イベント生成
 				// 変換行列を作成
-				this._transmat.transMatContinue(i_square, this._offset, result,result);
+				if(!this._transmat.transMatContinue(i_square,  this._offset, this._transmat_result, this._last_result_param.last_error, this._transmat_result, this._last_result_param)){
+					this._transmat.transMat(i_square, this._offset,this._transmat_result,this._last_result_param);
+				}
 				// OnUpdate
-				this.onUpdateHandler(i_square, result);
+				this.onUpdateHandler(i_square, this._transmat_result);
 				this._lost_delay_count = 0;
 				return true;
 			} else {// 異なるコードの認識→今はサポートしない。
@@ -411,8 +414,8 @@ public abstract class SingleARMarkerProcesser
 	 * 引数の値の有効期間は、関数が終了するまでです。
 	 * @param i_square
 	 * 現在のマーカ検出位置です。
-	 * @param result
+	 * @param _transmat_result2
 	 * 現在の姿勢変換行列です。
 	 */
-	protected abstract void onUpdateHandler(NyARSquare i_square, NyARTransMatResult result);
+	protected abstract void onUpdateHandler(NyARSquare i_square, NyARDoubleMatrix44 _transmat_result2);
 }

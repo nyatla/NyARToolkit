@@ -134,7 +134,7 @@ public class NyARTransMat implements INyARTransMat
 	 * ARToolKitのarGetTransMatに該当します。
 	 * @see INyARTransMat#transMatContinue
 	 */
-	public boolean transMat(NyARSquare i_square,NyARRectOffset i_offset, NyARTransMatResult o_result_conv) throws NyARException
+	public boolean transMat(NyARSquare i_square,NyARRectOffset i_offset, NyARDoubleMatrix44 o_result,NyARTransMatResultParam o_param) throws NyARException
 	{
 		final NyARDoublePoint3d trans=this.__transMat_trans;
 		double err_threshold=makeErrThreshold(i_square.sqvertex);
@@ -162,7 +162,11 @@ public class NyARTransMat implements INyARTransMat
 		this._transsolver.solveTransportVector(vertex_3d,trans);
 		
 		//計算結果の最適化(平行移動量と回転行列の最適化)
-		this.optimize(this._rotmatrix, trans, this._transsolver,i_offset.vertex, vertex_2d,err_threshold,o_result_conv);
+		double err=this.optimize(this._rotmatrix, trans, this._transsolver,i_offset.vertex, vertex_2d,err_threshold,o_result);
+		//必要なら計算パラメータを返却
+		if(o_param!=null){
+			o_param.last_error=err;
+		}
 		return true;
 	}
 
@@ -171,21 +175,11 @@ public class NyARTransMat implements INyARTransMat
 	 * 計算に過去の履歴を使う点が、{@link #transMat}と異なります。
 	 * @see INyARTransMat#transMatContinue
 	 */
-	public final boolean transMatContinue(NyARSquare i_square,NyARRectOffset i_offset,NyARTransMatResult i_prev_result,NyARTransMatResult o_result) throws NyARException
+	public boolean transMatContinue(NyARSquare i_square,NyARRectOffset i_offset, NyARDoubleMatrix44 i_prev_result,double i_prev_err,NyARDoubleMatrix44 o_result,NyARTransMatResultParam o_param) throws NyARException
 	{
 		final NyARDoublePoint3d trans=this.__transMat_trans;
-		// io_result_convが初期値なら、transMatで計算する。
-		if (!i_prev_result.has_value) {
-			this.transMat(i_square,i_offset, o_result);
-			return true;
-		}
-		//過去のエラーレートを記録(ここれやるのは、i_prev_resultとo_resultに同じインスタンスを指定できるようにするため)
-		double last_error=i_prev_result.last_error;
-		
 		//最適化計算の閾値を決定
 		double err_threshold=makeErrThreshold(i_square.sqvertex);
-
-		
 		//平行移動量計算機に、2D座標系をセット
 		NyARDoublePoint2d[] vertex_2d;
 		if(this._ref_dist_factor!=null){
@@ -206,11 +200,11 @@ public class NyARTransMat implements INyARTransMat
 		this._transsolver.solveTransportVector(vertex_3d,trans);
 
 		//現在のエラーレートを計算
-		double min_err=errRate(this._rotmatrix,trans,i_offset.vertex, vertex_2d,4,vertex_3d);
-		//結果をストア
-		o_result.setValue(rot,trans,min_err);
+		double min_err=errRate(rot,trans,i_offset.vertex, vertex_2d,4,vertex_3d);
 		//エラーレートの判定
-		if(min_err<last_error+err_threshold){
+		if(min_err<i_prev_err+err_threshold){
+			//save initial result
+			o_result.setValue(rot,trans);
 //			System.out.println("TR:ok");
 			//最適化してみる。
 			for (int i = 0;i<5; i++) {
@@ -223,24 +217,17 @@ public class NyARTransMat implements INyARTransMat
 					break;
 				}
 				this._transsolver.solveTransportVector(vertex_3d, trans);				
-				o_result.setValue(rot,trans,err);
+				o_result.setValue(rot,trans);
 				min_err=err;
 			}
-		}else{
-//			System.out.println("TR:again");
-			//回転行列を計算
-			if(!rot.initRotBySquare(i_square.line,i_square.sqvertex)){
-				return false;
+			//継続計算成功
+			if(o_param!=null){
+				o_param.last_error=min_err;
 			}
-			
-			//回転後の3D座標系から、平行移動量を計算
-			rot.getPoint3dBatch(i_offset.vertex,vertex_3d,4);
-			this._transsolver.solveTransportVector(vertex_3d,trans);
-			
-			//計算結果の最適化(平行移動量と回転行列の最適化)
-			this.optimize(rot,trans, this._transsolver,i_offset.vertex, vertex_2d,err_threshold,o_result);
+			return true;
 		}
-		return true;
+		//継続計算失敗
+		return false;
 	}
 
 	/**
@@ -253,15 +240,16 @@ public class NyARTransMat implements INyARTransMat
 	 * @param i_err_threshold
 	 * @param o_result
 	 * @return
+	 * エラーレート
 	 * @throws NyARException
 	 */
-	private void optimize(NyARRotMatrix iw_rotmat,NyARDoublePoint3d iw_transvec,INyARTransportVectorSolver i_solver,NyARDoublePoint3d[] i_offset_3d,NyARDoublePoint2d[] i_2d_vertex,double i_err_threshold,NyARTransMatResult o_result) throws NyARException
+	private double optimize(NyARRotMatrix iw_rotmat,NyARDoublePoint3d iw_transvec,INyARTransportVectorSolver i_solver,NyARDoublePoint3d[] i_offset_3d,NyARDoublePoint2d[] i_2d_vertex,double i_err_threshold,NyARDoubleMatrix44 o_result) throws NyARException
 	{
 		//System.out.println("START");
 		NyARDoublePoint3d[] vertex_3d=this.__transMat_vertex_3d;
 		//初期のエラー値を計算
 		double min_err=errRate(iw_rotmat, iw_transvec, i_offset_3d, i_2d_vertex,4,vertex_3d);
-		o_result.setValue(iw_rotmat,iw_transvec,min_err);
+		o_result.setValue(iw_rotmat,iw_transvec);
 
 		for (int i = 0;i<5; i++) {
 			//変換行列の最適化
@@ -273,13 +261,12 @@ public class NyARTransMat implements INyARTransMat
 				break;
 			}
 			i_solver.solveTransportVector(vertex_3d,iw_transvec);
-			o_result.setValue(iw_rotmat,iw_transvec,err);
+			o_result.setValue(iw_rotmat,iw_transvec);
 			min_err=err;
 		}
 		//System.out.println("END");
-		return;
+		return min_err;
 	}
-
 	/**
 	 * この関数は、姿勢行列のエラーレートを計算します。
 	 * エラーレートは、回転行列、平行移動量、オフセット、観察座標から計算します。

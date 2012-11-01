@@ -33,6 +33,7 @@ import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.rasterdriver.INyARHistogramFromRaster;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilter;
 import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.nyidmarker.*;
 import jp.nyatla.nyartoolkit.nyidmarker.data.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.*;
@@ -297,15 +298,15 @@ public abstract class SingleNyIdMarkerProcesser
 		return;
 	}
 
+	private NyARDoubleMatrix44 _transmat_result = new NyARDoubleMatrix44();
+	private NyARTransMatResultParam _last_result_param = new NyARTransMatResultParam();
 	
-	private NyARTransMatResult __NyARSquare_result = new NyARTransMatResult();
 
 	/**オブジェクトのステータスを更新し、必要に応じて自己コールバック関数を駆動します。
 	 */
 	private boolean updateStatus(NyARSquare i_square, INyIdMarkerData i_marker_data)  throws NyARException
 	{
 		boolean is_id_found=false;
-		NyARTransMatResult result = this.__NyARSquare_result;
 		if (!this._is_active) {// 未認識中
 			if (i_marker_data==null) {// 未認識から未認識の遷移
 				// なにもしないよーん。
@@ -316,9 +317,9 @@ public abstract class SingleNyIdMarkerProcesser
 				// OnEnter
 				this.onEnterHandler(this._data_current);
 				// 変換行列を作成
-				this._transmat.transMat(i_square, this._offset, result);
+				this._transmat.transMat(i_square, this._offset,this._transmat_result,this._last_result_param);
 				// OnUpdate
-				this.onUpdateHandler(i_square, result);
+				this.onUpdateHandler(i_square, this._transmat_result);
 				this._lost_delay_count = 0;
 				this._is_active=true;
 				is_id_found=true;
@@ -334,9 +335,11 @@ public abstract class SingleNyIdMarkerProcesser
 				}
 			} else if(this._data_current.isEqual(i_marker_data)) {
 				//同じidの再認識
-				this._transmat.transMatContinue(i_square, this._offset, result,result);
+				if(!this._transmat.transMatContinue(i_square,  this._offset, this._transmat_result, this._last_result_param.last_error, this._transmat_result, this._last_result_param)){
+					this._transmat.transMat(i_square, this._offset,this._transmat_result,this._last_result_param);
+				}
 				// OnUpdate
-				this.onUpdateHandler(i_square, result);
+				this.onUpdateHandler(i_square, this._transmat_result);
 				this._lost_delay_count = 0;
 				is_id_found=true;
 			} else {// 異なるコードの認識→今はサポートしない。
@@ -365,8 +368,8 @@ public abstract class SingleNyIdMarkerProcesser
 	 * 引数の値の有効期間は、関数が終了するまでです。
 	 * @param i_square
 	 * 現在のマーカ検出位置です。
-	 * @param result
+	 * @param _transmat_result2
 	 * 現在の姿勢変換行列です。
 	 */
-	protected abstract void onUpdateHandler(NyARSquare i_square, NyARTransMatResult result);
+	protected abstract void onUpdateHandler(NyARSquare i_square, NyARDoubleMatrix44 _transmat_result2);
 }

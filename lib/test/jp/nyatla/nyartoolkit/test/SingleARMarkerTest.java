@@ -38,8 +38,8 @@ import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
-import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.processor.SingleARMarkerProcesser;
 /**
  * このプログラムは、NyIdマーカ検出クラス{@link SingleARMarkerProcesser}の動作チェックプログラムです。
@@ -61,7 +61,7 @@ public class SingleARMarkerTest
 	class MarkerProcessor extends SingleARMarkerProcesser
 	{	
 		private Object _sync_object=new Object();
-		public NyARTransMatResult transmat=null;
+		public NyARDoubleMatrix44 transmat=null;
 		public int current_code=-1;
 	    /**
          * コンストラクタです。
@@ -113,7 +113,7 @@ public class SingleARMarkerTest
          * 
          * このサンプルでは、引数で通知されたマーカの姿勢を、メンバ変数に保存しています。
          */
-		protected void onUpdateHandler(NyARSquare i_square, NyARTransMatResult result)
+		protected void onUpdateHandler(NyARSquare i_square, NyARDoubleMatrix44 result)
 		{
 			synchronized(this._sync_object){
 				this.transmat=result;

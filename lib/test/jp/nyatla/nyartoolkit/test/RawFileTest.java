@@ -38,9 +38,9 @@ import jp.nyatla.nyartoolkit.core.NyARCode;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
-import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
 
 /**
@@ -99,7 +99,7 @@ public class RawFileTest
 		// １パターンのみを追跡するクラスを作成
 		NyARSingleDetectMarker ar = NyARSingleDetectMarker.createInstance(
 			ap, code, 80.0,NyARSingleDetectMarker.PF_NYARTOOLKIT);
-		NyARTransMatResult result_mat = new NyARTransMatResult();
+		NyARDoubleMatrix44 result_mat = new NyARDoubleMatrix44();
 		ar.setContinueMode(true);
 		ar.detectMarkerLite(ra, 100);
 		ar.getTransmat(result_mat);

@@ -25,8 +25,9 @@
 package jp.nyatla.nyartoolkit.markersystem.utils;
 
 import jp.nyatla.nyartoolkit.core.transmat.NyARRectOffset;
-import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
+import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResultParam;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 
 /**
  * このクラスは、マーカ情報を格納するためのクラスです。
@@ -44,7 +45,9 @@ public class TMarkerData
 	/** 検出した矩形の格納変数。理想形二次元座標を格納します。*/
 	public SquareStack.Item sq;
 	/** 検出した矩形の格納変数。マーカの姿勢行列を格納します。*/
-	public final NyARTransMatResult tmat=new NyARTransMatResult();
+	public final NyARDoubleMatrix44 tmat=new NyARDoubleMatrix44();
+	/** */
+	public final NyARTransMatResultParam last_param=new NyARTransMatResultParam();
 	/** 矩形の検出状態の格納変数。 連続して見失った回数を格納します。*/
 	public int lost_count=Integer.MAX_VALUE;
 	/** トラッキングログ用の領域*/

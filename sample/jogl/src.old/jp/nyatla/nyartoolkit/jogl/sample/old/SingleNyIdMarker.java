@@ -40,7 +40,7 @@ import com.sun.opengl.util.*;
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
-import jp.nyatla.nyartoolkit.core.transmat.*;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
 import jp.nyatla.nyartoolkit.processor.*;
@@ -85,7 +85,7 @@ class MarkerProcessor extends SingleNyIdMarkerProcesser
 	 * アプリケーションフレームワークのハンドラ（マーカ更新）
 	 * i_squareとresultの有効期間は個のコールバック関数が終了するまでです。
 	 */
-	protected void onUpdateHandler(NyARSquare i_square, NyARTransMatResult result)
+	protected void onUpdateHandler(NyARSquare i_square, NyARDoubleMatrix44 result)
 	{
 		try{
 			NyARGLUtil.toCameraViewRH(result,1.0, this.gltransmat);

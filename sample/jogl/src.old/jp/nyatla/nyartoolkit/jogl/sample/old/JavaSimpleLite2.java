@@ -36,7 +36,7 @@ import javax.media.opengl.*;
 
 import com.sun.opengl.util.Animator;
 import jp.nyatla.nyartoolkit.core.param.*;
-import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.detector.*;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
@@ -145,12 +145,12 @@ public class JavaSimpleLite2 implements GLEventListener, JmfCaptureListener
 		_gl.glMatrixMode(GL.GL_MODELVIEW);
 		_gl.glLoadIdentity();
 	}
-	private NyARTransMatResult __display_transmat_result=new NyARTransMatResult();
+	private NyARDoubleMatrix44 __display_transmat_result=new NyARDoubleMatrix44();
 	private double[] __display_wk=new double[16];
 	
 	public void display(GLAutoDrawable drawable)
 	{
-		NyARTransMatResult transmat_result=__display_transmat_result;
+		NyARDoubleMatrix44 transmat_result=__display_transmat_result;
 
 		try {
 			if (!_cap_image.hasBuffer()) {

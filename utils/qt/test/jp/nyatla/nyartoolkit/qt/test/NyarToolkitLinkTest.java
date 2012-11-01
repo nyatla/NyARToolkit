@@ -37,8 +37,8 @@ import java.io.FileInputStream;
 
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
-import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.detector.NyARSingleDetectMarker;
 /**
  * VFM+ARToolkitテストプログラム
@@ -58,7 +58,7 @@ public class NyarToolkitLinkTest extends Frame implements QtCaptureListener
 
 	private QtNyARRaster_RGB raster;
 
-	private NyARTransMatResult trans_mat_result = new NyARTransMatResult();
+	private NyARDoubleMatrix44 trans_mat_result = new NyARDoubleMatrix44();
 
 	public NyarToolkitLinkTest() throws Exception
 	{
