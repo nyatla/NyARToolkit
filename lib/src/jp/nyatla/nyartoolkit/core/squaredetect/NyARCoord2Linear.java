@@ -31,7 +31,7 @@
 package jp.nyatla.nyartoolkit.core.squaredetect;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
+import jp.nyatla.nyartoolkit.core.param.INyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.param.NyARObserv2IdealMap;
 import jp.nyatla.nyartoolkit.core.pca2d.INyARPca2d;
 import jp.nyatla.nyartoolkit.core.pca2d.NyARPca2d_MatrixPCA_O2;
@@ -64,7 +64,7 @@ public class NyARCoord2Linear
 	 * 樽型歪みを補正する場合に、オブジェクトを指定します。
 	 * nullの場合、補正を行いません。
 	 */
-	public NyARCoord2Linear(NyARIntSize i_size,NyARCameraDistortionFactor i_distfactor)
+	public NyARCoord2Linear(NyARIntSize i_size,INyARCameraDistortionFactor i_distfactor)
 	{
 		if(i_distfactor!=null){
 			this._dist_factor = new NyARObserv2IdealMap(i_distfactor,i_size);

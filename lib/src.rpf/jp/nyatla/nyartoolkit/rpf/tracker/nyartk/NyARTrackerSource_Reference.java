@@ -25,7 +25,7 @@
 package jp.nyatla.nyartoolkit.rpf.tracker.nyartk;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
+import jp.nyatla.nyartoolkit.core.param.INyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.rpf.sampler.lrlabel.LowResolutionLabelingSampler;
@@ -75,7 +75,7 @@ public class NyARTrackerSource_Reference extends NyARTrackerSource
 	 * trueの場合、バッファは内部に確保され、{@link #wrapBuffer}関数が使用できなくなります。
 	 * @throws NyARException
 	 */
-	public NyARTrackerSource_Reference(int i_number_of_sample,NyARCameraDistortionFactor i_ref_raster_distortion,int i_width,int i_height,int i_depth,boolean i_is_alloc) throws NyARException
+	public NyARTrackerSource_Reference(int i_number_of_sample,INyARCameraDistortionFactor i_ref_raster_distortion,int i_width,int i_height,int i_depth,boolean i_is_alloc) throws NyARException
 	{
 		super((int)Math.pow(2,i_depth));
 		assert(i_depth>0);

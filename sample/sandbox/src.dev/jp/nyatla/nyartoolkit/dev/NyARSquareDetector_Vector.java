@@ -33,7 +33,7 @@ package jp.nyatla.nyartoolkit.dev;
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.NyARLabelOverlapChecker;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.*;
-import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
+import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactorV2;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARCoord2SquareVertexIndexes;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
@@ -72,7 +72,7 @@ public class NyARSquareDetector_Vector
 	 * 
 	 * @param i_param
 	 */
-	public NyARSquareDetector_Vector(NyARCameraDistortionFactor i_dist_factor_ref,NyARIntSize i_size) throws NyARException
+	public NyARSquareDetector_Vector(NyARCameraDistortionFactorV2 i_dist_factor_ref,NyARIntSize i_size) throws NyARException
 	{
 		this._width = i_size.w;
 		this._height = i_size.h;
@@ -184,7 +184,7 @@ public class NyARSquareDetector_Vector
 		private final NyARObserv2IdealMap2 _distmap;
 		private final int[] __detectMarker_mkvertex = new int[4];
 		private final NyARCoord2SquareVertexIndexes _coord2vertex=new NyARCoord2SquareVertexIndexes();
-		public SquareContourDetector_Vector(NyARIntSize i_size,NyARCameraDistortionFactor i_distfactor_ref)
+		public SquareContourDetector_Vector(NyARIntSize i_size,NyARCameraDistortionFactorV2 i_distfactor_ref)
 		{
 			this._distmap=new NyARObserv2IdealMap2(i_distfactor_ref,i_size);
 			return;
@@ -322,7 +322,7 @@ public class NyARSquareDetector_Vector
 	 */
 	private class NyARObserv2IdealMap2 extends NyARObserv2IdealMap
 	{
-		public NyARObserv2IdealMap2(NyARCameraDistortionFactor i_distfactor,NyARIntSize i_screen_size)
+		public NyARObserv2IdealMap2(NyARCameraDistortionFactorV2 i_distfactor,NyARIntSize i_screen_size)
 		{
 			super(i_distfactor,i_screen_size);
 		}

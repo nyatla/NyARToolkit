@@ -62,7 +62,7 @@ public class NyARVertexDetector extends NyARSquareContourDetector
 	 * 
 	 * @param i_param
 	 */
-	public NyARVertexDetector(NyARCameraDistortionFactor i_dist_factor_ref,NyARIntSize i_size) throws NyARException
+	public NyARVertexDetector(NyARCameraDistortionFactorV2 i_dist_factor_ref,NyARIntSize i_size) throws NyARException
 	{
 		this._width = i_size.w;
 		this._height = i_size.h;

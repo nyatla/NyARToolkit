@@ -27,7 +27,7 @@ package jp.nyatla.nyartoolkit.rpf.realitysource.nyartk;
 
 
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
+import jp.nyatla.nyartoolkit.core.param.INyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.INyARPerspectiveCopy;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilter;
@@ -74,7 +74,7 @@ public class NyARRealitySource_Reference extends NyARRealitySource
 	 * 標準値は、{@link NyARBufferType#BYTE1D_B8G8R8X8_32}です。
 	 * @throws NyARException
 	 */
-	public NyARRealitySource_Reference(int i_width,int i_height,NyARCameraDistortionFactor i_ref_raster_distortion,int i_depth,int i_number_of_sample,int i_raster_type) throws NyARException
+	public NyARRealitySource_Reference(int i_width,int i_height,INyARCameraDistortionFactor i_ref_raster_distortion,int i_depth,int i_number_of_sample,int i_raster_type) throws NyARException
 	{
 		this._rgb_source=new NyARRgbRaster(i_width,i_height,i_raster_type);
 		this._filter=(INyARRgb2GsFilter) this._rgb_source.createInterface(INyARRgb2GsFilter.class);

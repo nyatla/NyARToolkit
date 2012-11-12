@@ -63,7 +63,7 @@ public class NyARSquareDetector_X2 extends NyARSquareContourDetector
 	 * 
 	 * @param i_param
 	 */
-	public NyARSquareDetector_X2(NyARCameraDistortionFactor i_dist_factor_ref,NyARIntSize i_size) throws NyARException
+	public NyARSquareDetector_X2(NyARCameraDistortionFactorV2 i_dist_factor_ref,NyARIntSize i_size) throws NyARException
 	{
 		this._width = i_size.w;
 		this._height = i_size.h;

@@ -3,7 +3,7 @@ package jp.nyatla.nyartoolkit.rpf.realitysource.nyartk;
 import java.awt.image.BufferedImage;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
+import jp.nyatla.nyartoolkit.core.param.INyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.rasterdriver.INyARPerspectiveCopy;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilter;
 import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.NyARTrackerSource;
@@ -33,7 +33,7 @@ public class NyARRealitySource_JavaImage extends NyARRealitySource
 	 * サンプリングするターゲット数を指定します。大体100以上をしておけばOKです。具体的な計算式は、{@link NyARTrackerSource_Reference#NyARTrackerSource_Reference}を参考にして下さい。
 	 * @throws NyARException
 	 */
-	public NyARRealitySource_JavaImage(int i_width,int i_height,NyARCameraDistortionFactor i_ref_raster_distortion,int i_depth,int i_number_of_sample) throws NyARException
+	public NyARRealitySource_JavaImage(int i_width,int i_height,INyARCameraDistortionFactor i_ref_raster_distortion,int i_depth,int i_number_of_sample) throws NyARException
 	{
 		
 		this._rgb_source=new NyARBufferedImageRaster(i_width,i_height);
@@ -55,7 +55,7 @@ public class NyARRealitySource_JavaImage extends NyARRealitySource
 	 * サンプリングするターゲット数を指定します。大体100以上をしておけばOKです。具体的な計算式は、{@link NyARTrackerSource_Reference#NyARTrackerSource_Reference}を参考にして下さい。
 	 * @throws NyARException
 	 */
-	public NyARRealitySource_JavaImage(BufferedImage i_bmp,NyARCameraDistortionFactor i_ref_raster_distortion,int i_depth,int i_number_of_sample) throws NyARException
+	public NyARRealitySource_JavaImage(BufferedImage i_bmp,INyARCameraDistortionFactor i_ref_raster_distortion,int i_depth,int i_number_of_sample) throws NyARException
 	{
 		this._rgb_source=new NyARBufferedImageRaster(i_bmp);
 		this._filter=(INyARRgb2GsFilter)this._rgb_source.createInterface(INyARRgb2GsFilter.class);

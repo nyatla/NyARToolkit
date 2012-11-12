@@ -50,7 +50,7 @@ public class NyARTransMat implements INyARTransMat
 	protected NyARPartialDifferentiationOptimize _mat_optimize;
 
 
-	private NyARCameraDistortionFactor _ref_dist_factor;
+	private INyARCameraDistortionFactor _ref_dist_factor;
 
 	/**
 	 * コンストラクタです。
@@ -70,7 +70,7 @@ public class NyARTransMat implements INyARTransMat
 	 * @param i_projmat
 	 * @throws NyARException
 	 */
-	private void initInstance(NyARCameraDistortionFactor i_distfactor,NyARPerspectiveProjectionMatrix i_projmat) throws NyARException
+	private void initInstance(INyARCameraDistortionFactor i_distfactor,NyARPerspectiveProjectionMatrix i_projmat) throws NyARException
 	{
 		this._transsolver=new NyARTransportVectorSolver(i_projmat,4);
 		//互換性が重要な時は、NyARRotMatrix_ARToolKitを使うこと。
@@ -90,7 +90,7 @@ public class NyARTransMat implements INyARTransMat
 	 * 射影変換オブジェクトの参照値です。
 	 * @throws NyARException
 	 */
-	public NyARTransMat(NyARCameraDistortionFactor i_ref_distfactor,NyARPerspectiveProjectionMatrix i_ref_projmat) throws NyARException
+	public NyARTransMat(INyARCameraDistortionFactor i_ref_distfactor,NyARPerspectiveProjectionMatrix i_ref_projmat) throws NyARException
 	{
 		initInstance(i_ref_distfactor,i_ref_projmat);
 		return;

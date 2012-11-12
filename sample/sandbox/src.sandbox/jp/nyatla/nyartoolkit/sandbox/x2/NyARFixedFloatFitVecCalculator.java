@@ -76,7 +76,7 @@ public class NyARFixedFloatFitVecCalculator
 
 
 //	private NyARDoublePoint2d[] _vertex_2d_ref;
-	public NyARFixedFloatFitVecCalculator(final NyARPerspectiveProjectionMatrix i_projection_mat_ref,final NyARCameraDistortionFactor i_distortion_ref)
+	public NyARFixedFloatFitVecCalculator(final NyARPerspectiveProjectionMatrix i_projection_mat_ref,final NyARCameraDistortionFactorV2 i_distortion_ref)
 	{
 		// 変換マトリクスdとbの準備(arGetTransMatSubの一部)
 		final long[][] a_array = this._mat_a.getArray();

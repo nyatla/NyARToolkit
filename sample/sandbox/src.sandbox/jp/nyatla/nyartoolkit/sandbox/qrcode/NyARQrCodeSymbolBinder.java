@@ -22,9 +22,9 @@ import jp.nyatla.nyartoolkit.core.param.*;
  */
 public class NyARQrCodeSymbolBinder
 {
-	private NyARCameraDistortionFactor _distfactor;
+	private NyARCameraDistortionFactorV2 _distfactor;
 
-	public NyARQrCodeSymbolBinder(NyARCameraDistortionFactor i_ref_distortion)
+	public NyARQrCodeSymbolBinder(NyARCameraDistortionFactorV2 i_ref_distortion)
 	{
 		this._distfactor=i_ref_distortion;
 		return;

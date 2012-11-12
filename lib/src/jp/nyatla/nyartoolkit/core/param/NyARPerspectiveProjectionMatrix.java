@@ -158,16 +158,16 @@ final public class NyARPerspectiveProjectionMatrix extends NyARDoubleMatrix44
 	 * @param i_scale
 	 * スケール値
 	 */
-	public void changeScale(double i_scale)
+	public void changeScale(double i_x_scale,double i_y_scale)
 	{
-		this.m00=this.m00*i_scale;
-		this.m10=this.m10*i_scale;
-		this.m01=this.m01*i_scale;
-		this.m11=this.m11*i_scale;
-		this.m02=this.m02*i_scale;
-		this.m12=this.m12*i_scale;
-		this.m03=this.m03*i_scale;
-		this.m13=this.m13*i_scale;
+		this.m00=this.m00*i_x_scale;
+		this.m10=this.m10*i_y_scale;
+		this.m01=this.m01*i_x_scale;
+		this.m11=this.m11*i_y_scale;
+		this.m02=this.m02*i_x_scale;
+		this.m12=this.m12*i_y_scale;
+		this.m03=this.m03*i_x_scale;
+		this.m13=this.m13*i_y_scale;
 		//for (int i = 0; i < 4; i++) {
 		//	array34[0 * 4 + i] = array34[0 * 4 + i] * scale;// newparam->mat[0][i]=source->mat[0][i]* scale;
 		//	array34[1 * 4 + i] = array34[1 * 4 + i] * scale;// newparam->mat[1][i]=source->mat[1][i]* scale;

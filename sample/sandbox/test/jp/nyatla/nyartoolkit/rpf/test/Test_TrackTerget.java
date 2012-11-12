@@ -17,7 +17,7 @@ import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARLabeling_Rle;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfo;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfoPtrStack;
-import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
+import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactorV2;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
@@ -190,7 +190,7 @@ public class Test_TrackTerget extends Frame
 	private int W = 320;
 	private int H = 240;
 	InputSource _input_source;
-	public Test_TrackTerget(NyARCameraDistortionFactor p) throws NyARException, Exception
+	public Test_TrackTerget(NyARCameraDistortionFactorV2 p) throws NyARException, Exception
 	{
 		setTitle("Reality Platform test");
 		Insets ins = this.getInsets();

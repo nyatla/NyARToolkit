@@ -3,7 +3,7 @@ package jp.nyatla.nyartoolkit.rpf.realitysource.nyartk;
 import javax.media.format.VideoFormat;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
+import jp.nyatla.nyartoolkit.core.param.INyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.INyARPerspectiveCopy;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilter;
@@ -32,7 +32,7 @@ public class NyARRealitySource_Jmf extends NyARRealitySource
 	 * サンプリングするターゲット数を指定します。大体100以上をしておけばOKです。具体的な計算式は、{@link NyARTrackerSource_Reference#NyARTrackerSource_Reference}を参考にして下さい。
 	 * @throws NyARException
 	 */
-	public NyARRealitySource_Jmf(VideoFormat i_fmt,NyARCameraDistortionFactor i_ref_raster_distortion,int i_depth,int i_number_of_sample) throws NyARException
+	public NyARRealitySource_Jmf(VideoFormat i_fmt,INyARCameraDistortionFactor i_ref_raster_distortion,int i_depth,int i_number_of_sample) throws NyARException
 	{		
 		this._rgb_source=new JmfNyARRGBRaster(i_fmt);
 		this._filter=(INyARRgb2GsFilter) this._rgb_source.createInterface(INyARRgb2GsFilter.class);

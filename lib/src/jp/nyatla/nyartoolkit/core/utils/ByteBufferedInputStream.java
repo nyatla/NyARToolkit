@@ -89,5 +89,10 @@ public class ByteBufferedInputStream
 		this._read_len+=4;
 		return this._bb.getFloat();
 	}
-
+	public double getDouble()
+	{
+		assert(this._read_len<this._buf.length);
+		this._read_len+=8;
+		return this._bb.getDouble();
+	}
 }

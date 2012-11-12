@@ -24,7 +24,7 @@
  */
 package jp.nyatla.nyartoolkit.rpf.tracker.nyartk;
 
-import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
+import jp.nyatla.nyartoolkit.core.param.INyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARContourPickup;
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -45,7 +45,7 @@ public class NyARVectorReader_INT1D_GRAY_8 extends NyARVectorReader_Base
 	 * @param i_ref_rob_raster
 	 * ヒント画像の参照値
 	 */
-	public NyARVectorReader_INT1D_GRAY_8(NyARGrayscaleRaster i_ref_raster,NyARCameraDistortionFactor i_ref_raster_distortion,NyARGrayscaleRaster i_ref_rob_raster)
+	public NyARVectorReader_INT1D_GRAY_8(NyARGrayscaleRaster i_ref_raster,INyARCameraDistortionFactor i_ref_raster_distortion,NyARGrayscaleRaster i_ref_rob_raster)
 	{
 		super();
 		assert (i_ref_raster.getBufferType() == NyARBufferType.INT1D_GRAY_8);

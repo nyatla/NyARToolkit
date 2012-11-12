@@ -25,7 +25,7 @@
 package jp.nyatla.nyartoolkit.rpf.reality.nyartk;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
+import jp.nyatla.nyartoolkit.core.param.INyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.param.NyARFrustum;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
@@ -178,7 +178,7 @@ public class NyARReality
 	 * {@link #NyARReality(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target)}を参照
 	 * @throws NyARException
 	 */
-	public NyARReality(NyARIntSize i_screen,double i_near,double i_far,NyARPerspectiveProjectionMatrix i_prjmat,NyARCameraDistortionFactor i_dist_factor,int i_max_known_target,int i_max_unknown_target) throws NyARException
+	public NyARReality(NyARIntSize i_screen,double i_near,double i_far,NyARPerspectiveProjectionMatrix i_prjmat,INyARCameraDistortionFactor i_dist_factor,int i_max_known_target,int i_max_unknown_target) throws NyARException
 	{
 		this.MAX_LIMIT_KNOWN=i_max_known_target;
 		this.MAX_LIMIT_UNKNOWN=i_max_unknown_target;
@@ -190,7 +190,7 @@ public class NyARReality
 	 * @param i_prjmat
 	 * @throws NyARException
 	 */
-	protected void initInstance(NyARIntSize i_screen,double i_near,double i_far,NyARPerspectiveProjectionMatrix i_prjmat,NyARCameraDistortionFactor i_dist_factor) throws NyARException
+	protected void initInstance(NyARIntSize i_screen,double i_near,double i_far,NyARPerspectiveProjectionMatrix i_prjmat,INyARCameraDistortionFactor i_dist_factor) throws NyARException
 	{
 		int number_of_reality_target=this.MAX_LIMIT_KNOWN+this.MAX_LIMIT_UNKNOWN;
 		//演算インスタンス

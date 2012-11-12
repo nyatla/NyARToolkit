@@ -32,7 +32,7 @@ package jp.nyatla.nyartoolkit.core.param;
 
 import java.io.*;
 import java.nio.*;
-
+import jp.nyatla.nyartoolkit.core.utils.*;
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
@@ -51,18 +51,18 @@ public class NyARParam
 {
 	/** スクリーンサイズです。*/
 	protected NyARIntSize _screen_size=new NyARIntSize();
-	private static final int SIZE_OF_PARAM_SET = 4 + 4 + (3 * 4 * 8) + (4 * 8);
-	private NyARCameraDistortionFactor _dist=new NyARCameraDistortionFactor();
+	private INyARCameraDistortionFactor _dist;
 	private NyARPerspectiveProjectionMatrix _projection_matrix=new NyARPerspectiveProjectionMatrix();
 	/**
 	 * テストパラメータを格納したインスタンスを生成します。
+	 * テストパラメータは、ARToolKit2形式のcamera_para.datです。
 	 * @return
+	 * @throws NyARException 
 	 */
-	public static NyARParam createDefaultParameter()
+	public static NyARParam createDefaultParameter() throws NyARException
 	{
-		NyARParam ret=new NyARParam();
-		ret.initByDefaultParametor();
-		return ret;
+		ParamLoader pm=new ParamLoader();
+		return new NyARParam(pm.size,pm.pmat,pm.dist_factor);
 	}
 	/**
 	 * i_streamからARToolkitのカメラパラメータを読み出して、格納したインスタンスを生成します。
@@ -72,9 +72,14 @@ public class NyARParam
 	 */
 	public static NyARParam createFromARParamFile(InputStream i_stream) throws NyARException
 	{
-		NyARParam ret=new NyARParam();
-		ret.initByARParam(i_stream);
-		return ret;
+		ParamLoader pm=new ParamLoader(i_stream);
+		return new NyARParam(pm.size,pm.pmat,pm.dist_factor);
+	}
+	public NyARParam(NyARIntSize i_screen_size,NyARPerspectiveProjectionMatrix i_projection_mat,INyARCameraDistortionFactor i_dist_factor)
+	{
+		this._screen_size=new NyARIntSize(i_screen_size);
+		this._dist=i_dist_factor;
+		this._projection_matrix=i_projection_mat;
 	}
 
 	public NyARIntSize getScreenSize()
@@ -96,7 +101,7 @@ public class NyARParam
 	 * @return
 	 * [read only]歪み補正パラメータオブジェクト
 	 */
-	public NyARCameraDistortionFactor getDistortionFactor()
+	public INyARCameraDistortionFactor getDistortionFactor()
 	{
 		return this._dist;
 	}
@@ -123,10 +128,11 @@ public class NyARParam
 	 */
 	public void changeScreenSize(int i_xsize, int i_ysize)
 	{
-		final double scale = (double) i_xsize / (double) (this._screen_size.w);// scale = (double)xsize / (double)(source->xsize);
+		final double x_scale = (double) i_xsize / (double) (this._screen_size.w);// scale = (double)xsize / (double)(source->xsize);
+		final double y_scale = (double) i_ysize / (double) (this._screen_size.h);// scale = (double)xsize / (double)(source->xsize);
 		//スケールを変更
-		this._dist.changeScale(scale);
-		this._projection_matrix.changeScale(scale);
+		this._dist.changeScale(x_scale,y_scale);
+		this._projection_matrix.changeScale(x_scale,y_scale);
 		this._screen_size.w = i_xsize;// newparam->xsize = xsize;
 		this._screen_size.h = i_ysize;// newparam->ysize = ysize;
 		return;
@@ -159,70 +165,95 @@ public class NyARParam
 		return;
 	}	
 
-	/**
-	 * テストに使用するための、カメラパラメータ値をロードします。
-	 * このパラメータは、ARToolKit2.7に付属しているカメラパラメータファイルの値です。
-	 */
-	protected void initByDefaultParametor()
-	{
-		double[] tmp={318.5,263.5,26.2,1.0127565206658486};
-		this._screen_size.setValue(640,480);
-		this._dist.setValue(tmp);
-		this._projection_matrix.m00=700.9514702992245;
-		this._projection_matrix.m01=0;
-		this._projection_matrix.m02=316.5;
-		this._projection_matrix.m03=0;
-		this._projection_matrix.m10=0;
-		this._projection_matrix.m11=726.0941816535367;
-		this._projection_matrix.m12=241.5;
-		this._projection_matrix.m13=0.0;
-		this._projection_matrix.m20=0.0;
-		this._projection_matrix.m21=0.0;
-		this._projection_matrix.m22=1.0;
-		this._projection_matrix.m23=0.0;
-		this._projection_matrix.m30=0.0;
-		this._projection_matrix.m31=0.0;
-		this._projection_matrix.m32=0.0;
-		this._projection_matrix.m33=1.0;
-	}
-	/**
-	 * この関数は、ストリームからARToolKit形式のカメラパラメーを1個目の設定をロードします。
-	 * 
-	 * @param i_stream
-	 * 読み込むストリームです。
-	 * @throws Exception
-	 */
-	protected void initByARParam(InputStream i_stream)throws NyARException
-	{
-		try {
-			byte[] buf = new byte[SIZE_OF_PARAM_SET];
-			i_stream.read(buf);
-			double[] tmp=new double[16];
 
-			// バッファを加工
-			ByteBuffer bb = ByteBuffer.wrap(buf);
-			bb.order(ByteOrder.BIG_ENDIAN);
-			this._screen_size.w = bb.getInt();
-			this._screen_size.h = bb.getInt();
-			//double値を12個読み込む
-			for(int i=0;i<12;i++){
-				tmp[i]=bb.getDouble();
-			}
-			//パディング
-			tmp[12]=tmp[13]=tmp[14]=0;
-			tmp[15]=1;
-			//Projectionオブジェクトにセット
-			this._projection_matrix.setValue(tmp);
-			//double値を4個読み込む
-			for (int i = 0; i < 4; i++) {
-				tmp[i]=bb.getDouble();
-			}
-			//Factorオブジェクトにセット
-			this._dist.setValue(tmp);
-		} catch (Exception e) {
-			throw new NyARException(e);
+	/**
+	 * パラメータローダーです。
+	 */
+	protected static class ParamLoader
+	{
+		public NyARIntSize size;
+		public NyARPerspectiveProjectionMatrix pmat;
+		public INyARCameraDistortionFactor dist_factor;
+		
+		/**
+		 * 標準パラメータでインスタンスを初期化します。
+		 * @throws NyARException
+		 */
+		public ParamLoader()throws NyARException
+		{
+			double[] df={318.5,263.5,26.2,1.0127565206658486};
+			double[] pj={	700.9514702992245,0,316.5,0,
+							0,726.0941816535367,241.5,0.0,
+							0.0,0.0,1.0,0.0,
+							0.0,0.0,0.0,1.0};
+			this.size=new NyARIntSize(640,480);
+			this.pmat=new NyARPerspectiveProjectionMatrix();
+			this.pmat.setValue(pj);
+			this.dist_factor=new NyARCameraDistortionFactorV2();
+			this.dist_factor.setValue(df);
 		}
-		return;
+		/**
+		 * ストリームから読み出したデータでインスタンスを初期化します。
+		 * @param i_stream
+		 * @throws NyARException
+		 */
+		public ParamLoader(InputStream i_stream)throws NyARException
+		{
+			try {
+				//読み出し
+				ByteBufferedInputStream bis=new ByteBufferedInputStream(i_stream,512);
+				int s=bis.readToBuffer(512);
+				bis.order(ByteBufferedInputStream.ENDIAN_BIG);
+				//読み出したサイズでバージョンを決定
+				int[] version_table={136,144,152,176};
+				int version=-1;
+				for(int i=0;i<version_table.length;i++){
+					if(s%version_table[i]==0){
+						version=i+1;
+						break;
+					}
+				}
+				//一致しなければ無し
+				if(version==-1){
+					throw new NyARException();
+				}
+				//size
+				this.size=new NyARIntSize();
+				this.size.setValue(bis.getInt(),bis.getInt());
+
+				//projection matrix
+				this.pmat=new NyARPerspectiveProjectionMatrix();
+				double[] pjv=new double[16];
+				for(int i=0;i<12;i++){
+					pjv[i]=bis.getDouble();
+				}			
+				pjv[12]=pjv[13]=pjv[14]=0;
+				pjv[15]=1;
+				this.pmat.setValue(pjv);
+				
+				//dist factor
+				double[] df;
+				switch(version)
+				{
+				case 1://Version1
+					df=new double[NyARCameraDistortionFactorV2.NUM_OF_FACTOR];
+					this.dist_factor=new NyARCameraDistortionFactorV2();
+					break;
+				case 4://Version4
+					df=new double[NyARCameraDistortionFactorV4.NUM_OF_FACTOR];
+					this.dist_factor=new NyARCameraDistortionFactorV4();
+					break;
+				default:
+					throw new NyARException();
+				}
+				for(int i=0;i<df.length;i++){
+					df[i]=bis.getDouble();
+				}
+				this.dist_factor.setValue(df);
+			} catch (Exception e) {
+				throw new NyARException(e);
+			}			
+		}
 	}
 	/**
 	 * この関数は機能しません。
@@ -233,28 +264,5 @@ public class NyARParam
 	public void saveARParam(OutputStream i_stream)throws Exception
 	{
 		NyARException.trap("未チェックの関数");
-		byte[] buf = new byte[SIZE_OF_PARAM_SET];
-		// バッファをラップ
-		ByteBuffer bb = ByteBuffer.wrap(buf);
-		bb.order(ByteOrder.BIG_ENDIAN);
-
-		// 書き込み
-		bb.putInt(this._screen_size.w);
-		bb.putInt(this._screen_size.h);
-		double[] tmp=new double[12];
-		//Projectionを読み出し
-		this._projection_matrix.getValue(tmp);
-		//double値を12個書き込む
-		for(int i=0;i<12;i++){
-			tmp[i]=bb.getDouble();
-		}
-		//Factorを読み出し
-		this._dist.getValue(tmp);
-		//double値を4個書き込む
-		for (int i = 0; i < 4; i++) {
-			tmp[i]=bb.getDouble();
-		}
-		i_stream.write(buf);
-		return;
 	}
 }

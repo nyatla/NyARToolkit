@@ -25,7 +25,7 @@
 package jp.nyatla.nyartoolkit.rpf.tracker.nyartk;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
+import jp.nyatla.nyartoolkit.core.param.INyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARContourPickup;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
@@ -50,7 +50,7 @@ public abstract class NyARVectorReader_Base implements INyARVectorReader
 	/** 参照するヒント画像の参照値*/
 	private NyARGrayscaleRaster _ref_rob_raster;
 	/** 参照する歪み矯正オブジェクトの参照値*/
-	protected NyARCameraDistortionFactor _factor;
+	protected INyARCameraDistortionFactor _factor;
 	/**
 	 * コンストラクタです。
 	 * 継承を必須とするため、隠蔽します。
@@ -71,7 +71,7 @@ public abstract class NyARVectorReader_Base implements INyARVectorReader
 	 * @param i_contour_pickup
 	 * 輪郭線取得オブジェクト
 	 */
-	public void initInstance(NyARGrayscaleRaster i_ref_raster,NyARCameraDistortionFactor i_ref_raster_distortion,NyARGrayscaleRaster i_ref_rob_raster,NyARContourPickup i_contour_pickup)
+	public void initInstance(NyARGrayscaleRaster i_ref_raster,INyARCameraDistortionFactor i_ref_raster_distortion,NyARGrayscaleRaster i_ref_rob_raster,NyARContourPickup i_contour_pickup)
 	{
 		this._rob_resolution=i_ref_raster.getWidth()/i_ref_rob_raster.getWidth();
 		this._ref_rob_raster=i_ref_rob_raster;

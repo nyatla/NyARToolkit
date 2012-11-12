@@ -7,7 +7,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARFixedFloat16Point2d;
 public class NyARFixedFloatIdeal2Observ
 {
 	private double[] _factor=new double[4];
-	public NyARFixedFloatIdeal2Observ(NyARCameraDistortionFactor i_distfactor)
+	public NyARFixedFloatIdeal2Observ(NyARCameraDistortionFactorV2 i_distfactor)
 	{
 		i_distfactor.getValue(this._factor);
 		return;

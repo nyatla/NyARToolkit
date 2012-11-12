@@ -1,7 +1,7 @@
 package jp.nyatla.nyartoolkit.sandbox.x2;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
+import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactorV2;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARI64Linear;
 import jp.nyatla.nyartoolkit.core.types.NyARI64Point2d;
@@ -25,7 +25,7 @@ public class SquareContourDetector_X2
 	private final NyARI64Point2d __getSquareLine_ev=new NyARI64Point2d();
 	private final NyARI64Linear[] __getSquareLine_i64liner=NyARI64Linear.createArray(4);
 	private final NyARFixedFloatObserv2IdealMap _dist_factor;
-	public SquareContourDetector_X2(NyARIntSize i_size,NyARCameraDistortionFactor i_distfactor_ref)
+	public SquareContourDetector_X2(NyARIntSize i_size,NyARCameraDistortionFactorV2 i_distfactor_ref)
 	{
 		//歪み計算テーブルを作ると、8*width/height*2の領域を消費します。
 		//領域を取りたくない場合は、i_dist_factor_refの値をそのまま使ってください。

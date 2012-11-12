@@ -69,7 +69,7 @@ public class NyARSquareDetector_Quad extends NyARSquareContourDetector
      * 
      * @param i_param
      */
-    public NyARSquareDetector_Quad(NyARCameraDistortionFactor i_dist_factor_ref, NyARIntSize i_size) throws NyARException
+    public NyARSquareDetector_Quad(NyARCameraDistortionFactorV2 i_dist_factor_ref, NyARIntSize i_size) throws NyARException
     {
         this._width = i_size.w / 2;
         this._height = i_size.h / 2;
@@ -86,7 +86,7 @@ public class NyARSquareDetector_Quad extends NyARSquareContourDetector
         this._ycoord = new int[number_of_coord * 2];
 
         //1/4サイズの歪みマップを作る
-        NyARCameraDistortionFactor quadfactor = new NyARCameraDistortionFactor();
+        NyARCameraDistortionFactorV2 quadfactor = new NyARCameraDistortionFactorV2();
         quadfactor.copyFrom(i_dist_factor_ref);
         quadfactor.changeScale(0.5);
     }

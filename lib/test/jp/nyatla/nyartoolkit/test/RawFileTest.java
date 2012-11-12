@@ -62,7 +62,7 @@ public class RawFileTest
 
 	private final String data_file = "../Data/320x240ABGR.raw";
 
-	private final String camera_file = "../Data/camera_para.dat";
+	private final String camera_file = "../Data/camera_para4.dat";
 
 	/**
 	 * コンストラクタです。

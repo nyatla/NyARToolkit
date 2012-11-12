@@ -56,7 +56,7 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 	protected INyARTransportVectorSolver _transsolver;
 	/** 姿勢行列最適化オブジェクト*/
 	protected INyARRotMatrixOptimize _mat_optimize;
-	private NyARCameraDistortionFactor _ref_dist_factor;
+	private INyARCameraDistortionFactor _ref_dist_factor;
 
 	/**
 	 * コンストラクタです。
@@ -77,7 +77,7 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 	 * 射影変換オブジェクトの参照値です。
 	 * @throws NyARException
 	 */
-	public NyARTransMat_ARToolKit(NyARCameraDistortionFactor i_ref_distfactor,NyARPerspectiveProjectionMatrix i_ref_projmat) throws NyARException
+	public NyARTransMat_ARToolKit(INyARCameraDistortionFactor i_ref_distfactor,NyARPerspectiveProjectionMatrix i_ref_projmat) throws NyARException
 	{
 		initInstance(i_ref_distfactor,i_ref_projmat);
 		return;
@@ -94,9 +94,9 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 	{
 		initInstance(i_param.getDistortionFactor(),i_param.getPerspectiveProjectionMatrix());
 	}
-	private void initInstance(NyARCameraDistortionFactor i_ref_distfactor,NyARPerspectiveProjectionMatrix i_ref_projmat) throws NyARException
+	private void initInstance(INyARCameraDistortionFactor i_ref_distfactor,NyARPerspectiveProjectionMatrix i_ref_projmat) throws NyARException
 	{
-		final NyARCameraDistortionFactor dist=i_ref_distfactor;
+		final INyARCameraDistortionFactor dist=i_ref_distfactor;
 		final NyARPerspectiveProjectionMatrix pmat=i_ref_projmat;
 		this._transsolver=new NyARTransportVectorSolver_ARToolKit(pmat);
 		//互換性が重要な時は、NyARRotMatrix_ARToolKitを使うこと。

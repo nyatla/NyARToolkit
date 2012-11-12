@@ -30,7 +30,6 @@
  */
 package jp.nyatla.nyartoolkit.core.param;
 
-import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
@@ -47,7 +46,7 @@ public class NyARObserv2IdealMap
 	protected double[] _mapy;
 	/**
 	 * コンストラクタです。
-	 * 入力した{@link NyARCameraDistortionFactor}とそのサイズから、テーブルを作成します。
+	 * 入力した{@link INyARCameraDistortionFactor}とそのサイズから、テーブルを作成します。
 	 * ２つのパラメータは整合性が取れていなければなりません。
 	 * (通常は、{@link NyARParam}の{@link NyARParam#getDistortionFactor()},{@link NyARParam#getScreenSize()}から得られた
 	 * パラメータを入力します。)
@@ -56,7 +55,7 @@ public class NyARObserv2IdealMap
 	 * @param i_screen_size
 	 * スクリーンサイズ
 	 */
-	public NyARObserv2IdealMap(NyARCameraDistortionFactor i_distfactor,NyARIntSize i_screen_size)
+	public NyARObserv2IdealMap(INyARCameraDistortionFactor i_distfactor,NyARIntSize i_screen_size)
 	{
 		NyARDoublePoint2d opoint=new NyARDoublePoint2d();
 		this._mapx=new double[i_screen_size.w*i_screen_size.h];
@@ -141,5 +140,5 @@ public class NyARObserv2IdealMap
 			ptr++;
 		}
 		return;
-	}	
+	}
 }

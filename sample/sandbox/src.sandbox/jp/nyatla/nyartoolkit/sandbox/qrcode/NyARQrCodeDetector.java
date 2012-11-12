@@ -5,7 +5,7 @@ import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingImage;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabel;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabelStack;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabeling_ARToolKit;
-import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactor;
+import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactorV2;
 import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARContourPickup;
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector;
@@ -38,7 +38,7 @@ public class NyARQrCodeDetector extends NyARSquareContourDetector
 	 * 
 	 * @param i_param
 	 */
-	public NyARQrCodeDetector(NyARCameraDistortionFactor i_dist_factor_ref, NyARIntSize i_size) throws NyARException
+	public NyARQrCodeDetector(NyARCameraDistortionFactorV2 i_dist_factor_ref, NyARIntSize i_size) throws NyARException
 	{
 		this._width = i_size.w;
 		this._height = i_size.h;

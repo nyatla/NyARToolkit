@@ -49,7 +49,7 @@ final public class NyARFixedFloatObserv2IdealMap
 		
 	}
 	
-	public NyARFixedFloatObserv2IdealMap(NyARCameraDistortionFactor i_distfactor,NyARIntSize i_screen_size)
+	public NyARFixedFloatObserv2IdealMap(NyARCameraDistortionFactorV2 i_distfactor,NyARIntSize i_screen_size)
 	{
 		NyARDoublePoint2d opoint=new NyARDoublePoint2d();
 		this._mapx=new int[i_screen_size.w*i_screen_size.h];
