@@ -29,7 +29,10 @@ package jp.nyatla.nyartoolkit.java3d.utils;
 import java.io.InputStream;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.param.INyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
+import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
+import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 
 import javax.media.j3d.Transform3D;
@@ -44,12 +47,12 @@ public class J3dNyARParam extends NyARParam
 	/**
 	 * テストパラメータを格納したインスタンスを生成する。
 	 * @return
+	 * @throws NyARException 
 	 */
-	public static NyARParam loadDefaultParameter()
+	public static J3dNyARParam loadDefaultParameter() throws NyARException
 	{
-		J3dNyARParam ret=new J3dNyARParam();
-		ret.initByDefaultParametor();
-		return ret;
+		ParamLoader pm=new ParamLoader();
+		return new J3dNyARParam(pm.size,pm.pmat,pm.dist_factor);
 	}
 	/**
 	 * i_streamからARToolkitのカメラパラメータを読み出して、インスタンスに格納して返します。
@@ -59,11 +62,13 @@ public class J3dNyARParam extends NyARParam
 	 */
 	public static J3dNyARParam loadARParamFile(InputStream i_stream) throws NyARException
 	{
-		J3dNyARParam ret=new J3dNyARParam();
-		ret.initByARParam(i_stream);
-		return ret;
+		ParamLoader pm=new ParamLoader(i_stream);
+		return new J3dNyARParam(pm.size,pm.pmat,pm.dist_factor);
 	}
-	
+	public J3dNyARParam(NyARIntSize i_screen_size,NyARPerspectiveProjectionMatrix i_projection_mat,INyARCameraDistortionFactor i_dist_factor)
+	{
+		super(i_screen_size,i_projection_mat,i_dist_factor);
+	}	
 
 	/**
 	 * 視体積の近い方をメートルで指定
