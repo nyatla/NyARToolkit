@@ -34,19 +34,6 @@ import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
  * このクラスは、樽型歪み設定/解除クラスです。
- * パラメータには、ARToolKitの樽型歪みパラメータを使います。
- * <p>アルゴリズム - 
- * このクラスでは、歪み矯正前の座標を観察座標系、歪み矯正後の座標を理想座標系と呼びます。
- * パラメータと理論については、以下の資料、11pageを参照してください。
- * http://www.hitl.washington.edu/artoolkit/Papers/ART02-Tutorial.pdf
- * <pre>
- * x=x(xi-x0),y=s(yi-y0)
- * d^2=x^2+y^2
- * p=(1-fd^2)
- * xd=px+x0,yd=py+y0
- * </pre>
- * </p>
- * このクラスは{@link NyARParam}に所有されることを前提にしており、単独の仕様は考慮されていません。
  */
 public interface INyARCameraDistortionFactor
 {	
