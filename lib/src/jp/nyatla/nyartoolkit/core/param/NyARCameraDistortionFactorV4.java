@@ -47,6 +47,143 @@ public class NyARCameraDistortionFactorV4 implements INyARCameraDistortionFactor
 	private double _x0;
 	private double _y0;
 	private double _s;
+	private double getSizeFactor(double x0,double y0, int xsize, int ysize)
+	{
+	    double  ox, oy;
+	    double  olen, ilen;
+	    double  sf1;
+
+	    double sf = 100.0;
+
+	    ox = 0.0;
+	    oy = y0;
+	    olen = x0;
+	    NyARDoublePoint2d itmp=new NyARDoublePoint2d();
+	    this.observ2Ideal(ox, oy,itmp);
+	    ilen = x0 - itmp.x;
+	    //printf("Olen = %f, Ilen = %f, s = %f\n", olen, ilen, ilen / olen);
+	    if( ilen > 0 ) {
+	        sf1 = ilen / olen;
+	        if( sf1 < sf ) sf = sf1;
+	    }
+
+	    ox = xsize;
+	    oy = y0;
+	    olen = xsize - x0;
+	    this.observ2Ideal(ox, oy,itmp);
+	    ilen = itmp.x - x0;
+	    //printf("Olen = %f, Ilen = %f, s = %f\n", olen, ilen, ilen / olen);
+	    if( ilen > 0 ) {
+	        sf1 = ilen / olen;
+	        if( sf1 < sf ) sf = sf1;
+	    }
+
+	    ox = x0;
+	    oy = 0.0;
+	    olen = y0;
+	    this.observ2Ideal(ox, oy,itmp);
+	    ilen = y0 - itmp.y;
+	    //printf("Olen = %f, Ilen = %f, s = %f\n", olen, ilen, ilen / olen);
+	    if( ilen > 0 ) {
+	        sf1 = ilen / olen;
+	        if( sf1 < sf ) sf = sf1;
+	    }
+
+	    ox = x0;
+	    oy = ysize;
+	    olen = ysize - y0;
+	    this.observ2Ideal(ox, oy,itmp);
+	    ilen = itmp.y - y0;
+	    //printf("Olen = %f, Ilen = %f, s = %f\n", olen, ilen, ilen / olen);
+	    if( ilen > 0 ) {
+	        sf1 = ilen / olen;
+	        if( sf1 < sf ) sf = sf1;
+	    }
+
+
+	    ox = 0.0;
+	    oy = 0.0;
+	    this.observ2Ideal(ox, oy,itmp);
+	    ilen = x0 - itmp.x;
+	    olen = x0;
+	    if( ilen > 0 ) {
+	        sf1 = ilen / olen;
+	        if( sf1 < sf ) sf = sf1;
+	    }
+	    ilen = y0 - itmp.y;
+	    olen = y0;
+	    if( ilen > 0 ) {
+	        sf1 = ilen / olen;
+	        if( sf1 < sf ) sf = sf1;
+	    }
+
+	    ox = xsize;
+	    oy = 0.0;
+	    this.observ2Ideal(ox, oy,itmp);
+	    ilen = itmp.x - x0;
+	    olen = xsize - x0;
+	    //printf("Olen = %f, Ilen = %f, s = %f\n", olen, ilen, ilen / olen);
+	    if( ilen > 0 ) {
+	        sf1 = ilen / olen;
+	        if( sf1 < sf ) sf = sf1;
+	    }
+	    ilen = y0 - itmp.y;
+	    olen = y0;
+	    //printf("Olen = %f, Ilen = %f, s = %f\n", olen, ilen, ilen / olen);
+	    if( ilen > 0 ) {
+	        sf1 = ilen / olen;
+	        if( sf1 < sf ) sf = sf1;
+	    }
+
+	    ox = 0.0;
+	    oy = ysize;
+	    this.observ2Ideal(ox, oy,itmp);
+	    ilen = x0 - itmp.x;
+	    olen = x0;
+	    //printf("Olen = %f, Ilen = %f, s = %f\n", olen, ilen, ilen / olen);
+	    if( ilen > 0 ) {
+	        sf1 = ilen / olen;
+	        if( sf1 < sf ) sf = sf1;
+	    }
+	    ilen = itmp.y - y0;
+	    olen = ysize - y0;
+	    //printf("Olen = %f, Ilen = %f, s = %f\n", olen, ilen, ilen / olen);
+	    if( ilen > 0 ) {
+	        sf1 = ilen / olen;
+	        if( sf1 < sf ) sf = sf1;
+	    }
+
+	    ox = xsize;
+	    oy = ysize;
+	    this.observ2Ideal(ox, oy,itmp);
+	    ilen = itmp.x - x0;
+	    olen = xsize - x0;
+	    //printf("Olen = %f, Ilen = %f, s = %f\n", olen, ilen, ilen / olen);
+	    if( ilen > 0 ) {
+	        sf1 = ilen / olen;
+	        if( sf1 < sf ) sf = sf1;
+	    }
+	    ilen = itmp.y - y0;
+	    olen = ysize - y0;
+	    //printf("Olen = %f, Ilen = %f, s = %f\n", olen, ilen, ilen / olen);
+	    if( ilen > 0 ) {
+	        sf1 = ilen / olen;
+	        if( sf1 < sf ){
+	        	sf = sf1;
+	        }
+	    }
+
+	    if( sf == 100.0 ){
+	    	sf = 1.0;
+	    }
+
+	    return sf;
+	}
+
+	public double getS()
+	{
+		return this._s;
+	}
 	/**
 	 * この関数は、参照元から歪みパラメータ値をコピーします。
 	 * @param i_ref
@@ -64,6 +201,29 @@ public class NyARCameraDistortionFactorV4 implements INyARCameraDistortionFactor
 		this._x0=src._x0;
 		this._y0=src._y0;
 		this._s=src._s;
+	}
+	/**
+	 * @param i_size
+	 * @param i_intrinsic_matrix
+	 * 3x3 matrix
+	 * このパラメータは、OpenCVのcvCalibrateCamera2関数が出力するintrinsic_matrixの値と合致します。
+	 * @param i_distortion_coeffs
+	 * 4x1 vector
+	 * このパラメータは、OpenCVのcvCalibrateCamera2関数が出力するdistortion_coeffsの値と合致します。
+	 */
+	public void setValue(NyARIntSize i_size,double[] i_intrinsic_matrix,double[] i_distortion_coeffs)
+	{
+		this._k1=i_distortion_coeffs[0];
+		this._k2=i_distortion_coeffs[1];
+		this._p1=i_distortion_coeffs[2];
+		this._p2=i_distortion_coeffs[3];
+		this._fx=i_intrinsic_matrix[0*3+0];//0,0
+		this._fy=i_intrinsic_matrix[1*3+1];//1,1
+		this._x0=i_intrinsic_matrix[0*3+2];//0,2
+		this._y0=i_intrinsic_matrix[1*3+2];//1,2
+		this._s=1.0;
+		//update s
+		this._s=this.getSizeFactor(this._x0, this._y0, i_size.w,i_size.h);		
 	}
 
 	/**

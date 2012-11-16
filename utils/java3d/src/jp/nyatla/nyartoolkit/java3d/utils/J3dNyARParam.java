@@ -65,6 +65,12 @@ public class J3dNyARParam extends NyARParam
 		ParamLoader pm=new ParamLoader(i_stream);
 		return new J3dNyARParam(pm.size,pm.pmat,pm.dist_factor);
 	}
+	public static J3dNyARParam createFromCvCalibrateCamera2Result(int i_w,int i_h,double[] i_intrinsic_matrix,double[] i_distortion_coeffs)
+	{
+		ParamLoader pm=new ParamLoader(i_w,i_h,i_intrinsic_matrix,i_distortion_coeffs);
+		return new J3dNyARParam(pm.size,pm.pmat,pm.dist_factor);
+	}
+	
 	public J3dNyARParam(NyARIntSize i_screen_size,NyARPerspectiveProjectionMatrix i_projection_mat,INyARCameraDistortionFactor i_dist_factor)
 	{
 		super(i_screen_size,i_projection_mat,i_dist_factor);

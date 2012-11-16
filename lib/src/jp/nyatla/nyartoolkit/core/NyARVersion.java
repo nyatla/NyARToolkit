@@ -36,7 +36,7 @@ package jp.nyatla.nyartoolkit.core;
 public class NyARVersion
 {
 	/**モジュール名*/
-	public final static String MODULE_NAME="NyARToolkit-pre";
+	public final static String MODULE_NAME="NyARToolkit";
 	/**メジャーバージョン*/
 	public final static int VERSION_MAJOR=4;
 	/**マイナバージョン*/
