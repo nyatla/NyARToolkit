@@ -81,20 +81,20 @@ NyARToolkitの使用する外部ライブラリは、以下の通りです。
 
  1. JMF JavaTM Media Framework 2.1.1e
     utils.jmf,sample.joglの実行に必要です。
-    website: http://java.sun.com/products/java-media/jmf/index.jsp
+    URL: http://www.oracle.com/technetwork/java/javase/download-142937.html
 
  2. QuickTime 7.5
     utils.qtの実行に必要です。
-    http://www.apple.com/quicktime/qtjava/
+    URL: http://www.apple.com/quicktime/qtjava/
 
  3. Jogl
     utils.jogl,sample.joglの実行に必要です。
-    website: https://jogl.dev.java.net/
-    file   : jogl-1.1.1-pre-20080328-xxxx-i586.zip
+    URL: http://download.java.net/media/jogl/builds/archive/
+    file   : jogl-1.1.1-rc8-xxxx-xxx.zip 
 
  4. java3d
     utils.java3d,sample.java3dの実行に必要です。
-    website: https://java3d.dev.java.net/binary-builds.html
+    URL: https://java3d.dev.java.net/binary-builds.html
     file:    java3d-1_5_1-xxxx-i586.exe
 
 

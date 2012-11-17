@@ -86,7 +86,7 @@ becomes available, please install the newer version.
 
  1. JMF JavaTM Media Framework 2.1.1e
 	Required for running utils.jmf, sample.jogl
-	URL: http://java.sun.com/products/java-media/jmf/index.jsp
+    URL: http://www.oracle.com/technetwork/java/javase/download-142937.html
 
  2. QuickTime 7.5
 	Required for running utils.qt
@@ -94,13 +94,13 @@ becomes available, please install the newer version.
 
  3. Jogl
 	Required for running utils.jogl, sample.jogl
-	URL	: https://jogl.dev.java.net/
-	Fill: jogl-1.1.1-pre-20080328-xxxx-i586.zip
+    URL: http://download.java.net/media/jogl/builds/archive/
+    file   : jogl-1.1.1-rc8-xxxx-xxx.zip 
 	
  4. java3d
 	Required for running utils.java3d, sample.java3d
-	URL	: https://java3d.dev.java.net/binary-builds.html
-	file: java3d-1_5_1-xxxx-i586.exe
+    URL: https://java3d.dev.java.net/binary-builds.html
+    file:    java3d-1_5_1-xxxx-i586.exe
 	
 Depending on application and purpose, it's not necessary to install all 
 the libraries above. Install only those needed.
