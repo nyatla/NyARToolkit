@@ -12,6 +12,5 @@
 	<classpathentry kind="lib" path="C:/Program Files/JDK6/jdk/lib/gluegen-rt.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/JDK6/jdk/lib/jogl.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolkit.utils.qt"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/NyARTKv4Pro"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
