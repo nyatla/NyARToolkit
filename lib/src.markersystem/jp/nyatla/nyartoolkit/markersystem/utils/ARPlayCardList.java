@@ -71,13 +71,9 @@ public class ARPlayCardList extends ArrayList<ARPlayCardList.Item>
 	}
 	public void prepare()
 	{
-		for(int i=this.size()-1;i>=0;i--){
-			Item target=this.get(i);
-			if(target.life>0){
-				target.lost_count++;
-			}
-			target.sq=null;
-		}
+		//nothing to do
+		//sqはtrackingでnull初期化済み
+		
 	}
 	public boolean update(INyARGrayscaleRaster i_raster,SquareStack.Item i_sq) throws NyARException
 	{
@@ -112,7 +108,7 @@ public class ARPlayCardList extends ArrayList<ARPlayCardList.Item>
 			Item target=this.get(i);
 			if(target.sq==null){
 				continue;
-			}
+			}			
 			if(target.lost_count>0){
 				//参照はそのままで、dirだけ調整する。
 				target.lost_count=0;

@@ -75,6 +75,7 @@ public class ARMarkerList extends ArrayList<ARMarkerList.Item>
 	public ARMarkerList() throws NyARException
 	{
 		this._mkmap=new ARMarkerSortList();//初期値1マーカ
+		//sqはtrackingでnull初期化済み
 		return;
 	}
 	/**
@@ -144,14 +145,6 @@ public class ARMarkerList extends ArrayList<ARMarkerList.Item>
 	{
 		//マッチングテーブルをリセット
 		this._mkmap.reset();
-		
-		//検出のために初期値設定
-		for(int i=this.size()-1;i>=0;i--){
-			ARMarkerList.Item target=this.get(i);
-			if(target.life>0){
-				target.lost_count++;
-			}
-		}			
 	}
 	public void finish()
 	{

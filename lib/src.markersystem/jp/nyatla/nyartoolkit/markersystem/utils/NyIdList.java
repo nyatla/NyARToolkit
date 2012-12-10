@@ -75,13 +75,8 @@ public class NyIdList extends ArrayList<NyIdList.Item>
 	}
 	public void prepare()
 	{
-		for(int i=this.size()-1;i>=0;i--){
-			Item target=this.get(i);
-			if(target.life>0){
-				target.lost_count++;
-			}
-			target.sq=null;
-		}
+		//nothing to do
+		//sqはtrackingでnull初期化済み
 	}
 	public boolean update(INyARGrayscaleRaster i_raster,SquareStack.Item i_sq) throws NyARException
 	{

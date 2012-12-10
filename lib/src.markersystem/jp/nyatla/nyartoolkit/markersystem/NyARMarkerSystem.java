@@ -622,9 +622,11 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 		for(int i=this._tracking_list.size()-1;i>=0;i--){
 			TMarkerData item=this._tracking_list.get(i);
 			if(item.lost_count>this.lost_th){
+				//連続で検出できなかった場合
 				item.life=0;//活性off
-			}else if(item.life>1){
-				//トラッキング中
+			}else if(item.sq!=null){
+				//直前のsqを検出できた場合
+//				System.out.println("[Tracking]");
 				if(!this._transmat.transMatContinue(item.sq,item.marker_offset,item.tmat,item.last_param.last_error,item.tmat,item.last_param))
 				{
 					if(!this._transmat.transMat(item.sq,item.marker_offset,item.tmat,item.last_param)){
@@ -642,6 +644,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 				if(target.life!=1){
 					continue;
 				}
+//				System.out.println("[ARMarker]");
 				this._transmat.transMat(target.sq,target.marker_offset,target.tmat,target.last_param);
 			}
 		}
@@ -653,6 +656,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 				if(target.life!=1){
 					continue;
 				}
+//				System.out.println("[NyIdARMarker]");
 				this._transmat.transMat(target.sq,target.marker_offset,target.tmat,target.last_param);
 			}
 		}
@@ -664,6 +668,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 				if(target.life!=1){
 					continue;
 				}
+//				System.out.println("[PSARMarker]");
 				this._transmat.transMat(target.sq,target.marker_offset,target.tmat,target.last_param);
 			}
 		}

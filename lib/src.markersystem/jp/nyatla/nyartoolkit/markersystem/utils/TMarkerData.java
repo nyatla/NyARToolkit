@@ -42,7 +42,9 @@ public class TMarkerData
 	public long life;
 	/** MK情報。マーカのオフセット位置。*/
 	public final NyARRectOffset marker_offset=new NyARRectOffset();			
-	/** 検出した矩形の格納変数。理想形二次元座標を格納します。*/
+	/** 検出した矩形の格納変数。理想形二次元座標を格納します。
+	 * 直前更新処理で矩形が得られなかった場合にはnullです。
+	 */
 	public SquareStack.Item sq;
 	/** 検出した矩形の格納変数。マーカの姿勢行列を格納します。*/
 	public final NyARDoubleMatrix44 tmat=new NyARDoubleMatrix44();
