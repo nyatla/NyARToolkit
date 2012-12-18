@@ -39,6 +39,9 @@ import jp.nyatla.nyartoolkit.utils.j2se.NyARBufferedImageRaster;
 /**
  * This is simple pattern capture program.
  * should use right camera parameter for correctly capturing.
+ * use ImageCaptureTest.pdf to print A4 paper.
+ * The pdf has 4 2cm Id marker and 4cm capture area.
+ * 4 Id markers are placed on each corner of 9cm square.
  */
 public class ImageCaptureTest extends GlSketch
 {
