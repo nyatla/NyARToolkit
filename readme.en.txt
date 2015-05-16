@@ -1,6 +1,6 @@
 ======================================================================
 NyARToolkit
- version 4.1.1
+ version 4.1.2
 ======================================================================
 Copyright (C)2008-2012 Ryo Iizuka
 
@@ -40,7 +40,7 @@ Translated by Bao-Wen Chen
   and so on)
 * Enhanced reusability compared to ARToolkit
 * High-speed capabilities are available for following calculation: 
-  labeling, posture optimization, image processing, matrix operation, equation resolution (•û’öŽ®ŒvŽZ?). In total, it's about twice faster than ARToolkit.
+  labeling, posture optimization, image processing, matrix operation, equation resolution
 * Support NyID-style ID marker
 * A MarkerSystem class that makes easy multiple uses of AR/NyID markers.
 * A simple sketching system for OpenGL
@@ -52,25 +52,17 @@ Translated by Bao-Wen Chen
  NyARToolkit License
 ----------------------------------------------------------------------
 
-NyARToolkit adaptes a commercial licensing and GPLv3 (or later) dual 
-license scheme.
-* The GNU General Public License (GPL) Ver.3 is intended for 
+NyARToolkit adaptes a LGPLv3 dual license.
+* GNU Lesser General Public License (LGPL) Ver.3 is intended for 
 open source usage, where applications based on NyARToolkit should also 
-be distributed under the GPL.
-* Commercial licensing is intended for commercial useage, which means 
-applications based on NyARTookit can be distributed without publishing 
-the source. 
-* If a GPLv3 license is approved, it will be available to use free of 
+be distributed under the LGPL.
+* Commercial licensing is intended for non-LGPL useage, which means 
+applications based on NyARTookit can be distributed without LGPL. 
+* If a LGPLv3 license is approved, it will be available to use free of 
 charge, regardless of commercial or non-commercial purposes.
-* If a GPLv3 license is not approved, please consider purchasing the 
+* If a LGPLv3 license is not approved, please consider purchasing the 
 commercial license.
 
- GPLv3
- For more info on GPLv3, read LICENSE.text.
- 
- Commercial License (Japan)
- Please contact M-Soft Inc.
- http://www.msoft.co.jp/pressrelease/press090928-1.html
  
  Commercial License (Other countries)
  Please contact ARToolWorks Inc.
