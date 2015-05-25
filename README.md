@@ -64,7 +64,7 @@ Eclipse環境に、NyARToolkit開発環境をインストールする方法を�
 
 1-4の手順については、http://sixwish.jp/Nyartoolkit/ に詳しい解説があります。
 
-# プロジェクトの概要
+## プロジェクトの概要
 
 各Eclipseプロジェクトの概要です。
 
