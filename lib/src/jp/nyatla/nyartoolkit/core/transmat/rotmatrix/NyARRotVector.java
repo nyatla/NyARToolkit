@@ -51,7 +51,7 @@ public class NyARRotVector
 	 * 初期値を持たないインスタンスを生成します。
 	 * @throws NyARException
 	 */
-	public NyARRotVector() throws NyARException
+	public NyARRotVector()
 	{
 	}
 	/**

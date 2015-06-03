@@ -85,9 +85,9 @@ public class LowResolutionLabelingSamplerOut
 	 */
 	private class AreaStack extends NyARPointerStack<Item>
 	{
-		public AreaStack(int i_length) throws NyARException
+		public AreaStack(int i_length)
 		{
-			super.initInstance(i_length, Item.class);
+			super(i_length, Item.class);
 		}
 	}
 

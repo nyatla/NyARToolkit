@@ -50,8 +50,7 @@ public class NyARLabelingLabelStack extends NyARObjectStack<NyARLabelingLabel>
 	 */
 	public NyARLabelingLabelStack(int i_max_array_size) throws NyARException
 	{
-		super();
-		super.initInstance(i_max_array_size,NyARLabelingLabel.class);
+		super(i_max_array_size,NyARLabelingLabel.class);
 	}
 	/** {@link NyARLabelingLabel}要素を返します。*/
 	protected NyARLabelingLabel createElement()

@@ -360,8 +360,7 @@ class NyARDetectMarkerResultStack extends NyARObjectStack<NyARDetectMarkerResult
 {
 	public NyARDetectMarkerResultStack(int i_length) throws NyARException
 	{
-		super();
-		this.initInstance(i_length,NyARDetectMarkerResult.class);
+		super(i_length,NyARDetectMarkerResult.class);
 		return;
 	}
 	protected NyARDetectMarkerResult createElement()

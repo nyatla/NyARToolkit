@@ -88,9 +88,9 @@ public class ARTKMarkerTable
 				this.idtag=i_idtag;
 			}
 		}		
-		public MarkerTable(int i_length) throws NyARException
+		public MarkerTable(int i_length)
 		{
-			super.initInstance(i_length,SerialTableRow.class);
+			super(i_length,SerialTableRow.class);
 		}
 		protected SerialTableRow createElement()
 		{

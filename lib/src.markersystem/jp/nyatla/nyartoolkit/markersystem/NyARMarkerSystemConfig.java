@@ -30,9 +30,11 @@ import java.io.InputStream;
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.analyzer.histogram.INyARHistogramAnalyzer_Threshold;
 import jp.nyatla.nyartoolkit.core.analyzer.histogram.NyARHistogramAnalyzer_SlidePTile;
+import jp.nyatla.nyartoolkit.core.icp.NyARIcpTransMat;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat;
+import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat_ARToolKit;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
@@ -41,7 +43,25 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
  */
 public class NyARMarkerSystemConfig implements INyARMarkerSystemConfig
 {
-	protected NyARParam _param;
+	/** ARToolkit v2互換のニュートン法を使った変換行列計算アルゴリズムを選択します。*/
+	public final static int TM_ARTKV2=1;
+	/** NyARToolKitの偏微分を使った変換行列アルゴリズムです。*/
+	public final static int TM_NYARTK=2;
+	/** ARToolkit v4に搭載されているICPを使った変換行列計算アルゴリズムを選択します。*/
+	public final static int TM_ARTKICP=3;
+	protected final NyARParam _param;
+	private final int _transmat_algo_type;
+	/**
+	 * 
+	 * @param i_param
+	 * @param i_transmat_algo_type
+	 */
+	public NyARMarkerSystemConfig(NyARParam i_param,int i_transmat_algo_type)
+	{
+		assert(1<=i_transmat_algo_type && i_transmat_algo_type<=3);
+		this._param=i_param;
+		this._transmat_algo_type=i_transmat_algo_type;
+	}
 	/**
 	 * コンストラクタです。
 	 * 初期化済カメラパラメータからコンフィギュレーションを生成します。
@@ -50,7 +70,7 @@ public class NyARMarkerSystemConfig implements INyARMarkerSystemConfig
 	 */
 	public NyARMarkerSystemConfig(NyARParam i_param)
 	{
-		this._param=i_param;
+		this(i_param,TM_ARTKICP);
 	}
 	/**
 	 * コンストラクタです。
@@ -66,7 +86,7 @@ public class NyARMarkerSystemConfig implements INyARMarkerSystemConfig
 	 */
 	public NyARMarkerSystemConfig(InputStream i_ar_param_stream,int i_width,int i_height) throws NyARException
 	{
-		this._param=NyARParam.createFromARParamFile(i_ar_param_stream);
+		this(NyARParam.createFromARParamFile(i_ar_param_stream));
 		this._param.changeScreenSize(i_width,i_height);
 	}
 	/**
@@ -80,7 +100,7 @@ public class NyARMarkerSystemConfig implements INyARMarkerSystemConfig
 	 */
 	public NyARMarkerSystemConfig(int i_width,int i_height) throws NyARException
 	{
-		this._param=NyARParam.createDefaultParameter();
+		this(NyARParam.createDefaultParameter());
 		this._param.changeScreenSize(i_width,i_height);		
 	}
 	/**
@@ -93,9 +113,17 @@ public class NyARMarkerSystemConfig implements INyARMarkerSystemConfig
 	/**
 	 * @Override
 	 */
-	public INyARTransMat createTransmatAlgorism() throws NyARException
+	public INyARTransMat createTransmatAlgorism()
 	{
-		return new NyARTransMat(this._param);
+		switch(this._transmat_algo_type){
+		case TM_ARTKV2:
+			return new NyARTransMat_ARToolKit(this._param);
+		case TM_NYARTK:
+			return new NyARTransMat(this._param);
+		case TM_ARTKICP:
+			return new NyARIcpTransMat(this._param,NyARIcpTransMat.AL_POINT_ROBUST);
+		}
+		throw new InternalError();
 	}
 	/**
 	 * @Override

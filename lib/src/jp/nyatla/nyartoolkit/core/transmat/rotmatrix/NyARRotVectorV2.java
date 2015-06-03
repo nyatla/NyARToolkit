@@ -52,7 +52,7 @@ public class NyARRotVectorV2 extends NyARRotVector
 	 * 射影変換オブジェクト。この値はインスタンスの生存中は変更しないでください。
 	 * @throws NyARException
 	 */
-	public NyARRotVectorV2(NyARPerspectiveProjectionMatrix i_cmat) throws NyARException
+	public NyARRotVectorV2(NyARPerspectiveProjectionMatrix i_cmat)
 	{
 		super();
 		this._inv_cpara.inverse(i_cmat);

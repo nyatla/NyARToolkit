@@ -82,9 +82,9 @@ public class RawbitSerialIdTable
 				this.name=i_name;
 			}
 		}		
-		public SerialTable(int i_length) throws NyARException
+		public SerialTable(int i_length)
 		{
-			super.initInstance(i_length,SerialTableRow.class);
+			super(i_length,SerialTableRow.class);
 		}
 		protected SerialTableRow createElement()
 		{

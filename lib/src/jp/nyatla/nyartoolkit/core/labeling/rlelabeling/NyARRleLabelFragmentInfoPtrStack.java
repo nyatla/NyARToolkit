@@ -26,7 +26,6 @@
 package jp.nyatla.nyartoolkit.core.labeling.rlelabeling;
 
 
-import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabel;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARPointerStack;
 
@@ -37,9 +36,9 @@ import jp.nyatla.nyartoolkit.core.types.stack.NyARPointerStack;
  */
 public class NyARRleLabelFragmentInfoPtrStack  extends NyARPointerStack<NyARRleLabelFragmentInfo>
 {
-	public NyARRleLabelFragmentInfoPtrStack(int i_length) throws NyARException
+	public NyARRleLabelFragmentInfoPtrStack(int i_length)
 	{
-		this.initInstance(i_length, NyARRleLabelFragmentInfo.class);
+		super(i_length, NyARRleLabelFragmentInfo.class);
 		return;
 	}
 

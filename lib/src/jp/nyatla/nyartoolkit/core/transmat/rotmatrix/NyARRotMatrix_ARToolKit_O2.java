@@ -45,9 +45,8 @@ public class NyARRotMatrix_ARToolKit_O2 extends NyARRotMatrix_ARToolKit
 	 * 参照する射影変換オブジェクトを指定して、インスタンスを生成します。
 	 * @param i_matrix
 	 * 参照する射影変換オブジェクト
-	 * @throws NyARException
 	 */
-	public NyARRotMatrix_ARToolKit_O2(NyARPerspectiveProjectionMatrix i_matrix) throws NyARException
+	public NyARRotMatrix_ARToolKit_O2(NyARPerspectiveProjectionMatrix i_matrix)
 	{
 		super(i_matrix);
 		return;

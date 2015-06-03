@@ -29,7 +29,6 @@ package jp.nyatla.nyartoolkit.markersystem;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
-import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.INyARHistogramFromRaster;

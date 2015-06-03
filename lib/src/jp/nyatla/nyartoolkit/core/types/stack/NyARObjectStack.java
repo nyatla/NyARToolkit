@@ -42,16 +42,7 @@ import jp.nyatla.nyartoolkit.core.NyARException;
  */
 public class NyARObjectStack<T> extends NyARPointerStack<T>
 {
-	/**
-	 * コンストラクタです。
-	 * クラスの実体化を禁止するために宣言しています。
-	 * 継承クラスから呼び出してください。
-	 * @throws NyARException
-	 */
-	protected NyARObjectStack() throws NyARException
-	{
-		return;
-	}
+
 	/**
 	 * この関数は、インスタンスを初期化します。
 	 * 継承クラスのコンストラクタから呼び出します。
@@ -63,10 +54,10 @@ public class NyARObjectStack<T> extends NyARPointerStack<T>
 	 * 配列型を示すクラスタイプ
 	 * @throws NyARException
 	 */
-	protected void initInstance(int i_length,Class<T> i_element_type) throws NyARException
+	protected NyARObjectStack(int i_length,Class<T> i_element_type)
 	{
 		//領域確保
-		super.initInstance(i_length,i_element_type);
+		super(i_length,i_element_type);
 		for (int i =0; i < i_length; i++){
 			this._items[i] =createElement();
 		}
@@ -85,10 +76,10 @@ public class NyARObjectStack<T> extends NyARPointerStack<T>
 	 * 配列要素を生成するときに渡すパラメータ
 	 * @throws NyARException
 	 */
-	protected void initInstance(int i_length,Class<T> i_element_type,Object i_param) throws NyARException
+	protected NyARObjectStack(int i_length,Class<T> i_element_type,Object i_param) throws NyARException
 	{
 		//領域確保
-		super.initInstance(i_length,i_element_type);
+		super(i_length,i_element_type);
 		for (int i =0; i < i_length; i++){
 			this._items[i] =createElement(i_param);
 		}
@@ -100,11 +91,10 @@ public class NyARObjectStack<T> extends NyARPointerStack<T>
 	 * 継承クラスでオーバライドして、要素オブジェクトを１個生成して返す処理を実装してください。
 	 * @return
 	 * 新しいオブジェクトを返してください。
-	 * @throws NyARException
 	 */
-	protected T createElement() throws NyARException
+	protected T createElement()
 	{
-		throw new NyARException();
+		throw new UnsupportedOperationException();
 	}
 	/**
 	 * この関数は、配列要素のオブジェクトを(引数付きで)１個作ります。
@@ -114,9 +104,9 @@ public class NyARObjectStack<T> extends NyARPointerStack<T>
 	 * 新しいオブジェクトを返してください。
 	 * @throws NyARException
 	 */
-	protected T createElement(Object i_param) throws NyARException
+	protected T createElement(Object i_param)
 	{
-		throw new NyARException();
+		throw new UnsupportedOperationException();
 	}
 	
 	/**
@@ -125,7 +115,6 @@ public class NyARObjectStack<T> extends NyARPointerStack<T>
 	 * @return
 	 * 成功すると、新しい配列要素。
 	 * 失敗するとnull
-	 * @throws NyARException
 	 */
 	public final T prePush()
 	{
@@ -143,7 +132,7 @@ public class NyARObjectStack<T> extends NyARPointerStack<T>
 	 */
 	public T push(T i_object)
 	{
-		return null;
+		throw new UnsupportedOperationException();
 	}
 	/**
 	 * この関数は、配列の有効長を設定します。

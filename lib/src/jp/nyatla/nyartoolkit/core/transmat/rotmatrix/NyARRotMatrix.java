@@ -47,7 +47,7 @@ public class NyARRotMatrix extends NyARDoubleMatrix33
 	 * 参照する射影変換オブジェクト
 	 * @throws NyARException
 	 */
-	public NyARRotMatrix(NyARPerspectiveProjectionMatrix i_matrix) throws NyARException
+	public NyARRotMatrix(NyARPerspectiveProjectionMatrix i_matrix)
 	{
 		this.__initRot_vec1=new NyARRotVectorV2(i_matrix);
 		this.__initRot_vec2=new NyARRotVectorV2(i_matrix);

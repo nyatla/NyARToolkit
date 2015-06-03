@@ -26,7 +26,6 @@
 package jp.nyatla.nyartoolkit.core.types.stack;
 
 
-import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
@@ -39,16 +38,16 @@ public class NyARIntPointStack extends NyARObjectStack<NyARIntPoint2d>
 	 * 配列の最大長さを指定して、インスタンスを生成します。
 	 * @param i_length
 	 * 配列の最大長さ
-	 * @throws NyARException
 	 */
-	public NyARIntPointStack(int i_length) throws NyARException
+	public NyARIntPointStack(int i_length)
 	{
-		super.initInstance(i_length,NyARIntPoint2d.class);
+		super(i_length,NyARIntPoint2d.class);
 		return;
 	}
 	/**
 	 * この関数は、配列要素を作成します。
 	 */
+	@Override
 	protected NyARIntPoint2d createElement()
 	{
 		return new NyARIntPoint2d();

@@ -38,23 +38,12 @@ import jp.nyatla.nyartoolkit.core.NyARException;
 public class NyARPointerStack<T>
 {
 	/** オブジェクトの参照値を格納するバッファ*/
-	protected T[] _items;
+	protected final T[] _items;
 	/** 配列の有効な長さ。({@link #_items}の配列長とは異なることに注意してください。*/
 	protected int _length;
 	
-	/**
-	 * コンストラクタです。
-	 * クラスの実体化を禁止するために宣言しています。
-	 * 継承クラスから呼び出してください。
-	 * @throws NyARException
-	 */
-	protected NyARPointerStack() throws NyARException
-	{
-	}
 
 	/**
-	 * この関数は、インスタンスを初期化します。
-	 * この関数は、このクラスを継承したクラスのコンストラクタから呼び出します。
 	 * @param i_length
 	 * 配列の最大長さ
 	 * @param i_element_type
@@ -62,7 +51,7 @@ public class NyARPointerStack<T>
 	 * @throws NyARException
 	 */
 	@SuppressWarnings("unchecked")
-	protected void initInstance(int i_length,Class<T> i_element_type) throws NyARException
+	protected NyARPointerStack(int i_length,Class<T> i_element_type)
 	{
 		//領域確保
 		this._items = (T[])Array.newInstance(i_element_type, i_length);

@@ -87,8 +87,8 @@ public class NyARSingleCameraSystem
 	//
 	protected class ObserverList extends NyARPointerStack<INyARSingleCameraSystemObserver>
 	{
-		public ObserverList(int i_length) throws NyARException{
-			super.initInstance(i_length,INyARSingleCameraSystemObserver.class);
+		public ObserverList(int i_length){
+			super(i_length,INyARSingleCameraSystemObserver.class);
 		}
 		public void notifyOnUpdateCameraParametor(NyARParam i_param,double i_near,double i_far)
 		{

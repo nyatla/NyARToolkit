@@ -45,9 +45,9 @@ public class NyARSquareStack extends NyARObjectStack<NyARSquare>
 	 * 配列の最大長さ
 	 * @throws NyARException
 	 */
-	public NyARSquareStack(int i_length) throws NyARException
+	public NyARSquareStack(int i_length)
 	{
-		super.initInstance(i_length,NyARSquare.class);
+		super(i_length,NyARSquare.class);
 
 	}
 	/**

@@ -25,7 +25,6 @@
  */
 package jp.nyatla.nyartoolkit.rpf.tracker.nyartk;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.types.stack.*;
 import jp.nyatla.nyartoolkit.rpf.sampler.lrlabel.*;
 
@@ -35,9 +34,9 @@ import jp.nyatla.nyartoolkit.rpf.sampler.lrlabel.*;
  */
 public class NyARTargetList extends NyARPointerStack<NyARTarget>
 {
-	public NyARTargetList(int i_max_target) throws NyARException
+	public NyARTargetList(int i_max_target)
 	{
-		super.initInstance(i_max_target,NyARTarget.class);
+		super(i_max_target,NyARTarget.class);
 	}
 	/**
 	 * この関数は、Sampleの位置キーに一致する可能性の高い要素のインデクスを１つ返します。

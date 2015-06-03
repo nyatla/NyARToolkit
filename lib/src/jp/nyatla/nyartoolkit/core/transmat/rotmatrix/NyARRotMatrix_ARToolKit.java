@@ -46,7 +46,7 @@ public class NyARRotMatrix_ARToolKit extends NyARRotMatrix
 	 * 参照する射影変換オブジェクト
 	 * @throws NyARException
 	 */
-	public NyARRotMatrix_ARToolKit(NyARPerspectiveProjectionMatrix i_matrix) throws NyARException
+	public NyARRotMatrix_ARToolKit(NyARPerspectiveProjectionMatrix i_matrix)
 	{
 		super(i_matrix);
 		this._angle=new NyARDoublePoint3d();

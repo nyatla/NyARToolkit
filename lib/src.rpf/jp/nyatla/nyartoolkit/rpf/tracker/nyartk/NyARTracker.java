@@ -750,10 +750,9 @@ final class SampleStack extends NyARPointerStack<LowResolutionLabelingSamplerOut
 	 * リストの最大数
 	 * @throws NyARException
 	 */
-	public SampleStack(int i_size) throws NyARException
+	public SampleStack(int i_size)
 	{
-		super();
-		this.initInstance(i_size,LowResolutionLabelingSamplerOut.Item.class);
+		super(i_size,LowResolutionLabelingSamplerOut.Item.class);
 	}
 }
 

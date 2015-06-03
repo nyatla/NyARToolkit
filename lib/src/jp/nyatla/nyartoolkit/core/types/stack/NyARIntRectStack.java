@@ -40,13 +40,14 @@ public class NyARIntRectStack extends NyARObjectStack<NyARIntRect>
 	 * 配列の最大長さ
 	 * @throws NyARException
 	 */	
-	public NyARIntRectStack(int i_length) throws NyARException
+	public NyARIntRectStack(int i_length)
 	{
-		super.initInstance(i_length,NyARIntRect.class);
+		super(i_length,NyARIntRect.class);
 	}
 	/**
 	 * この関数は、配列要素を作成します。
-	 */	
+	 */
+	@Override	
 	protected NyARIntRect createElement()
 	{
 		return new NyARIntRect();

@@ -62,25 +62,6 @@ public class NyARTransMat implements INyARTransMat
 		//作成して割り当ててください。
 		return;
 	}
-	
-	/**
-	 * この関数は、コンストラクタから呼び出してください。
-	 * @param i_distfactor
-	 * 歪みの逆矯正に使うオブジェクト。
-	 * @param i_projmat
-	 * @throws NyARException
-	 */
-	private void initInstance(INyARCameraDistortionFactor i_distfactor,NyARPerspectiveProjectionMatrix i_projmat) throws NyARException
-	{
-		this._transsolver=new NyARTransportVectorSolver(i_projmat,4);
-		//互換性が重要な時は、NyARRotMatrix_ARToolKitを使うこと。
-		//理屈はNyARRotMatrix_NyARToolKitもNyARRotMatrix_ARToolKitも同じだけど、少しだけ値がずれる。
-		this._rotmatrix = new NyARRotMatrix(i_projmat);
-		this._mat_optimize=new NyARPartialDifferentiationOptimize(i_projmat);
-		this._ref_dist_factor=i_distfactor;
-		this._ref_projection_mat=i_projmat;
-		return;
-	}
 	/**
 	 * コンストラクタです。
 	 * 座標計算に必要なオブジェクトの参照値を元に、インスタンスを生成します。
@@ -90,9 +71,15 @@ public class NyARTransMat implements INyARTransMat
 	 * 射影変換オブジェクトの参照値です。
 	 * @throws NyARException
 	 */
-	public NyARTransMat(INyARCameraDistortionFactor i_ref_distfactor,NyARPerspectiveProjectionMatrix i_ref_projmat) throws NyARException
+	public NyARTransMat(INyARCameraDistortionFactor i_ref_distfactor,NyARPerspectiveProjectionMatrix i_ref_projmat)
 	{
-		initInstance(i_ref_distfactor,i_ref_projmat);
+		this._transsolver=new NyARTransportVectorSolver(i_ref_projmat,4);
+		//互換性が重要な時は、NyARRotMatrix_ARToolKitを使うこと。
+		//理屈はNyARRotMatrix_NyARToolKitもNyARRotMatrix_ARToolKitも同じだけど、少しだけ値がずれる。
+		this._rotmatrix = new NyARRotMatrix(i_ref_projmat);
+		this._mat_optimize=new NyARPartialDifferentiationOptimize(i_ref_projmat);
+		this._ref_dist_factor=i_ref_distfactor;
+		this._ref_projection_mat=i_ref_projmat;
 		return;
 	}
 	/**
@@ -103,9 +90,9 @@ public class NyARTransMat implements INyARTransMat
 	 * インスタンスは、この中から樽型歪み矯正オブジェクト、射影変換オブジェクトを参照します。
 	 * @throws NyARException
 	 */
-	public NyARTransMat(NyARParam i_param) throws NyARException
+	public NyARTransMat(NyARParam i_param)
 	{
-		initInstance(i_param.getDistortionFactor(),i_param.getPerspectiveProjectionMatrix());
+		this(i_param.getDistortionFactor(),i_param.getPerspectiveProjectionMatrix());
 		return;
 	}
 

@@ -48,9 +48,8 @@ public interface INyARMarkerSystemConfig
 	 * 敷居値決定クラスを生成して返します。
 	 * @return
 	 * 新しいオブジェクト
-	 * @throws NyARException
 	 */
-	public INyARHistogramAnalyzer_Threshold createAutoThresholdArgorism() throws NyARException;
+	public INyARHistogramAnalyzer_Threshold createAutoThresholdArgorism();
 	/**
 	 * ARToolKitのカメラパラメータのオブジェクトを返します。
 	 * @return

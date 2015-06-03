@@ -41,9 +41,9 @@ public class NyARRealityTargetList extends NyARPointerStack<NyARRealityTarget>
 	 * リストの最大格納数です。
 	 * @throws NyARException
 	 */
-	public NyARRealityTargetList(int i_max_target) throws NyARException
+	public NyARRealityTargetList(int i_max_target)
 	{
-		super.initInstance(i_max_target,(Class<NyARRealityTarget>)NyARRealityTarget.class);
+		super(i_max_target,(Class<NyARRealityTarget>)NyARRealityTarget.class);
 	}
 	/**
 	 * この関数は、シリアル番号をキーに、リストからターゲットを探索します。

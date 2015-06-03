@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.markersystem.utils;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+
 import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
@@ -46,11 +46,12 @@ public class SquareStack extends NyARObjectStack<SquareStack.Item>
 		/** rectの面積*/
 		public int rect_area;
 	}
-	public SquareStack(int i_length) throws NyARException
+	public SquareStack(int i_length)
 	{
-		super.initInstance(i_length,SquareStack.Item.class);
+		super(i_length,SquareStack.Item.class);
 	}
-	protected SquareStack.Item createElement() throws NyARException
+	@Override
+	protected SquareStack.Item createElement()
 	{
 		return new SquareStack.Item();
 	}		
