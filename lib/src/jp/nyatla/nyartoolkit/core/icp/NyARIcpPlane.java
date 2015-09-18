@@ -13,6 +13,7 @@
 package jp.nyatla.nyartoolkit.core.icp;
 
 import jp.nyatla.nyartoolkit.core.*;
+import jp.nyatla.nyartoolkit.core.math.NyARMat;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.*;
 import jp.nyatla.nyartoolkit.core.types.*;

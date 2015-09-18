@@ -28,14 +28,14 @@ package jp.nyatla.nyartoolkit.markersystem;
 
 
 import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.histogram.NyARHistogram;
 import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
-import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
-import jp.nyatla.nyartoolkit.core.rasterdriver.INyARHistogramFromRaster;
-import jp.nyatla.nyartoolkit.core.rasterdriver.INyARPerspectiveCopy;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilter;
+import jp.nyatla.nyartoolkit.core.rasterdriver.histogram.INyARHistogramFromRaster;
+import jp.nyatla.nyartoolkit.core.rasterdriver.perspectivecopy.INyARPerspectiveCopy;
+import jp.nyatla.nyartoolkit.core.rasterdriver.rgb2gs.INyARRgb2GsFilter;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
-import jp.nyatla.nyartoolkit.core.types.NyARHistogram;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 

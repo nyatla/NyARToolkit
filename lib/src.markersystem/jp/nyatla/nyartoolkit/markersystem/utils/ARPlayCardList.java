@@ -28,9 +28,9 @@ package jp.nyatla.nyartoolkit.markersystem.utils;
 import java.util.ArrayList;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.marker.psarplaycard.PsARPlayCardPickup;
 import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
-import jp.nyatla.nyartoolkit.psarplaycard.PsARPlayCardPickup;
 
 /**
  * このクラスは、ARプレイカードの検出結果をマッピングします。

@@ -26,10 +26,11 @@
 package jp.nyatla.nyartoolkit.core.raster;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARLabeling_Rle;
-import jp.nyatla.nyartoolkit.core.pixeldriver.*;
-import jp.nyatla.nyartoolkit.core.rasterdriver.*;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARContourPickup;
+import jp.nyatla.nyartoolkit.core.rasterdriver.histogram.INyARHistogramFromRaster;
+import jp.nyatla.nyartoolkit.core.rasterdriver.histogram.NyARHistogramFromRasterFactory;
+import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.rle.NyARLabeling_Rle;
+import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.*;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARContourPickup;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**

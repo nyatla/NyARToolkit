@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.markersystem.utils;
 
-import jp.nyatla.nyartoolkit.core.utils.NyARLinkList;
+import jp.nyatla.nyartoolkit.core.types.NyARLinkList;
 
 
 /**

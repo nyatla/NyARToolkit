@@ -27,12 +27,12 @@ package jp.nyatla.nyartoolkit.markersystem.utils;
 
 import java.util.ArrayList;
 
-import jp.nyatla.nyartoolkit.core.NyARCode;
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.match.NyARMatchPattDeviationColorData;
-import jp.nyatla.nyartoolkit.core.match.NyARMatchPattResult;
-import jp.nyatla.nyartoolkit.core.match.NyARMatchPatt_Color_WITHOUT_PCA;
-import jp.nyatla.nyartoolkit.core.rasterdriver.INyARPerspectiveCopy;
+import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
+import jp.nyatla.nyartoolkit.core.marker.artk.algo.NyARMatchPatt_Color_WITHOUT_PCA;
+import jp.nyatla.nyartoolkit.core.marker.artk.match.NyARMatchPattDeviationColorData;
+import jp.nyatla.nyartoolkit.core.marker.artk.match.NyARMatchPattResult;
+import jp.nyatla.nyartoolkit.core.rasterdriver.perspectivecopy.INyARPerspectiveCopy;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 
 /**

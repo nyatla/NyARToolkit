@@ -28,16 +28,16 @@ package jp.nyatla.nyartoolkit.test;
 import java.io.File;
 import java.io.FileInputStream;
 
+import jp.nyatla.nyartoolkit.core.marker.nyidmarker.data.INyIdMarkerData;
+import jp.nyatla.nyartoolkit.core.marker.nyidmarker.data.NyIdMarkerDataEncoder_RawBitId;
+import jp.nyatla.nyartoolkit.core.marker.nyidmarker.data.NyIdMarkerData_RawBit;
+import jp.nyatla.nyartoolkit.core.marker.nyidmarker.data.NyIdMarkerData_RawBitId;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
-import jp.nyatla.nyartoolkit.nyidmarker.data.INyIdMarkerData;
-import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerDataEncoder_RawBitId;
-import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerData_RawBit;
-import jp.nyatla.nyartoolkit.nyidmarker.data.NyIdMarkerData_RawBitId;
-import jp.nyatla.nyartoolkit.processor.SingleNyIdMarkerProcesser;
+import jp.nyatla.nyartoolkit.old.processor.SingleNyIdMarkerProcesser;
 
 /**
  * このプログラムは、NyIdマーカ検出クラス{@link SingleNyIdMarkerProcesser}の動作チェックプログラムです。

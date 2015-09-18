@@ -28,14 +28,14 @@ package jp.nyatla.nyartoolkit.test;
 import java.io.File;
 import java.io.FileInputStream;
 
-import jp.nyatla.nyartoolkit.core.NyARCode;
 import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
-import jp.nyatla.nyartoolkit.processor.SingleARMarkerProcesser;
+import jp.nyatla.nyartoolkit.old.processor.SingleARMarkerProcesser;
 /**
  * このプログラムは、NyIdマーカ検出クラス{@link SingleARMarkerProcesser}の動作チェックプログラムです。
  * 静止画から1個のhiroマーカを認識する動作を確認できます。

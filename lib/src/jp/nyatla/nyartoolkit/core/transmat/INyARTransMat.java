@@ -31,7 +31,7 @@
 package jp.nyatla.nyartoolkit.core.transmat;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 
 

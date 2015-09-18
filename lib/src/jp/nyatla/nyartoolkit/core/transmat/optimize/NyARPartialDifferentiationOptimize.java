@@ -26,11 +26,12 @@
 package jp.nyatla.nyartoolkit.core.transmat.optimize;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.math.NyAREquationSolver;
 import jp.nyatla.nyartoolkit.core.param.*;
 
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
-import jp.nyatla.nyartoolkit.core.utils.*;
+
 
 
 
