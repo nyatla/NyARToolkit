@@ -1,8 +1,8 @@
 package jp.nyatla.nyartoolkit.dev.pro.core.surfacetracking.featuremap;
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.pixeldriver.INyARGsPixelDriver;
 import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARGsPixelDriver;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.pro.core.rasterfilter.INyARDefocusFilter;
@@ -18,7 +18,7 @@ public class NyARSurfaceFeatureMapUtils
 
 	/**
 	 * @param i_raster
-	 * ARToolkitNftのar2GenFeatureMapと同じ結果を得るには、{@link INyARDefocusFilter}で1回フィルタをかけた画像を入力すること�?
+	 * ARToolkitNftのar2GenFeatureMapと同じ結果を得るには、{@link INyARDefocusFilter}で1回フィルタをかけた画像を入力すること�?
 	 * @param i_dpi
 	 * @param ts1
 	 * @param ts2
@@ -46,10 +46,10 @@ public class NyARSurfaceFeatureMapUtils
 		INyARGsPixelDriver pxd=i_raster.getGsPixelDriver();
 
 		double[] fimage2=new double[xsize*ysize];
-	//	p = imgBW1;//ブラー1かいかけたやつっぽ�?
+	//	p = imgBW1;//ブラー1かいかけたやつっぽ�?
 		
 		int fp2 = 0;
-		//fimegeに数値を設定�?�エ�?ジは-1
+		//fimegeに数値を設定�?�エ�?ジは-1
 		for(int i = 0; i < xsize; i++ ) {
 			fimage2[fp2++] = -1.0f;
 		}
@@ -131,7 +131,7 @@ public class NyARSurfaceFeatureMapUtils
 				max = -1.0f;
 				for(int jj = -search_size1; jj <= search_size1; jj++ ) {
 					for(int ii = -search_size1; ii <= search_size1; ii++ ){
-						//�?を作ってる�?��?
+						//�?を作ってる�?��?
 						if( ii*ii + jj*jj <= search_size1*search_size1 ){
 							continue;
 						}
@@ -172,7 +172,7 @@ public class NyARSurfaceFeatureMapUtils
 			super.initInstance(i_length,Item.class);
 		}
 		/**
-		 * こ�?�関数は�?配�?�要�?を作�?�します�??
+		 * こ�?�関数は�?配�?�要�?を作�?�します�??
 		 */	
 		protected Item createElement()
 		{
@@ -354,7 +354,7 @@ public class NyARSurfaceFeatureMapUtils
 	
 	
 	/**
-	 * �?時テンプレート�??{@link NyARTemplatePatchImage}と同じ�?けど制度がdouble
+	 * �?時テンプレート�??{@link NyARTemplatePatchImage}と同じ�?けど制度がdouble
 	 */
 	private static class TemplateImage
 	{

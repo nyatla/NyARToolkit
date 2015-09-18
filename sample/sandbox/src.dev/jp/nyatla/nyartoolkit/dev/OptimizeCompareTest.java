@@ -33,6 +33,7 @@ import javax.media.opengl.*;
 import com.sun.opengl.util.*;
 import jp.nyatla.nyartoolkit.*;
 import jp.nyatla.nyartoolkit.core.*;
+import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.detector.*;

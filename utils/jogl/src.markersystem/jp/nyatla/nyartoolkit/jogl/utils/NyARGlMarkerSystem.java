@@ -2,17 +2,17 @@ package jp.nyatla.nyartoolkit.jogl.utils;
 
 import java.awt.image.BufferedImage;
 
-import jp.nyatla.nyartoolkit.core.NyARCode;
 import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
 import jp.nyatla.nyartoolkit.core.param.NyARFrustum;
-import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
+import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
-import jp.nyatla.nyartoolkit.core.rasterdriver.INyARPerspectiveCopy;
+import jp.nyatla.nyartoolkit.core.rasterdriver.perspectivecopy.INyARPerspectiveCopy;
+import jp.nyatla.nyartoolkit.j2se.NyARBufferedImageRaster;
 import jp.nyatla.nyartoolkit.jogl.utils.NyARGLUtil;
 import jp.nyatla.nyartoolkit.markersystem.INyARMarkerSystemConfig;
 import jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystem;
 import jp.nyatla.nyartoolkit.markersystem.NyARSensor;
-import jp.nyatla.nyartoolkit.utils.j2se.NyARBufferedImageRaster;
 
 public class NyARGlMarkerSystem extends NyARMarkerSystem
 {

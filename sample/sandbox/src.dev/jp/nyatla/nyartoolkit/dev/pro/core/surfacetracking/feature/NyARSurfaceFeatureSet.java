@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.nio.ByteOrder;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.utils.ByteBufferedInputStream;
+import jp.nyatla.nyartoolkit.j2se.ByteBufferedInputStream;
 
 public class NyARSurfaceFeatureSet
 {

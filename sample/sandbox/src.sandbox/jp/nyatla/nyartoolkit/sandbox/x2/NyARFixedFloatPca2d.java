@@ -31,10 +31,11 @@
  */
 package jp.nyatla.nyartoolkit.sandbox.x2;
 
+import jp.nyatla.nyartoolkit.artk.pca2d.*;
 import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.coord2liner.pca2d.INyARPca2d;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
-import jp.nyatla.nyartoolkit.core.pca2d.*;
 /**
  * 64bit(小数部16bit)の固定小数点を利用したPCA関数
  *

@@ -31,11 +31,11 @@ import javax.media.opengl.*;
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
+import jp.nyatla.nyartoolkit.j2se.NyARBufferedImageRaster;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.sketch.GlSketch;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
 import jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystemConfig;
-import jp.nyatla.nyartoolkit.utils.j2se.NyARBufferedImageRaster;
 /**
  * This is simple pattern capture program.
  * should use right camera parameter for correctly capturing.

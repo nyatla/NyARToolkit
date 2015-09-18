@@ -34,13 +34,12 @@ package jp.nyatla.nyartoolkit.sandbox.qrcode;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
+import jp.nyatla.nyartoolkit.core.rasterdriver.rgb2gs.*;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquare;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquareContourDetector;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquareStack;
 import jp.nyatla.nyartoolkit.core.rasterfilter.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareStack;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 

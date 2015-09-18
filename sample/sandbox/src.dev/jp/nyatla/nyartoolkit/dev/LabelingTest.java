@@ -13,13 +13,12 @@ import java.util.Date;
 import javax.imageio.ImageIO;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARLabeling_Rle;
-import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfo;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_RGB;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve192;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARContourPickup;
+import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.rle.NyARLabeling_Rle;
+import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.rle.NyARRleLabelFragmentInfo;
+import jp.nyatla.nyartoolkit.core.rasterdriver.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve192;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARContourPickup;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 

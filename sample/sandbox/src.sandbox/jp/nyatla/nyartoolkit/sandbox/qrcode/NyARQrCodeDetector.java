@@ -1,17 +1,17 @@
 package jp.nyatla.nyartoolkit.sandbox.qrcode;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingImage;
-import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabel;
-import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabelStack;
-import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabeling_ARToolKit;
+import jp.nyatla.nyartoolkit.core.coord2liner.NyARCoord2Linear;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactorV2;
 import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARContourPickup;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareStack;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARCoord2Linear;
+import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.artoolkit.NyARLabelingImage;
+import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.artoolkit.NyARLabelingLabel;
+import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.artoolkit.NyARLabelingLabelStack;
+import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.artoolkit.NyARLabeling_ARToolKit;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARContourPickup;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquare;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquareContourDetector;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquareStack;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 public class NyARQrCodeDetector extends NyARSquareContourDetector

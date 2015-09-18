@@ -1,6 +1,7 @@
 package jp.nyatla.nyartoolkit.dev.pro.core.surfacetracking;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.math.NyARLCGsRandomizer;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
@@ -16,7 +17,6 @@ import jp.nyatla.nyartoolkit.pro.core.icp.NyARIcpPointRobust;
 import jp.nyatla.nyartoolkit.pro.core.surfacetracking.feature.NyARSurfaceFeatureSet.NyAR2FeatureCoord;
 import jp.nyatla.nyartoolkit.pro.core.surfacetracking.feature.NyARSurfaceFeatureSet.NyAR2FeaturePoints;
 import jp.nyatla.nyartoolkit.pro.core.surfacetracking.imageset.NyARSurfaceImageSet;
-import jp.nyatla.nyartoolkit.core.utils.NyARLCGsRandomizer;
 
 
 
@@ -46,7 +46,7 @@ public class NyARSurfaceTracking_Base
 			super.initInstance(i_length,AR2TemplateCandidate.Item.class);
 		}
 		/**
-		 * こ�?�関数は�?配�?�要�?を作�?�します�??
+		 * こ�?�関数は�?配�?�要�?を作�?�します�??
 		 */	
 		protected AR2TemplateCandidate.Item createElement()
 		{
@@ -666,7 +666,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 //				s = 0;
 //			}
 	
-			//candidateの0な数を数えて�?
+			//candidateの0な数を数えて�?
 			for(int i = j = 0; i<candidate.getLength(); i++ ) {
 				AR2TemplateCandidate.Item item=candidate.getItem(i);
 				if( item.flag == 0 ){
@@ -677,7 +677,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 				return -1;
 			}
 	
-			//0なcandidateの�?ち、k番目のも�?�を探して1にしてる�?
+			//0なcandidateの�?ち、k番目のも�?�を探して1にしてる�?
 			int k = (int)((double )j * this._rand.rand() / (RepeatedRandomizer.RAND_MAX + 1.0f));
 			for(int i = j = 0; i<candidate.getLength(); i++ ) {
 				AR2TemplateCandidate.Item item=candidate.getItem(i);
@@ -738,7 +738,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 			if( k < 0 ) {
 				if( candidatePtr == this.candidate ) {
 					candidatePtr = this.candidate2;
-					//ポインタでなんか�?っとるわ�?
+					//ポインタでなんか�?っとるわ�?
 					k = ar2SelectTemplate( candidatePtr, this.prevFeature, num, this.pos,s.w,s.h);
 					if(k<0){
 						break;
@@ -1015,7 +1015,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 	    ix = (int)(ii.x + 0.5);
 	    iy = (int)(ii.y + 0.5);
 
-	    //座標計算と値取得�?��?けよ�?�?
+	    //座標計算と値取得�?��?けよ�?�?
 	    if( ix < 0 || ix >= image.width || iy < 0 || iy >= image.height ){
 	    	return -1;
 	    }
@@ -1260,7 +1260,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 	 * @param val
 	 * int[1]
 	 * @return
-	 * 整合�?�チェ�?クOK
+	 * 整合�?�チェ�?クOK
 	 */
 	static int ar2GetBestMatchingSubFine( INyARGrayscaleRaster img,
 	                                      AR2TemplateT mtemp, int sx, int sy, int[] val)

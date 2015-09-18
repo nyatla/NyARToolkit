@@ -39,9 +39,9 @@ import java.awt.*;
 import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.artoolkit.NyARLabelingImage;
+import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.artoolkit.NyARLabelingLabel;
 import jp.nyatla.nyartoolkit.core.types.stack.*;
-import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingImage;
-import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingLabel;
 
 /**
  * このクラスは、デバック用途のクラスです。

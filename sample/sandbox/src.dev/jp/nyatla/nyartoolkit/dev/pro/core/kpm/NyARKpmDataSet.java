@@ -17,7 +17,7 @@ import java.nio.ByteOrder;
 
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
-import jp.nyatla.nyartoolkit.core.utils.ByteBufferedInputStream;
+import jp.nyatla.nyartoolkit.j2se.ByteBufferedInputStream;
 import jp.nyatla.nyartoolkit.pro.core.kpm.ann.NyARSurfFeatureSet;
 
 /**
@@ -26,7 +26,7 @@ import jp.nyatla.nyartoolkit.pro.core.kpm.ann.NyARSurfFeatureSet;
 public class NyARKpmDataSet
 {
 	/**
-	 * ペ�?�ジ毎�?�{@link NyARSurfFeatureSet}
+	 * ペ�?�ジ毎�?�{@link NyARSurfFeatureSet}
 	 */
 	public NyARSurfFeatureSet[] _featureset;
 	public int surfThresh;
@@ -34,8 +34,8 @@ public class NyARKpmDataSet
 	/**
 	 * 
 	 * @param i_surfset
-	 * ラ�?プするデータオブジェクト�?�配�?��??
-	 * �?有権はインスタンスに移ります�??
+	 * ラ�?プするデータオブジェクト�?�配�?��??
+	 * �?有権はインスタンスに移ります�??
 	 * @throws NyARException
 	 */
 	protected NyARKpmDataSet(NyARSurfFeatureSet[] i_surfset)throws NyARException
@@ -52,7 +52,7 @@ public class NyARKpmDataSet
 			throw new NyARException();
 		}
 		NyARSurfFeatureSet[] fset = new NyARSurfFeatureSet[fimg.page_no_set.length];
-		// ペ�?�ジ�?離のために、特徴数を�?��?�ジ番号ごとに�?�?
+		// ペ�?�ジ�?離のために、特徴数を�?��?�ジ番号ごとに�?�?
 		int[] fnum = new int[fset.length];
 		for (int i = fnum.length - 1; i >= 0; i--) {
 			fnum[i] = 0;
@@ -67,11 +67,11 @@ public class NyARKpmDataSet
 				break;
 			}
 		}
-		// RefDatasetの作�??
+		// RefDatasetの作�??
 		for (int i = fset.length - 1; i >= 0; i--) {
 			fset[i] = new NyARSurfFeatureSet(fnum[i],Fset2Reader.FSET2_SURF_DIMENTION);
 		}
-		// それぞれのRefDatasetを�?�期�?
+		// それぞれのRefDatasetを�?�期�?
 		for (int i = fimg.feature_set.length - 1; i >= 0; i--) {
 			int pn = fimg.feature_set[i].pageNo;
 			for (int i2 = fimg.page_no_set.length - 1; i2 >= 0; i2--) {
@@ -91,7 +91,7 @@ public class NyARKpmDataSet
 				break;
 			}
 		}
-		// fnumが�?�て0ならOK
+		// fnumが�?�て0ならOK
 		NyARKpmDataSet ret=new NyARKpmDataSet(fset);
 		ret.surfThresh=fimg.surf_thresh;
 		return ret;
@@ -101,8 +101,8 @@ public class NyARKpmDataSet
 
 
 /**
- * Fset2形式�?�ファイルイメージを�?�納するクラスです�??
- * Fset2の�?容をpublic変数へ格納します�??
+ * Fset2形式�?�ファイルイメージを�?�納するクラスです�??
+ * Fset2の�?容をpublic変数へ格納します�??
  * ----
  * File structure of FSEAT2
  * ----
@@ -169,7 +169,7 @@ class Fset2Reader extends ByteBufferedInputStream
 		this.order(ENDIAN_LITTLE);
 	}
 	/**
-	 * fset2ファイルの�?容を読み出します�??
+	 * fset2ファイルの�?容を読み出します�??
 	 * @return
 	 */
 	public FileImage getFileImage() throws NyARException
@@ -194,7 +194,7 @@ class Fset2Reader extends ByteBufferedInputStream
 			item.refImageIndex = this.getInt();
 		}
 		this.readToBuffer(4);
-		// 再取�?
+		// 再取�?
 		int num_of_pset = this.getInt();
 		ret.page_no_set = new int[num_of_pset];
 		int ptr = 0;

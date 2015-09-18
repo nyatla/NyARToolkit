@@ -34,6 +34,7 @@ import javax.vecmath.*;
 
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.core.*;
+import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.detector.*;
 import jp.nyatla.nyartoolkit.core.types.*;

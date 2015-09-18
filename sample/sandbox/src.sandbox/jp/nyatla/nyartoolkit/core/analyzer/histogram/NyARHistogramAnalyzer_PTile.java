@@ -25,6 +25,7 @@
 package jp.nyatla.nyartoolkit.core.analyzer.histogram;
 
 
+import jp.nyatla.nyartoolkit.core.histogram.NyARHistogram;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 

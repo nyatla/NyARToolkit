@@ -39,13 +39,13 @@ import java.awt.event.WindowEvent;
 import java.io.FileInputStream;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfo;
-import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfoPtrStack;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilter;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector_Rle;
+import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.rle.NyARRleLabelFragmentInfo;
+import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.rle.NyARRleLabelFragmentInfoPtrStack;
+import jp.nyatla.nyartoolkit.core.rasterdriver.rgb2gs.INyARRgb2GsFilter;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquareContourDetector;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquareContourDetector_Rle;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**

@@ -34,14 +34,14 @@ import java.util.Date;
 import javax.imageio.ImageIO;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
+import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+import jp.nyatla.nyartoolkit.j2se.NyARBufferedImageRaster;
 import jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystem;
 import jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystemConfig;
 import jp.nyatla.nyartoolkit.markersystem.NyARSensor;
-import jp.nyatla.nyartoolkit.utils.j2se.NyARBufferedImageRaster;
 /**
  * JMFからの映像入力からマーカ1種を検出し、そこに立方体を重ねます。
  * ARマーカには、patt.hiroを使用して下さい。

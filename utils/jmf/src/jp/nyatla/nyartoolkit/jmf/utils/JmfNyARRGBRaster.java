@@ -31,9 +31,10 @@ import javax.media.*;
 import com.sun.media.codec.video.colorspace.*;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.types.*;
-import jp.nyatla.nyartoolkit.utils.j2se.NyARBufferedImageRaster;
+import jp.nyatla.nyartoolkit.j2se.NyARBufferedImageRaster;
 
 
 public class JmfNyARRGBRaster extends NyARBufferedImageRaster

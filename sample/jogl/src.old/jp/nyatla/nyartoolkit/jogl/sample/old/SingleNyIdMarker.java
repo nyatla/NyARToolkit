@@ -26,7 +26,6 @@
  */
 package jp.nyatla.nyartoolkit.jogl.sample.old;
 
-import jp.nyatla.nyartoolkit.nyidmarker.data.*;
 
 import java.awt.event.*;
 import java.awt.*;
@@ -38,12 +37,13 @@ import javax.media.opengl.*;
 
 import com.sun.opengl.util.*;
 import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.marker.nyidmarker.data.*;
 import jp.nyatla.nyartoolkit.core.param.*;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
-import jp.nyatla.nyartoolkit.processor.*;
+import jp.nyatla.nyartoolkit.old.processor.*;
 
 
 

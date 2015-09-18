@@ -14,20 +14,19 @@ import javax.media.format.VideoFormat;
 import javax.media.util.BufferToImage;
 
 import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARLabeling_Rle;
-import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfo;
-import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfoPtrStack;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactorV2;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
+import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve192;
-import jp.nyatla.nyartoolkit.utils.j2se.NyARBufferedImageRaster;
+import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.rle.NyARLabeling_Rle;
+import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.rle.NyARRleLabelFragmentInfo;
+import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.rle.NyARRleLabelFragmentInfoPtrStack;
+import jp.nyatla.nyartoolkit.core.rasterdriver.rgb2gs.NyARRasterFilter_Rgb2Gs_RgbAve192;
 import jp.nyatla.nyartoolkit.utils.j2se.NyARRasterImageIO;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 
-import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_RGB;
 //import jp.nyatla.nyartoolkit.dev.hierarchicallabeling.tracking.AreaTargetSrcHolder.AreaSrcItem;
 import jp.nyatla.nyartoolkit.rpf.sampler.lrlabel.*;
@@ -38,6 +37,7 @@ import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status.NyARContourTargetStatus;
 import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status.NyARRectTargetStatus;
 import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status.NyARTargetStatus;
 import jp.nyatla.nyartoolkit.rpf.utils.VecLinearCoordinatesOperator;
+import jp.nyatla.nyartoolkit.j2se.NyARBufferedImageRaster;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDevice;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureDeviceList;
 import jp.nyatla.nyartoolkit.jmf.utils.JmfCaptureListener;

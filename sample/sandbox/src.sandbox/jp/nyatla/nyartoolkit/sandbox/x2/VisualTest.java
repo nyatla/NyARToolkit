@@ -19,14 +19,14 @@ import java.awt.*;
 
 import jp.nyatla.nyartoolkit.core.analyzer.raster.threshold.INyARRasterThresholdAnalyzer;
 import jp.nyatla.nyartoolkit.core.labeling.*;
-import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabelingImage;
-import jp.nyatla.nyartoolkit.core.labeling.artoolkit.NyARLabeling_ARToolKit;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasteranalyzer.threshold.NyARRasterThresholdAnalyzer_DiffHistogram;
+import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.artoolkit.NyARLabelingImage;
+import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.artoolkit.NyARLabeling_ARToolKit;
+import jp.nyatla.nyartoolkit.core.rasterdriver.rgb2gs.INyARRasterFilter_Rgb2Gs;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquareStack;
 import jp.nyatla.nyartoolkit.core.rasterfilter.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRasterFilter_Rgb2Gs;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareStack;
 import jp.nyatla.nyartoolkit.core2.rasterfilter.rgb2gs.*;
 import jp.nyatla.nyartoolkit.core2.rasterfilter.gs2bin.*;
 import jp.nyatla.nyartoolkit.core2.rasteranalyzer.threshold.*;
