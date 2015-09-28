@@ -57,7 +57,6 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 	 * ラスタの高さを指定します。
 	 * @param i_is_alloc
 	 * BufferedImageを内部生成するかのフラグ。trueの場合、インスタンスはバッファを所有します。
-	 * @throws NyARRuntimeException
 	 */	
 	public NyARBufferedImageRaster(int i_width,int i_height,boolean i_is_alloc)
 	{
@@ -91,7 +90,7 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 		try{
 			img = ImageIO.read(new File(i_file));
 		}catch(Exception e){
-			throw new NyARRuntimeException();
+			throw new NyARRuntimeException(e);
 		}
 		//画像フォーマットの解析
 		NyARBufferedImageRaster ra=new NyARBufferedImageRaster(img.getWidth(),img.getHeight(),false);
@@ -323,7 +322,7 @@ final class NyARRgbPixelReader_OBJECT_Java_BufferedImage implements INyARRgbPixe
 	{
 		NyARRuntimeException.notImplement();		
 	}
-	public void switchRaster(INyARRgbRaster i_raster)throws NyARRuntimeException
+	public void switchRaster(INyARRgbRaster i_raster)
 	{
 		this._ref_buf=(BufferedImage)i_raster.getBuffer();
 		this._ref_size=i_raster.getSize();

@@ -100,8 +100,7 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 	 */
 	public NyARRgbRaster(int i_width, int i_height,int i_raster_type)
 	{
-		super(i_width,i_height,i_raster_type);
-		initInstance(this._size,i_raster_type,true);
+		this(i_width,i_height,i_raster_type,true);
 	}
 	/**
 	 * コンストラクタです。
@@ -114,8 +113,7 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 	 */
 	public NyARRgbRaster(int i_width, int i_height)
 	{
-		super(i_width,i_height,NyARBufferType.INT1D_X8R8G8B8_32);
-		initInstance(this._size,NyARBufferType.INT1D_X8R8G8B8_32,true);
+		this(i_width,i_height,NyARBufferType.INT1D_X8R8G8B8_32);
 	}	
 	/**
 	 * Readerとbufferを初期化する関数です。コンストラクタから呼び出します。
@@ -200,6 +198,8 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 	/**
 	 * サポートしているインタフェイスは以下の通りです。
 	 * <ul>
+	 * <li>{@link INyARRgbPixelDriver}
+	 * <li>{@link INyARPerspectiveCopy}
 	 * <li>{@link INyARPerspectiveCopy}
 	 * <li>{@link NyARMatchPattDeviationColorData.IRasterDriver}
 	 * <li>{@link INyARRgb2GsFilter}
@@ -217,8 +217,8 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 		if(iIid==NyARMatchPattDeviationColorData.IRasterDriver.class){
 			return NyARMatchPattDeviationColorData.RasterDriverFactory.createDriver(this);
 		}
+		//継承を考慮してる。
 		if(iIid==INyARRgb2GsFilter.class){
-			//デフォルトのインタフェイス
 			return NyARRgb2GsFilterFactory.createRgbAveDriver(this);
 		}else if(iIid==INyARRgb2GsFilterRgbAve.class){
 			return NyARRgb2GsFilterFactory.createRgbAveDriver(this);
@@ -230,6 +230,16 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 		if(iIid==INyARRgb2GsFilterArtkTh.class){
 			return NyARRgb2GsFilterArtkThFactory.createDriver(this);
 		}
-		throw new NyARRuntimeException();
+		//クラスが見つからない
+		throw new NyARRuntimeException("Interface not found!");
+//		return null;
+	}
+	public static void main(String args[]){
+		NyARRgbRaster n=new NyARRgbRaster(640,480);
+		long s=System.currentTimeMillis();
+		for(int i=0;i<100000;i++){
+			n.createInterface(null);
+		}
+		System.out.println(System.currentTimeMillis()-s);
 	}
 }

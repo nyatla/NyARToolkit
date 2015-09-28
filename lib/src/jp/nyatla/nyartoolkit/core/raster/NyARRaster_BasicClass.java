@@ -34,7 +34,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
 public abstract class NyARRaster_BasicClass implements INyARRaster
 {
 	protected final NyARIntSize _size;
-	protected int _buffer_type;
+	protected final int _buffer_type;
 	/**
 	 * コンストラクタです。
 	 * メンバ変数を初期化して、インスタンスを生成します。

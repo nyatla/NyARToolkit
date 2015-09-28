@@ -27,7 +27,6 @@ package jp.nyatla.nyartoolkit.core.rasterdriver.pixel;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
-import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
@@ -74,8 +73,7 @@ public interface INyARRgbPixelDriver
 	 *            値は、[R1][G1][B1][R2][G2][B2]の順に格納します。
 	 * @throws NyARRuntimeException
 	 */
-	public void getPixelSet(int[] i_x, int[] i_y, int i_num, int[] i_intrgb)
-			throws NyARRuntimeException;
+	public void getPixelSet(int[] i_x, int[] i_y, int i_num, int[] i_intrgb);
 
 	/**
 	 * この関数は、RGBデータを指定した座標のピクセルにセットします。 実装クラスでは、バッファにRGB値を書込む処理を実装してください。
@@ -92,9 +90,7 @@ public interface INyARRgbPixelDriver
 	 *            B成分のピクセル値。
 	 * @throws NyARRuntimeException
 	 */
-	public void setPixel(int i_x, int i_y, int i_r, int i_g, int i_b)
-			throws NyARRuntimeException;
-
+	public void setPixel(int i_x, int i_y, int i_r, int i_g, int i_b);
 	/**
 	 * この関数は、RGBデータを指定した座標のピクセルにセットします。 実装クラスでは、バッファにRGB値を書込む処理を実装してください。
 	 * 

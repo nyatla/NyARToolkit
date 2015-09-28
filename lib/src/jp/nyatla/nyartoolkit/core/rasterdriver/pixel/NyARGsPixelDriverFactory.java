@@ -129,7 +129,7 @@ class NyARGsPixelDriver_INT1D_GRAY_8 implements INyARGsPixelDriver
 class NyARGsPixelDriver_RGBX implements INyARGsPixelDriver
 {
 	private INyARRgbPixelDriver _rgbd;
-	private int[] _tmp=new int[3];
+	private final int[] _tmp=new int[3];
     public NyARGsPixelDriver_RGBX(INyARRgbRaster i_raster)
     {
         this._rgbd = i_raster.getRgbPixelDriver();

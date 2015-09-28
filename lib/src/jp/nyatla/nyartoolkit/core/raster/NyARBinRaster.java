@@ -62,6 +62,7 @@ public class NyARBinRaster extends NyARGrayscaleRaster
 	 * @return
 	 * 初期化に成功するとtrue 
 	 */
+	@Override
 	protected void initInstance(NyARIntSize i_size,int i_buf_type,boolean i_is_alloc)
 	{
 		switch(i_buf_type)
@@ -70,13 +71,13 @@ public class NyARBinRaster extends NyARGrayscaleRaster
 				this._buf = i_is_alloc?new int[i_size.w*i_size.h]:null;
 				break;
 			default:
-				super.initInstance(i_size, i_buf_type, i_is_alloc);
-				return;
+				throw new NyARRuntimeException();
 		}
 		this._pixdrv=NyARGsPixelDriverFactory.createDriver(this);
 		this._is_attached_buffer=i_is_alloc;
 		return;
 	}
+	@Override
 	public Object createInterface(Class<?> i_iid)
 	{
 		if(i_iid==NyARLabeling_Rle.IRasterDriver.class){

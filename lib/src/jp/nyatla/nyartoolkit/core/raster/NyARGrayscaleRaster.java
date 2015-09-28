@@ -40,11 +40,11 @@ import jp.nyatla.nyartoolkit.core.types.*;
 public class NyARGrayscaleRaster implements INyARGrayscaleRaster
 {
 	protected final NyARIntSize _size;
-	protected int _buffer_type;
+	protected final int _buffer_type;
 	/**
 	 * この関数は、ラスタの幅を返します。
 	 */
-	public final int getWidth()
+	final public int getWidth()
 	{
 		return this._size.w;
 	}
@@ -99,9 +99,7 @@ public class NyARGrayscaleRaster implements INyARGrayscaleRaster
 	 */
 	public NyARGrayscaleRaster(int i_width, int i_height)
 	{
-		this._size= new NyARIntSize(i_width,i_height);
-		this._buffer_type=NyARBufferType.INT1D_GRAY_8;		
-		initInstance(this._size, NyARBufferType.INT1D_GRAY_8, true);
+		this(i_width,i_height,true);
 	}
 	/**
 	 * コンストラクタです。
@@ -118,11 +116,8 @@ public class NyARGrayscaleRaster implements INyARGrayscaleRaster
 	 * @throws NyARRuntimeException
 	 */
 	public NyARGrayscaleRaster(int i_width, int i_height, boolean i_is_alloc)
-			throws NyARRuntimeException
 	{
-		this._size= new NyARIntSize(i_width,i_height);
-		this._buffer_type=NyARBufferType.INT1D_GRAY_8;		
-		initInstance(this._size, NyARBufferType.INT1D_GRAY_8, i_is_alloc);
+		this(i_width,i_height,NyARBufferType.INT1D_GRAY_8, i_is_alloc);
 	}
 
 	/**
@@ -148,7 +143,7 @@ public class NyARGrayscaleRaster implements INyARGrayscaleRaster
 	{
 		this._size= new NyARIntSize(i_width,i_height);
 		this._buffer_type=i_raster_type;
-		initInstance(this._size, i_raster_type, i_is_alloc);
+		this.initInstance(this._size, i_raster_type, i_is_alloc);
 	}
 
 	/**
@@ -159,7 +154,6 @@ public class NyARGrayscaleRaster implements INyARGrayscaleRaster
 	 * バッファ形式
 	 * @param i_is_alloc
 	 * バッファ参照方法値
-	 * @throws NyARRuntimeException 
 	 */
 	protected void initInstance(NyARIntSize i_size, int i_raster_type,boolean i_is_alloc)
 	{
@@ -174,6 +168,7 @@ public class NyARGrayscaleRaster implements INyARGrayscaleRaster
 		//ピクセルドライバの生成
 		this._pixdrv=NyARGsPixelDriverFactory.createDriver(this);
 	}
+	@Override
 	public Object createInterface(Class<?> i_iid)
 	{
 		if(i_iid==NyARLabeling_Rle.IRasterDriver.class){
@@ -191,7 +186,8 @@ public class NyARGrayscaleRaster implements INyARGrayscaleRaster
 	 * この関数は、ラスタのバッファへの参照値を返します。
 	 * バッファの形式は、コンストラクタに指定した形式と同じです。
 	 */	
-	public Object getBuffer()
+	@Override
+	public final Object getBuffer()
 	{
 		return this._buf;
 	}

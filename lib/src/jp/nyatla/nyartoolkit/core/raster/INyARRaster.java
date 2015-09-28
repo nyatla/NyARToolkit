@@ -96,7 +96,9 @@ public interface INyARRaster
 	 */
 	public void wrapBuffer(Object i_ref_buf);
 	/**
-	 * ARTKに必要なラスタドライバインタフェイスを返す。
+	 * ARTKに必要なラスタオペレーションインタフェイスを返す。
+	 * ラスタオペレーションインタフェイスは、ラスタに対するバッチ処理を実装します。
+	 * 生成には時間がかかるのでキャッシュしてください。
 	 * @return
 	 */
 	public Object createInterface(Class<?> i_iid)throws NyARRuntimeException;
