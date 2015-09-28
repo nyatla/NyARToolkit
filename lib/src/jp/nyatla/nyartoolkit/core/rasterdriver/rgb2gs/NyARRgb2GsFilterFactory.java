@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.rgb2gs;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
@@ -44,9 +44,9 @@ public class NyARRgb2GsFilterFactory
 	 * </ul>
 	 * @param i_raster
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public static INyARRgb2GsFilterRgbAve createRgbAveDriver(INyARRgbRaster i_raster) throws NyARException
+	public static INyARRgb2GsFilterRgbAve createRgbAveDriver(INyARRgbRaster i_raster)
 	{
 		switch(i_raster.getBufferType()){
 		case NyARBufferType.BYTE1D_B8G8R8X8_32:
@@ -67,9 +67,9 @@ public class NyARRgb2GsFilterFactory
 	 * 最適化されていません。
 	 * @param i_raster
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public static INyARRgb2GsFilterRgbAve createRgbCubeDriver(INyARRgbRaster i_raster) throws NyARException
+	public static INyARRgb2GsFilterRgbAve createRgbCubeDriver(INyARRgbRaster i_raster)
 	{
 		switch(i_raster.getBufferType()){
 		default:
@@ -81,9 +81,9 @@ public class NyARRgb2GsFilterFactory
 	 * 最適化されていません。
 	 * @param i_raster
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public static INyARRgb2GsFilterYCbCr createYCbCrDriver(INyARRgbRaster i_raster) throws NyARException
+	public static INyARRgb2GsFilterYCbCr createYCbCrDriver(INyARRgbRaster i_raster)
 	{
 		switch(i_raster.getBufferType()){
 		default:
@@ -109,12 +109,12 @@ class NyARRgb2GsFilterRgbAve_BYTE1D_B8G8R8X8_32 implements INyARRgb2GsFilterRgbA
 		assert i_ref_raster.isEqualBufferType(NyARBufferType.BYTE1D_B8G8R8X8_32);
 		this._ref_raster=i_ref_raster;
 	}
-	public void convert(INyARGrayscaleRaster i_raster) throws NyARException
+	public void convert(INyARGrayscaleRaster i_raster)
 	{
 		NyARIntSize s=this._ref_raster.getSize();
 		this.convertRect(0,0,s.w,s.h,i_raster);
 	}
-	public void convertRect(int l,int t,int w,int h,INyARGrayscaleRaster o_raster) throws NyARException
+	public void convertRect(int l,int t,int w,int h,INyARGrayscaleRaster o_raster)
 	{
 		NyARIntSize size=this._ref_raster.getSize();
 		int bp = (l+t*size.w)*4;
@@ -178,12 +178,12 @@ class NyARRgb2GsFilterRgbAve_BYTE1D_X8C8C8C8_32 implements INyARRgb2GsFilterRgbA
 	{
 		this._ref_raster=i_ref_raster;
 	}
-	public void convert(INyARGrayscaleRaster i_raster) throws NyARException
+	public void convert(INyARGrayscaleRaster i_raster)
 	{
 		NyARIntSize s=this._ref_raster.getSize();
 		this.convertRect(0,0,s.w,s.h,i_raster);
 	}
-	public void convertRect(int l,int t,int w,int h,INyARGrayscaleRaster o_raster) throws NyARException
+	public void convertRect(int l,int t,int w,int h,INyARGrayscaleRaster o_raster)
 	{
 		NyARIntSize size=this._ref_raster.getSize();
 		int bp = (l+t*size.w)*4;
@@ -254,12 +254,12 @@ class NyARRgb2GsFilterRgbAve_BYTE1D_C8C8C8_24 implements INyARRgb2GsFilterRgbAve
 		assert i_ref_raster.isEqualBufferType(NyARBufferType.BYTE1D_B8G8R8_24) || i_ref_raster.isEqualBufferType(NyARBufferType.BYTE1D_R8G8B8_24);
 		this._ref_raster=i_ref_raster;
 	}
-	public void convert(INyARGrayscaleRaster i_raster) throws NyARException
+	public void convert(INyARGrayscaleRaster i_raster)
 	{
 		NyARIntSize s=this._ref_raster.getSize();
 		this.convertRect(0,0,s.w,s.h,i_raster);
 	}
-	public void convertRect(int l,int t,int w,int h,INyARGrayscaleRaster o_raster) throws NyARException
+	public void convertRect(int l,int t,int w,int h,INyARGrayscaleRaster o_raster)
 	{
 		NyARIntSize size=this._ref_raster.getSize();
 		int bp = (l+t*size.w)*3;
@@ -324,12 +324,12 @@ class NyARRgb2GsFilterRgbAve_INT1D_X8R8G8B8_32 implements INyARRgb2GsFilterRgbAv
 		assert i_ref_raster.isEqualBufferType(NyARBufferType.INT1D_X8R8G8B8_32);
 		this._ref_raster=i_ref_raster;
 	}
-	public void convert(INyARGrayscaleRaster i_raster) throws NyARException
+	public void convert(INyARGrayscaleRaster i_raster)
 	{
 		NyARIntSize s=this._ref_raster.getSize();
 		this.convertRect(0,0,s.w,s.h,i_raster);
 	}
-	public void convertRect(int l,int t,int w,int h,INyARGrayscaleRaster o_raster) throws NyARException
+	public void convertRect(int l,int t,int w,int h,INyARGrayscaleRaster o_raster)
 	{
 		NyARIntSize size=this._ref_raster.getSize();
 		int bp = (l+t*size.w);
@@ -388,12 +388,12 @@ class NyARRgb2GsFilterRgbAve_Any implements INyARRgb2GsFilterRgbAve
 		this._ref_raster=i_ref_raster;
 	}
 	private int[] _wk=new int[3];
-	public void convert(INyARGrayscaleRaster i_raster) throws NyARException
+	public void convert(INyARGrayscaleRaster i_raster)
 	{
 		NyARIntSize s=this._ref_raster.getSize();
 		this.convertRect(0,0,s.w,s.h,i_raster);
 	}	
-	public void convertRect(int l,int t,int w,int h,INyARGrayscaleRaster o_raster) throws NyARException
+	public void convertRect(int l,int t,int w,int h,INyARGrayscaleRaster o_raster)
 	{
 		int[] wk=this._wk;
 		final int b=t+h;
@@ -428,12 +428,12 @@ class NyARRgb2GsFilterRgbCube_Any implements INyARRgb2GsFilterRgbAve
 		this._ref_raster=i_ref_raster;
 	}
 	private int[] _wk=new int[3];
-	public void convert(INyARGrayscaleRaster i_raster) throws NyARException
+	public void convert(INyARGrayscaleRaster i_raster)
 	{
 		NyARIntSize s=this._ref_raster.getSize();
 		this.convertRect(0,0,s.w,s.h,i_raster);
 	}
-	public void convertRect(int l,int t,int w,int h,INyARGrayscaleRaster o_raster) throws NyARException
+	public void convertRect(int l,int t,int w,int h,INyARGrayscaleRaster o_raster)
 	{
 		int[] wk=this._wk;
 		final int b=t+h;
@@ -465,13 +465,13 @@ class NyARRgb2GsFilterYCbCr_Any implements INyARRgb2GsFilterYCbCr
 	{
 		this._ref_raster=i_ref_raster;
 	}
-	public void convert(INyARGrayscaleRaster i_raster) throws NyARException
+	public void convert(INyARGrayscaleRaster i_raster)
 	{
 		NyARIntSize s=this._ref_raster.getSize();
 		this.convertRect(0,0,s.w,s.h,i_raster);
 	}	
 	private int[] _wk=new int[3];
-	public void convertRect(int l,int t,int w,int h,INyARGrayscaleRaster o_raster) throws NyARException
+	public void convertRect(int l,int t,int w,int h,INyARGrayscaleRaster o_raster)
 	{
 		int[] wk=this._wk;
 		final int b=t+h;
@@ -492,7 +492,7 @@ class NyARRgb2GsFilterYCbCr_Any implements INyARRgb2GsFilterYCbCr
 }
 
 /*	old cut filters
- 		public void doCutFilter(INyARRaster i_input, int l,int t,int i_st,INyARGrayscaleRaster o_output) throws NyARException
+ 		public void doCutFilter(INyARRaster i_input, int l,int t,int i_st,INyARGrayscaleRaster o_output)
 		{
 			assert(i_input.isEqualBufferType(NyARBufferType.BYTE1D_B8G8R8_24)||i_input.isEqualBufferType(NyARBufferType.BYTE1D_R8G8B8_24));
 			assert(i_input.getSize().isInnerSize(l+o_output.getWidth()*i_st,t+o_output.getHeight()*i_st));
@@ -539,7 +539,7 @@ class NyARRgb2GsFilterYCbCr_Any implements INyARRgb2GsFilterYCbCr
 			return;
 		}
 		
-		public void doCutFilter(INyARRaster i_input, int l,int t,int i_st,INyARGrayscaleRaster o_output) throws NyARException
+		public void doCutFilter(INyARRaster i_input, int l,int t,int i_st,INyARGrayscaleRaster o_output)
 		{
 			assert(i_input.isEqualBufferType(NyARBufferType.INT1D_X8R8G8B8_32));
 			assert(i_input.getSize().isInnerSize(l+o_output.getWidth()*i_st,t+o_output.getHeight()*i_st));

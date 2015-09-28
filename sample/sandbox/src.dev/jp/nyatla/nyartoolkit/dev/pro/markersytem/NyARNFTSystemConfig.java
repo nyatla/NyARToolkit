@@ -26,60 +26,60 @@ package jp.nyatla.nyartoolkit.dev.pro.markersytem;
 
 import java.io.InputStream;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
- * こ�?�クラスは、NyARToolkitの姿勢推定アルゴリズ�?に調整したコンフィギュレーションクラスです�??
+ * こ�?�クラスは、NyARToolkitの姿勢推定アルゴリズ�?に調整したコンフィギュレーションクラスです�??
  *
  */
 public class NyARNFTSystemConfig
 {
 	protected NyARParam _param;
 	/**
-	 * コンストラクタです�??
-	 * 初期化済カメラパラメータからコンフィギュレーションを生成します�??
+	 * コンストラクタです�??
+	 * 初期化済カメラパラメータからコンフィギュレーションを生成します�??
 	 * @param i_param
-	 * 初期化に使�?カメラパラメータオブジェクト�?�インスタンスの�?有権は、インスタンスに移ります�??
+	 * 初期化に使�?カメラパラメータオブジェクト�?�インスタンスの�?有権は、インスタンスに移ります�??
 	 */
 	public NyARNFTSystemConfig(NyARParam i_param)
 	{
 		this._param=i_param;
 	}
 	/**
-	 * コンストラクタです�??
-	 * i_ar_parama_streamからカメラパラメータファイルを読み出して、スクリーンサイズをi_width,i_heightに変形してから�?
-	 * コンフィギュレーションを生成します�??
+	 * コンストラクタです�??
+	 * i_ar_parama_streamからカメラパラメータファイルを読み出して、スクリーンサイズをi_width,i_heightに変形してから�?
+	 * コンフィギュレーションを生成します�??
 	 * @param i_ar_param_stream
-	 * カメラパラメータファイルを読み出すストリー�?
+	 * カメラパラメータファイルを読み出すストリー�?
 	 * @param i_width
 	 * スクリーンサイズ
 	 * @param i_height
 	 * スクリーンサイズ
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public NyARNFTSystemConfig(InputStream i_ar_param_stream,int i_width,int i_height) throws NyARException
+	public NyARNFTSystemConfig(InputStream i_ar_param_stream,int i_width,int i_height) throws NyARRuntimeException
 	{
 		this._param=NyARParam.createFromARParamFile(i_ar_param_stream);
 		this._param.changeScreenSize(i_width,i_height);
 	}
 	/**
-	 * コンストラクタです�?�カメラパラメータにサンプル値(../Data/camera_para.dat)の値をロードして�?
-	 * コンフィギュレーションを生成します�??
+	 * コンストラクタです�?�カメラパラメータにサンプル値(../Data/camera_para.dat)の値をロードして�?
+	 * コンフィギュレーションを生成します�??
 	 * @param i_width
 	 * スクリーンサイズ
 	 * @param i_height
 	 * スクリーンサイズ
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public NyARNFTSystemConfig(int i_width,int i_height) throws NyARException
+	public NyARNFTSystemConfig(int i_width,int i_height) throws NyARRuntimeException
 	{
 		this._param=NyARParam.createDefaultParameter();
 		this._param.changeScreenSize(i_width,i_height);		
 	}
 	/**
-	 * こ�?�値は、カメラパラメータのスクリーンサイズです�??
+	 * こ�?�値は、カメラパラメータのスクリーンサイズです�??
 	 */
 	public final NyARIntSize getScreenSize()
 	{

@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.markersystem;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.histogram.algo.INyARHistogramAnalyzer_Threshold;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
@@ -41,9 +41,9 @@ public interface INyARMarkerSystemConfig
 	 * 姿勢行列計算クラスを生成して返します。
 	 * @return
 	 * 新しいオブジェクト。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public INyARTransMat createTransmatAlgorism() throws NyARException;
+	public INyARTransMat createTransmatAlgorism();
 	/**
 	 * 敷居値決定クラスを生成して返します。
 	 * @return

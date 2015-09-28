@@ -66,7 +66,7 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 		
 		public int current_code=-1;
 
-		public MarkerProcessor(NyARParam i_cparam,int i_raster_format,NyARGLUtil i_glutil) throws NyARException
+		public MarkerProcessor(NyARParam i_cparam,int i_raster_format,NyARGLUtil i_glutil) throws NyARRuntimeException
 		{
 			//アプリケーションフレームワークの初期化
 			super();
@@ -124,7 +124,7 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 		//キャプチャリソースの準備
 		this._capture=devlist.getDevice(0);
 		if(!this._capture.setCaptureFormat(SCREEN_X, SCREEN_Y,30.0f)){
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		this._capture.setOnCapture(this);
 		this._cap_image = new JmfNyARRGBRaster(this._capture.getCaptureFormat());	

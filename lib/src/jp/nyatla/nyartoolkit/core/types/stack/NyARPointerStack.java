@@ -27,7 +27,7 @@ package jp.nyatla.nyartoolkit.core.types.stack;
 
 import java.lang.reflect.Array;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 
 /**
  * このクラスは、オブジェクトの参照値を格納する可変長配列です。
@@ -48,7 +48,7 @@ public class NyARPointerStack<T>
 	 * 配列の最大長さ
 	 * @param i_element_type
 	 * 配列型を示すクラスタイプ
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	@SuppressWarnings("unchecked")
 	protected NyARPointerStack(int i_length,Class<T> i_element_type)

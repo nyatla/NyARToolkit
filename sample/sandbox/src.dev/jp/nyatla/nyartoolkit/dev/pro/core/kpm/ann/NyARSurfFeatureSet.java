@@ -12,7 +12,7 @@
  */
 package jp.nyatla.nyartoolkit.dev.pro.core.kpm.ann;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
@@ -55,13 +55,13 @@ public class NyARSurfFeatureSet
 	}
 
 	/**
-	 * コンストラクタです�?? 配�?��?��?大長さを�?定して、インスタンスを生成します�??
+	 * コンストラクタです�?? 配�?��?��?大長さを�?定して、インスタンスを生成します�??
 	 * 
 	 * @param i_length
-	 * 配�?��?��?大長�?
-	 * @throws NyARException
+	 * 配�?��?��?大長�?
+	 * @throws NyARRuntimeException
 	 */
-	public NyARSurfFeatureSet(int i_length, int i_dim) throws NyARException
+	public NyARSurfFeatureSet(int i_length, int i_dim) throws NyARRuntimeException
 	{
 		this._items = new Item[i_length];
 		for (int i = 0; i < i_length; i++) {

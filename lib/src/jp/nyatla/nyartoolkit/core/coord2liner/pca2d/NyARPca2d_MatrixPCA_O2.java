@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.coord2liner.pca2d;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 
 /**
@@ -50,9 +50,9 @@ public class NyARPca2d_MatrixPCA_O2 implements INyARPca2d
 	 * 
 	 * @param a
 	 * @param dv
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	private static void PCA_QRM(NyARDoubleMatrix22 o_matrix, double[] dv) throws NyARException
+	private static void PCA_QRM(NyARDoubleMatrix22 o_matrix, double[] dv)
 	{
 		double w, t, s, x, y, c;
 		double ev1;
@@ -148,9 +148,9 @@ public class NyARPca2d_MatrixPCA_O2 implements INyARPca2d
 	 * 
 	 * @param output
 	 * @param o_ev
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	private void PCA_PCA(double[] i_v1,double[] i_v2,int i_number_of_data,NyARDoubleMatrix22 o_matrix, double[] o_ev,double[] o_mean) throws NyARException
+	private void PCA_PCA(double[] i_v1,double[] i_v2,int i_number_of_data,NyARDoubleMatrix22 o_matrix, double[] o_ev,double[] o_mean)
 	{
 		// double[] mean_array=mean.getArray();
 		// mean.zeroClear();
@@ -200,7 +200,7 @@ public class NyARPca2d_MatrixPCA_O2 implements INyARPca2d
 		return;
 	}
 	//override
-	public void pca(double[] i_v1,double[] i_v2,int i_number_of_point,NyARDoubleMatrix22 o_evec, double[] o_ev,double[] o_mean) throws NyARException
+	public void pca(double[] i_v1,double[] i_v2,int i_number_of_point,NyARDoubleMatrix22 o_evec, double[] o_ev,double[] o_mean)
 	{
 		PCA_PCA(i_v1,i_v2,i_number_of_point,o_evec, o_ev,o_mean);
 

@@ -24,7 +24,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.NyARLabelOverlapChecker;
 import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.rle.NyARLabeling_Rle;
@@ -47,7 +47,7 @@ public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 		int _bottom;
 		
 		
-		public Labeling(int i_width,int i_height) throws NyARException
+		public Labeling(int i_width,int i_height)
 		{
 			super(i_width,i_height);
 			long t=(long)i_width*i_height*2048/(320*240)+32;//full HD support
@@ -56,7 +56,7 @@ public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 			this._right=i_width-1;
 			return;
 		}
-		public boolean labeling(INyARGrayscaleRaster i_raster,NyARIntRect i_area,int i_th) throws NyARException
+		public boolean labeling(INyARGrayscaleRaster i_raster,NyARIntRect i_area,int i_th)
 		{
 			//配列初期化
 			this.label_stack.clear();
@@ -66,7 +66,7 @@ public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 			this.label_stack.sortByArea();
 			return ret;
 		}
-		public boolean labeling(INyARGrayscaleRaster i_raster,int i_th) throws NyARException
+		public boolean labeling(INyARGrayscaleRaster i_raster,int i_th)
 		{
 			//配列初期化
 			this.label_stack.clear();
@@ -102,7 +102,7 @@ public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 	 * @param i_size
 	 * 入力画像のサイズ
 	 */
-	public NyARSquareContourDetector_Rle(NyARIntSize i_size) throws NyARException
+	public NyARSquareContourDetector_Rle(NyARIntSize i_size)
 	{ 
 		this.setupImageDriver(i_size);
 		//ラベリングのサイズを指定したいときはsetAreaRangeを使ってね。
@@ -112,9 +112,9 @@ public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 	/**
 	 * 画像処理オブジェクトの切り替え関数。切り替える場合は、この関数を上書きすること。
 	 * @param i_size
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	protected void setupImageDriver(NyARIntSize i_size) throws NyARException
+	protected void setupImageDriver(NyARIntSize i_size)
 	{
 		//特性確認
 		assert(NyARLabeling_Rle._sf_label_array_safe_reference);
@@ -132,9 +132,9 @@ public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 	 * 検出する範囲。検出元のラスタの内側である必要があります。
 	 * @param i_th
 	 * ラベルと判定する敷居値
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void detectMarker(INyARGrayscaleRaster i_raster,NyARIntRect i_area,int i_th,NyARSquareContourDetector.CbHandler i_cb) throws NyARException
+	public void detectMarker(INyARGrayscaleRaster i_raster,NyARIntRect i_area,int i_th,NyARSquareContourDetector.CbHandler i_cb)
 	{
 		assert(i_area.w*i_area.h>0);
 		
@@ -198,7 +198,7 @@ public class NyARSquareContourDetector_Rle extends NyARSquareContourDetector
 	 * @param i_th
 	 * 画素の二値判定敷居値です。この値は、ラベリングと、輪郭線追跡時に使われます。
 	 */
-	public void detectMarker(INyARGrayscaleRaster i_raster,int i_th,NyARSquareContourDetector.CbHandler i_cb) throws NyARException
+	public void detectMarker(INyARGrayscaleRaster i_raster,int i_th,NyARSquareContourDetector.CbHandler i_cb)
 	{
 		final NyARRleLabelFragmentInfoPtrStack flagment=this._labeling.label_stack;
 		final NyARLabelOverlapChecker<NyARRleLabelFragmentInfo> overlap = this._overlap_checker;

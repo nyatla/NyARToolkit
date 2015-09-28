@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.NyARIntCoordinates;
 
 /**
@@ -45,7 +45,7 @@ public interface INyARSquareContourDetectorHandler
 	 * 輪郭線オブジェクト
 	 * @param i_vertex_index
 	 * 矩形の４頂点に対応する、輪郭線オブジェクトのインデクス番号。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void detectMarkerCb(NyARIntCoordinates i_coord,int[] i_vertex_index)  throws NyARException;
+	public void detectMarkerCb(NyARIntCoordinates i_coord,int[] i_vertex_index)  throws NyARRuntimeException;
 }

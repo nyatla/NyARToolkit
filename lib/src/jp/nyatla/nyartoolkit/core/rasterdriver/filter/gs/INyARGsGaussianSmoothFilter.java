@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.filter.gs;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 
@@ -38,7 +38,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
  */
 public interface INyARGsGaussianSmoothFilter
 {
-	public void doFilter(INyARGrayscaleRaster i_output) throws NyARException;
+	public void doFilter(INyARGrayscaleRaster i_output);
 }
 
 /**
@@ -54,7 +54,7 @@ class NyARGsGaussianSmoothFilter_GS8 implements INyARGsGaussianSmoothFilter
 		this._raster=i_raster;
 	}
 	
-	public void doFilter(INyARGrayscaleRaster i_output) throws NyARException
+	public void doFilter(INyARGrayscaleRaster i_output)
 	{
 		int[] in_ptr =(int[])this._raster.getBuffer();
 		int width=this._raster.getWidth();
@@ -113,7 +113,7 @@ class NyARGsGaussianSmoothFilter_GS8 implements INyARGsGaussianSmoothFilter
 			bptr++;
 			return;
 		default:
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 	}
 }

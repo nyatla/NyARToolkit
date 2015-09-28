@@ -34,7 +34,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.marker.artk.match.NyARMatchPattDeviationBlackWhiteData;
 import jp.nyatla.nyartoolkit.core.marker.artk.match.NyARMatchPattDeviationColorData;
 import jp.nyatla.nyartoolkit.core.marker.artk.match.NyARMatchPattResult;
@@ -57,9 +57,9 @@ class NyARCodeFileReader
 	 * @param o_raster
 	 * 出力先のラスタ配列です。
 	 * バッファ形式は形式はINT1D_X8R8G8B8_32であり、4要素、かつ全て同一なサイズである必要があります。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public static void loadFromARToolKitFormFile(InputStream i_stream,NyARRaster[] o_raster) throws NyARException
+	public static void loadFromARToolKitFormFile(InputStream i_stream,NyARRaster[] o_raster)
 	{
 		assert(o_raster.length==4);
 		//4個の要素をラスタにセットする。
@@ -72,7 +72,7 @@ class NyARCodeFileReader
 				readBlock(st,ra.getWidth(),ra.getHeight(),(int[])ra.getBuffer());
 			}
 		} catch (Exception e) {
-			throw new NyARException(e);
+			throw new NyARRuntimeException(e);
 		}
 		return;
 	}
@@ -82,9 +82,9 @@ class NyARCodeFileReader
 	 * 読出し元のストリームです。
 	 * @param o_code
 	 * 出力先の{@link NyARCode}オブジェクトです。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public static void loadFromARToolKitFormFile(InputStream i_stream,NyARCode o_code) throws NyARException
+	public static void loadFromARToolKitFormFile(InputStream i_stream,NyARCode o_code)
 	{
 		int width=o_code.getWidth();
 		int height=o_code.getHeight();
@@ -101,7 +101,7 @@ class NyARCodeFileReader
 				o_code.getBlackWhiteData(h).setRaster(tmp_raster);
 			}
 		} catch (Exception e) {
-			throw new NyARException(e);
+			throw new NyARRuntimeException(e);
 		}
 		tmp_raster=null;//ポイ
 		return;
@@ -117,9 +117,9 @@ class NyARCodeFileReader
 	 * パターンの縦解像度(pixel)です。
 	 * @param o_buf
 	 * 読み取った値を格納する配列です。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	private static void readBlock(StreamTokenizer i_st,int i_width,int i_height,int[] o_buf) throws NyARException
+	private static void readBlock(StreamTokenizer i_st,int i_width,int i_height,int[] o_buf)
 	{
 		try {
 			final int pixels=i_width*i_height;
@@ -130,7 +130,7 @@ class NyARCodeFileReader
 					case StreamTokenizer.TT_NUMBER:
 						break;
 					default:
-						throw new NyARException();
+						throw new NyARRuntimeException();
 					}
 					o_buf[i2]=(o_buf[i2]<<8)|((0x000000ff&(int)i_st.nval));
 				}
@@ -140,7 +140,7 @@ class NyARCodeFileReader
 				o_buf[i3]=((o_buf[i3]<<16)&0xff0000)|(o_buf[i3]&0x00ff00)|((o_buf[i3]>>16)&0x0000ff);
 			}
 		} catch (Exception e) {
-			throw new NyARException(e);
+			throw new NyARRuntimeException(e);
 		}		
 		return;
 	}
@@ -166,9 +166,9 @@ public class NyARCode
 	 * パターンの幅pixel数。データの内容と一致している必要があります。
 	 * @param i_height
 	 * パターンの幅pixel数。データの内容と一致している必要があります。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */	
-	public static NyARCode createFromARPattFile(InputStream i_stream,int i_width,int i_height) throws NyARException
+	public static NyARCode createFromARPattFile(InputStream i_stream,int i_width,int i_height)
 	{
 		//ラスタにパターンをロードする。
 		NyARCode ret=new NyARCode(i_width,i_height);
@@ -230,9 +230,9 @@ public class NyARCode
 	 * 作成するマーカパターンの横解像度[pixel]
 	 * @param i_height
 	 * 作成するマーカパターンの縦解像度[pixel]
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public NyARCode(int i_width, int i_height) throws NyARException
+	public NyARCode(int i_width, int i_height)
 	{
 		this._width = i_width;
 		this._height = i_height;
@@ -251,9 +251,9 @@ public class NyARCode
 	 * パターンデータを格納したラスタオブジェクト配列を指定します。
 	 * ラスタは同一な解像度であり、かつこのインスタンスと同じ解像度である必要があります。
 	 * 格納順は、パターンの右上が、1,2,3,4象限になる順番です。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void setRaster(INyARRgbRaster[] i_raster) throws NyARException
+	public void setRaster(INyARRgbRaster[] i_raster)
 	{
 		assert(i_raster.length!=4);
 		//ラスタにパターンをロードする。
@@ -268,9 +268,9 @@ public class NyARCode
 	 * @param i_raster
 	 * パターンデータを格納したラスタオブジェクトを指定します。
 	 * ラスタは、このインスタンスと同じ解像度である必要があります。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */	
-	public void setRaster(INyARRgbRaster i_raster) throws NyARException
+	public void setRaster(INyARRgbRaster i_raster)
 	{
 		//ラスタにパターンをロードする。
 		for(int i=0;i<4;i++){

@@ -2,7 +2,7 @@ package jp.nyatla.nyartoolkit.dev.pro.markersytem;
 
 import java.io.InputStream;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResultParam;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
@@ -36,7 +36,7 @@ public class NyARSingleNFTSystem extends NyARSingleCameraSystem
 	private NyARSurfaceDataSet _ss;
 	private NyARNFTSystemConfig _config;
 	
-	public NyARSingleNFTSystem(NyARNFTSystemConfig i_config) throws NyARException
+	public NyARSingleNFTSystem(NyARNFTSystemConfig i_config) throws NyARRuntimeException
 	{
 		super(i_config.getNyARParam());
 		this._config=i_config;
@@ -51,15 +51,15 @@ public class NyARSingleNFTSystem extends NyARSingleCameraSystem
 	 * サーフェイス特徴ファイルを読み出す{@link InputStream}
 	 * @param i_kpm_fset
 	 * キーポイントファイルを読み出す{@link InputStream}
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void setARNftDataset(InputStream i_iset,InputStream i_fset,InputStream i_kpm_fset) throws NyARException
+	public void setARNftDataset(InputStream i_iset,InputStream i_fset,InputStream i_kpm_fset) throws NyARRuntimeException
 	{
 		this._ss=NyARSurfaceDataSet.loadFromSurfaceFiles(i_iset,i_fset);
 		this._rds=NyARKpmDataSet.loadFromFset2(i_kpm_fset);
 		this._kpm=new NyARSingleKpm(this._config.getNyARParam(),this._rds);
 	}
-	public void update(NyARSensor i_sensor) throws NyARException
+	public void update(NyARSensor i_sensor) throws NyARRuntimeException
 	{
 		if(this._is_found){
 			if(updateTracking(i_sensor)){
@@ -90,10 +90,10 @@ public class NyARSingleNFTSystem extends NyARSingleCameraSystem
 	 * @param i_mat
 	 * @return
 	 */
-	public NyARDoubleMatrix44 getMarkerMatrix() throws NyARException
+	public NyARDoubleMatrix44 getMarkerMatrix() throws NyARRuntimeException
 	{
 		if(!this._is_found){
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		return this._current_transmat;
 	}
@@ -104,9 +104,9 @@ public class NyARSingleNFTSystem extends NyARSingleCameraSystem
 	 * SurfaceTrackingによる検�?�
 	 * @param i_sensor
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public boolean updateTracking(NyARSensor i_sensor) throws NyARException
+	public boolean updateTracking(NyARSensor i_sensor) throws NyARRuntimeException
 	{
 		int points=this._stracker.tracking(i_sensor.getGsImage(),this._ss,this._current_transmat,this.__pos2d,this.__pos3d,MAX_SURFACE_TRACKING);
 		if(points<4){
@@ -119,9 +119,9 @@ public class NyARSingleNFTSystem extends NyARSingleCameraSystem
 	 * KPMによる初期検�?�
 	 * @param i_sensor
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public boolean updateKpm(NyARSensor i_sensor) throws NyARException
+	public boolean updateKpm(NyARSensor i_sensor) throws NyARRuntimeException
 	{
 		NyARSurfAnnMatch.ResultPtr match_items=new NyARSurfAnnMatch.ResultPtr(MAX_RANSAC_RESULT);
 		this._kpm.updateMatching(i_sensor.getGsImage());
@@ -151,7 +151,7 @@ public class NyARSingleNFTSystem extends NyARSingleCameraSystem
 	 * @return
 	 * 結果を�?�納したi_outに設定したオブジェク�?
 	 */
-	public NyARDoublePoint3d getMarkerPlanePos(int i_x,int i_y,NyARDoublePoint3d i_out) throws NyARException
+	public NyARDoublePoint3d getMarkerPlanePos(int i_x,int i_y,NyARDoublePoint3d i_out) throws NyARRuntimeException
 	{
 		this._frustum.unProjectOnMatrix(i_x, i_y,this.getMarkerMatrix(),i_out);
 		return i_out;
@@ -171,7 +171,7 @@ public class NyARSingleNFTSystem extends NyARSingleCameraSystem
 	 * @return
 	 * 結果を�?�納したi_outに設定したオブジェク�?
 	 */
-	public NyARDoublePoint2d getScreenPos(double i_x,double i_y,double i_z,NyARDoublePoint2d i_out) throws NyARException
+	public NyARDoublePoint2d getScreenPos(double i_x,double i_y,double i_z,NyARDoublePoint2d i_out) throws NyARRuntimeException
 	{
 		NyARDoublePoint3d _wk_3dpos=this._wk_3dpos;
 		this.getMarkerMatrix().transform3d(i_x, i_y, i_z,_wk_3dpos);
@@ -205,7 +205,7 @@ public class NyARSingleNFTSystem extends NyARSingleCameraSystem
 	 * 取得した画像を格納するオブジェク�?
 	 * @return
 	 * 結果を�?�納したi_rasterオブジェク�?
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public INyARRgbRaster getMarkerPlaneImage(
 		NyARSensor i_sensor,
@@ -213,7 +213,7 @@ public class NyARSingleNFTSystem extends NyARSingleCameraSystem
 		double i_x2,double i_y2,
 		double i_x3,double i_y3,
 		double i_x4,double i_y4,
-	    INyARRgbRaster i_raster) throws NyARException
+	    INyARRgbRaster i_raster) throws NyARRuntimeException
 	{
 		NyARDoublePoint3d[] pos  = this.__pos3d;
 		NyARDoublePoint2d[] pos2 = this.__pos2d;
@@ -244,13 +244,13 @@ public class NyARSingleNFTSystem extends NyARSingleCameraSystem
 	 * 出力�?��?�オブジェク�?
 	 * @return
 	 * 結果を�?�納したi_rasterオブジェク�?
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public INyARRgbRaster getMarkerPlaneImage(
 		NyARSensor i_sensor,
 	    double i_l,double i_t,
 	    double i_w,double i_h,
-	    INyARRgbRaster i_raster) throws NyARException
+	    INyARRgbRaster i_raster) throws NyARRuntimeException
     {
 		return this.getMarkerPlaneImage(i_sensor,i_l+i_w-1,i_t+i_h-1,i_l,i_t+i_h-1,i_l,i_t,i_l+i_w-1,i_t,i_raster);
     }	

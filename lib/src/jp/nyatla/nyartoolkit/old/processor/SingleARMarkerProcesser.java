@@ -94,14 +94,14 @@ public abstract class SingleARMarkerProcesser
 		private final NyARMatchPattResult __detectMarkerLite_mr=new NyARMatchPattResult();
 		private NyARCoord2Linear _coordline;
 		
-		public DetectSquare(NyARParam i_param) throws NyARException
+		public DetectSquare(NyARParam i_param)
 		{
 			super(i_param.getScreenSize());
 			this._match_patt=null;
 			this._coordline=new NyARCoord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
 			return;
 		}
-		public void setNyARCodeTable(NyARCode[] i_ref_code,int i_code_resolution) throws NyARException
+		public void setNyARCodeTable(NyARCode[] i_ref_code,int i_code_resolution)
 		{
 			/*unmanagedで実装するときは、ここでリソース解放をすること。*/
 			this._deviation_data=new NyARMatchPattDeviationColorData(i_code_resolution,i_code_resolution);
@@ -128,7 +128,7 @@ public abstract class SingleARMarkerProcesser
 		 * 矩形が見付かるたびに呼び出されます。
 		 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
 		 */
-		public void detectMarkerCallback(NyARIntCoordinates i_coord,int[] i_vertex_index)  throws NyARException
+		public void detectMarkerCallback(NyARIntCoordinates i_coord,int[] i_vertex_index)  throws NyARRuntimeException
 		{
 			if (this._match_patt==null) {
 				return;
@@ -206,7 +206,7 @@ public abstract class SingleARMarkerProcesser
 			for (int i = 0; i < 4; i++) {
 				//直線同士の交点計算
 				if(!sq.line[i].crossPos(sq.line[(i + 3) % 4],sq.sqvertex[i])){
-					throw new NyARException();//ここのエラー復帰するならダブルバッファにすればOK
+					throw new NyARRuntimeException();//ここのエラー復帰するならダブルバッファにすればOK
 				}
 			}
 		}
@@ -243,9 +243,9 @@ public abstract class SingleARMarkerProcesser
 	 * 継承先のクラスから呼び出してください。
 	 * @param i_param
 	 * カメラパラメータオブジェクト。このサイズは、{@link #detectMarker}に入力する画像と同じサイズである必要があります。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	protected void initInstance(NyARParam i_param) throws NyARException
+	protected void initInstance(NyARParam i_param)
 	{
 		//初期化済？
 		assert(this._initialized==false);
@@ -276,9 +276,9 @@ public abstract class SingleARMarkerProcesser
 	 * <p>メモ:
 	 * マーカを検出している状態で関数を実行すると、イベント通知なしに、認識中のマーカを見失います。
 	 * </p>
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public void setARCodeTable(NyARCode[] i_ref_code_table, int i_code_resolution, double i_marker_width) throws NyARException
+	public void setARCodeTable(NyARCode[] i_ref_code_table, int i_code_resolution, double i_marker_width)
 	{
 		if (this._current_arcode_index != -1) {
 			// 強制リセット
@@ -319,9 +319,9 @@ public abstract class SingleARMarkerProcesser
 	 * イベントハンドラの呼び出しは、この関数を呼び出したスレッドが、この関数が終了するまでに行います。
 	 * @param i_raster
 	 * 検出処理をする画像を指定します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void detectMarker(INyARRgbRaster i_raster) throws NyARException
+	public void detectMarker(INyARRgbRaster i_raster)
 	{
 		// サイズチェック
 		assert(this._gs_raster.getSize().isEqualSize(i_raster.getSize().w, i_raster.getSize().h));
@@ -364,7 +364,7 @@ public abstract class SingleARMarkerProcesser
 	/**	オブジェクトのステータスを更新し、必要に応じて自己コールバック関数を駆動します。
 	 * 	戻り値は、「実際にマーカを発見する事ができたか」を示す真偽値です。クラスの状態とは異なります。
 	 */
-	private boolean updateStatus(NyARSquare i_square, int i_code_index)  throws NyARException
+	private boolean updateStatus(NyARSquare i_square, int i_code_index)  throws NyARRuntimeException
 	{
 		if (this._current_arcode_index < 0) {// 未認識中
 			if (i_code_index < 0) {// 未認識から未認識の遷移
@@ -402,7 +402,7 @@ public abstract class SingleARMarkerProcesser
 				this._lost_delay_count = 0;
 				return true;
 			} else {// 異なるコードの認識→今はサポートしない。
-				throw new  NyARException();
+				throw new  NyARRuntimeException();
 			}
 		}
 	}

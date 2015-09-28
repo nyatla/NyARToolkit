@@ -26,7 +26,7 @@
  */
 package jp.nyatla.nyartoolkit.qt.test;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.qt.utils.*;
 import java.awt.*;
 /**
@@ -46,7 +46,7 @@ public class QtCaptureTest extends Frame implements QtCaptureListener
 {
 	private static final long serialVersionUID = -734697739607654631L;
 
-	public QtCaptureTest() throws NyARException
+	public QtCaptureTest() throws NyARRuntimeException
 	{
 		setTitle("QtCaptureTest");
 		setBounds(0, 0, 320 + 64, 240 + 64);

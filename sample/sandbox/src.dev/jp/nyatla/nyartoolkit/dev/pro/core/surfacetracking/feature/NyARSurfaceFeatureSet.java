@@ -3,7 +3,7 @@ package jp.nyatla.nyartoolkit.dev.pro.core.surfacetracking.feature;
 import java.io.InputStream;
 import java.nio.ByteOrder;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.j2se.ByteBufferedInputStream;
 
 public class NyARSurfaceFeatureSet
@@ -53,7 +53,7 @@ public class NyARSurfaceFeatureSet
 		this.list=i_list;
 		return;
 	}
-	public static NyARSurfaceFeatureSet loadFromFsetFile(InputStream i_stream) throws NyARException
+	public static NyARSurfaceFeatureSet loadFromFsetFile(InputStream i_stream) throws NyARRuntimeException
 	{
 		FsetReader fsr=new FsetReader(i_stream);
 		int num=fsr.getNumberofPoints();
@@ -80,12 +80,12 @@ class FsetReader extends ByteBufferedInputStream
 		super(i_stream,512);
 		this.order(ENDIAN_LITTLE);
 	}
-	public int getNumberofPoints() throws NyARException
+	public int getNumberofPoints() throws NyARRuntimeException
 	{
 		this.readToBuffer(4);
 		return this.getInt();
 	}
-	public NyARSurfaceFeatureSet.NyAR2FeaturePoints getNyAR2FeaturePointsT() throws NyARException
+	public NyARSurfaceFeatureSet.NyAR2FeaturePoints getNyAR2FeaturePointsT() throws NyARRuntimeException
 	{
 		this.readToBuffer(4+4*2+4);
 		int scale=this.getInt();

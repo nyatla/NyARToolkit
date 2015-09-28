@@ -45,7 +45,7 @@ class NyARCustomMatrix extends NyARMat
 		super(i_row,i_clm);
 		return;
 	}
-	public void copyFrom(NyARFixedFloat16Mat i_mat) throws NyARException
+	public void copyFrom(NyARFixedFloat16Mat i_mat) throws NyARRuntimeException
 	{
 		long[][] ptr;
 		int r,c;
@@ -114,9 +114,9 @@ public class NyARFixedFloatFitVecCalculator
 	/**
 	 * 適合させる矩形座標を指定します。
 	 * @param i_square_vertex
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void setFittedSquare(NyARFixedFloat16Point2d[] i_square_vertex) throws NyARException
+	public void setFittedSquare(NyARFixedFloat16Point2d[] i_square_vertex) throws NyARRuntimeException
 	{
 		final NyARFixedFloat16Point2d[] vertex=_fitsquare_vertex;
 		for(int i=0;i<4;i++){
@@ -149,9 +149,9 @@ public class NyARFixedFloatFitVecCalculator
 	 * 現在のオフセット矩形、適合先矩形と、回転行列から、平行移動量を計算します。
 	 * @param i_rotation
 	 * @param o_transfer
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	final public void calculateTransfer(NyARFixedFloatRotMatrix i_rotation,NyARFixedFloat16Point3d o_transfer) throws NyARException
+	final public void calculateTransfer(NyARFixedFloatRotMatrix i_rotation,NyARFixedFloat16Point3d o_transfer) throws NyARRuntimeException
 	{
 		assert(this._offset_square!=null);
 		final long cpara00=(long)(this._projection_mat.m00*NyMath.FIXEDFLOAT16_1);

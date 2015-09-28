@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.labeling.rle;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARGsPixelDriver;
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -74,7 +74,7 @@ public abstract class NyARLabeling_Rle
 		 * @param i_out
 		 * @return
 		 */
-		public int xLineToRle(int i_x,int i_y,int i_len,int i_th,RleElement[] i_out) throws NyARException;
+		public int xLineToRle(int i_x,int i_y,int i_len,int i_th,RleElement[] i_out);
 	}
 	/**
 	 * Labeling用の画像ドライバを構築します。
@@ -86,7 +86,7 @@ public abstract class NyARLabeling_Rle
 		 * @param i_raster
 		 * @return
 		 */
-		public static NyARLabeling_Rle.IRasterDriver createDriver(INyARGrayscaleRaster i_raster) throws NyARException
+		public static NyARLabeling_Rle.IRasterDriver createDriver(INyARGrayscaleRaster i_raster)
 		{
 			switch(i_raster.getBufferType()){
 			case NyARBufferType.INT1D_GRAY_8:
@@ -96,7 +96,7 @@ public abstract class NyARLabeling_Rle
 				if(i_raster instanceof INyARGrayscaleRaster){
 					return new NyARRlePixelDriver_GSReader((INyARGrayscaleRaster) i_raster);
 				}
-				throw new NyARException();
+				throw new NyARRuntimeException();
 			}
 		}		
 	}	
@@ -134,14 +134,14 @@ public abstract class NyARLabeling_Rle
 	 * 入力画像の幅
 	 * @param i_height
 	 * 入力画像の高さ
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public NyARLabeling_Rle(int i_width,int i_height) throws NyARException
+	public NyARLabeling_Rle(int i_width,int i_height)
 	{
 		this.initInstance(i_width, i_height);
 	}
 
-	protected void initInstance(int i_width,int i_height) throws NyARException
+	protected void initInstance(int i_width,int i_height)
 	{
 		this._raster_size.setValue(i_width,i_height);
 		//120KB/QVGA +4K
@@ -176,9 +176,9 @@ public abstract class NyARLabeling_Rle
 	 * @param i_row_index
 	 * @param o_stack
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	private final boolean addFragment(RleElement i_rel_img, int i_nof, int i_row_index,RleInfoStack o_stack) throws NyARException
+	private final boolean addFragment(RleElement i_rel_img, int i_nof, int i_row_index,RleInfoStack o_stack)
 	{
 		int l=i_rel_img.l;
 		final int len=i_rel_img.r - l;
@@ -205,11 +205,11 @@ public abstract class NyARLabeling_Rle
 	 * 入力画像。対応する形式は、クラスの説明を参照してください。
 	 * @param i_th
 	 * 敷居値を指定します。2値画像の場合は、0を指定してください。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 * @return
 	 * ラベリング中にエラーが起こるとfalse
 	 */
-	public boolean labeling(INyARGrayscaleRaster i_raster,int i_th) throws NyARException
+	public boolean labeling(INyARGrayscaleRaster i_raster,int i_th)
 	{
 		NyARIntSize size=i_raster.getSize();
 		return this.imple_labeling(i_raster,i_th,0,0,size.w,size.h);
@@ -225,9 +225,9 @@ public abstract class NyARLabeling_Rle
 	 * 敷居値
 	 * @return
 	 * ラベリング中にエラーが起こるとfalse
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public boolean labeling(INyARGrayscaleRaster i_raster,NyARIntRect i_area,int i_th) throws NyARException
+	public boolean labeling(INyARGrayscaleRaster i_raster,NyARIntRect i_area,int i_th)
 	{
 		return this.imple_labeling(i_raster,0,i_area.x,i_area.y,i_area.w,i_area.h);
 	}
@@ -240,7 +240,7 @@ public abstract class NyARLabeling_Rle
 	 * @return
 	 * ラベル数が上限に達したときはfalse
 	 */
-	private boolean imple_labeling(INyARRaster i_raster,int i_th,int i_left,int i_top,int i_width, int i_height) throws NyARException
+	private boolean imple_labeling(INyARRaster i_raster,int i_th,int i_left,int i_top,int i_width, int i_height)
 	{
 		//ラスタのサイズを確認
 		assert(i_raster.getSize().isEqualSize(this._raster_size));
@@ -428,10 +428,10 @@ public abstract class NyARLabeling_Rle
 	 * @param i_ref_label
 	 * 検出したラベルを格納したオブジェクト。値の有効期間は、次の{@link #labeling}が実行されるまでです。
 	 * (注)この仕様は変わるかもしれません。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 
-	protected abstract void onLabelFound(NyARRleLabelFragmentInfo i_ref_label) throws NyARException;
+	protected abstract void onLabelFound(NyARRleLabelFragmentInfo i_ref_label);
 	
 	/**
 	 * クラスの仕様確認フラグです。ラベル配列の参照アクセスが可能かを返します。
@@ -446,7 +446,7 @@ public abstract class NyARLabeling_Rle
  */
 class RleInfoStack extends NyARObjectStack<NyARRleLabelFragmentInfo>
 {	
-	public RleInfoStack(int i_length) throws NyARException
+	public RleInfoStack(int i_length)
 	{
 		super(i_length, NyARRleLabelFragmentInfo.class);
 		return;
@@ -469,7 +469,7 @@ class NyARRlePixelDriver_BIN_GS8 implements NyARLabeling_Rle.IRasterDriver
 	{
 		this._ref_raster=i_ref_raster;
 	}
-	public int xLineToRle(int i_x,int i_y,int i_len,int i_th,NyARLabeling_Rle.RleElement[] i_out) throws NyARException
+	public int xLineToRle(int i_x,int i_y,int i_len,int i_th,NyARLabeling_Rle.RleElement[] i_out)
 	{
 		int[] buf=(int[])this._ref_raster.getBuffer();
 		int current = 0;
@@ -533,11 +533,11 @@ class NyARRlePixelDriver_BIN_GS8 implements NyARLabeling_Rle.IRasterDriver
 class NyARRlePixelDriver_GSReader implements NyARLabeling_Rle.IRasterDriver
 {
 	private INyARGsPixelDriver _ref_driver;
-	public NyARRlePixelDriver_GSReader(INyARGrayscaleRaster i_raster) throws NyARException
+	public NyARRlePixelDriver_GSReader(INyARGrayscaleRaster i_raster)
 	{
 		this._ref_driver=i_raster.getGsPixelDriver();
 	}
-	public int xLineToRle(int i_x,int i_y,int i_len,int i_th,NyARLabeling_Rle.RleElement[] i_out) throws NyARException
+	public int xLineToRle(int i_x,int i_y,int i_len,int i_th,NyARLabeling_Rle.RleElement[] i_out)
 	{
 		int current = 0;
 		int r = -1;

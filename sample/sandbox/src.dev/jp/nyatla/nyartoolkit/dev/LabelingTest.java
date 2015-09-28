@@ -12,7 +12,7 @@ import java.util.Date;
 
 import javax.imageio.ImageIO;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster_RGB;
 import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.rle.NyARLabeling_Rle;
@@ -30,14 +30,14 @@ class Main_Labeling extends NyARLabeling_Rle
 	private NyARIntPoint2d[] vx=NyARIntPoint2d.createArray(100);
 	public NyARGrayscaleRaster current_gs;
 	public int current_th;
-	public Main_Labeling(int i_width,int i_height) throws NyARException
+	public Main_Labeling(int i_width,int i_height) throws NyARRuntimeException
 	{
 		super(i_width,i_height);
 	}
 	/**
 	 * @Override
 	 */
-	protected void onLabelFound(NyARRleLabelFragmentInfo iRefLabel)throws NyARException
+	protected void onLabelFound(NyARRleLabelFragmentInfo iRefLabel)throws NyARRuntimeException
 	{
 		NyARContourPickup ct=new NyARContourPickup();
 		Date d2 = new Date();
@@ -62,7 +62,7 @@ public class LabelingTest extends Frame
 {
 	private final String source_file = "../Data/ラべリングのエントリポイントエラー.png";
 	private BufferedImage _src_image;
-	public LabelingTest() throws NyARException,Exception
+	public LabelingTest() throws NyARRuntimeException,Exception
 	{
 		this._src_image = ImageIO.read(new File(source_file));
 		

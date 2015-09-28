@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.types;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 
 /**
  * このクラスは、整数型の距離値を格納します。
@@ -97,7 +97,7 @@ public class NyARIntSize
 	 * 比較するサイズ値(H)
 	 * @return
 	 * サイズが引数値と同じなら、trueを返します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public final boolean isEqualSize(int i_width, int i_height)
 	{
@@ -113,7 +113,7 @@ public class NyARIntSize
 	 * 比較するサイズ値
 	 * @return
 	 * サイズが引数値と同じなら、trueを返します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public final boolean isEqualSize(NyARIntSize i_size)
 	{
@@ -130,7 +130,7 @@ public class NyARIntSize
 	 * 比較するサイズ値(H)
 	 * @return
 	 * 引数値がインスタンスのサイズよりも小さければ、trueを返します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public final boolean isInnerSize(int i_x,int i_y)
 	{
@@ -142,7 +142,7 @@ public class NyARIntSize
 	 * 比較するサイズ値
 	 * @return
 	 * 引数値がインスタンスのサイズよりも小さければ、trueを返します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public final boolean isInnerSize(NyARIntSize i_size)
 	{
@@ -156,7 +156,7 @@ public class NyARIntSize
 	 * 調査する座標点
 	 * @return
 	 * 引数値が範囲内ならば、trueを返します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public final boolean isInnerPoint(int i_x,int i_y)
 	{
@@ -168,7 +168,7 @@ public class NyARIntSize
 	 * 調査する座標点
 	 * @return
 	 * 引数値が範囲内ならば、trueを返します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public final boolean isInnerPoint(NyARDoublePoint2d i_pos)
 	{
@@ -180,7 +180,7 @@ public class NyARIntSize
 	 * 調査する座標点
 	 * @return
 	 * 引数値が範囲内ならば、trueを返します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public final boolean isInnerPoint(NyARIntPoint2d i_pos)
 	{

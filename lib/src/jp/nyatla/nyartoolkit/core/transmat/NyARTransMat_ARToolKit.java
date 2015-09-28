@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.transmat;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.transmat.solver.*;
@@ -75,7 +75,7 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 	 * 樽型歪み矯正オブジェクトの参照値です。歪み矯正が不要な時は、nullを指定します。
 	 * @param i_ref_projmat
 	 * 射影変換オブジェクトの参照値です。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public NyARTransMat_ARToolKit(INyARCameraDistortionFactor i_ref_distfactor,NyARPerspectiveProjectionMatrix i_ref_projmat)
 	{
@@ -94,7 +94,7 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 	 * @param i_param
 	 * ARToolKit形式のカメラパラメータです。
 	 * インスタンスは、この中から樽型歪み矯正オブジェクト、射影変換オブジェクトを参照します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */	
 	public NyARTransMat_ARToolKit(NyARParam i_param)
 	{
@@ -109,7 +109,7 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 	 * ARToolKitのarGetTransMatに該当します。
 	 * @see INyARTransMat#transMatContinue
 	 */
-	public boolean transMat(NyARSquare i_square,NyARRectOffset i_offset, NyARDoubleMatrix44 o_result,NyARTransMatResultParam o_param) throws NyARException
+	public boolean transMat(NyARSquare i_square,NyARRectOffset i_offset, NyARDoubleMatrix44 o_result,NyARTransMatResultParam o_param)
 	{
 		final NyARDoublePoint3d trans=this.__transMat_trans;
 		
@@ -148,7 +148,7 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 	 * ARToolkitと同じ結果を返します。i_prev_err引数は無視されますので、0を指定してください。
 	 * @see INyARTransMat#transMatContinue
 	 */
-	public boolean transMatContinue(NyARSquare i_square,NyARRectOffset i_offset, NyARDoubleMatrix44 i_prev_result,double i_prev_err,NyARDoubleMatrix44 o_result,NyARTransMatResultParam o_param) throws NyARException
+	public boolean transMatContinue(NyARSquare i_square,NyARRectOffset i_offset, NyARDoubleMatrix44 i_prev_result,double i_prev_err,NyARDoubleMatrix44 o_result,NyARTransMatResultParam o_param)
 	{
 		final NyARDoublePoint3d trans=this.__transMat_trans;
 		
@@ -186,7 +186,7 @@ public class NyARTransMat_ARToolKit implements INyARTransMat
 		}
 		return true;
 	}
-	private double optimize(NyARRotMatrix_ARToolKit io_rotmat,NyARDoublePoint3d io_transvec,INyARTransportVectorSolver i_solver,NyARDoublePoint3d[] i_offset_3d,NyARDoublePoint2d[] i_2d_vertex) throws NyARException
+	private double optimize(NyARRotMatrix_ARToolKit io_rotmat,NyARDoublePoint3d io_transvec,INyARTransportVectorSolver i_solver,NyARDoublePoint3d[] i_offset_3d,NyARDoublePoint2d[] i_2d_vertex)
 	{
 		NyARDoublePoint3d[] vertex_3d=this.__transMat_vertex_3d;
 		double err = -1;

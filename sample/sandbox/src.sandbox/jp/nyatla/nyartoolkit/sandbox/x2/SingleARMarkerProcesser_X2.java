@@ -112,7 +112,7 @@ public abstract class SingleARMarkerProcesser_X2
 	}
 
 
-	protected void initInstance(NyARParam i_param,int i_raster_type) throws NyARException
+	protected void initInstance(NyARParam i_param,int i_raster_type) throws NyARRuntimeException
 	{
 		NyARIntSize scr_size = i_param.getScreenSize();
 		// 解析オブジェクトを作る
@@ -161,7 +161,7 @@ public abstract class SingleARMarkerProcesser_X2
 		return;
 	}
 
-	public void detectMarker(INyARRgbRaster i_raster) throws NyARException
+	public void detectMarker(INyARRgbRaster i_raster) throws NyARRuntimeException
 	{
 		// サイズチェック
 		assert(this._bin_raster.getSize().isEqualSize(i_raster.getSize().w, i_raster.getSize().h));
@@ -192,7 +192,7 @@ public abstract class SingleARMarkerProcesser_X2
 	
 	/**ARCodeのリストから、最も一致するコード番号を検索します。
 	 */
-	private boolean selectARCodeIndexFromList(INyARRgbRaster i_raster, NyARSquare i_square, TResult_selectARCodeIndex o_result) throws NyARException
+	private boolean selectARCodeIndexFromList(INyARRgbRaster i_raster, NyARSquare i_square, TResult_selectARCodeIndex o_result) throws NyARRuntimeException
 	{
 		// 現在コードテーブルはアクティブ？
 		if (this._match_patt==null) {
@@ -228,7 +228,7 @@ public abstract class SingleARMarkerProcesser_X2
 
 	/**新規マーカ検索 現在認識中のマーカがないものとして、最も認識しやすいマーカを１個認識します。
 	 */
-	private void detectNewMarker(INyARRgbRaster i_raster, NyARSquareStack i_stack) throws NyARException
+	private void detectNewMarker(INyARRgbRaster i_raster, NyARSquareStack i_stack) throws NyARRuntimeException
 	{
 		int number_of_square = i_stack.getLength();
 		double cf = 0;
@@ -266,7 +266,7 @@ public abstract class SingleARMarkerProcesser_X2
 	/**マーカの継続認識 現在認識中のマーカを優先して認識します。 
 	 * （注）この機能はたぶん今後いろいろ発展するからNewと混ぜないこと。
 	 */
-	private void detectExistMarker(INyARRgbRaster i_raster, NyARSquareStack i_stack, int i_current_id) throws NyARException
+	private void detectExistMarker(INyARRgbRaster i_raster, NyARSquareStack i_stack, int i_current_id) throws NyARRuntimeException
 	{
 		int number_of_square = i_stack.getLength();
 		double cf = 0;
@@ -312,7 +312,7 @@ public abstract class SingleARMarkerProcesser_X2
 	/**	オブジェクトのステータスを更新し、必要に応じてハンドル関数を駆動します。
 	 * 	戻り値は、「実際にマーカを発見する事ができたか」です。クラスの状態とは異なります。
 	 */
-	private boolean updateStatus(NyARSquare i_square, int i_code_index, double i_cf, int i_dir)  throws NyARException
+	private boolean updateStatus(NyARSquare i_square, int i_code_index, double i_cf, int i_dir)  throws NyARRuntimeException
 	{
 		NyARTransMatResult result = this.__NyARSquare_result;
 		if (this._current_arcode_index < 0) {// 未認識中
@@ -349,7 +349,7 @@ public abstract class SingleARMarkerProcesser_X2
 				this._lost_delay_count = 0;
 				return true;
 			} else {// 異なるコードの認識→今はサポートしない。
-				throw new  NyARException();
+				throw new  NyARRuntimeException();
 			}
 		}
 	}

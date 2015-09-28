@@ -24,7 +24,7 @@
  */
 package jp.nyatla.nyartoolkit.utils.j2se;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
@@ -44,18 +44,18 @@ public class NyARRGBRaster_BufferedImage extends NyARRgbRaster_BasicClass
 	 * バッファオブジェクトがアタッチされていればtrue
 	 */
 	protected boolean _is_attached_buffer;
-	public NyARRGBRaster_BufferedImage(int i_width, int i_height,boolean i_is_alloc) throws NyARException
+	public NyARRGBRaster_BufferedImage(int i_width, int i_height,boolean i_is_alloc) throws NyARRuntimeException
 	{
 		super(i_width,i_height,NyARBufferType.OBJECT_Java_BufferedImage);
 		if(!initInstance(this._size,i_is_alloc)){
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 	}
-	public NyARRGBRaster_BufferedImage(int i_width, int i_height) throws NyARException
+	public NyARRGBRaster_BufferedImage(int i_width, int i_height) throws NyARRuntimeException
 	{
 		super(i_width,i_height,NyARBufferType.OBJECT_Java_BufferedImage);
 		if(!initInstance(this._size,true)){
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 	}
 	protected boolean initInstance(NyARIntSize i_size,boolean i_is_alloc)
@@ -67,7 +67,7 @@ public class NyARRGBRaster_BufferedImage extends NyARRgbRaster_BasicClass
 	}	
 	
 
-	public INyARRgbPixelReader getRgbPixelReader() throws NyARException
+	public INyARRgbPixelReader getRgbPixelReader() throws NyARRuntimeException
 	{
 		return this._reader;
 	}
@@ -79,7 +79,7 @@ public class NyARRGBRaster_BufferedImage extends NyARRgbRaster_BasicClass
 	{
 		return this._buf!=null;
 	}
-	public void wrapBuffer(Object i_ref_buf) throws NyARException
+	public void wrapBuffer(Object i_ref_buf) throws NyARRuntimeException
 	{
 		assert(!this._is_attached_buffer);//バッファがアタッチされていたら機能しない。
 		BufferedImage buf=(BufferedImage)i_ref_buf;
@@ -125,15 +125,15 @@ public class NyARRGBRaster_BufferedImage extends NyARRgbRaster_BasicClass
 			}
 			return;
 		}
-		public void setPixel(int i_x, int i_y, int[] i_rgb) throws NyARException
+		public void setPixel(int i_x, int i_y, int[] i_rgb) throws NyARRuntimeException
 		{
-			NyARException.notImplement();		
+			NyARRuntimeException.notImplement();		
 		}
-		public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intrgb) throws NyARException
+		public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intrgb) throws NyARRuntimeException
 		{
-			NyARException.notImplement();		
+			NyARRuntimeException.notImplement();		
 		}
-		public void switchBuffer(Object i_ref_buffer) throws NyARException
+		public void switchBuffer(Object i_ref_buffer) throws NyARRuntimeException
 		{
 			this._ref_buf = (BufferedImage)i_ref_buffer;
 		}

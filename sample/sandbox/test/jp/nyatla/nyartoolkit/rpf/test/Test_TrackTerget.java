@@ -13,7 +13,7 @@ import javax.media.Buffer;
 import javax.media.format.VideoFormat;
 import javax.media.util.BufferToImage;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactorV2;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
@@ -61,7 +61,7 @@ public class Test_TrackTerget extends Frame
 	 */
 	interface InputSource
 	{
-		public void UpdateInput(NyARTrackerSource_Reference o_input) throws NyARException;
+		public void UpdateInput(NyARTrackerSource_Reference o_input) throws NyARRuntimeException;
 	}
 
 	class ImageSource implements InputSource
@@ -70,13 +70,13 @@ public class Test_TrackTerget extends Frame
 		NyARGrayscaleRaster gs;
 		NyARRasterFilter_Rgb2Gs_RgbAve192 filter;
 
-		public ImageSource(String i_filename) throws IOException, NyARException
+		public ImageSource(String i_filename) throws IOException, NyARRuntimeException
 		{
 			this._src_image=new NyARBufferedImageRaster(ImageIO.read(new File(i_filename)));
 			this.gs=new NyARGrayscaleRaster(this._src_image.getWidth(),this._src_image.getHeight());
 			this.filter=new NyARRasterFilter_Rgb2Gs_RgbAve192(this._src_image.getBufferType());
 		}
-		public void UpdateInput(NyARTrackerSource_Reference o_input) throws NyARException
+		public void UpdateInput(NyARTrackerSource_Reference o_input) throws NyARRuntimeException
 		{
 			//GS値化
 			this.filter.doFilter(this._src_image,gs);
@@ -96,7 +96,7 @@ public class Test_TrackTerget extends Frame
 			sx=1;sy=1;x=10;y=10;
 			sx2=-2;sy2=1;x2=100;y2=10;
 		}
-		public void UpdateInput(NyARTrackerSource_Reference o_input) throws NyARException
+		public void UpdateInput(NyARTrackerSource_Reference o_input) throws NyARRuntimeException
 		{
 	        Graphics s=_src_image.getGraphics();
 	        s.setColor(Color.white);
@@ -122,7 +122,7 @@ public class Test_TrackTerget extends Frame
 
 	class LiveSource implements InputSource,JmfCaptureListener
 	{
-		public LiveSource(int W,int H) throws NyARException
+		public LiveSource(int W,int H) throws NyARRuntimeException
 		{
 			//キャプチャの準備
 			JmfCaptureDeviceList devlist=new JmfCaptureDeviceList();
@@ -130,7 +130,7 @@ public class Test_TrackTerget extends Frame
 			//JmfNyARRaster_RGBはYUVよりもRGBで高速に動作します。
 			if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB,W, H,30f)){
 				if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_YUV,W,H,30f)){
-					throw new NyARException("キャプチャフォーマットが見つかりません");
+					throw new NyARRuntimeException("キャプチャフォーマットが見つかりません");
 				}		
 			}
 			this._capture.setOnCapture(this);
@@ -141,7 +141,7 @@ public class Test_TrackTerget extends Frame
 			return;
 			
 		}
-		public void UpdateInput(NyARTrackerSource_Reference o_input) throws NyARException
+		public void UpdateInput(NyARTrackerSource_Reference o_input) throws NyARRuntimeException
 		{
 			synchronized(this._raster){
 				this._filter.doFilter(this._raster,this._bi);
@@ -190,7 +190,7 @@ public class Test_TrackTerget extends Frame
 	private int W = 320;
 	private int H = 240;
 	InputSource _input_source;
-	public Test_TrackTerget(NyARCameraDistortionFactorV2 p) throws NyARException, Exception
+	public Test_TrackTerget(NyARCameraDistortionFactorV2 p) throws NyARRuntimeException, Exception
 	{
 		setTitle("Reality Platform test");
 		Insets ins = this.getInsets();
@@ -238,7 +238,7 @@ public class Test_TrackTerget extends Frame
 		}
     }
     BufferedImage _tmp_bf;
-    private void draw(Graphics ig) throws NyARException
+    private void draw(Graphics ig) throws NyARRuntimeException
     {
     	//ウインドウの情報
 		Insets ins = this.getInsets();
@@ -268,7 +268,7 @@ public class Test_TrackTerget extends Frame
     	ig.drawImage(bmp,ins.left,ins.top,null);
     	drawImage(ig,ins.left+640,ins.top,this.tracksource.refEdgeRaster());
     }
-    private void drawImage(Graphics g,int x,int y,NyARGrayscaleRaster r) throws NyARException
+    private void drawImage(Graphics g,int x,int y,NyARGrayscaleRaster r) throws NyARRuntimeException
     {
         BufferedImage _tmp_bf=new BufferedImage(r.getWidth(),r.getHeight(),BufferedImage.TYPE_INT_RGB);
     	NyARRasterImageIO.copy(r, _tmp_bf);

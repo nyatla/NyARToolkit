@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.labeling.artoolkit;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
@@ -55,9 +55,9 @@ final public class NyARLabeling_ARToolKit
 	 * 入力元の二値ラスタオブジェクトです。画素形式は、{@link NyARBufferType#INT1D_BIN_8}である必要があります。
 	 * @param o_destination
 	 * ラべリング画像の出力先オブジェクトです。i_rasterと同じサイズである必要があります。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public int labeling(NyARBinRaster i_raster,NyARLabelingImage o_destination) throws NyARException
+	public int labeling(NyARBinRaster i_raster,NyARLabelingImage o_destination)
 	{
 		assert(i_raster.getBufferType()==NyARBufferType.INT1D_BIN_8);
 		int label_img_ptr1, label_pixel;
@@ -299,7 +299,7 @@ final class NyARWorkHolder
 	 * 
 	 * @param i_index
 	 */
-	public final void reserv(int i_index) throws NyARException
+	public final void reserv(int i_index)
 	{
 		// アロケート済みなら即リターン
 		if (this.allocate_size > i_index) {
@@ -307,7 +307,7 @@ final class NyARWorkHolder
 		}
 		// 要求されたインデクスは範囲外
 		if (i_index >= this.work2.length) {
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		// 追加アロケート範囲を計算
 		int range = i_index + ARRAY_APPEND_STEP;

@@ -9,7 +9,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARRgbPixelDriver;
@@ -33,15 +33,15 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 	 * BufferedImageを外部参照したラスタを構築します。
 	 * @param i_img
 	 * 参照するラスタ
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public NyARBufferedImageRaster(BufferedImage i_img) throws NyARException
+	public NyARBufferedImageRaster(BufferedImage i_img)
 	{
 		//NyARToolkit互換のラスタを定義する。
 		super(i_img.getWidth(),i_img.getHeight(),getRasterTypeFromBufferedImage(i_img),false);
 		this.wrapImage(i_img);
 	}
-	public NyARBufferedImageRaster(int i_width,int i_height,int i_raster_type,boolean i_is_alloc) throws NyARException
+	public NyARBufferedImageRaster(int i_width,int i_height,int i_raster_type,boolean i_is_alloc)
 	{
 		//NyARToolkit互換のラスタを定義する。
 		super(i_width,i_height,i_raster_type,i_is_alloc);
@@ -57,9 +57,9 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 	 * ラスタの高さを指定します。
 	 * @param i_is_alloc
 	 * BufferedImageを内部生成するかのフラグ。trueの場合、インスタンスはバッファを所有します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */	
-	public NyARBufferedImageRaster(int i_width,int i_height,boolean i_is_alloc) throws NyARException
+	public NyARBufferedImageRaster(int i_width,int i_height,boolean i_is_alloc)
 	{
 		//NyARToolkit互換のラスタを定義する。
 		super(i_width,i_height, NyARBufferType.INT1D_X8R8G8B8_32,i_is_alloc);
@@ -71,9 +71,9 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 	 * ラスタの幅を指定します。
 	 * @param i_height
 	 * ラスタの高さを指定します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public NyARBufferedImageRaster(int i_width,int i_height) throws NyARException
+	public NyARBufferedImageRaster(int i_width,int i_height)
 	{
 		//NyARToolkit互換のラスタを定義する。
 		super(i_width,i_height, NyARBufferType.INT1D_X8R8G8B8_32,true);
@@ -83,15 +83,15 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 	 * @param i_file
 	 * @return
 	 * @throws IOException
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public static NyARBufferedImageRaster createFromFile(String i_file) throws NyARException
+	public static NyARBufferedImageRaster createFromFile(String i_file)
 	{
 		BufferedImage img;
 		try{
 			img = ImageIO.read(new File(i_file));
 		}catch(Exception e){
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		//画像フォーマットの解析
 		NyARBufferedImageRaster ra=new NyARBufferedImageRaster(img.getWidth(),img.getHeight(),false);
@@ -99,7 +99,7 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 		return ra;
 	}
 	
-	public Object createInterface(Class<?> i_iid) throws NyARException
+	public Object createInterface(Class<?> i_iid)
 	{
 		//アクセラレータインタフェイスはここに追加する。
 		return super.createInterface(i_iid);
@@ -107,9 +107,9 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 
 	/**
 	 * この関数は、NyARRgbRasterに、NyARBufferedImageRasterの機能を追加します。
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	protected void initInstance(NyARIntSize i_size,int i_raster_type,boolean i_is_alloc) throws NyARException
+	protected void initInstance(NyARIntSize i_size,int i_raster_type,boolean i_is_alloc)
 	{
 		super.initInstance(i_size, i_raster_type, i_is_alloc);
 		//成功した場合、i_is_allocがtrueなら、BufferedImageの構築
@@ -147,7 +147,7 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 				}
 				break;
 			default:
-				throw new NyARException();
+				throw new NyARRuntimeException();
 			}
 			this._buffered_image=bfi;
 		}
@@ -159,9 +159,9 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 	 * BitmapBufferをラップします。古いBitmapbufferへの参照は解除されます。
 	 * @param i_ref_bmi
 	 * ラップするBitmapBufferオブジェクト。このオブジェクトは、現在のラスタと同じフォーマットである必要があります。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void wrapImage(BufferedImage i_ref_bmi) throws NyARException
+	public void wrapImage(BufferedImage i_ref_bmi)
 	{
 		assert(!this._is_attached_buffer);//バッファがアタッチされていたら機能しない。
 		assert(this._size.isEqualSize(i_ref_bmi.getWidth(),i_ref_bmi.getHeight()));//サイズ確認
@@ -169,7 +169,7 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 		int raster_type=getRasterTypeFromBufferedImage(i_ref_bmi);
 		//フォーマット確認
 		if(!this.isEqualBufferType(raster_type)){
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		//参照しているImageを切り替え
 		this._buffered_image=i_ref_bmi;
@@ -188,7 +188,7 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 				this._buf=i_ref_bmi;
 				break;
 			default:
-				throw new NyARException();
+				throw new NyARRuntimeException();
 		}
 		//ピクセルドライバを更新
 		this._rgb_pixel_driver.switchRaster(this);
@@ -196,9 +196,9 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 	/**
 	 * この関数は使用できません。{@link BufferedImage}をセットするには、wrapImageを使用してください。
 	 */
-	public void wrapBuffer(Object i_ref_buf) throws NyARException
+	public void wrapBuffer(Object i_ref_buf)
 	{
-		throw new NyARException();
+		throw new NyARRuntimeException();
 	}	
 	/**
 	 * この関数は、ラップしているBufferedImageを返します。
@@ -311,19 +311,19 @@ final class NyARRgbPixelReader_OBJECT_Java_BufferedImage implements INyARRgbPixe
 		}
 		return;
 	}
-	public void setPixel(int i_x, int i_y, int[] i_rgb) throws NyARException
+	public void setPixel(int i_x, int i_y, int[] i_rgb)
 	{
 		this._ref_buf.setRGB(i_x, i_y, ((i_rgb[0]<<16)&0xff0000)|((i_rgb[1]<<8)&0x00ff00)|((i_rgb[2])&0x0000ff));
 	}
-	public void setPixel(int i_x, int i_y, int i_r,int i_g,int i_b) throws NyARException
+	public void setPixel(int i_x, int i_y, int i_r,int i_g,int i_b)
 	{
 		this._ref_buf.setRGB(i_x, i_y, ((i_r<<16)&0xff0000)|((i_g<<8)&0x00ff00)|(i_b&0x0000ff));
 	}
-	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intrgb) throws NyARException
+	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intrgb)
 	{
-		NyARException.notImplement();		
+		NyARRuntimeException.notImplement();		
 	}
-	public void switchRaster(INyARRgbRaster i_raster)throws NyARException
+	public void switchRaster(INyARRgbRaster i_raster)throws NyARRuntimeException
 	{
 		this._ref_buf=(BufferedImage)i_raster.getBuffer();
 		this._ref_size=i_raster.getSize();

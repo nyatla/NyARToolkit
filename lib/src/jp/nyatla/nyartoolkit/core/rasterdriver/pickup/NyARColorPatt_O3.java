@@ -50,9 +50,9 @@ public class NyARColorPatt_O3 extends NyARColorPatt_Base
 	 * ラスタのサイズ
 	 * @param i_height
 	 * ラスタのサイズ
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */	
-	public NyARColorPatt_O3(int i_width, int i_height) throws NyARException
+	public NyARColorPatt_O3(int i_width, int i_height)
 	{
 		super(i_width,i_height);
 	}
@@ -64,9 +64,9 @@ public class NyARColorPatt_O3 extends NyARColorPatt_Base
 	 * @param world
 	 * @param vertex
 	 * @param o_para
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	private boolean get_cpara(final NyARIntPoint2d[] i_vertex, NyARMat o_para)throws NyARException
+	private boolean get_cpara(final NyARIntPoint2d[] i_vertex, NyARMat o_para)throws NyARRuntimeException
 	{
 		double[][] world = CPARAM_WORLD;
 		NyARMat a = wk_get_cpara_a;// 次処理で値を設定するので、初期化不要// new NyARMat( 8, 8 );
@@ -110,7 +110,7 @@ public class NyARColorPatt_O3 extends NyARColorPatt_Base
 	/**
 	 * この関数は、ラスタのi_vertexsで定義される四角形からパターンを取得して、インスタンスに格納します。
 	 */
-	public boolean pickFromRaster(INyARRgbRaster image,NyARIntPoint2d[] i_vertexs)throws NyARException
+	public boolean pickFromRaster(INyARRgbRaster image,NyARIntPoint2d[] i_vertexs)throws NyARRuntimeException
 	{
 		NyARMat cpara = this.wk_pickFromRaster_cpara;
 		// xdiv2,ydiv2の計算
@@ -187,7 +187,7 @@ public class NyARColorPatt_O3 extends NyARColorPatt_Base
 	private static double SQ_SIZE=5.0;
 	
 	//分割数16未満になると少し遅くなるかも。
-	private void updateExtpat(INyARRgbRaster image, NyARMat i_cpara, int i_xdiv2,int i_ydiv2) throws NyARException
+	private void updateExtpat(INyARRgbRaster image, NyARMat i_cpara, int i_xdiv2,int i_ydiv2)
 	{
 
 		int i,j;
@@ -243,7 +243,7 @@ public class NyARColorPatt_O3 extends NyARColorPatt_Base
 							
 						final double d = para20 * xw[j] + para12_x_yw_para22;
 						if (d == 0) {
-							throw new NyARException();
+							throw new NyARRuntimeException();
 						}
 						final int xcw= (int) ((para00 * xw[j] + para01_x_yw_para02) / d);
 						final int ycw= (int) ((para10 * xw[j] + para11_x_yw_para12) / d);

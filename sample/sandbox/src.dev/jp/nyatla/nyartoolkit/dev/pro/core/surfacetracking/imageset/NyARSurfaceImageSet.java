@@ -3,7 +3,7 @@ package jp.nyatla.nyartoolkit.dev.pro.core.surfacetracking.imageset;
 import java.io.InputStream;
 import java.nio.ByteOrder;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.j2se.ByteBufferedInputStream;
 
 /**
@@ -19,7 +19,7 @@ public class NyARSurfaceImageSet
 	}
 	public ReferenceImage[] items;
 	
-	public static NyARSurfaceImageSet loadFromIsetFile(InputStream i_stream) throws NyARException
+	public static NyARSurfaceImageSet loadFromIsetFile(InputStream i_stream) throws NyARRuntimeException
 	{
 		ISetReader isr=new ISetReader(i_stream);
 		int num=isr.getNumberOfItem();
@@ -66,12 +66,12 @@ class ISetReader extends ByteBufferedInputStream
 		super(i_stream,512);
 		this.order(ENDIAN_LITTLE);
 	}
-	public int getNumberOfItem() throws NyARException
+	public int getNumberOfItem() throws NyARRuntimeException
 	{
 		this.readToBuffer(4);
 		return this.getInt();
 	}
-	public NyARSurfaceImageSet.ReferenceImage getAR2ImageT() throws NyARException
+	public NyARSurfaceImageSet.ReferenceImage getAR2ImageT() throws NyARRuntimeException
 	{
 		this.readToBuffer(4*2+4);
 		int w=this.getInt();

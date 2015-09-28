@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.marker.nyidmarker;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.math.perspectiveparam.NyARPerspectiveParamGenerator;
 import jp.nyatla.nyartoolkit.core.math.perspectiveparam.NyARPerspectiveParamGenerator_O1;
 import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARGsPixelDriver;
@@ -45,9 +45,9 @@ public class NyIdMarkerPickup
 
 	/**
 	 * コンストラクタです。インスタンスを生成します。
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public NyIdMarkerPickup() throws NyARException
+	public NyIdMarkerPickup()
 	{
 		this._perspective_reader=new PerspectivePixelReader();
 		return;
@@ -61,9 +61,9 @@ public class NyIdMarkerPickup
 	 * @param o_data
 	 * @param o_param
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public final boolean pickFromRaster(INyARGsPixelDriver i_pix_drv,NyARIntPoint2d[] i_vertex,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
+	public final boolean pickFromRaster(INyARGsPixelDriver i_pix_drv,NyARIntPoint2d[] i_vertex,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARRuntimeException
 	{
 		if(!this._perspective_reader.setSourceSquare(i_vertex)){
 			return false;
@@ -78,9 +78,9 @@ public class NyIdMarkerPickup
 	 * @param o_data
 	 * @param o_param
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public final boolean pickFromRaster(INyARGsPixelDriver i_pix_drv,NyARDoublePoint2d[] i_vertex,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
+	public final boolean pickFromRaster(INyARGsPixelDriver i_pix_drv,NyARDoublePoint2d[] i_vertex,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARRuntimeException
 	{
 		if(!this._perspective_reader.setSourceSquare(i_vertex)){
 			return false;
@@ -95,9 +95,9 @@ public class NyIdMarkerPickup
 	 * @param o_data
 	 * @param o_param
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	private boolean _pickFromRaster(INyARGsPixelDriver i_pix_drv,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARException
+	private boolean _pickFromRaster(INyARGsPixelDriver i_pix_drv,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARRuntimeException
 	{
 		final PerspectivePixelReader.TThreshold th=this.__pickFromRaster_th;
 		final MarkerPattEncoder encoder=this.__pickFromRaster_encoder;
@@ -154,9 +154,9 @@ final class PerspectivePixelReader
 	 * セットする四角形頂点座標。4要素である必要があります。
 	 * @return
 	 * 成功するとtrueです。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public boolean setSourceSquare(NyARIntPoint2d[] i_vertex)throws NyARException
+	public boolean setSourceSquare(NyARIntPoint2d[] i_vertex)throws NyARRuntimeException
 	{
 		return this._param_gen.getParam(READ_RESOLUTION,READ_RESOLUTION,i_vertex, this._cparam);
 	}
@@ -166,9 +166,9 @@ final class PerspectivePixelReader
 	 * セットする四角形頂点座標。4要素である必要があります。
 	 * @return
 	 * 成功するとtrueです。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public boolean setSourceSquare(NyARDoublePoint2d[] i_vertex)throws NyARException
+	public boolean setSourceSquare(NyARDoublePoint2d[] i_vertex)throws NyARRuntimeException
 	{
 		return this._param_gen.getParam(READ_RESOLUTION,READ_RESOLUTION,i_vertex, this._cparam);
 	}
@@ -185,9 +185,9 @@ final class PerspectivePixelReader
 	 * 格納バッファo_pixelの先頭のインデクス。
 	 * @param o_pixel
 	 * グレースケールのピクセルを格納するバッファ
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	private boolean rectPixels(INyARGsPixelDriver i_reader,NyARIntSize i_raster_size,int i_lt_x,int i_lt_y,int i_step_x,int i_step_y,int i_width,int i_height,int i_out_st,int[] o_pixel)throws NyARException
+	private boolean rectPixels(INyARGsPixelDriver i_reader,NyARIntSize i_raster_size,int i_lt_x,int i_lt_y,int i_step_x,int i_step_y,int i_width,int i_height,int i_out_st,int[] o_pixel)throws NyARRuntimeException
 	{
 		final double[] cpara=this._cparam;
 		final int[] ref_x=this._ref_x;
@@ -315,9 +315,9 @@ final class PerspectivePixelReader
 	 * [FRQ_POINTS]以上の配列を指定すること。
 	 * @return
 	 * 周波数の値。失敗すると-1
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public int getRowFrequency(INyARGsPixelDriver i_reader,NyARIntSize i_raster_size,int i_y1,int i_th_h,int i_th_l,int[] o_edge_index)throws NyARException
+	public int getRowFrequency(INyARGsPixelDriver i_reader,NyARIntSize i_raster_size,int i_y1,int i_th_h,int i_th_l,int[] o_edge_index)throws NyARRuntimeException
 	{
 		//3,4,5,6,7,8,9,10
 		final int[] freq_count_table=this._freq_count_table;
@@ -403,9 +403,9 @@ final class PerspectivePixelReader
 	 * [FRQ_POINTS]以上の配列を指定すること。
 	 * @return
 	 * 周波数の値。失敗すると-1
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public int getColFrequency(INyARGsPixelDriver i_reader,NyARIntSize i_raster_size,int i_x1,int i_th_h,int i_th_l,int[] o_edge_index)throws NyARException
+	public int getColFrequency(INyARGsPixelDriver i_reader,NyARIntSize i_raster_size,int i_x1,int i_th_h,int i_th_l,int[] o_edge_index)throws NyARRuntimeException
 	{
 		final double[] cpara=this._cparam;
 		final int[] ref_x=this._ref_x;
@@ -619,9 +619,9 @@ final class PerspectivePixelReader
 	 * ラスのタのサイズ
 	 * @param o_threshold
 	 * 敷居値を受け取るオブジェクト
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void detectThresholdValue(INyARGsPixelDriver i_reader,TThreshold o_threshold)throws NyARException
+	public void detectThresholdValue(INyARGsPixelDriver i_reader,TThreshold o_threshold)throws NyARRuntimeException
 	{
 		final int[] th_pixels=this._th_pixels;
 		NyARIntSize size=i_reader.getSize();
@@ -722,7 +722,7 @@ final class PerspectivePixelReader
 	}
 	private int[] __detectDataBitsIndex_freq_index1=new int[FRQ_POINTS];
 	private int[] __detectDataBitsIndex_freq_index2=new int[FRQ_POINTS];
-	private int detectDataBitsIndex(INyARGsPixelDriver i_reader,NyARIntSize i_raster_size,PerspectivePixelReader.TThreshold i_th,double[] o_index_row,double[] o_index_col) throws NyARException
+	private int detectDataBitsIndex(INyARGsPixelDriver i_reader,NyARIntSize i_raster_size,PerspectivePixelReader.TThreshold i_th,double[] o_index_row,double[] o_index_col)
 	{
 		//周波数を測定
 		final int[] freq_index1=this.__detectDataBitsIndex_freq_index1;
@@ -796,9 +796,9 @@ final class PerspectivePixelReader
 	 * データビットの出力先
 	 * @return
 	 * 成功するとtrue
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public boolean readDataBits(INyARGsPixelDriver i_reader,NyARIntSize i_raster_size,PerspectivePixelReader.TThreshold i_th,MarkerPattEncoder o_bitbuffer)throws NyARException
+	public boolean readDataBits(INyARGsPixelDriver i_reader,NyARIntSize i_raster_size,PerspectivePixelReader.TThreshold i_th,MarkerPattEncoder o_bitbuffer)throws NyARRuntimeException
 	{
 		final int raster_width=i_raster_size.w;
 		final int raster_height=i_raster_size.h;

@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARGsPixelDriver;
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -56,11 +56,11 @@ public class NyARContourPickup
 {
 	public interface IRasterDriver
 	{
-		public boolean getContour(int i_l,int i_t,int i_r,int i_b,int i_entry_x,int i_entry_y,int i_th,NyARIntCoordinates o_coord) throws NyARException;
+		public boolean getContour(int i_l,int i_t,int i_r,int i_b,int i_entry_x,int i_entry_y,int i_th,NyARIntCoordinates o_coord);
 	}
 	public static class ImageDriverFactory
 	{
-		public static IRasterDriver createDriver(INyARGrayscaleRaster i_ref_raster) throws NyARException
+		public static IRasterDriver createDriver(INyARGrayscaleRaster i_ref_raster)
 		{
 			switch(i_ref_raster.getBufferType()){
 			case NyARBufferType.INT1D_GRAY_8:
@@ -72,7 +72,7 @@ public class NyARContourPickup
 				}
 				break;
 			}
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 	}
 	/** 最後に処理したラスタ*/
@@ -95,9 +95,9 @@ public class NyARContourPickup
 	 * 輪郭点を格納する配列を指定します。i_array_sizeよりも大きなサイズの配列が必要です。
 	 * @return
 	 * 輪郭の抽出に成功するとtrueを返します。輪郭抽出に十分なバッファが無いと、falseになります。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public boolean getContour(INyARGrayscaleRaster i_raster,int i_th,int i_entry_x,int i_entry_y,NyARIntCoordinates o_coord) throws NyARException
+	public boolean getContour(INyARGrayscaleRaster i_raster,int i_th,int i_entry_x,int i_entry_y,NyARIntCoordinates o_coord)
 	{
 		NyARIntSize s=i_raster.getSize();
 		//ラスタドライバの切り替え
@@ -125,9 +125,9 @@ public class NyARContourPickup
 	 * 輪郭点を格納するオブジェクトを指定します。
 	 * @return
 	 * 輪郭線がo_coordの長さを超えた場合、falseを返します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public boolean getContour(INyARGrayscaleRaster i_raster,NyARIntRect i_area,int i_th,int i_entry_x,int i_entry_y,NyARIntCoordinates o_coord) throws NyARException
+	public boolean getContour(INyARGrayscaleRaster i_raster,NyARIntRect i_area,int i_th,int i_entry_x,int i_entry_y,NyARIntCoordinates o_coord)
 	{
 		//ラスタドライバの切り替え
 		if(i_raster!=this._ref_last_input_raster){
@@ -146,7 +146,7 @@ abstract class NyARContourPickup_Base implements NyARContourPickup.IRasterDriver
 	protected final static int[] _getContour_xdir = { 0, 1, 1, 1, 0,-1,-1,-1 , 0, 1, 1, 1, 0,-1,-1};
 	/** 8方位探索の座標マップ*/
 	protected final static int[] _getContour_ydir = {-1,-1, 0, 1, 1, 1, 0,-1 ,-1,-1, 0, 1, 1, 1, 0};
-	public abstract boolean getContour(int i_l, int i_t, int i_r, int i_b, int i_entry_x, int i_entry_y, int i_th, NyARIntCoordinates o_coord) throws NyARException;	
+	public abstract boolean getContour(int i_l, int i_t, int i_r, int i_b, int i_entry_x, int i_entry_y, int i_th, NyARIntCoordinates o_coord);	
 }
 
 
@@ -161,7 +161,7 @@ class NyARContourPickup_BIN_GS8 extends NyARContourPickup_Base
 	{
 		this._ref_raster=i_ref_raster;
 	}
-	public boolean getContour(int i_l,int i_t,int i_r,int i_b,int i_entry_x,int i_entry_y,int i_th,NyARIntCoordinates o_coord) throws NyARException
+	public boolean getContour(int i_l,int i_t,int i_r,int i_b,int i_entry_x,int i_entry_y,int i_th,NyARIntCoordinates o_coord)
 	{
 		assert(i_t<=i_entry_x);
 		final int[] buf=(int[])this._ref_raster.getBuffer();
@@ -217,7 +217,7 @@ class NyARContourPickup_BIN_GS8 extends NyARContourPickup_Base
 						break;
 					}
 					//8方向全て調べたけどラベルが無いよ？
-					throw new NyARException();			
+					throw new NyARRuntimeException();			
 				}
 			}else{
 				//境界に接しているとき
@@ -235,7 +235,7 @@ class NyARContourPickup_BIN_GS8 extends NyARContourPickup_Base
 				}
 				if (i == 8) {
 					//8方向全て調べたけどラベルが無いよ？
-					throw new NyARException();// return(-1);
+					throw new NyARRuntimeException();// return(-1);
 				}				
 			}
 			// xcoordとycoordをc,rにも保存
@@ -268,7 +268,7 @@ class NyARContourPickup_BIN_GS8 extends NyARContourPickup_Base
 				}
 				if (i == 8) {
 					//8方向全て調べたけどラベルが無いよ？
-					throw new NyARException();
+					throw new NyARRuntimeException();
 				}
 				//得たピクセルが、[1]と同じならば、末端である。
 				c = c + xdir[dir];
@@ -305,7 +305,7 @@ class NyARContourPickup_GsReader extends NyARContourPickup_Base
 	{
 		this._ref_raster=i_ref_raster;
 	}
-	public boolean getContour(int i_l,int i_t,int i_r,int i_b,int i_entry_x,int i_entry_y,int i_th,NyARIntCoordinates o_coord) throws NyARException
+	public boolean getContour(int i_l,int i_t,int i_r,int i_b,int i_entry_x,int i_entry_y,int i_th,NyARIntCoordinates o_coord)
 	{
 		assert(i_t<=i_entry_x);
 		INyARGsPixelDriver reader=this._ref_raster.getGsPixelDriver();
@@ -338,7 +338,7 @@ class NyARContourPickup_GsReader extends NyARContourPickup_Base
 			}
 			if (i == 8) {
 				//8方向全て調べたけどラベルが無いよ？
-				throw new NyARException();// return(-1);
+				throw new NyARRuntimeException();// return(-1);
 			}				
 			// xcoordとycoordをc,rにも保存
 			c = c + xdir[dir];
@@ -369,7 +369,7 @@ class NyARContourPickup_GsReader extends NyARContourPickup_Base
 				}
 				if (i == 8) {
 					//8方向全て調べたけどラベルが無いよ？
-					throw new NyARException();
+					throw new NyARRuntimeException();
 				}
 				//得たピクセルが、[1]と同じならば、末端である。
 				c = c + xdir[dir];

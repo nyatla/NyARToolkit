@@ -1,6 +1,6 @@
 package jp.nyatla.nyartoolkit.dev.pro.core.rasterfiltr;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARGsPixelDriver;
@@ -17,9 +17,9 @@ public class NyARDefocusFilterFactory
 	 * </ul>
 	 * @param i_raster
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public static INyARDefocusFilter createDriver(INyARGrayscaleRaster i_raster) throws NyARException
+	public static INyARDefocusFilter createDriver(INyARGrayscaleRaster i_raster) throws NyARRuntimeException
 	{
 		switch(i_raster.getBufferType()){
 		default:
@@ -32,11 +32,11 @@ class DefocusFilter_Any implements INyARDefocusFilter
 {
 	private INyARGrayscaleRaster _ref_raster;
 	private INyARGrayscaleRaster _tmp_raster;
-	public DefocusFilter_Any(INyARGrayscaleRaster i_raster) throws NyARException
+	public DefocusFilter_Any(INyARGrayscaleRaster i_raster) throws NyARRuntimeException
 	{
 		this._ref_raster=i_raster;
 	}
-	public void doFilter(INyARGrayscaleRaster i_output,int i_loop) throws NyARException
+	public void doFilter(INyARGrayscaleRaster i_output,int i_loop) throws NyARRuntimeException
 	{
 		assert(i_loop>0);
 		assert(this._ref_raster!=i_output);
@@ -75,7 +75,7 @@ class DefocusFilter_Any implements INyARDefocusFilter
 	}
 	
 	
-	public void doFilter(INyARGrayscaleRaster i_output) throws NyARException
+	public void doFilter(INyARGrayscaleRaster i_output) throws NyARRuntimeException
 	{
 		assert(i_output!=this._ref_raster);
 	    NyARIntSize s=this._ref_raster.getSize();

@@ -75,7 +75,7 @@ public class NyarToolkitLinkTest extends Frame implements JmfCaptureListener
 		//JmfNyARRaster_RGBはYUVよりもRGBで高速に動作します。
 		if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB,320, 240,15f)){
 			if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_YUV,320, 240,15f)){
-				throw new NyARException("キャプチャフォーマットが見つかりません");
+				throw new NyARRuntimeException("キャプチャフォーマットが見つかりません");
 			}		
 		}
 		this._capture.setOnCapture(this);

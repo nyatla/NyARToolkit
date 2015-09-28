@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.math.perspectiveparam;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 
 /**
@@ -51,7 +51,7 @@ public class NyARPerspectiveParamGenerator_Reference extends NyARPerspectivePara
 	/**
 	 * この関数は、遠近法のパラメータを計算して、返却します。
 	 */
-	public final boolean getParam(int i_dest_w,int i_dest_h,double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4,double[] o_param)throws NyARException
+	public final boolean getParam(int i_dest_w,int i_dest_h,double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4,double[] o_param)throws NyARRuntimeException
 	{
 		double ltx=this._local_x;
 		double lty=this._local_y;

@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterfilter;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.INyARRasterFilter;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
@@ -41,7 +41,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
  */
 public class NyARRasterFilter_Edge implements INyARRasterFilter
 {
-	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARException
+	public void doFilter(INyARRaster i_input, INyARRaster i_output) throws NyARRuntimeException
 	{
 		assert (i_input.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
 		assert (i_output.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));

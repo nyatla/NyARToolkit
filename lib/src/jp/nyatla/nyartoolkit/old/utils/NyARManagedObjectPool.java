@@ -27,7 +27,7 @@ package jp.nyatla.nyartoolkit.old.utils;
 
 import java.lang.reflect.Array;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.old.utils.NyARManagedObject.INyARManagedObjectPoolOperater;
 
 
@@ -90,7 +90,7 @@ public class NyARManagedObjectPool<T extends NyARManagedObject>
 	 * 新しいオブジェクト。失敗した場合はnull
 	 */
 	@SuppressWarnings("unchecked")
-	public T newObject() throws NyARException
+	public T newObject()
 	{
 		Operator pool=this._op_interface;
 		if(pool._pool_stock<1){
@@ -117,10 +117,10 @@ public class NyARManagedObjectPool<T extends NyARManagedObject>
 	 * 配列の最大長さ
 	 * @param i_element_type
 	 * 配列型を示すクラスタイプ
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	@SuppressWarnings("unchecked")
-	protected void initInstance(int i_length,Class<T> i_element_type) throws NyARException
+	protected void initInstance(int i_length,Class<T> i_element_type)
 	{
 		Operator pool=this._op_interface;
 		//領域確保
@@ -146,10 +146,10 @@ public class NyARManagedObjectPool<T extends NyARManagedObject>
 	 * 配列型を示すクラスタイプ
 	 * @param i_param
 	 * 配列要素を生成するときに渡すパラメータ
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	@SuppressWarnings("unchecked")
-	protected void initInstance(int i_length,Class<T> i_element_type,Object i_param) throws NyARException
+	protected void initInstance(int i_length,Class<T> i_element_type,Object i_param)
 	{
 		Operator pool=this._op_interface;
 		//領域確保
@@ -170,11 +170,11 @@ public class NyARManagedObjectPool<T extends NyARManagedObject>
 	 * 継承クラスでオーバライドして、要素オブジェクトを１個生成して返す処理を実装してください。
 	 * @return
 	 * 新しいオブジェクトを返してください。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	protected T createElement() throws NyARException
+	protected T createElement()
 	{
-		throw new NyARException();
+		throw new NyARRuntimeException();
 	}
 	/**
 	 * この関数は、配列要素のオブジェクトを(引数付きで)１個作ります。
@@ -182,10 +182,10 @@ public class NyARManagedObjectPool<T extends NyARManagedObject>
 	 * 継承クラスでオーバライドして、要素オブジェクトを１個生成して返す処理を実装してください。
 	 * @return
 	 * 新しいオブジェクトを返してください。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */	
-	protected T createElement(Object i_param) throws NyARException
+	protected T createElement(Object i_param)
 	{
-		throw new NyARException();
+		throw new NyARRuntimeException();
 	}
 }

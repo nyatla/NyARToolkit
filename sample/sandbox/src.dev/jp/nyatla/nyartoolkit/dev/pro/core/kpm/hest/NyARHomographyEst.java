@@ -23,7 +23,7 @@ import jp.nyatla.nyartoolkit.pro.core.kpm.hest.utils.HomographyMatrix;
 
 
 /**
- * @todo 0.5ピクセル補正は�?
+ * @todo 0.5ピクセル補正は�?
  * @author nyatla
  *
  */
@@ -34,26 +34,26 @@ public class NyARHomographyEst implements INyARHomographyEst
 	/**
 	 * 
 	 * @param i_max_input_points
-	 * {@link #ransacEstimation}のpreRANSACに入力されるサンプルの�?大数
-	 * @throws NyARException
+	 * {@link #ransacEstimation}のpreRANSACに入力されるサンプルの�?大数
+	 * @throws NyARRuntimeException
 	 */
-	public NyARHomographyEst(int i_max_input_points) throws NyARException
+	public NyARHomographyEst(int i_max_input_points) throws NyARRuntimeException
 	{
 		this._temp_index_map=new int[i_max_input_points];
 		this._dest_index_map=new int[i_max_input_points];
 		this._aselector=new ApproximateIndexSelector();		
 	}
 	/**
-	 * afterRANSACの数にあわせて、最大preRANSACの数と同じ数のサンプルセ�?トを返します�??
+	 * afterRANSACの数にあわせて、最大preRANSACの数と同じ数のサンプルセ�?トを返します�??
 	 */
-	public void ransacEstimation(NyARSurfAnnMatch.ResultPtr preRANSAC, NyARSurfAnnMatch.ResultPtr afterRANSAC) throws NyARException
+	public void ransacEstimation(NyARSurfAnnMatch.ResultPtr preRANSAC, NyARSurfAnnMatch.ResultPtr afterRANSAC) throws NyARRuntimeException
 	{
-		//戸数チェ�?ク
+		//戸数チェ�?ク
 		assert(preRANSAC.getLength()<=this._temp_index_map.length);
 		
 		int[] index_map=this._dest_index_map;
 		int len=preRANSAC.getLength();
-		int ret_num;//出力する�?�イント数
+		int ret_num;//出力する�?�イント数
 		if(len < 5 ) {
 			ret_num=len;
 			for(int i=0;i<len;i++){
@@ -65,7 +65,7 @@ public class NyARHomographyEst implements INyARHomographyEst
 		}else{
 			ret_num=this.ransacHomographyEst1( preRANSAC,index_map);
 		}
-		//�?大返却数の決�?
+		//�?大返却数の決�?
 		if(afterRANSAC.getArraySize()<ret_num)
 		{
 			ret_num=afterRANSAC.getArraySize();
@@ -84,7 +84,7 @@ public class NyARHomographyEst implements INyARHomographyEst
 	private final static double E=0.70;
 	
 	/**
-	 * 仮定した行�?�につ�?て、誤差の小さ�?イン�?クス�?けを�?める�?
+	 * 仮定した行�?�につ�?て、誤差の小さ�?イン�?クス�?けを�?める�?
 	 * @author nyatla
 	 *
 	 */
@@ -93,8 +93,8 @@ public class NyARHomographyEst implements INyARHomographyEst
 		private final static int T_SQUARE=10;// t = sqrt(6)* sigma and set sigma = sqrt(6)
 		NyARDoubleMatrix33 __invH=new NyARDoubleMatrix33();
 		/**
-		 * i_inから、Hに対して誤差の少な�?�?ータを選択します�??
-		 * o_indicesの数は、i_inの数と同じである�?要があります�??
+		 * i_inから、Hに対して誤差の少な�?�?ータを選択します�??
+		 * o_indicesの数は、i_inの数と同じである�?要があります�??
 		 * @param H
 		 * @param i_in
 		 * @return
@@ -151,9 +151,9 @@ public class NyARHomographyEst implements INyARHomographyEst
 	 * @param i_in_map
 	 * @param o_index_of_map
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	private int ransacHomographyEst1(NyARSurfAnnMatch.ResultPtr i_in_map, int[] o_index_of_map) throws NyARException
+	private int ransacHomographyEst1(NyARSurfAnnMatch.ResultPtr i_in_map, int[] o_index_of_map) throws NyARRuntimeException
 	{
 		RansacSamples ransac_sample=this.__ransac_sample;
 		double e = E;
@@ -170,7 +170,7 @@ public class NyARHomographyEst implements INyARHomographyEst
 		{
 			ransac_sample.sampling(i_in_map);
 			if(!ransac_sample.isGoodSamples()){
-				//サンプリングに�?定回数以上失敗したら終�?
+				//サンプリングに�?定回数以上失敗したら終�?
 				retry_sampling++;
 				if(retry_sampling>500){
 					break;
@@ -183,10 +183,10 @@ public class NyARHomographyEst implements INyARHomographyEst
 
 			// calculate the distance for each correspondences
 			// compute the number of inliers	
-			//誤差の少な�?ポイントだけを�?めた、�?時的なRansacResultを作�??
+			//誤差の少な�?ポイントだけを�?めた、�?時的なRansacResultを作�??
 			int num_of_inliers=tempInlierMap.selectApproximateIndex(this.__Htmp,i_in_map,this._temp_index_map);
 
-			//�?大のポイント数のも�?�を�?�力�?��?�に保�?
+			//�?大のポイント数のも�?�を�?�力�?��?�に保�?
 			// choose H with the largest number of inliears
 			if(num_of_inliers >= maxNumOfInliers )
 			{
@@ -203,7 +203,7 @@ public class NyARHomographyEst implements INyARHomographyEst
 		}
 		return maxNumOfInliers;
 	}
-	private int ransacHomographyEst2(NyARSurfAnnMatch.ResultPtr i_in_map,int[]  o_index_of_map) throws NyARException
+	private int ransacHomographyEst2(NyARSurfAnnMatch.ResultPtr i_in_map,int[]  o_index_of_map) throws NyARRuntimeException
 	{
 		RansacSamples ransac_sample=this.__ransac_sample;
 		ApproximateIndexSelector tempInlierMap=this._aselector;
@@ -219,17 +219,17 @@ public class NyARHomographyEst implements INyARHomographyEst
 					for( int i4 = i3+1; i4 < num_of_samples; i4++ ) {
 						ransac_sample.setSample(3, i4, i_in_map);
 						
-						//良�?サンプルでなければ無�?
+						//良�?サンプルでなければ無�?
 						if(!ransac_sample.isGoodSamples())
 						{
 							continue;
 						}
-						//仮計�?
+						//仮計�?
 						this.__Htmp.computeHomography4Points(ransac_sample.ref_pt1,ransac_sample.ref_pt2);
-						//誤差の少な�?ポイントだけを�?めた、�?時的なRansacResultを作�??
+						//誤差の少な�?ポイントだけを�?めた、�?時的なRansacResultを作�??
 						int num_of_inliers=tempInlierMap.selectApproximateIndex(this.__Htmp,i_in_map,this._temp_index_map);
 
-						//�?大のポイント数のも�?�を�?�力�?��?�に保�?
+						//�?大のポイント数のも�?�を�?�力�?��?�に保�?
 						// choose H with the largest number of inliears
 						if(num_of_inliers >= maxNumOfInliers )
 						{
@@ -265,7 +265,7 @@ class RansacSamples
 	{
 		int len=this.length;
 		int number_of_items=i_in_map.getLength();
-		//乱数値のロー�?
+		//乱数値のロー�?
 		long rand_val=this._rand_val;
 		// pick corresponding points
 		for(int i = 0 ; i < len ; i++ )
@@ -278,11 +278,11 @@ class RansacSamples
 			this.ref_pt1[i]=item.feature.coord3DI;
 			this.ref_pt2[i]=item.key.ipoint;
 		}
-		//乱数値の保�?
+		//乱数値の保�?
 		this._rand_val=rand_val;	
 	}
 	/**
-	 * i_index番目の要�?に、i_in_mapのi_sample_idの要�?をセ�?トします�??
+	 * i_index番目の要�?に、i_in_mapのi_sample_idの要�?をセ�?トします�??
 	 * @param i_index
 	 * @param i_sample_id
 	 * @param i_in_map
@@ -294,7 +294,7 @@ class RansacSamples
 		this.ref_pt2[i_index]=item.key.ipoint;
 	}
 	/**
-	 * 配�?�に含まれる要�?が�?��?�線状で無�?か確認します�??
+	 * 配�?�に含まれる要�?が�?��?�線状で無�?か確認します�??
 	 * @param i_item
 	 * @param num
 	 * @return
@@ -356,7 +356,7 @@ class RansacSamples
 	// --------------------------------------
 	// This function checks the colinearity of
 	// the given 3 points A, B, and C.
-	// If these are colinear, it returns false. (true ?��?��ﾈｯ?�?��ｾ?���?��ｴ?��ｰ?�? ?��?�??��?�??)
+	// If these are colinear, it returns false. (true ?��?��ﾈｯ?�?��ｾ?���?��ｴ?��ｰ?�? ?��?�??��?�??)
 	//
 	private static boolean isColinear(NyARIntPoint2d i_A,NyARIntPoint2d i_B,NyARIntPoint2d i_C)
 	{

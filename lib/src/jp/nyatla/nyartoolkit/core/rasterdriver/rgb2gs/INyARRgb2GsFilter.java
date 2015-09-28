@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.rgb2gs;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
 
 public interface INyARRgb2GsFilter
@@ -38,14 +38,14 @@ public interface INyARRgb2GsFilter
 	 * @param w
 	 * @param h
 	 * @param i_raster
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void convertRect(int l,int t,int w,int h,INyARGrayscaleRaster i_raster) throws NyARException;
+	public void convertRect(int l,int t,int w,int h,INyARGrayscaleRaster i_raster);
 	/**
 	 * i_rasterへグレースケール画像を生成します。
 	 * @param i_raster
 	 * 出力先のラスタオブジェクト。同一サイズである必要があります。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void convert(INyARGrayscaleRaster i_raster) throws NyARException;
+	public void convert(INyARGrayscaleRaster i_raster);
 }

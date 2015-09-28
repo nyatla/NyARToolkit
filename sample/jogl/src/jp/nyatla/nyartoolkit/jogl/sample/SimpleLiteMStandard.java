@@ -33,7 +33,7 @@ import java.io.FileInputStream;
 import javax.media.opengl.*;
 
 import com.sun.opengl.util.*;
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
@@ -56,7 +56,7 @@ public class SimpleLiteMStandard implements GLEventListener
 	private final static String ARCODE_FILE = "../../Data/patt.hiro";
 	private final static String ARCODE_FILE2 = "../../Data/patt.kanji";
 	private int[] ids=new int[2];
-	public SimpleLiteMStandard(INyARMarkerSystemConfig i_config) throws NyARException
+	public SimpleLiteMStandard(INyARMarkerSystemConfig i_config) throws NyARRuntimeException
 	{		
 		JmfCaptureDeviceList devlist = new JmfCaptureDeviceList();
 		JmfCaptureDevice d = devlist.getDevice(0);

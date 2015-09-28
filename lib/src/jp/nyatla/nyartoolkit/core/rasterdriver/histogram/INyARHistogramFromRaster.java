@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.histogram;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.histogram.NyARHistogram;
 
 /**
@@ -36,6 +36,6 @@ import jp.nyatla.nyartoolkit.core.histogram.NyARHistogram;
 public interface INyARHistogramFromRaster
 {
 	//GSRaster
-	public void createHistogram(int i_l,int i_t,int i_w,int i_h,int i_skip, NyARHistogram o_histogram) throws NyARException;
-	public void createHistogram(int i_skip,NyARHistogram o_histogram) throws NyARException;
+	public void createHistogram(int i_l,int i_t,int i_w,int i_h,int i_skip, NyARHistogram o_histogram);
+	public void createHistogram(int i_skip,NyARHistogram o_histogram);
 }

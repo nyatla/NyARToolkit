@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasteranalyzer;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.stack.*;
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -44,7 +44,7 @@ public class NyARRasterDetector_QrCodeEdge
 {
 	private NyARIntRectStack _result;
 
-	public NyARRasterDetector_QrCodeEdge(int i_result_max) throws NyARException
+	public NyARRasterDetector_QrCodeEdge(int i_result_max) throws NyARRuntimeException
 	{
 		this._result = new NyARIntRectStack(i_result_max);
 		return;
@@ -84,7 +84,7 @@ public class NyARRasterDetector_QrCodeEdge
 		int v=i_b3*100/i_b1;
 		return (50<=v && v<=150);
 	}	
-	public void analyzeRaster(INyARRaster i_input) throws NyARException
+	public void analyzeRaster(INyARRaster i_input) throws NyARRuntimeException
 	{
 		assert (i_input.isEqualBufferType(NyARBufferType.INT1D_BIN_8));
 
@@ -259,7 +259,7 @@ public class NyARRasterDetector_QrCodeEdge
 					token_id=0;
 					break;
 				default:
-					throw new NyARException();
+					throw new NyARRuntimeException();
 				}
 			}
 		}

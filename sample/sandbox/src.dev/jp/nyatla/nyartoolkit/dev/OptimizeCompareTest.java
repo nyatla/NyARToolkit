@@ -55,13 +55,13 @@ class Program implements JmfCaptureListener
 	private final static int SCREEN_Y = 240;
 	private JmfCaptureDevice _capture;
 	public GLNyARRaster_RGB _cap_image;
-	public Program(NyARParam i_param, NyARCode i_ar_code) throws NyARException
+	public Program(NyARParam i_param, NyARCode i_ar_code) throws NyARRuntimeException
 	{
 		// キャプチャの準備
 		JmfCaptureDeviceList devlist = new JmfCaptureDeviceList();
 		this._capture = devlist.getDevice(0);
 		if (!this._capture.setCaptureFormat(SCREEN_X, SCREEN_Y, 30.0f)) {
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		this._ar_param=i_param;
 		this._ar_code=i_ar_code;
@@ -154,7 +154,7 @@ public class OptimizeCompareTest implements GLEventListener
 	private double[] _camera_projection = new double[16];
 
 
-	public OptimizeCompareTest(Program i_program,int i_pf) throws NyARException
+	public OptimizeCompareTest(Program i_program,int i_pf) throws NyARRuntimeException
 	{
 		this._parent=i_program;
 		this._ar_param = i_program._ar_param;

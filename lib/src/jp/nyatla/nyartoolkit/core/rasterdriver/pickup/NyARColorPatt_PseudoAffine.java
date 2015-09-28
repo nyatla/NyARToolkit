@@ -26,7 +26,7 @@
 package jp.nyatla.nyartoolkit.core.rasterdriver.pickup;
 
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.*;
@@ -90,9 +90,9 @@ public class NyARColorPatt_PseudoAffine implements INyARColorPatt
 	/**
 	 * この関数は使用不可能です。
 	 */	
-	public void wrapBuffer(Object i_ref_buf) throws NyARException
+	public void wrapBuffer(Object i_ref_buf)
 	{
-		NyARException.notImplement();
+		NyARRuntimeException.notImplement();
 	}
 	/**
 	 * この関数は、バッファタイプの定数を返します。
@@ -116,9 +116,9 @@ public class NyARColorPatt_PseudoAffine implements INyARColorPatt
 	 * このラスタの幅
 	 * @param i_height
 	 * このラスタの高さ
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public NyARColorPatt_PseudoAffine(int i_width, int i_height) throws NyARException
+	public NyARColorPatt_PseudoAffine(int i_width, int i_height)
 	{		
 		this._size=new NyARIntSize(i_width,i_height);
 		this._patdata = new int[i_height*i_width];
@@ -186,7 +186,7 @@ public class NyARColorPatt_PseudoAffine implements INyARColorPatt
 	/**
 	 * この関数は、ラスタのi_vertexsで定義される四角形からパターンを取得して、インスタンスに格納します。
 	 */
-	public boolean pickFromRaster(INyARRgbRaster image,NyARIntPoint2d[] i_vertexs)throws NyARException
+	public boolean pickFromRaster(INyARRgbRaster image,NyARIntPoint2d[] i_vertexs)throws NyARRuntimeException
 	{
 		final double[] conv_param=this._convparam;
 	    int rx2,ry2;
@@ -209,7 +209,7 @@ public class NyARColorPatt_PseudoAffine implements INyARColorPatt
 		}
 		return true;
 	}
-	public Object createInterface(Class<?> iIid) throws NyARException {
+	public Object createInterface(Class<?> iIid) {
 		// TODO Auto-generated method stub
 		return null;
 	}

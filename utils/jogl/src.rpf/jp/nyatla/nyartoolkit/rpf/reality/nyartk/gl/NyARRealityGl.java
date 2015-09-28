@@ -2,7 +2,7 @@ package jp.nyatla.nyartoolkit.rpf.reality.nyartk.gl;
 
 import javax.media.opengl.GL;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
@@ -46,7 +46,7 @@ public class NyARRealityGl extends NyARReality
 	 * @param i_max_unknown_target
 	 * UnKnownステータスのRTターゲットの最大数を指定します。
 	 */
-	public NyARRealityGl(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target) throws NyARException
+	public NyARRealityGl(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target) throws NyARRuntimeException
 	{
 		super(i_param,i_near,i_far,i_max_known_target,i_max_unknown_target);
 		//カメラパラメータを取得しておく。
@@ -68,9 +68,9 @@ public class NyARRealityGl extends NyARReality
 	 * {@link NyARReality#NyARReality(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target)}を参照
 	 * @param i_max_unknown_target
 	 * {@link NyARReality#NyARReality(NyARParam i_param,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target)}を参照
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public NyARRealityGl(NyARPerspectiveProjectionMatrix i_prjmat,NyARIntSize i_screen_size,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target) throws NyARException
+	public NyARRealityGl(NyARPerspectiveProjectionMatrix i_prjmat,NyARIntSize i_screen_size,double i_near,double i_far,int i_max_known_target,int i_max_unknown_target) throws NyARRuntimeException
 	{
 		super(i_screen_size,i_near,i_far,i_prjmat,null,i_max_known_target,i_max_unknown_target);
 		//カメラパラメータを取得しておく。
@@ -84,9 +84,9 @@ public class NyARRealityGl extends NyARReality
 	 * OpenGLのインスタンス
 	 * @param i_mat
 	 * NyARToolkit形式の姿勢変換行列
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void glLoadModelViewMatrix(GL i_gl,NyARDoubleMatrix44 i_mat) throws NyARException
+	public void glLoadModelViewMatrix(GL i_gl,NyARDoubleMatrix44 i_mat) throws NyARRuntimeException
 	{
 		NyARGLUtil.toCameraViewRH(i_mat,1,this._temp);
 		i_gl.glLoadMatrixd(this._temp,0);
@@ -110,9 +110,9 @@ public class NyARRealityGl extends NyARReality
 	 * OpenGLインスタンスを指定します。
 	 * @param i_rtsource
 	 * 描画するRealitySource
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void glDrawRealitySource(GL i_gl,NyARRealitySource i_rtsource) throws NyARException
+	public void glDrawRealitySource(GL i_gl,NyARRealitySource i_rtsource) throws NyARRuntimeException
 	{
 		NyARGLDrawUtil.drawBackGround(i_gl,i_rtsource.refRgbSource(),1.0);
 		return;

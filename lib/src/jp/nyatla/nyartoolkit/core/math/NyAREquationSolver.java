@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.math;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 
 /**
  * このクラスには、方程式を解く関数を定義します。
@@ -181,7 +181,7 @@ public class NyAREquationSolver
 	 * @return
 	 * 返却した実根の数。
 	 */
-	public static int solve4Equation(double i_a, double i_b, double i_c, double i_d,double i_e,double[] o_result) throws NyARException
+	public static int solve4Equation(double i_a, double i_b, double i_c, double i_d,double i_e,double[] o_result)
 	{
 		assert (i_a != 0);
 		double A3,A2,A1,A0,B3;
@@ -245,7 +245,7 @@ public class NyAREquationSolver
 				}
 				return number_of_result;
 			default:
-				throw new NyARException();
+				throw new NyARRuntimeException();
 			}
 		}else{
 			//それ以外
@@ -272,7 +272,7 @@ public class NyAREquationSolver
 				o_result[1]=o_result[1]-B3;
 				break;
 			default:
-				throw new NyARException();
+				throw new NyARRuntimeException();
 			}
 			result_2nd=solve2Equation(ru,(p+u)/2-ru*q/(2*u),o_result,result_1st);
 			//0,1番目に格納
@@ -287,7 +287,7 @@ public class NyAREquationSolver
 				o_result[result_1st+1]=o_result[result_1st+1]-B3;
 				break;
 			default:
-				throw new NyARException();
+				throw new NyARRuntimeException();
 			}
 			return result_1st+result_2nd;
 		}

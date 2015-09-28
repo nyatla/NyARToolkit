@@ -27,7 +27,7 @@ package jp.nyatla.nyartoolkit.markersystem;
 
 
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.histogram.NyARHistogram;
 import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
@@ -58,9 +58,9 @@ public class NyARSensor
 	 * 画像サイズ（スクリーンサイズ）を指定して、インスタンスを生成します。
 	 * @param i_size
 	 * 画像のサイズ。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public NyARSensor(NyARIntSize i_size) throws NyARException
+	public NyARSensor(NyARIntSize i_size)
 	{
 		this.initInstance(i_size);
 		this._hist_drv=(INyARHistogramFromRaster) this._gs_raster.createInterface(INyARHistogramFromRaster.class);
@@ -69,18 +69,18 @@ public class NyARSensor
 	 * この関数は、画像ドライバに依存するインスタンスを生成する。
 	 * 継承クラスで上書きする。
 	 * @param s
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	protected void initResource(NyARIntSize s) throws NyARException
+	protected void initResource(NyARIntSize s)
 	{
 		this._gs_raster=new NyARGrayscaleRaster(s.w,s.h,NyARBufferType.INT1D_GRAY_8,true);
 	}
 	/**
 	 * 
 	 * @param i_size
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	private void initInstance(NyARIntSize i_size) throws NyARException
+	private void initInstance(NyARIntSize i_size)
 	{
 		//リソースの生成
 		this.initResource(i_size);
@@ -109,9 +109,9 @@ public class NyARSensor
 	 * @param i_input
 	 * カラー画像。画像のサイズは、コンストラクタに設定したスクリーンサイズと同じである必要があります。
 	 * この画像は、次回の{@link #update}まで、インスタンスから参照されます。
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public void update(INyARRgbRaster i_input) throws NyARException
+	public void update(INyARRgbRaster i_input)
 	{
 		//ラスタドライバの準備
 		if(this._ref_raster!=i_input){
@@ -145,9 +145,9 @@ public class NyARSensor
 	 * @return
 	 * [readonly]
 	 * グレースケールに変換した現在の画像
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public INyARGrayscaleRaster getGsImage() throws NyARException
+	public INyARGrayscaleRaster getGsImage()
 	{
 		//必要に応じてグレースケール画像の生成
 		if(this._src_ts!=this._gs_id_ts){
@@ -162,9 +162,9 @@ public class NyARSensor
 	 * @return
 	 * [readonly]
 	 * 256スケールのヒストグラム。
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public NyARHistogram getGsHistogram() throws NyARException
+	public NyARHistogram getGsHistogram()
 	{
 		//必要に応じてヒストグラムを生成
 		if(this._gs_id_ts!=this._gs_hist_ts){
@@ -198,14 +198,14 @@ public class NyARSensor
 	 * @param i_y4
 	 * @param i_raster
 	 * @return
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
 	public INyARRgbRaster getPerspectiveImage(
 	    int i_x1,int i_y1,
 	    int i_x2,int i_y2,
 	    int i_x3,int i_y3,
 	    int i_x4,int i_y4,
-	    INyARRgbRaster i_raster) throws NyARException
+	    INyARRgbRaster i_raster)
 	{
 		this._pcopy.copyPatt(i_x1, i_y1, i_x2, i_y2, i_x3, i_y3, i_x4, i_y4,0,0,1, i_raster);
 		return i_raster;
@@ -233,14 +233,14 @@ public class NyARSensor
 	 * 射影変換した画像を受け取るオブジェクト
 	 * @return
 	 * 結果を格納したi_rasterオブジェクト。
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
 	public INyARRgbRaster getPerspectiveImage(
 		    double i_x1,double i_y1,
 		    double i_x2,double i_y2,
 		    double i_x3,double i_y3,
 		    double i_x4,double i_y4,
-		    INyARRgbRaster i_raster) throws NyARException
+		    INyARRgbRaster i_raster)
 		{
 			this._pcopy.copyPatt(i_x1, i_y1, i_x2, i_y2, i_x3, i_y3, i_x4, i_y4,0,0,1, i_raster);
 			return i_raster;

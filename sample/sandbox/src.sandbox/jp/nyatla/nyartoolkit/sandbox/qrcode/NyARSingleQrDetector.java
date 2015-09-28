@@ -71,9 +71,9 @@ public class NyARSingleQrDetector
 	 * カメラパラメータを指定します。
 	 * @param i_marker_width
 	 * ARコードの物理サイズを、ミリメートルで指定します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public NyARSingleQrDetector(NyARParam i_param, double i_marker_width) throws NyARException
+	public NyARSingleQrDetector(NyARParam i_param, double i_marker_width) throws NyARRuntimeException
 	{
 		final NyARIntSize scr_size=i_param.getScreenSize();		
 		// 解析オブジェクトを作る
@@ -98,13 +98,13 @@ public class NyARSingleQrDetector
 	 * マーカーを検出するイメージを指定します。イメージサイズは、カメラパラメータ
 	 * と一致していなければなりません。
 	 * @return マーカーが検出できたかを真偽値で返します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public boolean detectMarkerLite(INyARRgbRaster i_raster,int i_threshold) throws NyARException
+	public boolean detectMarkerLite(INyARRgbRaster i_raster,int i_threshold) throws NyARRuntimeException
 	{
 		//サイズチェック
 		if(!this._bin_raster.getSize().isEqualSize(i_raster.getSize())){
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		//グレースケールに変換
 		this._rgb2gs_filter.doFilter(i_raster, this._gs_raster);
@@ -133,9 +133,9 @@ public class NyARSingleQrDetector
 	 * 
 	 * @param o_result
 	 * 変換行列を受け取るオブジェクトを指定します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void getTransmationMatrix(NyARTransMatResult o_result) throws NyARException
+	public void getTransmationMatrix(NyARTransMatResult o_result) throws NyARRuntimeException
 	{
 		// 一番一致したマーカーの位置とかその辺を計算
 		if (this._is_continue) {

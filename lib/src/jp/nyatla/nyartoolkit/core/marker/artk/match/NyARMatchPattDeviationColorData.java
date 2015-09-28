@@ -31,7 +31,7 @@
 package jp.nyatla.nyartoolkit.core.marker.artk.match;
 
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.marker.artk.algo.NyARMatchPatt_BlackWhite;
 import jp.nyatla.nyartoolkit.core.marker.artk.algo.NyARMatchPatt_Color_WITHOUT_PCA;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
@@ -62,7 +62,7 @@ public class NyARMatchPattDeviationColorData
 		 * @return
 		 * pow値
 		 */
-		public double makeColorData(int[] o_out) throws NyARException;
+		public double makeColorData(int[] o_out);
 	}
 	public static class RasterDriverFactory
 	{
@@ -135,7 +135,7 @@ public class NyARMatchPattDeviationColorData
 	 * {@link NyARBufferType#INT1D_X8R8G8B8_32}形式のバッファを持つラスタの場合、他の形式よりも
 	 * 何倍か高速に動作します。
 	 */
-	public void setRaster(INyARRgbRaster i_raster) throws NyARException
+	public void setRaster(INyARRgbRaster i_raster)
 	{
 		//ドライバの生成
 		if(this._last_input_raster!=i_raster){
@@ -152,9 +152,9 @@ public class NyARMatchPattDeviationColorData
 	 * 差分画像の元画像。サイズは、このインスタンスと同じである必要があります。
 	 * @param i_direction
 	 * 右上の位置です。0=1象限、1=2象限、、2=3象限、、3=4象限の位置に対応します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public final void setRaster(INyARRgbRaster i_raster,int i_direction) throws NyARException
+	public final void setRaster(INyARRgbRaster i_raster,int i_direction)
 	{
 		int width=this._size.w;
 		int height=this._size.h;
@@ -240,7 +240,7 @@ class NyARMatchPattDeviationDataDriver_INT1D_X8R8G8B8_32 implements NyARMatchPat
 	{
 		this._ref_raster=i_raster;
 	}
-	public double makeColorData(int[] o_out) throws NyARException
+	public double makeColorData(int[] o_out)
 	{
 		//i_buffer[XRGB]→差分[R,G,B]変換			
 		int i;
@@ -325,7 +325,7 @@ class NyARMatchPattDeviationDataDriver_RGBAny implements NyARMatchPattDeviationC
 		this._ref_raster=i_raster;
 	}
 	private int[] __rgb=new int[3];
-	public double makeColorData(int[] o_out) throws NyARException
+	public double makeColorData(int[] o_out)
 	{
 		NyARIntSize size=this._ref_raster.getSize();
 		INyARRgbPixelDriver pixdev=this._ref_raster.getRgbPixelDriver();

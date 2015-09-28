@@ -36,20 +36,20 @@ public class NyARKpmDataSet
 	 * @param i_surfset
 	 * ラ�?プするデータオブジェクト�?�配�?��??
 	 * �?有権はインスタンスに移ります�??
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	protected NyARKpmDataSet(NyARSurfFeatureSet[] i_surfset)throws NyARException
+	protected NyARKpmDataSet(NyARSurfFeatureSet[] i_surfset)throws NyARRuntimeException
 	{
 		this._featureset = i_surfset;
 	}
 
-	public static NyARKpmDataSet loadFromFset2(InputStream i_stream)throws NyARException
+	public static NyARKpmDataSet loadFromFset2(InputStream i_stream)throws NyARRuntimeException
 	{
 		Fset2Reader fset2file = new Fset2Reader(i_stream);
 		Fset2Reader.FileImage fimg=fset2file.getFileImage();
 		//3D flags reqired!
 		if(fimg.coord3d_flag==0){
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		NyARSurfFeatureSet[] fset = new NyARSurfFeatureSet[fimg.page_no_set.length];
 		// ペ�?�ジ�?離のために、特徴数を�?��?�ジ番号ごとに�?�?
@@ -163,7 +163,7 @@ class Fset2Reader extends ByteBufferedInputStream
 	};
 
 
-	public Fset2Reader(InputStream i_stream) throws NyARException
+	public Fset2Reader(InputStream i_stream) throws NyARRuntimeException
 	{
 		super(i_stream,512);
 		this.order(ENDIAN_LITTLE);
@@ -172,7 +172,7 @@ class Fset2Reader extends ByteBufferedInputStream
 	 * fset2ファイルの�?容を読み出します�??
 	 * @return
 	 */
-	public FileImage getFileImage() throws NyARException
+	public FileImage getFileImage() throws NyARRuntimeException
 	{
 		FileImage ret=new FileImage();
 		this.readToBuffer(SIZE_OF_FSET2_HEADER);

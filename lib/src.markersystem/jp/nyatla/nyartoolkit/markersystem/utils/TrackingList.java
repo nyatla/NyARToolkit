@@ -27,7 +27,7 @@ package jp.nyatla.nyartoolkit.markersystem.utils;
 
 import java.util.ArrayList;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 
 /**
@@ -37,7 +37,7 @@ public class TrackingList extends ArrayList<TMarkerData>
 {
 	private static final long serialVersionUID = -6446466460932931830L;
 	private VertexSortTable _tracking_list;
-	public TrackingList() throws NyARException
+	public TrackingList()
 	{
 		this._tracking_list=new VertexSortTable(1);
 	}
@@ -57,7 +57,7 @@ public class TrackingList extends ArrayList<TMarkerData>
 		}
 	}
 	private int[] __ret=new int[2];
-	public boolean update(SquareStack.Item i_new_sq) throws NyARException
+	public boolean update(SquareStack.Item i_new_sq)
 	{
 		int[] ret=this.__ret;
 		int new_area=i_new_sq.rect_area;

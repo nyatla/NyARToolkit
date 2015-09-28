@@ -31,7 +31,7 @@
  */
 package jp.nyatla.nyartoolkit.sandbox.x2;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARFixedFloat24Matrix33;
@@ -53,7 +53,7 @@ public class NyARFixedFloatRotMatrix extends NyARFixedFloat24Matrix33
 	 * 
 	 * @param i_param
 	 */
-	public NyARFixedFloatRotMatrix(NyARPerspectiveProjectionMatrix i_matrix) throws NyARException
+	public NyARFixedFloatRotMatrix(NyARPerspectiveProjectionMatrix i_matrix) throws NyARRuntimeException
 	{
 		this.__initRot_vec1 = new NyARFixedFloatRotVector(i_matrix);
 		this.__initRot_vec2 = new NyARFixedFloatRotVector(i_matrix);
@@ -80,7 +80,7 @@ public class NyARFixedFloatRotMatrix extends NyARFixedFloat24Matrix33
 		return;
 	}
 
-	public final void initRotBySquare(final NyARLinear[] i_linear, final NyARFixedFloat16Point2d[] i_sqvertex) throws NyARException
+	public final void initRotBySquare(final NyARLinear[] i_linear, final NyARFixedFloat16Point2d[] i_sqvertex) throws NyARRuntimeException
 	{
 		final NyARFixedFloatRotVector vec1 = this.__initRot_vec1;
 		final NyARFixedFloatRotVector vec2 = this.__initRot_vec2;

@@ -38,7 +38,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.FileInputStream;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.rle.NyARRleLabelFragmentInfo;
@@ -56,11 +56,11 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 {
 	class SquareDetector extends NyARSquareContourDetector_Rle implements NyARSquareContourDetector.CbHandler
 	{
-		public SquareDetector(NyARIntSize i_size) throws NyARException
+		public SquareDetector(NyARIntSize i_size) throws NyARRuntimeException
 		{
 			super(i_size);
 		}
-		public void detectMarkerCallback(NyARIntCoordinates i_coord,int[] i_vertex_index)  throws NyARException
+		public void detectMarkerCallback(NyARIntCoordinates i_coord,int[] i_vertex_index)  throws NyARRuntimeException
 		{
 			
 		}
@@ -77,7 +77,7 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 
 	private JmfNyARRGBRaster _raster;
 
-	public LabelingViewer() throws NyARException,Exception
+	public LabelingViewer() throws NyARRuntimeException,Exception
 	{
 		setTitle("JmfCaptureTest");
 		setBounds(0, 0, 320 + 64, 240 + 64);
@@ -87,7 +87,7 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 		//JmfNyARRaster_RGBはYUVよりもRGBで高速に動作します。
 		if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB,320, 240,15f)){
 			if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_YUV,320, 240,15f)){
-				throw new NyARException("キャプチャフォーマットが見つかりません");
+				throw new NyARRuntimeException("キャプチャフォーマットが見つかりません");
 			}		
 		}
 		this._capture.setOnCapture(this);

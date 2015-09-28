@@ -32,7 +32,7 @@ package jp.nyatla.nyartoolkit.core.rasterdriver.labeling.artoolkit;
 
 
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
 /**
@@ -46,9 +46,9 @@ public class NyARLabelingLabelStack extends NyARObjectStack<NyARLabelingLabel>
 	 * コンストラクタです。
 	 * @param i_max_array_size
 	 * 配列の最大サイズ。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public NyARLabelingLabelStack(int i_max_array_size) throws NyARException
+	public NyARLabelingLabelStack(int i_max_array_size)
 	{
 		super(i_max_array_size,NyARLabelingLabel.class);
 	}

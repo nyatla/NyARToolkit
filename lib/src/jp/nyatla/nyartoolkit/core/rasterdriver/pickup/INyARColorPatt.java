@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.pickup;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -50,7 +50,7 @@ public interface INyARColorPatt extends INyARRgbRaster
 	 * 収録元画像上の、４頂点を格納した配列です。要素数は4である必要があります。
 	 * @return
 	 * 取得に成功すると、trueを返します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public boolean pickFromRaster(INyARRgbRaster image, NyARIntPoint2d[] i_vertexs) throws NyARException;
+	public boolean pickFromRaster(INyARRgbRaster image, NyARIntPoint2d[] i_vertexs);
 }

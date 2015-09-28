@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.rgb2gs;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARRgbPixelDriver;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
@@ -45,14 +45,14 @@ public interface INyARRgb2GsFilterArtkTh
 	 * @param i_gsraster
 	 * INT1D_BIN_8形式である必要があります。
 	 */
-	public void doFilter(int i_th,INyARGrayscaleRaster i_gsraster) throws NyARException;
-	public void doFilter(int i_l,int i_t,int i_w,int i_h,int i_th,INyARGrayscaleRaster i_gsraster) throws NyARException;
+	public void doFilter(int i_th,INyARGrayscaleRaster i_gsraster);
+	public void doFilter(int i_l,int i_t,int i_w,int i_h,int i_th,INyARGrayscaleRaster i_gsraster);
 }
 
 abstract class NyARRgb2GsFilterArtkTh_Base implements INyARRgb2GsFilterArtkTh
 {
 	protected INyARRgbRaster _raster;
-	public void doFilter(int i_h,INyARGrayscaleRaster i_gsraster) throws NyARException
+	public void doFilter(int i_h,INyARGrayscaleRaster i_gsraster)
 	{
 		NyARIntSize s=this._raster.getSize();
 		this.doFilter(0,0,s.w,s.h,i_h,i_gsraster);
@@ -68,7 +68,7 @@ class NyARRgb2GsFilterArtkTh_BYTE1D_C8C8C8_24 extends NyARRgb2GsFilterArtkTh_Bas
 				i_raster.isEqualBufferType(NyARBufferType.BYTE1D_R8G8B8_24));
 		this._raster=i_raster;
 	}
-	public void doFilter(int i_l,int i_t,int i_w,int i_h,int i_th,INyARGrayscaleRaster i_gsraster) throws NyARException
+	public void doFilter(int i_l,int i_t,int i_w,int i_h,int i_th,INyARGrayscaleRaster i_gsraster)
 	{
 		assert i_gsraster.isEqualBufferType(NyARBufferType.INT1D_BIN_8);
 		final byte[] input=(byte[])this._raster.getBuffer();
@@ -121,7 +121,7 @@ class NyARRgb2GsFilterArtkTh_BYTE1D_B8G8R8X8_32 extends NyARRgb2GsFilterArtkTh_B
 		assert(i_raster.isEqualBufferType(NyARBufferType.BYTE1D_B8G8R8X8_32));
 		this._raster=i_raster;
 	}
-	public void doFilter(int i_l,int i_t,int i_w,int i_h,int i_th,INyARGrayscaleRaster i_gsraster) throws NyARException
+	public void doFilter(int i_l,int i_t,int i_w,int i_h,int i_th,INyARGrayscaleRaster i_gsraster)
 	{
 		assert i_gsraster.isEqualBufferType(NyARBufferType.INT1D_BIN_8);
 		final byte[] input=(byte[])this._raster.getBuffer();
@@ -175,7 +175,7 @@ class NyARRgb2GsFilterArtkTh_BYTE1D_X8C8C8C8_32 extends NyARRgb2GsFilterArtkTh_B
 	{
 		this._raster=i_raster;
 	}
-	public void doFilter(int i_l,int i_t,int i_w,int i_h,int i_th,INyARGrayscaleRaster i_gsraster) throws NyARException
+	public void doFilter(int i_l,int i_t,int i_w,int i_h,int i_th,INyARGrayscaleRaster i_gsraster)
 	{
 		assert i_gsraster.isEqualBufferType(NyARBufferType.INT1D_BIN_8);
 		final byte[] input=(byte[])this._raster.getBuffer();
@@ -229,7 +229,7 @@ class NyARRgb2GsFilterArtkTh_INT1D_X8R8G8B8_32 extends NyARRgb2GsFilterArtkTh_Ba
 		assert(i_raster.isEqualBufferType(NyARBufferType.INT1D_X8R8G8B8_32));
 		this._raster=i_raster;
 	}
-	public void doFilter(int i_l,int i_t,int i_w,int i_h,int i_th,INyARGrayscaleRaster i_gsraster) throws NyARException
+	public void doFilter(int i_l,int i_t,int i_w,int i_h,int i_th,INyARGrayscaleRaster i_gsraster)
 	{
 		assert i_gsraster.isEqualBufferType(NyARBufferType.INT1D_BIN_8);
 		final int[] input=(int[])this._raster.getBuffer();
@@ -274,7 +274,7 @@ class NyARRgb2GsFilterArtkTh_WORD1D_R5G6B5_16LE extends NyARRgb2GsFilterArtkTh_B
 		assert(i_raster.isEqualBufferType(NyARBufferType.WORD1D_R5G6B5_16LE));
 		this._raster=i_raster;
 	}
-	public void doFilter(int i_l,int i_t,int i_w,int i_h,int i_th,INyARGrayscaleRaster i_gsraster) throws NyARException
+	public void doFilter(int i_l,int i_t,int i_w,int i_h,int i_th,INyARGrayscaleRaster i_gsraster)
 	{
 		assert i_gsraster.isEqualBufferType(NyARBufferType.INT1D_BIN_8);
 		final short[] input=(short[])this._raster.getBuffer();
@@ -319,7 +319,7 @@ class NyARRgb2GsFilterArtkTh_Any extends NyARRgb2GsFilterArtkTh_Base
 		this._raster=i_raster;
 	}
 	private int[] __rgb=new int[3];
-	public void doFilter(int i_l,int i_t,int i_w,int i_h,int i_th,INyARGrayscaleRaster i_gsraster) throws NyARException
+	public void doFilter(int i_l,int i_t,int i_w,int i_h,int i_th,INyARGrayscaleRaster i_gsraster)
 	{
 		assert i_gsraster.isEqualBufferType(NyARBufferType.INT1D_BIN_8);
 		INyARRgbPixelDriver input=this._raster.getRgbPixelDriver();

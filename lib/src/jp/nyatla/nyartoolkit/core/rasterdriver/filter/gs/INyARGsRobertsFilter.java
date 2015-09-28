@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.filter.gs;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
@@ -47,7 +47,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
  */
 public interface INyARGsRobertsFilter
 {
-	public void doFilter(INyARGrayscaleRaster i_output) throws NyARException;	
+	public void doFilter(INyARGrayscaleRaster i_output);	
 }
 
 class NyARGsRobertsFilter_GS8 implements INyARGsRobertsFilter
@@ -57,7 +57,7 @@ class NyARGsRobertsFilter_GS8 implements INyARGsRobertsFilter
 	{
 		this._raster=i_raster;
 	}
-	public void doFilter(INyARGrayscaleRaster i_output) throws NyARException
+	public void doFilter(INyARGrayscaleRaster i_output)
 	{
 		assert (i_output.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
 		NyARIntSize size=this._raster.getSize();
@@ -116,7 +116,7 @@ class NyARGsRobertsFilter_GS8 implements INyARGsRobertsFilter
 			return;
 		default:
 			//ANY未対応
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}		
 	}
 }

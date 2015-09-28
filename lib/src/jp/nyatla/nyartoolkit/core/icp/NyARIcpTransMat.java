@@ -11,7 +11,7 @@
  *
  */
 package jp.nyatla.nyartoolkit.core.icp;
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.transmat.*;
@@ -36,7 +36,7 @@ public class NyARIcpTransMat implements INyARTransMat
 	 * ARToolkit parameter object that finished setup.
 	 * @param i_al_mode
 	 * fitting algorism type.
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public NyARIcpTransMat(NyARParam i_param,int i_al_mode)
 	{
@@ -56,7 +56,7 @@ public class NyARIcpTransMat implements INyARTransMat
 	/**
 	 * Make tansform matrix by ICP algorism.
 	 */
-	public boolean transMat(NyARSquare i_square, NyARRectOffset i_offset,NyARDoubleMatrix44 i_result,NyARTransMatResultParam o_param) throws NyARException
+	public boolean transMat(NyARSquare i_square, NyARRectOffset i_offset,NyARDoubleMatrix44 i_result,NyARTransMatResultParam o_param)
 	{
 		if(this._icpc.icpGetInitXw2Xc_from_PlanarData(i_square.sqvertex,i_offset.vertex,4,i_result)){
 			if(this._icpp.icpPoint(i_square.sqvertex,i_offset.vertex,4,i_result,i_result,o_param)){
@@ -70,7 +70,7 @@ public class NyARIcpTransMat implements INyARTransMat
 	 * i_prev_result parameter is not effective. should set 0.
 	 */
 	public boolean transMatContinue(NyARSquare i_square, NyARRectOffset i_offset, NyARDoubleMatrix44 i_prev_result, double i_prev_err,
-			NyARDoubleMatrix44 o_result, NyARTransMatResultParam o_param) throws NyARException
+			NyARDoubleMatrix44 o_result, NyARTransMatResultParam o_param)
 	{
 		if(this._icpp.icpPoint(i_square.sqvertex,i_offset.vertex,4,o_result,o_result,o_param)){
 			return true;

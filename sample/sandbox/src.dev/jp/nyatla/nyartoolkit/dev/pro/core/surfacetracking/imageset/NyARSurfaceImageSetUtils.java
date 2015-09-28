@@ -1,5 +1,5 @@
 package jp.nyatla.nyartoolkit.dev.pro.core.surfacetracking.imageset;
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARGsPixelDriver;
@@ -22,9 +22,9 @@ public class NyARSurfaceImageSetUtils
 	 * @param i_dpi
 	 * @param i_dpi_list
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public static NyARSurfaceImageSet makeImageSet(INyARGrayscaleRaster i_src,double i_dpi,double[] i_dpi_list) throws NyARException
+	public static NyARSurfaceImageSet makeImageSet(INyARGrayscaleRaster i_src,double i_dpi,double[] i_dpi_list) throws NyARRuntimeException
 	{
 		//dpiにあわせた画像セ�?トを作る�?
 		INyARGrayscaleRaster[] imgs=makeRasterSet(i_src,i_dpi,i_dpi_list);
@@ -55,9 +55,9 @@ public class NyARSurfaceImageSetUtils
 	 * 通常は{@link #makeRasterSet(INyARGrayscaleRaster, double, double[])}で生�?�した画像セ�?トを渡します�??
 	 * @param i_dpi_list
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public static NyARSurfaceImageSet makeImageSet(INyARGrayscaleRaster[] i_src,double[] i_dpi_list) throws NyARException
+	public static NyARSurfaceImageSet makeImageSet(INyARGrayscaleRaster[] i_src,double[] i_dpi_list) throws NyARRuntimeException
 	{
 		//�?フォーカスとNyARImageSet.ReferenceImageへの変換
 		NyARSurfaceImageSet.ReferenceImage[] rimgs=new NyARSurfaceImageSet.ReferenceImage[i_src.length];
@@ -82,19 +82,19 @@ public class NyARSurfaceImageSetUtils
 	}
 	/**
 	 * �?定したdpiセ�?トに対応する画像セ�?トを返します�??
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public static INyARGrayscaleRaster[] makeRasterSet(INyARGrayscaleRaster i_src,double i_dpi,double[] i_dpi_list) throws NyARException
+	public static INyARGrayscaleRaster[] makeRasterSet(INyARGrayscaleRaster i_src,double i_dpi,double[] i_dpi_list) throws NyARRuntimeException
 	{
 		
 		int dpi_num=i_dpi_list.length;
 		//dpiの�?囲確�?
 		if(dpi_num==0){
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		for(int i=0;i<i_dpi_list.length;i++){
 			if(i_dpi_list[i]>i_dpi){
-				throw new NyARException();
+				throw new NyARRuntimeException();
 			}						
 		}
 		INyARGsPixelDriver src_pixdrv=i_src.getGsPixelDriver();

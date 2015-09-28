@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.pixel;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
@@ -41,9 +41,9 @@ public class NyARGsPixelDriverFactory
 	 * ラスタから画素ドライバを構築します。構築したラスタドライバには、i_ref_rasterをセットします。
 	 * @param i_ref_raster
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public static INyARGsPixelDriver createDriver(INyARGrayscaleRaster i_ref_raster) throws NyARException
+	public static INyARGsPixelDriver createDriver(INyARGrayscaleRaster i_ref_raster)
 	{
 		INyARGsPixelDriver ret;
 		switch(i_ref_raster.getBufferType()){
@@ -57,12 +57,12 @@ public class NyARGsPixelDriverFactory
 				ret=new NyARGsPixelDriver_RGBX((INyARRgbRaster)i_ref_raster);
 				break;
 			}
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		ret.switchRaster(i_ref_raster);
 		return ret;
 	}
-	public static INyARGsPixelDriver createDriver(INyARRgbRaster i_ref_raster) throws NyARException
+	public static INyARGsPixelDriver createDriver(INyARRgbRaster i_ref_raster)
 	{
 		//RGBRasterインタフェイスがある場合
 		return new NyARGsPixelDriver_RGBX(i_ref_raster);
@@ -101,11 +101,11 @@ class NyARGsPixelDriver_INT1D_GRAY_8 implements INyARGsPixelDriver
 		final int[] ref_buf = this._ref_buf;
 		return ref_buf[(i_x + i_y * this._ref_size.w)];
 	}
-	public void setPixel(int i_x, int i_y, int i_gs) throws NyARException
+	public void setPixel(int i_x, int i_y, int i_gs)
 	{
 		this._ref_buf[(i_x + i_y * this._ref_size.w)]=i_gs;
 	}
-	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intgs) throws NyARException
+	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intgs)
 	{
 		int w=this._ref_size.w;
 		int[] r=this._ref_buf;
@@ -113,7 +113,7 @@ class NyARGsPixelDriver_INT1D_GRAY_8 implements INyARGsPixelDriver
 			r[(i_x[i] + i_y[i] * w)]=i_intgs[i];
 		}
 	}	
-	public void switchRaster(INyARRaster i_ref_raster) throws NyARException
+	public void switchRaster(INyARRaster i_ref_raster)
 	{
 		this._ref_buf=(int[])i_ref_raster.getBuffer();
 		this._ref_size=i_ref_raster.getSize();
@@ -130,7 +130,7 @@ class NyARGsPixelDriver_RGBX implements INyARGsPixelDriver
 {
 	private INyARRgbPixelDriver _rgbd;
 	private int[] _tmp=new int[3];
-    public NyARGsPixelDriver_RGBX(INyARRgbRaster i_raster) throws NyARException
+    public NyARGsPixelDriver_RGBX(INyARRgbRaster i_raster)
     {
         this._rgbd = i_raster.getRgbPixelDriver();
     }	
@@ -138,7 +138,7 @@ class NyARGsPixelDriver_RGBX implements INyARGsPixelDriver
 	{
 		return this._rgbd.getSize();
 	}
-	public void getPixelSet(int[] i_x,int[] i_y,int i_n,int[] o_buf,int i_st_buf) throws NyARException
+	public void getPixelSet(int[] i_x,int[] i_y,int i_n,int[] o_buf,int i_st_buf)
 	{
 		INyARRgbPixelDriver r=this._rgbd;
 		int[] tmp=this._tmp;
@@ -148,17 +148,17 @@ class NyARGsPixelDriver_RGBX implements INyARGsPixelDriver
 		}
 		return;
 	}
-	public int getPixel(int i_x,int i_y) throws NyARException
+	public int getPixel(int i_x,int i_y)
 	{
 		int[] tmp=this._tmp;
 		this._rgbd.getPixel(i_x,i_y,tmp);
 		return (tmp[0]+tmp[1]+tmp[2])/3;
 	}
-	public void setPixel(int i_x, int i_y, int i_gs) throws NyARException
+	public void setPixel(int i_x, int i_y, int i_gs)
 	{
 		this._rgbd.setPixel(i_x, i_y, i_gs,i_gs,i_gs);
 	}
-	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intgs) throws NyARException
+	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intgs)
 	{
 		INyARRgbPixelDriver r=this._rgbd;
 		for (int i = i_num - 1; i >= 0; i--){
@@ -166,10 +166,10 @@ class NyARGsPixelDriver_RGBX implements INyARGsPixelDriver
 			r.setPixel(i_x[i], i_y[i],gs,gs,gs);
 		}
 	}
-	public void switchRaster(INyARRaster i_ref_raster) throws NyARException
+	public void switchRaster(INyARRaster i_ref_raster)
 	{
 		if(!(i_ref_raster instanceof INyARRgbRaster)){
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		this._rgbd=((INyARRgbRaster)i_ref_raster).getRgbPixelDriver();
 	}

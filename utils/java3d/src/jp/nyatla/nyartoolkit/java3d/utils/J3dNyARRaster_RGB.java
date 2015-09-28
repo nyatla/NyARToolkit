@@ -32,7 +32,7 @@ import javax.media.format.VideoFormat;
 import javax.media.j3d.ImageComponent;
 import javax.media.j3d.ImageComponent2D;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
@@ -55,7 +55,7 @@ public class J3dNyARRaster_RGB extends JmfNyARRGBRaster
 	 * 画像の格納されたバッファを指定して下さい。
 	 * 画像サイズはコンストラクタで与えたパラメタと同じサイズである必要があります。
 	 */
-	public void setBuffer(javax.media.Buffer i_buffer) throws NyARException
+	public void setBuffer(javax.media.Buffer i_buffer) throws NyARRuntimeException
 	{
 		super.setBuffer(i_buffer);
 		synchronized (this){
@@ -75,12 +75,12 @@ public class J3dNyARRaster_RGB extends JmfNyARRGBRaster
 		return;
 	}
 
-	public J3dNyARRaster_RGB(NyARParam i_cparam,VideoFormat i_format) throws NyARException
+	public J3dNyARRaster_RGB(NyARParam i_cparam,VideoFormat i_format) throws NyARRuntimeException
 	{
 		super(i_format);
 		//bufferdimageの種類を決める
 		if(this.getBufferType()!=NyARBufferType.BYTE1D_B8G8R8_24){
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		//RGBのラスタを作る。
 		this.bufferd_image = new BufferedImage(this._size.w, this._size.h, BufferedImage.TYPE_3BYTE_BGR);

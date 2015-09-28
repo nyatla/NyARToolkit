@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.raster;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.rle.NyARLabeling_Rle;
 import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.NyARGsPixelDriverFactory;
 import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARContourPickup;
@@ -44,9 +44,9 @@ public class NyARBinRaster extends NyARGrayscaleRaster
 	 * ラスタのサイズ
 	 * @param i_height
 	 * ラスタのサイズ
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public NyARBinRaster(int i_width, int i_height) throws NyARException
+	public NyARBinRaster(int i_width, int i_height)
 	{
 		super(i_width,i_height,NyARBufferType.INT1D_BIN_8,true);
 	}
@@ -60,10 +60,9 @@ public class NyARBinRaster extends NyARGrayscaleRaster
 	 * @param i_is_alloc
 	 * 内部バッファ/外部バッファのフラグ
 	 * @return
-	 * 初期化に成功するとtrue
-	 * @throws NyARException 
+	 * 初期化に成功するとtrue 
 	 */
-	protected void initInstance(NyARIntSize i_size,int i_buf_type,boolean i_is_alloc) throws NyARException
+	protected void initInstance(NyARIntSize i_size,int i_buf_type,boolean i_is_alloc)
 	{
 		switch(i_buf_type)
 		{
@@ -78,7 +77,7 @@ public class NyARBinRaster extends NyARGrayscaleRaster
 		this._is_attached_buffer=i_is_alloc;
 		return;
 	}
-	public Object createInterface(Class<?> i_iid) throws NyARException
+	public Object createInterface(Class<?> i_iid)
 	{
 		if(i_iid==NyARLabeling_Rle.IRasterDriver.class){
 			return NyARLabeling_Rle.RasterDriverFactory.createDriver(this);
@@ -86,6 +85,6 @@ public class NyARBinRaster extends NyARGrayscaleRaster
 		if(i_iid==NyARContourPickup.IRasterDriver.class){
 			return NyARContourPickup.ImageDriverFactory.createDriver(this);
 		}
-		throw new NyARException();
+		throw new NyARRuntimeException();
 	}
 }

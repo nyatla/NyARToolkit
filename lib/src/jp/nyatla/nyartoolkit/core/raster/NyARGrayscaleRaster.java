@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.raster;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.rasterdriver.histogram.INyARHistogramFromRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.histogram.NyARHistogramFromRasterFactory;
 import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.rle.NyARLabeling_Rle;
@@ -77,7 +77,7 @@ public class NyARGrayscaleRaster implements INyARGrayscaleRaster
 	{
 		return this._buffer_type==i_type_value;
 	}
-	public INyARGsPixelDriver getGsPixelDriver() throws NyARException
+	public INyARGsPixelDriver getGsPixelDriver()
 	{
 		return this._pixdrv;
 	}
@@ -95,9 +95,9 @@ public class NyARGrayscaleRaster implements INyARGrayscaleRaster
 	 * ラスタのサイズ
 	 * @param i_height
 	 * ラスタのサイズ
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public NyARGrayscaleRaster(int i_width, int i_height) throws NyARException
+	public NyARGrayscaleRaster(int i_width, int i_height)
 	{
 		this._size= new NyARIntSize(i_width,i_height);
 		this._buffer_type=NyARBufferType.INT1D_GRAY_8;		
@@ -115,10 +115,10 @@ public class NyARGrayscaleRaster implements INyARGrayscaleRaster
 	 * バッファを外部参照にするかのフラグ値。
 	 * trueなら内部バッファ、falseなら外部バッファを使用します。
 	 * falseの場合、初期のバッファはnullになります。インスタンスを生成したのちに、{@link #wrapBuffer}を使って割り当ててください。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public NyARGrayscaleRaster(int i_width, int i_height, boolean i_is_alloc)
-			throws NyARException
+			throws NyARRuntimeException
 	{
 		this._size= new NyARIntSize(i_width,i_height);
 		this._buffer_type=NyARBufferType.INT1D_GRAY_8;		
@@ -142,9 +142,9 @@ public class NyARGrayscaleRaster implements INyARGrayscaleRaster
 	 * バッファを外部参照にするかのフラグ値。
 	 * trueなら内部バッファ、falseなら外部バッファを使用します。
 	 * falseの場合、初期のバッファはnullになります。インスタンスを生成したのちに、{@link #wrapBuffer}を使って割り当ててください。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public NyARGrayscaleRaster(int i_width, int i_height, int i_raster_type,boolean i_is_alloc) throws NyARException
+	public NyARGrayscaleRaster(int i_width, int i_height, int i_raster_type,boolean i_is_alloc)
 	{
 		this._size= new NyARIntSize(i_width,i_height);
 		this._buffer_type=i_raster_type;
@@ -159,22 +159,22 @@ public class NyARGrayscaleRaster implements INyARGrayscaleRaster
 	 * バッファ形式
 	 * @param i_is_alloc
 	 * バッファ参照方法値
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	protected void initInstance(NyARIntSize i_size, int i_raster_type,boolean i_is_alloc) throws NyARException
+	protected void initInstance(NyARIntSize i_size, int i_raster_type,boolean i_is_alloc)
 	{
 		switch (i_raster_type) {
 		case NyARBufferType.INT1D_GRAY_8:
 			this._buf = i_is_alloc ? new int[i_size.w * i_size.h] : null;
 			break;
 		default:
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		this._is_attached_buffer = i_is_alloc;
 		//ピクセルドライバの生成
 		this._pixdrv=NyARGsPixelDriverFactory.createDriver(this);
 	}
-	public Object createInterface(Class<?> i_iid) throws NyARException
+	public Object createInterface(Class<?> i_iid)
 	{
 		if(i_iid==NyARLabeling_Rle.IRasterDriver.class){
 			return NyARLabeling_Rle.RasterDriverFactory.createDriver(this);
@@ -185,7 +185,7 @@ public class NyARGrayscaleRaster implements INyARGrayscaleRaster
 		if(i_iid==INyARHistogramFromRaster.class){
 			return NyARHistogramFromRasterFactory.createInstance(this);
 		}
-		throw new NyARException();
+		throw new NyARRuntimeException();
 	}	
 	/**
 	 * この関数は、ラスタのバッファへの参照値を返します。
@@ -209,7 +209,7 @@ public class NyARGrayscaleRaster implements INyARGrayscaleRaster
 	 * この関数は、ラスタに外部参照バッファをセットします。
 	 * 外部参照バッファを持つインスタンスでのみ使用できます。内部参照バッファを持つインスタンスでは使用できません。
 	 */
-	public void wrapBuffer(Object i_ref_buf) throws NyARException
+	public void wrapBuffer(Object i_ref_buf)
 	{
 		assert (!this._is_attached_buffer);// バッファがアタッチされていたら機能しない。
 		//ラスタの形式は省略。

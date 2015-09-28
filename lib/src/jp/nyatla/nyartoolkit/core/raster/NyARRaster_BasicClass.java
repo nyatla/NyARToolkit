@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.raster;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
@@ -88,6 +88,6 @@ public abstract class NyARRaster_BasicClass implements INyARRaster
 	}
     public abstract Object getBuffer();
     public abstract boolean hasBuffer();
-    public abstract void wrapBuffer(Object i_ref_buf)throws NyARException;
-    public abstract Object createInterface(Class<?> i_iid)throws NyARException;
+    public abstract void wrapBuffer(Object i_ref_buf)throws NyARRuntimeException;
+    public abstract Object createInterface(Class<?> i_iid)throws NyARRuntimeException;
 }

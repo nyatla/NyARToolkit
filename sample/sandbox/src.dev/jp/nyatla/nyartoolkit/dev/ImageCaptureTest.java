@@ -28,7 +28,7 @@ package jp.nyatla.nyartoolkit.dev;
 
 
 import javax.media.opengl.*;
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
 import jp.nyatla.nyartoolkit.j2se.NyARBufferedImageRaster;

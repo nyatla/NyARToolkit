@@ -34,7 +34,7 @@ package jp.nyatla.nyartoolkit.core;
  * NyARToolkitライブラリが生成するExceptionのクラスです。
  * このクラスは、NyARToolkitで発生する例外を通知します。
  */
-public class NyARException extends Exception
+public class NyARRuntimeException extends RuntimeException
 {
 	private static final long serialVersionUID = 1L;
 
@@ -42,7 +42,7 @@ public class NyARException extends Exception
 	 * コンストラクタです。
 	 * 例外オブジェクトを生成します。
 	 */
-	public NyARException()
+	public NyARRuntimeException()
 	{
 		super();
 	}
@@ -52,7 +52,7 @@ public class NyARException extends Exception
 	 * @param e
 	 * 継承する例外オブジェクト
 	 */
-	public NyARException(Exception e)
+	public NyARRuntimeException(Exception e)
 	{
 		super(e);
 	}
@@ -61,7 +61,7 @@ public class NyARException extends Exception
 	 * メッセージを指定して、例外を生成します。
 	 * @param m
 	 */
-	public NyARException(String m)
+	public NyARRuntimeException(String m)
 	{
 		super(m);
 	}
@@ -70,29 +70,29 @@ public class NyARException extends Exception
 	 * 意図的に例外を発生するときに、コードに埋め込みます。
 	 * @param m
 	 * 例外メッセージを指定します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public static void trap(String m) throws NyARException
+	public static void trap(String m)
 	{
-		throw new NyARException("トラップ:" + m);
+		throw new NyARRuntimeException("トラップ:" + m);
 	}
 	/**
 	 * ライブラリ開発者向けの関数です。
 	 * "Not Implement!"メッセージを指定して、例外をスローします。
 	 * この関数は、NyARToolkitの未実装部分に埋め込みます。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public static void notImplement() throws NyARException
+	public static void notImplement()
 	{
-		throw new NyARException("Not Implement!");
+		throw new NyARRuntimeException("Not Implement!");
 	}
 	/**
 	 * ライブラリ開発者向けの関数です。
 	 * 関数が使用不能である事を、例外で通知します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public static void unavailability() throws NyARException
+	public static void unavailability()
 	{
-		throw new NyARException("unavailability!");
+		throw new NyARRuntimeException("unavailability!");
 	}
 }

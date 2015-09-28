@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.marker.psarplaycard;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.math.perspectiveparam.NyARPerspectiveParamGenerator;
 import jp.nyatla.nyartoolkit.core.math.perspectiveparam.NyARPerspectiveParamGenerator_O1;
 import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARGsPixelDriver;
@@ -49,9 +49,9 @@ public class PsARPlayCardPickup
 
 	/**
 	 * コンストラクタです。インスタンスを生成します。
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public PsARPlayCardPickup() throws NyARException
+	public PsARPlayCardPickup()
 	{
 		this._perspective_reader=new PerspectivePixelReader();
 		return;
@@ -65,9 +65,9 @@ public class PsARPlayCardPickup
 	 * @param o_data
 	 * @param o_param
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public final boolean getARPlayCardId(INyARGsPixelDriver i_pix_drv,NyARIntPoint2d[] i_vertex,PsArIdParam i_result)throws NyARException
+	public final boolean getARPlayCardId(INyARGsPixelDriver i_pix_drv,NyARIntPoint2d[] i_vertex,PsArIdParam i_result)throws NyARRuntimeException
 	{
 		if(!this._perspective_reader.setSourceSquare(i_vertex)){
 			return false;
@@ -82,9 +82,9 @@ public class PsARPlayCardPickup
 	 * @param o_data
 	 * @param o_param
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public final boolean getARPlayCardId(INyARGsPixelDriver i_pix_drv,NyARDoublePoint2d[] i_vertex,PsArIdParam i_result)throws NyARException
+	public final boolean getARPlayCardId(INyARGsPixelDriver i_pix_drv,NyARDoublePoint2d[] i_vertex,PsArIdParam i_result)throws NyARRuntimeException
 	{
 		if(!this._perspective_reader.setSourceSquare(i_vertex)){
 			return false;
@@ -99,9 +99,9 @@ public class PsARPlayCardPickup
 	 * @param o_data
 	 * @param o_param
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	private boolean _pickFromRaster(INyARGsPixelDriver i_pix_drv,PsArIdParam i_result)throws NyARException
+	private boolean _pickFromRaster(INyARGsPixelDriver i_pix_drv,PsArIdParam i_result)throws NyARRuntimeException
 	{
 		if(!this._perspective_reader.readDataBits(i_pix_drv,i_pix_drv.getSize(),this._decoder)){
 			return false;
@@ -135,9 +135,9 @@ final class PerspectivePixelReader
 	 * セットする四角形頂点座標。4要素である必要があります。
 	 * @return
 	 * 成功するとtrueです。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public boolean setSourceSquare(NyARIntPoint2d[] i_vertex)throws NyARException
+	public boolean setSourceSquare(NyARIntPoint2d[] i_vertex)throws NyARRuntimeException
 	{
 		return this._param_gen.getParam(READ_RESOLUTION,READ_RESOLUTION,i_vertex, this._cparam);
 	}
@@ -147,9 +147,9 @@ final class PerspectivePixelReader
 	 * セットする四角形頂点座標。4要素である必要があります。
 	 * @return
 	 * 成功するとtrueです。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public boolean setSourceSquare(NyARDoublePoint2d[] i_vertex)throws NyARException
+	public boolean setSourceSquare(NyARDoublePoint2d[] i_vertex)throws NyARRuntimeException
 	{
 		return this._param_gen.getParam(READ_RESOLUTION,READ_RESOLUTION,i_vertex, this._cparam);
 	}
@@ -166,7 +166,7 @@ final class PerspectivePixelReader
 	private int[] _pixcel_temp=new int[108];
 
 
-	private void detectDataBitsIndex(double[] o_index_row,double[] o_index_col) throws NyARException
+	private void detectDataBitsIndex(double[] o_index_row,double[] o_index_col)
 	{
 		for(int i=0;i<3;i++){
 			o_index_row[i*2]  =25+i*20;
@@ -187,9 +187,9 @@ final class PerspectivePixelReader
 	 * データビットの出力先
 	 * @return
 	 * 成功するとtrue
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public boolean readDataBits(INyARGsPixelDriver i_reader,NyARIntSize i_raster_size,MarkerPattDecoder o_bitbuffer)throws NyARException
+	public boolean readDataBits(INyARGsPixelDriver i_reader,NyARIntSize i_raster_size,MarkerPattDecoder o_bitbuffer)throws NyARRuntimeException
 	{
 		final int raster_width=i_raster_size.w;
 		final int raster_height=i_raster_size.h;

@@ -37,7 +37,7 @@ import java.io.FileInputStream;
 import javax.media.Buffer;
 import javax.media.opengl.*;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
@@ -82,7 +82,7 @@ public class Test_NyARRealityGl_AsyncIdMarker implements GLEventListener, JmfCap
 	NyARRealitySource_Jmf _src;
 	ASyncIdMarkerTable _mklib;
 
-	public Test_NyARRealityGl_AsyncIdMarker(NyARParam i_param) throws NyARException
+	public Test_NyARRealityGl_AsyncIdMarker(NyARParam i_param) throws NyARRuntimeException
 	{
 		Frame frame = new Frame("NyARToolkit+RPF["+this.getClass().getName()+"]");
 		
@@ -90,7 +90,7 @@ public class Test_NyARRealityGl_AsyncIdMarker implements GLEventListener, JmfCap
 		JmfCaptureDeviceList devlist = new JmfCaptureDeviceList();
 		this._capture = devlist.getDevice(0);
 		if (!this._capture.setCaptureFormat(SCREEN_X, SCREEN_Y, 30.0f)) {
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		this._capture.setOnCapture(this);
 		//Realityの構築

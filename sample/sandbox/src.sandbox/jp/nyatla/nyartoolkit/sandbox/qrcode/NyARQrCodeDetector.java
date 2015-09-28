@@ -1,6 +1,6 @@
 package jp.nyatla.nyartoolkit.sandbox.qrcode;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.coord2liner.NyARCoord2Linear;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactorV2;
 import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
@@ -38,7 +38,7 @@ public class NyARQrCodeDetector extends NyARSquareContourDetector
 	 * 
 	 * @param i_param
 	 */
-	public NyARQrCodeDetector(NyARCameraDistortionFactorV2 i_dist_factor_ref, NyARIntSize i_size) throws NyARException
+	public NyARQrCodeDetector(NyARCameraDistortionFactorV2 i_dist_factor_ref, NyARIntSize i_size) throws NyARRuntimeException
 	{
 		this._width = i_size.w;
 		this._height = i_size.h;
@@ -72,9 +72,9 @@ public class NyARQrCodeDetector extends NyARSquareContourDetector
 	 * 解析する２値ラスタイメージを指定します。
 	 * @param o_square_stack
 	 * 抽出した正方形候補を格納するリスト
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public final void detectMarker(NyARBinRaster i_raster, NyARSquareStack o_square_stack) throws NyARException
+	public final void detectMarker(NyARBinRaster i_raster, NyARSquareStack o_square_stack) throws NyARRuntimeException
 	{
 		final NyARLabelingImage limage = this._limage;
 
@@ -164,7 +164,7 @@ public class NyARQrCodeDetector extends NyARSquareContourDetector
 	 * QRコードのエッジグループを作る
 	 * @param i_square_stack
 	 */
-	public void bindQrcodeEdge(NyARSquareStack i_square_stack,NyARSquareStack o_square_stack) throws NyARException
+	public void bindQrcodeEdge(NyARSquareStack i_square_stack,NyARSquareStack o_square_stack) throws NyARRuntimeException
 	{
 		NyARSquare[] group=new NyARSquare[3];
 		int number_of_edge=i_square_stack.getLength();

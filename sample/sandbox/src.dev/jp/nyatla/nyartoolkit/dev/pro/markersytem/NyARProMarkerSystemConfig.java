@@ -11,7 +11,7 @@ package jp.nyatla.nyartoolkit.dev.pro.markersytem;
 
 import java.io.InputStream;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystemConfig;
@@ -25,23 +25,23 @@ public class NyARProMarkerSystemConfig extends NyARMarkerSystemConfig
 		super(i_param);
 		this._icp_mode=i_mode;
 	}
-	public NyARProMarkerSystemConfig(InputStream i_ar_param_stream,int i_width,int i_height,int i_mode) throws NyARException
+	public NyARProMarkerSystemConfig(InputStream i_ar_param_stream,int i_width,int i_height,int i_mode) throws NyARRuntimeException
 	{
 		super(i_ar_param_stream,i_width,i_height);
 		this._icp_mode=i_mode;
 	}
 	/**
-	 * コンストラクタです�?�カメラパラメータにサンプル値(../Data/camera_para.dat)をロードして、コンフィギュレーションを生成します�??
+	 * コンストラクタです�?�カメラパラメータにサンプル値(../Data/camera_para.dat)をロードして、コンフィギュレーションを生成します�??
 	 * @param i_width
 	 * @param i_height
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public NyARProMarkerSystemConfig(int i_width,int i_height,int i_mode) throws NyARException
+	public NyARProMarkerSystemConfig(int i_width,int i_height,int i_mode) throws NyARRuntimeException
 	{
 		super(i_width,i_height);
 		this._icp_mode=i_mode;
 	}
-	public INyARTransMat createTransmatAlgorism() throws NyARException
+	public INyARTransMat createTransmatAlgorism() throws NyARRuntimeException
 	{
 		return new NyARIcpTransMat(this._param,this._icp_mode);
 	}

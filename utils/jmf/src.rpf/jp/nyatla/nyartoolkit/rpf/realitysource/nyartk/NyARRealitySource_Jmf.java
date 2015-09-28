@@ -2,7 +2,7 @@ package jp.nyatla.nyartoolkit.rpf.realitysource.nyartk;
 
 import javax.media.format.VideoFormat;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.INyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.perspectivecopy.INyARPerspectiveCopy;
@@ -30,9 +30,9 @@ public class NyARRealitySource_Jmf extends NyARRealitySource
 	 * 数値が大きいほど高速になり、検出精度は低下します。実用的なのは、1<=n<=3の範囲です。標準値は2です。
 	 * @param i_number_of_sample
 	 * サンプリングするターゲット数を指定します。大体100以上をしておけばOKです。具体的な計算式は、{@link NyARTrackerSource_Reference#NyARTrackerSource_Reference}を参考にして下さい。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public NyARRealitySource_Jmf(VideoFormat i_fmt,INyARCameraDistortionFactor i_ref_raster_distortion,int i_depth,int i_number_of_sample) throws NyARException
+	public NyARRealitySource_Jmf(VideoFormat i_fmt,INyARCameraDistortionFactor i_ref_raster_distortion,int i_depth,int i_number_of_sample) throws NyARRuntimeException
 	{		
 		this._rgb_source=new JmfNyARRGBRaster(i_fmt);
 		this._filter=(INyARRgb2GsFilter) this._rgb_source.createInterface(INyARRgb2GsFilter.class);
@@ -44,9 +44,9 @@ public class NyARRealitySource_Jmf extends NyARRealitySource
 	/**
 	 * Jmfのバッファをセットします。
 	 * @param i_buffer
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void setImage(javax.media.Buffer i_buffer) throws NyARException
+	public void setImage(javax.media.Buffer i_buffer) throws NyARRuntimeException
 	{
 		((JmfNyARRGBRaster)(this._rgb_source)).setBuffer(i_buffer);
 		return;
@@ -55,12 +55,12 @@ public class NyARRealitySource_Jmf extends NyARRealitySource
 	{
 		return ((JmfNyARRGBRaster)this._rgb_source).hasBuffer();
 	}
-	public final void syncResource() throws NyARException
+	public final void syncResource() throws NyARRuntimeException
 	{
 		this._filter.convert(this._tracksource.refBaseRaster());
 		super.syncResource();
 	}
-	public final NyARTrackerSource makeTrackSource() throws NyARException
+	public final NyARTrackerSource makeTrackSource() throws NyARRuntimeException
 	{
 		this._filter.convert(this._tracksource.refBaseRaster());		
 		return this._tracksource;

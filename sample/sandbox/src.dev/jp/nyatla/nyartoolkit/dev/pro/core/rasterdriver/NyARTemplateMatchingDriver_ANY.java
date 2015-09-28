@@ -1,6 +1,6 @@
 package jp.nyatla.nyartoolkit.dev.pro.core.rasterdriver;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARGsPixelDriver;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
@@ -98,9 +98,9 @@ public class NyARTemplateMatchingDriver_ANY implements INyARTemplateMatchingDriv
 		/**
 		 * wval�?�?で候補点の追�?を試�?
 		 * i_valが大きい方がえらい
-		 * @throws NyARException 
+		 * @throws NyARRuntimeException 
 		 */
-		public boolean tryToAdd(int i_x, int i_y,int i_val) throws NyARException
+		public boolean tryToAdd(int i_x, int i_y,int i_val) throws NyARRuntimeException
 		{
 			Item[] items=this.items;
 			int num=this.num_of_item;
@@ -157,7 +157,7 @@ public class NyARTemplateMatchingDriver_ANY implements INyARTemplateMatchingDriv
 					return true;
 				}
 			}
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 	}
 	/**
@@ -178,10 +178,10 @@ public class NyARTemplateMatchingDriver_ANY implements INyARTemplateMatchingDriv
 	 * @return
 	 * �?致�?(値�?囲調査中)
 	 * 0の場合�?��?致せず�?
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public double ar2GetBestMatching(NyARTemplatePatchImage i_template, NyARIntPoint2d[] i_points,int i_number_of_point,
-			NyARDoublePoint2d o_obs_point) throws NyARException
+			NyARDoublePoint2d o_obs_point) throws NyARRuntimeException
 	{
 		//�?大�?ンプレートサイズの制�?
 		assert(i_template.xsize*i_template.ysize<100*100);
@@ -324,9 +324,9 @@ public class NyARTemplateMatchingDriver_ANY implements INyARTemplateMatchingDriv
 	 * @param sy
 	 * @param 評価点。エラーの場�?0
 	 * @return
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	private static int ar2GetBestMatchingSubFine(INyARGsPixelDriver i_pxd,NyARTemplatePatchImage mtemp, int sx, int sy) throws NyARException
+	private static int ar2GetBestMatchingSubFine(INyARGsPixelDriver i_pxd,NyARTemplatePatchImage mtemp, int sx, int sy) throws NyARRuntimeException
 	{
 		int[] tmp_buf = mtemp.img;
 		int r1=0;

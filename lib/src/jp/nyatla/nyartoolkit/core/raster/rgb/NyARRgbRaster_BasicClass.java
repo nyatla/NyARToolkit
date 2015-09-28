@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.raster.rgb;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARRgbPixelDriver;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
@@ -93,9 +93,9 @@ public abstract class NyARRgbRaster_BasicClass implements INyARRgbRaster
 	 * この関数は暫定です。低速なので注意してください。
 	 * @param i_input
 	 * @param o_output
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public static void copy(INyARRgbRaster i_input,INyARRgbRaster o_output) throws NyARException
+	public static void copy(INyARRgbRaster i_input,INyARRgbRaster o_output)
 	{
 		assert(i_input.getSize().isEqualSize(o_output.getSize()));
 		int width=i_input.getWidth();
@@ -112,8 +112,8 @@ public abstract class NyARRgbRaster_BasicClass implements INyARRgbRaster
 	}
 	// abstract functions
     public abstract boolean hasBuffer();
-    public abstract INyARRgbPixelDriver getRgbPixelDriver() throws NyARException;
-    public abstract void wrapBuffer(Object i_ref_buf)throws NyARException;
-    public abstract Object createInterface(Class<?> i_iid)throws NyARException;
+    public abstract INyARRgbPixelDriver getRgbPixelDriver();
+    public abstract void wrapBuffer(Object i_ref_buf)throws NyARRuntimeException;
+    public abstract Object createInterface(Class<?> i_iid)throws NyARRuntimeException;
     public abstract Object getBuffer();	
 }

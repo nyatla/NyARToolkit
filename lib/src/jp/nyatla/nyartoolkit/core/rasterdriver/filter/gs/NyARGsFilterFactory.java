@@ -25,32 +25,31 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.filter.gs;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
 
 public class NyARGsFilterFactory
 {
-	public static INyARGsCustomToneTableFilter createCustomToneTableFilter(INyARGrayscaleRaster i_raster) throws NyARException
+	public static INyARGsCustomToneTableFilter createCustomToneTableFilter(INyARGrayscaleRaster i_raster)
 	{
 		return new NyARGsCustomToneTableFilter_Any(i_raster);
 	}
-	public static INyARGsEqualizeHistFilter createEqualizeHistFilter(INyARGrayscaleRaster i_raster) throws NyARException
+	public static INyARGsEqualizeHistFilter createEqualizeHistFilter(INyARGrayscaleRaster i_raster)
 	{
 		return new NyARGsEqualizeHistFilter_Any(i_raster);
 	}
-	public static INyARGsGaussianSmoothFilter createGaussianSmoothFilter(INyARGrayscaleRaster i_raster) throws NyARException
+	public static INyARGsGaussianSmoothFilter createGaussianSmoothFilter(INyARGrayscaleRaster i_raster)
 	{
 		return new NyARGsGaussianSmoothFilter_GS8(i_raster);
 	}
-	public static INyARGsReverseFilter createReverseFilter(INyARGrayscaleRaster i_raster) throws NyARException
+	public static INyARGsReverseFilter createReverseFilter(INyARGrayscaleRaster i_raster)
 	{
 		return new NyARGsReverseFilter_Any(i_raster);
 	}
-	public static INyARGsRobertsFilter createRobertsFilter(INyARGrayscaleRaster i_raster) throws NyARException
+	public static INyARGsRobertsFilter createRobertsFilter(INyARGrayscaleRaster i_raster)
 	{
 		return new NyARGsRobertsFilter_GS8(i_raster);
 	}
-	public static INyARGsToneTableFilter createToneTableFilter(INyARGrayscaleRaster i_raster) throws NyARException
+	public static INyARGsToneTableFilter createToneTableFilter(INyARGrayscaleRaster i_raster)
 	{
 		return new NyARGsToneTableFilter(i_raster);
 	}

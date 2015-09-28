@@ -31,7 +31,7 @@
  */
 package jp.nyatla.nyartoolkit.sandbox.qrcode;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin.*;
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -44,7 +44,7 @@ public class NyARRasterFilter_QrAreaAverage implements INyARRasterFilter_Gs2Bin
 {
 	private int _area = 8;
 
-	public void doFilter(NyARGrayscaleRaster i_input, NyARBinRaster i_output) throws NyARException
+	public void doFilter(NyARGrayscaleRaster i_input, NyARBinRaster i_output) throws NyARRuntimeException
 	{
 		final NyARIntSize size = i_output.getSize();
 		final int[] out_buf = (int[]) i_output.getBuffer();

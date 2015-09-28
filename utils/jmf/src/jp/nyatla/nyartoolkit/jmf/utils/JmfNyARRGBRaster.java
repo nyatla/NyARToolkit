@@ -30,7 +30,7 @@ import javax.media.format.*;
 import javax.media.*;
 import com.sun.media.codec.video.colorspace.*;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -44,9 +44,9 @@ public class JmfNyARRGBRaster extends NyARBufferedImageRaster
 	 * コンストラクタ。i_fmtに合致するバッファを持つインスタンスを作成します。
 	 * このコンストラクタで作成したクラスは、hasBuffer()がfalseを返すことがあります。
 	 * @param i_fmt
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public JmfNyARRGBRaster(VideoFormat i_fmt) throws NyARException
+	public JmfNyARRGBRaster(VideoFormat i_fmt) throws NyARRuntimeException
 	{
 		super(i_fmt.getSize().width,i_fmt.getSize().height,fmt2RasterType(i_fmt),true);
 		if(i_fmt instanceof YUVFormat){
@@ -55,7 +55,7 @@ public class JmfNyARRGBRaster extends NyARBufferedImageRaster
 			this._buf_adapter=new RGBBufferAdapter(this,(RGBFormat) i_fmt);
 		}
 	}
-	private static int fmt2RasterType(VideoFormat i_fmt) throws NyARException
+	private static int fmt2RasterType(VideoFormat i_fmt) throws NyARRuntimeException
 	{
 		// データ配列の確認
 		if(i_fmt instanceof YUVFormat){
@@ -63,7 +63,7 @@ public class JmfNyARRGBRaster extends NyARBufferedImageRaster
 		}else if(i_fmt instanceof RGBFormat){
 			RGBFormat fm=(RGBFormat)i_fmt;
 			if(fm.getBitsPerPixel()!=24){
-				throw new NyARException();
+				throw new NyARRuntimeException();
 			}
 			int r=fm.getRedMask();
 			int b=fm.getBlueMask();
@@ -72,25 +72,25 @@ public class JmfNyARRGBRaster extends NyARBufferedImageRaster
 			}else if(r==3 && b==1){
 				return NyARBufferType.BYTE1D_B8G8R8_24;			
 			}else{
-				throw new NyARException();
+				throw new NyARRuntimeException();
 			}
 		}else{
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}		
 	}
 	/**
 	 * JMFバッファをインスタンスにセットします。
 	 * @param i_buffer
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void setBuffer(javax.media.Buffer i_buffer) throws NyARException
+	public void setBuffer(javax.media.Buffer i_buffer) throws NyARRuntimeException
 	{
 		this._buf_adapter.setBuffer(i_buffer);
 		return;
 	}
-	public void switchRaster(INyARRgbRaster i_raster)throws NyARException
+	public void switchRaster(INyARRgbRaster i_raster)throws NyARRuntimeException
 	{
-		NyARException.notImplement();		
+		NyARRuntimeException.notImplement();		
 	}
 	private IBufferAdapter _buf_adapter;
 	//
@@ -135,20 +135,20 @@ public class JmfNyARRGBRaster extends NyARBufferedImageRaster
 		private Buffer _rgb_buf=new javax.media.Buffer();
 		private YUVToRGB _yuv2rgb;
 		private JmfNyARRGBRaster _raster;
-		public YuvBufferAdapter(JmfNyARRGBRaster i_raster,YUVFormat i_vfm) throws NyARException
+		public YuvBufferAdapter(JmfNyARRGBRaster i_raster,YUVFormat i_vfm) throws NyARRuntimeException
 		{
 			this._yuv2rgb=new YUVToRGB();
 			//24bit-BGRフォーマットのものを探す
 			Format output_format=selectRGB24Format(this._yuv2rgb.getSupportedOutputFormats(i_vfm));
 			if(output_format==null){
-				throw new NyARException();
+				throw new NyARRuntimeException();
 			}
 			this._yuv2rgb.setInputFormat(i_vfm);
 			this._yuv2rgb.setOutputFormat(output_format);
 			try{
 				this._yuv2rgb.open();
 			}catch(Exception e){
-				throw new NyARException(e);
+				throw new NyARRuntimeException(e);
 			}
 			return;
 			

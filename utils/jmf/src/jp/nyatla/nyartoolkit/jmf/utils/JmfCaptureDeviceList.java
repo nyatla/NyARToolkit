@@ -8,7 +8,7 @@ import javax.media.CaptureDeviceManager;
 import javax.media.Format;
 import javax.media.format.*;
 import jp.nyatla.nyartoolkit.*;
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 
 
 
@@ -22,7 +22,7 @@ public class JmfCaptureDeviceList
 {
 	private Vector<CaptureDeviceInfo> _devices;
 
-	public JmfCaptureDeviceList() throws NyARException
+	public JmfCaptureDeviceList() throws NyARRuntimeException
 	{ 
 		this._devices = (Vector<CaptureDeviceInfo>)(CaptureDeviceManager.getDeviceList(null).clone());
 		// ビデオソースのデバイスだけ残す
@@ -38,7 +38,7 @@ public class JmfCaptureDeviceList
 				i++;
 			}
 		} catch (Exception e) {
-			throw new NyARException(e);
+			throw new NyARRuntimeException(e);
 		}
 		return;
 	}
@@ -74,9 +74,9 @@ public class JmfCaptureDeviceList
 	 * i_index番目のキャプチャデバイスを得る。
 	 * @param i_index
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public JmfCaptureDevice getDevice(int i_index) throws NyARException
+	public JmfCaptureDevice getDevice(int i_index) throws NyARRuntimeException
 	{
 		return new JmfCaptureDevice((CaptureDeviceInfo) this._devices.elementAt(i_index));
 	}

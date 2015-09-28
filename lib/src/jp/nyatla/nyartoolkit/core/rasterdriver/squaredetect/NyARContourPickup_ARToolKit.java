@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.artoolkit.NyARLabelingImage;
 import jp.nyatla.nyartoolkit.core.types.NyARIntCoordinates;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
@@ -49,7 +49,7 @@ public class NyARContourPickup_ARToolKit extends NyARContourPickup
 	/** 8方位探索の座標マップ*/
 	protected final static int[] _getContour_ydir = {-1,-1, 0, 1, 1, 1, 0,-1 ,-1,-1, 0, 1, 1, 1, 0};
 	
-	public NyARContourPickup_ARToolKit() throws NyARException
+	public NyARContourPickup_ARToolKit()
 	{
 		super();
 	}
@@ -67,9 +67,9 @@ public class NyARContourPickup_ARToolKit extends NyARContourPickup
 	 * 輪郭点を格納するオブジェクトを指定します。
 	 * @return
 	 * 輪郭線がo_coordの長さを超えた場合、falseを返します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public boolean getContour(NyARLabelingImage i_raster,int i_entry_x,int i_entry_y,NyARIntCoordinates o_coord) throws NyARException
+	public boolean getContour(NyARLabelingImage i_raster,int i_entry_x,int i_entry_y,NyARIntCoordinates o_coord)
 	{	
 		final int[] xdir = _getContour_xdir;// static int xdir[8] = { 0, 1, 1, 1, 0,-1,-1,-1};
 		final int[] ydir = _getContour_ydir;// static int ydir[8] = {-1,-1, 0, 1, 1, 1, 0,-1};
@@ -129,7 +129,7 @@ public class NyARContourPickup_ARToolKit extends NyARContourPickup
 						break;
 					}
 					//8方向全て調べたけどラベルが無いよ？
-					throw new NyARException();			
+					throw new NyARRuntimeException();			
 				}
 			}else{
 				//境界に接しているとき
@@ -147,7 +147,7 @@ public class NyARContourPickup_ARToolKit extends NyARContourPickup
 				}
 				if (i == 8) {
 					//8方向全て調べたけどラベルが無いよ？
-					throw new NyARException();// return(-1);
+					throw new NyARRuntimeException();// return(-1);
 				}				
 			}
 			

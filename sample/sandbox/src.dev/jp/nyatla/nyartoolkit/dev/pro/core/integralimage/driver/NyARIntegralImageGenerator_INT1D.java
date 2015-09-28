@@ -12,7 +12,7 @@
  */
 package jp.nyatla.nyartoolkit.dev.pro.core.integralimage.driver;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
@@ -32,9 +32,9 @@ public class NyARIntegralImageGenerator_INT1D implements NyARIntegralImage.IInte
 	/**
 	 * Standard
 	 * @param i_in
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void genIntegralImage(INyARGrayscaleRaster i_in) throws NyARException
+	public void genIntegralImage(INyARGrayscaleRaster i_in) throws NyARRuntimeException
 	{
 		assert(this._ref_size.isEqualSize(i_in.getSize()));
 

@@ -27,7 +27,7 @@ package jp.nyatla.nyartoolkit.markersystem.utils;
 
 import java.util.ArrayList;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.marker.artk.match.NyARMatchPattDeviationColorData;
 import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
@@ -48,7 +48,7 @@ public class MultiResolutionPattProvider
 		public NyARMatchPattDeviationColorData _patt_d;
 		public int _patt_edge;
 		public int _patt_resolution;
-		public Item(int i_patt_w,int i_patt_h,int i_edge_percentage) throws NyARException
+		public Item(int i_patt_w,int i_patt_h,int i_edge_percentage)
 		{
 			int r=1;
 			//解像度は幅を基準にする。
@@ -67,9 +67,9 @@ public class MultiResolutionPattProvider
 	private ArrayList<Item> items=new ArrayList<Item>();
 	/**
 	 * [readonly]マーカにマッチした{@link NyARMatchPattDeviationColorData}インスタンスを得る。
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public NyARMatchPattDeviationColorData getDeviationColorData(ARMarkerList.Item i_marker,INyARPerspectiveCopy i_pix_drv, NyARIntPoint2d[] i_vertex) throws NyARException
+	public NyARMatchPattDeviationColorData getDeviationColorData(ARMarkerList.Item i_marker,INyARPerspectiveCopy i_pix_drv, NyARIntPoint2d[] i_vertex)
 	{
 		int mk_edge=i_marker.patt_edge_percentage;
 		for(int i=this.items.size()-1;i>=0;i--)

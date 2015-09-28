@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.pixel;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
@@ -39,9 +39,9 @@ public class NyARRgbPixelDriverFactory
 	 * この関数は、i_rasterを操作するピクセルドライバインスタンスを生成します。
 	 * @param i_raster
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public static INyARRgbPixelDriver createDriver(INyARRgbRaster i_raster) throws NyARException
+	public static INyARRgbPixelDriver createDriver(INyARRgbRaster i_raster)
 	{
 		INyARRgbPixelDriver ret;
 		switch(i_raster.getBufferType()){
@@ -70,7 +70,7 @@ public class NyARRgbPixelDriverFactory
 			ret= new NyARRgbPixelDriver_WORD1D_R5G6B5_16LE();
 			break;
 		default:
-			throw new NyARException();		
+			throw new NyARRuntimeException();		
 		}
 		ret.switchRaster(i_raster);
 		return ret;
@@ -122,7 +122,7 @@ final class NyARRgbPixelDriver_BYTE1D_B8G8R8_24 implements INyARRgbPixelDriver {
 	/**
 	 * この関数は、RGBデータを指定した座標のピクセルにセットします。
 	 */
-	public void setPixel(int i_x, int i_y, int[] i_rgb) throws NyARException {
+	public void setPixel(int i_x, int i_y, int[] i_rgb) {
 		final byte[] ref_buf = this._ref_buf;
 		final int idx = (i_y * this._ref_size.w + i_x) * 3;
 		ref_buf[idx + 0] = (byte) i_rgb[2];// B
@@ -134,7 +134,7 @@ final class NyARRgbPixelDriver_BYTE1D_B8G8R8_24 implements INyARRgbPixelDriver {
 	 * この関数は、RGBデータを指定した座標のピクセルにセットします。
 	 */
 	public void setPixel(int i_x, int i_y, int i_r, int i_g, int i_b)
-			throws NyARException {
+			throws NyARRuntimeException {
 		final byte[] ref_buf = this._ref_buf;
 		final int idx = (i_y * this._ref_size.w + i_x) * 3;
 		ref_buf[idx + 0] = (byte) i_b;// B
@@ -146,11 +146,11 @@ final class NyARRgbPixelDriver_BYTE1D_B8G8R8_24 implements INyARRgbPixelDriver {
 	 * この関数は、機能しません。
 	 */
 	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intrgb)
-			throws NyARException {
-		NyARException.notImplement();
+			throws NyARRuntimeException {
+		NyARRuntimeException.notImplement();
 	}
 
-	public void switchRaster(INyARRgbRaster i_raster) throws NyARException {
+	public void switchRaster(INyARRgbRaster i_raster) {
 		this._ref_buf = (byte[]) i_raster.getBuffer();
 		this._ref_size = i_raster.getSize();
 	}
@@ -200,7 +200,7 @@ final class NyARRgbPixelDriver_BYTE1D_B8G8R8X8_32 implements
 	/**
 	 * この関数は、RGBデータを指定した座標のピクセルにセットします。
 	 */
-	public void setPixel(int i_x, int i_y, int[] i_rgb) throws NyARException {
+	public void setPixel(int i_x, int i_y, int[] i_rgb) {
 		final byte[] ref_buf = this._ref_buf;
 		final int bp = (i_x + i_y * this._ref_size.w) * 4;
 		ref_buf[bp + 2] = (byte) i_rgb[0];// R
@@ -212,7 +212,7 @@ final class NyARRgbPixelDriver_BYTE1D_B8G8R8X8_32 implements
 	 * この関数は、RGBデータを指定した座標のピクセルにセットします。
 	 */
 	public void setPixel(int i_x, int i_y, int i_r, int i_g, int i_b)
-			throws NyARException {
+			throws NyARRuntimeException {
 		final byte[] ref_buf = this._ref_buf;
 		final int bp = (i_x + i_y * this._ref_size.w) * 4;
 		ref_buf[bp + 2] = (byte) i_r;// R
@@ -224,11 +224,11 @@ final class NyARRgbPixelDriver_BYTE1D_B8G8R8X8_32 implements
 	 * この関数は、機能しません。
 	 */
 	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intrgb)
-			throws NyARException {
-		NyARException.notImplement();
+			throws NyARRuntimeException {
+		NyARRuntimeException.notImplement();
 	}
 
-	public void switchRaster(INyARRgbRaster i_raster) throws NyARException {
+	public void switchRaster(INyARRgbRaster i_raster) {
 		this._ref_buf = (byte[]) i_raster.getBuffer();
 		this._ref_size = i_raster.getSize();
 	}
@@ -278,7 +278,7 @@ final class NyARRgbPixelDriver_BYTE1D_R8G8B8_24 implements INyARRgbPixelDriver {
 	/**
 	 * この関数は、RGBデータを指定した座標のピクセルにセットします。
 	 */
-	public void setPixel(int i_x, int i_y, int[] i_rgb) throws NyARException {
+	public void setPixel(int i_x, int i_y, int[] i_rgb) {
 		final byte[] ref_buf = this._ref_buf;
 		final int idx = (i_y * this._ref_size.w + i_x) * 3;
 		ref_buf[idx + 0] = (byte) i_rgb[0];// R
@@ -290,7 +290,7 @@ final class NyARRgbPixelDriver_BYTE1D_R8G8B8_24 implements INyARRgbPixelDriver {
 	 * この関数は、RGBデータを指定した座標のピクセルにセットします。
 	 */
 	public void setPixel(int i_x, int i_y, int i_r, int i_g, int i_b)
-			throws NyARException {
+			throws NyARRuntimeException {
 		final byte[] ref_buf = this._ref_buf;
 		final int idx = (i_y * this._ref_size.w + i_x) * 3;
 		ref_buf[idx + 0] = (byte) i_r;// R
@@ -302,11 +302,11 @@ final class NyARRgbPixelDriver_BYTE1D_R8G8B8_24 implements INyARRgbPixelDriver {
 	 * この関数は、機能しません。
 	 */
 	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intrgb)
-			throws NyARException {
-		NyARException.notImplement();
+			throws NyARRuntimeException {
+		NyARRuntimeException.notImplement();
 	}
 
-	public void switchRaster(INyARRgbRaster i_raster) throws NyARException {
+	public void switchRaster(INyARRgbRaster i_raster) {
 		this._ref_buf = (byte[]) i_raster.getBuffer();
 		this._ref_size = i_raster.getSize();
 	}
@@ -384,7 +384,7 @@ final class NyARRgbPixelDriver_BYTE1D_X8R8G8B8_32 implements
         }
     }
 
-	public void switchRaster(INyARRgbRaster i_raster) throws NyARException
+	public void switchRaster(INyARRgbRaster i_raster)
 	{
 		this._ref_buf = (byte[]) i_raster.getBuffer();
 		this._ref_size = i_raster.getSize();
@@ -463,7 +463,7 @@ final class NyARRgbPixelDriver_BYTE1D_X8B8G8R8_32 implements
         }
     }
 
-	public void switchRaster(INyARRgbRaster i_raster) throws NyARException
+	public void switchRaster(INyARRgbRaster i_raster)
 	{
 		this._ref_buf = (byte[]) i_raster.getBuffer();
 		this._ref_size = i_raster.getSize();
@@ -510,27 +510,27 @@ final class NyARRgbPixelDriver_INT1D_GRAY_8 implements INyARRgbPixelDriver {
 	/**
 	 * この関数は、機能しません。
 	 */
-	public void setPixel(int i_x, int i_y, int[] i_rgb) throws NyARException {
-		NyARException.notImplement();
+	public void setPixel(int i_x, int i_y, int[] i_rgb) {
+		NyARRuntimeException.notImplement();
 	}
 
 	/**
 	 * この関数は、機能しません。
 	 */
 	public void setPixel(int i_x, int i_y, int i_r, int i_g, int i_b)
-			throws NyARException {
-		NyARException.notImplement();
+			throws NyARRuntimeException {
+		NyARRuntimeException.notImplement();
 	}
 
 	/**
 	 * この関数は、機能しません。
 	 */
 	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intrgb)
-			throws NyARException {
-		NyARException.notImplement();
+			throws NyARRuntimeException {
+		NyARRuntimeException.notImplement();
 	}
 
-	public void switchRaster(INyARRgbRaster i_raster) throws NyARException {
+	public void switchRaster(INyARRgbRaster i_raster) {
 		this._ref_buf = (int[]) i_raster.getBuffer();
 		this._ref_size = i_raster.getSize();
 	}
@@ -577,7 +577,7 @@ final class NyARRgbPixelDriver_INT1D_X8R8G8B8_32 implements INyARRgbPixelDriver 
 	/**
 	 * この関数は、RGBデータを指定した座標のピクセルにセットします。
 	 */
-	public void setPixel(int i_x, int i_y, int[] i_rgb) throws NyARException {
+	public void setPixel(int i_x, int i_y, int[] i_rgb) {
 		this._ref_buf[i_x + i_y * this._ref_size.w] = (i_rgb[0] << 16)
 				| (i_rgb[1] << 8) | (i_rgb[2]);
 	}
@@ -586,7 +586,7 @@ final class NyARRgbPixelDriver_INT1D_X8R8G8B8_32 implements INyARRgbPixelDriver 
 	 * この関数は、RGBデータを指定した座標のピクセルにセットします。
 	 */
 	public void setPixel(int i_x, int i_y, int i_r, int i_g, int i_b)
-			throws NyARException {
+			throws NyARRuntimeException {
 		this._ref_buf[i_x + i_y * this._ref_size.w] = (i_r << 16) | (i_g << 8)
 				| (i_b);
 	}
@@ -595,11 +595,11 @@ final class NyARRgbPixelDriver_INT1D_X8R8G8B8_32 implements INyARRgbPixelDriver 
 	 * この関数は、機能しません。
 	 */
 	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intrgb)
-			throws NyARException {
-		NyARException.notImplement();
+			throws NyARRuntimeException {
+		NyARRuntimeException.notImplement();
 	}
 
-	public void switchRaster(INyARRgbRaster i_raster) throws NyARException {
+	public void switchRaster(INyARRgbRaster i_raster) {
 		this._ref_buf = (int[]) i_raster.getBuffer();
 		this._ref_size = i_raster.getSize();
 	}
@@ -655,27 +655,27 @@ final class NyARRgbPixelDriver_WORD1D_R5G6B5_16LE implements
 	/**
 	 * この関数は、機能しません。
 	 */
-	public void setPixel(int i_x, int i_y, int[] i_rgb) throws NyARException {
-		NyARException.notImplement();
+	public void setPixel(int i_x, int i_y, int[] i_rgb) {
+		NyARRuntimeException.notImplement();
 	}
 
 	/**
 	 * この関数は、機能しません。
 	 */
 	public void setPixel(int i_x, int i_y, int i_r, int i_g, int i_b)
-			throws NyARException {
-		NyARException.notImplement();
+			throws NyARRuntimeException {
+		NyARRuntimeException.notImplement();
 	}
 
 	/**
 	 * この関数は、機能しません。
 	 */
 	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intrgb)
-			throws NyARException {
-		NyARException.notImplement();
+			throws NyARRuntimeException {
+		NyARRuntimeException.notImplement();
 	}
 
-	public void switchRaster(INyARRgbRaster i_raster) throws NyARException {
+	public void switchRaster(INyARRgbRaster i_raster) {
 		this._ref_buf = (short[]) i_raster.getBuffer();
 		this._ref_size = i_raster.getSize();
 	}

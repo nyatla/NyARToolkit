@@ -25,7 +25,6 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.filter.gs;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.histogram.NyARHistogram;
 import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.histogram.INyARHistogramFromRaster;
@@ -35,7 +34,7 @@ import jp.nyatla.nyartoolkit.core.rasterdriver.histogram.INyARHistogramFromRaste
  */
 public interface INyARGsEqualizeHistFilter
 {
-	public void doFilter(int i_hist_interval,INyARGrayscaleRaster i_output) throws NyARException;
+	public void doFilter(int i_hist_interval,INyARGrayscaleRaster i_output);
 }
 
 
@@ -48,12 +47,12 @@ class NyARGsEqualizeHistFilter_Any implements INyARGsEqualizeHistFilter
 	private NyARHistogram _histogram=new NyARHistogram(256);
 	private int[] _hist=new int[256];
 
-	public NyARGsEqualizeHistFilter_Any(INyARGrayscaleRaster i_raster) throws NyARException
+	public NyARGsEqualizeHistFilter_Any(INyARGrayscaleRaster i_raster)
 	{
 		this._tone_table=NyARGsFilterFactory.createCustomToneTableFilter(i_raster);
 		this._histdrv=(INyARHistogramFromRaster) i_raster.createInterface(INyARHistogramFromRaster.class);
 	}
-	public void doFilter(int i_hist_interval,INyARGrayscaleRaster i_output) throws NyARException
+	public void doFilter(int i_hist_interval,INyARGrayscaleRaster i_output)
 	{
 		//ヒストグラムを得る
 		NyARHistogram hist=this._histogram;

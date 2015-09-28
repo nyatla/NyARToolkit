@@ -25,7 +25,6 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.filter.gs;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARGsPixelDriver;
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -39,7 +38,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
  */
 public interface INyARGsReverseFilter
 {
-	public void doFilter(INyARGrayscaleRaster i_output) throws NyARException;
+	public void doFilter(INyARGrayscaleRaster i_output);
 }
 class NyARGsReverseFilter_Any implements INyARGsReverseFilter
 {
@@ -48,7 +47,7 @@ class NyARGsReverseFilter_Any implements INyARGsReverseFilter
 	{
 		this._raster=i_raster;
 	}
-	public final void doFilter(INyARGrayscaleRaster i_output) throws NyARException
+	public final void doFilter(INyARGrayscaleRaster i_output)
 	{
 		INyARGsPixelDriver ind=this._raster.getGsPixelDriver();
 		INyARGsPixelDriver outd=i_output.getGsPixelDriver();

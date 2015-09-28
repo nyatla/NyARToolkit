@@ -30,7 +30,7 @@
  * 
  */
 package jp.nyatla.nyartoolkit.sandbox.vertexdetect;
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.coord2liner.NyARCoord2Linear;
 import jp.nyatla.nyartoolkit.core.labeling.*;
 import jp.nyatla.nyartoolkit.core.labeling.artoolkit.*;
@@ -72,7 +72,7 @@ public class NyARVertexDetector extends NyARSquareContourDetector
 	 * 
 	 * @param i_param
 	 */
-	public NyARVertexDetector(NyARCameraDistortionFactorV2 i_dist_factor_ref,NyARIntSize i_size) throws NyARException
+	public NyARVertexDetector(NyARCameraDistortionFactorV2 i_dist_factor_ref,NyARIntSize i_size) throws NyARRuntimeException
 	{
 		this._width = i_size.w;
 		this._height = i_size.h;
@@ -101,9 +101,9 @@ public class NyARVertexDetector extends NyARSquareContourDetector
 	 * 解析する２値ラスタイメージを指定します。
 	 * @param o_square_stack
 	 * 抽出した正方形候補を格納するリスト
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public final void detectMarker(NyARBinRaster i_raster, NyARSquareStack o_square_stack) throws NyARException
+	public final void detectMarker(NyARBinRaster i_raster, NyARSquareStack o_square_stack) throws NyARRuntimeException
 	{
 		final NyARLabelingImage limage = this._limage;
 

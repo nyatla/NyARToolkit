@@ -12,7 +12,7 @@
  */
 package jp.nyatla.nyartoolkit.dev.pro.core.kpm.ann;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.stack.*;
 import jp.nyatla.nyartoolkit.pro.core.surf.NyARSurfDescriptor;
 
@@ -29,13 +29,13 @@ public abstract class NyARSurfAnnMatch
 	public static class ResultPtr extends NyARPointerStack<ResultItem>
 	{
 		/**
-		 * コンストラクタです�?? 配�?��?��?大長さを�?定して、インスタンスを生成します�??
+		 * コンストラクタです�?? 配�?��?��?大長さを�?定して、インスタンスを生成します�??
 		 * 
 		 * @param i_length
-		 *            配�?��?��?大長�?
-		 * @throws NyARException
+		 *            配�?��?��?大長�?
+		 * @throws NyARRuntimeException
 		 */
-		public ResultPtr(int i_length) throws NyARException
+		public ResultPtr(int i_length) throws NyARRuntimeException
 		{
 			super.initInstance(i_length, ResultItem.class);
 		}
@@ -43,7 +43,7 @@ public abstract class NyARSurfAnnMatch
 
 	public static class Result extends ResultPtr
 	{
-		public Result(int i_length) throws NyARException
+		public Result(int i_length) throws NyARRuntimeException
 		{
 			super(i_length);
 			for(int i=i_length-1;i>=0;i--){
@@ -52,11 +52,11 @@ public abstract class NyARSurfAnnMatch
 		}
 		public final ResultItem prePush()
 		{
-			// �?要に応じてアロケー�?
+			// �?要に応じてアロケー�?
 			if (this._length >= this._items.length){
 				return null;
 			}
-			// 使用領域�?+1して、予�?した領域を返す�?
+			// 使用領域�?+1して、予�?した領域を返す�?
 			ResultItem ret = this._items[this._length];
 			this._length++;
 			return ret;

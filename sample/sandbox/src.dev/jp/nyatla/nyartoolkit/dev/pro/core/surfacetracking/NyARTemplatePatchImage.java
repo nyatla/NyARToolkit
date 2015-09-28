@@ -1,13 +1,13 @@
 package jp.nyatla.nyartoolkit.dev.pro.core.surfacetracking;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.INyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.pro.core.surfacetracking.imageset.NyARSurfaceImageSet;
 
 /**
- * �?ンプレートに使用するパッチ画像を格納します�??
+ * �?ンプレートに使用するパッチ画像を格納します�??
  *
  */
 public class NyARTemplatePatchImage
@@ -15,25 +15,25 @@ public class NyARTemplatePatchImage
 	public final static int AR2_TEMP_SCALE = 3;
 	public final static int AR2_TEMPLATE_NULL_PIXEL = 2000000000;
 	/**
-	 * �?ンプレートサイズ
+	 * �?ンプレートサイズ
 	 */
 	public int xsize;
 	/**
-	 * �?ンプレートサイズ
+	 * �?ンプレートサイズ
 	 */
 	public int ysize;
 	/**
-	 * x方向�?��?ンプレート�?�域
+	 * x方向�?��?ンプレート�?�域
 	 * xsize=xts*2+1
 	 */
 	public int xts;
 	/**
-	 * y方向�?��?ンプレート�?�域
+	 * y方向�?��?ンプレート�?�域
 	 * ysize=yts*2+1
 	 */
 	public int yts;
 	/**
-	 * �?ンプレートイメージ。この値はARToolkitNFTと異なり�?�生�?ータであるので注意すること?�?
+	 * �?ンプレートイメージ。この値はARToolkitNFTと異なり�?�生�?ータであるので注意すること?�?
 	 */
 	public int[] img;
 	/**
@@ -41,7 +41,7 @@ public class NyARTemplatePatchImage
 	 */
 	public int vlen;
 	/**
-	 * 有効なピクセル値の合計�?�
+	 * 有効なピクセル値の合計�?�
 	 */
 	public int sum_of_img;
 	/**
@@ -49,14 +49,14 @@ public class NyARTemplatePatchImage
 	 */
 	public int num_of_pixels;
 	/**
-	 * 有効なピクセルの平�?値
+	 * 有効なピクセルの平�?値
 	 */
 	public int ave;
 	
 
 
 	/**
-	 * 1bitを中�?に�?(i_tx*2+1)*(i_ty*2+1)の�?ンプレートを生�?�する�??
+	 * 1bitを中�?に�?(i_tx*2+1)*(i_ty*2+1)の�?ンプレートを生�?�する�??
 	 * @param i_tx
 	 * @param i_ty
 	 */
@@ -74,17 +74,17 @@ public class NyARTemplatePatchImage
 	private NyARDoublePoint2d __in=new NyARDoublePoint2d();
 	
 	/**
-	 * 元ar2GenTemplate関数�?
-	 * 与えられた座標を中�?に、テンプレート画像を生�?�する�??
-	 * 座標�?�観察座標点�?
+	 * 元ar2GenTemplate関数�?
+	 * 与えられた座標を中�?に、テンプレート画像を生�?�する�??
+	 * 座標�?�観察座標点�?
 	 * @param i_x
 	 * @param i_y
 	 * @param i_scale
 	 * @param o_template
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void makeFromReferenceImage(double i_x,double i_y,NyARDoubleMatrix44 i_ref_ctrans,INyARCameraDistortionFactor i_ref_dist_factor,jp.nyatla.nyartoolkit.dev.pro.core.surfacetracking.imageset.ReferenceImage i_source) throws NyARException
+	public void makeFromReferenceImage(double i_x,double i_y,NyARDoubleMatrix44 i_ref_ctrans,INyARCameraDistortionFactor i_ref_dist_factor,jp.nyatla.nyartoolkit.dev.pro.core.surfacetracking.imageset.ReferenceImage i_source) throws NyARRuntimeException
 	{
 		int[] img = this.img;
 		int img1_ptr=0;
@@ -111,7 +111,7 @@ public class NyARTemplatePatchImage
 					int ix= (int)((((c22 * b1 - c12 * b2) / m) * i_source.dpi / 25.4f)+0.5);
 					int iy= (int)((i_source.height - (((c11 * b2 - c21 * b1) / m) * i_source.dpi)/ 25.4f)+0.5);
 
-				    //座標計算と値取得�?��?けよ�?�?
+				    //座標計算と値取得�?��?けよ�?�?
 				    if( ix < 0 || ix >= i_source.width || iy < 0 || iy >= i_source.height ){
 				    	img[img1_ptr] = AR2_TEMPLATE_NULL_PIXEL;
 				    }else{
@@ -120,7 +120,7 @@ public class NyARTemplatePatchImage
 						r2+=ret;
 						k++;
 				    }
-				    //byte値はint�?
+				    //byte値はint�?
 				}				    
 				img1_ptr++;
 			}

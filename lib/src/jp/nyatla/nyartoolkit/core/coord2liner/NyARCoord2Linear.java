@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.coord2liner;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.coord2liner.pca2d.INyARPca2d;
 import jp.nyatla.nyartoolkit.core.coord2liner.pca2d.NyARPca2d_MatrixPCA_O2;
 import jp.nyatla.nyartoolkit.core.param.INyARCameraDistortionFactor;
@@ -90,9 +90,9 @@ public class NyARCoord2Linear
 	 * 直線式を受け取るオブジェクト
 	 * @return
 	 * 直線式の計算に成功すると、trueを返します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public boolean coord2Line(int i_st,int i_ed,NyARIntCoordinates i_coord, NyARLinear o_line) throws NyARException
+	public boolean coord2Line(int i_st,int i_ed,NyARIntCoordinates i_coord, NyARLinear o_line)
 	{
 		//頂点を取得
 		int n,st,ed;

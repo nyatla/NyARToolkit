@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
@@ -46,19 +46,19 @@ public class NyARRasterFilter_Rgb2Hsv
 	public interface IFilter
 	{
 		public boolean isSupport(INyARRaster i_in,INyARRaster i_out);
-		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException;		
+		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size);		
 	}
 
 	private IFilter _do_filter_impl;
 	/**
 	 * コンストラクタです。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public NyARRasterFilter_Rgb2Hsv() throws NyARException
+	public NyARRasterFilter_Rgb2Hsv()
 	{
 		this._do_filter_impl=new Rgb2HsvFilter_Blank();
 	}
-	protected IFilter createFilter(INyARRaster i_in,INyARRaster i_out) throws NyARException
+	protected IFilter createFilter(INyARRaster i_in,INyARRaster i_out)
 	{
 		if(i_in.getBufferType()==NyARBufferType.INT1D_GRAY_8){
 			switch(i_out.getBufferType()){
@@ -68,13 +68,13 @@ public class NyARRasterFilter_Rgb2Hsv
 				break;
 			}
 		}
-		throw new NyARException();
+		throw new NyARRuntimeException();
 	}	
 	/**
 	 * 入力ラスタをHSV形式に変換して、出力ラスタへ書込みます。
 	 * 画素形式は、コンストラクタに指定した形式に合せてください。
 	 */		
-	public void doFilter(INyARRgbRaster i_input, INyARRaster i_output) throws NyARException
+	public void doFilter(INyARRgbRaster i_input, INyARRaster i_output)
 	{
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
 		if(!this._do_filter_impl.isSupport(i_input,i_output)){
@@ -94,9 +94,9 @@ class Rgb2HsvFilter_Blank implements NyARRasterFilter_Rgb2Hsv.IFilter
 	{
 		return false;
 	}
-	public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException
+	public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size)
 	{
-		throw new NyARException();
+		throw new NyARRuntimeException();
 	}
 	
 }
@@ -107,7 +107,7 @@ class Rgb2HsvFilter_BYTE1D_B8G8R8_24 implements NyARRasterFilter_Rgb2Hsv.IFilter
 	{
 		return i_in.isEqualBufferType(NyARBufferType.BYTE1D_B8G8R8_24) && i_out.isEqualBufferType(NyARBufferType.INT1D_X7H9S8V8_32);
 	}
-	public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException
+	public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size)
 	{
 		assert(i_input.isEqualBufferType(NyARBufferType.INT1D_X7H9S8V8_32));
 		

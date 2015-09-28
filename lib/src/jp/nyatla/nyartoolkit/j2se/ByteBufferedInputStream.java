@@ -30,7 +30,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 
 /**
  * このクラスは、{@link InputStream}からバッファリングしながら読み出します。
@@ -65,16 +65,16 @@ public class ByteBufferedInputStream
 	 * @param i_size
 	 * @return
 	 * 読み出したバイト数
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public int readToBuffer(int i_size) throws NyARException
+	public int readToBuffer(int i_size)
 	{
 		assert(this._read_len<this._buf.length);
 		int len=0;
 		try {
 			len=this._stream.read(this._buf, 0, i_size);
 		} catch (IOException e) {
-			throw new NyARException(e);
+			throw new NyARRuntimeException(e);
 		}
 		this._bb.rewind();
 		this._read_len=0;
@@ -86,14 +86,14 @@ public class ByteBufferedInputStream
 	 * @param i_size
 	 * @return
 	 * 読み出したバイト数
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public int readBytes(byte[] i_buf,int i_size) throws NyARException
+	public int readBytes(byte[] i_buf,int i_size)
 	{
 		try {
 			return this._stream.read(i_buf, 0, i_size);
 		} catch (IOException e) {
-			throw new NyARException(e);
+			throw new NyARRuntimeException(e);
 		}
 	}	
 	public int getInt()

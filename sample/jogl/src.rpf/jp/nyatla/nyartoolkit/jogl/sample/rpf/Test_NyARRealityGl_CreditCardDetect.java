@@ -37,7 +37,7 @@ import java.io.FileInputStream;
 import javax.media.Buffer;
 import javax.media.opengl.*;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
@@ -86,7 +86,7 @@ public class Test_NyARRealityGl_CreditCardDetect implements GLEventListener, Jmf
 	NyARRealitySource_Jmf _src;
 	CardDetect _mklib;
 
-	public Test_NyARRealityGl_CreditCardDetect(NyARParam i_param) throws NyARException
+	public Test_NyARRealityGl_CreditCardDetect(NyARParam i_param) throws NyARRuntimeException
 	{
 		clock=0;
 		Frame frame = new Frame("NyARToolkit+RPF["+this.getClass().getName()+"]");
@@ -95,7 +95,7 @@ public class Test_NyARRealityGl_CreditCardDetect implements GLEventListener, Jmf
 		JmfCaptureDeviceList devlist = new JmfCaptureDeviceList();
 		this._capture = devlist.getDevice(0);
 		if (!this._capture.setCaptureFormat(SCREEN_X, SCREEN_Y, 15.0f)) {
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		this._capture.setOnCapture(this);
 		//Realityの構築

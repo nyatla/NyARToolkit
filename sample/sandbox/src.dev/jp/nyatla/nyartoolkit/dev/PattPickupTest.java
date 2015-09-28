@@ -61,7 +61,7 @@ public class PattPickupTest extends Frame implements JmfCaptureListener
 
 	private NyARSingleDetectMarker detect;
 
-	public PattPickupTest() throws NyARException
+	public PattPickupTest() throws NyARRuntimeException
 	{
 		setTitle("JmfCaptureTest");
 		Insets ins = this.getInsets();
@@ -70,7 +70,7 @@ public class PattPickupTest extends Frame implements JmfCaptureListener
 		this._capture = dl.getDevice(0);
 		if (!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB, W, H, 30.0f)) {
 			if (!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_YUV, W, H, 30.0f)) {
-				throw new NyARException("キャプチャフォーマットが見つかりません。");
+				throw new NyARRuntimeException("キャプチャフォーマットが見つかりません。");
 			}
 		}
 		NyARParam ar_param = new NyARParam();

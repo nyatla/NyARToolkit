@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.labeling.artoolkit;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
@@ -61,9 +61,9 @@ public class NyARLabelingImage extends NyARRaster_BasicClass
 	 * ラスタの幅を指定します。
 	 * @param i_height
 	 * ラスタの高さを指定します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public NyARLabelingImage(int i_width, int i_height) throws NyARException
+	public NyARLabelingImage(int i_width, int i_height)
 	{
 		super(i_width,i_height,NyARBufferType.INT1D);
 		this._buf =new int[i_height*i_width];
@@ -88,9 +88,9 @@ public class NyARLabelingImage extends NyARRaster_BasicClass
 	/**
 	 * このクラスでは、関数は機能しません。
 	 */
-	public void wrapBuffer(Object i_ref_buf) throws NyARException
+	public void wrapBuffer(Object i_ref_buf)
 	{
-		NyARException.notImplement();
+		NyARRuntimeException.notImplement();
 	}	
 	/**
 	 * この関数は、矩形エッジ（画像を囲む枠）を書きます。
@@ -160,7 +160,7 @@ public class NyARLabelingImage extends NyARRaster_BasicClass
 	 * @return
 	 * ラベルの上辺クリップとの接点となる、x位置
 	 */
-	public int getTopClipTangentX(NyARLabelingLabel i_label) throws NyARException
+	public int getTopClipTangentX(NyARLabelingLabel i_label)
 	{
 		int pix;
 		int i_label_id=i_label.id;
@@ -176,11 +176,11 @@ public class NyARLabelingImage extends NyARRaster_BasicClass
 			}
 		}
 		//あれ？見つからないよ？
-		throw new NyARException();
+		throw new NyARRuntimeException();
 	}
-	public Object createInterface(Class<?> iIid) throws NyARException
+	public Object createInterface(Class<?> iIid)
 	{
-		throw new NyARException();
+		throw new NyARRuntimeException();
 	}
 	
 }

@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.raster;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARRgbPixelDriver;
 
 /**
@@ -38,8 +38,8 @@ public interface INyARRgbRaster extends INyARRaster
 	 * 実装クラスでは、所有するバッファに関連したラスタ読出しオブジェクトを返す処理を実装してください。
 	 * @return
 	 * オブジェクトの参照値
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public INyARRgbPixelDriver getRgbPixelDriver() throws NyARException;
+	public INyARRgbPixelDriver getRgbPixelDriver();
 
 }

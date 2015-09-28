@@ -25,7 +25,6 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.filter.gs;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
 
 /**
@@ -50,7 +49,7 @@ public interface INyARGsToneTableFilter
 	 * @param i_a
 	 * 直線の傾きです。
 	 */	
-	public void line(double i_a,INyARGrayscaleRaster i_output) throws NyARException;
+	public void line(double i_a,INyARGrayscaleRaster i_output);
 	/**
 	 * トーンテーブルに、点x,yを通過する、傾きi_aの直線を定義して、フィルタを適応します。
 	 * @param i_x
@@ -60,7 +59,7 @@ public interface INyARGsToneTableFilter
 	 * @param i_a
 	 * 直線の傾きです。
 	 */	
-	public void line(int i_x,int i_y,double i_a,INyARGrayscaleRaster i_output) throws NyARException;
+	public void line(int i_x,int i_y,double i_a,INyARGrayscaleRaster i_output);
 	/**
 	 * 点 i_x,i_yを中心とする、ゲインi_gainのシグモイド関数を定義して、フィルタを適応します。
 	 * @param i_x
@@ -70,13 +69,13 @@ public interface INyARGsToneTableFilter
 	 * @param i_gain
 	 * シグモイド関数のゲイン値
 	 */	
-	public void sigmoid(int i_x,int i_y,double i_gain,INyARGrayscaleRaster i_output) throws NyARException;
+	public void sigmoid(int i_x,int i_y,double i_gain,INyARGrayscaleRaster i_output);
 	/**
 	 * ガンマ補正値を定義して、フィルタを適応します。
 	 * @param i_gamma
 	 * ガンマ値
 	 */	
-	public void gamma(double i_gamma,INyARGrayscaleRaster i_output) throws NyARException;
+	public void gamma(double i_gamma,INyARGrayscaleRaster i_output);
 }
 
 
@@ -85,12 +84,12 @@ class NyARGsToneTableFilter implements INyARGsToneTableFilter
 	private int[] _table=new int[256];
 	private INyARGsCustomToneTableFilter _tone_filter;
 	
-	public NyARGsToneTableFilter(INyARGrayscaleRaster i_raster) throws NyARException
+	public NyARGsToneTableFilter(INyARGrayscaleRaster i_raster)
 	{
 		this._tone_filter=NyARGsFilterFactory.createCustomToneTableFilter(i_raster);
 	}
 
-	public void line(int i_x,int i_y,double i_a,INyARGrayscaleRaster i_output) throws NyARException
+	public void line(int i_x,int i_y,double i_a,INyARGrayscaleRaster i_output)
 	{
 		if(i_a==0){
 			int i;
@@ -110,12 +109,12 @@ class NyARGsToneTableFilter implements INyARGsToneTableFilter
 		this._tone_filter.doFilter(this._table,i_output);
 	}
 
-	public void line(double i_a,INyARGrayscaleRaster i_output) throws NyARException
+	public void line(double i_a,INyARGrayscaleRaster i_output)
 	{
 		this.line(0,0,i_a,i_output);
 	}
 
-	public void sigmoid(int i_x,int i_y,double i_gain,INyARGrayscaleRaster i_output) throws NyARException
+	public void sigmoid(int i_x,int i_y,double i_gain,INyARGrayscaleRaster i_output)
 	{
 		for(int i=0;i<256;i++){
 			int v=255*(int)(1/(1+Math.exp(i_gain*(i-i_x)))-0.5)+i_y;
@@ -124,7 +123,7 @@ class NyARGsToneTableFilter implements INyARGsToneTableFilter
 		this._tone_filter.doFilter(this._table,i_output);
 	}
 
-	public void gamma(double i_gamma,INyARGrayscaleRaster i_output) throws NyARException
+	public void gamma(double i_gamma,INyARGrayscaleRaster i_output)
 	{
 		for(int i=0;i<256;i++){
 			this._table[i]=(int)(Math.pow((double)i/255.0,i_gamma)*255.0);

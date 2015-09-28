@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterfilter;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
@@ -42,18 +42,18 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 public class NyARRasterOperator_Mul
 {
 	private IdoFilterImpl _dofilterimpl;
-	public NyARRasterOperator_Mul(int i_raster_type) throws NyARException
+	public NyARRasterOperator_Mul(int i_raster_type) throws NyARRuntimeException
 	{
 		switch (i_raster_type) {
 		case NyARBufferType.INT1D_GRAY_8:
 			this._dofilterimpl=new IdoFilterImpl_INT1D_GRAY_8();
 			break;
 		default:
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 	}
 	//
-	public void doFilter(INyARRaster i_input_a,INyARRaster i_input_b, INyARRaster i_output) throws NyARException
+	public void doFilter(INyARRaster i_input_a,INyARRaster i_input_b, INyARRaster i_output) throws NyARRuntimeException
 	{
 		assert (i_input_a.getSize().isEqualSize(i_output.getSize()) == true);
 		assert (i_input_b.getSize().isEqualSize(i_output.getSize()) == true);
@@ -63,12 +63,12 @@ public class NyARRasterOperator_Mul
 	abstract class IdoFilterImpl
 	{
 		int[] _window_ref;
-		public abstract void doFilter(INyARRaster i_input_a,INyARRaster i_input_b,INyARRaster i_output,NyARIntSize i_size) throws NyARException;
+		public abstract void doFilter(INyARRaster i_input_a,INyARRaster i_input_b,INyARRaster i_output,NyARIntSize i_size) throws NyARRuntimeException;
 		
 	}
 	class IdoFilterImpl_INT1D_GRAY_8 extends IdoFilterImpl
 	{
-		public void doFilter(INyARRaster i_input_a,INyARRaster i_input_b,INyARRaster i_output,NyARIntSize i_size) throws NyARException
+		public void doFilter(INyARRaster i_input_a,INyARRaster i_input_b,INyARRaster i_output,NyARIntSize i_size) throws NyARRuntimeException
 		{
 			assert(i_input_a.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
 			assert(i_input_b.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));

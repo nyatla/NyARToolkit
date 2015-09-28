@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.coord2liner.pca2d;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix22;
 
 /**
@@ -54,9 +54,9 @@ public interface INyARPca2d
 	 * 出力値
 	 * @param o_mean
 	 * 出力値
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void pca(double[] i_v1,double[] i_v2,int i_number_of_point,NyARDoubleMatrix22 o_evec, double[] o_ev,double[] o_mean) throws NyARException;
+	public void pca(double[] i_v1,double[] i_v2,int i_number_of_point,NyARDoubleMatrix22 o_evec, double[] o_ev,double[] o_mean);
 //	/**
 //	 * カメラ歪み補正つきのPCA
 //	 * @param i_x
@@ -66,7 +66,6 @@ public interface INyARPca2d
 //	 * @param i_factor
 //	 * @param o_evec
 //	 * @param o_mean
-//	 * @throws NyARException
 //	 */
-//	public void pcaWithDistortionFactor(int[] i_x,int[] i_y,int i_start,int i_number_of_point,INyARCameraDistortionFactor i_factor,NyARDoubleMatrix22 o_evec,NyARDoublePoint2d o_ev, NyARDoublePoint2d o_mean) throws NyARException;
+//	public void pcaWithDistortionFactor(int[] i_x,int[] i_y,int i_start,int i_number_of_point,INyARCameraDistortionFactor i_factor,NyARDoubleMatrix22 o_evec,NyARDoublePoint2d o_ev, NyARDoublePoint2d o_mean);
 }

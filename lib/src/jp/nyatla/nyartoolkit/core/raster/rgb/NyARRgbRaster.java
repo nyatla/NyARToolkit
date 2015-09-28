@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.raster.rgb;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.marker.artk.match.NyARMatchPattDeviationColorData;
 import jp.nyatla.nyartoolkit.core.rasterdriver.perspectivecopy.INyARPerspectiveCopy;
 import jp.nyatla.nyartoolkit.core.rasterdriver.perspectivecopy.NyARPerspectiveCopyFactory;
@@ -78,9 +78,9 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 	 * バッファを外部参照にするかのフラグ値。
 	 * trueなら内部バッファ、falseなら外部バッファを使用します。
 	 * falseの場合、初期のバッファはnullになります。インスタンスを生成したのちに、{@link #wrapBuffer}を使って割り当ててください。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public NyARRgbRaster(int i_width, int i_height,int i_raster_type,boolean i_is_alloc) throws NyARException
+	public NyARRgbRaster(int i_width, int i_height,int i_raster_type,boolean i_is_alloc)
 	{
 		super(i_width,i_height,i_raster_type);
 		initInstance(this._size,i_raster_type,i_is_alloc);
@@ -96,9 +96,9 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 	 * ラスタのバッファ形式。
 	 * {@link NyARBufferType}に定義された定数値を指定してください。
 	 * 指定できる値は、クラスの説明を見てください。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public NyARRgbRaster(int i_width, int i_height,int i_raster_type) throws NyARException
+	public NyARRgbRaster(int i_width, int i_height,int i_raster_type)
 	{
 		super(i_width,i_height,i_raster_type);
 		initInstance(this._size,i_raster_type,true);
@@ -110,9 +110,9 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 	 * ラスタのサイズ
 	 * @param i_height
 	 * ラスタのサイズ
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public NyARRgbRaster(int i_width, int i_height) throws NyARException
+	public NyARRgbRaster(int i_width, int i_height)
 	{
 		super(i_width,i_height,NyARBufferType.INT1D_X8R8G8B8_32);
 		initInstance(this._size,NyARBufferType.INT1D_X8R8G8B8_32,true);
@@ -126,10 +126,10 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 	 * バッファタイプ
 	 * @param i_is_alloc
 	 * 外部参照/内部バッファのフラグ
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 * 初期化に失敗したら例外を発生させます。
 	 */
-	protected void initInstance(NyARIntSize i_size,int i_raster_type,boolean i_is_alloc) throws NyARException
+	protected void initInstance(NyARIntSize i_size,int i_raster_type,boolean i_is_alloc)
 	{
 		//バッファの構築
 		switch(i_raster_type)
@@ -150,7 +150,7 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 				this._buf=i_is_alloc?new short[i_size.w*i_size.h]:null;
 				break;
 			default:
-				throw new NyARException();
+				throw new NyARRuntimeException();
 		}
 		//readerの構築
 		this._rgb_pixel_driver=NyARRgbPixelDriverFactory.createDriver(this);
@@ -161,9 +161,9 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 	 * この関数は、画素形式によらない画素アクセスを行うオブジェクトへの参照値を返します。
 	 * @return
 	 * オブジェクトの参照値
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */	
-	public INyARRgbPixelDriver getRgbPixelDriver() throws NyARException
+	public INyARRgbPixelDriver getRgbPixelDriver()
 	{
 		return this._rgb_pixel_driver;
 	}	
@@ -190,7 +190,7 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 	 * この関数は、ラスタに外部参照バッファをセットします。
 	 * 外部参照バッファの時にだけ使えます。
 	 */
-	public void wrapBuffer(Object i_ref_buf) throws NyARException
+	public void wrapBuffer(Object i_ref_buf)
 	{
 		assert(!this._is_attached_buffer);//バッファがアタッチされていたら機能しない。
 		this._buf=i_ref_buf;
@@ -209,7 +209,7 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 	 * <li>{@link INyARRgb2GsFilterArtkTh}
 	 * </ul>
 	 */
-	public Object createInterface(Class<?> iIid) throws NyARException
+	public Object createInterface(Class<?> iIid)
 	{
 		if(iIid==INyARPerspectiveCopy.class){
 			return NyARPerspectiveCopyFactory.createDriver(this);
@@ -230,6 +230,6 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 		if(iIid==INyARRgb2GsFilterArtkTh.class){
 			return NyARRgb2GsFilterArtkThFactory.createDriver(this);
 		}
-		throw new NyARException();
+		throw new NyARRuntimeException();
 	}
 }

@@ -85,7 +85,7 @@ public class NyARMatchPatt_Color_WITHOUT_PCA implements INyARMatchPatt
 	 * 基準パターンをセットします。セットできる基準パターンは、コンストラクタに設定したサイズと同じものである必要があります。
 	 * @param i_code_ref
 	 * セットする基準パターンを格納したオブジェクト
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public void setARCode(NyARCode i_code_ref)
 	{
@@ -100,9 +100,9 @@ public class NyARMatchPatt_Color_WITHOUT_PCA implements INyARMatchPatt
 	 * 結果を受け取るオブジェクトです。
 	 * @return
 	 * 検査に成功するとtrueを返します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */	
-	public boolean evaluate(NyARMatchPattDeviationColorData i_patt,NyARMatchPattResult o_result) throws NyARException
+	public boolean evaluate(NyARMatchPattDeviationColorData i_patt,NyARMatchPattResult o_result)
 	{
 		assert this._code_patt!=null;
 		//

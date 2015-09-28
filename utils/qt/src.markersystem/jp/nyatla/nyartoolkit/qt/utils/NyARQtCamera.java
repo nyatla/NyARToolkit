@@ -1,6 +1,6 @@
 package jp.nyatla.nyartoolkit.qt.utils;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.markersystem.NyARSensor;
 
 /**
@@ -14,7 +14,7 @@ public class NyARQtCamera extends NyARSensor implements QtCaptureListener
 {
 	private QtCameraCapture _cdev;
 	private QtNyARRaster_RGB _raster;
-	public NyARQtCamera(QtCameraCapture i_capture) throws NyARException
+	public NyARQtCamera(QtCameraCapture i_capture) throws NyARRuntimeException
 	{
 		super(i_capture.getSize());
 		this._cdev=i_capture;
@@ -35,7 +35,7 @@ public class NyARQtCamera extends NyARSensor implements QtCaptureListener
 	/**
 	 * この関数は、JMFの非同期更新を開始します。
 	 */
-	public void start() throws NyARException
+	public void start() throws NyARRuntimeException
 	{
 		this._cdev.start();
 		//1枚目の画像が取得され、RGBラスタにデータがセットされるまで待つ。
@@ -43,7 +43,7 @@ public class NyARQtCamera extends NyARSensor implements QtCaptureListener
 			try {
 				Thread.sleep(200);
 			} catch (InterruptedException e) {
-				throw new NyARException(e);
+				throw new NyARRuntimeException(e);
 			}
 		}
 	}

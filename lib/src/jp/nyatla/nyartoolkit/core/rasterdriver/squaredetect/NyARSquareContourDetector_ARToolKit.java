@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.NyARLabelOverlapChecker;
 import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.artoolkit.NyARLabelingImage;
@@ -69,7 +69,7 @@ public abstract class NyARSquareContourDetector_ARToolKit extends NyARSquareCont
 	 * @param i_size
 	 * 入力画像のサイズ
 	 */
-	public NyARSquareContourDetector_ARToolKit(NyARIntSize i_size) throws NyARException
+	public NyARSquareContourDetector_ARToolKit(NyARIntSize i_size)
 	{
 		this._width = i_size.w;
 		this._height = i_size.h;
@@ -89,9 +89,9 @@ public abstract class NyARSquareContourDetector_ARToolKit extends NyARSquareCont
 	 * 実装クラスでは、矩形検出処理をして、結果を通知する処理を実装してください。
 	 * @param i_raster
 	 * 検出元のラスタ画像
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public final void detectMarker(NyARBinRaster i_raster,NyARSquareContourDetector.CbHandler i_cb) throws NyARException
+	public final void detectMarker(NyARBinRaster i_raster,NyARSquareContourDetector.CbHandler i_cb)
 	{
 		final NyARLabelingImage limage = this._limage;
 

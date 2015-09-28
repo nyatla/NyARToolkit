@@ -111,9 +111,9 @@ public abstract class NyARSingleDetectMarker
 	 * 直前に実行した{@link #detectMarkerLite}が成功していないと使えません。
 	 * @param o_result
 	 * 変換行列を受け取るオブジェクト。{@link #setContinueMode}でtrueを設定した場合は、履歴行列としても使われます。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void getTransmat(NyARDoubleMatrix44 o_result) throws NyARException
+	public void getTransmat(NyARDoubleMatrix44 o_result)
 	{
 		// 一番一致したマーカーの位置とかその辺を計算
 		if (this._is_continue){
@@ -133,7 +133,7 @@ public abstract class NyARSingleDetectMarker
 	 * @deprecated
 	 * {@link #getTransmat}
 	 */
-	public void getTransmationMatrix(NyARDoubleMatrix44 o_result) throws NyARException
+	public void getTransmationMatrix(NyARDoubleMatrix44 o_result)
 	{
 		this.getTransmat(o_result);
 		return;
@@ -151,13 +151,13 @@ public abstract class NyARSingleDetectMarker
 	 * 2値化敷居値。0から256までの値を指定します。
 	 * @return
 	 * マーカーが検出できたかを、真偽値で返します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */	
-	public boolean detectMarkerLite(INyARRgbRaster i_raster,int i_th) throws NyARException
+	public boolean detectMarkerLite(INyARRgbRaster i_raster,int i_th)
 	{
 		//サイズチェック
 		if(!this._bin_raster.getSize().isEqualSize(i_raster.getSize())){
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		//最終入力ラスタを更新
 		if(this._last_input_raster!=i_raster){
@@ -207,9 +207,9 @@ public abstract class NyARSingleDetectMarker
 	 * この関数は、thisの二次元矩形情報プロパティを更新します。
 	 * @param i_coord
 	 * @param i_vertex_index
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	protected void updateSquareInfo(NyARIntCoordinates i_coord,int[] i_vertex_index) throws NyARException
+	protected void updateSquareInfo(NyARIntCoordinates i_coord,int[] i_vertex_index)
 	{
 		NyARMatchPattResult mr=this.__detectMarkerLite_mr;
 		//輪郭座標から頂点リストに変換
@@ -244,11 +244,11 @@ public abstract class NyARSingleDetectMarker
 		for (int i = 0; i < 4; i++) {
 			//直線同士の交点計算
 			if(!sq.line[i].crossPos(sq.line[(i + 3) % 4],sq.sqvertex[i])){
-				throw new NyARException();//ここのエラー復帰するならダブルバッファにすればOK
+				throw new NyARRuntimeException();//ここのエラー復帰するならダブルバッファにすればOK
 			}
 		}
 	}
-	protected NyARSingleDetectMarker(NyARParam i_ref_param,NyARCode i_ref_code,double i_marker_width) throws NyARException
+	protected NyARSingleDetectMarker(NyARParam i_ref_param,NyARCode i_ref_code,double i_marker_width)
 	{
 		this._deviation_data=new NyARMatchPattDeviationColorData(i_ref_code.getWidth(),i_ref_code.getHeight());
 		this._match_patt=new NyARMatchPatt_Color_WITHOUT_PCA(i_ref_code);		
@@ -259,7 +259,7 @@ public abstract class NyARSingleDetectMarker
 		NyARIntSize s=i_ref_param.getScreenSize();
 		this._bin_raster=new NyARBinRaster(s.w,s.h);
 	}
-	protected abstract void execDetectMarker() throws NyARException;	
+	protected abstract void execDetectMarker();	
 	
 	/** ARToolKit互換のアルゴリズムを選択します。*/
 	public final static int PF_ARTOOLKIT_COMPATIBLE=1;
@@ -287,10 +287,10 @@ public abstract class NyARSingleDetectMarker
 	 * <li>{@link #PF_NYARTOOLKIT}
 	 * <li>{@link #PF_NYARTOOLKIT_ARTOOLKIT_FITTING}
 	 * </ul>
-	 * @throws NyARException 
-	 * @throws NyARException
+	 * @throws NyARRuntimeException 
+	 * @throws NyARRuntimeException
 	 */	
-	public static NyARSingleDetectMarker createInstance(NyARParam i_param, NyARCode i_code, double i_marker_width,int i_profile_id) throws NyARException
+	public static NyARSingleDetectMarker createInstance(NyARParam i_param, NyARCode i_code, double i_marker_width,int i_profile_id)
 	{
 		switch(i_profile_id){
 		case PF_ARTOOLKIT_COMPATIBLE:
@@ -300,10 +300,10 @@ public abstract class NyARSingleDetectMarker
 		case PF_NYARTOOLKIT://default
 			return new NyARSingleDetectMarker_NyARTK(i_param,i_code,i_marker_width);
 		default:
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}		
 	}
-	public static NyARSingleDetectMarker createInstance(NyARParam i_param, NyARCode i_code, double i_marker_width) throws NyARException
+	public static NyARSingleDetectMarker createInstance(NyARParam i_param, NyARCode i_code, double i_marker_width)
 	{
 		return createInstance(i_param,i_code,i_marker_width,PF_NYARTOOLKIT);
 	}
@@ -325,24 +325,24 @@ class NyARSingleDetectMarker_ARTKv2 extends NyARSingleDetectMarker
 	public static class ARTKDetector extends NyARSquareContourDetector_ARToolKit implements NyARSquareContourDetector.CbHandler
 	{
 		private NyARSingleDetectMarker _parent;
-		public ARTKDetector(NyARSingleDetectMarker i_parent,NyARIntSize i_size) throws NyARException
+		public ARTKDetector(NyARSingleDetectMarker i_parent,NyARIntSize i_size)
 		{
 			super(i_size);
 			this._parent=i_parent;
 		}
-		public void detectMarkerCallback(NyARIntCoordinates i_coord,int[] i_vertex_index) throws NyARException
+		public void detectMarkerCallback(NyARIntCoordinates i_coord,int[] i_vertex_index)
 		{
 			this._parent.updateSquareInfo(i_coord, i_vertex_index);
 		}	
 	}
-	public NyARSingleDetectMarker_ARTKv2(NyARParam i_ref_param,NyARCode i_ref_code,double i_marker_width) throws NyARException
+	public NyARSingleDetectMarker_ARTKv2(NyARParam i_ref_param,NyARCode i_ref_code,double i_marker_width)
 	{
 		super(i_ref_param,i_ref_code,i_marker_width);
 		this._inst_patt=new NyARColorPatt_O3(i_ref_code.getWidth(), i_ref_code.getHeight());
 		this._transmat=new NyARTransMat_ARToolKit(i_ref_param);
 		this._square_detect=new ARTKDetector(this,i_ref_param.getScreenSize());
 	}
-	protected void execDetectMarker() throws NyARException
+	protected void execDetectMarker()
 	{
 		//矩形を探す(戻り値はコールバック関数で受け取る。)
 		this._square_detect.detectMarker(this._bin_raster,this._square_detect);
@@ -352,14 +352,14 @@ class NyARSingleDetectMarker_ARTKv2 extends NyARSingleDetectMarker
 class NyARSingleDetectMarker_NyARTK_FITTING_ARTKv2 extends NyARSingleDetectMarker
 {
 	protected NyARSingleDetectMarker_ARTKv2.ARTKDetector _square_detect;	
-	public NyARSingleDetectMarker_NyARTK_FITTING_ARTKv2(NyARParam i_ref_param,NyARCode i_ref_code,double i_marker_width) throws NyARException
+	public NyARSingleDetectMarker_NyARTK_FITTING_ARTKv2(NyARParam i_ref_param,NyARCode i_ref_code,double i_marker_width)
 	{
 		super(i_ref_param,i_ref_code,i_marker_width);
 		this._inst_patt=new NyARColorPatt_Perspective(i_ref_code.getWidth(), i_ref_code.getHeight(),4,25);
 		this._transmat=new NyARTransMat_ARToolKit(i_ref_param);
 		this._square_detect=new NyARSingleDetectMarker_ARTKv2.ARTKDetector(this,i_ref_param.getScreenSize());
 	}
-	protected void execDetectMarker() throws NyARException
+	protected void execDetectMarker()
 	{
 		//矩形を探す(戻り値はコールバック関数で受け取る。)
 		this._square_detect.detectMarker(this._bin_raster,this._square_detect);
@@ -379,27 +379,27 @@ class NyARSingleDetectMarker_NyARTK extends NyARSingleDetectMarker
 	private class RleDetector extends NyARSquareContourDetector_Rle implements NyARSquareContourDetector.CbHandler
 	{
 		NyARSingleDetectMarker _parent;
-		public RleDetector(NyARSingleDetectMarker i_parent,NyARIntSize i_size) throws NyARException
+		public RleDetector(NyARSingleDetectMarker i_parent,NyARIntSize i_size)
 		{
 			super(i_size);
 			this._parent=i_parent;
 		}
 
-		public void detectMarkerCallback(NyARIntCoordinates i_coord,int[] i_vertex_index) throws NyARException
+		public void detectMarkerCallback(NyARIntCoordinates i_coord,int[] i_vertex_index)
 		{
 			this._parent.updateSquareInfo(i_coord, i_vertex_index);
 			
 		}
 	}
 	
-	public NyARSingleDetectMarker_NyARTK(NyARParam i_ref_param,NyARCode i_ref_code,double i_marker_width) throws NyARException
+	public NyARSingleDetectMarker_NyARTK(NyARParam i_ref_param,NyARCode i_ref_code,double i_marker_width)
 	{
 		super(i_ref_param,i_ref_code,i_marker_width);
 		this._inst_patt=new NyARColorPatt_Perspective(i_ref_code.getWidth(), i_ref_code.getHeight(),4,25);
 		this._transmat=new NyARTransMat(i_ref_param);
 		this._square_detect=new RleDetector(this,i_ref_param.getScreenSize());
 	}	
-	protected void execDetectMarker() throws NyARException
+	protected void execDetectMarker()
 	{
 		//矩形を探す(戻り値はコールバック関数で受け取る。)
 		this._square_detect.detectMarker(this._bin_raster,0,this._square_detect);

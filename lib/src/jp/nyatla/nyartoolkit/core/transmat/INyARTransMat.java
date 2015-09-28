@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.transmat;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 
@@ -53,9 +53,9 @@ public interface INyARTransMat
 	 * 結果を格納するオブジェクトです。
 	 * @param o_param
 	 * 結果パラメータを格納するオブジェクトです。nullの場合無視します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public boolean transMat(NyARSquare i_square,NyARRectOffset i_offset, NyARDoubleMatrix44 o_result,NyARTransMatResultParam o_param) throws NyARException;
+	public boolean transMat(NyARSquare i_square,NyARRectOffset i_offset, NyARDoubleMatrix44 o_result,NyARTransMatResultParam o_param);
 	/**
 	 * この関数は、理想座標系の四角系を元に、位置姿勢変換行列を求めます。
 	 * 位置姿勢変換行列は、オフセット位置を基準とした変換行列です。
@@ -77,7 +77,7 @@ public interface INyARTransMat
 	 * 結果パラメータを格納するオブジェクトです。nullの場合無視します。
 	 * @return
 	 * トラッキングに失敗した場合はfalseを返します。その場合は{@link #transMat}からやり直してください。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public boolean transMatContinue(NyARSquare i_square,NyARRectOffset i_offset, NyARDoubleMatrix44 i_prev_result,double i_prev_err,NyARDoubleMatrix44 o_result,NyARTransMatResultParam o_param) throws NyARException;
+	public boolean transMatContinue(NyARSquare i_square,NyARRectOffset i_offset, NyARDoubleMatrix44 i_prev_result,double i_prev_err,NyARDoubleMatrix44 o_result,NyARTransMatResultParam o_param);
 }

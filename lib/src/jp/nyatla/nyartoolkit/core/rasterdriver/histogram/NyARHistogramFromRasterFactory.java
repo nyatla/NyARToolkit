@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.histogram;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.histogram.NyARHistogram;
 import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
@@ -46,7 +46,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
  */
 public class NyARHistogramFromRasterFactory
 {
-	public static INyARHistogramFromRaster createInstance(INyARGrayscaleRaster i_raster) throws NyARException
+	public static INyARHistogramFromRaster createInstance(INyARGrayscaleRaster i_raster)
 	{
 		switch(i_raster.getBufferType()){
 		case NyARBufferType.INT1D_GRAY_8:
@@ -61,14 +61,14 @@ public class NyARHistogramFromRasterFactory
 			}
 			break;
 		}
-		throw new NyARException();
+		throw new NyARRuntimeException();
 	}
-	public static INyARHistogramFromRaster createInstance(INyARRgbRaster i_raster) throws NyARException
+	public static INyARHistogramFromRaster createInstance(INyARRgbRaster i_raster)
 	{
 		if(i_raster instanceof INyARRgbRaster){
 			return new NyARHistogramFromRaster_AnyRgb((INyARRgbRaster)i_raster);
 		}
-		throw new NyARException();
+		throw new NyARRuntimeException();
 	}
 	
 }
@@ -82,12 +82,12 @@ class NyARHistogramFromRaster_AnyGs implements INyARHistogramFromRaster
 	{
 		this._gsr=i_raster;
 	}
-	public void createHistogram(int i_skip,NyARHistogram o_histogram) throws NyARException
+	public void createHistogram(int i_skip,NyARHistogram o_histogram)
 	{
 		NyARIntSize s=this._gsr.getSize();
 		this.createHistogram(0,0,s.w,s.h,i_skip,o_histogram);
 	}
-	public void createHistogram(int i_l,int i_t,int i_w,int i_h,int i_skip,NyARHistogram o_histogram) throws NyARException
+	public void createHistogram(int i_l,int i_t,int i_w,int i_h,int i_skip,NyARHistogram o_histogram)
 	{
 		o_histogram.reset();
 		int[] data_ptr=o_histogram.data;
@@ -112,13 +112,13 @@ class NyARHistogramFromRaster_AnyRgb implements INyARHistogramFromRaster
 	{
 		this._gsr=i_raster;
 	}
-	public void createHistogram(int i_skip,NyARHistogram o_histogram) throws NyARException
+	public void createHistogram(int i_skip,NyARHistogram o_histogram)
 	{
 		NyARIntSize s=this._gsr.getSize();
 		this.createHistogram(0,0,s.w,s.h,i_skip,o_histogram);
 	}
 	private int[] tmp=new int[3];
-	public void createHistogram(int i_l,int i_t,int i_w,int i_h,int i_skip,NyARHistogram o_histogram) throws NyARException
+	public void createHistogram(int i_l,int i_t,int i_w,int i_h,int i_skip,NyARHistogram o_histogram)
 	{
 		o_histogram.reset();
 		int[] data_ptr=o_histogram.data;
@@ -145,7 +145,7 @@ class NyARHistogramFromRaster_INTGS8 implements INyARHistogramFromRaster
 	{
 		this._gsr=i_raster;
 	}
-	public void createHistogram(int i_skip,NyARHistogram o_histogram) throws NyARException
+	public void createHistogram(int i_skip,NyARHistogram o_histogram)
 	{
 		NyARIntSize s=this._gsr.getSize();
 		this.createHistogram(0,0,s.w,s.h,i_skip,o_histogram);

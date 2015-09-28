@@ -1,5 +1,5 @@
 package jp.nyatla.nyartoolkit.dev.pro.core.surfacetracking.featuremap;
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARGsPixelDriver;
@@ -27,14 +27,14 @@ public class NyARSurfaceFeatureMapUtils
 	 * @param max_sim_thresh
 	 * @param sd_thresh
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public static NyARSurfaceFeatureMap ar2GenFeatureMap(
 		INyARGrayscaleRaster i_raster,
 		double i_dpi,
         int ts1, int ts2,
         int search_size1,
-        double  max_sim_thresh, double  sd_thresh ) throws NyARException
+        double  max_sim_thresh, double  sd_thresh ) throws NyARRuntimeException
 	{
 
 		double           max;
@@ -167,7 +167,7 @@ public class NyARSurfaceFeatureMapUtils
 			public int y;
 			public double min_sim;
 		}
-		public SelectFeatureResult(int i_length) throws NyARException
+		public SelectFeatureResult(int i_length) throws NyARRuntimeException
 		{
 			super.initInstance(i_length,Item.class);
 		}
@@ -192,12 +192,12 @@ public class NyARSurfaceFeatureMapUtils
 	 * @param min_sim_thresh
 	 * @param sd_thresh
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public static SelectFeatureResult ar2SelectFeature(
 		INyARGrayscaleRaster i_raster,double i_dpi,NyARSurfaceFeatureMap i_feature_map,
         int ts1, int ts2, int search_size1, int i_occ_size,
-        double  max_sim_thresh, double  min_sim_thresh, double  sd_thresh) throws NyARException
+        double  max_sim_thresh, double  min_sim_thresh, double  sd_thresh) throws NyARRuntimeException
 	{
 //		NyARSurfaceFeatureMap featureMap=ar2GenFeatureMap(i_raster, i_dpi, ts1, ts2, search_size1, max_sim_thresh, sd_thresh);
 		
@@ -369,7 +369,7 @@ public class NyARSurfaceFeatureMapUtils
 			this.img=new double[(i_ts1+1+i_ts2)*(i_ts1+1+i_ts2)];
 		}
 		public boolean make_template(INyARGrayscaleRaster imageBW,
-            int cx, int cy,double  sd_thresh) throws NyARException
+            int cx, int cy,double  sd_thresh) throws NyARRuntimeException
 		{
 			int      i, j;
 			int ts1=this._ts1;
@@ -410,7 +410,7 @@ public class NyARSurfaceFeatureMapUtils
 			this.vlen = Math.sqrt(vlen1);
 			return true;
 		}
-		public double get_similarity(INyARGrayscaleRaster imageBW,int cx, int cy) throws NyARException
+		public double get_similarity(INyARGrayscaleRaster imageBW,int cx, int cy) throws NyARRuntimeException
 		{
 //		    int       i, j;
 		    int ts1=this._ts1;

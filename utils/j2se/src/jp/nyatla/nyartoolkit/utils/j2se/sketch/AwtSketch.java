@@ -13,7 +13,7 @@ import java.awt.event.WindowEvent;
 
 
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 

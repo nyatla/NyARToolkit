@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.transmat.solver;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 
@@ -47,9 +47,9 @@ public interface INyARTransportVectorSolver
 	 * 射影変換後の頂点座標配列。
 	 * @param i_number_of_vertex
 	 * 頂点座標配列の要素数
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void set2dVertex(NyARDoublePoint2d[] i_ref_vertex_2d,int i_number_of_vertex) throws NyARException;
+	public void set2dVertex(NyARDoublePoint2d[] i_ref_vertex_2d,int i_number_of_vertex);
 	/**
 	 * 画面座標群と3次元座標群から、平行移動量を計算します。
 	 * 2d座標系は、直前に実行した{@link #set2dVertex}のものを使用します。
@@ -58,7 +58,7 @@ public interface INyARTransportVectorSolver
 	 * 3次元空間の座標群を設定します。頂点の順番は、画面座標群と同じ順序で格納してください。
 	 * @param o_transfer
 	 * 並進ベクトルを受け取るオブジェクトを指定します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void solveTransportVector(NyARDoublePoint3d[] i_vertex3d,NyARDoublePoint3d o_transfer) throws NyARException;
+	public void solveTransportVector(NyARDoublePoint3d[] i_vertex3d,NyARDoublePoint3d o_transfer);
 }

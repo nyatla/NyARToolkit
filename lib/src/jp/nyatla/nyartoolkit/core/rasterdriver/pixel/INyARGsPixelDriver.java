@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.pixel;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
@@ -37,9 +37,9 @@ public interface INyARGsPixelDriver
 	 * [readonly]
 	 */
 	public NyARIntSize getSize();
-	public void getPixelSet(int[] i_x,int[] i_y,int i_n,int[] o_buf,int i_st_buf) throws NyARException;
-	public int getPixel(int i_x,int i_y) throws NyARException;
-	public void switchRaster(INyARRaster i_ref_raster) throws NyARException;
+	public void getPixelSet(int[] i_x,int[] i_y,int i_n,int[] o_buf,int i_st_buf);
+	public int getPixel(int i_x,int i_y);
+	public void switchRaster(INyARRaster i_ref_raster);
 	public boolean isCompatibleRaster(INyARRaster i_raster);
 	/**
 	 * この関数は、RGBデータを指定した座標のピクセルにセットします。 実装クラスでは、バッファにRGB値を書込む処理を実装してください。
@@ -50,9 +50,9 @@ public interface INyARGsPixelDriver
 	 * 書込むピクセルの座標。画像の範囲内である事。
 	 * @param i_rgb
 	 * 設定するピクセル値。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void setPixel(int i_x, int i_y, int i_gs) throws NyARException;
+	public void setPixel(int i_x, int i_y, int i_gs);
 	/**
 	 * この関数は、座標群にピクセルごとのRGBデータをセットします。 実装クラスでは、バッファにRGB値を書込む処理を実装してください。
 	 * 
@@ -62,8 +62,8 @@ public interface INyARGsPixelDriver
 	 * 書き込むピクセルの座標配列。画像の範囲内である事。
 	 * @param i_intgs
 	 * 設定するピクセル値の数
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intgs) throws NyARException;	
+	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intgs);	
 }
 

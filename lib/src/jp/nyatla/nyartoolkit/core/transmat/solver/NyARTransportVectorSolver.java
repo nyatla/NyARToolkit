@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.transmat.solver;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
 import jp.nyatla.nyartoolkit.core.types.*;
 
@@ -66,7 +66,7 @@ public class NyARTransportVectorSolver implements INyARTransportVectorSolver
 	 * この関数は、射影変換後の２次元頂点座標をセットします。
 	 * i_number_of_vertexは、コンストラクタで指定した最大数以下である必要があります。
 	 */
-	public void set2dVertex(NyARDoublePoint2d[] i_ref_vertex_2d,int i_number_of_vertex) throws NyARException
+	public void set2dVertex(NyARDoublePoint2d[] i_ref_vertex_2d,int i_number_of_vertex)
 	{
 		//3x2nと2n*3の行列から、最小二乗法計算するために3x3マトリクスを作る。		
 		//行列[A]の3列目のキャッシュ
@@ -108,7 +108,7 @@ public class NyARTransportVectorSolver implements INyARTransportVectorSolver
 	 * 画面座標群と3次元座標群から、平行移動量を計算します。
 	 * 2d座標系は、直前に実行した{@link #set2dVertex}のものを使用します。
 	 */
-	public void solveTransportVector(NyARDoublePoint3d[] i_vertex3d,NyARDoublePoint3d o_transfer) throws NyARException
+	public void solveTransportVector(NyARDoublePoint3d[] i_vertex3d,NyARDoublePoint3d o_transfer)
 	{
 		final int number_of_vertex=this._nmber_of_vertex;
 		final double p00=this._projection_mat.m00;

@@ -28,7 +28,7 @@ package jp.nyatla.nyartoolkit.test;
 import java.io.File;
 import java.io.FileInputStream;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
@@ -68,7 +68,7 @@ public class SingleARMarkerTest
          * 入力ラスタのフォーマット。
          * @throws Exception
          */
-		public MarkerProcessor(NyARParam i_cparam,int i_raster_format) throws NyARException
+		public MarkerProcessor(NyARParam i_cparam,int i_raster_format)
 		{
 			//アプリケーションフレームワークの初期化
 			super();

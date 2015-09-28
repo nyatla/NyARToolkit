@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.transmat.rotmatrix;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -50,7 +50,7 @@ public class NyARRotVectorV2 extends NyARRotVector
 	 * 射影変換オブジェクトの参照値を設定して、インスタンスを作成します。
 	 * @param i_cmat
 	 * 射影変換オブジェクト。この値はインスタンスの生存中は変更しないでください。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public NyARRotVectorV2(NyARPerspectiveProjectionMatrix i_cmat)
 	{
@@ -91,7 +91,7 @@ public class NyARRotVectorV2 extends NyARRotVector
 	 * 開始位置？
 	 * @param i_end_vertex
 	 * 終了位置？
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public boolean checkVectorByVertex(NyARDoublePoint2d i_start_vertex,NyARDoublePoint2d i_end_vertex)
 	{

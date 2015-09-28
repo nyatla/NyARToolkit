@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.transmat.rotmatrix;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 
 /**
  * このクラスは、三次元ベクトルを格納します。
@@ -49,7 +49,7 @@ public class NyARRotVector
 	/**
 	 * コンストラクタです。
 	 * 初期値を持たないインスタンスを生成します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public NyARRotVector()
 	{
@@ -57,7 +57,7 @@ public class NyARRotVector
 	/**
 	 * この関数は、ARToolKitのcheck_rotationに相当する計算をします。
 	 * 詳細は不明です。(2つのベクトルの関係を調整？)
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public static boolean checkRotation(NyARRotVector io_vec1, NyARRotVector io_vec2)
 	{

@@ -36,7 +36,7 @@ import java.awt.color.*;
 import java.awt.*;
 
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.artoolkit.NyARLabelingImage;
@@ -120,7 +120,7 @@ public class LabelingBufferdImage extends BufferedImage
 
 
 
-	public void drawImage(NyARGrayscaleRaster i_raster) throws NyARException
+	public void drawImage(NyARGrayscaleRaster i_raster) throws NyARRuntimeException
 	{
 		assert (i_raster.getBufferType() == NyARBufferType.INT1D_GRAY_8);
 
@@ -129,7 +129,7 @@ public class LabelingBufferdImage extends BufferedImage
 		// サイズをチェック
 		NyARIntSize size = i_raster.getSize();
 		if (size.h > h || size.w > w) {
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 
 		int[] limg;
@@ -145,9 +145,9 @@ public class LabelingBufferdImage extends BufferedImage
 	/**
 	 * バイナリラスタ
 	 * @param i_raster
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void drawImage(NyARBinRaster i_raster) throws NyARException
+	public void drawImage(NyARBinRaster i_raster) throws NyARRuntimeException
 	{
 		assert (i_raster.getBufferType() == NyARBufferType.INT1D_BIN_8);
 
@@ -156,7 +156,7 @@ public class LabelingBufferdImage extends BufferedImage
 		// サイズをチェック
 		NyARIntSize size = i_raster.getSize();
 		if (size.h > h || size.w > w) {
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 
 		int[] limg;
@@ -173,16 +173,16 @@ public class LabelingBufferdImage extends BufferedImage
 	/**
 	 * ラベリングイメージを書く
 	 * @param i_raster
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void drawLabel(NyARLabelingImage i_image) throws NyARException
+	public void drawLabel(NyARLabelingImage i_image) throws NyARRuntimeException
 	{
 		int w = this.getWidth();
 		int h = this.getHeight();
 		// サイズをチェック
 		NyARIntSize size = i_image.getSize();
 		if (size.h > h || size.w > w) {
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		int[] index_array=i_image.getIndexArray();
 

@@ -27,7 +27,7 @@ package jp.nyatla.nyartoolkit.old.utils;
 
 import java.lang.reflect.Array;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 
 
 
@@ -81,7 +81,7 @@ public class NyARObjectPool<T extends Object>
 	 * 生成拒否の為に、コンストラクタを隠蔽します。
 	 * 継承クラスを作成してください。
 	 */
-	public NyARObjectPool() throws NyARException
+	public NyARObjectPool()
 	{
 	}
 	/**
@@ -91,10 +91,10 @@ public class NyARObjectPool<T extends Object>
 	 * 配列の最大長さ
 	 * @param i_element_type
 	 * 配列型を示すクラスタイプ
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	@SuppressWarnings("unchecked")
-	protected void initInstance(int i_length,Class<T> i_element_type) throws NyARException
+	protected void initInstance(int i_length,Class<T> i_element_type)
 	{
 		//領域確保
 		this._buffer = (T[])Array.newInstance(i_element_type, i_length);
@@ -114,11 +114,11 @@ public class NyARObjectPool<T extends Object>
 	 * 継承クラスでオーバライドして、要素オブジェクトを１個生成して返す処理を実装してください。
 	 * @return
 	 * 新しいオブジェクトを返してください。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	protected T createElement() throws NyARException
+	protected T createElement()
 	{
-		throw new NyARException();
+		throw new NyARRuntimeException();
 	}
 	
 }

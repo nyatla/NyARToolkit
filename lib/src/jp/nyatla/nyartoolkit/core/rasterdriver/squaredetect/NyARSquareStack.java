@@ -31,7 +31,7 @@
 package jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect;
 
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 /**
  * このクラスは、{@link NyARSquare}の動的配列御定義します。
@@ -43,7 +43,7 @@ public class NyARSquareStack extends NyARObjectStack<NyARSquare>
 	 * サイズを指定して、配列を作成します。
 	 * @param i_length
 	 * 配列の最大長さ
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public NyARSquareStack(int i_length)
 	{

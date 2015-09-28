@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.old.processor;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.coord2liner.NyARCoord2Linear;
 import jp.nyatla.nyartoolkit.core.histogram.NyARHistogram;
 import jp.nyatla.nyartoolkit.core.histogram.algo.NyARHistogramAnalyzer_SlidePTile;
@@ -87,7 +87,7 @@ public abstract class SingleNyIdMarkerProcesser
 		private INyIdMarkerData _data_temp;
 		private INyIdMarkerData _prev_data;
 		
-		public RleDetector(NyARParam i_param,INyIdMarkerDataEncoder i_encoder,NyIdMarkerPickup i_id_pickup) throws NyARException
+		public RleDetector(NyARParam i_param,INyIdMarkerDataEncoder i_encoder,NyIdMarkerPickup i_id_pickup)
 		{
 			super(i_param.getScreenSize());
 			this._coordline=new NyARCoord2Linear(i_param.getScreenSize(),i_param.getDistortionFactor());
@@ -114,7 +114,7 @@ public abstract class SingleNyIdMarkerProcesser
 		 * 矩形が見付かるたびに呼び出されます。
 		 * 発見した矩形のパターンを検査して、方位を考慮した頂点データを確保します。
 		 */
-		public void detectMarkerCallback(NyARIntCoordinates i_coord,int[] i_vertex_index)  throws NyARException
+		public void detectMarkerCallback(NyARIntCoordinates i_coord,int[] i_vertex_index)  throws NyARRuntimeException
 		{
 			//既に発見済なら終了
 			if(this.marker_data!=null){
@@ -159,7 +159,7 @@ public abstract class SingleNyIdMarkerProcesser
 			for (int i = 0; i < 4; i++) {
 				//直線同士の交点計算
 				if(!sq.line[i].crossPos(sq.line[(i + 3) % 4],sq.sqvertex[i])){
-					throw new NyARException();//ここのエラー復帰するならダブルバッファにすればOK
+					throw new NyARRuntimeException();//ここのエラー復帰するならダブルバッファにすればOK
 				}
 			}
 			this.threshold=param.threshold;
@@ -206,9 +206,9 @@ public abstract class SingleNyIdMarkerProcesser
 	 * IDマーカの値エンコーダを指定します。
 	 * @param i_marker_width
 	 * マーカの物理縦横サイズをmm単位で指定します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	protected void initInstance(NyARParam i_param,INyIdMarkerDataEncoder i_encoder,double i_marker_width) throws NyARException
+	protected void initInstance(NyARParam i_param,INyIdMarkerDataEncoder i_encoder,double i_marker_width)
 	{
 		//初期化済？
 		assert(this._initialized==false);
@@ -268,13 +268,13 @@ public abstract class SingleNyIdMarkerProcesser
 	 * イベントハンドラの呼び出しは、この関数を呼び出したスレッドが、この関数が終了するまでに行います。
 	 * @param i_raster
 	 * 検出処理をする画像を指定します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void detectMarker(INyARRgbRaster i_raster) throws NyARException
+	public void detectMarker(INyARRgbRaster i_raster)
 	{
 		// サイズチェック
 		if (!this._gs_raster.getSize().isEqualSize(i_raster.getSize().w, i_raster.getSize().h)) {
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		// ラスタをGSへ変換する。
 		if(this._last_input_raster!=i_raster){
@@ -309,7 +309,7 @@ public abstract class SingleNyIdMarkerProcesser
 
 	/**オブジェクトのステータスを更新し、必要に応じて自己コールバック関数を駆動します。
 	 */
-	private boolean updateStatus(NyARSquare i_square, INyIdMarkerData i_marker_data)  throws NyARException
+	private boolean updateStatus(NyARSquare i_square, INyIdMarkerData i_marker_data)  throws NyARRuntimeException
 	{
 		boolean is_id_found=false;
 		if (!this._is_active) {// 未認識中
@@ -348,7 +348,7 @@ public abstract class SingleNyIdMarkerProcesser
 				this._lost_delay_count = 0;
 				is_id_found=true;
 			} else {// 異なるコードの認識→今はサポートしない。
-				throw new  NyARException();
+				throw new  NyARRuntimeException();
 			}
 		}
 		return is_id_found;

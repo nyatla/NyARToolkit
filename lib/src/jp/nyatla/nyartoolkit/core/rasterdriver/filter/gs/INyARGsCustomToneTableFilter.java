@@ -25,7 +25,6 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.filter.gs;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARGsPixelDriver;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
@@ -35,17 +34,17 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
  */
 public interface INyARGsCustomToneTableFilter
 {
-	public void doFilter(int[] i_tone_table,INyARGrayscaleRaster i_output) throws NyARException;	
+	public void doFilter(int[] i_tone_table,INyARGrayscaleRaster i_output);	
 }
 
 class NyARGsCustomToneTableFilter_Any implements INyARGsCustomToneTableFilter
 {
 	private INyARGrayscaleRaster _raster;
-	public NyARGsCustomToneTableFilter_Any(INyARGrayscaleRaster i_ref_raster) throws NyARException
+	public NyARGsCustomToneTableFilter_Any(INyARGrayscaleRaster i_ref_raster)
 	{
 		this._raster=i_ref_raster;
 	}
-	public void doFilter(int[] i_tone_table,INyARGrayscaleRaster i_output) throws NyARException
+	public void doFilter(int[] i_tone_table,INyARGrayscaleRaster i_output)
 	{
 		INyARGsPixelDriver outd= i_output.getGsPixelDriver();
 		INyARGsPixelDriver ind= this._raster.getGsPixelDriver();

@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.marker.artk.algo;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
 import jp.nyatla.nyartoolkit.core.marker.artk.match.NyARMatchPattDeviationColorData;
 import jp.nyatla.nyartoolkit.core.marker.artk.match.NyARMatchPattResult;
@@ -86,9 +86,9 @@ public class NyARMatchPatt_Color_WITH_PCA extends NyARMatchPatt_Color_WITHOUT_PC
 	 * 結果を受け取るオブジェクトです。
 	 * @return
 	 * 検査に成功するとtrueを返します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */	
-	public boolean evaluate(NyARMatchPattDeviationColorData i_patt,NyARMatchPattResult o_result) throws NyARException
+	public boolean evaluate(NyARMatchPattDeviationColorData i_patt,NyARMatchPattResult o_result)
 	{
 		final int[] linput = i_patt.getData();
 		int sum;

@@ -12,17 +12,17 @@
  */
 package jp.nyatla.nyartoolkit.dev.pro.core.kpm.hest;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.pro.core.kpm.ann.NyARSurfAnnMatch;
 
 public interface INyARHomographyEst
 {
 	/**
-	 * o_point_pairの数にあわせて、最大o_point_pairの数と同じ数のサンプルセ�?トを返します�??
+	 * o_point_pairの数にあわせて、最大o_point_pairの数と同じ数のサンプルセ�?トを返します�??
 	 * @param preRANSAC
 	 * @param o_point_pair
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void ransacEstimation(NyARSurfAnnMatch.ResultPtr preRANSAC, NyARSurfAnnMatch.ResultPtr o_point_pair) throws NyARException;
+	public void ransacEstimation(NyARSurfAnnMatch.ResultPtr preRANSAC, NyARSurfAnnMatch.ResultPtr o_point_pair) throws NyARRuntimeException;
 
 }

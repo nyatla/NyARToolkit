@@ -41,7 +41,7 @@ public class VisualTest extends Frame implements JmfCaptureListener
 
 	private JmfCaptureDevice capture;
 	private NyARParam ap;
-	public VisualTest() throws NyARException, NyARException
+	public VisualTest() throws NyARRuntimeException, NyARRuntimeException
 	{
 		setBounds(0, 0, 640 + 64, 720 + 64);
 		// キャプチャの準備

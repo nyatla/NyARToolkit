@@ -15,7 +15,7 @@ import jp.nyatla.nyartoolkit.utils.j2se.LabelingBufferdImage;
 
 import java.awt.*;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.analyzer.raster.threshold.INyARRasterThresholdAnalyzer;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
@@ -39,7 +39,7 @@ public class SingleQrTest extends Frame implements JmfCaptureListener
 
 	private JmfCaptureDevice capture;
 	private NyARParam ap;
-	public SingleQrTest() throws NyARException, NyARException
+	public SingleQrTest() throws NyARRuntimeException, NyARRuntimeException
 	{
 		setBounds(0, 0, 640 + 64, 720 + 64);
 		// キャプチャの準備

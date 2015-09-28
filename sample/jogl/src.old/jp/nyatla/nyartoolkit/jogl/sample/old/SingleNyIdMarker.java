@@ -36,7 +36,7 @@ import javax.media.Buffer;
 import javax.media.opengl.*;
 
 import com.sun.opengl.util.*;
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.marker.nyidmarker.data.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquare;
@@ -58,7 +58,7 @@ class MarkerProcessor extends SingleNyIdMarkerProcesser
 	public double[] gltransmat=new double[16];
 	public int current_id=-1;
 
-	public MarkerProcessor(NyARParam i_cparam,int i_width,int i_raster_format) throws NyARException
+	public MarkerProcessor(NyARParam i_cparam,int i_width,int i_raster_format) throws NyARRuntimeException
 	{
 		//アプリケーションフレームワークの初期化
 		super();
@@ -111,7 +111,7 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 	private Object _sync_object=new Object();
 	private MarkerProcessor _processor;
 
-	public SingleNyIdMarker(NyARParam i_cparam) throws NyARException
+	public SingleNyIdMarker(NyARParam i_cparam) throws NyARRuntimeException
 	{
 		JmfCaptureDeviceList devlist=new JmfCaptureDeviceList();
 		this._ar_param=i_cparam;
@@ -119,7 +119,7 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 		//キャプチャリソースの準備
 		this._capture=devlist.getDevice(0);
 		if(!this._capture.setCaptureFormat(SCREEN_X, SCREEN_Y,30.0f)){
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		this._capture.setOnCapture(this);
 		this._cap_image = new JmfNyARRGBRaster(this._capture.getCaptureFormat());	

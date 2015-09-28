@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.perspectivecopy;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARRgbPixelDriver;
@@ -58,7 +58,7 @@ public class NyARPerspectiveCopyFactory
 	 * 出力ラスタの形式です。
 	 * @return
 	 */
-	public static INyARPerspectiveCopy createDriver(INyARRgbRaster i_raster) throws NyARException
+	public static INyARPerspectiveCopy createDriver(INyARRgbRaster i_raster)
 	{
 		//新しいモードに対応したら書いてね。
 		switch(i_raster.getBufferType()){
@@ -93,7 +93,7 @@ class PerspectiveCopy_ANYRgb extends NyARPerspectiveCopy_Base
 	{
 		this._ref_raster=(INyARRgbRaster)i_ref_raster;
 	}
-	protected boolean onePixel(int pk_l,int pk_t,double[] cpara,INyARRaster o_out)throws NyARException
+	protected boolean onePixel(int pk_l,int pk_t,double[] cpara,INyARRaster o_out)throws NyARRuntimeException
 	{
 		final int[] rgb_tmp = this.__pickFromRaster_rgb_tmp;
 		int in_w=this._ref_raster.getWidth();
@@ -180,7 +180,7 @@ class PerspectiveCopy_ANYRgb extends NyARPerspectiveCopy_Base
 		}
 		return false;
 	}
-	protected boolean multiPixel(int pk_l,int pk_t,double[] cpara,int i_resolution,INyARRaster o_out)throws NyARException
+	protected boolean multiPixel(int pk_l,int pk_t,double[] cpara,int i_resolution,INyARRaster o_out)throws NyARRuntimeException
 	{
 		final int res_pix=i_resolution*i_resolution;
 
@@ -304,7 +304,7 @@ class PerspectiveCopy_BYTE1D_B8G8R8X8_32 extends NyARPerspectiveCopy_Base
 	{
 		this._ref_raster=(INyARRgbRaster)i_ref_raster;
 	}
-	protected boolean onePixel(int pk_l,int pk_t,double[] cpara,INyARRaster o_out)throws NyARException
+	protected boolean onePixel(int pk_l,int pk_t,double[] cpara,INyARRaster o_out)throws NyARRuntimeException
 	{
 		int in_w=this._ref_raster.getWidth();
 		int in_h=this._ref_raster.getHeight();
@@ -395,7 +395,7 @@ class PerspectiveCopy_BYTE1D_B8G8R8X8_32 extends NyARPerspectiveCopy_Base
 		}
 		return false;
 	}
-	protected boolean multiPixel(int pk_l,int pk_t,double[] cpara,int i_resolution,INyARRaster o_out)throws NyARException
+	protected boolean multiPixel(int pk_l,int pk_t,double[] cpara,int i_resolution,INyARRaster o_out)throws NyARRuntimeException
 	{
 		int in_w=this._ref_raster.getWidth();
 		int in_h=this._ref_raster.getHeight();
@@ -466,7 +466,7 @@ class PerspectiveCopy_BYTE1D_B8G8R8_24 extends NyARPerspectiveCopy_Base
 	{
 		this._ref_raster=(INyARRgbRaster)i_ref_raster;
 	}
-	protected boolean onePixel(int pk_l,int pk_t,double[] cpara,INyARRaster o_out)throws NyARException
+	protected boolean onePixel(int pk_l,int pk_t,double[] cpara,INyARRaster o_out)throws NyARRuntimeException
 	{
 		int in_w=this._ref_raster.getWidth();
 		int in_h=this._ref_raster.getHeight();
@@ -557,7 +557,7 @@ class PerspectiveCopy_BYTE1D_B8G8R8_24 extends NyARPerspectiveCopy_Base
 		}
 		return false;
 	}
-	protected boolean multiPixel(int pk_l,int pk_t,double[] cpara,int i_resolution,INyARRaster o_out)throws NyARException
+	protected boolean multiPixel(int pk_l,int pk_t,double[] cpara,int i_resolution,INyARRaster o_out)throws NyARRuntimeException
 	{
 		final int res_pix=i_resolution*i_resolution;
 		int in_w=this._ref_raster.getWidth();
@@ -629,7 +629,7 @@ class PerspectiveCopy_BYTE1D_R8G8B8_24 extends NyARPerspectiveCopy_Base
 	{
 		this._ref_raster=(INyARRgbRaster)i_ref_raster;
 	}
-	protected boolean onePixel(int pk_l,int pk_t,double[] cpara,INyARRaster o_out)throws NyARException
+	protected boolean onePixel(int pk_l,int pk_t,double[] cpara,INyARRaster o_out)throws NyARRuntimeException
 	{
 		byte[] i_in_buf=(byte[])this._ref_raster.getBuffer();
 		int in_w=this._ref_raster.getWidth();
@@ -719,7 +719,7 @@ class PerspectiveCopy_BYTE1D_R8G8B8_24 extends NyARPerspectiveCopy_Base
 		}
 		return false;
 	}
-	protected boolean multiPixel(int pk_l,int pk_t,double[] cpara,int i_resolution,INyARRaster o_out)throws NyARException
+	protected boolean multiPixel(int pk_l,int pk_t,double[] cpara,int i_resolution,INyARRaster o_out)throws NyARRuntimeException
 	{
 		final int res_pix=i_resolution*i_resolution;
 

@@ -30,7 +30,7 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 
 import javax.media.opengl.*;
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.sketch.GlSketch;

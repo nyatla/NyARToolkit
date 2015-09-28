@@ -14,7 +14,7 @@ package jp.nyatla.nyartoolkit.core.icp.base;
 
 import java.util.Arrays;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.math.NyARMat;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
@@ -22,7 +22,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 
 public class NyARIcpPointRobust_Base extends NyARIcpPoint_Base {
-	public NyARIcpPointRobust_Base(NyARParam i_param) throws NyARException {
+	public NyARIcpPointRobust_Base(NyARParam i_param) {
 		super(i_param);
 		// n=4で作る。
 	}
@@ -32,7 +32,7 @@ public class NyARIcpPointRobust_Base extends NyARIcpPoint_Base {
 	public boolean icpPoint(NyARDoublePoint2d[] screenCoord,
 			NyARDoublePoint3d[] worldCoord, int num,
 			NyARDoubleMatrix44 initMatXw2Xc, NyARDoubleMatrix44 matXw2Xc)
-			throws NyARException {
+			throws NyARRuntimeException {
 		assert num >= 4;
 		int inlierNum = (int) (num * this.getInlierProbability());
 		if (inlierNum < 3) {

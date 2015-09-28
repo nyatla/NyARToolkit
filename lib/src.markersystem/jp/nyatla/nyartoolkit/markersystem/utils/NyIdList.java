@@ -27,7 +27,7 @@ package jp.nyatla.nyartoolkit.markersystem.utils;
 
 import java.util.ArrayList;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.marker.nyidmarker.*;
 import jp.nyatla.nyartoolkit.core.marker.nyidmarker.data.*;
 import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
@@ -52,7 +52,7 @@ public class NyIdList extends ArrayList<NyIdList.Item>
 		 * @param i_range_s
 		 * @param i_range_e
 		 * @param i_patt_size
-		 * @throws NyARException
+		 * @throws NyARRuntimeException
 		 */
 		public Item(long i_nyid_range_s,long i_nyid_range_e,double i_patt_size)
 		{
@@ -70,7 +70,7 @@ public class NyIdList extends ArrayList<NyIdList.Item>
 	private final NyIdMarkerParam _id_param=new NyIdMarkerParam();
 	private final NyIdMarkerDataEncoder_RawBitId _id_encoder=new NyIdMarkerDataEncoder_RawBitId();
 	private final NyIdMarkerData_RawBitId _id_data=new NyIdMarkerData_RawBitId();
-	public NyIdList() throws NyARException
+	public NyIdList()
 	{
 		this._id_pickup = new NyIdMarkerPickup();
 	}
@@ -79,7 +79,7 @@ public class NyIdList extends ArrayList<NyIdList.Item>
 		//nothing to do
 		//sqはtrackingでnull初期化済み
 	}
-	public boolean update(INyARGrayscaleRaster i_raster,SquareStack.Item i_sq) throws NyARException
+	public boolean update(INyARGrayscaleRaster i_raster,SquareStack.Item i_sq)
 	{
 		if(!this._id_pickup.pickFromRaster(i_raster.getGsPixelDriver(),i_sq.ob_vertex, this._id_patt, this._id_param))
 		{

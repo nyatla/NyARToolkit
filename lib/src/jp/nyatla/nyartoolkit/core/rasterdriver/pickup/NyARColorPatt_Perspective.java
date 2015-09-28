@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.pickup;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.marker.artk.match.NyARMatchPattDeviationColorData;
 import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
@@ -51,7 +51,7 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 	protected NyARIntSize _size;
 	private INyARRgbPixelDriver _pixelreader;
 	private static final int BUFFER_FORMAT=NyARBufferType.INT1D_X8R8G8B8_32;
-	private void initInstance(int i_width, int i_height,int i_point_per_pix) throws NyARException
+	private void initInstance(int i_width, int i_height,int i_point_per_pix)
 	{
 		assert i_width>2 && i_height>2;
 		this._sample_per_pixel=i_point_per_pix;	
@@ -71,9 +71,9 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 	 * 取得画像の解像度高さ
 	 * @param i_point_per_pix
 	 * 1ピクセルあたりの縦横サンプリング数。2なら2x2=4ポイントをサンプリングする。
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public NyARColorPatt_Perspective(int i_width, int i_height,int i_point_per_pix) throws NyARException
+	public NyARColorPatt_Perspective(int i_width, int i_height,int i_point_per_pix)
 	{
 		this.initInstance(i_width,i_height,i_point_per_pix);
 		this._edge.setValue(0,0);
@@ -90,9 +90,9 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 	 * 1ピクセルあたりの解像度
 	 * @param i_edge_percentage
 	 * エッジ幅の割合(ARToolKit標準と同じなら、25)
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public NyARColorPatt_Perspective(int i_width, int i_height,int i_point_per_pix,int i_edge_percentage) throws NyARException
+	public NyARColorPatt_Perspective(int i_width, int i_height,int i_point_per_pix,int i_edge_percentage)
 	{
 		this.initInstance(i_width,i_height,i_point_per_pix);
 		this._edge.setValue(i_edge_percentage, i_edge_percentage);
@@ -161,9 +161,9 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 	/**
 	 * この関数は使用不可能です。
 	 */
-	public void wrapBuffer(Object i_ref_buf) throws NyARException
+	public void wrapBuffer(Object i_ref_buf)
 	{
-		NyARException.notImplement();
+		NyARRuntimeException.notImplement();
 	}
 	/**
 	 * この関数は、バッファタイプの定数を返します。
@@ -184,7 +184,7 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 	/**
 	 * この関数は、ラスタのi_vertexsで定義される四角形からパターンを取得して、インスタンスに格納します。
 	 */
-	public boolean pickFromRaster(INyARRgbRaster image,NyARIntPoint2d[] i_vertexs)throws NyARException
+	public boolean pickFromRaster(INyARRgbRaster image,NyARIntPoint2d[] i_vertexs)throws NyARRuntimeException
 	{
 		if(this._last_input_raster!=image){
 			this._raster_driver=(INyARPerspectiveCopy) image.createInterface(INyARPerspectiveCopy.class);
@@ -194,7 +194,7 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 		return this._raster_driver.copyPatt(i_vertexs,this._edge.x,this._edge.y,this._sample_per_pixel, this);
 	}
 
-	public Object createInterface(Class<?> iIid) throws NyARException
+	public Object createInterface(Class<?> iIid)
 	{
 		if(iIid==INyARPerspectiveCopy.class){
 			return NyARPerspectiveCopyFactory.createDriver(this);
@@ -202,6 +202,6 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 		if(iIid==NyARMatchPattDeviationColorData.IRasterDriver.class){
 			return NyARMatchPattDeviationColorData.RasterDriverFactory.createDriver(this);
 		}		
-		throw new NyARException();
+		throw new NyARRuntimeException();
 	}
 }

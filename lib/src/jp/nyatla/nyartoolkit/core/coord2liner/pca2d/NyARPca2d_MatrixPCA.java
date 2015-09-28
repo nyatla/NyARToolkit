@@ -30,7 +30,6 @@
  */
 package jp.nyatla.nyartoolkit.core.coord2liner.pca2d;
 
-import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.math.NyARMat;
 import jp.nyatla.nyartoolkit.core.math.NyARMatPca;
 import jp.nyatla.nyartoolkit.core.math.NyARVec;
@@ -46,7 +45,7 @@ public class NyARPca2d_MatrixPCA implements INyARPca2d
 	private final NyARVec __pca_ev = new NyARVec(2);
 	private final NyARVec __pca_mean = new NyARVec(2);	
 	//override
-	public void pca(double[] i_v1,double[] i_v2,int i_number_of_point,NyARDoubleMatrix22 o_evec, double[] o_ev,double[] o_mean) throws NyARException
+	public void pca(double[] i_v1,double[] i_v2,int i_number_of_point,NyARDoubleMatrix22 o_evec, double[] o_ev,double[] o_mean)
 	{
 		final NyARMatPca input = this.__pca_input;// 次処理で初期化される。		
 		// pcaの準備

@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.perspectivecopy;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.math.perspectiveparam.NyARPerspectiveParamGenerator;
 import jp.nyatla.nyartoolkit.core.math.perspectiveparam.NyARPerspectiveParamGenerator_O1;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
@@ -48,7 +48,7 @@ public abstract class NyARPerspectiveCopy_Base implements INyARPerspectiveCopy
 	{
 		this._perspective_gen=new NyARPerspectiveParamGenerator_O1(LOCAL_LT,LOCAL_LT);		
 	}
-	public boolean copyPatt(double i_x1,double i_y1,double i_x2,double i_y2,double i_x3,double i_y3,double i_x4,double i_y4,int i_edge_x,int i_edge_y,int i_resolution,INyARRgbRaster i_out) throws NyARException
+	public boolean copyPatt(double i_x1,double i_y1,double i_x2,double i_y2,double i_x3,double i_y3,double i_x4,double i_y4,int i_edge_x,int i_edge_y,int i_resolution,INyARRgbRaster i_out)
 	{
 		NyARIntSize out_size=i_out.getSize();
 		int xe=out_size.w*i_edge_x/50;
@@ -69,15 +69,15 @@ public abstract class NyARPerspectiveCopy_Base implements INyARPerspectiveCopy
 		return true;
 	}
 
-	public boolean copyPatt(NyARDoublePoint2d[] i_vertex,int i_edge_x,int i_edge_y,int i_resolution,INyARRgbRaster i_out) throws NyARException
+	public boolean copyPatt(NyARDoublePoint2d[] i_vertex,int i_edge_x,int i_edge_y,int i_resolution,INyARRgbRaster i_out)
 	{
 		return this.copyPatt(i_vertex[0].x,i_vertex[0].y,i_vertex[1].x,i_vertex[1].y,i_vertex[2].x,i_vertex[2].y,i_vertex[3].x,i_vertex[3].y, i_edge_x, i_edge_y, i_resolution, i_out);
 	}
-	public boolean copyPatt(NyARIntPoint2d[] i_vertex,int i_edge_x,int i_edge_y,int i_resolution,INyARRgbRaster i_out) throws NyARException
+	public boolean copyPatt(NyARIntPoint2d[] i_vertex,int i_edge_x,int i_edge_y,int i_resolution,INyARRgbRaster i_out)
 	{
 		return this.copyPatt(i_vertex[0].x,i_vertex[0].y,i_vertex[1].x,i_vertex[1].y,i_vertex[2].x,i_vertex[2].y,i_vertex[3].x,i_vertex[3].y, i_edge_x, i_edge_y, i_resolution, i_out);
 	}
-	protected abstract boolean onePixel(int pk_l,int pk_t,double[] cpara,INyARRaster o_out)throws NyARException;
-	protected abstract boolean multiPixel(int pk_l,int pk_t,double[] cpara,int i_resolution,INyARRaster o_out)throws NyARException;
+	protected abstract boolean onePixel(int pk_l,int pk_t,double[] cpara,INyARRaster o_out)throws NyARRuntimeException;
+	protected abstract boolean multiPixel(int pk_l,int pk_t,double[] cpara,int i_resolution,INyARRaster o_out)throws NyARRuntimeException;
 
 }

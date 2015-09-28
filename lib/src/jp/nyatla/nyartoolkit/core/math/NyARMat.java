@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.math;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix22;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
@@ -66,11 +66,11 @@ public class NyARMat
 	/**
 	 * デフォルトコンストラクタ。
 	 * 機能しません。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	protected NyARMat() throws NyARException
+	protected NyARMat()
 	{
-		throw new NyARException();
+		throw new NyARRuntimeException();
 	}
 	/**
 	 * 配列i_mをラップしてインスタンスを生成します。
@@ -153,9 +153,9 @@ public class NyARMat
 	 * 計算元の行列A
 	 * @param i_mat_b
 	 * 計算元の行列B
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void mul(NyARMat i_mat_a, NyARMat i_mat_b) throws NyARException
+	public void mul(NyARMat i_mat_a, NyARMat i_mat_b)
 	{
 		assert i_mat_a.clm == i_mat_b.row && this.row==i_mat_a.row && this.clm==i_mat_b.clm;
 
@@ -180,9 +180,9 @@ public class NyARMat
 	 * @return
 	 *　逆行列が計算できたかの、真偽値を返します。trueなら、逆行列が存在します。falseなら、逆行列はありません。
 	 * 失敗すると、thisの内容は不定になります。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public boolean inverse() throws NyARException
+	public boolean inverse()
 	{
 		double[][] ap = this._m;
 		int dimen = this.row;
@@ -196,7 +196,7 @@ public class NyARMat
 		/* check size */
 		switch (dimen) {
 		case 0:
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		case 1:
 			ap[0][0] = 1.0 / ap[0][0];// *ap = 1.0 / (*ap);
 			return true;/* 1 dimension */
@@ -219,7 +219,6 @@ public class NyARMat
 			// if (p <= matrixSelfInv_epsl){
 			if (p == 0.0) {
 				return false;
-				// throw new NyARException();
 			}
 
 			nwork = nos[ip];
@@ -273,11 +272,11 @@ public class NyARMat
 	 * コピー元の行列です。
 	 * この行列のサイズは、thisと同じでなければなりません。
 	 */
-	public void setValue(NyARMat i_copy_from) throws NyARException
+	public void setValue(NyARMat i_copy_from)
 	{
 		// サイズ確認
 		if (this.row != i_copy_from.row || this.clm != i_copy_from.clm) {
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		// 値コピー
 		for (int r = this.row - 1; r >= 0; r--) {
@@ -314,10 +313,10 @@ public class NyARMat
 	 * @param i_src
 	 * 入力元のオブジェクト。(i_src.row == this.clm)&&(i_src.clm == this.row)でなければなりません。
 	 */
-	public void transpose(NyARMat i_src) throws NyARException
+	public void transpose(NyARMat i_src)
 	{
 		if (this.row != i_src.clm || this.clm != i_src.row) {
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		for (int r = 0; r < this.row; r++) {
 			for (int c = 0; c < this.clm; c++) {
@@ -332,12 +331,12 @@ public class NyARMat
 	 * @param unit
 	 * 操作するオブジェクト。
 	 */
-	public static void matrixUnit(NyARMat unit) throws NyARException
+	public static void matrixUnit(NyARMat unit)
 	{
 		if (unit.row != unit.clm) {
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
-		NyARException.trap("未チェックのパス");
+		NyARRuntimeException.trap("未チェックのパス");
 		// For順変更禁止
 		for (int r = 0; r < unit.getRow(); r++) {
 			for (int c = 0; c < unit.getClm(); c++) {
@@ -371,10 +370,10 @@ public class NyARMat
 	/** @deprecated */
 	public void zeroCrear(){this.loadZero();}
 	/** @deprecated */
-	public void copyFrom(NyARMat i_copy_from) throws NyARException {this.setValue(i_copy_from);}
+	public void copyFrom(NyARMat i_copy_from) {this.setValue(i_copy_from);}
 	/** @deprecated */
-	public boolean matrixSelfInv() throws NyARException{ return this.inverse();}
+	public boolean matrixSelfInv(){ return this.inverse();}
 	/** @deprecated */
-	public void matrixMul(NyARMat i_mat_a, NyARMat i_mat_b) throws NyARException{this.mul(i_mat_a, i_mat_b);}
+	public void matrixMul(NyARMat i_mat_a, NyARMat i_mat_b){this.mul(i_mat_a, i_mat_b);}
 
 }

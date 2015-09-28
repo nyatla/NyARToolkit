@@ -24,7 +24,7 @@
  * 
  */
 package jp.nyatla.nyartoolkit.core.types.stack;
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 
 
 
@@ -52,7 +52,7 @@ public class NyARObjectStack<T> extends NyARPointerStack<T>
 	 * 配列の最大長さ
 	 * @param i_element_type
 	 * 配列型を示すクラスタイプ
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	protected NyARObjectStack(int i_length,Class<T> i_element_type)
 	{
@@ -74,9 +74,9 @@ public class NyARObjectStack<T> extends NyARPointerStack<T>
 	 * 配列型を示すクラスタイプ
 	 * @param i_param
 	 * 配列要素を生成するときに渡すパラメータ
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	protected NyARObjectStack(int i_length,Class<T> i_element_type,Object i_param) throws NyARException
+	protected NyARObjectStack(int i_length,Class<T> i_element_type,Object i_param)
 	{
 		//領域確保
 		super(i_length,i_element_type);
@@ -102,7 +102,7 @@ public class NyARObjectStack<T> extends NyARPointerStack<T>
 	 * 継承クラスでオーバライドして、要素オブジェクトを１個生成して返す処理を実装してください。
 	 * @return
 	 * 新しいオブジェクトを返してください。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	protected T createElement(Object i_param)
 	{
@@ -139,11 +139,11 @@ public class NyARObjectStack<T> extends NyARPointerStack<T>
 	 * @param i_reserv_length
 	 * 設定するサイズ
 	 */
-	public final void init(int i_reserv_length) throws NyARException
+	public final void init(int i_reserv_length)
 	{
 		// 必要に応じてアロケート
 		if (i_reserv_length >= this._items.length){
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		this._length=i_reserv_length;
 	}

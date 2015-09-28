@@ -46,7 +46,7 @@ import quicktime.std.sg.SGVideoChannel;
 import quicktime.std.sg.SequenceGrabber;
 import quicktime.util.RawEncodedImage;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
@@ -101,18 +101,18 @@ public class QtCameraCapture implements ActionListener
 		return image_size;
 	}
 
-	public byte[] readBuffer() throws NyARException
+	public byte[] readBuffer() throws NyARRuntimeException
 	{
 		if (grabber == null) {
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		return pixels;
 	}
 
-	public void setCaptureListener(QtCaptureListener i_listener) throws NyARException
+	public void setCaptureListener(QtCaptureListener i_listener) throws NyARRuntimeException
 	{
 		if (grabber != null) {
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		capture_listener = i_listener;
 
@@ -159,7 +159,7 @@ public class QtCameraCapture implements ActionListener
 		channel.settingsDialog();
 	}
 
-	public void start() throws NyARException
+	public void start() throws NyARRuntimeException
 	{
 		try {
 
@@ -184,7 +184,7 @@ public class QtCameraCapture implements ActionListener
 			pixels_int = new int[image_size.w * image_size.h];
 		} catch (QTException e) {
 			QTSession.close();
-			throw new NyARException(e);
+			throw new NyARRuntimeException(e);
 		}
 
 		// キャプチャイメージを定期的に更新するタイマー

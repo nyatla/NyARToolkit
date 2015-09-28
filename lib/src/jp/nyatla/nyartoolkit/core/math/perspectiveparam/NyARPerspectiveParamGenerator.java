@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.math.perspectiveparam;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
@@ -64,9 +64,9 @@ public abstract class NyARPerspectiveParamGenerator
 	 * 射影変換パラメータの出力インスタンスを指定します。要素数は8でなければなりません。
 	 * @return
 	 * 成功するとtrueを返します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public final boolean getParam(NyARIntSize i_size,NyARIntPoint2d[] i_vertex,double[] o_param)throws NyARException
+	public final boolean getParam(NyARIntSize i_size,NyARIntPoint2d[] i_vertex,double[] o_param)throws NyARRuntimeException
 	{
 		assert(i_vertex.length==4);
 		return this.getParam(i_size.w,i_size.h,i_vertex[0].x,i_vertex[0].y,i_vertex[1].x,i_vertex[1].y,i_vertex[2].x,i_vertex[2].y,i_vertex[3].x,i_vertex[3].y, o_param);
@@ -81,9 +81,9 @@ public abstract class NyARPerspectiveParamGenerator
 	 * 射影変換パラメータの出力インスタンスを指定します。要素数は8でなければなりません。
 	 * @return
 	 * 成功するとtrueを返します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public final boolean getParam(NyARIntSize i_size,NyARDoublePoint2d[] i_vertex,double[] o_param)throws NyARException
+	public final boolean getParam(NyARIntSize i_size,NyARDoublePoint2d[] i_vertex,double[] o_param)throws NyARRuntimeException
 	{
 		return this.getParam(i_size.w,i_size.h,i_vertex[0].x,i_vertex[0].y,i_vertex[1].x,i_vertex[1].y,i_vertex[2].x,i_vertex[2].y,i_vertex[3].x,i_vertex[3].y, o_param);
 	}
@@ -99,9 +99,9 @@ public abstract class NyARPerspectiveParamGenerator
 	 * 射影変換パラメータの出力インスタンスを指定します。要素数は8でなければなりません。
 	 * @return
 	 * 成功するとtrueを返します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public final boolean getParam(int i_width,int i_height,NyARDoublePoint2d[] i_vertex,double[] o_param)throws NyARException
+	public final boolean getParam(int i_width,int i_height,NyARDoublePoint2d[] i_vertex,double[] o_param)throws NyARRuntimeException
 	{
 		return this.getParam(i_width,i_height,i_vertex[0].x,i_vertex[0].y,i_vertex[1].x,i_vertex[1].y,i_vertex[2].x,i_vertex[2].y,i_vertex[3].x,i_vertex[3].y, o_param);
 	}
@@ -117,9 +117,9 @@ public abstract class NyARPerspectiveParamGenerator
 	 * 射影変換パラメータの出力インスタンスを指定します。要素数は8でなければなりません。
 	 * @return
 	 * 成功するとtrueを返します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public final boolean getParam(int i_width,int i_height,NyARIntPoint2d[] i_vertex,double[] o_param)throws NyARException
+	public final boolean getParam(int i_width,int i_height,NyARIntPoint2d[] i_vertex,double[] o_param)throws NyARRuntimeException
 	{
 		return this.getParam(i_width,i_height,i_vertex[0].x,i_vertex[0].y,i_vertex[1].x,i_vertex[1].y,i_vertex[2].x,i_vertex[2].y,i_vertex[3].x,i_vertex[3].y, o_param);
 	}
@@ -150,7 +150,7 @@ public abstract class NyARPerspectiveParamGenerator
 	 *　結果を受け取る配列を指定します。
 	 * @return
 	 * 計算に成功するとtrueを返します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public abstract boolean getParam(int i_dest_w,int i_dest_h,double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4,double[] o_param)throws NyARException;
+	public abstract boolean getParam(int i_dest_w,int i_dest_h,double x1,double y1,double x2,double y2,double x3,double y3,double x4,double y4,double[] o_param)throws NyARRuntimeException;
 }

@@ -25,7 +25,7 @@
 package jp.nyatla.nyartoolkit.qt.utils;
 
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.j2se.NyARBufferedImageRaster;
@@ -41,9 +41,9 @@ public class QtNyARRaster_RGB extends NyARBufferedImageRaster
 	 * この
 	 * @param i_width
 	 * @param i_height
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public QtNyARRaster_RGB(int i_width, int i_height) throws NyARException
+	public QtNyARRaster_RGB(int i_width, int i_height) throws NyARRuntimeException
 	{
 		super(i_width,i_height,NyARBufferType.BYTE1D_R8G8B8_24,true);
 	}
@@ -54,8 +54,8 @@ public class QtNyARRaster_RGB extends NyARBufferedImageRaster
 	/**
 	 * この関数は使えません。{@link #setQtImage}を使用します。
 	 */
-	final public void wrapBuffer(Object i_ref_buf) throws NyARException
+	final public void wrapBuffer(Object i_ref_buf) throws NyARRuntimeException
 	{
-		throw new NyARException();
+		throw new NyARRuntimeException();
 	}
 }

@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.pickup;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.math.NyARMat;
 import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
@@ -62,9 +62,9 @@ public class NyARColorPatt_Base implements INyARColorPatt
 	 * ラスタのサイズ
 	 * @param i_height
 	 * ラスタのサイズ
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public NyARColorPatt_Base(int i_width, int i_height) throws NyARException
+	public NyARColorPatt_Base(int i_width, int i_height)
 	{
 		//入力制限
 		assert i_width<=64 && i_height<=64;
@@ -119,9 +119,9 @@ public class NyARColorPatt_Base implements INyARColorPatt
 	/**
 	 * この関数は使用不可能です。
 	 */
-	public void wrapBuffer(Object i_ref_buf) throws NyARException
+	public void wrapBuffer(Object i_ref_buf)
 	{
-		NyARException.notImplement();
+		NyARRuntimeException.notImplement();
 	}
 	/**
 	 * この関数は、バッファタイプの定数を返します。
@@ -145,9 +145,9 @@ public class NyARColorPatt_Base implements INyARColorPatt
 	 * 計算したパラメータの出力先配列
 	 * @return
 	 * 計算に成功するとtrueです。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	private boolean get_cpara(final NyARIntPoint2d[] i_vertex, NyARMat o_para)throws NyARException
+	private boolean get_cpara(final NyARIntPoint2d[] i_vertex, NyARMat o_para)throws NyARRuntimeException
 	{
 		double[][] world = CPARAM_WORLD;
 		NyARMat a = new NyARMat(8, 8);// 次処理で値を設定するので、初期化不要// new NyARMat( 8, 8 );
@@ -191,7 +191,7 @@ public class NyARColorPatt_Base implements INyARColorPatt
 	/**
 	 * この関数は、ラスタのi_vertexsで定義される四角形からパターンを取得して、インスタンスに格納します。
 	 */
-	public boolean pickFromRaster(INyARRgbRaster image,NyARIntPoint2d[] i_vertexs)throws NyARException
+	public boolean pickFromRaster(INyARRgbRaster image,NyARIntPoint2d[] i_vertexs)throws NyARRuntimeException
 	{
 		// パターンの切り出しに失敗することもある。
 		NyARMat cpara = new NyARMat(8, 1);
@@ -262,7 +262,7 @@ public class NyARColorPatt_Base implements INyARColorPatt
 						final double xw = 102.5 + 5.0 * (ix*xdiv+i + 0.5) * xdiv2_reciprocal;
 						final double d = para20 * xw + para21 * yw+ para22;
 						if (d == 0) {
-							throw new NyARException();
+							throw new NyARRuntimeException();
 						}
 						final int xc = (int) ((para00 * xw + para01 * yw + para02) / d);
 						final int yc = (int) ((para10 * xw + para11 * yw + para12) / d);
@@ -281,12 +281,12 @@ public class NyARColorPatt_Base implements INyARColorPatt
 		}
 		return true;
 	}
-	public Object createInterface(Class<?> iIid) throws NyARException 
+	public Object createInterface(Class<?> iIid) 
 	{
 		if(iIid==INyARPerspectiveCopy.class){
 			return NyARPerspectiveCopyFactory.createDriver(this);
 		}
-		throw new NyARException();
+		throw new NyARRuntimeException();
 	}
 	
 }
