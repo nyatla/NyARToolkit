@@ -32,6 +32,8 @@ package jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.raster.gs.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARGsPixelDriver;
 import jp.nyatla.nyartoolkit.core.types.*;
 

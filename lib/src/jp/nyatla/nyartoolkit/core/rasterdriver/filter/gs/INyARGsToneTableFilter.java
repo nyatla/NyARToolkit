@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.filter.gs;
 
-import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 
 /**
  * このクラスは、色調テーブルフィルタです。

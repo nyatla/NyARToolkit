@@ -26,9 +26,9 @@
 package jp.nyatla.nyartoolkit.core.rasterdriver.rgb2gs;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
-import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
+import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARGsPixelDriver;
 import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARRgbPixelDriver;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;

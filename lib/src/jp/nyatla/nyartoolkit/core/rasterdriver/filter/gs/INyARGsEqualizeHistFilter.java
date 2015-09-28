@@ -26,7 +26,7 @@
 package jp.nyatla.nyartoolkit.core.rasterdriver.filter.gs;
 
 import jp.nyatla.nyartoolkit.core.histogram.NyARHistogram;
-import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.histogram.INyARHistogramFromRaster;
 
 /**

@@ -36,6 +36,7 @@ import jp.nyatla.nyartoolkit.core.marker.artk.match.NyARMatchPattResult;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.pattmatch.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.raster.gs.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterdriver.histogram.INyARHistogramFromRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.pickup.INyARColorPatt;

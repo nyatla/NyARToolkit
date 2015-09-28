@@ -23,8 +23,9 @@
  *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.raster;
+package jp.nyatla.nyartoolkit.core.raster.gs;
 
+import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARGsPixelDriver;
 
 /**

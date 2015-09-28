@@ -33,6 +33,8 @@ import jp.nyatla.nyartoolkit.core.marker.nyidmarker.*;
 import jp.nyatla.nyartoolkit.core.marker.nyidmarker.data.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.raster.gs.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.rasterdriver.histogram.INyARHistogramFromRaster;

@@ -23,7 +23,7 @@
  *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.raster;
+package jp.nyatla.nyartoolkit.core.raster.gs;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.rasterdriver.histogram.INyARHistogramFromRaster;
@@ -41,9 +41,15 @@ public class NyARGrayscaleRaster implements INyARGrayscaleRaster
 {
 	protected final NyARIntSize _size;
 	protected final int _buffer_type;
+	
+	public static INyARGrayscaleRaster createInstance()
+	{
+		return null;
+	}
 	/**
 	 * この関数は、ラスタの幅を返します。
 	 */
+	@Override
 	final public int getWidth()
 	{
 		return this._size.w;
@@ -51,6 +57,7 @@ public class NyARGrayscaleRaster implements INyARGrayscaleRaster
 	/**
 	 * この関数は、ラスタの高さを返します。
 	 */
+	@Override
 	final public int getHeight()
 	{
 		return this._size.h;
@@ -58,6 +65,7 @@ public class NyARGrayscaleRaster implements INyARGrayscaleRaster
 	/**
 	 * この関数は、ラスタのサイズを格納したオブジェクトを返します。
 	 */
+	@Override
 	final public NyARIntSize getSize()
 	{
 		return this._size;
@@ -66,6 +74,7 @@ public class NyARGrayscaleRaster implements INyARGrayscaleRaster
 	 * この関数は、ラスタのバッファへの参照値を返します。
 	 * バッファの形式は、コンストラクタに指定した形式と同じです。
 	 */	
+	@Override
 	final public int getBufferType()
 	{
 		return _buffer_type;
@@ -73,13 +82,10 @@ public class NyARGrayscaleRaster implements INyARGrayscaleRaster
 	/**
 	 * この関数は、ラスタの幅を返します。
 	 */
+	@Override
 	final public boolean isEqualBufferType(int i_type_value)
 	{
 		return this._buffer_type==i_type_value;
-	}
-	public INyARGsPixelDriver getGsPixelDriver()
-	{
-		return this._pixdrv;
 	}
 	
 	/** バッファオブジェクト*/
@@ -211,6 +217,10 @@ public class NyARGrayscaleRaster implements INyARGrayscaleRaster
 		//ラスタの形式は省略。
 		this._pixdrv.switchRaster(this);
 		this._buf = i_ref_buf;
+	}
+	@Override
+	public INyARGsPixelDriver getGsPixelDriver() {
+		return this._pixdrv;
 	}
 
 }

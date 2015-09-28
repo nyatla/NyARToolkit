@@ -55,6 +55,24 @@ public class NyARRaster extends NyARRaster_BasicClass
 	 * ラスタの画素形式。
 	 * {@link NyARBufferType}に定義された定数値を指定してください。
 	 * 指定できる値は、クラスの説明を見てください。
+	 * @throws NyARRuntimeException
+	 */
+	public NyARRaster(int i_width, int i_height,int i_buffer_type)
+	{
+		this(i_width,i_height,i_buffer_type,true);
+		return;
+	}	
+	/**
+	 * コンストラクタです。
+	 * 画像のサイズパラメータとバッファ形式を指定して、インスタンスを生成します。
+	 * @param i_width
+	 * ラスタのサイズ
+	 * @param i_height
+	 * ラスタのサイズ
+	 * @param i_buffer_type
+	 * ラスタの画素形式。
+	 * {@link NyARBufferType}に定義された定数値を指定してください。
+	 * 指定できる値は、クラスの説明を見てください。
 	 * @param i_is_alloc
 	 * バッファを外部参照にするかのフラグ値。
 	 * trueなら内部バッファ、falseなら外部バッファを使用します。
@@ -69,27 +87,6 @@ public class NyARRaster extends NyARRaster_BasicClass
 		}
 		return;
 	}	
-	/**
-	 * コンストラクタです。
-	 * 画像のサイズパラメータとバッファ形式を指定して、インスタンスを生成します。
-	 * @param i_width
-	 * ラスタのサイズ
-	 * @param i_height
-	 * ラスタのサイズ
-	 * @param i_buffer_type
-	 * ラスタの画素形式。
-	 * {@link NyARBufferType}に定義された定数値を指定してください。
-	 * 指定できる値は、クラスの説明を見てください。
-	 * @throws NyARRuntimeException
-	 */
-	public NyARRaster(int i_width, int i_height,int i_buffer_type)
-	{
-		super(i_width,i_height,i_buffer_type);
-		if(!initInstance(this._size,i_buffer_type,true)){
-			throw new NyARRuntimeException();
-		}
-		return;
-	}
 	/**
 	 * このクラスの初期化シーケンスです。コンストラクタから呼び出します。
 	 * @param i_size
