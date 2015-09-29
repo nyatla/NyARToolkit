@@ -25,7 +25,6 @@
  */
 package jp.nyatla.nyartoolkit.markersystem;
 
-import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.NyARFrustum;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;

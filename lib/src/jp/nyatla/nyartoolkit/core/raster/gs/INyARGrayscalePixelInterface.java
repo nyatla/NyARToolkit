@@ -23,24 +23,18 @@
  *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.rasterdriver.pixel;
+package jp.nyatla.nyartoolkit.core.raster.gs;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
-import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
-public interface INyARGsPixelDriver
+/**
+ * {@link NyARGrayscaleRaster}で継承します。
+ *
+ */
+public interface INyARGrayscalePixelInterface
 {
-	/**
-	 * この関数は、ピクセルドライバの参照する画像のサイズを返します。
-	 * @return
-	 * [readonly]
-	 */
-	public NyARIntSize getSize();
-	public void getPixelSet(int[] i_x,int[] i_y,int i_n,int[] o_buf,int i_st_buf);
+	public int[] getPixelSet(int[] i_x,int[] i_y,int i_n,int[] o_buf,int i_st_buf);
 	public int getPixel(int i_x,int i_y);
-	public void switchRaster(INyARRaster i_ref_raster);
-	public boolean isCompatibleRaster(INyARRaster i_raster);
 	/**
 	 * この関数は、RGBデータを指定した座標のピクセルにセットします。 実装クラスでは、バッファにRGB値を書込む処理を実装してください。
 	 * 
@@ -66,4 +60,3 @@ public interface INyARGsPixelDriver
 	 */
 	public void setPixels(int[] i_x, int[] i_y, int i_num, int[] i_intgs);	
 }
-

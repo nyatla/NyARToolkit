@@ -28,7 +28,7 @@ package jp.nyatla.nyartoolkit.core.marker.psarplaycard;
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.math.perspectiveparam.NyARPerspectiveParamGenerator;
 import jp.nyatla.nyartoolkit.core.math.perspectiveparam.NyARPerspectiveParamGenerator_O1;
-import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARGsPixelDriver;
+import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 
@@ -67,12 +67,12 @@ public class PsARPlayCardPickup
 	 * @return
 	 * @throws NyARRuntimeException
 	 */
-	public final boolean getARPlayCardId(INyARGsPixelDriver i_pix_drv,NyARIntPoint2d[] i_vertex,PsArIdParam i_result)throws NyARRuntimeException
+	public final boolean getARPlayCardId(INyARGrayscaleRaster i_raster,NyARIntPoint2d[] i_vertex,PsArIdParam i_result)
 	{
 		if(!this._perspective_reader.setSourceSquare(i_vertex)){
 			return false;
 		}
-		return this._pickFromRaster(i_pix_drv,i_result);
+		return this._pickFromRaster(i_raster,i_result);
 	}
 	/**
 	 * この関数は、ラスタドライバから画像を読み出します。
@@ -84,12 +84,12 @@ public class PsARPlayCardPickup
 	 * @return
 	 * @throws NyARRuntimeException
 	 */
-	public final boolean getARPlayCardId(INyARGsPixelDriver i_pix_drv,NyARDoublePoint2d[] i_vertex,PsArIdParam i_result)throws NyARRuntimeException
+	public final boolean getARPlayCardId(INyARGrayscaleRaster i_raster,NyARDoublePoint2d[] i_vertex,PsArIdParam i_result)
 	{
 		if(!this._perspective_reader.setSourceSquare(i_vertex)){
 			return false;
 		}
-		return this._pickFromRaster(i_pix_drv,i_result);
+		return this._pickFromRaster(i_raster,i_result);
 	}	
 	/**
 	 * i_imageから、idマーカを読みだします。
@@ -101,9 +101,9 @@ public class PsARPlayCardPickup
 	 * @return
 	 * @throws NyARRuntimeException
 	 */
-	private boolean _pickFromRaster(INyARGsPixelDriver i_pix_drv,PsArIdParam i_result)throws NyARRuntimeException
+	private boolean _pickFromRaster(INyARGrayscaleRaster i_raster,PsArIdParam i_result)
 	{
-		if(!this._perspective_reader.readDataBits(i_pix_drv,i_pix_drv.getSize(),this._decoder)){
+		if(!this._perspective_reader.readDataBits(i_raster,i_raster.getSize(),this._decoder)){
 			return false;
 		}
 		//敷居値検索
@@ -137,7 +137,7 @@ final class PerspectivePixelReader
 	 * 成功するとtrueです。
 	 * @throws NyARRuntimeException
 	 */
-	public boolean setSourceSquare(NyARIntPoint2d[] i_vertex)throws NyARRuntimeException
+	public boolean setSourceSquare(NyARIntPoint2d[] i_vertex)
 	{
 		return this._param_gen.getParam(READ_RESOLUTION,READ_RESOLUTION,i_vertex, this._cparam);
 	}
@@ -149,7 +149,7 @@ final class PerspectivePixelReader
 	 * 成功するとtrueです。
 	 * @throws NyARRuntimeException
 	 */
-	public boolean setSourceSquare(NyARDoublePoint2d[] i_vertex)throws NyARRuntimeException
+	public boolean setSourceSquare(NyARDoublePoint2d[] i_vertex)
 	{
 		return this._param_gen.getParam(READ_RESOLUTION,READ_RESOLUTION,i_vertex, this._cparam);
 	}
@@ -189,7 +189,7 @@ final class PerspectivePixelReader
 	 * 成功するとtrue
 	 * @throws NyARRuntimeException
 	 */
-	public boolean readDataBits(INyARGsPixelDriver i_reader,NyARIntSize i_raster_size,MarkerPattDecoder o_bitbuffer)throws NyARRuntimeException
+	public boolean readDataBits(INyARGrayscaleRaster i_raster,NyARIntSize i_raster_size,MarkerPattDecoder o_bitbuffer)
 	{
 		final int raster_width=i_raster_size.w;
 		final int raster_height=i_raster_size.h;
@@ -282,7 +282,7 @@ final class PerspectivePixelReader
 				pt++;
 			}
 			//1行分のピクセルを取得(場合によっては専用アクセサを書いた方がいい)
-			i_reader.getPixelSet(ref_x,ref_y,resolution*4,pixcel_temp,0);
+			i_raster.getPixelSet(ref_x,ref_y,resolution*4,pixcel_temp,0);
 			//グレースケールにしながら、line→mapへの転写
 			for(int i2=0;i2<resolution;i2++){
 				int index=i2*4;

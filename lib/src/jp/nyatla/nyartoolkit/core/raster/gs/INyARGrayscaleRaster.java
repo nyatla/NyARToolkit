@@ -26,7 +26,6 @@
 package jp.nyatla.nyartoolkit.core.raster.gs;
 
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
-import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARGsPixelDriver;
 
 /**
  * このインタフェイスは、グレースケール画像の操作インタフェイスを提供します。
@@ -35,7 +34,6 @@ import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARGsPixelDriver;
  * @author nyatla
  *
  */
-public interface INyARGrayscaleRaster extends INyARRaster
+public interface INyARGrayscaleRaster extends INyARRaster,INyARGrayscalePixelInterface
 {
-	public INyARGsPixelDriver getGsPixelDriver();
 }

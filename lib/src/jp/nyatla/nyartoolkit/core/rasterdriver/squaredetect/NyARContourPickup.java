@@ -32,9 +32,9 @@ package jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.raster.bin.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.gs.NyARGrayscaleRaster;
-import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARGsPixelDriver;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 
@@ -310,7 +310,7 @@ class NyARContourPickup_GsReader extends NyARContourPickup_Base
 	public boolean getContour(int i_l,int i_t,int i_r,int i_b,int i_entry_x,int i_entry_y,int i_th,NyARIntCoordinates o_coord)
 	{
 		assert(i_t<=i_entry_x);
-		INyARGsPixelDriver reader=this._ref_raster.getGsPixelDriver();
+		INyARGrayscaleRaster reader=this._ref_raster;
 		final int[] xdir = _getContour_xdir;// static int xdir[8] = { 0, 1, 1, 1, 0,-1,-1,-1};
 		final int[] ydir = _getContour_ydir;// static int ydir[8] = {-1,-1, 0, 1, 1, 1, 0,-1};
 		//クリップ領域の上端に接しているポイントを得る。

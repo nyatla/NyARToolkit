@@ -25,9 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.filter.gs;
 
-import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
-import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARGsPixelDriver;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
@@ -47,8 +45,8 @@ class NyARGsCustomToneTableFilter_Any implements INyARGsCustomToneTableFilter
 	}
 	public void doFilter(int[] i_tone_table,INyARGrayscaleRaster i_output)
 	{
-		INyARGsPixelDriver outd= i_output.getGsPixelDriver();
-		INyARGsPixelDriver ind= this._raster.getGsPixelDriver();
+		INyARGrayscaleRaster outd= i_output;
+		INyARGrayscaleRaster ind= this._raster;
 		NyARIntSize s=this._raster.getSize();
 		for(int y=s.h-1;y>=0;y--)
 		{

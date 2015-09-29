@@ -23,25 +23,24 @@
  *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.raster.gs;
+package jp.nyatla.nyartoolkit.core.raster.bin;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
-import jp.nyatla.nyartoolkit.core.raster.gs.format.NyARGsRaster_INT1D_GRAY_8;
-import jp.nyatla.nyartoolkit.core.rasterdriver.histogram.INyARHistogramFromRaster;
-import jp.nyatla.nyartoolkit.core.rasterdriver.histogram.NyARHistogramFromRasterFactory;
+import jp.nyatla.nyartoolkit.core.raster.bin.format.NyARBinRaster_INT1D_BIN_8;
 import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.rle.NyARLabeling_Rle;
 import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARContourPickup;
-import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
+import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+
 
 /**
- * このクラスは、グレースケース画像を格納するラスタクラスです。
- * 外部バッファ、内部バッファの両方に対応します。
+ * このクラスは、0/1 の二値GrayscaleRasterです。
  */
-public abstract class NyARGrayscaleRaster implements INyARGrayscaleRaster
+public abstract class NyARBinRaster implements INyARBinRaster
 {
-	protected final NyARIntSize _size;
+	protected final NyARIntSize _size;	
 	/** バッファオブジェクトがアタッチされていればtrue*/
-	protected final boolean _is_attached_buffer;
+	protected final boolean _is_attached_buffer;	
 	/**
 	 * コンストラクタです。
 	 * 画像のサイズパラメータとバッファ形式を指定して、インスタンスを生成します。
@@ -61,11 +60,11 @@ public abstract class NyARGrayscaleRaster implements INyARGrayscaleRaster
 	 * falseの場合、初期のバッファはnullになります。インスタンスを生成したのちに、{@link #wrapBuffer}を使って割り当ててください。
 	 * @throws NyARRuntimeException
 	 */	
-	public static NyARGrayscaleRaster createInstance(int i_width, int i_height, int i_raster_type,boolean i_is_alloc)
+	public static INyARBinRaster createInstance(int i_width, int i_height, int i_raster_type,boolean i_is_alloc)
 	{
 		switch(i_raster_type){
 		case NyARBufferType.INT1D_GRAY_8:
-			return new NyARGsRaster_INT1D_GRAY_8(i_width,i_height,i_is_alloc);
+			return new NyARBinRaster_INT1D_BIN_8(i_width,i_height,i_is_alloc);
 		}
 		throw new NyARRuntimeException();
 	}
@@ -77,9 +76,9 @@ public abstract class NyARGrayscaleRaster implements INyARGrayscaleRaster
 	 * ラスタのサイズ
 	 * @throws NyARRuntimeException
 	 */
-	public static NyARGrayscaleRaster createInstance(int i_width, int i_height)
+	public static INyARBinRaster createInstance(int i_width, int i_height)
 	{
-		return NyARGrayscaleRaster.createInstance(i_width,i_height,true);
+		return NyARBinRaster.createInstance(i_width,i_height,true);
 	}
 	/**
 	 * 画像のサイズパラメータとバッファ参照方式を指定して、インスタンスを生成します。
@@ -94,10 +93,12 @@ public abstract class NyARGrayscaleRaster implements INyARGrayscaleRaster
 	 * falseの場合、初期のバッファはnullになります。インスタンスを生成したのちに、{@link #wrapBuffer}を使って割り当ててください。
 	 * @throws NyARRuntimeException
 	 */
-	public static NyARGrayscaleRaster createInstance(int i_width, int i_height, boolean i_is_alloc)
+	public static INyARBinRaster createInstance(int i_width, int i_height, boolean i_is_alloc)
 	{		
-		return NyARGrayscaleRaster.createInstance(i_width,i_height,NyARBufferType.INT1D_GRAY_8, i_is_alloc);
+		return NyARBinRaster.createInstance(i_width,i_height,NyARBufferType.INT1D_GRAY_8, i_is_alloc);
 	}	
+	
+
 	/**
 	 * この関数は、ラスタの幅を返します。
 	 */
@@ -152,11 +153,12 @@ public abstract class NyARGrayscaleRaster implements INyARGrayscaleRaster
 	 * @param i_size
 	 * @param i_is_alloc
 	 */
-	protected NyARGrayscaleRaster(int i_width,int i_height,boolean i_is_alloc)
+	protected NyARBinRaster(int i_width,int i_height,boolean i_is_alloc)
 	{
 		this._size=new NyARIntSize(i_width,i_height);
 		this._is_attached_buffer=i_is_alloc;
-	}
+	}	
+
 	@Override
 	public Object createInterface(Class<?> i_iid)
 	{
@@ -166,10 +168,6 @@ public abstract class NyARGrayscaleRaster implements INyARGrayscaleRaster
 		if(i_iid==NyARContourPickup.IRasterDriver.class){
 			return NyARContourPickup.ImageDriverFactory.createDriver(this);
 		}
-		if(i_iid==INyARHistogramFromRaster.class){
-			return NyARHistogramFromRasterFactory.createInstance(this);
-		}
 		throw new NyARRuntimeException();
 	}
-
 }

@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.marker.nyidmarker.*;
 import jp.nyatla.nyartoolkit.core.marker.nyidmarker.data.*;
-import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 
 /**
@@ -81,7 +81,7 @@ public class NyIdList extends ArrayList<NyIdList.Item>
 	}
 	public boolean update(INyARGrayscaleRaster i_raster,SquareStack.Item i_sq)
 	{
-		if(!this._id_pickup.pickFromRaster(i_raster.getGsPixelDriver(),i_sq.ob_vertex, this._id_patt, this._id_param))
+		if(!this._id_pickup.pickFromRaster(i_raster,i_sq.ob_vertex, this._id_patt, this._id_param))
 		{
 			return false;
 		}

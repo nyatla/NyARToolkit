@@ -28,7 +28,7 @@ package jp.nyatla.nyartoolkit.core.marker.nyidmarker;
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.math.perspectiveparam.NyARPerspectiveParamGenerator;
 import jp.nyatla.nyartoolkit.core.math.perspectiveparam.NyARPerspectiveParamGenerator_O1;
-import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARGsPixelDriver;
+import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 
@@ -63,7 +63,7 @@ public class NyIdMarkerPickup
 	 * @return
 	 * @throws NyARRuntimeException
 	 */
-	public final boolean pickFromRaster(INyARGsPixelDriver i_pix_drv,NyARIntPoint2d[] i_vertex,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARRuntimeException
+	public final boolean pickFromRaster(INyARGrayscaleRaster i_pix_drv,NyARIntPoint2d[] i_vertex,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)
 	{
 		if(!this._perspective_reader.setSourceSquare(i_vertex)){
 			return false;
@@ -80,7 +80,7 @@ public class NyIdMarkerPickup
 	 * @return
 	 * @throws NyARRuntimeException
 	 */
-	public final boolean pickFromRaster(INyARGsPixelDriver i_pix_drv,NyARDoublePoint2d[] i_vertex,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARRuntimeException
+	public final boolean pickFromRaster(INyARGrayscaleRaster i_pix_drv,NyARDoublePoint2d[] i_vertex,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)
 	{
 		if(!this._perspective_reader.setSourceSquare(i_vertex)){
 			return false;
@@ -97,14 +97,14 @@ public class NyIdMarkerPickup
 	 * @return
 	 * @throws NyARRuntimeException
 	 */
-	private boolean _pickFromRaster(INyARGsPixelDriver i_pix_drv,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)throws NyARRuntimeException
+	private boolean _pickFromRaster(INyARGrayscaleRaster i_raster,NyIdMarkerPattern o_data,NyIdMarkerParam o_param)
 	{
 		final PerspectivePixelReader.TThreshold th=this.__pickFromRaster_th;
 		final MarkerPattEncoder encoder=this.__pickFromRaster_encoder;
 		//マーカパラメータを取得
-		this._perspective_reader.detectThresholdValue(i_pix_drv,th);
+		this._perspective_reader.detectThresholdValue(i_raster,th);
 
-		if(!this._perspective_reader.readDataBits(i_pix_drv,i_pix_drv.getSize(),th, encoder)){
+		if(!this._perspective_reader.readDataBits(i_raster,th, encoder)){
 			return false;
 		}
 		final int d=encoder.encode(o_data);
@@ -172,9 +172,10 @@ final class PerspectivePixelReader
 	{
 		return this._param_gen.getParam(READ_RESOLUTION,READ_RESOLUTION,i_vertex, this._cparam);
 	}
-
 	/**
 	 * ラスタから射影変換したピクセルを得ます。
+	 * @param i_reader
+	 * @param i_raster_size
 	 * @param i_lt_x
 	 * @param i_lt_y
 	 * @param i_step_x
@@ -185,15 +186,16 @@ final class PerspectivePixelReader
 	 * 格納バッファo_pixelの先頭のインデクス。
 	 * @param o_pixel
 	 * グレースケールのピクセルを格納するバッファ
+	 * @return
 	 * @throws NyARRuntimeException
 	 */
-	private boolean rectPixels(INyARGsPixelDriver i_reader,NyARIntSize i_raster_size,int i_lt_x,int i_lt_y,int i_step_x,int i_step_y,int i_width,int i_height,int i_out_st,int[] o_pixel)throws NyARRuntimeException
+	private boolean rectPixels(INyARGrayscaleRaster i_raster,int i_lt_x,int i_lt_y,int i_step_x,int i_step_y,int i_width,int i_height,int i_out_st,int[] o_pixel)
 	{
 		final double[] cpara=this._cparam;
 		final int[] ref_x=this._ref_x;
 		final int[] ref_y=this._ref_y;
-		final int raster_width=i_raster_size.w;
-		final int raster_height=i_raster_size.h;
+		final int raster_width=i_raster.getWidth();
+		final int raster_height=i_raster.getHeight();
 
 		int out_index=i_out_st;
 		final double cpara_6=cpara[6];
@@ -222,7 +224,7 @@ final class PerspectivePixelReader
 				pt++;
 			}
 			//GS値を配列に取得
-			i_reader.getPixelSet(ref_x,ref_y,i_width,o_pixel,out_index);
+			i_raster.getPixelSet(ref_x,ref_y,i_width,o_pixel,out_index);
 			out_index+=i_width;
 		}
 		return true;
@@ -317,7 +319,7 @@ final class PerspectivePixelReader
 	 * 周波数の値。失敗すると-1
 	 * @throws NyARRuntimeException
 	 */
-	public int getRowFrequency(INyARGsPixelDriver i_reader,NyARIntSize i_raster_size,int i_y1,int i_th_h,int i_th_l,int[] o_edge_index)throws NyARRuntimeException
+	public int getRowFrequency(INyARGrayscaleRaster i_raster,int i_y1,int i_th_h,int i_th_l,int[] o_edge_index)
 	{
 		//3,4,5,6,7,8,9,10
 		final int[] freq_count_table=this._freq_count_table;
@@ -334,8 +336,9 @@ final class PerspectivePixelReader
 		for(int i=0;i<110;i++){
 			freq_table[i]=0;
 		}
-		final int raster_width=i_raster_size.w;
-		final int raster_height=i_raster_size.h;
+		final NyARIntSize raster_size=i_raster.getSize();
+		final int raster_width=raster_size.w;
+		final int raster_height=raster_size.h;
 
 		final double cpara_0=cpara[0];
 		final double cpara_3=cpara[3];
@@ -366,7 +369,7 @@ final class PerspectivePixelReader
 			}
 			
 			//ピクセルを取得(入力画像を多様化するならここから先を調整すること)
-			i_reader.getPixelSet(ref_x,ref_y,FRQ_POINTS,pixcel_temp,0);
+			i_raster.getPixelSet(ref_x,ref_y,FRQ_POINTS,pixcel_temp,0);
 
 			//o_edge_indexを一時的に破壊して調査する
 			final int freq_t=getFreqInfo(pixcel_temp,i_th_h,i_th_l,o_edge_index);			
@@ -405,7 +408,7 @@ final class PerspectivePixelReader
 	 * 周波数の値。失敗すると-1
 	 * @throws NyARRuntimeException
 	 */
-	public int getColFrequency(INyARGsPixelDriver i_reader,NyARIntSize i_raster_size,int i_x1,int i_th_h,int i_th_l,int[] o_edge_index)throws NyARRuntimeException
+	public int getColFrequency(INyARGrayscaleRaster i_raster,int i_x1,int i_th_h,int i_th_l,int[] o_edge_index)throws NyARRuntimeException
 	{
 		final double[] cpara=this._cparam;
 		final int[] ref_x=this._ref_x;
@@ -421,8 +424,9 @@ final class PerspectivePixelReader
 		for(int i=0;i<110;i++){
 			freq_table[i]=0;
 		}
-		final int raster_width=i_raster_size.w;
-		final int raster_height=i_raster_size.h;
+		final NyARIntSize raster_size=i_raster.getSize();
+		final int raster_width=raster_size.w;
+		final int raster_height=raster_size.h;
 		
 		
 		final double cpara7=cpara[7];
@@ -454,7 +458,7 @@ final class PerspectivePixelReader
 			}		
 		
 			//ピクセルを取得(入力画像を多様化するならここを調整すること)
-			i_reader.getPixelSet(ref_x,ref_y,FRQ_POINTS,pixcel_temp,0);
+			i_raster.getPixelSet(ref_x,ref_y,FRQ_POINTS,pixcel_temp,0);
 			
 			final int freq_t=getFreqInfo(pixcel_temp,i_th_h,i_th_l,o_edge_index);
 			//周期は3-10であること
@@ -621,21 +625,20 @@ final class PerspectivePixelReader
 	 * 敷居値を受け取るオブジェクト
 	 * @throws NyARRuntimeException
 	 */
-	public void detectThresholdValue(INyARGsPixelDriver i_reader,TThreshold o_threshold)throws NyARRuntimeException
+	public void detectThresholdValue(INyARGrayscaleRaster i_raster,TThreshold o_threshold)throws NyARRuntimeException
 	{
 		final int[] th_pixels=this._th_pixels;
-		NyARIntSize size=i_reader.getSize();
 		//左上のピックアップ領域からピクセルを得る(00-24)
-		rectPixels(i_reader,size,THRESHOLD_SAMPLE_LT,THRESHOLD_SAMPLE_LT,THRESHOLD_STEP,THRESHOLD_STEP,THRESHOLD_PIXEL,THRESHOLD_PIXEL,0,th_pixels);
+		rectPixels(i_raster,THRESHOLD_SAMPLE_LT,THRESHOLD_SAMPLE_LT,THRESHOLD_STEP,THRESHOLD_STEP,THRESHOLD_PIXEL,THRESHOLD_PIXEL,0,th_pixels);
 		
 		//左下のピックアップ領域からピクセルを得る(25-49)
-		rectPixels(i_reader,size,THRESHOLD_SAMPLE_LT,THRESHOLD_SAMPLE_RB,THRESHOLD_STEP,THRESHOLD_STEP,THRESHOLD_PIXEL,THRESHOLD_PIXEL,THRESHOLD_SAMPLE,th_pixels);
+		rectPixels(i_raster,THRESHOLD_SAMPLE_LT,THRESHOLD_SAMPLE_RB,THRESHOLD_STEP,THRESHOLD_STEP,THRESHOLD_PIXEL,THRESHOLD_PIXEL,THRESHOLD_SAMPLE,th_pixels);
 		
 		//右上のピックアップ領域からピクセルを得る(50-74)
-		rectPixels(i_reader,size,THRESHOLD_SAMPLE_RB,THRESHOLD_SAMPLE_LT,THRESHOLD_STEP,THRESHOLD_STEP,THRESHOLD_PIXEL,THRESHOLD_PIXEL,THRESHOLD_SAMPLE*2,th_pixels);
+		rectPixels(i_raster,THRESHOLD_SAMPLE_RB,THRESHOLD_SAMPLE_LT,THRESHOLD_STEP,THRESHOLD_STEP,THRESHOLD_PIXEL,THRESHOLD_PIXEL,THRESHOLD_SAMPLE*2,th_pixels);
 
 		//右下のピックアップ領域からピクセルを得る(75-99)
-		rectPixels(i_reader,size,THRESHOLD_SAMPLE_RB,THRESHOLD_SAMPLE_RB,THRESHOLD_STEP,THRESHOLD_STEP,THRESHOLD_PIXEL,THRESHOLD_PIXEL,THRESHOLD_SAMPLE*3,th_pixels);
+		rectPixels(i_raster,THRESHOLD_SAMPLE_RB,THRESHOLD_SAMPLE_RB,THRESHOLD_STEP,THRESHOLD_STEP,THRESHOLD_PIXEL,THRESHOLD_PIXEL,THRESHOLD_SAMPLE*3,th_pixels);
 
 		final THighAndLow hl=this.__detectThresholdValue_hl;
 		//Ptailで求めたピクセル平均
@@ -722,14 +725,14 @@ final class PerspectivePixelReader
 	}
 	private int[] __detectDataBitsIndex_freq_index1=new int[FRQ_POINTS];
 	private int[] __detectDataBitsIndex_freq_index2=new int[FRQ_POINTS];
-	private int detectDataBitsIndex(INyARGsPixelDriver i_reader,NyARIntSize i_raster_size,PerspectivePixelReader.TThreshold i_th,double[] o_index_row,double[] o_index_col)
+	private int detectDataBitsIndex(INyARGrayscaleRaster i_raster,PerspectivePixelReader.TThreshold i_th,double[] o_index_row,double[] o_index_col)
 	{
 		//周波数を測定
 		final int[] freq_index1=this.__detectDataBitsIndex_freq_index1;
 		final int[] freq_index2=this.__detectDataBitsIndex_freq_index2;
 		
-		int frq_t=getRowFrequency(i_reader,i_raster_size,i_th.lt_y,i_th.th_h,i_th.th_l,freq_index1);
-		int frq_b=getRowFrequency(i_reader,i_raster_size,i_th.rb_y,i_th.th_h,i_th.th_l,freq_index2);
+		int frq_t=getRowFrequency(i_raster,i_th.lt_y,i_th.th_h,i_th.th_l,freq_index1);
+		int frq_b=getRowFrequency(i_raster,i_th.rb_y,i_th.th_h,i_th.th_l,freq_index2);
 		//周波数はまとも？
 		if((frq_t<0 && frq_b<0) || frq_t==frq_b){
 			return -1;
@@ -750,8 +753,8 @@ final class PerspectivePixelReader
 		}		
 		
 		
-		final int frq_l=getColFrequency(i_reader,i_raster_size,i_th.lt_x,i_th.th_h,i_th.th_l,freq_index1);
-		final int frq_r=getColFrequency(i_reader,i_raster_size,i_th.rb_x,i_th.th_h,i_th.th_l,freq_index2);
+		final int frq_l=getColFrequency(i_raster,i_th.lt_x,i_th.th_h,i_th.th_l,freq_index1);
+		final int frq_r=getColFrequency(i_raster,i_th.rb_x,i_th.th_h,i_th.th_l,freq_index2);
 		//周波数はまとも？
 		if((frq_l<0 && frq_r<0) || frq_l==frq_r){
 			return -1;
@@ -798,17 +801,17 @@ final class PerspectivePixelReader
 	 * 成功するとtrue
 	 * @throws NyARRuntimeException
 	 */
-	public boolean readDataBits(INyARGsPixelDriver i_reader,NyARIntSize i_raster_size,PerspectivePixelReader.TThreshold i_th,MarkerPattEncoder o_bitbuffer)throws NyARRuntimeException
+	public boolean readDataBits(INyARGrayscaleRaster i_raster,PerspectivePixelReader.TThreshold i_th,MarkerPattEncoder o_bitbuffer)throws NyARRuntimeException
 	{
-		final int raster_width=i_raster_size.w;
-		final int raster_height=i_raster_size.h;
+		final int raster_width=i_raster.getWidth();
+		final int raster_height=i_raster.getHeight();
 		
 		final double[] index_x=this.__readDataBits_index_bit_x;
 		final double[] index_y=this.__readDataBits_index_bit_y;
 		
 
 		//読み出し位置を取得
-		final int size=detectDataBitsIndex(i_reader,i_raster_size,i_th,index_x,index_y);
+		final int size=detectDataBitsIndex(i_raster,i_th,index_x,index_y);
 		final int resolution=size+size-1;
 		if(size<0){
 			return false;
@@ -898,7 +901,7 @@ final class PerspectivePixelReader
 				pt++;
 			}
 			//1行分のピクセルを取得(場合によっては専用アクセサを書いた方がいい)
-			i_reader.getPixelSet(ref_x,ref_y,resolution*4,pixcel_temp,0);
+			i_raster.getPixelSet(ref_x,ref_y,resolution*4,pixcel_temp,0);
 			//グレースケールにしながら、line→mapへの転写
 			for(int i2=0;i2<resolution;i2++){
 				int index=i2*4;

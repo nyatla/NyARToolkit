@@ -31,7 +31,8 @@
 package jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
-import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
+import jp.nyatla.nyartoolkit.core.raster.bin.INyARBinRaster;
+import jp.nyatla.nyartoolkit.core.raster.bin.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.NyARLabelOverlapChecker;
 import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.artoolkit.NyARLabelingImage;
 import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.artoolkit.NyARLabelingLabel;
@@ -91,7 +92,7 @@ public abstract class NyARSquareContourDetector_ARToolKit extends NyARSquareCont
 	 * 検出元のラスタ画像
 	 * @throws NyARRuntimeException
 	 */
-	public final void detectMarker(NyARBinRaster i_raster,NyARSquareContourDetector.CbHandler i_cb)
+	public final void detectMarker(INyARBinRaster i_raster,NyARSquareContourDetector.CbHandler i_cb)
 	{
 		final NyARLabelingImage limage = this._limage;
 

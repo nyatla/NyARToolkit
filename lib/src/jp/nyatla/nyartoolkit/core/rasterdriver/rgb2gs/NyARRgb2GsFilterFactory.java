@@ -29,7 +29,6 @@ import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
-import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARGsPixelDriver;
 import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARRgbPixelDriver;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
@@ -158,10 +157,9 @@ class NyARRgb2GsFilterRgbAve_BYTE1D_B8G8R8X8_32 implements INyARRgb2GsFilterRgbA
 			}
 			return;
 		default:
-			INyARGsPixelDriver out_drv=o_raster.getGsPixelDriver();
 			for (int y = t; y < b; y++) {
 				for (int x = 0; x<pix_count; x++){
-					out_drv.setPixel(x,y,((in_buf[bp] & 0xff) + (in_buf[bp+1] & 0xff) + (in_buf[bp+2] & 0xff)) /3);
+					o_raster.setPixel(x,y,((in_buf[bp] & 0xff) + (in_buf[bp+1] & 0xff) + (in_buf[bp+2] & 0xff)) /3);
 					bp+=4;
 				}
 				bp+=row_padding_src;
@@ -227,10 +225,9 @@ class NyARRgb2GsFilterRgbAve_BYTE1D_X8C8C8C8_32 implements INyARRgb2GsFilterRgbA
 			}
 			return;
 		default:
-			INyARGsPixelDriver out_drv=o_raster.getGsPixelDriver();
 			for (int y = t; y < b; y++) {
 				for (int x = 0; x<pix_count; x++){
-					out_drv.setPixel(x,y,((in_buf[bp+1] & 0xff) + (in_buf[bp+2] & 0xff) + (in_buf[bp+3] & 0xff)) /3);
+					o_raster.setPixel(x,y,((in_buf[bp+1] & 0xff) + (in_buf[bp+2] & 0xff) + (in_buf[bp+3] & 0xff)) /3);
 					bp+=4;
 				}
 				bp+=row_padding_src;
@@ -303,10 +300,9 @@ class NyARRgb2GsFilterRgbAve_BYTE1D_C8C8C8_24 implements INyARRgb2GsFilterRgbAve
 			}
 			return;
 		default:
-			INyARGsPixelDriver out_drv=o_raster.getGsPixelDriver();
 			for (int y = t; y < b; y++) {
 				for (int x = 0; x<pix_count; x++){
-					out_drv.setPixel(x,y,((in_buf[bp] & 0xff) + (in_buf[bp+1] & 0xff) + (in_buf[bp+2] & 0xff)) /3);
+					o_raster.setPixel(x,y,((in_buf[bp] & 0xff) + (in_buf[bp+1] & 0xff) + (in_buf[bp+2] & 0xff)) /3);
 					bp+=3;
 				}
 				bp+=row_padding_src;
@@ -364,11 +360,10 @@ class NyARRgb2GsFilterRgbAve_INT1D_X8R8G8B8_32 implements INyARRgb2GsFilterRgbAv
 			}
 			return;
 		default:
-			INyARGsPixelDriver out_drv=o_raster.getGsPixelDriver();
 			for (int y = t; y < b; y++) {
 				for (int x = 0; x<pix_count; x++){
 					v=in_buf[src_ptr++];
-					out_drv.setPixel(x,y,(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))/3);
+					o_raster.setPixel(x,y,(((v>>16)& 0xff)+((v>>8)& 0xff)+(v &0xff))/3);
 				}
 			}
 			return;
@@ -400,12 +395,11 @@ class NyARRgb2GsFilterRgbAve_Any implements INyARRgb2GsFilterRgbAve
 		final int pix_count=w;
 		switch(o_raster.getBufferType()){
 		default:
-			INyARGsPixelDriver out_drv=o_raster.getGsPixelDriver();
 			INyARRgbPixelDriver in_drv=this._ref_raster.getRgbPixelDriver();
 			for (int y = t; y < b; y++) {
 				for (int x = pix_count-1; x >=0; x--){
 					in_drv.getPixel(x,y,wk);
-					out_drv.setPixel(x,y,(wk[0]+wk[1]+wk[2])/3);
+					o_raster.setPixel(x,y,(wk[0]+wk[1]+wk[2])/3);
 				}
 			}
 			return;
@@ -440,12 +434,11 @@ class NyARRgb2GsFilterRgbCube_Any implements INyARRgb2GsFilterRgbAve
 		final int pix_count=w;
 		switch(o_raster.getBufferType()){
 		default:
-			INyARGsPixelDriver out_drv=o_raster.getGsPixelDriver();
 			INyARRgbPixelDriver in_drv=this._ref_raster.getRgbPixelDriver();
 			for (int y = t; y < b; y++) {
 				for (int x = pix_count-1; x >=0; x--){
 					in_drv.getPixel(x,y,wk);
-					out_drv.setPixel(x,y,(wk[0]*wk[1]*wk[2])>>16);
+					o_raster.setPixel(x,y,(wk[0]*wk[1]*wk[2])>>16);
 				}
 			}
 			return;
@@ -478,12 +471,11 @@ class NyARRgb2GsFilterYCbCr_Any implements INyARRgb2GsFilterYCbCr
 		final int pix_count=w;
 		switch(o_raster.getBufferType()){
 		default:
-			INyARGsPixelDriver out_drv=o_raster.getGsPixelDriver();
 			INyARRgbPixelDriver in_drv=this._ref_raster.getRgbPixelDriver();
 			for (int y = t; y < b; y++) {
 				for (int x = pix_count-1; x >=0; x--){
 					in_drv.getPixel(x,y,wk);
-					out_drv.setPixel(x,y,(306*(wk[2] & 0xff)+601*(wk[1] & 0xff)+117 * (wk[0] & 0xff))>>10);
+					o_raster.setPixel(x,y,(306*(wk[2] & 0xff)+601*(wk[1] & 0xff)+117 * (wk[0] & 0xff))>>10);
 				}
 			}
 			return;

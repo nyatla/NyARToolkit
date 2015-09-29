@@ -27,9 +27,9 @@ package jp.nyatla.nyartoolkit.core.rasterdriver.labeling.rle;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.raster.bin.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.gs.NyARGrayscaleRaster;
-import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARGsPixelDriver;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
@@ -534,10 +534,10 @@ class NyARRlePixelDriver_BIN_GS8 implements NyARLabeling_Rle.IRasterDriver
  */
 class NyARRlePixelDriver_GSReader implements NyARLabeling_Rle.IRasterDriver
 {
-	private INyARGsPixelDriver _ref_driver;
+	private final INyARGrayscaleRaster _ref_raster;
 	public NyARRlePixelDriver_GSReader(INyARGrayscaleRaster i_raster)
 	{
-		this._ref_driver=i_raster.getGsPixelDriver();
+		this._ref_raster=i_raster;
 	}
 	public int xLineToRle(int i_x,int i_y,int i_len,int i_th,NyARLabeling_Rle.RleElement[] i_out)
 	{
@@ -549,7 +549,7 @@ class NyARRlePixelDriver_GSReader implements NyARLabeling_Rle.IRasterDriver
 		final int right_edge = st + i_len - 1;
 		while (x < right_edge) {
 			// 暗点(0)スキャン
-			if (this._ref_driver.getPixel(x,i_y) > i_th) {
+			if (this._ref_raster.getPixel(x,i_y) > i_th) {
 				x++;//明点
 				continue;
 			}
@@ -559,7 +559,7 @@ class NyARRlePixelDriver_GSReader implements NyARLabeling_Rle.IRasterDriver
 			r++;// 暗点+1
 			x++;
 			while (x < right_edge) {
-				if (this._ref_driver.getPixel(x,i_y) > i_th) {
+				if (this._ref_raster.getPixel(x,i_y) > i_th) {
 					// 明点(1)→暗点(0)配列終了>登録
 					i_out[current].r = r;
 					current++;
@@ -574,7 +574,7 @@ class NyARRlePixelDriver_GSReader implements NyARLabeling_Rle.IRasterDriver
 			}
 		}
 		// 最後の1点だけ判定方法が少し違うの。
-		if (this._ref_driver.getPixel(x,i_y) > i_th) {
+		if (this._ref_raster.getPixel(x,i_y) > i_th) {
 			// 明点→rカウント中なら暗点配列終了>登録
 			if (r >= 0) {
 				i_out[current].r = r;

@@ -30,7 +30,6 @@ import jp.nyatla.nyartoolkit.core.histogram.NyARHistogram;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
-import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARGsPixelDriver;
 import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARRgbPixelDriver;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
@@ -91,7 +90,7 @@ class NyARHistogramFromRaster_AnyGs implements INyARHistogramFromRaster
 	{
 		o_histogram.reset();
 		int[] data_ptr=o_histogram.data;
-		INyARGsPixelDriver drv=this._gsr.getGsPixelDriver();
+		INyARGrayscaleRaster drv=this._gsr;
 		final int pix_count=i_w;
 		final int pix_mod_part=pix_count-(pix_count%8);
 		//左上から1行づつ走査していく

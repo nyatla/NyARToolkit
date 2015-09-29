@@ -31,7 +31,7 @@
 package jp.nyatla.nyartoolkit.core.rasterdriver.labeling.artoolkit;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
-import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.raster.bin.INyARBinRaster;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
@@ -57,7 +57,7 @@ final public class NyARLabeling_ARToolKit
 	 * ラべリング画像の出力先オブジェクトです。i_rasterと同じサイズである必要があります。
 	 * @throws NyARRuntimeException
 	 */
-	public int labeling(NyARBinRaster i_raster,NyARLabelingImage o_destination)
+	public int labeling(INyARBinRaster i_raster,NyARLabelingImage o_destination)
 	{
 		assert(i_raster.getBufferType()==NyARBufferType.INT1D_BIN_8);
 		int label_img_ptr1, label_pixel;

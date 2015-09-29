@@ -38,7 +38,8 @@ import jp.nyatla.nyartoolkit.core.marker.artk.match.NyARMatchPattDeviationColorD
 import jp.nyatla.nyartoolkit.core.marker.artk.match.NyARMatchPattResult;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
-import jp.nyatla.nyartoolkit.core.raster.NyARBinRaster;
+import jp.nyatla.nyartoolkit.core.raster.bin.INyARBinRaster;
+import jp.nyatla.nyartoolkit.core.raster.bin.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterdriver.pickup.INyARColorPatt;
 import jp.nyatla.nyartoolkit.core.rasterdriver.pickup.NyARColorPatt_O3;
@@ -188,7 +189,7 @@ public abstract class NyARSingleDetectMarker
 	private NyARMatchPattDeviationColorData _deviation_data;
 	private NyARMatchPatt_Color_WITHOUT_PCA _match_patt;
 	private NyARCoord2Linear _coordline;	
-	protected NyARBinRaster _bin_raster;
+	protected INyARBinRaster _bin_raster;
 	/** 一致率*/
 	private double _confidence=0;
 	/** 認識矩形の記録用*/
@@ -257,7 +258,7 @@ public abstract class NyARSingleDetectMarker
 		this._coordline=new NyARCoord2Linear(i_ref_param.getScreenSize(),i_ref_param.getDistortionFactor());
 		//２値画像バッファを作る		
 		NyARIntSize s=i_ref_param.getScreenSize();
-		this._bin_raster=new NyARBinRaster(s.w,s.h);
+		this._bin_raster=NyARBinRaster.createInstance(s.w,s.h);
 	}
 	protected abstract void execDetectMarker();	
 	

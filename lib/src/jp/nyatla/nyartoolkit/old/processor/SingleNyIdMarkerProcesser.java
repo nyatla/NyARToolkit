@@ -132,7 +132,7 @@ public abstract class SingleNyIdMarkerProcesser
 			NyIdMarkerParam param=this._marker_param;
 			NyIdMarkerPattern patt_data  =this._marker_data;			
 			// 評価基準になるパターンをイメージから切り出す
-			if (!this._id_pickup.pickFromRaster(this._ref_raster.getGsPixelDriver(),vertex, patt_data, param)){
+			if (!this._id_pickup.pickFromRaster(this._ref_raster,vertex, patt_data, param)){
 				return;
 			}
 			//エンコード
@@ -224,7 +224,7 @@ public abstract class SingleNyIdMarkerProcesser
 		this._transmat = new NyARTransMat(i_param);
 
 		// ２値画像バッファを作る
-		this._gs_raster = new NyARGrayscaleRaster(scr_size.w, scr_size.h);
+		this._gs_raster = NyARGrayscaleRaster.createInstance(scr_size.w, scr_size.h);
 		this._histmaker=(INyARHistogramFromRaster) this._gs_raster.createInterface(INyARHistogramFromRaster.class);
 		//ワーク用のデータオブジェクトを２個作る
 		this._data_current=i_encoder.createDataInstance();

@@ -27,7 +27,6 @@ package jp.nyatla.nyartoolkit.markersystem.utils;
 
 import java.util.ArrayList;
 
-import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 
 /**
