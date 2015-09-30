@@ -14,7 +14,7 @@ package jp.nyatla.nyartoolkit.dev.pro.core.kpm;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.*;
-import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.pro.core.integralimage.NyARIntegralImage;
 import jp.nyatla.nyartoolkit.pro.core.kpm.ann.NyARLinearFeatureSearch;

@@ -40,7 +40,7 @@ import java.io.FileInputStream;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
-import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.raster.gs.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.rle.NyARRleLabelFragmentInfo;
 import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.rle.NyARRleLabelFragmentInfoPtrStack;
 import jp.nyatla.nyartoolkit.core.rasterdriver.rgb2gs.INyARRgb2GsFilter;
@@ -107,7 +107,7 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 		return;
 	}
 	private SquareDetector _detect;
-	private NyARGrayscaleRaster _bi=new NyARGrayscaleRaster(320,240);
+	private NyARGrayscaleRaster _bi=NyARGrayscaleRaster.createInstance(320,240);
 	private INyARRgb2GsFilter _filter;
 
 
@@ -129,7 +129,7 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 			NyARParam param=NyARParam.createFromARParamFile(new FileInputStream(PARAM_FILE));
 			param.changeScreenSize(320,240);
 			try{
-				NyARIntRect rect=new NyARIntRect();
+//				NyARIntRect rect=new NyARIntRect();
 //				rect.x=0;rect.y=0;rect.w=220;rect.h=140;
 				this._detect.detectMarker(gs,110,this._detect);
 			}catch(Exception e){

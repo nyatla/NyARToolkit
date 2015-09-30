@@ -13,8 +13,8 @@
 package jp.nyatla.nyartoolkit.dev.pro.core.integralimage;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
-import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.NyARRaster;
+import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.pro.core.integralimage.driver.INyARIntegralImageDriver;
 import jp.nyatla.nyartoolkit.pro.core.integralimage.driver.NyARIntegralImageDriver_INT1D;

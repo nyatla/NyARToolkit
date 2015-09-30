@@ -34,7 +34,7 @@ import java.util.Date;
 import javax.imageio.ImageIO;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
-import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
+import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
@@ -65,7 +65,7 @@ public class MarkerSystemTest
 				FileInputStream fs = new FileInputStream(raw_file);
 				byte[] buf = new byte[(int) f.length()];
 				fs.read(buf);
-				INyARRgbRaster ra = new NyARRgbRaster(320, 240,NyARBufferType.BYTE1D_B8G8R8X8_32,false);
+				INyARRgbRaster ra = NyARRgbRaster.createInstance(320, 240,NyARBufferType.BYTE1D_B8G8R8X8_32,false);
 				ra.wrapBuffer(buf);
 				s.update(ra);
 			}else{

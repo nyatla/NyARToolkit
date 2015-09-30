@@ -1,7 +1,7 @@
 package jp.nyatla.nyartoolkit.dev.pro.core.surfacetracking.feature;
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
-import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
-import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.raster.gs.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.pro.core.rasterfilter.INyARDefocusFilter;
 import jp.nyatla.nyartoolkit.pro.core.rasterfilter.NyARDefocusFilterFactory;
 import jp.nyatla.nyartoolkit.pro.core.surfacetracking.featuremap.NyARSurfaceFeatureMap;

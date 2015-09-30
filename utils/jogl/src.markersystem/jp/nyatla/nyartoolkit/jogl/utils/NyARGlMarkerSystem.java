@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
 import jp.nyatla.nyartoolkit.core.param.NyARFrustum;
-import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
+import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.perspectivecopy.INyARPerspectiveCopy;
 import jp.nyatla.nyartoolkit.j2se.NyARBufferedImageRaster;

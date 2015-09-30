@@ -39,6 +39,7 @@ import jp.nyatla.nyartoolkit.core.marker.artk.match.NyARMatchPattResult;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.pattmatch.*;
 import jp.nyatla.nyartoolkit.core.pickup.*;
+import jp.nyatla.nyartoolkit.core.raster.bin.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;

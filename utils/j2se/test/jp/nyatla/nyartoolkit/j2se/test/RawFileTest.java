@@ -39,7 +39,6 @@ import javax.imageio.ImageIO;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
-import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterdriver.perspectivecopy.INyARPerspectiveCopy;
 import jp.nyatla.nyartoolkit.core.rasterdriver.perspectivecopy.NyARPerspectiveCopyFactory;
@@ -106,7 +105,7 @@ public class RawFileTest
 		INyARRgbRaster im=new NyARBufferedImageRaster(ImageIO.read(new File("../../Data/hiro.png")));
 		NyARIntSize s=im.getSize();
 		INyARPerspectiveCopy pc=(INyARPerspectiveCopy)im.createInterface(INyARPerspectiveCopy.class);
-		NyARRgbRaster tr=new NyARRgbRaster(16,16);
+		INyARRgbRaster tr=NyARRgbRaster.createInstance(16,16);
 		pc.copyPatt(0,0,s.w,0,s.w,s.h,0,s.h,25, 25,4, tr);		
 		code.setRaster(tr);
 

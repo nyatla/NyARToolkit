@@ -1,7 +1,7 @@
 package jp.nyatla.nyartoolkit.dev.pro.core.rasterfiltr;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
-import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 
 public interface INyARDefocusFilter
 {
