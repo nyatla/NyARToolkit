@@ -27,9 +27,8 @@ package jp.nyatla.nyartoolkit.core.rasterdriver.pickup;
 
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
-import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
-import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.*;
+import jp.nyatla.nyartoolkit.core.raster.rgb.format.NyARRgbRaster_INT1D_X8R8G8B8_32;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 
@@ -38,77 +37,9 @@ import jp.nyatla.nyartoolkit.core.types.matrix.*;
  * このクラスは、疑似アフィン変換を使用して画像からパターンを取得します。
  * 取得領域は、領域を定義する４頂点と、除外する枠線の幅（割合）から定義します。
  */
-public class NyARColorPatt_PseudoAffine implements INyARColorPatt
+public class NyARColorPatt_PseudoAffine extends NyARRgbRaster_INT1D_X8R8G8B8_32 implements INyARColorPatt
 {
-	private int[] _patdata;
-	private INyARRgbPixelDriver _pixelreader;
-	private NyARIntSize _size;
-	private static final int BUFFER_FORMAT=NyARBufferType.INT1D_X8R8G8B8_32;
-	/**
-	 * この関数はラスタの幅を返します。
-	 */		
-	public final int getWidth()
-	{
-		return this._size.w;
-	}
-	/**
-	 * この関数はラスタの高さを返します。
-	 */	
-	public final int getHeight()
-	{
-		return this._size.h;
-	}
-	/**
-	 * この関数はラスタのサイズの参照値を返します。
-	 */	
-	public final NyARIntSize getSize()
-	{
-		return 	this._size;
-	}
-	/**
-	 * この関数は、ラスタの画素読み取りオブジェクトの参照値を返します。
-	 */	
-	public final INyARRgbPixelDriver getRgbPixelDriver()
-	{
-		return this._pixelreader;
-	}
-	/**
-	 * この関数は、ラスタ画像のバッファを返します。
-	 * バッファ形式は、{@link NyARBufferType#INT1D_X8R8G8B8_32}(int[])です。
-	 */	
-	public Object getBuffer()
-	{
-		return this._patdata;
-	}
-	/**
-	 * この関数は、インスタンスがバッファを所有しているかを返します。基本的にtrueです。
-	 */	
-	public boolean hasBuffer()
-	{
-		return this._patdata!=null;
-	}
-	/**
-	 * この関数は使用不可能です。
-	 */	
-	public void wrapBuffer(Object i_ref_buf)
-	{
-		NyARRuntimeException.notImplement();
-	}
-	/**
-	 * この関数は、バッファタイプの定数を返します。
-	 */	
-	public final int getBufferType()
-	{
-		return BUFFER_FORMAT;
-	}
-	/**
-	 * この関数は、インスタンスのバッファタイプが引数のものと一致しているか判定します。
-	 */	
-	public final boolean isEqualBufferType(int i_type_value)
-	{
-		return BUFFER_FORMAT==i_type_value;
-	}	
-	private NyARDoubleMatrix44 _invmat=new NyARDoubleMatrix44();
+	final private NyARDoubleMatrix44 _invmat=new NyARDoubleMatrix44();
 
 	/**
 	 * コンストラクタです。
@@ -119,10 +50,8 @@ public class NyARColorPatt_PseudoAffine implements INyARColorPatt
 	 * @throws NyARRuntimeException 
 	 */
 	public NyARColorPatt_PseudoAffine(int i_width, int i_height)
-	{		
-		this._size=new NyARIntSize(i_width,i_height);
-		this._patdata = new int[i_height*i_width];
-		this._pixelreader=NyARRgbPixelDriverFactory.createDriver(this);
+	{
+		super(i_width,i_height,true);
 		//疑似アフィン変換のパラメタマトリクスを計算します。
 		//長方形から計算すると、有効要素がm00,m01,m02,m03,m10,m11,m20,m23,m30になります。
 		final NyARDoubleMatrix44 mat=this._invmat;
@@ -194,7 +123,6 @@ public class NyARColorPatt_PseudoAffine implements INyARColorPatt
 		ry2=this._size.h;
 		int[] rgb_tmp=new int[3];
 
-		INyARRgbPixelDriver reader=image.getRgbPixelDriver();
 		// 変形先領域の頂点を取得
 
 		//変換行列から現在の座標系への変換パラメタを作成
@@ -203,8 +131,8 @@ public class NyARColorPatt_PseudoAffine implements INyARColorPatt
 			for(int x=0;x<rx2;x++){
 				final int ttx=(int)((conv_param[0]*x*y+conv_param[1]*x+conv_param[2]*y+conv_param[3])+0.5);
 				final int tty=(int)((conv_param[4]*x*y+conv_param[5]*x+conv_param[6]*y+conv_param[7])+0.5);
-				reader.getPixel((int)ttx,(int)tty,rgb_tmp);
-				this._patdata[x+y*rx2]=(rgb_tmp[0]<<16)|(rgb_tmp[1]<<8)|rgb_tmp[2];				
+				this.getPixel((int)ttx,(int)tty,rgb_tmp);
+				this._buf[x+y*rx2]=(rgb_tmp[0]<<16)|(rgb_tmp[1]<<8)|rgb_tmp[2];				
 			}
 		}
 		return true;

@@ -27,9 +27,8 @@ package jp.nyatla.nyartoolkit.core.rasterdriver.rgb2gs;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
-import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
-import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARRgbPixelDriver;
+import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
@@ -395,7 +394,7 @@ class NyARRgb2GsFilterRgbAve_Any implements INyARRgb2GsFilterRgbAve
 		final int pix_count=w;
 		switch(o_raster.getBufferType()){
 		default:
-			INyARRgbPixelDriver in_drv=this._ref_raster.getRgbPixelDriver();
+			INyARRgbRaster in_drv=this._ref_raster;
 			for (int y = t; y < b; y++) {
 				for (int x = pix_count-1; x >=0; x--){
 					in_drv.getPixel(x,y,wk);
@@ -434,7 +433,7 @@ class NyARRgb2GsFilterRgbCube_Any implements INyARRgb2GsFilterRgbAve
 		final int pix_count=w;
 		switch(o_raster.getBufferType()){
 		default:
-			INyARRgbPixelDriver in_drv=this._ref_raster.getRgbPixelDriver();
+			INyARRgbRaster in_drv=this._ref_raster;
 			for (int y = t; y < b; y++) {
 				for (int x = pix_count-1; x >=0; x--){
 					in_drv.getPixel(x,y,wk);
@@ -471,7 +470,7 @@ class NyARRgb2GsFilterYCbCr_Any implements INyARRgb2GsFilterYCbCr
 		final int pix_count=w;
 		switch(o_raster.getBufferType()){
 		default:
-			INyARRgbPixelDriver in_drv=this._ref_raster.getRgbPixelDriver();
+			INyARRgbRaster in_drv=this._ref_raster;
 			for (int y = t; y < b; y++) {
 				for (int x = pix_count-1; x >=0; x--){
 					in_drv.getPixel(x,y,wk);

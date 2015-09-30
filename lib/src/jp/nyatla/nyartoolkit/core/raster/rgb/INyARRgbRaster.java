@@ -23,23 +23,13 @@
  *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.raster;
+package jp.nyatla.nyartoolkit.core.raster.rgb;
 
-import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
-import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARRgbPixelDriver;
+import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 
 /**
  * このインタフェイスは、{@link INyARRaster}に、カラー画像へアクセスする機能を追加します。
  */
-public interface INyARRgbRaster extends INyARRaster
+public interface INyARRgbRaster extends INyARRaster,INyARRgbPixelInterface
 {
-	/**
-	 * この関数は、画素形式によらない画素アクセスを行うオブジェクトへの参照値を返します。
-	 * 実装クラスでは、所有するバッファに関連したラスタ読出しオブジェクトを返す処理を実装してください。
-	 * @return
-	 * オブジェクトの参照値
-	 * @throws NyARRuntimeException
-	 */
-	public INyARRgbPixelDriver getRgbPixelDriver();
-
 }

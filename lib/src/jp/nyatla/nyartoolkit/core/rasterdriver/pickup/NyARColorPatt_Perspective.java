@@ -27,12 +27,10 @@ package jp.nyatla.nyartoolkit.core.rasterdriver.pickup;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.marker.artk.match.NyARMatchPattDeviationColorData;
-import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
+import jp.nyatla.nyartoolkit.core.raster.rgb.format.NyARRgbRaster_INT1D_X8R8G8B8_32;
 import jp.nyatla.nyartoolkit.core.rasterdriver.perspectivecopy.INyARPerspectiveCopy;
 import jp.nyatla.nyartoolkit.core.rasterdriver.perspectivecopy.NyARPerspectiveCopyFactory;
-import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARRgbPixelDriver;
-import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.NyARRgbPixelDriverFactory;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 
@@ -40,26 +38,13 @@ import jp.nyatla.nyartoolkit.core.types.*;
  * このクラスは、入力サイズ制限の無いPerspectiveReaderです。
  *
  */
-public class NyARColorPatt_Perspective implements INyARColorPatt
+public class NyARColorPatt_Perspective extends NyARRgbRaster_INT1D_X8R8G8B8_32 implements INyARColorPatt
 {
-	private NyARIntPoint2d _edge=new NyARIntPoint2d();
-	/** パターン格納用のバッファ*/
-	protected int[] _patdata;
+	final private NyARIntPoint2d _edge=new NyARIntPoint2d();
 	/** サンプリング解像度*/
-	protected int _sample_per_pixel;
-	/** このラスタのサイズ*/	
-	protected NyARIntSize _size;
-	private INyARRgbPixelDriver _pixelreader;
-	private static final int BUFFER_FORMAT=NyARBufferType.INT1D_X8R8G8B8_32;
-	private void initInstance(int i_width, int i_height,int i_point_per_pix)
-	{
-		assert i_width>2 && i_height>2;
-		this._sample_per_pixel=i_point_per_pix;	
-		this._size=new NyARIntSize(i_width,i_height);
-		this._patdata = new int[i_height*i_width];
-		this._pixelreader=NyARRgbPixelDriverFactory.createDriver(this);
-		return;
-	}
+	final protected int _sample_per_pixel;
+
+
 
 	/**
 	 * コンストラクタです。
@@ -75,9 +60,7 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 	 */
 	public NyARColorPatt_Perspective(int i_width, int i_height,int i_point_per_pix)
 	{
-		this.initInstance(i_width,i_height,i_point_per_pix);
-		this._edge.setValue(0,0);
-		return;
+		this(i_width,i_height,i_point_per_pix,0);
 	}
 	/**
 	 * コンストラクタです。
@@ -94,7 +77,9 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 	 */
 	public NyARColorPatt_Perspective(int i_width, int i_height,int i_point_per_pix,int i_edge_percentage)
 	{
-		this.initInstance(i_width,i_height,i_point_per_pix);
+		super(i_width,i_height,true);
+		assert i_width>2 && i_height>2;
+		this._sample_per_pixel=i_point_per_pix;
 		this._edge.setValue(i_edge_percentage, i_edge_percentage);
 		return;
 	}
@@ -106,7 +91,7 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 	 * 上下のエッジの割合です。0から50の間の数で指定します。
 	 * @param i_sample_per_pixel
 	 * 1ピクセルあたりの縦横サンプリング数。2なら2x2=4ポイントをサンプリングする。
-	 */
+	 *//*
 	public void setEdgeSizeByPercent(int i_x_percent,int i_y_percent,int i_sample_per_pixel)
 	{
 		assert(i_x_percent>=0);
@@ -114,71 +99,9 @@ public class NyARColorPatt_Perspective implements INyARColorPatt
 		this._edge.setValue(i_x_percent, i_y_percent);
 		this._sample_per_pixel=i_sample_per_pixel;
 		return;
-	}
-	/**
-	 * この関数はラスタの幅を返します。
-	 */
-	public final int getWidth()
-	{
-		return this._size.w;
-	}
-	/**
-	 * この関数はラスタの高さを返します。
-	 */
-	public final int getHeight()
-	{
-		return this._size.h;
-	}
-	/**
-	 * この関数はラスタのサイズの参照値を返します。
-	 */
-	public final NyARIntSize getSize()
-	{
-		return 	this._size;
-	}
-	/**
-	 * この関数は、ラスタの画素読み取りオブジェクトの参照値を返します。
-	 */	
-	public final INyARRgbPixelDriver getRgbPixelDriver()
-	{
-		return this._pixelreader;
-	}
-	/**
-	 * この関数は、ラスタ画像のバッファを返します。
-	 * バッファ形式は、{@link NyARBufferType#INT1D_X8R8G8B8_32}(int[])です。
-	 */	
-	public Object getBuffer()
-	{
-		return this._patdata;
-	}
-	/**
-	 * この関数は、インスタンスがバッファを所有しているかを返します。基本的にtrueです。
-	 */	
-	public boolean hasBuffer()
-	{
-		return this._patdata!=null;
-	}
-	/**
-	 * この関数は使用不可能です。
-	 */
-	public void wrapBuffer(Object i_ref_buf)
-	{
-		NyARRuntimeException.notImplement();
-	}
-	/**
-	 * この関数は、バッファタイプの定数を返します。
-	 */
-	public final int getBufferType()
-	{
-		return BUFFER_FORMAT;
-	}
-	/**
-	 * この関数は、インスタンスのバッファタイプが引数のものと一致しているか判定します。
-	 */	
-	public final boolean isEqualBufferType(int i_type_value)
-	{
-		return BUFFER_FORMAT==i_type_value;
-	}
+	}*/
+
+
 	private INyARRgbRaster _last_input_raster=null;
 	private INyARPerspectiveCopy _raster_driver;
 	/**

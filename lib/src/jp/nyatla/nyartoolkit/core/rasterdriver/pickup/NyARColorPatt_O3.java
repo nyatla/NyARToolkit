@@ -32,9 +32,7 @@ package jp.nyatla.nyartoolkit.core.rasterdriver.pickup;
 
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.math.NyARMat;
-import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
-import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARRgbPixelDriver;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 
@@ -208,7 +206,7 @@ public class NyARColorPatt_O3 extends NyARColorPatt_Base
 		final double para20=para[2*3+0][0];
 		final double para21=para[2*3+1][0];
 
-		INyARRgbPixelDriver reader=image.getRgbPixelDriver();
+		
 		final int img_width=image.getWidth();
 		final int img_height=image.getHeight();
 
@@ -256,7 +254,7 @@ public class NyARColorPatt_O3 extends NyARColorPatt_Base
 					}
 				}
 				//1ピクセル分の配列を取得
-				reader.getPixelSet(xc,yc,number_of_pix, rgb_set);
+				this.getPixelSet(xc,yc,number_of_pix, rgb_set);
 				r=g=b=0;
 				for(i=number_of_pix*3-1;i>=0;i-=3){
 					r += rgb_set[i-2];// R
@@ -264,7 +262,7 @@ public class NyARColorPatt_O3 extends NyARColorPatt_Base
 					b += rgb_set[i];// B
 				}
 				//1ピクセル確定
-				this._patdata[iy*pat_size_w+ix]=(((r / xdiv_x_ydiv)&0xff)<<16)|(((g / xdiv_x_ydiv)&0xff)<<8)|(((b / xdiv_x_ydiv)&0xff));
+				this._buf[iy*pat_size_w+ix]=(((r / xdiv_x_ydiv)&0xff)<<16)|(((g / xdiv_x_ydiv)&0xff)<<8)|(((b / xdiv_x_ydiv)&0xff));
 			}
 		}
 		return;

@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Date;
 
+import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
@@ -52,7 +53,7 @@ public class MarkerSystem
 			FileInputStream fs = new FileInputStream(data_file);
 			byte[] buf = new byte[(int) f.length()];
 			fs.read(buf);
-			NyARRgbRaster ra = new NyARRgbRaster(320, 240,NyARBufferType.BYTE1D_B8G8R8X8_32,false);
+			INyARRgbRaster ra = NyARRgbRaster.createInstance(320, 240,NyARBufferType.BYTE1D_B8G8R8X8_32,false);
 			ra.wrapBuffer(buf);
 			//Configurationの生成
 			NyARMarkerSystemConfig config = new NyARMarkerSystemConfig(320,240);

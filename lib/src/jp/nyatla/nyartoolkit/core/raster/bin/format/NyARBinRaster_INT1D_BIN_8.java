@@ -30,7 +30,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 
 public class NyARBinRaster_INT1D_BIN_8 extends NyARBinRaster
 {
-	private int[] _buf;
+	protected int[] _buf;
 	public NyARBinRaster_INT1D_BIN_8(int i_width,int i_height,boolean i_is_alloc)
 	{
 		super(i_width,i_height,i_is_alloc);

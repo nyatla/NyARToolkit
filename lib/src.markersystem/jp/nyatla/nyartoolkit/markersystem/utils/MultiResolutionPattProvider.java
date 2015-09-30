@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.marker.artk.match.NyARMatchPattDeviationColorData;
-import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
+import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.perspectivecopy.INyARPerspectiveCopy;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
@@ -55,7 +55,7 @@ public class MultiResolutionPattProvider
 			while(i_patt_w*r<64){
 				r*=2;
 			}
-			this._patt=new NyARRgbRaster(i_patt_w,i_patt_h,NyARBufferType.INT1D_X8R8G8B8_32,true);
+			this._patt=NyARRgbRaster.createInstance(i_patt_w,i_patt_h,NyARBufferType.INT1D_X8R8G8B8_32,true);
 			this._patt_d=new NyARMatchPattDeviationColorData(i_patt_w,i_patt_h);
 			this._patt_edge=i_edge_percentage;
 			this._patt_resolution=r;

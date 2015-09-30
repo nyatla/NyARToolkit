@@ -32,12 +32,10 @@ package jp.nyatla.nyartoolkit.core.rasterdriver.pickup;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.math.NyARMat;
-import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
+import jp.nyatla.nyartoolkit.core.raster.rgb.format.NyARRgbRaster_INT1D_X8R8G8B8_32;
 import jp.nyatla.nyartoolkit.core.rasterdriver.perspectivecopy.INyARPerspectiveCopy;
 import jp.nyatla.nyartoolkit.core.rasterdriver.perspectivecopy.NyARPerspectiveCopyFactory;
-import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARRgbPixelDriver;
-import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.NyARRgbPixelDriverFactory;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
@@ -45,16 +43,11 @@ import jp.nyatla.nyartoolkit.core.types.*;
  * ARToolKit由来のアルゴリズムで画像からパターン取得する機能を提供します。
  * この関数は可読性を重視しているため低速です。高速な{@link NyARColorPatt_O3}を使ってください。
  */
-public class NyARColorPatt_Base implements INyARColorPatt
+public class NyARColorPatt_Base extends NyARRgbRaster_INT1D_X8R8G8B8_32 implements INyARColorPatt
 {
 	protected static final int AR_PATT_SAMPLE_NUM = 64;
-	protected static final int BUFFER_FORMAT=NyARBufferType.INT1D_X8R8G8B8_32;
 	protected final static double[][] CPARAM_WORLD = {{ 100.0, 100.0 }, { 100.0 + 10.0, 100.0 }, { 100.0 + 10.0, 100.0 + 10.0 },{ 100.0, 100.0 + 10.0 } };
-
-	protected NyARIntSize _size;
-	protected int[] _patdata;
 	
-	protected INyARRgbPixelDriver _pixelreader;
 	/**
 	 * コンストラクタです。
 	 * 解像度を指定して、インスタンスを生成します。
@@ -64,79 +57,13 @@ public class NyARColorPatt_Base implements INyARColorPatt
 	 * ラスタのサイズ
 	 * @throws NyARRuntimeException 
 	 */
-	public NyARColorPatt_Base(int i_width, int i_height)
+	protected NyARColorPatt_Base(int i_width, int i_height)
 	{
+		super(i_width,i_height,true);
 		//入力制限
 		assert i_width<=64 && i_height<=64;
-		this._size=new NyARIntSize(i_width,i_height);
-		this._patdata = new int[i_height*i_width];
-		this._pixelreader=NyARRgbPixelDriverFactory.createDriver(this);
-		return;
 	}
-	/**
-	 * この関数はラスタの幅を返します。
-	 */
-	public final int getWidth()
-	{
-		return this._size.w;
-	}
-	/**
-	 * この関数はラスタの高さを返します。
-	 */
-	public final int getHeight()
-	{
-		return this._size.h;
-	}
-	/**
-	 * この関数はラスタのサイズの参照値を返します。
-	 */
-	public final NyARIntSize getSize()
-	{
-		return 	this._size;
-	}
-	/**
-	 * この関数は、ラスタの画素読み取りオブジェクトの参照値を返します。
-	 */
-	public final INyARRgbPixelDriver getRgbPixelDriver()
-	{
-		return this._pixelreader;
-	}
-	/**
-	 * この関数は、ラスタ画像のバッファを返します。
-	 * バッファ形式は、{@link NyARBufferType#INT1D_X8R8G8B8_32}(int[])です。
-	 */
-	public Object getBuffer()
-	{
-		return this._patdata;
-	}
-	/**
-	 * この関数は、インスタンスがバッファを所有しているかを返します。基本的にtrueです。
-	 */
-	public boolean hasBuffer()
-	{
-		return this._patdata!=null;
-	}
-	/**
-	 * この関数は使用不可能です。
-	 */
-	public void wrapBuffer(Object i_ref_buf)
-	{
-		NyARRuntimeException.notImplement();
-	}
-	/**
-	 * この関数は、バッファタイプの定数を返します。
-	 */
-	public final int getBufferType()
-	{
-		return BUFFER_FORMAT;
-	}
-	/**
-	 * この関数は、インスタンスのバッファタイプが引数のものと一致しているか判定します。
-	 */
-	public final boolean isEqualBufferType(int i_type_value)
-	{
-		return BUFFER_FORMAT==i_type_value;
-	}
+
 	/**
 	 * この関数は、射影変換パラメータを計算します。
 	 * @param i_vertex
@@ -147,7 +74,7 @@ public class NyARColorPatt_Base implements INyARColorPatt
 	 * 計算に成功するとtrueです。
 	 * @throws NyARRuntimeException
 	 */
-	private boolean get_cpara(final NyARIntPoint2d[] i_vertex, NyARMat o_para)throws NyARRuntimeException
+	private boolean get_cpara(final NyARIntPoint2d[] i_vertex, NyARMat o_para)
 	{
 		double[][] world = CPARAM_WORLD;
 		NyARMat a = new NyARMat(8, 8);// 次処理で値を設定するので、初期化不要// new NyARMat( 8, 8 );
@@ -191,7 +118,7 @@ public class NyARColorPatt_Base implements INyARColorPatt
 	/**
 	 * この関数は、ラスタのi_vertexsで定義される四角形からパターンを取得して、インスタンスに格納します。
 	 */
-	public boolean pickFromRaster(INyARRgbRaster image,NyARIntPoint2d[] i_vertexs)throws NyARRuntimeException
+	public boolean pickFromRaster(INyARRgbRaster image,NyARIntPoint2d[] i_vertexs)
 	{
 		// パターンの切り出しに失敗することもある。
 		NyARMat cpara = new NyARMat(8, 1);
@@ -249,7 +176,6 @@ public class NyARColorPatt_Base implements INyARColorPatt
 		int[] rgb_tmp = new int[3];
 
 		//ピクセルリーダーを取得
-		INyARRgbPixelDriver reader=image.getRgbPixelDriver();
 		final int xdiv_x_ydiv = xdiv * ydiv;
 
 		for(int iy=0;iy<this._size.h;iy++){
@@ -268,7 +194,7 @@ public class NyARColorPatt_Base implements INyARColorPatt
 						final int yc = (int) ((para10 * xw + para11 * yw + para12) / d);
 	
 						if (xc >= 0 && xc < img_x && yc >= 0 && yc < img_y) {
-							reader.getPixel(xc, yc, rgb_tmp);
+							image.getPixel(xc, yc, rgb_tmp);
 							r += rgb_tmp[0];// R
 							g += rgb_tmp[1];// G
 							b += rgb_tmp[2];// B
@@ -276,7 +202,7 @@ public class NyARColorPatt_Base implements INyARColorPatt
 						}
 					}
 				}
-				this._patdata[iy*this._size.w+ix]=(((r / xdiv_x_ydiv)&0xff)<<16)|(((g / xdiv_x_ydiv)&0xff)<<8)|(((b / xdiv_x_ydiv)&0xff));
+				this._buf[iy*this._size.w+ix]=(((r / xdiv_x_ydiv)&0xff)<<16)|(((g / xdiv_x_ydiv)&0xff)<<8)|(((b / xdiv_x_ydiv)&0xff));
 			}
 		}
 		return true;
@@ -286,7 +212,7 @@ public class NyARColorPatt_Base implements INyARColorPatt
 		if(iIid==INyARPerspectiveCopy.class){
 			return NyARPerspectiveCopyFactory.createDriver(this);
 		}
-		throw new NyARRuntimeException();
+		return super.createInterface(iIid);
 	}
 	
 }

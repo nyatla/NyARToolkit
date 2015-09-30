@@ -27,10 +27,15 @@ package jp.nyatla.nyartoolkit.core.raster.rgb;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.marker.artk.match.NyARMatchPattDeviationColorData;
+import jp.nyatla.nyartoolkit.core.raster.rgb.format.NyARRgbRaster_BYTE1D_B8G8R8X8_32;
+import jp.nyatla.nyartoolkit.core.raster.rgb.format.NyARRgbRaster_BYTE1D_B8G8R8_24;
+import jp.nyatla.nyartoolkit.core.raster.rgb.format.NyARRgbRaster_BYTE1D_R8G8B8_24;
+import jp.nyatla.nyartoolkit.core.raster.rgb.format.NyARRgbRaster_BYTE1D_X8B8G8R8_32;
+import jp.nyatla.nyartoolkit.core.raster.rgb.format.NyARRgbRaster_BYTE1D_X8R8G8B8_32;
+import jp.nyatla.nyartoolkit.core.raster.rgb.format.NyARRgbRaster_INT1D_X8R8G8B8_32;
+import jp.nyatla.nyartoolkit.core.raster.rgb.format.NyARRgbRaster_WORD1D_R5G6B5_16LE;
 import jp.nyatla.nyartoolkit.core.rasterdriver.perspectivecopy.INyARPerspectiveCopy;
 import jp.nyatla.nyartoolkit.core.rasterdriver.perspectivecopy.NyARPerspectiveCopyFactory;
-import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARRgbPixelDriver;
-import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.NyARRgbPixelDriverFactory;
 import jp.nyatla.nyartoolkit.core.rasterdriver.rgb2gs.INyARRgb2GsFilter;
 import jp.nyatla.nyartoolkit.core.rasterdriver.rgb2gs.INyARRgb2GsFilterArtkTh;
 import jp.nyatla.nyartoolkit.core.rasterdriver.rgb2gs.INyARRgb2GsFilterRgbAve;
@@ -43,6 +48,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
 /**
  * このクラスは、指定形式のバッファを持つRGBラスタです。
  * 外部参照バッファ、内部バッファの両方に対応します。
+ * コンストラクタは無効です。{@link #createInstance}を使ってください。
  * <p>
  * 対応しているバッファタイプ-
  * <ul>{@link NyARBufferType#INT1D_X8R8G8B8_32}
@@ -54,15 +60,11 @@ import jp.nyatla.nyartoolkit.core.types.*;
  * </ul>
  * </p>
  */
-public class NyARRgbRaster extends NyARRgbRaster_BasicClass
+public abstract class NyARRgbRaster implements INyARRgbRaster
 {
-	/** バッファオブジェクト*/
-	protected Object _buf;
-	/** ピクセルリーダ*/
-	protected INyARRgbPixelDriver _rgb_pixel_driver;
 	/** バッファオブジェクトがアタッチされていればtrue*/
-	protected boolean _is_attached_buffer;
-	
+	final protected boolean _is_attached_buffer;
+	final protected NyARIntSize _size;
 	/**
 	 * コンストラクタです。
 	 * 画像のサイズパラメータとバッファ形式を指定して、インスタンスを生成します。
@@ -80,10 +82,27 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 	 * falseの場合、初期のバッファはnullになります。インスタンスを生成したのちに、{@link #wrapBuffer}を使って割り当ててください。
 	 * @throws NyARRuntimeException
 	 */
-	public NyARRgbRaster(int i_width, int i_height,int i_raster_type,boolean i_is_alloc)
+	public static INyARRgbRaster createInstance(int i_width, int i_height,int i_buffer_type,boolean i_is_alloc)
 	{
-		super(i_width,i_height,i_raster_type);
-		initInstance(this._size,i_raster_type,i_is_alloc);
+		switch(i_buffer_type)
+		{
+			case NyARBufferType.INT1D_X8R8G8B8_32:
+				return new NyARRgbRaster_INT1D_X8R8G8B8_32(i_width,i_height,i_is_alloc);
+			case NyARBufferType.BYTE1D_B8G8R8X8_32:
+				return new NyARRgbRaster_BYTE1D_B8G8R8X8_32(i_width,i_height,i_is_alloc);
+			case NyARBufferType.BYTE1D_X8R8G8B8_32:
+				return new NyARRgbRaster_BYTE1D_X8R8G8B8_32(i_width,i_height,i_is_alloc);
+			case NyARBufferType.BYTE1D_X8B8G8R8_32:
+				return new NyARRgbRaster_BYTE1D_X8B8G8R8_32(i_width,i_height,i_is_alloc);
+			case NyARBufferType.BYTE1D_R8G8B8_24:
+				return new NyARRgbRaster_BYTE1D_R8G8B8_24(i_width,i_height,i_is_alloc);				
+			case NyARBufferType.BYTE1D_B8G8R8_24:
+				return new NyARRgbRaster_BYTE1D_B8G8R8_24(i_width,i_height,i_is_alloc);				
+			case NyARBufferType.WORD1D_R5G6B5_16LE:
+				return new NyARRgbRaster_WORD1D_R5G6B5_16LE(i_width,i_height,i_is_alloc);				
+			default:
+				throw new NyARRuntimeException();
+		}		
 	}
 	/**
 	 * コンストラクタです。
@@ -98,9 +117,9 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 	 * 指定できる値は、クラスの説明を見てください。
 	 * @throws NyARRuntimeException
 	 */
-	public NyARRgbRaster(int i_width, int i_height,int i_raster_type)
+	public static INyARRgbRaster createInstance(int i_width, int i_height,int i_raster_type)
 	{
-		this(i_width,i_height,i_raster_type,true);
+		return createInstance(i_width,i_height,i_raster_type,true);
 	}
 	/**
 	 * コンストラクタです。
@@ -111,89 +130,63 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 	 * ラスタのサイズ
 	 * @throws NyARRuntimeException
 	 */
-	public NyARRgbRaster(int i_width, int i_height)
+	public static INyARRgbRaster createInstance(int i_width, int i_height)
 	{
-		this(i_width,i_height,NyARBufferType.INT1D_X8R8G8B8_32);
-	}	
+		return createInstance(i_width,i_height,NyARBufferType.INT1D_X8R8G8B8_32);
+	}		
+	
 	/**
-	 * Readerとbufferを初期化する関数です。コンストラクタから呼び出します。
-	 * 継承クラスでこの関数を拡張することで、対応するバッファタイプの種類を増やせます。
-	 * @param i_size
-	 * ラスタのサイズ
-	 * @param i_raster_type
-	 * バッファタイプ
-	 * @param i_is_alloc
-	 * 外部参照/内部バッファのフラグ
-	 * @throws NyARRuntimeException 
-	 * 初期化に失敗したら例外を発生させます。
+	 * 継承クラス呼び出すコンストラクタです。
 	 */
-	protected void initInstance(NyARIntSize i_size,int i_raster_type,boolean i_is_alloc)
+	protected NyARRgbRaster(int i_width, int i_height,boolean i_is_alloc)
 	{
-		//バッファの構築
-		switch(i_raster_type)
-		{
-			case NyARBufferType.INT1D_X8R8G8B8_32:
-				this._buf=i_is_alloc?new int[i_size.w*i_size.h]:null;
-				break;
-			case NyARBufferType.BYTE1D_B8G8R8X8_32:
-			case NyARBufferType.BYTE1D_X8R8G8B8_32:
-			case NyARBufferType.BYTE1D_X8B8G8R8_32:
-				this._buf=i_is_alloc?new byte[i_size.w*i_size.h*4]:null;
-				break;
-			case NyARBufferType.BYTE1D_R8G8B8_24:
-			case NyARBufferType.BYTE1D_B8G8R8_24:
-				this._buf=i_is_alloc?new byte[i_size.w*i_size.h*3]:null;
-				break;
-			case NyARBufferType.WORD1D_R5G6B5_16LE:
-				this._buf=i_is_alloc?new short[i_size.w*i_size.h]:null;
-				break;
-			default:
-				throw new NyARRuntimeException();
-		}
-		//readerの構築
-		this._rgb_pixel_driver=NyARRgbPixelDriverFactory.createDriver(this);
 		this._is_attached_buffer=i_is_alloc;
-		return;
+		this._size=new NyARIntSize(i_width,i_height);
 	}
-	/**
-	 * この関数は、画素形式によらない画素アクセスを行うオブジェクトへの参照値を返します。
-	 * @return
-	 * オブジェクトの参照値
-	 * @throws NyARRuntimeException
-	 */	
-	public INyARRgbPixelDriver getRgbPixelDriver()
-	{
-		return this._rgb_pixel_driver;
-	}	
-	/**
-	 * この関数は、ラスタのバッファへの参照値を返します。
-	 * バッファの形式は、コンストラクタに指定した形式と同じです。
-	 */	
-	public Object getBuffer()
-	{
-		return this._buf;
-	}
+
+
 	/**
 	 * インスタンスがバッファを所有するかを返します。
 	 * コンストラクタでi_is_allocをfalseにしてラスタを作成した場合、
 	 * バッファにアクセスするまえに、バッファの有無をこの関数でチェックしてください。
 	 * @return
 	 * インスタンスがバッファを所有すれば、trueです。
-	 */		
-	public boolean hasBuffer()
+	 */
+	@Override
+	final public boolean hasBuffer()
 	{
-		return this._buf!=null;
+		return this.getBuffer()!=null;
 	}
 	/**
-	 * この関数は、ラスタに外部参照バッファをセットします。
-	 * 外部参照バッファの時にだけ使えます。
-	 */
-	public void wrapBuffer(Object i_ref_buf)
+	 * この関数は、ラスタの幅を返します。
+	 */	
+	@Override
+	final public int getWidth()
 	{
-		assert(!this._is_attached_buffer);//バッファがアタッチされていたら機能しない。
-		this._buf=i_ref_buf;
-		//ピクセルリーダーの参照バッファを切り替える。
-		this._rgb_pixel_driver.switchRaster(this);
+		return this._size.w;
+	}
+	/**
+	 * この関数は、ラスタの高さを返します。
+	 */	
+	@Override
+	final public int getHeight()
+	{
+		return this._size.h;
+	}
+	/**
+	 * この関数は、ラスタのサイズを格納したオブジェクトを返します。
+	 */
+	@Override
+	final public NyARIntSize getSize()
+	{
+		return this._size;
+	}
+	/**
+	 * この関数は、ラスタの幅を返します。
+	 */	
+	final public boolean isEqualBufferType(int i_type_value)
+	{
+		return this.getBufferType()==i_type_value;
 	}
 	/**
 	 * サポートしているインタフェイスは以下の通りです。
@@ -235,7 +228,7 @@ public class NyARRgbRaster extends NyARRgbRaster_BasicClass
 //		return null;
 	}
 	public static void main(String args[]){
-		NyARRgbRaster n=new NyARRgbRaster(640,480);
+		INyARRgbRaster n=NyARRgbRaster.createInstance(640,480);
 		long s=System.currentTimeMillis();
 		for(int i=0;i<100000;i++){
 			n.createInterface(null);

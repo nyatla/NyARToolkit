@@ -39,6 +39,7 @@ import jp.nyatla.nyartoolkit.core.marker.artk.match.NyARMatchPattDeviationBlackW
 import jp.nyatla.nyartoolkit.core.marker.artk.match.NyARMatchPattDeviationColorData;
 import jp.nyatla.nyartoolkit.core.marker.artk.match.NyARMatchPattResult;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 
@@ -88,7 +89,7 @@ class NyARCodeFileReader
 	{
 		int width=o_code.getWidth();
 		int height=o_code.getHeight();
-		NyARRgbRaster tmp_raster=new NyARRgbRaster(width,height, NyARBufferType.INT1D_X8R8G8B8_32);
+		INyARRgbRaster tmp_raster=NyARRgbRaster.createInstance(width,height, NyARBufferType.INT1D_X8R8G8B8_32);
 		//4個の要素をラスタにセットする。
 		try {
 			StreamTokenizer st = new StreamTokenizer(new InputStreamReader(i_stream));

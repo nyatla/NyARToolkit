@@ -29,6 +29,7 @@ import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 
 /**
  * {@link NyARGrayscaleRaster}で継承します。
+ * グレースケール画像のピクセルアクセサを定義します。
  *
  */
 public interface INyARGrayscalePixelInterface

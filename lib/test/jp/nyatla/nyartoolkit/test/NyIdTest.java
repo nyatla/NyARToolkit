@@ -33,6 +33,7 @@ import jp.nyatla.nyartoolkit.core.marker.nyidmarker.data.NyIdMarkerDataEncoder_R
 import jp.nyatla.nyartoolkit.core.marker.nyidmarker.data.NyIdMarkerData_RawBit;
 import jp.nyatla.nyartoolkit.core.marker.nyidmarker.data.NyIdMarkerData_RawBitId;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
+import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
@@ -157,7 +158,7 @@ public class NyIdTest
 		byte[] buf = new byte[(int) f.length()];
 		fs.read(buf);		
 
-        NyARRgbRaster ra = new NyARRgbRaster(320, 240,NyARBufferType.BYTE1D_R8G8B8_24,false);
+        INyARRgbRaster ra =NyARRgbRaster.createInstance(320, 240,NyARBufferType.BYTE1D_R8G8B8_24,false);
         ra.wrapBuffer(buf);
 
         MarkerProcessor pr = new MarkerProcessor(ap, ra.getBufferType());

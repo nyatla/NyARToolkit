@@ -30,7 +30,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 
 public class NyARGsRaster_INT1D_GRAY_8 extends NyARGrayscaleRaster
 {
-	private int[] _buf;
+	protected int[] _buf;
 	public NyARGsRaster_INT1D_GRAY_8(int i_width,int i_height,boolean i_is_alloc)
 	{
 		super(i_width,i_height,i_is_alloc);

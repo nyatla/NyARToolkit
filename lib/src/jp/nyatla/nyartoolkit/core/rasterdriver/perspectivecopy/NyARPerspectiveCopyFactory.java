@@ -27,8 +27,7 @@ package jp.nyatla.nyartoolkit.core.rasterdriver.perspectivecopy;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
-import jp.nyatla.nyartoolkit.core.raster.INyARRgbRaster;
-import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARRgbPixelDriver;
+import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 public class NyARPerspectiveCopyFactory
@@ -93,7 +92,7 @@ class PerspectiveCopy_ANYRgb extends NyARPerspectiveCopy_Base
 	{
 		this._ref_raster=(INyARRgbRaster)i_ref_raster;
 	}
-	protected boolean onePixel(int pk_l,int pk_t,double[] cpara,INyARRaster o_out)throws NyARRuntimeException
+	protected boolean onePixel(int pk_l,int pk_t,double[] cpara,INyARRaster o_out)
 	{
 		final int[] rgb_tmp = this.__pickFromRaster_rgb_tmp;
 		int in_w=this._ref_raster.getWidth();
@@ -113,7 +112,7 @@ class PerspectiveCopy_ANYRgb extends NyARPerspectiveCopy_Base
 		double cp1_cy_cp2=cp1*pk_t+cpara[2]+cp0*pk_l;
 		double cp4_cy_cp5=cp4*pk_t+cpara[5]+cp3*pk_l;
 		
-		INyARRgbPixelDriver i_in_reader=this._ref_raster.getRgbPixelDriver();
+		INyARRgbRaster i_in_reader=this._ref_raster;
 		switch(o_out.getBufferType())
 		{
 		case NyARBufferType.INT1D_X8R8G8B8_32:
@@ -149,7 +148,7 @@ class PerspectiveCopy_ANYRgb extends NyARPerspectiveCopy_Base
 		default:
 			//ANY to RGBx
 			if(o_out instanceof INyARRgbRaster){
-				INyARRgbPixelDriver out_reader=((INyARRgbRaster)o_out).getRgbPixelDriver();	
+				INyARRgbRaster out_reader=(INyARRgbRaster)o_out;	
 				for(int iy=0;iy<out_h;iy++){
 					//解像度分の点を取る。
 					double cp7_cy_1_cp6_cx  =cp7_cy_1;
@@ -180,14 +179,14 @@ class PerspectiveCopy_ANYRgb extends NyARPerspectiveCopy_Base
 		}
 		return false;
 	}
-	protected boolean multiPixel(int pk_l,int pk_t,double[] cpara,int i_resolution,INyARRaster o_out)throws NyARRuntimeException
+	protected boolean multiPixel(int pk_l,int pk_t,double[] cpara,int i_resolution,INyARRaster o_out)
 	{
 		final int res_pix=i_resolution*i_resolution;
 
 		final int[] rgb_tmp = this.__pickFromRaster_rgb_tmp;
 		int in_w=this._ref_raster.getWidth();
 		int in_h=this._ref_raster.getHeight();
-		INyARRgbPixelDriver i_in_reader=this._ref_raster.getRgbPixelDriver();
+		INyARRgbRaster i_in_reader=this._ref_raster;
 
 		//ピクセルリーダーを取得
 		double cp0=cpara[0];
@@ -251,7 +250,7 @@ class PerspectiveCopy_ANYRgb extends NyARPerspectiveCopy_Base
 		default:
 			//ANY to RGBx
 			if(o_out instanceof INyARRgbRaster){
-				INyARRgbPixelDriver out_reader=((INyARRgbRaster)o_out).getRgbPixelDriver();
+				INyARRgbRaster out_reader=(INyARRgbRaster)o_out;
 				for(int iy=out_h-1;iy>=0;iy--){
 					//解像度分の点を取る。
 					for(int ix=out_w-1;ix>=0;ix--){
@@ -361,7 +360,7 @@ class PerspectiveCopy_BYTE1D_B8G8R8X8_32 extends NyARPerspectiveCopy_Base
 		default:
 			//ANY to RGBx
 			if(o_out instanceof INyARRgbRaster){
-				INyARRgbPixelDriver out_reader=((INyARRgbRaster)o_out).getRgbPixelDriver();
+				INyARRgbRaster out_reader=(INyARRgbRaster)o_out;
 				for(int iy=0;iy<out_h;iy++){
 					//解像度分の点を取る。
 					double cp7_cy_1_cp6_cx  =cp7_cy_1;
@@ -415,7 +414,7 @@ class PerspectiveCopy_BYTE1D_B8G8R8X8_32 extends NyARPerspectiveCopy_Base
 		int out_w=o_out.getWidth();
 		int out_h=o_out.getHeight();
 		if(o_out instanceof INyARRgbRaster){
-			INyARRgbPixelDriver out_reader=((INyARRgbRaster)o_out).getRgbPixelDriver();
+			INyARRgbRaster out_reader=(INyARRgbRaster)o_out;
 			for(int iy=out_h-1;iy>=0;iy--){
 				//解像度分の点を取る。
 				for(int ix=out_w-1;ix>=0;ix--){
@@ -522,7 +521,7 @@ class PerspectiveCopy_BYTE1D_B8G8R8_24 extends NyARPerspectiveCopy_Base
 		default:
 			if(o_out instanceof INyARRgbRaster)
 			{
-				INyARRgbPixelDriver out_reader=((INyARRgbRaster)o_out).getRgbPixelDriver();	
+				INyARRgbRaster out_reader=(INyARRgbRaster)o_out;
 				for(int iy=0;iy<out_h;iy++){
 					//解像度分の点を取る。
 					double cp7_cy_1_cp6_cx  =cp7_cy_1;
@@ -557,7 +556,7 @@ class PerspectiveCopy_BYTE1D_B8G8R8_24 extends NyARPerspectiveCopy_Base
 		}
 		return false;
 	}
-	protected boolean multiPixel(int pk_l,int pk_t,double[] cpara,int i_resolution,INyARRaster o_out)throws NyARRuntimeException
+	protected boolean multiPixel(int pk_l,int pk_t,double[] cpara,int i_resolution,INyARRaster o_out)
 	{
 		final int res_pix=i_resolution*i_resolution;
 		int in_w=this._ref_raster.getWidth();
@@ -578,7 +577,7 @@ class PerspectiveCopy_BYTE1D_B8G8R8_24 extends NyARPerspectiveCopy_Base
 		int out_h=o_out.getHeight();
 		if(o_out instanceof INyARRgbRaster)
 		{
-			INyARRgbPixelDriver out_reader=((INyARRgbRaster) o_out).getRgbPixelDriver();
+			INyARRgbRaster out_reader=(INyARRgbRaster) o_out;
 			for(int iy=out_h-1;iy>=0;iy--){
 				//解像度分の点を取る。
 				for(int ix=out_w-1;ix>=0;ix--){
@@ -629,7 +628,7 @@ class PerspectiveCopy_BYTE1D_R8G8B8_24 extends NyARPerspectiveCopy_Base
 	{
 		this._ref_raster=(INyARRgbRaster)i_ref_raster;
 	}
-	protected boolean onePixel(int pk_l,int pk_t,double[] cpara,INyARRaster o_out)throws NyARRuntimeException
+	protected boolean onePixel(int pk_l,int pk_t,double[] cpara,INyARRaster o_out)
 	{
 		byte[] i_in_buf=(byte[])this._ref_raster.getBuffer();
 		int in_w=this._ref_raster.getWidth();
@@ -684,7 +683,7 @@ class PerspectiveCopy_BYTE1D_R8G8B8_24 extends NyARPerspectiveCopy_Base
 			return true;
 		default:
 			if(o_out instanceof INyARRgbRaster){
-				INyARRgbPixelDriver out_reader=((INyARRgbRaster) o_out).getRgbPixelDriver();
+				INyARRgbRaster out_reader=(INyARRgbRaster) o_out;
 				for(int iy=0;iy<out_h;iy++){
 					//解像度分の点を取る。
 					double cp7_cy_1_cp6_cx  =cp7_cy_1;
@@ -719,7 +718,7 @@ class PerspectiveCopy_BYTE1D_R8G8B8_24 extends NyARPerspectiveCopy_Base
 		}
 		return false;
 	}
-	protected boolean multiPixel(int pk_l,int pk_t,double[] cpara,int i_resolution,INyARRaster o_out)throws NyARRuntimeException
+	protected boolean multiPixel(int pk_l,int pk_t,double[] cpara,int i_resolution,INyARRaster o_out)
 	{
 		final int res_pix=i_resolution*i_resolution;
 
@@ -741,7 +740,7 @@ class PerspectiveCopy_BYTE1D_R8G8B8_24 extends NyARPerspectiveCopy_Base
 		int out_h=o_out.getHeight();
 		if(o_out instanceof INyARRgbRaster)
 		{
-			INyARRgbPixelDriver out_reader=((INyARRgbRaster) o_out).getRgbPixelDriver();
+			INyARRgbRaster out_reader=(INyARRgbRaster) o_out;
 			for(int iy=out_h-1;iy>=0;iy--){
 				//解像度分の点を取る。
 				for(int ix=out_w-1;ix>=0;ix--){

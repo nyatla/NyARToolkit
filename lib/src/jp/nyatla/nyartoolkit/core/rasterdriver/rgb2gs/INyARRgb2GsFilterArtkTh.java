@@ -30,9 +30,8 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterdriver.rgb2gs;
 
-import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
-import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARRgbPixelDriver;
+import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
@@ -322,7 +321,7 @@ class NyARRgb2GsFilterArtkTh_Any extends NyARRgb2GsFilterArtkTh_Base
 	public void doFilter(int i_l,int i_t,int i_w,int i_h,int i_th,INyARGrayscaleRaster i_gsraster)
 	{
 		assert i_gsraster.isEqualBufferType(NyARBufferType.INT1D_BIN_8);
-		INyARRgbPixelDriver input=this._raster.getRgbPixelDriver();
+		INyARRgbRaster input=this._raster;
 		final int[] output=(int[])i_gsraster.getBuffer();
 		int th=i_th*3;
 		NyARIntSize s=i_gsraster.getSize();
