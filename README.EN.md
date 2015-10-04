@@ -48,7 +48,7 @@ URL: http://www.oracle.com/technetwork/java/javase/download-142937.html
 3. QuickTime 7.5  
 Required for running utils.qt  
 URL: http://www.apple.com/quicktime/qtjava/
-4. Jogl  
+4. Jogl (This is included in the NyARToolkit/4.2.1 later.)  
 Required for running utils.jogl, sample.jogl  
 URL: http://download.java.net/media/jogl/builds/archive/  
 file   : jogl-1.1.1-rc8-xxxx-xxx.zip 
