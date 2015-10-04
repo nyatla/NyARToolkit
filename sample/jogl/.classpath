@@ -9,8 +9,19 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolkit.utils.jogl"/>
 	<classpathentry kind="lib" path="C:/Program Files (x86)/JMF2.1.1e/lib/jmf.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolkit.utils.j2se"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolkit.utils.qt"/>
-	<classpathentry kind="lib" path="D:/project.github/NyARToolkit series/NyARToolkit/extlib/jogl-1.1.1-rc8-windows-i586/lib/gluegen-rt.jar"/>
-	<classpathentry kind="lib" path="D:/project.github/NyARToolkit series/NyARToolkit/extlib/jogl-1.1.1-rc8-windows-i586/lib/jogl.jar"/>
+	<classpathentry kind="lib" path="/NyARToolkit.utils.webcamcapture/extlib/webcam-capture-0.3.10-dist/webcam-capture-0.3.10.jar"/>
+	<classpathentry kind="lib" path="/NyARToolkit.utils.webcamcapture/extlib/webcam-capture-0.3.10-dist/libs/bridj-0.6.2.jar"/>
+	<classpathentry kind="lib" path="/NyARToolkit.utils.webcamcapture/extlib/webcam-capture-0.3.10-dist/libs/slf4j-api-1.7.2.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolkit.utils.webcamcapture"/>
+	<classpathentry kind="lib" path="/NyARToolkit.utils.jogl/extlib/gluegen-old-1.0b6/gluegen-rt.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="NyARToolkit.utils.jogl/extlib/gluegen-old-1.0b6"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/NyARToolkit.utils.jogl/extlib/jogl-old-1.1.1/jogl.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="NyARToolkit.utils.jogl/extlib/jogl-old-1.1.1/bin"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

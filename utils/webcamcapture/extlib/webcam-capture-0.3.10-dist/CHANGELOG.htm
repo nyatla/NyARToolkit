@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8"/>
+	<title>Webcam Capture v0.3.10 changelog</title>
+	<style type="text/css">
+		body {
+		font-family: Arial;
+		}
+		table {
+		border-collapse: collapse;
+		}
+		td {
+		border: 1px solid #CCCCCC;
+		}
+		td.date, .author, .committer {
+		white-space: nowrap;
+		}
+		.tag td {
+		border-width: 0px;
+		font-weight: bold;
+		padding-top: 30px;
+		padding-bottom: 7px;
+		}
+	</style>
+</head>
+<body>
+<h1>Webcam Capture v0.3.10 changelog</h1>
+
+	<table class="changelog">
+		<tbody>
+		<tr class="tag"><td colspan=3>webcam-capture-parent-0.3.10</td></tr>
+		<tr><td class="date">2014-09-23 19:10:12 +0200</td><td>Fix javadocs</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-09-23 18:57:10 +0200</td><td>Fix dependencies, upgrade plugins</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-09-23 18:19:18 +0200</td><td>Fix more javadocs, change repos, fix classpaths</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-09-23 17:59:57 +0200</td><td>Fix javadoc comment [ci skip]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-09-23 17:28:55 +0200</td><td>Fix Maven repositories</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-09-01 10:14:14 +0200</td><td>Add links to JavaFX examples, refs <a href="https://github.com/sarxos/webcam-capture/issues/241">#241</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-09-01 09:42:51 +0200</td><td>Add link to FXML example</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-08-31 22:57:03 +0200</td><td>Fix incorrect description in README.md, refs <a href="https://github.com/sarxos/webcam-capture/issues/241">#241</a> [ci skip]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-08-31 22:54:30 +0200</td><td>Integrate FXML example from Rakesh Bhatt, refs <a href="https://github.com/sarxos/webcam-capture/issues/241">#241</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-08-31 20:49:14 +0200</td><td>Add screenshoots to README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-08-31 20:29:45 +0200</td><td>Integrate JavaFX example from Rakesh Bhatt, refs <a href="https://github.com/sarxos/webcam-capture/issues/241">#241</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-08-29 17:51:51 +0200</td><td>Better code formatting rules</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-08-29 17:34:45 +0200</td><td>Add get device ID, name and ref methods, refs <a href="https://github.com/sarxos/webcam-capture/issues/256">#256</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-08-29 16:54:34 +0200</td><td>Add examples for PULL/PUSH foscam demo, refs <a href="https://github.com/sarxos/webcam-capture/issues/255">#255</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-08-10 16:31:38 +0200</td><td>Add note about binding to 0.0.0.0</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-08-08 21:19:19 +0200</td><td>GStremaer capture use of video/x-raw-rgb to increase FPS</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-08-08 19:51:03 +0200</td><td>More motion detection examples, refs <a href="https://github.com/sarxos/webcam-capture/issues/250">#250</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-08-08 19:49:24 +0200</td><td>Bug in the motion detector cause false positives, fixes <a href="https://github.com/sarxos/webcam-capture/issues/250">#250</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-08-08 19:20:38 +0200</td><td>Under some conditions webcam API completely hangs, fixes <a href="https://github.com/sarxos/webcam-capture/issues/249">#249</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-07-24 20:51:57 +0200</td><td>Remove buffer access from FsWebcamDevice, refs <a href="https://github.com/sarxos/webcam-capture/issues/240">#240</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-07-24 20:37:14 +0200</td><td>Add possibility to read image to pre-created buffer, fixes <a href="https://github.com/sarxos/webcam-capture/issues/240">#240</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-07-17 12:55:05 +0200</td><td>Add webcam panel super component paint, refs <a href="https://github.com/sarxos/webcam-capture/issues/234">#234</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-07-15 19:59:52 +0200</td><td>Update README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-07-15 19:01:13 +0200</td><td>Add possibility to use vlcj-driver on Windows, refs <a href="https://github.com/sarxos/webcam-capture/issues/233">#233</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-07-15 18:54:55 +0200</td><td>Do not scan devices if support says it's not possible, refs <a href="https://github.com/sarxos/webcam-capture/issues/233">#233</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-07-09 13:47:43 +0200</td><td>Add note about how to stream remotely, fixes <a href="https://github.com/sarxos/webcam-capture/issues/230">#230</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-06-25 23:44:52 +0200</td><td>Add dummy driver to be later used in tests</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-06-25 00:39:26 +0200</td><td>Update descriptions in README [ci skip]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-06-25 00:37:55 +0200</td><td>Build only on OpenJDK 6 to avoid network failures with many workers</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-06-24 22:40:07 +0200</td><td>Add info about the panel fit option</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-06-24 20:19:14 +0200</td><td>Fix performance issue on Widnows when image is mirrored, refs <a href="https://github.com/sarxos/webcam-capture/issues/227">#227</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-06-22 01:54:24 +0200</td><td>Remove assertions failing unit tests, refs <a href="https://github.com/sarxos/webcam-capture/issues/228">#228</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-06-22 01:31:35 +0200</td><td>Do not spawn unecessary threads, refs <a href="https://github.com/sarxos/webcam-capture/issues/228">#228</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-06-21 19:22:41 +0200</td><td>Schedule update execution only when webcam is open, fixes <a href="https://github.com/sarxos/webcam-capture/issues/228">#228</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-06-21 18:09:32 +0200</td><td>Add possibility to mirror webcam panel image, closes <a href="https://github.com/sarxos/webcam-capture/issues/227">#227</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-06-21 03:04:24 +0200</td><td>Fix rendering performancem, fixes <a href="https://github.com/sarxos/webcam-capture/issues/223">#223</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-06-19 00:37:13 +0200</td><td>Progress on the OpenCV capture driver implementation</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-06-19 00:32:30 +0200</td><td>Test I forgot to move in 4e5cd763b5</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-06-19 00:29:39 +0200</td><td>Add info about natives from LTI-CIVIL, refs <a href="https://github.com/sarxos/webcam-capture/issues/224">#224</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-06-19 00:28:30 +0200</td><td>Move some common files to main project</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-06-19 00:21:14 +0200</td><td>Update LTI-CIVIL binaries by the ones from George Rhoten patch, refs <a href="https://github.com/sarxos/webcam-capture/issues/224">#224</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-06-18 19:42:11 +0200</td><td>Create README.md for LTI-CIVIL driver</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-06-12 00:10:48 +0200</td><td>Add discovery support to IP camera driver, closes <a href="https://github.com/sarxos/webcam-capture/issues/214">#214</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-06-11 21:43:01 +0200</td><td>Get rid of unused methods</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-06-11 21:41:38 +0200</td><td>Add missing dependency management in root pom</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-06-11 18:54:59 +0200</td><td>Add unit tests for VLCj driver</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-05-22 13:42:47 +0200</td><td>Update vlcj capture driver</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-05-22 13:21:30 +0200</td><td>Make driver field volatile, fixes <a href="https://github.com/sarxos/webcam-capture/issues/218">#218</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-05-16 09:56:24 +0200</td><td>404 when accessing one of the examples</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-04-27 20:42:58 +0200</td><td>Make Webcam.getFPS() method public</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-04-17 15:36:29 +0200</td><td>Basic authenticator does not send auth header, fixes <a href="https://github.com/sarxos/webcam-capture/issues/205">#205</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-04-17 15:36:29 +0200</td><td>Add minor null check</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-03-28 03:48:25 +0100</td><td>Urgh. Third times the charm.</td><td><span class="committer">Dan Rollo</span></td></tr>
+		<tr><td class="date">2014-03-28 03:44:55 +0100</td><td>Fix doc that referred to maven repos at octopussy (which are gone now).Undo unicode char that was mangled with my first attempt.</td><td><span class="committer">Dan Rollo</span></td></tr>
+		<tr><td class="date">2014-03-28 03:35:09 +0100</td><td>Fix doc that referred to maven repos at octopussy (which are gone now).</td><td><span class="committer">Dan Rollo</span></td></tr>
+		<tr><td class="date">2014-03-14 18:38:51 +0100</td><td>Fix description a little bit</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-03-14 19:32:47 +0100</td><td>Capture driver able to read image by fswebcam cli tool, closes <a href="https://github.com/sarxos/webcam-capture/issues/175">#175</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-03-10 20:33:19 +0100</td><td>Add stop button in TakeSnaphotFromVideoExample, refs <a href="https://github.com/sarxos/webcam-capture/issues/188">#188</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-03-10 20:31:08 +0100</td><td>Do not ignore OpenIMAJ driver on mvn deploy, fixes <a href="https://github.com/sarxos/webcam-capture/issues/191">#191</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-03-09 05:58:42 +0100</td><td>Add 'test' scope to junit lib dependency.</td><td><span class="committer">Dan Rollo</span></td></tr>
+		<tr><td class="date">2014-03-09 05:02:38 +0100</td><td>Fix 'String index out of range: 5' error when video device file has no suffix.</td><td><span class="committer">Dan Rollo</span></td></tr>
+		<tr><td class="date">2014-02-26 22:32:58 +0100</td><td>Same image data for multiple images obtained from API, fixes <a href="https://github.com/sarxos/webcam-capture/issues/182">#182</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-02-26 22:23:12 +0100</td><td>Correcting links for drivers.</td><td><span class="committer">tbbach</span></td></tr>
+		<tr><td class="date">2014-02-19 00:20:52 +0100</td><td>Reorganize drivers project directory structure</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-02-19 00:09:07 +0100</td><td>Use stable OpenIMAJ dependency</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-02-17 17:15:19 +0100</td><td>Fix notes in live streaming example readme</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-02-03 17:39:38 +0100</td><td>Painter enhancements in WebcamPanel</td><td><span class="committer">Sylwia Kauczor</span></td></tr>
+		<tr><td class="date">2014-01-14 00:51:26 +0100</td><td>Add unit tests coverage stats badge [ci skip]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-01-13 22:18:36 +0100</td><td>Integrate Coveralls with Travis CI</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2014-01-13 20:27:29 +0100</td><td>Bring Travis CI build back to normal</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-11-21 10:22:12 +0100</td><td>Shutdown executors, fix applet example, fixes <a href="https://github.com/sarxos/webcam-capture/issues/65">#65</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-11-15 11:18:31 +0100</td><td>Small changes in the examples [ci skip]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-11-13 11:03:32 +0100</td><td>Fix syntax error in dependency XML inside README.md [ci skip]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-10-14 11:34:56 +0200</td><td>Prepare for next development iteration</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-10-14 11:27:36 +0200</td><td>Prepare release webcam-capture-parent-0.3.10-RC6</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-10-14 11:02:45 +0200</td><td>Add onejar example</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-10-13 15:42:51 +0200</td><td>Few small enhancements in processor code</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-10-08 19:16:03 +0200</td><td>Change library paths for armhf and armel binaries, refs <a href="https://github.com/sarxos/webcam-capture/issues/140">#140</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-10-07 22:41:57 +0200</td><td>Fix method signature and fix detector timing issue, fixes <a href="https://github.com/sarxos/webcam-capture/issues/150">#150</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-10-07 18:07:39 +0200</td><td>Update site to include 0.3.10-RC5, fixes <a href="https://github.com/sarxos/webcam-capture/issues/149">#149</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr class="tag"><td colspan=3>webcam-capture-parent-0.3.10-RC5</td></tr>
+		<tr><td class="date">2013-08-30 16:09:19 +0200</td><td>Fix broken link on web page, fixes <a href="https://github.com/sarxos/webcam-capture/issues/138">#138</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-08-11 12:29:38 +0200</td><td>Add few examples, change MJPEG streamer</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-08-09 18:17:55 +0200</td><td>Update Webcam Capture API handbook, refs <a href="https://github.com/sarxos/webcam-capture/issues/102">#102</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-08-08 01:08:56 +0200</td><td>Perform webcam buffer update in background, refs <a href="https://github.com/sarxos/webcam-capture/issues/131">#131</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-08-07 23:11:46 +0200</td><td>Black images when saving to JPG using OpenImajDriver, fixes <a href="https://github.com/sarxos/webcam-capture/issues/134">#134</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-08-05 23:45:30 +0200</td><td>Do not lock webcam when locking is disabled, closes <a href="https://github.com/sarxos/webcam-capture/issues/131">#131</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-08-04 14:27:37 +0200</td><td>Do not crash application when lock file is broken, refs <a href="https://github.com/sarxos/webcam-capture/issues/131">#131</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-08-03 10:26:09 +0200</td><td>Synchronize lock read method, refs <a href="https://github.com/sarxos/webcam-capture/issues/131">#131</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-07-24 01:22:55 +0200</td><td>Remove debug println</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-07-24 00:48:12 +0200</td><td>Rework applet example, relax discovery sync, fixes <a href="https://github.com/sarxos/webcam-capture/issues/128">#128</a>, refs <a href="https://github.com/sarxos/webcam-capture/issues/65">#65</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-07-22 22:18:29 +0200</td><td>GStremaer driver ExceptionInInitializerError when GStreamer not in PATH</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-07-22 22:03:08 +0200</td><td>Add PHP files for spycam POC example to be refined</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-07-22 21:50:28 +0200</td><td>Application never stops on Windows</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-07-22 15:02:28 +0200</td><td>Update README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-07-21 23:44:47 +0200</td><td>Spy camera addon, work in progress, PHP not ready yet</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-07-21 20:54:46 +0200</td><td>Add licenses, change README file</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-07-21 15:42:59 +0200</td><td>Fix small code issues from last commit, refs <a href="https://github.com/sarxos/webcam-capture/issues/124">#124</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-07-21 15:23:36 +0200</td><td>VLCj driver resolution problem and cannot choose camera, fixes <a href="https://github.com/sarxos/webcam-capture/issues/124">#124</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-07-20 16:56:33 +0200</td><td>WebcamViewerExample image hangs when user change selected camera, fixes <a href="https://github.com/sarxos/webcam-capture/issues/123">#123</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-07-20 12:38:44 +0200</td><td>WebcamPanel is not being disposed correctly, fixes <a href="https://github.com/sarxos/webcam-capture/issues/121">#121</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-07-20 12:23:17 +0200</td><td>ConcurrentModificationException in Webcam.dispose(), fixes <a href="https://github.com/sarxos/webcam-capture/issues/122">#122</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-07-14 12:50:10 +0200</td><td>Bump up version in documents, upgrade deployment script</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-07-13 14:31:29 +0200</td><td>Add bash script to automate private release deployment</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-07-10 22:46:09 +0200</td><td>Update README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-07-10 22:43:45 +0200</td><td>Webcam Capture Handbook continuation, refs <a href="https://github.com/sarxos/webcam-capture/issues/102">#102</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-07-10 22:19:53 +0200</td><td>Update README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-07-10 22:17:36 +0200</td><td>Add detect faces example showing how to use painter interface</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-07-10 20:45:08 +0200</td><td>Warning when trying to lock webcam, fixes <a href="https://github.com/sarxos/webcam-capture/issues/120">#120</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-07-05 21:23:01 +0200</td><td>Stack trace not available when no SLF4J binding in classpath, fixes <a href="https://github.com/sarxos/webcam-capture/issues/118">#118</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-07-05 19:48:53 +0200</td><td>Incorrect FPS value when WebcamPanel used with non-blocking mode, fixes <a href="https://github.com/sarxos/webcam-capture/issues/117">#117</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-06-21 19:56:46 +0200</td><td>Remove Android JARs while it's not supported, bump up BridJ version</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-06-21 19:54:12 +0200</td><td>Update *.so objects with lowered glibc version</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-06-20 14:37:27 +0200</td><td>OS X 10.5.8 OpenIMAJ not loaded in 3.10-RC3, fixes <a href="https://github.com/sarxos/webcam-capture/issues/109">#109</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-06-08 15:09:53 +0200</td><td>Reimplement lock (move from preferences to regular file)</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-06-02 12:26:01 +0200</td><td>Latest build is failing on Travis, fixes <a href="https://github.com/sarxos/webcam-capture/issues/108">#108</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-30 14:29:28 +0200</td><td>Lock webcam so other Java process cannot use it</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-29 19:29:50 +0200</td><td>Start working on global webcam lock</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-28 17:09:37 +0200</td><td>Add formatter.xml for Eclipse Save Action</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-26 16:26:28 +0200</td><td>Fix typo in the error message</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-24 17:00:21 +0200</td><td>Update README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-23 13:34:38 +0200</td><td>Webcam capture handbook enhancements, refs <a href="https://github.com/sarxos/webcam-capture/issues/102">#102</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-22 11:42:37 +0200</td><td>Enhance log configurator to avoid ClassNotFoundException</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-21 17:09:23 +0200</td><td>Update README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-21 11:17:38 +0200</td><td>Fix bug in IP camera registry, fixes <a href="https://github.com/sarxos/webcam-capture/issues/106">#106</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-20 20:53:29 +0200</td><td>Update README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-20 09:18:12 +0200</td><td>Add V4L4j driver on the capture drivers list, refs <a href="https://github.com/sarxos/webcam-capture/issues/104">#104</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-19 23:15:16 +0200</td><td>Fix typo in README</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-18 20:12:50 +0200</td><td>Default driver used instead of IpCamDriver, fixes <a href="https://github.com/sarxos/webcam-capture/issues/105">#105</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-18 18:47:02 +0200</td><td>Remove webcam log configurator call from examples, fixes <a href="https://github.com/sarxos/webcam-capture/issues/103">#103</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-18 16:39:28 +0200</td><td>Add README.md to V4L4J capture driver, refs <a href="https://github.com/sarxos/webcam-capture/issues/104">#104</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-18 16:34:23 +0200</td><td>Create capture driver for V4L4J framework, closes <a href="https://github.com/sarxos/webcam-capture/issues/104">#104</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-17 14:37:44 +0200</td><td>Update README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-16 11:52:40 +0200</td><td>Working on the SWT WebcamComposite, refs <a href="https://github.com/sarxos/webcam-capture/issues/91">#91</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-15 10:31:42 +0200</td><td>Fix InvalidThreadAccess exception on redraw composite, refs <a href="https://github.com/sarxos/webcam-capture/issues/91">#91</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-15 10:27:04 +0200</td><td>SWT equivalent for WebcamPanel, refs <a href="https://github.com/sarxos/webcam-capture/issues/91">#91</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-14 22:34:36 +0200</td><td>Update Webcam Capture API Handbook, refs <a href="https://github.com/sarxos/webcam-capture/issues/102">#102</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-12 15:32:09 +0200</td><td>Few enhancements in GStreamer driver</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-12 14:40:45 +0200</td><td>Add Linux support to GStreamer capture driver, refs <a href="https://github.com/sarxos/webcam-capture/issues/100">#100</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-12 12:31:08 +0200</td><td>Remove CIF, HVGA and XGA from default list of supported resolutions, closes <a href="https://github.com/sarxos/webcam-capture/issues/99">#99</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-11 23:01:26 +0200</td><td>Update README with 0.3.10-RC3 version</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-10 22:29:29 +0200</td><td>Fix illegal state exception when closing application, fixes <a href="https://github.com/sarxos/webcam-capture/issues/97">#97</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-10 22:21:54 +0200</td><td>Update examples</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-10 22:18:07 +0200</td><td>Too many debug prints in the log when using non-blocking mode, fixes <a href="https://github.com/sarxos/webcam-capture/issues/96">#96</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-10 05:43:26 +0200</td><td>Update OpenIMAJGrabber.dll for both 32- and 64-bit windows, refs <a href="https://github.com/sarxos/webcam-capture/issues/81">#81</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-09 21:58:20 +0200</td><td>Add logs to GStreamer driver, add FPS source support</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-09 21:58:18 +0200</td><td>Continous GStreamer driver enhancement</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-07 11:06:27 +0200</td><td>Start working on SWT composite, refs <a href="https://github.com/sarxos/webcam-capture/issues/91">#91</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-06 21:05:29 +0200</td><td>Fix caps in GStreamerDevice, refs <a href="https://github.com/sarxos/webcam-capture/issues/57">#57</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-06 21:02:23 +0200</td><td>GStreamer driver for Webcam-Capture, closes <a href="https://github.com/sarxos/webcam-capture/issues/57">#57</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-06 20:58:38 +0200</td><td>IP camera device registry doesn't work with discovery service, fixes <a href="https://github.com/sarxos/webcam-capture/issues/93">#93</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-06 14:55:42 +0200</td><td>Update MjpegLignanoBeachExample.java</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-05 19:02:16 +0200</td><td>Some usful methods in IpCamDeviceRegistry</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-05 16:19:12 +0200</td><td>Add unregister method to IpCamDriver, fixes <a href="https://github.com/sarxos/webcam-capture/issues/92">#92</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-05 16:12:10 +0200</td><td>Example of how to use WebcamPanel in SWT application, refs <a href="https://github.com/sarxos/webcam-capture/issues/92">#92</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-05 15:26:29 +0200</td><td>Update IP camera driver README to cover newest version</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-05 15:17:50 +0200</td><td>Update README and include some IP camera examples, refs <a href="https://github.com/sarxos/webcam-capture/issues/92">#92</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-05 15:10:51 +0200</td><td>Add better IP camera examples, refs <a href="https://github.com/sarxos/webcam-capture/issues/92">#92</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-04 11:57:42 +0200</td><td>Broken ConcurrentThreadsExample link, refs <a href="https://github.com/sarxos/webcam-capture/issues/92">#92</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-02 20:30:47 +0200</td><td>Update README and site to cover new RC version</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-05-02 15:08:41 +0200</td><td>Stop WebcamPanel doesn't stop all required threads, fixes <a href="https://github.com/sarxos/webcam-capture/issues/90">#90</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-04-27 15:49:25 +0200</td><td>Start working on experimental GStreamer driver, refs <a href="https://github.com/sarxos/webcam-capture/issues/57">#57</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-04-27 14:10:16 +0200</td><td>Move webcam viewer from examples to core, closes <a href="https://github.com/sarxos/webcam-capture/issues/89">#89</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-04-22 21:30:04 +0200</td><td>Create README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-04-22 21:27:40 +0200</td><td>Fix incorrect video recording example path</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-04-22 21:24:48 +0200</td><td>Update record video example, refs <a href="https://github.com/sarxos/webcam-capture/issues/88">#88</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-04-20 13:32:01 +0200</td><td>Add catch clauses to debug more problems, refs <a href="https://github.com/sarxos/webcam-capture/issues/87">#87</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-04-16 22:47:43 +0200</td><td>Fix zh_CN and zh_TW i18n translation in WebcamPanel, fixes <a href="https://github.com/sarxos/webcam-capture/issues/76">#76</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-04-16 22:20:00 +0200</td><td>Add Webcam picker component, closes <a href="https://github.com/sarxos/webcam-capture/issues/85">#85</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-04-16 21:51:05 +0200</td><td>LTI-CIVIL driver returns null images, fixes <a href="https://github.com/sarxos/webcam-capture/issues/84">#84</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-04-16 20:55:05 +0200</td><td>IllegalStateException when using LTI-CIVIL driver, fixes <a href="https://github.com/sarxos/webcam-capture/issues/83">#83</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-04-05 11:55:48 +0200</td><td>Update CustomResolutionExample.java</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-25 10:05:36 +0100</td><td>Fix broken links in README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-22 20:34:12 +0100</td><td>Move examples, add mixxing dx license, update link in site</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-21 21:04:45 +0100</td><td>Add missing uncaught exception handlers</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-21 14:08:21 +0100</td><td>Update README, add release candidate info</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-20 11:07:46 +0100</td><td>Add image transformation feature, closes <a href="https://github.com/sarxos/webcam-capture/issues/73">#73</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-20 10:31:37 +0100</td><td>Add few assertions in the code, minor changes</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-18 22:42:05 +0100</td><td>Remove Maven build warnings, fixes <a href="https://github.com/sarxos/webcam-capture/issues/72">#72</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-18 22:11:05 +0100</td><td>Introduce get image timeout in OpenImage-based default driver, fixes <a href="https://github.com/sarxos/webcam-capture/issues/40">#40</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-18 21:22:45 +0100</td><td>Fix WebcamPanel, OpenIMAJ driver, etc, fixes <a href="https://github.com/sarxos/webcam-capture/issues/71">#71</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-18 18:04:55 +0100</td><td>Update OpenIMAJ driver</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-18 10:41:56 +0100</td><td>Move examples to different package, refs <a href="https://github.com/sarxos/webcam-capture/issues/69">#69</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-18 00:15:40 +0100</td><td>Mavenize hepin1989's example of live webcam video streaming</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-17 22:59:32 +0100</td><td>I18N support for messages displayed in WebcamPanel, closes <a href="https://github.com/sarxos/webcam-capture/issues/66">#66</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-17 09:34:54 +0100</td><td>Add listener event for image obtained, fixes <a href="https://github.com/sarxos/webcam-capture/issues/64">#64</a>, fixes <a href="https://github.com/sarxos/webcam-capture/issues/46">#46</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-16 14:17:22 +0100</td><td>Fix in DiscoveryService.stop() method</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-16 12:09:26 +0100</td><td>New Windows binaries</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-16 11:58:14 +0100</td><td>Don't start discovery runner if driver doesn't support discovery, fixes <a href="https://github.com/sarxos/webcam-capture/issues/63">#63</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-16 11:46:17 +0100</td><td>WebcamPanel freezes after displaying one frame</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-16 11:32:24 +0100</td><td>Add native timeout, fix method signature, fixes <a href="https://github.com/sarxos/webcam-capture/issues/67">#67</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-16 00:34:03 +0100</td><td>add the h264 live stream example .</td><td><span class="committer">hepin1989</span></td></tr>
+		<tr><td class="date">2013-03-15 21:35:43 +0100</td><td>Make WebcamPanel resistant to unexpected exceptions, refs <a href="https://github.com/sarxos/webcam-capture/issues/65">#65</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-15 18:29:06 +0100</td><td>Update README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-14 21:33:52 +0100</td><td>Update handbook</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-13 21:00:32 +0100</td><td>Add logo, start writing handbook</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-09 15:51:23 +0100</td><td>Enhance deployment process</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-09 12:03:23 +0100</td><td>Bump BridJ version to 0.6.3-SNAPSHOT</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-09 11:03:39 +0100</td><td>Integrate new binaries for Windows, Linux, Mac OS and ARM</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-09 10:41:21 +0100</td><td>Update README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-09 10:34:54 +0100</td><td>Add README.md for FFmpeg capture driver</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-05 22:44:36 +0100</td><td>Enhance assembly profile</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-05 22:33:17 +0100</td><td>Add snapshot assemblies, fixes <a href="https://github.com/sarxos/webcam-capture/issues/56">#56</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-02 10:33:20 +0100</td><td>Add javadoc comments in webcam updater class</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-01 19:14:46 +0100</td><td>Compressed SVG file</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-01 18:41:27 +0100</td><td>Update README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-03-01 18:06:38 +0100</td><td>Upload new QR, small fix in POM</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-28 00:37:14 +0100</td><td>Implement non-blocking capture API access, refs <a href="https://github.com/sarxos/webcam-capture/issues/46">#46</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-27 21:46:27 +0100</td><td>Remove list of predefined driver classes to search, closes <a href="https://github.com/sarxos/webcam-capture/issues/53">#53</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-27 20:30:30 +0100</td><td>Prevent experimental FFmpeg driver from being deployed</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-27 20:27:07 +0100</td><td>Implement FFmpeg driver fetching images from MJPEG stream, fixes <a href="https://github.com/sarxos/webcam-capture/issues/52">#52</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-27 01:11:00 +0100</td><td>Add possibility to display current FPS in WebcamPanel, fixes <a href="https://github.com/sarxos/webcam-capture/issues/51">#51</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-27 00:33:20 +0100</td><td>WebcamPanel much slower than native camera display, fixes <a href="https://github.com/sarxos/webcam-capture/issues/50">#50</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-26 22:16:09 +0100</td><td>Add info regarding SNAPSHOT repository</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-24 12:41:27 +0100</td><td>Non-blocking image access</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-24 00:56:17 +0100</td><td>Remove unnecessary file</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-23 23:53:18 +0100</td><td>Update README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-23 23:50:14 +0100</td><td>Example for how to record video from webcam</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-22 21:11:51 +0100</td><td>Implement possibility to access direct image buffer</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-20 22:39:08 +0100</td><td>Change delay mechanism in WebcamDiscoveryService</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-19 20:16:38 +0100</td><td>Fix problems reported by PMD</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-19 17:00:17 +0100</td><td>Missing licenses in binary distribution, fixes <a href="https://github.com/sarxos/webcam-capture/issues/43">#43</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-14 14:19:14 +0100</td><td>Update README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-10 22:24:31 +0100</td><td>Add Linux support to LTI-CIVIL driver</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-10 20:33:24 +0100</td><td>Remove dependency on unofficial LTI-CIVIL</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-09 20:15:00 +0100</td><td>Update README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-08 23:33:10 +0100</td><td>Remove dependency on jhlabs</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-08 21:15:04 +0100</td><td>Update versions</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-08 20:55:40 +0100</td><td>Do not exclude JMF driver from being released</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-08 20:54:05 +0100</td><td>Update README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr class="tag"><td colspan=3>webcam-capture-parent-0.3.9</td></tr>
+		<tr><td class="date">2013-02-08 19:15:55 +0100</td><td>WebcamPanel does not refresh after it is resumed, fixes <a href="https://github.com/sarxos/webcam-capture/issues/37">#37</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-08 18:36:42 +0100</td><td>Prevent few modules from being released</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-08 17:59:13 +0100</td><td>Parrallel threads break native grabber, fix for <a href="https://github.com/sarxos/webcam-capture/issues/36">#36</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-08 15:05:31 +0100</td><td>Not able to detect camera, hot fix for <a href="https://github.com/sarxos/webcam-capture/issues/35">#35</a></td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-07 06:05:21 +0100</td><td>Update version to the newest one</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr class="tag"><td colspan=3>webcam-capture-parent-0.3.8</td></tr>
+		<tr><td class="date">2013-02-07 00:42:10 +0100</td><td>Update README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-06 22:47:40 +0100</td><td>Update pages</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-06 22:46:53 +0100</td><td>Update README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-06 14:05:27 +0100</td><td>Small changes in processor, fix tests</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-06 13:02:27 +0100</td><td>Add thread-safe support info in webcam drivers</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-05 22:06:00 +0100</td><td>Implement non-blocking mechanisms</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-05 18:34:24 +0100</td><td>Disallow resolution change when webcam is open</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-05 18:17:07 +0100</td><td>More synchronization changes</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-03 23:16:37 +0100</td><td>Update README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-03 22:34:07 +0100</td><td>Redesign some synchronization features</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-02-03 12:48:51 +0100</td><td>Do not throw exception when no webcam in the system</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-01-31 19:15:34 +0100</td><td>Add exclusions and change repos</td><td><span class="committer">jonhare</span></td></tr>
+		<tr><td class="date">2013-01-30 22:10:43 +0100</td><td>Rever previous version of OpenIMAJGrabber.so</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-01-17 23:07:59 +0100</td><td>Check Travis output on before_script 2</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-01-17 22:56:34 +0100</td><td>Check Travis output on before_script</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-01-17 16:59:29 +0100</td><td>WebcamDiscoveryListener example</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-01-15 20:04:02 +0100</td><td>Enhance IP camera driver, update few dependencies</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-01-15 17:55:35 +0100</td><td>Update com.jhlabs:filters to 2.0.235-1</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-01-15 17:16:56 +0100</td><td>Update README</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-01-15 17:05:16 +0100</td><td>Update version in descriptions / docs</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr class="tag"><td colspan=3>webcam-capture-parent-0.3.7</td></tr>
+		<tr><td class="date">2013-01-14 13:14:21 +0100</td><td>Provide utility methods to capture image in specific format</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-01-14 12:52:23 +0100</td><td>File capture.cpp aborting libv4l2 JPEG header error</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-01-13 12:58:59 +0100</td><td>Fix Travis build failing due to launch4j config</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-01-11 15:45:53 +0100</td><td>Ignore exception when removing ShutdownHook on shutdown</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-01-11 15:43:54 +0100</td><td>Add bridj.quiet property so it will be less verbose</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-01-11 15:41:59 +0100</td><td>Ignore SocketException</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-01-11 15:36:56 +0100</td><td>SocketException: Broken pipe when using WebcamStreamer</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-01-11 15:34:03 +0100</td><td>Remove hard dependency on org.apache.felix:org.osgi.core</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-01-11 08:42:26 +0100</td><td>Small fixes in discovery service</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-01-10 19:34:33 +0100</td><td>Remove unnecessary synchronized code blocks [ci skip]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-01-10 19:30:33 +0100</td><td>Add webcams discovery support / listener</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2013-01-08 20:34:02 +0100</td><td>Remove memory leak on resetDriver() when handle TERM signal enabled</td><td><span class="committer">sarxos</span></td></tr>
+		<tr><td class="date">2013-01-08 18:43:17 +0100</td><td>Add timeout to Webcam.getWebcams() and getDefault() methods</td><td><span class="committer">sarxos</span></td></tr>
+		<tr><td class="date">2013-01-08 13:07:03 +0100</td><td>Java core dump when terminating Webcam Capture process</td><td><span class="committer">sarxos</span></td></tr>
+		<tr><td class="date">2013-01-07 22:48:19 +0100</td><td>Deallocate devices on TERM signal (experimental feature)</td><td><span class="committer">sarxos</span></td></tr>
+		<tr><td class="date">2012-12-27 16:35:10 +0100</td><td>Fix assembly profile [ci skip]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-12-27 00:09:48 +0100</td><td>OpenIMAJ license file to be included in JAR</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-12-26 22:56:44 +0100</td><td>Add possibility to support custom resolution</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-12-26 22:02:46 +0100</td><td>Possible deadlock in WebcamGrabberProcessor</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-12-20 18:35:08 +0100</td><td>Update webcam-capture-examples/webcam-capture-manycams/README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-12-04 22:08:40 +0100</td><td>Update README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-12-04 21:58:19 +0100</td><td>Additional images ilustrating how bar codes are read [ci skip]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-12-04 21:39:21 +0100</td><td>More images for QR code example</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-12-04 20:23:19 +0100</td><td>Enhance WebcamPanel default painter - add camera name</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-12-04 20:20:53 +0100</td><td>Example of how to use multiple cameras at once</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-12-04 01:24:07 +0100</td><td>Update webcam-capture-drivers/webcam-capture-driver-jmf/README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-12-04 01:22:51 +0100</td><td>Update version info</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-12-03 21:44:48 +0100</td><td>Fix URLs in README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-12-03 21:43:35 +0100</td><td>Update README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-12-03 21:39:30 +0100</td><td>Reorganize project structure</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-30 00:47:47 +0100</td><td>Update version in README and site files</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr class="tag"><td colspan=3>webcam-capture-parent-0.3.6</td></tr>
+		<tr><td class="date">2012-11-29 21:17:36 +0100</td><td>Prepare release, change to snaphot</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-29 21:07:11 +0100</td><td>Update jhlabs-filters version</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-24 13:17:46 +0100</td><td>Add example how to read QR code with web camera</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-23 22:49:32 +0100</td><td>Update README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-23 22:41:38 +0100</td><td>Extract WebcamPanel painter interface</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-22 01:18:28 +0100</td><td>Better multithreading support</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-21 02:02:10 +0100</td><td>Remove unecessary picture</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-21 02:01:15 +0100</td><td>Small fix in build, switch logback to error level</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-21 01:50:39 +0100</td><td>Grabber initialization failure in multithreaded environment</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-19 20:37:47 +0100</td><td>Update README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-19 01:36:08 +0100</td><td>Add webcam streamer</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-18 23:02:18 +0100</td><td>Update README for motion detector example</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-18 22:58:15 +0100</td><td>Motion detector example</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-18 21:40:23 +0100</td><td>Applet example README.md update</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-18 21:27:17 +0100</td><td>Applet example</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-18 17:27:30 +0100</td><td>Pages</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-18 14:56:35 +0100</td><td>Update webcam-capture-driver-jmf/README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-18 13:29:07 +0100</td><td>Fix error logging</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-18 01:04:01 +0100</td><td>Add more null checks</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-16 17:59:25 +0100</td><td>Update webcam-capture-driver-ipcam/README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-16 17:54:41 +0100</td><td>Update README.md</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-14 21:42:17 +0100</td><td>Introduce IP cameras registry, fix drivers discovery</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-14 19:23:27 +0100</td><td>Update versions in POMs</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-14 19:16:14 +0100</td><td>Update version in other POMs</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr class="tag"><td colspan=3>webcam-capture-0.3.5</td></tr>
+		<tr><td class="date">2012-11-14 18:52:02 +0100</td><td>Change gitignore</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-14 18:46:02 +0100</td><td>Remove modules to build</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-14 18:44:24 +0100</td><td>Updare incorrect version in README</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-14 18:37:22 +0100</td><td>Remove debug log, README update, example change</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-14 18:25:46 +0100</td><td>Default driver fetch only one image frame</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-14 18:14:58 +0100</td><td>Cannot find default webcam driver</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-14 16:23:17 +0100</td><td>Update README [ci skip]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-14 12:24:59 +0100</td><td>Better exception handling in MJPEG, examples</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-14 01:50:42 +0100</td><td>Fix incorrect property</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-14 01:28:30 +0100</td><td>Unify POMs tree</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-14 00:20:07 +0100</td><td>Fix build failing because of outdated root POM</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr class="tag"><td colspan=3>webcam-capture-0.3.4</td></tr>
+		<tr><td class="date">2012-11-14 00:02:00 +0100</td><td>Revert version</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-13 22:45:35 +0100</td><td>Prepare to release</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-13 22:00:40 +0100</td><td>Update README [ci skip]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-13 21:39:59 +0100</td><td>Fix build failing because of outdated SNAPSHOT</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-13 21:19:28 +0100</td><td>Update README</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-11-13 21:02:50 +0100</td><td>Support for IP / network cameras</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-30 12:24:06 +0200</td><td>Initial IP camera driver impl</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-28 12:29:58 +0200</td><td>JavaCV webcam device (experimental)</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-27 18:14:30 +0200</td><td>Fix failing tests</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-27 17:54:35 +0200</td><td>Scratch for JavaCV driver, small fixes</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-27 16:31:59 +0200</td><td>Add experimental vlcj webcam driver</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-24 22:34:22 +0200</td><td>Change README, add dependencies info [ci skip]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-24 22:20:41 +0200</td><td>Fix failing tests</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-24 22:15:39 +0200</td><td>Fix failing test</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-24 22:02:04 +0200</td><td>Remove type from felix artifact</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-24 21:52:26 +0200</td><td>Change to OSGi bundle, configure mvn site generation</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-24 01:12:48 +0200</td><td>More tests</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-23 22:51:33 +0200</td><td>Add initial test cases foundation</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr class="tag"><td colspan=3>webcam-capture-0.3.3</td></tr>
+		<tr><td class="date">2012-07-23 20:55:51 +0200</td><td>Add profiles [ci skip]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr class="tag"><td colspan=3>webcam-capture-0.3.2</td></tr>
+		<tr><td class="date">2012-07-23 20:25:34 +0200</td><td>Fix POMs setup</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-23 20:19:17 +0200</td><td>Continous POM enhancements [ci skip]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-23 20:15:07 +0200</td><td>Continous POMs enhancements</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-23 20:05:08 +0200</td><td>Remove parent relation [ci skip]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-23 19:54:36 +0200</td><td>Update poms 2 [ci skip]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-23 19:53:23 +0200</td><td>Update poms [ci skip]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-23 19:48:21 +0200</td><td>Update maven-release-plugin version [ci skip]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-23 19:46:02 +0200</td><td>Strange think in pom [ci skip]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-23 19:33:18 +0200</td><td>Add SNAPHOT [ci skip]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-23 19:25:57 +0200</td><td>Fix project setup [ci skip]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-23 18:52:27 +0200</td><td>Prepare next iteration [ci skip]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-23 00:47:35 +0200</td><td>Betters drivers registration, new version</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-19 22:10:30 +0200</td><td>Classpath small change [skip ci]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-19 22:05:26 +0200</td><td>Fix OpenIMAJ webcam driver</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-19 21:53:36 +0200</td><td>Add default build in driver</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-13 22:22:35 +0200</td><td>Change filename on windows 2</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-13 22:21:32 +0200</td><td>Change filename on windows [skip ci]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-13 21:59:59 +0200</td><td>Fix incorrect repository URLs</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-13 21:50:50 +0200</td><td>Better drivers loading</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-13 19:55:23 +0200</td><td>Add missing repository</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-13 01:23:42 +0200</td><td>Automated resources management and drivers loading</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-10 23:25:27 +0200</td><td>Add OpenIMAJ data source</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-10 18:10:43 +0200</td><td>Add external repo to pom</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-10 16:47:18 +0200</td><td>Move GPG sign artifacts to profile</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-10 15:34:02 +0200</td><td>Reorganize project structure</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-09 21:33:11 +0200</td><td>Change readme [skip ci]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-09 21:26:05 +0200</td><td>Create data source abstraction</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-08 17:47:59 +0200</td><td>Add possibility to set view size + example</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-07 16:30:42 +0200</td><td>Hide ThreadFactory interface</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-07 13:53:52 +0200</td><td>Rename root package (prepare upload to central)</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-07 01:08:20 +0200</td><td>Fix markup in readme [skip ci]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-07 01:06:23 +0200</td><td>Add logging description in readme</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-07 01:00:52 +0200</td><td>Fix markup in readme</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-07 00:59:47 +0200</td><td>Change readme, add download link</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-07 00:40:29 +0200</td><td>Add missing repo location</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-07 00:30:46 +0200</td><td>Change version in pom</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-07-06 22:46:21 +0200</td><td>Add motion detector + examples</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-05-29 02:25:33 +0200</td><td>Add github deploy option</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-05-26 20:43:29 +0200</td><td>Refactor [ci skip]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-05-26 20:41:05 +0200</td><td>Description changes [ci skip]</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-05-26 20:10:41 +0200</td><td>Add Travis support, change pom</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		<tr><td class="date">2012-05-25 22:27:55 +0200</td><td>First commit</td><td><span class="committer">Bartosz Firyn</span></td></tr>
+		</tbody>
+	</table>
+
+
+</body>
+</html>

@@ -1,0 +1,7 @@
+Default fileset has been set for the Windows X64.
+In case of other platform/arch, extract native codes to here.
+
+Native codes are archived ../jogl-natives-[platform]-[arch].jar.
+
+1.Rename file extention .jar to .zip
+2.Extract .zip tile to here.
