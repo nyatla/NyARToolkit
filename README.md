@@ -65,7 +65,7 @@ Eclipse環境に、NyARToolkit開発環境をインストールする方法を�
 文字コードの不一致は、プロジェクトの文字コードをUTF8に変更することで解決します。
 外部JARファイルの参照ミスについては、外部ライブラリの章を参考にして下さい。
 4. Webカメラをコンピュータに接続してください。
-5. NyARToolkit.sample.joglのWebCamSample.javaを実行して、マーカを撮影します。立方体が現れれば、インストールは正しく完了しています。
+5. NyARToolkit.sample.joglの[WebcamCapture.java](https://github.com/nyatla/NyARToolkit/blob/master/sample/jogl/src/jp/nyatla/nyartoolkit/jogl/sample/sketch/webcamcapture/WebCamSample.java)を実行して、マーカを撮影します。立方体が現れれば、インストールは正しく完了しています。
 
 1-4の手順については、http://sixwish.jp/Nyartoolkit/ に詳しい解説があります。
 
