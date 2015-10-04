@@ -51,7 +51,7 @@ URL: http://www.apple.com/quicktime/qtjava/
 4. Jogl (This is included in the NyARToolkit/4.2.1 later.)  
 Required for running utils.jogl, sample.jogl  
 URL: http://download.java.net/media/jogl/builds/archive/  
-file   : jogl-1.1.1-rc8-xxxx-xxx.zip 
+file   : gluegen-old-1.0b6,jogl-old-1.1.1  
 5. java3d  
 Required for running utils.java3d, sample.java3d  
 URL: https://java3d.dev.java.net/binary-builds.html  
