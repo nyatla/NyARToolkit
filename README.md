@@ -82,7 +82,7 @@ NyARToolkitライブラリの本体です。基本的はJ2MEのAPIが有れば�
 Java3dを出力先とするサンプルアプリケーションです。1個のサンプルプログラムがあります。  
 外部ライブラリは、Java3DとJMFに依存しています。
 * NyARToolkit.sample.jogl  
-OpenGLでの代表的な利用方法を実装したサンプルです。そのまま動作するのはWebcamCapture.javaだけです。
+OpenGLでの代表的な利用方法を実装したサンプルです。そのまま動作するのは[WebcamCapture.java](https://github.com/nyatla/NyARToolkit/blob/master/sample/jogl/src/jp/nyatla/nyartoolkit/jogl/sample/sketch/webcamcapture/WebCamSample.java)だけです。
 他のサンプルはキャプチャライブラリにJMFを使っているため、JMFをセットアップするか、キャプチャ方式を書き換える必要があります。
 srcには、MarkerSystemを使ったサンプルがあります。OpenGLのスケッチを使ったサンプルと、使わないサンプルがあります。
 src.oldには、以前の古い形式のサンプルプログラムがあります。
