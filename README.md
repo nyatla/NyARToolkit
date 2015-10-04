@@ -36,8 +36,8 @@ URL: http://www.apple.com/quicktime/qtjava/
 3. JMF JavaTM Media Framework 2.1.1e　
 utils.jmf,sample.joglの実行に必要です。  
 URL: http://www.oracle.com/technetwork/java/javase/download-142937.html
-4. Jogl  
-utils.jogl,sample.joglの実行に必要です。(NyARToolKit/4.2.1以降ではリポジトリに含まれています。)  
+4. Jogl(NyARToolKit/4.2.1以降ではリポジトリに含まれています。)  
+utils.jogl,sample.joglの実行に必要です。  
 URL: https://jogamp.org/  
 file   : gluegen-old-1.0b6,jogl-old-1.1.1  
 5. java3d  
