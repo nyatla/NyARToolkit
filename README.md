@@ -27,9 +27,9 @@ http://www.hitl.washington.edu/artoolkit/
 NyARToolkitの使用する外部ライブラリは以下の通りです。新しいバージョンのものがあれば、そちらを使用してください。
 
 
-1. Webcam Capture in Java (NyARToolKit/4.2.1以降ではリポジトリに含まれています。)
+1. Webcam Capture in Java (NyARToolKit/4.2.1以降ではリポジトリに含まれています。)  
 utils.jmf,sample.joglの実行に必要です。  
-URL: http://www.oracle.com/technetwork/java/javase/download-142937.html
+URL: http://www.oracle.com/technetwork/java/javase/download-142937.html  
 
 2. QuickTime 7.5  
 utils.qtの実行に必要です。
@@ -40,9 +40,9 @@ utils.jmf,sample.joglの実行に必要です。
 URL: http://www.oracle.com/technetwork/java/javase/download-142937.html
 
 4. Jogl  
-utils.jogl,sample.joglの実行に必要です。(NyARToolKit/4.2.1以降ではリポジトリに含まれています。)
-URL: https://jogamp.org/ 
-file   : gluegen-old-1.0b6,jogl-old-1.1.1
+utils.jogl,sample.joglの実行に必要です。(NyARToolKit/4.2.1以降ではリポジトリに含まれています。)  
+URL: https://jogamp.org/  
+file   : gluegen-old-1.0b6,jogl-old-1.1.1  
 
 5. java3d  
 utils.java3d,sample.java3dの実行に必要です。  
