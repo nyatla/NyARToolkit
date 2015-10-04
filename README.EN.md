@@ -41,7 +41,7 @@ NyARToolkit uses the following external libraries. If newer version becomes avai
 
 1. Webcam Capture in Java (This is included in the NyARToolkit/4.2.1 later.)  
 Easiest stable capture driver.  
-URL: http://www.oracle.com/technetwork/java/javase/download-142937.html  
+URL: http://www.webcam-capture.sarxos.pl/  
 2. JMF JavaTM Media Framework 2.1.1e  
 Required for running utils.jmf, sample.jogl  
 URL: http://www.oracle.com/technetwork/java/javase/download-142937.html
