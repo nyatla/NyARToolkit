@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="lib" path="extlib/webcam-capture-0.3.10-dist/libs/bridj-0.6.2.jar"/>
+	<classpathentry kind="lib" path="extlib/webcam-capture-0.3.10-dist/libs/slf4j-api-1.7.2.jar"/>
+	<classpathentry kind="lib" path="extlib/webcam-capture-0.3.10-dist/webcam-capture-0.3.10.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

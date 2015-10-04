@@ -6,8 +6,8 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolKit"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolkit.utils.jmf"/>
 	<classpathentry kind="lib" path="C:/Program Files (x86)/JMF2.1.1e/lib/jmf.jar"/>
-	<classpathentry kind="lib" path="C:/Program Files/JDK6/jdk/lib/gluegen-rt.jar"/>
-	<classpathentry kind="lib" path="C:/Program Files/JDK6/jdk/lib/jogl.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolkit.utils.j2se"/>
+	<classpathentry kind="lib" path="extlib/gluegen-old-1.0b6/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="extlib/jogl-old-1.1.1/jogl.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
