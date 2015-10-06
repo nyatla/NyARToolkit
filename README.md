@@ -27,26 +27,27 @@ http://www.hitl.washington.edu/artoolkit/
 NyARToolkitの使用する外部ライブラリは以下の通りです。新しいバージョンのものがあれば、そちらを使用してください。
 
 
-1. JMF JavaTM Media Framework 2.1.1e　
+1. Webcam Capture in Java (NyARToolKit/4.2.1以降ではリポジトリに含まれています。)  
 utils.jmf,sample.joglの実行に必要です。  
-URL: http://www.oracle.com/technetwork/java/javase/download-142937.html
-
+URL: http://www.webcam-capture.sarxos.pl/  
 2. QuickTime 7.5  
 utils.qtの実行に必要です。
 URL: http://www.apple.com/quicktime/qtjava/
-
-3. Jogl  
+3. JMF JavaTM Media Framework 2.1.1e　
+utils.jmf,sample.joglの実行に必要です。  
+URL: http://www.oracle.com/technetwork/java/javase/download-142937.html
+4. Jogl(NyARToolKit/4.2.1以降ではリポジトリに含まれています。)  
 utils.jogl,sample.joglの実行に必要です。  
-URL: http://download.java.net/media/jogl/builds/archive/  
-file   : jogl-1.1.1-rc8-xxxx-xxx.zip
-
-4. java3d  
+URL: https://jogamp.org/  
+file   : gluegen-old-1.0b6,jogl-old-1.1.1  
+5. java3d  
 utils.java3d,sample.java3dの実行に必要です。  
 URL: https://java3d.dev.java.net/binary-builds.html  
 file:    java3d-1_5_1-xxxx-i586.exe
 
-全ての外部ライブラリを揃える必要はありません。必要なものだけをインストールしてください。
-例えば、WindowsでJoglを使用する場合はQuickTimeとJava3dは不要です。
+NyARToolKit/4.2.1以降では、joglとWebcam Captureがソースツリーに含まれています。
+他のライブラリは、必要なものだけを探してインストールしてください。
+
 
 
 ## セットアップ方法
@@ -60,7 +61,7 @@ Eclipse環境に、NyARToolkit開発環境をインストールする方法を�
 文字コードの不一致は、プロジェクトの文字コードをUTF8に変更することで解決します。
 外部JARファイルの参照ミスについては、外部ライブラリの章を参考にして下さい。
 4. Webカメラをコンピュータに接続してください。
-5. NyARToolkit.sample.joglのSimpleLiteMStandard.javaを実行して、マーカを撮影します。立方体が現れれば、インストールは正しく完了しています。
+5. NyARToolkit.sample.joglの[WebcamCapture.java](https://github.com/nyatla/NyARToolkit/blob/master/sample/jogl/src/jp/nyatla/nyartoolkit/jogl/sample/sketch/webcamcapture/WebCamSample.java)を実行して、マーカを撮影します。立方体が現れれば、インストールは正しく完了しています。
 
 1-4の手順については、http://sixwish.jp/Nyartoolkit/ に詳しい解説があります。
 
@@ -77,13 +78,12 @@ NyARToolkitライブラリの本体です。基本的はJ2MEのAPIが有れば�
 Java3dを出力先とするサンプルアプリケーションです。1個のサンプルプログラムがあります。  
 外部ライブラリは、Java3DとJMFに依存しています。
 * NyARToolkit.sample.jogl  
-OpenGLでの代表的な利用方法を実装したサンプルです。
+OpenGLでの代表的な利用方法を実装したサンプルです。そのまま動作するのは[WebcamCapture.java](https://github.com/nyatla/NyARToolkit/blob/master/sample/jogl/src/jp/nyatla/nyartoolkit/jogl/sample/sketch/webcamcapture/WebCamSample.java)だけです。
+他のサンプルはキャプチャライブラリにJMFを使っているため、JMFをセットアップするか、キャプチャ方式を書き換える必要があります。
 srcには、MarkerSystemを使ったサンプルがあります。OpenGLのスケッチを使ったサンプルと、使わないサンプルがあります。
 src.oldには、以前の古い形式のサンプルプログラムがあります。
 src.rpfには、RealityPlatformを使ったサンプルプログラムがあります。
-  
-重要なのはsrc以下のサンプルです。  
-src/sketchの下には、簡易スケッチシステムを使った色々なサンプルがあります。
+
 * NyARToolkit.sandbox  
 お砂場です。実験プログラムや作りかけのコードなどを埋蔵しています。  
 品質は未保証です（不具合等が多く放置されています）。testソースフォルダにあるサンプルプログラムは、RealityPlatformの試験に役立つかもしれません。
@@ -98,6 +98,8 @@ Joglに依存したヘルパークラス群と、テストプログラムがあ�
 * NyARToolkit.utils.qt  
 QTJavaに依存したヘルパークラス群と、テストプログラムがあります。  
 QuickTimeのドライバです。
+* NyARToolkit.utils.webcampapture
+Webcam Captureに関するファイルが有ります。
 
 
 

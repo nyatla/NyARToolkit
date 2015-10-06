@@ -39,23 +39,26 @@ http://www.hitl.washington.edu/artoolkit/
 
 NyARToolkit uses the following external libraries. If newer version becomes available, please install the newer version.
 
-1. JMF JavaTM Media Framework 2.1.1e  
+1. Webcam Capture in Java (This is included in the NyARToolkit/4.2.1 later.)  
+Easiest stable capture driver.  
+URL: http://www.webcam-capture.sarxos.pl/  
+2. JMF JavaTM Media Framework 2.1.1e  
 Required for running utils.jmf, sample.jogl  
 URL: http://www.oracle.com/technetwork/java/javase/download-142937.html
-2. QuickTime 7.5  
+3. QuickTime 7.5  
 Required for running utils.qt  
 URL: http://www.apple.com/quicktime/qtjava/
-3. Jogl  
+4. Jogl (This is included in the NyARToolkit/4.2.1 later.)  
 Required for running utils.jogl, sample.jogl  
 URL: http://download.java.net/media/jogl/builds/archive/  
-file   : jogl-1.1.1-rc8-xxxx-xxx.zip 
-4. java3d  
+file   : gluegen-old-1.0b6,jogl-old-1.1.1  
+5. java3d  
 Required for running utils.java3d, sample.java3d  
 URL: https://java3d.dev.java.net/binary-builds.html  
 file:    java3d-1_5_1-xxxx-i586.exe
 
-Depending on application and purpose, it's not necessary to install all 
-the libraries above. Install only those needed.
+NyARToolKit/4.2.1 includes jogl and Webcam Capture library.
+It's not necessary to install all the libraries above. Install only those needed.
 
  Getting Started
 ----------------------------------------------------------------------
@@ -69,7 +72,7 @@ tools under Eclipse environment.
 	The error of inconsistent character codes can be resolved by changing the project's encoding to UTF-8.  
 	For resolving reference misses to external JAR libraries, please refer to the chapter of external library.
 4. Connect webcam to PC.
-5. Run SimpleLiteMStandard.java within NyARToolkit.sample.jogl, and point the webcam to the marker. If a cube appears, the installation of NyARToolkit is done!
+5. Run [WebcamCapture.java](https://github.com/nyatla/NyARToolkit/blob/master/sample/jogl/src/jp/nyatla/nyartoolkit/jogl/sample/sketch/webcamcapture/WebCamSample.java) within NyARToolkit.sample.jogl, and point the webcam to the marker. If a cube appears, the installation of NyARToolkit is done!
 	
 For detailed intruction of step 1 ~ step 4, please refer to  
 http://sixwish.jp/Nyartoolkit/ 
