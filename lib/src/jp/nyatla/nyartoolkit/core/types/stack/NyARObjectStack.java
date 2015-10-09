@@ -46,7 +46,7 @@ public class NyARObjectStack<T> extends NyARPointerStack<T>
 	/**
 	 * この関数は、インスタンスを初期化します。
 	 * 継承クラスのコンストラクタから呼び出します。
-	 * {@link #initInstance(int, Class, Object)}との違いは、オブジェクトの生成に引数を渡すかどうかです。
+	 * {@link #NyARObjectStack(int, Class, Object)}との違いは、オブジェクトの生成に引数を渡すかどうかです。
 	 * 引数が必要な時は、こちらの関数を使って、{@link #createElement()}をオーバライドします。
 	 * @param i_length
 	 * 配列の最大長さ
@@ -66,7 +66,7 @@ public class NyARObjectStack<T> extends NyARPointerStack<T>
 	/**
 	 * この関数は、インスタンスを初期化します。
 	 * 継承クラスのコンストラクタから呼び出します。
-	 * {@link #initInstance(int, Class)}との違いは、オブジェクトの生成に引数を渡すかどうかです。
+	 * {@link #NyARObjectStack(int, Class)}との違いは、オブジェクトの生成に引数を渡すかどうかです。
 	 * 引数が必要な時は、こちらの関数を使って、{@link #createElement(Object)}をオーバライドします。
 	 * @param i_length
 	 * 配列の最大長さ
@@ -136,6 +136,7 @@ public class NyARObjectStack<T> extends NyARPointerStack<T>
 	}
 	/**
 	 * この関数は、配列の有効長を設定します。
+	 * この関数はインスタンスの最大格納数を増加させるわけではなく、i_reserv_lengthまでの要素がアクティブになるだけです。
 	 * @param i_reserv_length
 	 * 設定するサイズ
 	 */
