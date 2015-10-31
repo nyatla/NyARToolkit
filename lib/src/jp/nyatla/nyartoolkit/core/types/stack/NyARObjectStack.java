@@ -40,7 +40,7 @@ import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
  * @param <T>
  * 配列型を指定します。
  */
-public class NyARObjectStack<T> extends NyARPointerStack<T>
+public abstract class NyARObjectStack<T> extends NyARPointerStack<T>
 {
 
 	/**

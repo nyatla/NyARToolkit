@@ -1,5 +1,7 @@
 package jp.nyatla.nyartoolkit.core.kpm;
 
+import jp.nyatla.nyartoolkit.core.kpm.vision.detectors.GaussianScaleSpacePyramid;
+
 public class OrientationAssignment {
     public OrientationAssignment()
     {

@@ -92,9 +92,15 @@ public class NyARParam
 		ParamLoader pm=new ParamLoader(i_w,i_h,i_intrinsic_matrix,i_distortion_coeffs);
 		return new NyARParam(pm.size,pm.pmat,pm.dist_factor);
 	}
+	/**
+	 * 引数のオブジェクトを参照します。
+	 * @param i_screen_size
+	 * @param i_projection_mat
+	 * @param i_dist_factor
+	 */
 	public NyARParam(NyARIntSize i_screen_size,NyARPerspectiveProjectionMatrix i_projection_mat,INyARCameraDistortionFactor i_dist_factor)
 	{
-		this._screen_size=new NyARIntSize(i_screen_size);
+		this._screen_size=i_screen_size;
 		this._dist=i_dist_factor;
 		this._projection_matrix=i_projection_mat;
 	}

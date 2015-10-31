@@ -1,5 +1,9 @@
-package jp.nyatla.nyartoolkit.core.kpm;
+package jp.nyatla.nyartoolkit.core.kpm.vision.detectors;
 
+import jp.nyatla.nyartoolkit.core.kpm.DoGPyramid;
+import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
+import jp.nyatla.nyartoolkit.core.kpm.KpmMath;
+import jp.nyatla.nyartoolkit.core.kpm.OrientationAssignment;
 import jp.nyatla.nyartoolkit.core.kpm.OrientationAssignment.FloatVector;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
@@ -18,12 +22,7 @@ public class DoGScaleInvariantDetector {
         public float score;
         public float sigma;
         public float edge_score;
-        public static FeaturePoint[] createArray(int n){
-        	FeaturePoint[] r=new FeaturePoint[n];
-        	for(int i=0;i<r.length;i++){
-        		r[i]=new FeaturePoint();
-        	}
-        }
+
         public FeaturePoint(){
         }
         public FeaturePoint(FeaturePoint i_src)
@@ -43,15 +42,28 @@ public class DoGScaleInvariantDetector {
         	this.edge_score=i_src.edge_score;
 		}
     }; // FeaturePoint
-    public static class FeaturePointStack extends NyARObjectStack<FeaturePoint>
+    public static class FeaturePointStack extends NyARObjectStack<FeaturePoint> implements Cloneable
     {
 		public FeaturePointStack(int i_length)
 		{
 			super(i_length,FeaturePoint.class);
 		}
+		@Override
 		final protected FeaturePoint createElement()
 		{
 			return new FeaturePoint();
+		}
+		/**
+		 * DeepCopy これあとで消してね。
+		 */
+		@Override
+		final public Object clone()
+		{
+			FeaturePointStack n=new FeaturePointStack(this._items.length);
+			for(int i=0;i<this._length;i++){
+				n.prePush().set(this._items[i]);
+			}
+			return n;
 		}
     }
         

@@ -17,10 +17,10 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 
 /**
- * HomographyMatrixの計算機�?�を持つNyARDoubleMatrix33
+ * HomographyMatrixの計算機�?�を持つNyARDoubleMatrix33
  * 
- * こ�?�クラスは多数のリソースを消費します�?�で、データストレージとしては使用しな�?でください�?
- * もし多数の行�?�を同時に保持するなら�?�計算器に改�?すること?�?
+ * このクラスは多数のリソースを消費します�?�で、データストレージとしては使用しないでください
+ * もし多数の行を同時に保持するなら�?�計算器に改�?すること?�?
  */
 public class HomographyMatrix extends NyARDoubleMatrix33
 {
@@ -32,7 +32,7 @@ public class HomographyMatrix extends NyARDoubleMatrix33
 	private NyARDoublePoint2d[] _p1_normal=NyARDoublePoint2d.createArray(4);
 	private NyARDoublePoint2d[] _p2_normal=NyARDoublePoint2d.createArray(4);
 	/**
-	 * サンプル数4に�?適化したcomputeHomography関数
+	 * サンプル数4に�?適化したcomputeHomography関数
 	 * @param samples
 	 * @param i_dest
 	 */

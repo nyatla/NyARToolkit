@@ -1,4 +1,7 @@
-package jp.nyatla.nyartoolkit.core.kpm;
+package jp.nyatla.nyartoolkit.core.kpm.vision.detectors;
+
+import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
+import jp.nyatla.nyartoolkit.core.kpm.KpmMath;
 
 
 
