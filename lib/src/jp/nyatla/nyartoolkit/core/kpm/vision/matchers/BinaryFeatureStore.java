@@ -1,8 +1,8 @@
-package jp.nyatla.nyartoolkit.core.kpm.vision;
+package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
 
 
-import jp.nyatla.nyartoolkit.core.kpm.vision.detectors.DoGScaleInvariantDetector.FeaturePoint;
-import jp.nyatla.nyartoolkit.core.kpm.vision.detectors.DoGScaleInvariantDetector.FeaturePointStack;
+
+
 
 
 /**

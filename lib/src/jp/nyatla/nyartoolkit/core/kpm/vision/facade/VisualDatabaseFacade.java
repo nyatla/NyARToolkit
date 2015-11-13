@@ -1,22 +1,35 @@
-package jp.nyatla.nyartoolkit.core.kpm;
+package jp.nyatla.nyartoolkit.core.kpm.vision.facade;
+import java.util.*;
 
-public class VisualDatabaseFacade {
+import jp.nyatla.nyartoolkit.core.kpm.Point3dVector;
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.BinaryFeatureMatcher;
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.BinaryFeatureStore;
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FREAKExtractor;
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.VisualDatabase;
+import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
+
+public class VisualDatabaseFacade
+{
+	class Point3dMap extends HashMap<Integer,Point3dVector>{
+		
+	}
     class VisualDatabaseImpl{
-    public VisualDatabaseImpl(){
-    	mVdb.reset(new vdb_t());
+    	public VisualDatabaseImpl(){
+    		mVdb=new VisualDatabase<FREAKExtractor, BinaryFeatureStore, BinaryFeatureMatcher>();
+    	}
+    	public VisualDatabase<FREAKExtractor, BinaryFeatureStore, BinaryFeatureMatcher> mVdb;
+
+//        std::unique_ptr<vdb_t> mVdb;
+ //       Point3dMap mPoint3d;
     }
-        std::unique_ptr<vdb_t> mVdb;
-        point3d_map_t mPoint3d;
-    };
+    public VisualDatabaseFacade(){
+        this.mVisualDbImpl=new VisualDatabaseImpl();
+    }
+    private VisualDatabaseImpl mVisualDbImpl;
+/*
+
     
-    VisualDatabaseFacade::VisualDatabaseFacade(){
-        mVisualDbImpl.reset(new VisualDatabaseImpl());
-    }
-    VisualDatabaseFacade::~VisualDatabaseFacade(){
-        
-    }
-    
-    void VisualDatabaseFacade::addImage(unsigned char* grayImage,
+    void addImage(unsigned char* grayImage,
                                         size_t width,
                                         size_t height,
                                         int image_id) {
@@ -25,7 +38,7 @@ public class VisualDatabaseFacade {
         mVisualDbImpl->mVdb->addImage(img, image_id);
     }
     
-    void VisualDatabaseFacade::addFreakFeaturesAndDescriptors(const std::vector<FeaturePoint>& featurePoints,
+    void addFreakFeaturesAndDescriptors(const std::vector<FeaturePoint>& featurePoints,
                                                               const std::vector<unsigned char>& descriptors,
                                                               const std::vector<vision::Point3d<float> >& points3D,
                                                               size_t width,
@@ -44,7 +57,7 @@ public class VisualDatabaseFacade {
         mVisualDbImpl->mPoint3d[image_id] = points3D;
     }
     
-    void VisualDatabaseFacade::computeFreakFeaturesAndDescriptors(unsigned char* grayImage,
+    void computeFreakFeaturesAndDescriptors(unsigned char* grayImage,
                                                                   size_t width,
                                                                   size_t height,
                                                                   std::vector<FeaturePoint>& featurePoints,
@@ -55,15 +68,12 @@ public class VisualDatabaseFacade {
         featurePoints = tmpDb->keyframe(1)->store().points();
         descriptors = tmpDb->keyframe(1)->store().features();
     }
-    
-    bool VisualDatabaseFacade::query(unsigned char* grayImage,
-                                     size_t width,
-                                     size_t height){
-        Image img = Image(grayImage,IMAGE_UINT8,width,height,(int)width,1);
-        return mVisualDbImpl->mVdb->query(img);
+   */ 
+    public boolean query(INyARGrayscaleRaster grayImage){
+        return mVisualDbImpl.mVdb.query(grayImage);
     }
-    
-    bool VisualDatabaseFacade::erase(int image_id){
+    /*
+    boolean erase(int image_id){
         return mVisualDbImpl->mVdb->erase(image_id);
     }
     
@@ -71,15 +81,15 @@ public class VisualDatabaseFacade {
         return mVisualDbImpl->mVdb->databaseCount();
     }
     
-    int VisualDatabaseFacade::matchedId(){
+    int matchedId(){
         return mVisualDbImpl->mVdb->matchedId();
     }
     
-    const float* VisualDatabaseFacade::matchedGeometry(){
+    const float* matchedGeometry(){
         return mVisualDbImpl->mVdb->matchedGeometry();
     }
     
-    const std::vector<FeaturePoint> &VisualDatabaseFacade::getFeaturePoints(int image_id) const{
+    const std::vector<FeaturePoint>& getFeaturePoints(int image_id) const{
         return mVisualDbImpl->mVdb->keyframe(image_id)->store().points();
     }
     
@@ -95,18 +105,18 @@ public class VisualDatabaseFacade {
         return mVisualDbImpl->mVdb->queryKeyframe()->store().points();
     }
     
-    const std::vector<unsigned char>&VisualDatabaseFacade::getQueryDescriptors() const{
+    const std::vector<unsigned char>& getQueryDescriptors() const{
         return mVisualDbImpl->mVdb->queryKeyframe()->store().features();
     }
     
-    const matches_t& VisualDatabaseFacade::inliers() const{
+    const matches_t& inliers() const{
         return mVisualDbImpl->mVdb->inliers();
     }
     
-    int VisualDatabaseFacade::getWidth(int image_id) const{
+    int getWidth(int image_id) const{
         return mVisualDbImpl->mVdb->keyframe(image_id)->width();
     }
-    int VisualDatabaseFacade::getHeight(int image_id) const{
+    int getHeight(int image_id) const{
         return mVisualDbImpl->mVdb->keyframe(image_id)->height();
-    }
+    }*/
 }

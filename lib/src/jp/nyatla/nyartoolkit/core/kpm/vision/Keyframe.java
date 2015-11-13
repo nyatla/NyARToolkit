@@ -1,5 +1,7 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision;
 
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.BinaryFeatureStore;
+
 
 public class Keyframe {
 
@@ -46,7 +48,7 @@ public class Keyframe {
             mIndex.setNumCenters(8);
             mIndex.setMaxNodesToPop(8);
             mIndex.setMinFeaturesPerNode(16);
-            mIndex.build(&mStore.features()[0], (int)mStore.size());
+            mIndex.build(mStore.features()[0], (int)mStore.size());
         
         /**
          * Copy a keyframe.

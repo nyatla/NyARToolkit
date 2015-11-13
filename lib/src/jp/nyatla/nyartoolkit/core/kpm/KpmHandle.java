@@ -1,5 +1,7 @@
 package jp.nyatla.nyartoolkit.core.kpm;
 
+import jp.nyatla.nyartoolkit.core.kpm.vision.facade.VisualDatabaseFacade;
+import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 public class KpmHandle
@@ -52,23 +54,13 @@ public class KpmHandle
 	    this.resultNum               = 0;
 
 	}
-	int kpmMatching(int [] inImage )
+	int kpmMatching(INyARGrayscaleRaster inImage)
 	{
 	    int               xsize, ysize;
 	    int               xsize2, ysize2;
 	    int               procMode;
-	    ARUint8          *inImageBW;
 	    FeatureVector     featureVector;
 	    int               i, j;
-/*	#if !BINARY_FEATURE
-	    int              *inlierIndex;
-	    CorspMap          preRANSAC;
-	    int               inlierNum;
-	    CAnnMatch2       *ann2;
-	    int              *annMatch2;
-	    int               knn;
-	    float             h[3][3];
-	#endif*/
 	    int               ret;
 	    
 
@@ -87,7 +79,7 @@ public class KpmHandle
 
 //	#if BINARY_FEATURE
 	    //kpmHandle->freakMatcherOpencv->query(inImageBW, xsize ,ysize);
-	    this.freakMatcher.->query(inImageBW, xsize ,ysize);
+	    this.freakMatcher.query(inImage);
 	    kpmHandle->inDataSet.num = featureVector.num = (int)kpmHandle->freakMatcher->getQueryFeaturePoints().size();
 /*	#else
 	    surfSubExtractFeaturePoint( kpmHandle->surfHandle, inImageBW, kpmHandle->skipRegion.region, kpmHandle->skipRegion.regionNum );

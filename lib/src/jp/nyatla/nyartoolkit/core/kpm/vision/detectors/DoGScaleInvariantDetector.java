@@ -5,6 +5,7 @@ import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
 import jp.nyatla.nyartoolkit.core.kpm.KpmMath;
 import jp.nyatla.nyartoolkit.core.kpm.OrientationAssignment;
 import jp.nyatla.nyartoolkit.core.kpm.OrientationAssignment.FloatVector;
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FeaturePoint;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARPointerStack;
@@ -41,6 +42,7 @@ public class DoGScaleInvariantDetector {
         	this.sigma=i_src.sigma;
         	this.edge_score=i_src.edge_score;
 		}
+
     }; // FeaturePoint
     public static class FeaturePointStack extends NyARObjectStack<FeaturePoint> implements Cloneable
     {
@@ -80,29 +82,29 @@ public class DoGScaleInvariantDetector {
 	    this.setMaxNumFeaturePoints(kMaxNumFeaturePoints);
 	    this.mOrientations=new float[kMaxNumOrientations];
     }
-        /**
-         * Allocate memory.
-         */
-        void alloc(GaussianScaleSpacePyramid pyramid)
-        {
-            mLaplacianPyramid.alloc(pyramid);
-            
-            mOrientationAssignment.alloc(pyramid.images()[0].getWidth(),
-                                         pyramid.images()[0].getHeight(),
-                                         pyramid.numOctaves(),
-                                         pyramid.numScalesPerOctave(),
-                                         kMaxNumOrientations,
-                                         3,
-                                         1.5f,
-                                         5,
-                                         0.8f);
-            
-            mWidth = pyramid.images()[0].getWidth();
-            mHeight = pyramid.images()[0].getHeight();
-            
-            // Allocate bucket container
-            mBuckets=createBucketPairArray(mNumBucketsX,mNumBucketsY);       	
-        }
+    /**
+     * Allocate memory.
+     */
+    public void alloc(GaussianScaleSpacePyramid pyramid)
+    {
+        mLaplacianPyramid.alloc(pyramid);
+        
+        mOrientationAssignment.alloc(pyramid.images()[0].getWidth(),
+                                     pyramid.images()[0].getHeight(),
+                                     pyramid.numOctaves(),
+                                     pyramid.numScalesPerOctave(),
+                                     kMaxNumOrientations,
+                                     3,
+                                     1.5f,
+                                     5,
+                                     0.8f);
+        
+        mWidth = pyramid.images()[0].getWidth();
+        mHeight = pyramid.images()[0].getHeight();
+        
+        // Allocate bucket container
+        mBuckets=createBucketPairArray(mNumBucketsX,mNumBucketsY);       	
+    }
         
         /**
          * @return Width/Height of configured image
@@ -149,7 +151,7 @@ public class DoGScaleInvariantDetector {
         {
             return mLaplacianThreshold;
         }
-        void setLaplacianThreshold(float tr) {
+        public void setLaplacianThreshold(float tr) {
             this.mLaplacianThreshold = tr;
         }
         
@@ -160,7 +162,7 @@ public class DoGScaleInvariantDetector {
         {
             return this.mMaxNumFeaturePoints;
         }
-        void setMaxNumFeaturePoints(int n)
+        public void setMaxNumFeaturePoints(int n)
         {
             this.mMaxNumFeaturePoints = n;
             this.mFeaturePoints=new FeaturePointStack(2000);
@@ -173,7 +175,7 @@ public class DoGScaleInvariantDetector {
         {
             return this.mEdgeThreshold;
         }
-        void setEdgeThreshold(float tr)
+        public void setEdgeThreshold(float tr)
         {
             this.mEdgeThreshold = tr;
         }
