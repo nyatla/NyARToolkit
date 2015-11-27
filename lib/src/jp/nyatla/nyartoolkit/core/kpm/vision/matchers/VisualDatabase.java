@@ -4,11 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jp.nyatla.nyartoolkit.core.kpm.BinomialPyramid32f;
+import jp.nyatla.nyartoolkit.core.kpm.Point2d;
 import jp.nyatla.nyartoolkit.core.kpm.vision.Keyframe;
 import jp.nyatla.nyartoolkit.core.kpm.vision.KeyframeMap;
 import jp.nyatla.nyartoolkit.core.kpm.vision.detectors.DoGScaleInvariantDetector;
 import jp.nyatla.nyartoolkit.core.kpm.vision.detectors.GaussianScaleSpacePyramid;
+import jp.nyatla.nyartoolkit.core.kpm.vision.homography_estimation.RobustHomography;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
 public class VisualDatabase<FEATURE_EXTRACTOR extends FREAKExtractor,STORE extends BinaryFeatureStore,MATCHER extends BinaryFeatureMatcher>
 {
@@ -179,11 +182,11 @@ int FindHoughSimilarity(HoughSimilarityVoting hough,
 //    hough.vote((float*)&query[0], (float*)&ref[0], (int)matches.size());
     hough.vote(query,ref,matches.getLength());
 
-    float maxVotes;
-    int maxIndex;
-    hough.getMaximumNumberOfVotes(maxVotes, maxIndex);
+
+    HoughSimilarityVoting.getMaximumNumberOfVotesResult max=new HoughSimilarityVoting.getMaximumNumberOfVotesResult();
+    hough.getMaximumNumberOfVotes(max);
     
-    return (maxVotes < 3) ? -1 : maxIndex;
+    return (max.votes < 3) ? -1 : max.index;
 }
 boolean query(Keyframe query_keyframe)
 {
@@ -223,17 +226,17 @@ boolean query(Keyframe query_keyframe)
                                                   query_points,
                                                   ref_points,
                                                   mMatcher.matches(),
-                                                  query_keyframe->width(),
-                                                  query_keyframe->height(),
-                                                  it->second->width(),
-                                                  it->second->height());
+                                                  query_keyframe.width(),
+                                                  query_keyframe.height(),
+                                                  second.width(),
+                                                  second.height());
             if(max_hough_index < 0) {
                 continue;
             }
   //      }
         
-        matches_t hough_matches;
-        TIMED("Find Hough Matches (1)") {
+        matchStack hough_matches;
+//        TIMED("Find Hough Matches (1)") {
             FindHoughMatches(hough_matches,
                              mHoughSimilarityVoting,
                              query_points,
@@ -241,70 +244,70 @@ boolean query(Keyframe query_keyframe)
                              mMatcher.matches(),
                              max_hough_index,
                              kHoughBinDelta);
-        }
+ //       }
         
         //
         // Estimate the transformation between the two images
         //
         
-        float H[9];
-        TIMED("Estimate Homography (1)") {
+        float[] H=new float[9];
+//        TIMED("Estimate Homography (1)") {
             if(!EstimateHomography(H,
                                    query_points,
                                    ref_points,
                                    hough_matches,
                                    mHomographyInlierThreshold,
                                    mRobustHomography,
-                                   it->second->width(),
-                                   it->second->height())) {
+                                   second.width(),
+                                   second.height())) {
                 continue;
             }
-        }
+ //       }
         
         //
         // Find the inliers
         //
         
-        matches_t inliers;
-        TIMED("Find Inliers (1)") {
+            matchStack inliers;
+//        TIMED("Find Inliers (1)") {
             FindInliers(inliers, H, query_points, ref_points, hough_matches, mHomographyInlierThreshold);
             if(inliers.size() < mMinNumInliers) {
                 continue;
             }
-        }
+ //       }
         
         //
         // Use the estimated homography to find more inliers
         //
         
-        TIMED("Find Matches (2)") {
-            if(mMatcher.match(&query_keyframe->store(),
-                              &it->second->store(),
+ //       TIMED("Find Matches (2)") {
+            if(mMatcher.match(query_keyframe.store(),
+                              second.store(),
                               H,
                               10) < mMinNumInliers) {
                 continue;
             }
-        }
+ //       }
         
         //
         // Vote for a similarity with new matches
         //
         
-        TIMED("Hough Voting (2)") {
+//        TIMED("Hough Voting (2)") {
             max_hough_index = FindHoughSimilarity(mHoughSimilarityVoting,
                                                   query_points,
                                                   ref_points,
                                                   mMatcher.matches(),
-                                                  query_keyframe->width(),
-                                                  query_keyframe->height(),
-                                                  it->second->width(),
-                                                  it->second->height());
+                                                  query_keyframe.width(),
+                                                  query_keyframe.height(),
+                                                  second.width(),
+                                                  second.height());
             if(max_hough_index < 0) {
                 continue;
             }
-        }
+//        }
         
-        TIMED("Find Hough Matches (2)") {
+//        TIMED("Find Hough Matches (2)") {
             FindHoughMatches(hough_matches,
                              mHoughSimilarityVoting,
                              query_points,
@@ -312,48 +315,175 @@ boolean query(Keyframe query_keyframe)
                              mMatcher.matches(),
                              max_hough_index,
                              kHoughBinDelta);
-        }
+//        }
         
         //
         // Re-estimate the homography
         //
         
-        TIMED("Estimate Homography (2)") {
+//        TIMED("Estimate Homography (2)") {
             if(!EstimateHomography(H,
                                    query_points,
                                    ref_points,
                                    hough_matches,
                                    mHomographyInlierThreshold,
                                    mRobustHomography,
-                                   it->second->width(),
-                                   it->second->height())) {
+                                   second.width(),
+                                   second.height())) {
                 continue;
             }
-        }
+//        }
         
         //
         // Check if this is the best match based on number of inliers
         //
         
         inliers.clear();
-        TIMED("Find Inliers (2)") {
+//        TIMED("Find Inliers (2)") {
             FindInliers(inliers, H, query_points, ref_points, hough_matches, mHomographyInlierThreshold);
-        }
+//        }
         
         //std::cout<<"inliers-"<<inliers.size()<<std::endl;
         if(inliers.size() >= mMinNumInliers && inliers.size() > mMatchedInliers.size()) {
             CopyVector9(mMatchedGeometry, H);
             mMatchedInliers.swap(inliers);
-            mMatchedId = it->first;
+            mMatchedId = first;
         }
     }
     
     return mMatchedId >= 0;
 }
+/**
+ * Get only the matches that are consistent based on the hough votes.
+ */
+void FindHoughMatches(matchStack out_matches,
+                             HoughSimilarityVoting hough,
+                             FeaturePointStack p1,
+                             FeaturePointStack p2,
+                             matchStack in_matches,
+                             int binIndex,
+                             float binDelta) {
+    
+    float dx, dy, dangle, dscale;
+    int bin_x, bin_y, bin_angle, bin_scale;
+    HoughSimilarityVoting.Bins bin=hough.getBinsFromIndex(binIndex);
+    
+    out_matches.clear();
+    
+    int n = (int)hough.getSubBinLocationIndices().length;
+//    const float* vote_loc = hough.getSubBinLocations().data();
+    float[] vote_loc = hough.getSubBinLocations();//.data();
+    int vote_ptr=0;
+//    ASSERT(n <= in_matches.size(), "Should be the same");
+    HoughSimilarityVoting.mapCorrespondenceResult r=new HoughSimilarityVoting.mapCorrespondenceResult();
+    for(int i = 0; i < n; i++,vote_ptr+=4) {
+        hough.getBinDistance(r,
+                             vote_loc[vote_ptr+0],   vote_loc[vote_ptr+1],   vote_loc[vote_ptr+2],   vote_loc[vote_ptr+3],
+                             bin_x+.5f,      bin_y+.5f,      bin_angle+.5f,  bin_scale+.5f);
+        
+        if (dx < binDelta && dy < binDelta && dangle < binDelta && dscale < binDelta) {
+            int idx = hough.getSubBinLocationIndices()[i];
+//            out_matches.push_back(in_matches[idx]);
+            match_t t=out_matches.prePush();
+            t.set(in_matches.getItem(idx));
+        }
+    }
+}
 
-
-
-
+/**
+ * Estimate the homography between a set of correspondences.
+ */
+boolean EstimateHomography(float[] H,
+                               FeaturePointStack p1,
+                               FeaturePointStack p2,
+                               matchStack matches,
+                               float threshold,
+                               RobustHomography estimator,
+                               int refWidth,
+                               int refHeight) {
+    
+    Point2d[] srcPoints=Point2d.createArray(matches.getLength());
+    Point2d[] dstPoints=Point2d.createArray(matches.getLength());
+    
+    //
+    // Copy correspondences
+    //
+    
+    for(int i = 0; i < matches.getLength(); i++) {
+        dstPoints[i].x = p1.getItem(matches.getItem(i).ins).x;
+        dstPoints[i].y = p1.getItem(matches.getItem(i).ins).y;
+        srcPoints[i].x = p1.getItem(matches.getItem(i).ref).x;
+        srcPoints[i].y = p1.getItem(matches.getItem(i).ref).y;
+    }
+    
+    //
+    // Create test points for geometric verification
+    //
+    
+    Point2d[] test_points=Point2d.createArray(8);
+    test_points[0].x = 0;
+    test_points[0].y = 0;
+    test_points[1].x = refWidth;
+    test_points[1].y = 0;
+    test_points[2].x = refWidth;
+    test_points[2].y = refHeight;
+    test_points[3].x = 0;
+    test_points[3].y = refHeight;
+    
+    //
+    // Compute the homography
+    //
+//    if(!estimator.find(H, (float*)&srcPoints[0], (float*)&dstPoints[0], (int)matches.size(), test_points, 4)) {    
+    if(!estimator.find(H,srcPoints, dstPoints, (int)matches.getLength(), test_points, 4)) {
+        return false;
+    }
+    
+    //
+    // Apply some heuristics to the homography
+    //
+    
+    if(!CheckHomographyHeuristics(H, refWidth, refHeight)) {
+        return false;
+    }
+    
+    return true;
+}
+/**
+ * Check if a homography is valid based on some heuristics.
+ */
+//boolean CheckHomographyHeuristics(float H[9], int refWidth, int refHeight) {
+boolean CheckHomographyHeuristics(float[] H, int refWidth, int refHeight) {
+    float p0p[2];
+    float p1p[2];
+    float p2p[2];
+    float p3p[2];
+    
+    float Hinv[9];
+    if(!MatrixInverse3x3<float>(Hinv, H, 1e-5)) {
+        return false;
+    }
+    
+    float p0[] = {0, 0};
+    float p1[] = {(float)refWidth, 0};
+    float p2[] = {(float)refWidth, (float)refHeight};
+    float p3[] = {0, (float)refHeight};
+    
+    MultiplyPointHomographyInhomogenous(p0p, Hinv, p0);
+    MultiplyPointHomographyInhomogenous(p1p, Hinv, p1);
+    MultiplyPointHomographyInhomogenous(p2p, Hinv, p2);
+    MultiplyPointHomographyInhomogenous(p3p, Hinv, p3);
+    
+    const float tr = refWidth*refHeight*0.0001;
+    if(SmallestTriangleArea(p0p, p1p, p2p, p3p) < tr) {
+        return false;
+    }
+    
+    if(!QuadrilateralConvex(p0p, p1p, p2p, p3p)) {
+        return false;
+    }
+    
+    return true;
+}
 
 //        
 //        /**
@@ -431,15 +561,9 @@ private float mHomographyInlierThreshold;
 // Set to true if the feature index is enabled
 private boolean mUseFeatureIndex;
 
-class match_t {
-//    match_t() : ins(-1), ref(-1) {}
-    match_t(int _ins, int _ref){
-    	this.ins=_ins;
-    	this.ref=_ref;
-    }
-    public int ins;
-    public int ref;
-}; // match_t
+
+
+
 
 
 //        
@@ -466,7 +590,7 @@ private DoGScaleInvariantDetector mDetector=new DoGScaleInvariantDetector();
         
         // Similarity voter
         HoughSimilarityVoting mHoughSimilarityVoting;
-//        
-//        // Robust homography estimation
-//        RobustHomography<float> mRobustHomography;
+        
+        // Robust homography estimation
+        RobustHomography mRobustHomography;
 }

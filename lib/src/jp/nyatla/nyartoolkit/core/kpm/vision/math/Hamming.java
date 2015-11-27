@@ -24,7 +24,7 @@ public class Hamming {
     /**
      * Hamming distance for 768 bits (96 bytes)
      */
-    static int HammingDistance768(int[] a,int a_ptr, int[] b,int b_ptr)
+    public static int HammingDistance768(int[] a,int a_ptr, int[] b,int b_ptr)
     {
         return  HammingDistance32(a[0+a_ptr],  b[0+b_ptr]) +
                 HammingDistance32(a[1+a_ptr],  b[1+b_ptr]) +

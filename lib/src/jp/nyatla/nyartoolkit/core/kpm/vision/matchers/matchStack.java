@@ -4,7 +4,7 @@ import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
 public class matchStack extends NyARObjectStack<match_t>{
 
-	protected matchStack(int i_length) {
+	public matchStack(int i_length) {
 		super(i_length, match_t.class);
 	}
 	@Override
