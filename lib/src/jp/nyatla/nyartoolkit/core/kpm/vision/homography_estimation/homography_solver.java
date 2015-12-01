@@ -1,7 +1,7 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.homography_estimation;
 
-import jp.nyatla.nyartoolkit.core.kpm.KpmMath;
 import jp.nyatla.nyartoolkit.core.kpm.Point2d;
+import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.liner_algebr;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.liner_solver;
 
@@ -51,7 +51,7 @@ public class homography_solver {
 			return false;
 		}
 
-		float s = (float) ((1 / d) * KpmMath.SQRT2);
+		float s = (float) ((1 / d) * math_utils.SQRT2);
 		mus[2] = s;
 		xp1.x = d1[0] * s;
 		xp1.y = d1[1] * s;

@@ -20,5 +20,19 @@ public class indexing {
     	for(int i=0;i<i_len;i++){
     		dst[i_dst_idx+i]=src[i_src_idx+i];
     	}
-    }    
+    }  
+	public static float min4(float a1, float a2, float a3, float a4)
+	{
+		float r=a1;
+		if(r>a2){
+			r=a2;
+		}
+		if(r>a3){
+			r=a3;
+		}
+		if(r>a4){
+			r=a4;
+		}
+		return r;
+	}
 }

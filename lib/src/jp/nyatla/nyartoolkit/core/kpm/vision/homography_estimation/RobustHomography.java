@@ -1,9 +1,9 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.homography_estimation;
 
-import jp.nyatla.nyartoolkit.core.kpm.KpmMath;
 import jp.nyatla.nyartoolkit.core.kpm.Point2d;
 import jp.nyatla.nyartoolkit.core.kpm.Utils;
 import jp.nyatla.nyartoolkit.core.kpm.vision.match.indexing;
+import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.geometry;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.rand;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.homography;
@@ -135,8 +135,8 @@ public class RobustHomography {
 		hyp_perm = 0;
 		point_perm = num_points;
 
-		one_over_scale2 = 1 / KpmMath.sqr(scale);
-		chunk_size = KpmMath.min2(chunk_size, num_points);
+		one_over_scale2 = 1 / math_utils.sqr(scale);
+		chunk_size = math_utils.min2(chunk_size, num_points);
 		next_chunk = 0;
 
 		// Fill two arrays from [0,num_points)
@@ -206,7 +206,7 @@ public class RobustHomography {
 		for (int i = 0; i < num_points && num_hypotheses_remaining > 2; i += cur_chunk_size) {
 
 			// Size of the current chunk
-			cur_chunk_size = KpmMath.min2(chunk_size, num_points - i);
+			cur_chunk_size = math_utils.min2(chunk_size, num_points - i);
 
 			// End of the current chunk
 			this_chunk_end = i + cur_chunk_size;

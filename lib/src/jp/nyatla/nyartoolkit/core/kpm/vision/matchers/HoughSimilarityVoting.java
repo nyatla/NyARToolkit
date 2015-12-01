@@ -3,7 +3,7 @@ package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import jp.nyatla.nyartoolkit.core.kpm.KpmMath;
+import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 
 /**
  * Hough voting for a similarity transformation based on a set of
@@ -131,7 +131,7 @@ public class HoughSimilarityVoting {
 			float x, float y, float angle, float scale) {
 		fBin.x = mNumXBins * SafeDivision(x - mMinX, mMaxX - mMinX);
 		fBin.y = mNumYBins * SafeDivision(y - mMinY, mMaxY - mMinY);
-		fBin.angle = (float) (mNumAngleBins * ((angle + KpmMath.PI) * (1 / (2 * KpmMath.PI))));
+		fBin.angle = (float) (mNumAngleBins * ((angle + math_utils.PI) * (1 / (2 * math_utils.PI))));
 		fBin.scale = mNumScaleBins
 				* SafeDivision(scale - mMinScale, mMaxScale - mMinScale);
 	}
@@ -186,7 +186,7 @@ public class HoughSimilarityVoting {
 
 		// Check that the vote is within range
 		if (x < mMinX || x >= mMaxX || y < mMinY || y >= mMaxY
-				|| angle <= -KpmMath.PI || angle > KpmMath.PI
+				|| angle <= -math_utils.PI || angle > math_utils.PI
 				|| scale < mMinScale || scale >= mMaxScale) {
 			return false;
 		}
@@ -315,7 +315,7 @@ public class HoughSimilarityVoting {
 		mSubBinLocationIndices = n2;
 	}
 
-	class mapCorrespondenceResult {
+	static class mapCorrespondenceResult {
 		float x, y, angle, scale;
 	}
 
@@ -351,10 +351,10 @@ public class HoughSimilarityVoting {
 
 		r.angle = ins_angle - ref_angle;
 		// Map angle to (-pi,pi]
-		if (r.angle <= -KpmMath.PI) {
-			r.angle += (2 * KpmMath.PI);
-		} else if (r.angle > KpmMath.PI) {
-			r.angle -= (2 * KpmMath.PI);
+		if (r.angle <= -math_utils.PI) {
+			r.angle += (2 * math_utils.PI);
+		} else if (r.angle > math_utils.PI) {
+			r.angle -= (2 * math_utils.PI);
 		}
 		// ASSERT(r.angle > -KpmMath.PI, "angle out of range");
 		// ASSERT(r.angle <= KpmMath.PI, "angle out of range");
@@ -453,7 +453,7 @@ public class HoughSimilarityVoting {
 
 		float d1 = Math.abs(insBinAngle - refBinAngle);
 		float d2 = (float) mNumAngleBins - d1;
-		distbin.angle = (float) KpmMath.min2(d1, d2);
+		distbin.angle = (float) math_utils.min2(d1, d2);
 
 		// ASSERT(distBinAngle >= 0, "distBinAngle must not be negative");
 	}
@@ -605,7 +605,7 @@ public class HoughSimilarityVoting {
 	 * Set the number of bins for translation based on the correspondences.
 	 */
 	private void autoAdjustXYNumBins(float[] ins, float[] ref, int size) {
-		int max_dim = KpmMath.max2(mRefImageWidth, mRefImageHeight);
+		int max_dim = math_utils.max2(mRefImageWidth, mRefImageHeight);
 		float[] projected_dim = new float[size];
 
 		// ASSERT(size > 0, "size must be positive");
@@ -635,9 +635,9 @@ public class HoughSimilarityVoting {
 		// Compute the bin size a fraction of the median projected dim
 		float bin_size = 0.25f * median_proj_dim;
 
-		mNumXBins = KpmMath
+		mNumXBins = math_utils
 				.max2(5, (int) Math.ceil((mMaxX - mMinX) / bin_size));
-		mNumYBins = KpmMath
+		mNumYBins = math_utils
 				.max2(5, (int) Math.ceil((mMaxY - mMinY) / bin_size));
 
 		mA = mNumXBins * mNumYBins;

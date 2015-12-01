@@ -1,6 +1,7 @@
 package jp.nyatla.nyartoolkit.core.kpm;
 
 import jp.nyatla.nyartoolkit.core.kpm.vision.detectors.GaussianScaleSpacePyramid;
+import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 
 public class DoGPyramid
 {
@@ -93,7 +94,7 @@ public class DoGPyramid
     public int octaveFromIndex(int index)
     {
 //        ASSERT(index < mImages.size(), "Index is out of range");
-        return (int)KpmMath.round(KpmMath.log2((mImages[0].getWidth()/this.mImages[index].getWidth())));
+        return (int)math_utils.round(math_utils.log2((mImages[0].getWidth()/this.mImages[index].getWidth())));
     }
     
     /**

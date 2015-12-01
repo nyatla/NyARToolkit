@@ -12,6 +12,6 @@ package jp.nyatla.nyartoolkit.core.kpm;
 public class KpmRefDataSet {
     KpmRefData       refPoint;
     int               num;
-    KpmPageInfo      pageInfo;
+    KpmPageInfo[]      pageInfo;
     int               pageNum;
 }

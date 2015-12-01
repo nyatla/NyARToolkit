@@ -5,7 +5,9 @@ import jp.nyatla.nyartoolkit.core.kpm.Point3dVector;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.BinaryFeatureMatcher;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.BinaryFeatureStore;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FREAKExtractor;
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.VisualDatabase;
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.matchStack;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 
 public class VisualDatabaseFacade
@@ -20,7 +22,7 @@ public class VisualDatabaseFacade
     	public VisualDatabase<FREAKExtractor, BinaryFeatureStore, BinaryFeatureMatcher> mVdb;
 
 //        std::unique_ptr<vdb_t> mVdb;
- //       Point3dMap mPoint3d;
+        public Point3dMap mPoint3d;
     }
     public VisualDatabaseFacade(){
         this.mVisualDbImpl=new VisualDatabaseImpl();
@@ -81,9 +83,7 @@ public class VisualDatabaseFacade
         return mVisualDbImpl->mVdb->databaseCount();
     }
     
-    int matchedId(){
-        return mVisualDbImpl->mVdb->matchedId();
-    }
+
     
     const float* matchedGeometry(){
         return mVisualDbImpl->mVdb->matchedGeometry();
@@ -99,19 +99,17 @@ public class VisualDatabaseFacade
     
     const std::vector<vision::Point3d<float> >& VisualDatabaseFacade::get3DFeaturePoints(int image_id) const{
         return mVisualDbImpl->mPoint3d[image_id];
-    }
+    }*/
     
-    const std::vector<FeaturePoint>&VisualDatabaseFacade::getQueryFeaturePoints() const{
-        return mVisualDbImpl->mVdb->queryKeyframe()->store().points();
+    public FeaturePointStack getQueryFeaturePoints()
+    {
+        return mVisualDbImpl.mVdb.queryKeyframe().store().points();
     }
-    
-    const std::vector<unsigned char>& getQueryDescriptors() const{
-        return mVisualDbImpl->mVdb->queryKeyframe()->store().features();
+    public int[] getQueryDescriptors()
+    {
+        return mVisualDbImpl.mVdb.queryKeyframe().store().features();
     }
-    
-    const matches_t& inliers() const{
-        return mVisualDbImpl->mVdb->inliers();
-    }
+    /*
     
     int getWidth(int image_id) const{
         return mVisualDbImpl->mVdb->keyframe(image_id)->width();
@@ -119,4 +117,20 @@ public class VisualDatabaseFacade
     int getHeight(int image_id) const{
         return mVisualDbImpl->mVdb->keyframe(image_id)->height();
     }*/
+
+	public matchStack inliers() {
+		// TODO Auto-generated method stub
+		return mVisualDbImpl.mVdb.inliers();
+	}
+
+	public int matchedId() {
+        return mVisualDbImpl.mVdb.matchedId();
+	}
+
+    public Point3dVector get3DFeaturePoints(int image_id)
+    {
+        return mVisualDbImpl.mPoint3d.get(image_id);
+    }	
+
+
 }

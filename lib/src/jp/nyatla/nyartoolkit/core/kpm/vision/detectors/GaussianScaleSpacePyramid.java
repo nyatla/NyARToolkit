@@ -1,8 +1,8 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.detectors;
 
 import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
-import jp.nyatla.nyartoolkit.core.kpm.KpmMath;
 import jp.nyatla.nyartoolkit.core.kpm.Point2d;
+import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 
 public class GaussianScaleSpacePyramid {
 	// Number of octaves
@@ -61,12 +61,12 @@ public class GaussianScaleSpacePyramid {
 	 */
 	public void locate(double sigma, LocateResult result) {
 		// octave = floor(log2(s))
-		int octave = (int) Math.floor(KpmMath.log2(sigma));
+		int octave = (int) Math.floor(math_utils.log2(sigma));
 		// scale = logk(s/2^octave)
 		// Here we ROUND the scale to an integer value
 		double fscale = Math.log(sigma / (float) (1 << octave))
 				* this.mOneOverLogK;
-		int scale = (int) KpmMath.round(fscale);
+		int scale = (int) math_utils.round(fscale);
 
 		// The last scale in an octave has the same sigma as the first scale
 		// of the next octave. We prefer coarser octaves for efficiency.

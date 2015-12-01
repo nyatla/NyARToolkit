@@ -26,7 +26,16 @@ public class homography
         xp.x = (H[0]*x[x_idx].x + H[1]*x[x_idx].y + H[2])/w;
         xp.y = (H[3]*x[x_idx].y + H[4]*x[x_idx].y + H[5])/w;
     }
-
+    public static void MultiplyPointHomographyInhomogenous(Point2d xp,float[] H, float x,float y) {
+        float w = H[6]*x + H[7]*y + H[8];
+        xp.x = (H[0]*x + H[1]*y + H[2])/w;
+        xp.y = (H[3]*y + H[4]*y + H[5])/w;
+    }    
+    public static void MultiplyPointHomographyInhomogenous(Point2d xp,float[] H, Point2d x) {
+        float w = H[6]*x.x + H[7]*x.y + H[8];
+        xp.x = (H[0]*x.x + H[1]*x.y + H[2])/w;
+        xp.y = (H[3]*x.y + H[4]*x.y + H[5])/w;
+    }
 
 //    boolean HomographyPointsGeometricallyConsistent(const T H[9], const T* x, int size) {
     public static boolean HomographyPointsGeometricallyConsistent(float[] H, Point2d[] x,int i_x_ptr, int size) {

@@ -1,10 +1,10 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
 
 import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
-import jp.nyatla.nyartoolkit.core.kpm.KpmMath;
 import jp.nyatla.nyartoolkit.core.kpm.Point2d;
 import jp.nyatla.nyartoolkit.core.kpm.vision.detectors.GaussianScaleSpacePyramid;
 import jp.nyatla.nyartoolkit.core.kpm.vision.detectors.interpole;
+import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 
 public class FREAKExtractor
 {
@@ -412,59 +412,59 @@ ExtractFREAK84(store,
              }
              
              // Transformation from canonical test locations to image
-             KpmMath.Similarity(S, point.x, point.y, point.angle, transform_scale);
+             math_utils.Similarity(S, point.x, point.y, point.angle, transform_scale);
              
              // Locate center points
              c[0] = S[2];
              c[1] = S[5];
              
              // Locate ring 0 points
-             KpmMath.MultiplyPointSimilarityInhomogenous(r0,0,  S, points_ring0,0);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r0,2,  S, points_ring0,2);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r0,4,  S, points_ring0,4);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r0,6,  S, points_ring0,6);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r0,8,  S, points_ring0,8);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r0,10, S, points_ring0,10);
+             math_utils.MultiplyPointSimilarityInhomogenous(r0,0,  S, points_ring0,0);
+             math_utils.MultiplyPointSimilarityInhomogenous(r0,2,  S, points_ring0,2);
+             math_utils.MultiplyPointSimilarityInhomogenous(r0,4,  S, points_ring0,4);
+             math_utils.MultiplyPointSimilarityInhomogenous(r0,6,  S, points_ring0,6);
+             math_utils.MultiplyPointSimilarityInhomogenous(r0,8,  S, points_ring0,8);
+             math_utils.MultiplyPointSimilarityInhomogenous(r0,10, S, points_ring0,10);
              
              // Locate ring 1 points
-             KpmMath.MultiplyPointSimilarityInhomogenous(r1,0,  S, points_ring1,0);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r1,2,  S, points_ring1,2);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r1,4,  S, points_ring1,4);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r1,6,  S, points_ring1,6);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r1,8,  S, points_ring1,8);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r1,10, S, points_ring1,10);
+             math_utils.MultiplyPointSimilarityInhomogenous(r1,0,  S, points_ring1,0);
+             math_utils.MultiplyPointSimilarityInhomogenous(r1,2,  S, points_ring1,2);
+             math_utils.MultiplyPointSimilarityInhomogenous(r1,4,  S, points_ring1,4);
+             math_utils.MultiplyPointSimilarityInhomogenous(r1,6,  S, points_ring1,6);
+             math_utils.MultiplyPointSimilarityInhomogenous(r1,8,  S, points_ring1,8);
+             math_utils.MultiplyPointSimilarityInhomogenous(r1,10, S, points_ring1,10);
              
              // Locate ring 2 points
-             KpmMath.MultiplyPointSimilarityInhomogenous(r2,0,  S, points_ring2,0);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r2,2,  S, points_ring2,2);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r2,4,  S, points_ring2,4);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r2,6,  S, points_ring2,6);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r2,8,  S, points_ring2,8);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r2,10, S, points_ring2,10);
+             math_utils.MultiplyPointSimilarityInhomogenous(r2,0,  S, points_ring2,0);
+             math_utils.MultiplyPointSimilarityInhomogenous(r2,2,  S, points_ring2,2);
+             math_utils.MultiplyPointSimilarityInhomogenous(r2,4,  S, points_ring2,4);
+             math_utils.MultiplyPointSimilarityInhomogenous(r2,6,  S, points_ring2,6);
+             math_utils.MultiplyPointSimilarityInhomogenous(r2,8,  S, points_ring2,8);
+             math_utils.MultiplyPointSimilarityInhomogenous(r2,10, S, points_ring2,10);
              
              // Locate ring 3 points
-             KpmMath.MultiplyPointSimilarityInhomogenous(r3,0,  S, points_ring3,0);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r3,2,  S, points_ring3,2);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r3,4,  S, points_ring3,4);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r3,6,  S, points_ring3,6);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r3,8,  S, points_ring3,8);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r3,10, S, points_ring3,10);
+             math_utils.MultiplyPointSimilarityInhomogenous(r3,0,  S, points_ring3,0);
+             math_utils.MultiplyPointSimilarityInhomogenous(r3,2,  S, points_ring3,2);
+             math_utils.MultiplyPointSimilarityInhomogenous(r3,4,  S, points_ring3,4);
+             math_utils.MultiplyPointSimilarityInhomogenous(r3,6,  S, points_ring3,6);
+             math_utils.MultiplyPointSimilarityInhomogenous(r3,8,  S, points_ring3,8);
+             math_utils.MultiplyPointSimilarityInhomogenous(r3,10, S, points_ring3,10);
              
              // Locate ring 4 points
-             KpmMath.MultiplyPointSimilarityInhomogenous(r4,0,  S, points_ring4,0);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r4,2,  S, points_ring4,2);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r4,4,  S, points_ring4,4);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r4,6,  S, points_ring4,6);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r4,8,  S, points_ring4,8);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r4,10, S, points_ring4,10);
+             math_utils.MultiplyPointSimilarityInhomogenous(r4,0,  S, points_ring4,0);
+             math_utils.MultiplyPointSimilarityInhomogenous(r4,2,  S, points_ring4,2);
+             math_utils.MultiplyPointSimilarityInhomogenous(r4,4,  S, points_ring4,4);
+             math_utils.MultiplyPointSimilarityInhomogenous(r4,6,  S, points_ring4,6);
+             math_utils.MultiplyPointSimilarityInhomogenous(r4,8,  S, points_ring4,8);
+             math_utils.MultiplyPointSimilarityInhomogenous(r4,10, S, points_ring4,10);
              
              // Locate ring 5 points
-             KpmMath.MultiplyPointSimilarityInhomogenous(r5,0,  S, points_ring5,0);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r5,2,  S, points_ring5,2);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r5,4,  S, points_ring5,4);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r5,6,  S, points_ring5,6);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r5,8,  S, points_ring5,8);
-             KpmMath.MultiplyPointSimilarityInhomogenous(r5,10, S, points_ring5,10);
+             math_utils.MultiplyPointSimilarityInhomogenous(r5,0,  S, points_ring5,0);
+             math_utils.MultiplyPointSimilarityInhomogenous(r5,2,  S, points_ring5,2);
+             math_utils.MultiplyPointSimilarityInhomogenous(r5,4,  S, points_ring5,4);
+             math_utils.MultiplyPointSimilarityInhomogenous(r5,6,  S, points_ring5,6);
+             math_utils.MultiplyPointSimilarityInhomogenous(r5,8,  S, points_ring5,8);
+             math_utils.MultiplyPointSimilarityInhomogenous(r5,10, S, points_ring5,10);
              
              // Transfer all the SIGMA values to the image
              sc = sigma_center*transform_scale;

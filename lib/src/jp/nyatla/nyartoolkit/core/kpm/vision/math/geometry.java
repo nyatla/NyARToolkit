@@ -1,6 +1,8 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.math;
 
 import jp.nyatla.nyartoolkit.core.kpm.Point2d;
+import jp.nyatla.nyartoolkit.core.kpm.vision.match.indexing;
+
 
 public class geometry {
     /**
@@ -40,7 +42,56 @@ public class geometry {
             return false;
         return true;
     }
-
-
-
+    /**
+     * Subtract two vectors.
+     */
+    static void SubVector2(Point2d c, Point2d a, Point2d b) {
+		c.x = a.x - b.x;
+		c.y = a.y - b.y;
+	}
+    /**
+     * Compute the area of a triangle.
+     */
+    static float AreaOfTriangle(Point2d u,Point2d v) {
+//		T a = u[0]*v[1] - u[1]*v[0];
+		float a = u.x*v.y - u.y*v.x;
+		return (float) (Math.abs(a)*0.5);
+	}
+	/**
+	 * Find the smallest area for each triangle formed by 4 points.
+	 */
+	public static float SmallestTriangleArea(Point2d x1, Point2d x2, Point2d x3,Point2d x4)
+	{
+		Point2d v12=new Point2d();
+		Point2d v13=new Point2d();
+		Point2d v14=new Point2d();
+		Point2d v32=new Point2d();
+		Point2d v34=new Point2d();
+	    
+		SubVector2(v12, x2, x1);
+		SubVector2(v13, x3, x1);
+		SubVector2(v14, x4, x1);
+		SubVector2(v32, x2, x3);
+		SubVector2(v34, x4, x3);
+		
+	    float a1 = AreaOfTriangle(v12, v13);
+	    float a2 = AreaOfTriangle(v13, v14);
+	    float a3 = AreaOfTriangle(v12, v14);
+	    float a4 = AreaOfTriangle(v32, v34);
+		
+		return indexing.min4(a1, a2, a3, a4);
+	}
+    /**
+     * Check if four points form a convex quadrilaternal.
+     */
+    public static boolean QuadrilateralConvex(Point2d x1,Point2d x2,Point2d x3,Point2d x4) {
+        int s;
+        
+        s  = LinePointSide(x1, x2, x3) > 0 ? 1 : -1;
+        s += LinePointSide(x2, x3, x4) > 0 ? 1 : -1;
+        s += LinePointSide(x3, x4, x1) > 0 ? 1 : -1;
+        s += LinePointSide(x4, x1, x2) > 0 ? 1 : -1;
+        
+        return (Math.abs(s) == 4);
+    }
 }

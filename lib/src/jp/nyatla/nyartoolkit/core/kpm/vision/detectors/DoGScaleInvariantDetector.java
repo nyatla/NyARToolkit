@@ -2,10 +2,10 @@ package jp.nyatla.nyartoolkit.core.kpm.vision.detectors;
 
 import jp.nyatla.nyartoolkit.core.kpm.DoGPyramid;
 import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
-import jp.nyatla.nyartoolkit.core.kpm.KpmMath;
 import jp.nyatla.nyartoolkit.core.kpm.OrientationAssignment;
 import jp.nyatla.nyartoolkit.core.kpm.OrientationAssignment.FloatVector;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FeaturePoint;
+import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARPointerStack;
@@ -422,7 +422,7 @@ public class DoGScaleInvariantDetector {
             // Clear old features
             mFeaturePoints.clear();
             
-            float laplacianSqrThreshold = KpmMath.sqr(mLaplacianThreshold);
+            float laplacianSqrThreshold = math_utils.sqr(mLaplacianThreshold);
             
             for(int i = 1; i < mLaplacianPyramid.size()-1; i++) {
                 KpmImage im0 = laplacian.get(i-1);
@@ -459,7 +459,7 @@ public class DoGScaleInvariantDetector {
                             float value = im1b[im1_y+col];
                             
                             // Check laplacian score
-                            if(KpmMath.sqr(value) < laplacianSqrThreshold) {
+                            if(math_utils.sqr(value) < laplacianSqrThreshold) {
                                 continue;
                             }
                             boolean extrema = false;
@@ -529,7 +529,7 @@ public class DoGScaleInvariantDetector {
                             float value = im1b[im1_y+col];
                             
                             // Check laplacian score
-                            if(KpmMath.sqr(value) < laplacianSqrThreshold) {
+                            if(math_utils.sqr(value) < laplacianSqrThreshold) {
                                 continue;
                             }
                             
@@ -611,7 +611,7 @@ public class DoGScaleInvariantDetector {
                             float value = im1b[im1_y+col];
                             
                             // Check laplacian score
-                            if(KpmMath.sqr(value) < laplacianSqrThreshold) {
+                            if(math_utils.sqr(value) < laplacianSqrThreshold) {
                                 continue;
                             }
                             
@@ -707,8 +707,8 @@ public class DoGScaleInvariantDetector {
             float hessianThreshold;
             
             num_points = 0;
-            laplacianSqrThreshold = KpmMath.sqr(mLaplacianThreshold);
-            hessianThreshold = (KpmMath.sqr(mEdgeThreshold+1)/mEdgeThreshold);
+            laplacianSqrThreshold = math_utils.sqr(mLaplacianThreshold);
+            hessianThreshold = (math_utils.sqr(mEdgeThreshold+1)/mEdgeThreshold);
             
             for(int i = 0; i < mFeaturePoints.getLength(); i++) {
                 FeaturePoint kp = mFeaturePoints.getItem(i);
@@ -718,7 +718,7 @@ public class DoGScaleInvariantDetector {
                 // Downsample the feature point to the detection octave
                 bilinear_downsample_point(tmp, kp.x, kp.y, kp.octave);
                 xp=tmp[0];
-                xp=tmp[1];
+                yp=tmp[1];
                 // Compute the discrete pixel location
                 x = (int)(xp+0.5f);
                 y = (int)(yp+0.5f);
@@ -740,7 +740,7 @@ public class DoGScaleInvariantDetector {
                 
                 // If points move too much in the sub-pixel update, then the point probably
                 // unstable.
-                if(KpmMath.sqr(u[0])+KpmMath.sqr(u[1]) > mMaxSubpixelDistanceSqr) {
+                if(math_utils.sqr(u[0])+math_utils.sqr(u[1]) > mMaxSubpixelDistanceSqr) {
                     continue;
                 }
                 
@@ -752,7 +752,8 @@ public class DoGScaleInvariantDetector {
                 
                 // Compute a linear estimate of the intensity
 //                ASSERT(kp.score == lap1.get<float>(y)[x], "Score is not consistent with the DoG image");
-                kp.score = lap1.get(y)[x] - (b[0]*u[0] + b[1]*u[1] + b[2]*u[2]);
+                float[] lap1_buf=(float[])lap1.getBuffer();
+                kp.score = lap1_buf[lap1.get(y)+x] - (b[0]*u[0] + b[1]*u[1] + b[2]*u[2]);
                 
                 // Update the location:
                 // Apply the update on the downsampled location and then upsample the result.
@@ -766,18 +767,18 @@ public class DoGScaleInvariantDetector {
                 kp.sp_scale = ClipScalar(kp.sp_scale, 0, mLaplacianPyramid.numScalePerOctave());
                 
                 if(Math.abs(kp.edge_score)  < hessianThreshold &&
-                   KpmMath.sqr(kp.score)            >= laplacianSqrThreshold &&
+                   math_utils.sqr(kp.score)            >= laplacianSqrThreshold &&
                    kp.x                     >= 0 &&
                    kp.x                     < mLaplacianPyramid.images()[0].getWidth() &&
                    kp.y                     >= 0 &&
                    kp.y                     < mLaplacianPyramid.images()[0].getHeight()) {
                     // Update the sigma
                     kp.sigma = (float) pyramid.effectiveSigma(kp.octave, kp.sp_scale);
-                    mFeaturePoints[num_points++] = kp;
+                    mFeaturePoints.getItem(num_points++).set(kp);
                 }
             }
             
-            mFeaturePoints.resize(num_points);        	
+            mFeaturePoints.setLength(num_points);        	
         }
         
         /**
@@ -1148,7 +1149,7 @@ public class DoGScaleInvariantDetector {
             float Dyy = H[4];
             float Dxy = H[1];
             
-            det = (Dxx*Dyy)-KpmMath.sqr(Dxy);
+            det = (Dxx*Dyy)-math_utils.sqr(Dxy);
             
             // The determinant cannot be zero
             if(det == 0) {
@@ -1156,7 +1157,7 @@ public class DoGScaleInvariantDetector {
             }
             
             // Compute a score based on the local curvature
-            score[0] =KpmMath.sqr(Dxx+Dyy)/det;
+            score[0] =math_utils.sqr(Dxx+Dyy)/det;
             
             return true;
         }

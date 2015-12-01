@@ -39,26 +39,18 @@ public class Keyframe {
          */
         public BinaryHierarchicalClustering index() { return mIndex; }
         
-        /**
-         * Build an index for the features.
-         */
-        public void buildIndex()
-        {
-            mIndex.setNumHypotheses(128);
-            mIndex.setNumCenters(8);
-            mIndex.setMaxNodesToPop(8);
-            mIndex.setMinFeaturesPerNode(16);
-            mIndex.build(mStore.features()[0], (int)mStore.size());
+
+
         
         /**
          * Copy a keyframe.
          */
-        void copy(Keyframe keyframe) {
-        	assert(this.NUM_BYTES_PER_FEATURE==keyframe.NUM_BYTES_PER_FEATURE);
-            mWidth = keyframe.mWidth;
-            mHeight = keyframe.mHeight;
-            mStore.copy(keyframe.store());
-        }
+//        void copy(Keyframe keyframe) {
+//        	assert(this.NUM_BYTES_PER_FEATURE==keyframe.NUM_BYTES_PER_FEATURE);
+//            mWidth = keyframe.mWidth;
+//            mHeight = keyframe.mHeight;
+//            mStore.copy(keyframe.store());
+//        }
         
         //
         // Serialization

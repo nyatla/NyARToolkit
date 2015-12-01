@@ -87,12 +87,12 @@ public class BinaryFeatureStore
      * DeepCopy
      * Copy a feature store.
      */
-    void copy(BinaryFeatureStore store) {
-    	
-        this.mNumBytesPerFeature = store.mNumBytesPerFeature;
-        this.mFeatures=store.mFeatures.clone();//プリミティブ型だからディープコピー相当
-        this.mPoints = (FeaturePointStack) store.mPoints.clone();
-    }
+//    void copy(BinaryFeatureStore store) {
+//    	
+//        this.mNumBytesPerFeature = store.mNumBytesPerFeature;
+//        this.mFeatures=store.mFeatures.clone();//プリミティブ型だからディープコピー相当
+//        this.mPoints = (FeaturePointStack) store.mPoints.clone();
+//    }
     
     //
     // Serialization
