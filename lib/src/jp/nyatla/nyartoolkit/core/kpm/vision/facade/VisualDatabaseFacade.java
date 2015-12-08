@@ -2,6 +2,7 @@ package jp.nyatla.nyartoolkit.core.kpm.vision.facade;
 import java.util.*;
 
 import jp.nyatla.nyartoolkit.core.kpm.Point3dVector;
+import jp.nyatla.nyartoolkit.core.kpm.vision.Keyframe;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.BinaryFeatureMatcher;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.BinaryFeatureStore;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FREAKExtractor;
@@ -39,26 +40,27 @@ public class VisualDatabaseFacade
         img.deepCopy(Image(grayImage,IMAGE_UINT8,width,height,(int)width,1));
         mVisualDbImpl->mVdb->addImage(img, image_id);
     }
-    
-    void addFreakFeaturesAndDescriptors(const std::vector<FeaturePoint>& featurePoints,
-                                                              const std::vector<unsigned char>& descriptors,
-                                                              const std::vector<vision::Point3d<float> >& points3D,
-                                                              size_t width,
-                                                              size_t height,
+*/   
+    public void addFreakFeaturesAndDescriptors(FeaturePointStack featurePoints,
+                                                              byte[][] descriptors,
+                                                              Point3dVector points3D,
+                                                              int width,
+                                                              int height,
                                                               int image_id){
-        std::shared_ptr<Keyframe<96> > keyframe(new Keyframe<96>());
-        keyframe->setWidth((int)width);
-        keyframe->setHeight((int)height);
-        keyframe->store().setNumBytesPerFeature(96);
-        keyframe->store().points().resize(featurePoints.size());
-        keyframe->store().points() = featurePoints;
-        keyframe->store().features().resize(descriptors.size());
-        keyframe->store().features() = descriptors;
-        keyframe->buildIndex();
-        mVisualDbImpl->mVdb->addKeyframe(keyframe, image_id);
-        mVisualDbImpl->mPoint3d[image_id] = points3D;
+//        std::shared_ptr<Keyframe<96> > keyframe(new Keyframe<96>());
+        Keyframe keyframe=new Keyframe(96);
+        keyframe.setWidth(width);
+        keyframe.setHeight(height);
+        keyframe.store().setNumBytesPerFeature(96);
+        keyframe.store().points().resize(featurePoints.size());
+        keyframe.store().points() = featurePoints;
+        keyframe.store().features().resize(descriptors.size());
+        keyframe.store().features() = descriptors;
+        keyframe.buildIndex();
+        mVisualDbImpl.mVdb.addKeyframe(keyframe, image_id);
+        mVisualDbImpl.mPoint3d[image_id] = points3D;
     }
-    
+/*    
     void computeFreakFeaturesAndDescriptors(unsigned char* grayImage,
                                                                   size_t width,
                                                                   size_t height,
@@ -105,7 +107,7 @@ public class VisualDatabaseFacade
     {
         return mVisualDbImpl.mVdb.queryKeyframe().store().points();
     }
-    public int[] getQueryDescriptors()
+    public byte[] getQueryDescriptors()
     {
         return mVisualDbImpl.mVdb.queryKeyframe().store().features();
     }

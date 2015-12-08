@@ -2,13 +2,13 @@ package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
 
 import jp.nyatla.nyartoolkit.core.kpm.vision.BinaryHierarchicalClustering;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.Hamming;
-import jp.nyatla.nyartoolkit.core.types.stack.NyARPointerStack;
+
 
 public class Node {
 	public Node(int i_NUM_BYTES_PER_FEATURE,int id){
 		this.mId=id;
 		this.mLeaf=true;
-		this.mCenter=new int[i_NUM_BYTES_PER_FEATURE];
+		this.mCenter=new byte[i_NUM_BYTES_PER_FEATURE];
 	}
     /**
      * Set/Get leaf flag
@@ -52,7 +52,7 @@ public class Node {
      */
     public void nearest(NodePtrStack nodes,
     		BinaryHierarchicalClustering.Queue queue,
-                        int[] feature,int i_ptr)
+                        byte[] feature,int i_ptr)
     {
         int mind = Integer.MAX_VALUE;
         int mini = -1;
@@ -94,7 +94,7 @@ public class Node {
     private int mId;
 //    
 //    // Feature center
-    private int mCenter[];
+    private byte mCenter[];
 //    
 //    // True if a leaf node
     private boolean mLeaf;

@@ -1,8 +1,12 @@
 package jp.nyatla.nyartoolkit.core.kpm;
 
+import java.util.List;
+import java.util.ArrayList;
 import jp.nyatla.nyartoolkit.core.kpm.vision.facade.VisualDatabaseFacade;
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.matchStack;
+import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftFreakFsetFile;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
@@ -16,7 +20,7 @@ public class KpmHandle {
 	int ysize;
 	int procMode;
 	int detectedMaxFeature;
-	KpmRefDataSet refDataSet;
+	KpmRefData[] refDataSet;
 	KpmInputDataSet inDataSet;
 	KpmResult[] result;
 	int resultNum;
@@ -44,10 +48,7 @@ public class KpmHandle {
 		this.procMode = KpmDefaultProcMode;
 		this.detectedMaxFeature = -1;
 
-		this.refDataSet.refPoint = null;
-		this.refDataSet.num = 0;
-		this.refDataSet.pageInfo = null;
-		this.refDataSet.pageNum = 0;
+		this.refDataSet=null;
 
 		this.inDataSet.coord = null;
 		this.inDataSet.num = 0;
@@ -123,7 +124,7 @@ public class KpmHandle {
 			// #if BINARY_FEATURE
 			FeaturePointStack points = this.freakMatcher
 					.getQueryFeaturePoints();
-			int[] descriptors = this.freakMatcher.getQueryDescriptors();
+			byte[] descriptors = this.freakMatcher.getQueryDescriptors();
 			// #endif
 			if (procMode == KpmProcFullSize) {
 				for (i = 0; i < this.inDataSet.num; i++) {
@@ -330,7 +331,7 @@ public class KpmHandle {
 			 */
 			for (int pageLoop = 0; pageLoop < this.resultNum; pageLoop++) {
 
-				this.result[pageLoop].pageNo = this.refDataSet.pageInfo[pageLoop].pageNo;
+//				this.result[pageLoop].pageNo = this.refDataSet[pageLoop].pageNo;
 				this.result[pageLoop].camPoseF = -1;
 				if (this.result[pageLoop].skipF)
 					continue;
@@ -376,5 +377,72 @@ public class KpmHandle {
 
 		return 0;
 	}
+	int kpmSetRefDataSet(NyARNftFreakFsetFile i_refDataSet)
+	{
+//	    FeatureVector       featureVector;
+//	    this.refDataSet=new KpmRefData[1];
+//	    this.refDataSet[0]=i_refDataSet;
 
+
+//	    this.refDataSet.pageNum = 1;
+
+    	this.resultNum=1;
+
+
+	    // Create feature vectors.
+
+//        featureVector.num = kpmHandle->refDataSet.num;
+        
+        int db_id = 0;
+        for (int k = 0; k < i_refDataSet.page_info.length; k++) {
+            for (int m = 0; m < i_refDataSet.page_info[k].image_info.length; m++)
+            {
+            	int page_id=i_refDataSet.page_info[m].page_no;
+        		List<byte[]> dl=new ArrayList<byte[]>();
+        		List<Point3d> p3dl=new ArrayList<Point3d>();
+        		List<FeaturePoint> fpl=new ArrayList<FeaturePoint>();
+            	for(int i=0;i<i_refDataSet.ref_point.length;i++){
+            		if(i_refDataSet.ref_point[i].pageNo==page_id){
+            			NyARNftFreakFsetFile.RefDataSet t=i_refDataSet.ref_point[i];
+            			FeaturePoint fp=new FeaturePoint(); 
+            			fp.x=t.coord2D.x;
+            			fp.y=t.coord2D.y;
+            			fp.angle=t.featureVec.angle;
+            			fp.scale=t.featureVec.scale;
+            			fp.maxima=t.featureVec.maxima>1?true:false;
+            			fpl.add(fp);
+            			//
+            			byte[] description=new byte[i_refDataSet.ref_point[i].featureVec.v.length];
+            			dl.add(description);
+            			//
+            			Point3d point3d=new Point3d();
+            			point3d.x=t.coord3D.x;
+            			point3d.y=t.coord3D.y;
+            			p3dl.add(point3d);
+            			
+            		}
+            	}
+            	FeaturePointStack fps=new FeaturePointStack(fpl.size());
+            	for(FeaturePoint i:fpl){
+            		FeaturePoint p=fps.prePush();
+            		p.set(i);
+            	}
+            	Point3dVector p3v=new Point3dVector(p3dl.size());
+            	for(Point3d i:p3dl){
+            		Point3d p=p3v.prePush();
+            		p.x=i.x;
+            		p.y=i.y;
+            		p.z=i.z;
+            	}
+            	this.freakMatcher.addFreakFeaturesAndDescriptors(
+            			fps,
+            			dl.toArray(new byte[0][0]),
+                        p3v,
+                        i_refDataSet.page_info[k].image_info[m].w,
+                        i_refDataSet.page_info[k].image_info[m].h,
+                        db_id++);
+            }
+        }
+	    return 0;
+	}
 }

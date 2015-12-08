@@ -4,7 +4,7 @@ import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARPointerStack;
 import jp.nyatla.nyartoolkit.pro.core.surfacetracking.feature.NyARSurfaceFeatureSet;
 
-public class NyARFeatureCoordPtrList extends NyARPointerStack<NyARSurfaceFeatureSet.NyAR2FeatureCoord>
+public class NyARFeatureCoordPtrList extends NyARPointerStack<NyARNftFsetFile.NyAR2FeatureCoord>
 {
 	public NyARFeatureCoordPtrList(int i_max_num) throws NyARRuntimeException
 	{

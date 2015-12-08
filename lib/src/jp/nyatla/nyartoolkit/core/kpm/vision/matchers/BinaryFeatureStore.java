@@ -23,9 +23,9 @@ public class BinaryFeatureStore
      */
     public void resize(int numFeatures)
     {
-    	int[] old=this.mFeatures;
+    	byte[] old=this.mFeatures;
     	//サイズを変えるときはコピーする。
-        this.mFeatures=new int[this.mNumBytesPerFeature*numFeatures];
+        this.mFeatures=new byte[this.mNumBytesPerFeature*numFeatures];
         System.arraycopy(this.mFeatures,0,old,0,Math.min(old.length,numFeatures));
         this.mPoints=new FeaturePointStack(numFeatures);
     }
@@ -56,7 +56,7 @@ public class BinaryFeatureStore
      * @return Vector of features
      */
 //    inline std::vector<unsigned char>& features() { return mFeatures; }
-    public int[] features(){
+    public byte[] features(){
     	return this.mFeatures;
     }
     
@@ -111,7 +111,7 @@ public class BinaryFeatureStore
     private int mNumBytesPerFeature;
     
     // Vector of features
-    private int[] mFeatures;
+    private byte[] mFeatures;
 
     // Vector of feature points
     private FeaturePointStack mPoints;

@@ -36,7 +36,7 @@ public class BinaryHierarchicalClustering {
 	/**
 	 * Query the tree for a reverse index.
 	 */
-	public int query(int[] feature, int i_ptr) {
+	public int query(byte[] feature, int i_ptr) {
 		mNumNodesPopped = 0;
 		mQueryReverseIndex = new int[0];
 
@@ -143,7 +143,7 @@ public class BinaryHierarchicalClustering {
 	/**
 	 * Recursive function query function.
 	 */
-	private void query(Queue queue, Node node, int[] feature, int i_ptr) {
+	private void query(Queue queue, Node node, byte[] feature, int i_ptr) {
 
 		if (node.leaf()) {
 			// Insert all the leaf indices into the query index

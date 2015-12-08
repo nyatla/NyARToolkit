@@ -24,8 +24,9 @@ public class Hamming {
     /**
      * Hamming distance for 768 bits (96 bytes)
      */
-    public static int HammingDistance768(int[] a,int a_ptr, int[] b,int b_ptr)
+    public static int HammingDistance768(byte[] a,int a_ptr, byte[] b,int b_ptr)
     {
+    	//8bitできてるから32bitに直さないと。
         return  HammingDistance32(a[0+a_ptr],  b[0+b_ptr]) +
                 HammingDistance32(a[1+a_ptr],  b[1+b_ptr]) +
                 HammingDistance32(a[2+a_ptr],  b[2+b_ptr]) +
@@ -52,7 +53,7 @@ public class Hamming {
                 HammingDistance32(a[23+a_ptr], b[23+b_ptr]);
     }
     
-    public static int HammingDistance(int[] a,int a_ptr, int[] b,int b_ptr) {
+    public static int HammingDistance(byte[] a,int a_ptr, byte[] b,int b_ptr) {
         switch(a.length) {
             case 96:
                 return HammingDistance768(a,a_ptr,b,b_ptr);

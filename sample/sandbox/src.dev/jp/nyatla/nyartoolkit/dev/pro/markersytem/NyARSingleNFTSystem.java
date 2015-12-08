@@ -33,7 +33,7 @@ public class NyARSingleNFTSystem extends NyARSingleCameraSystem
 	private NyARDoubleMatrix44 _current_transmat=new NyARDoubleMatrix44();
 	private boolean _is_found=false;
 	private NyARKpmDataSet _rds;
-	private NyARSurfaceDataSet _ss;
+	private NyARNftDataSet _ss;
 	private NyARNFTSystemConfig _config;
 	
 	public NyARSingleNFTSystem(NyARNFTSystemConfig i_config) throws NyARRuntimeException
@@ -55,7 +55,7 @@ public class NyARSingleNFTSystem extends NyARSingleCameraSystem
 	 */
 	public void setARNftDataset(InputStream i_iset,InputStream i_fset,InputStream i_kpm_fset) throws NyARRuntimeException
 	{
-		this._ss=NyARSurfaceDataSet.loadFromSurfaceFiles(i_iset,i_fset);
+		this._ss=NyARNftDataSet.loadFromSurfaceFiles(i_iset,i_fset);
 		this._rds=NyARKpmDataSet.loadFromFset2(i_kpm_fset);
 		this._kpm=new NyARSingleKpm(this._config.getNyARParam(),this._rds);
 	}

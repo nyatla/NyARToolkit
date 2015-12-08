@@ -324,7 +324,7 @@ ExtractFREAK84(store,
           */
          boolean ExtractFREAK84(
         		 int i_desc_idx,//unsigned char desc[84],
-        		 int[] i_desc,//unsigned char desc[84],
+        		 byte[] i_desc,//unsigned char desc[84],
                                     GaussianScaleSpacePyramid pyramid,
                                     FeaturePoint point,
                                     float[] points_ring0,
@@ -561,7 +561,7 @@ ExtractFREAK84(store,
          /**
           * Compute the descriptor given the 37 samples from each receptor.
           */
-         void CompareFREAK84(int[] desc, float[] samples) {
+         void CompareFREAK84(byte[] desc, float[] samples) {
              int pos = 0;
              for(int i=0;i<desc.length;i++){desc[i]=0;}//ZeroVector(desc, 84);
              for(int i = 0; i < 37; i++) {
@@ -578,7 +578,7 @@ ExtractFREAK84(store,
           *
           * [7 6 5 4 3 2 1 0, 15 14 13 12 11 10 9 8, 23 22 21 20 19 18 17 15, ...] 
           */
-         private void bitstring_set_bit(int[] bitstring, int pos, int bit) {
+         private void bitstring_set_bit(byte[] bitstring, int pos, int bit) {
              bitstring[pos/8] |= (bit << (pos%8));
          }
 //         inline unsigned char bitstring_get_bit(const unsigned char* bitstring, int pos) {
