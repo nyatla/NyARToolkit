@@ -25,7 +25,7 @@ public class NyARIcpPoint_Base extends NyARIcp {
 
 	public NyARIcpPoint_Base(NyARParam i_param)
 	{
-		super(i_param);
+		super(i_param.getPerspectiveProjectionMatrix());
 		// n=4で作る。
 	}
 

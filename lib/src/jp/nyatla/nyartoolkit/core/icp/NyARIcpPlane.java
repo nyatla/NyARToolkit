@@ -14,7 +14,6 @@ package jp.nyatla.nyartoolkit.core.icp;
 
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.math.NyARMat;
-import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
@@ -23,9 +22,9 @@ public class NyARIcpPlane
 {
 	protected NyARDoubleMatrix44 _cparam;
 
-	public NyARIcpPlane(NyARParam i_param)
+	public NyARIcpPlane(NyARDoubleMatrix44 i_projection_mat)
 	{
-		this._cparam = i_param.getPerspectiveProjectionMatrix();
+		this._cparam = i_projection_mat;
 	}
 	private NyARRotVector __vec0 = new NyARRotVector();
 	private NyARRotVector __vec1 = new NyARRotVector();

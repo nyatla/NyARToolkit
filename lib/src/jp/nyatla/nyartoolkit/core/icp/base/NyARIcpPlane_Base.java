@@ -24,7 +24,7 @@ public class NyARIcpPlane_Base {
 	protected NyARIcpPoint _icp_point;
 
 	public NyARIcpPlane_Base(NyARParam i_param) {
-		this.initInstance(new NyARIcpPoint(i_param));
+		this.initInstance(new NyARIcpPoint(i_param.getPerspectiveProjectionMatrix()));
 		// n=4で作る。
 	}
 

@@ -17,7 +17,7 @@ public class NyARNftDataSet
 	 * @param i_fset
 	 * InputStream for reading Featureset source.
 	 */
-	protected NyARNftDataSet(NyARNftIsetFile i_iset,NyARNftFsetFile i_fset)
+	public NyARNftDataSet(NyARNftIsetFile i_iset,NyARNftFsetFile i_fset)
 	{
 		this.iset=i_iset;
 		this.fset=i_fset;

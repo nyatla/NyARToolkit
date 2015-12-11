@@ -13,7 +13,6 @@
 package jp.nyatla.nyartoolkit.core.icp;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
-import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResultParam;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
@@ -22,9 +21,9 @@ import jp.nyatla.nyartoolkit.core.types.matrix.*;
 public class NyARIcpPoint extends NyARIcp
 {
 
-	public NyARIcpPoint(NyARParam i_param)
+	public NyARIcpPoint(NyARDoubleMatrix44 i_projection_matrix)
 	{
-		super(i_param);
+		super(i_projection_matrix);
 		// n=4で作る。
 	}
 	private NyARIcpUtils.JusStack __jus=new NyARIcpUtils.JusStack(16);

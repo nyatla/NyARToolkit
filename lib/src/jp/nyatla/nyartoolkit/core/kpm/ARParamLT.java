@@ -36,6 +36,7 @@ public class ARParamLT extends NyARParam{
     public int      ysize;
     public int      xOff;
     public int      yOff;
+    final static int AR_PARAM_LT_DEFAULT_OFFSET =15;
     /**
     Allocate and calculate a lookup-table camera parameter from a standard camera parameter.
     A lookup-table based camera parameter offers significant performance
@@ -57,6 +58,10 @@ public class ARParamLT extends NyARParam{
         of by calling arParamLTFree() on it.
     @seealso arParamLTFree arParamLTFree
  */    
+    public ARParamLT(NyARParam i_param)
+    {
+    	this(i_param.getScreenSize(),i_param.getPerspectiveProjectionMatrix(),i_param.getDistortionFactor(),AR_PARAM_LT_DEFAULT_OFFSET);
+    }
 	public ARParamLT(NyARIntSize i_screen_size,
 			NyARPerspectiveProjectionMatrix i_projection_mat,
 			INyARCameraDistortionFactor i_dist_factor,int i_offset) {

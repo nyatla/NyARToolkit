@@ -15,7 +15,6 @@ package jp.nyatla.nyartoolkit.core.icp;
 import java.util.Arrays;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
-import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResultParam;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
@@ -25,13 +24,12 @@ public class NyARIcpPointRobust extends NyARIcpPoint
 {
 	/**
 	 * @param i_param
-	 * @param i_max_points
 	 * 最大頂点数
 	 * @throws NyARRuntimeException
 	 */
-	public NyARIcpPointRobust(NyARParam i_param)
+	public NyARIcpPointRobust(NyARDoubleMatrix44 i_projection_matrix)
 	{
-		super(i_param);
+		super(i_projection_matrix);
 		// n=4で作る。
 	}
 
