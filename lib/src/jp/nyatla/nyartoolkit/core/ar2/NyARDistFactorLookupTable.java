@@ -1,7 +1,7 @@
 package jp.nyatla.nyartoolkit.core.ar2;
 
-import jp.nyatla.nyartoolkit.core.param.INyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
+import jp.nyatla.nyartoolkit.core.param.distfactor.INyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;

@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.core.ar2;
+package jp.nyatla.nyartoolkit.core.ar2.base;
 /**
  * AR2HandleをベースにしたSurfaceTrckingのレファレンス実装
  * 

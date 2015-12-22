@@ -28,7 +28,7 @@
  *	<airmail(at)ebony.plala.or.jp> or <nyatla(at)nyatla.jp>
  * 
  */
-package jp.nyatla.nyartoolkit.core.param;
+package jp.nyatla.nyartoolkit.core.param.distfactor;
 
 import jp.nyatla.nyartoolkit.core.types.*;
 
