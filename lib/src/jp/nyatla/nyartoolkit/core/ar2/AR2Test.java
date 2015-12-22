@@ -26,6 +26,18 @@ public class AR2Test
 	 */
 	public static void main(String[] args)
 	{
+		NyARDoubleMatrix44 DEST_MAT=new NyARDoubleMatrix44(
+				new double[]{
+				0.983216579802738	,0.004789670338920735	,-0.182379395452632	,-190.59060778155634,
+				0.012860128650301084,-0.9989882776886819	,0.04309405286235391,64.04490608650205,
+				-0.18198846949444153,-0.04471620834836307	,-0.9822833723761636,616.6427501051592,
+				0,0,0,1});
+		NyARDoubleMatrix44 SRC_MAT=new NyARDoubleMatrix44(new double[]{
+			0.984363556,	0.00667689135,	-0.176022261,	-191.179672,
+			0.0115975942,	-0.999569774,	0.0269410834,	63.0028076,
+			-0.175766647,	-0.0285612550,	-0.984017432,	611.758728,
+			0,0,0,1});
+
 		try {
 			String img_file="../Data/test.raw";
 			String cparam="../Data/camera_para5.dat";
@@ -59,10 +71,10 @@ public class AR2Test
 			tracking.ar2SetTemplateSize2(6);
 			//validation test
 			{
-				tracking.setInitialTransmat(TestPattAR2.ar2Tracking2d_trans());
-				ret.setValue(TestPattAR2.ar2Tracking2d_trans());
+				tracking.setInitialTransmat(SRC_MAT);
+				ret.setValue(SRC_MAT);
 				tracking.ar2Tracking(gs, ret);
-				System.out.println(1);
+				System.out.println(ret.equals(DEST_MAT));
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -70,56 +82,4 @@ public class AR2Test
 		}
 	}
 
-}
-class TestPattAR2
-{
-	public static NyARDoubleMatrix44 ar2Tracking2d_trans()
-	{
-		NyARDoubleMatrix44 ret=new NyARDoubleMatrix44();
-		ret.m00=0.984363556;
-		ret.m01=0.00667689135;
-		ret.m02=-0.176022261;
-		ret.m03=-191.179672;
-
-		ret.m10=0.0115975942;
-		ret.m11=-0.999569774;
-		ret.m12=0.0269410834;
-		ret.m13=63.0028076;
-
-		ret.m20=-0.175766647;
-		ret.m21=-0.0285612550;
-		ret.m22=-0.984017432;
-		ret.m23=611.758728;
-		
-		ret.m30=0;
-		ret.m31=0;
-		ret.m32=0;
-		ret.m33=1;
-		return ret;
-	}	
-	public static NyARDoubleMatrix44 ar2Tracking2d_trans2()
-	{
-		NyARDoubleMatrix44 ret=new NyARDoubleMatrix44();
-		ret.m00=-0.57428467373793857;
-		ret.m01=-0.81758351060399137;
-		ret.m02=-0.041884563960663847;
-		ret.m03=153.13901584837785;
-
-		ret.m10=-0.61372743931962814;
-		ret.m11=0.46382384999455162;
-		ret.m12=-0.63891006127810923;
-		ret.m13=-29.730875975660652;
-
-		ret.m20=0.54178939057154141;
-		ret.m21=-0.34121054990237981;
-		ret.m22=-0.76814036275893471;
-		ret.m23=321.11397159739073;
-		
-		ret.m30=0;
-		ret.m31=0;
-		ret.m32=0;
-		ret.m33=1;
-		return ret;
-
-	}		
 }
