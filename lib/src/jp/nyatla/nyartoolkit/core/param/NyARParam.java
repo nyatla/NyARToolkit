@@ -33,6 +33,9 @@ package jp.nyatla.nyartoolkit.core.param;
 import java.io.*;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
+import jp.nyatla.nyartoolkit.core.param.distfactor.INyARCameraDistortionFactor;
+import jp.nyatla.nyartoolkit.core.param.distfactor.NyARCameraDistortionFactorV2;
+import jp.nyatla.nyartoolkit.core.param.distfactor.NyARCameraDistortionFactorV4;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
@@ -51,19 +54,18 @@ import jp.nyatla.nyartoolkit.j2se.ByteBufferedInputStream;
 public class NyARParam
 {
 	/** スクリーンサイズです。*/
-	protected NyARIntSize _screen_size=new NyARIntSize();
-	private INyARCameraDistortionFactor _dist;
-	private NyARPerspectiveProjectionMatrix _projection_matrix=new NyARPerspectiveProjectionMatrix();
+	final protected NyARIntSize _screen_size;
+	final private INyARCameraDistortionFactor _dist;
+	final private NyARPerspectiveProjectionMatrix _projection_matrix;
 	/**
 	 * テストパラメータを格納したインスタンスを生成します。
 	 * テストパラメータは、ARToolKit2形式のcamera_para.datです。
 	 * @return
-	 * @throws NyARRuntimeException 
 	 */
-	public static NyARParam createDefaultParameter()
+	public static NyARParam loadDefaultParams()
 	{
 		ParamLoader pm=new ParamLoader();
-		return new NyARParam(pm.size,pm.pmat,pm.dist_factor);
+		return new NyARParam(pm.size,pm.pmat,pm.dist_factor);		
 	}
 	/**
 	 * i_streamからARToolkitのカメラパラメータを読み出して、格納したインスタンスを生成します。
@@ -71,7 +73,7 @@ public class NyARParam
 	 * @return
 	 * @throws NyARRuntimeException
 	 */
-	public static NyARParam createFromARParamFile(InputStream i_stream)
+	public static NyARParam loadFromARParamFile(InputStream i_stream)
 	{
 		ParamLoader pm=new ParamLoader(i_stream);
 		return new NyARParam(pm.size,pm.pmat,pm.dist_factor);
@@ -87,10 +89,34 @@ public class NyARParam
 	 * 4x1 matrix
 	 * このパラメータは、OpenCVのcvCalibrateCamera2関数が出力するdistortion_coeffsの値と合致します。
 	 */		
-	public static NyARParam createFromCvCalibrateCamera2Result(int i_w,int i_h,double[] i_intrinsic_matrix,double[] i_distortion_coeffs)
+	public static NyARParam loadFromCvCalibrateCamera2Result(int i_w,int i_h,double[] i_intrinsic_matrix,double[] i_distortion_coeffs)
 	{
 		ParamLoader pm=new ParamLoader(i_w,i_h,i_intrinsic_matrix,i_distortion_coeffs);
 		return new NyARParam(pm.size,pm.pmat,pm.dist_factor);
+	}	
+	/**
+	 * @see #loadDefaultParams
+	 * @deprecated 
+	 */
+	public static NyARParam createDefaultParameter()
+	{
+		return loadDefaultParams();
+	}
+	/**
+	 * @see #loadFromARParamFile
+	 * @deprecated 
+	 */
+	public static NyARParam createFromARParamFile(InputStream i_stream)
+	{
+		return loadFromARParamFile(i_stream);
+	}
+	/**
+	 * @see loadFromCvCalibrateCamera2Result
+	 * @deprecated 
+	 */
+	public static NyARParam createFromCvCalibrateCamera2Result(int i_w,int i_h,double[] i_intrinsic_matrix,double[] i_distortion_coeffs)
+	{
+		return loadFromCvCalibrateCamera2Result(i_w,i_h,i_intrinsic_matrix,i_distortion_coeffs);
 	}
 	/**
 	 * 引数のオブジェクトを参照します。
