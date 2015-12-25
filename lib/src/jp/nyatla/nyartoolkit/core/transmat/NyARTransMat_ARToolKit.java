@@ -32,6 +32,7 @@ package jp.nyatla.nyartoolkit.core.transmat;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.*;
+import jp.nyatla.nyartoolkit.core.param.distfactor.INyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.transmat.solver.*;
 import jp.nyatla.nyartoolkit.core.transmat.optimize.artoolkit.INyARRotMatrixOptimize;

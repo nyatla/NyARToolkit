@@ -39,7 +39,7 @@ import jp.nyatla.nyartoolkit.core.param.distfactor.NyARCameraDistortionFactorV4;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
-import jp.nyatla.nyartoolkit.j2se.ByteBufferedInputStream;
+import jp.nyatla.nyartoolkit.j2se.BinaryReader;
 
 /**
  * このクラスは、NyARToolkitの環境パラメータを格納します。
@@ -53,6 +53,9 @@ import jp.nyatla.nyartoolkit.j2se.ByteBufferedInputStream;
  */
 public class NyARParam
 {
+	final public static int DISTFACTOR_RAW=0;
+	final public static int DISTFACTOR_LT_ARTK2=1;
+	final public static int DISTFACTOR_LT_ARTK5=2;
 	/** スクリーンサイズです。*/
 	final protected NyARIntSize _screen_size;
 	final private INyARCameraDistortionFactor _dist;
@@ -134,7 +137,6 @@ public class NyARParam
 	{
 		return this._screen_size;
 	}
-
 	/**
 	 * この関数は、ARToolKit形式の透視変換行列を返します。
 	 * @return
@@ -152,19 +154,6 @@ public class NyARParam
 	public INyARCameraDistortionFactor getDistortionFactor()
 	{
 		return this._dist;
-	}
-	/**
-	 * この関数は、配列から値を設定します。
-	 * @param i_factor
-	 * NyARCameraDistortionFactorにセットする配列を指定する。要素数は4であること。
-	 * @param i_projection
-	 * NyARPerspectiveProjectionMatrixセットする配列を指定する。要素数は12であること。
-	 */
-	public void setValue(double[] i_factor,double[] i_projection)
-	{
-		this._dist.setValue(i_factor);
-		this._projection_matrix.setValue(i_projection);
-		return;
 	}
 	/**
 	 * この関数は、現在のスクリーンサイズを変更します。
@@ -211,120 +200,6 @@ public class NyARParam
 	{
 		this._projection_matrix.makeCameraFrustumRH(this._screen_size.w, this._screen_size.h, i_dist_min, i_dist_max, o_frustum);
 		return;
-	}	
-
-
-	/**
-	 * パラメータローダーです。
-	 */
-	protected static class ParamLoader
-	{
-		public NyARIntSize size;
-		public NyARPerspectiveProjectionMatrix pmat;
-		public INyARCameraDistortionFactor dist_factor;
-		/**
-		 * intrinsic_matrixとdistortion_coeffsからインスタンスを初期化する。
-		 * @param i_w
-		 * カメラパラメータ生成時の画面サイズ
-		 * @param i_h
-		 * カメラパラメータ生成時の画面サイズ
-		 * @param i_intrinsic_matrix 3x3 matrix このパラメータは、OpenCVのcvCalibrateCamera2関数が出力するintrinsic_matrixの値と合致します。
-		 * @param i_distortion_coeffs 4x1 vector このパラメータは、OpenCVのcvCalibrateCamera2関数が出力するdistortion_coeffsの値と合致します。
-		 */
-		public ParamLoader(int i_w,int i_h,double[] i_intrinsic_matrix,double[] i_distortion_coeffs)
-		{
-			this.size=new NyARIntSize(i_w,i_h);
-			//dist factor
-			NyARCameraDistortionFactorV4 v4dist=new NyARCameraDistortionFactorV4();
-			v4dist.setValue(this.size,i_intrinsic_matrix,i_distortion_coeffs);
-			double s=v4dist.getS();
-			this.dist_factor=v4dist;
-			//projection matrix
-			this.pmat=new NyARPerspectiveProjectionMatrix();
-			NyARDoubleMatrix33 r=new NyARDoubleMatrix33();
-			r.setValue(i_intrinsic_matrix);
-		    r.m00 /= s;
-		    r.m01 /= s;
-		    r.m10 /= s;
-		    r.m11 /= s;
-			this.pmat.setValue(r, new NyARDoublePoint3d());
-		}
-		/**
-		 * 標準パラメータでインスタンスを初期化します。
-		 * @throws NyARRuntimeException
-		 */
-		public ParamLoader()
-		{
-			double[] df={318.5,263.5,26.2,1.0127565206658486};
-			double[] pj={	700.9514702992245,0,316.5,0,
-							0,726.0941816535367,241.5,0.0,
-							0.0,0.0,1.0,0.0,
-							0.0,0.0,0.0,1.0};
-			this.size=new NyARIntSize(640,480);
-			this.pmat=new NyARPerspectiveProjectionMatrix();
-			this.pmat.setValue(pj);
-			this.dist_factor=new NyARCameraDistortionFactorV2();
-			this.dist_factor.setValue(df);
-		}
-		/**
-		 * ストリームから読み出したデータでインスタンスを初期化します。
-		 * @param i_stream
-		 * @throws NyARRuntimeException
-		 */
-		public ParamLoader(InputStream i_stream)throws NyARRuntimeException
-		{
-			//読み出し
-			ByteBufferedInputStream bis=new ByteBufferedInputStream(i_stream,512);
-			int s=bis.readToBuffer(512);
-			bis.order(ByteBufferedInputStream.ENDIAN_BIG);
-			//読み出したサイズでバージョンを決定
-			int[] version_table={136,144,152,176};
-			int version=-1;
-			for(int i=0;i<version_table.length;i++){
-				if(s%version_table[i]==0){
-					version=i+1;
-					break;
-				}
-			}
-			//一致しなければ無し
-			if(version==-1){
-				throw new NyARRuntimeException();
-			}
-			//size
-			this.size=new NyARIntSize();
-			this.size.setValue(bis.getInt(),bis.getInt());
-
-			//projection matrix
-			this.pmat=new NyARPerspectiveProjectionMatrix();
-			double[] pjv=new double[16];
-			for(int i=0;i<12;i++){
-				pjv[i]=bis.getDouble();
-			}			
-			pjv[12]=pjv[13]=pjv[14]=0;
-			pjv[15]=1;
-			this.pmat.setValue(pjv);
-			
-			//dist factor
-			double[] df;
-			switch(version)
-			{
-			case 1://Version1
-				df=new double[NyARCameraDistortionFactorV2.NUM_OF_FACTOR];
-				this.dist_factor=new NyARCameraDistortionFactorV2();
-				break;
-			case 4://Version4
-				df=new double[NyARCameraDistortionFactorV4.NUM_OF_FACTOR];
-				this.dist_factor=new NyARCameraDistortionFactorV4();
-				break;
-			default:
-				throw new NyARRuntimeException();
-			}
-			//値の更新
-			for(int i=0;i<df.length;i++){
-				df[i]=bis.getDouble();
-			}
-			this.dist_factor.setValue(df);
-		}
 	}
 	/**
 	 * この関数は機能しません。
@@ -335,5 +210,117 @@ public class NyARParam
 	public void saveARParam(OutputStream i_stream)throws Exception
 	{
 		NyARRuntimeException.trap("未チェックの関数");
+	}
+}
+
+
+
+
+
+
+
+
+/**
+ * パラメータローダーです。
+ */
+class ParamLoader
+{
+	public NyARIntSize size;
+	public NyARPerspectiveProjectionMatrix pmat;
+	public INyARCameraDistortionFactor dist_factor;
+	/**
+	 * intrinsic_matrixとdistortion_coeffsからインスタンスを初期化する。
+	 * @param i_w
+	 * カメラパラメータ生成時の画面サイズ
+	 * @param i_h
+	 * カメラパラメータ生成時の画面サイズ
+	 * @param i_intrinsic_matrix 3x3 matrix このパラメータは、OpenCVのcvCalibrateCamera2関数が出力するintrinsic_matrixの値と合致します。
+	 * @param i_distortion_coeffs 4x1 vector このパラメータは、OpenCVのcvCalibrateCamera2関数が出力するdistortion_coeffsの値と合致します。
+	 */
+	public ParamLoader(int i_w,int i_h,double[] i_intrinsic_matrix,double[] i_distortion_coeffs)
+	{
+		this.size=new NyARIntSize(i_w,i_h);
+		//dist factor
+		NyARCameraDistortionFactorV4 v4dist=new NyARCameraDistortionFactorV4();
+		v4dist.setValue(this.size,i_intrinsic_matrix,i_distortion_coeffs);
+		double s=v4dist.getS();
+		this.dist_factor=v4dist;
+		//projection matrix
+		this.pmat=new NyARPerspectiveProjectionMatrix();
+		NyARDoubleMatrix33 r=new NyARDoubleMatrix33();
+		r.setValue(i_intrinsic_matrix);
+	    r.m00 /= s;
+	    r.m01 /= s;
+	    r.m10 /= s;
+	    r.m11 /= s;
+		this.pmat.setValue(r, new NyARDoublePoint3d());
+	}
+	/**
+	 * 標準パラメータでインスタンスを初期化します。
+	 * @throws NyARRuntimeException
+	 */
+	public ParamLoader()
+	{
+		double[] df={318.5,263.5,26.2,1.0127565206658486};
+		double[] pj={	700.9514702992245,0,316.5,0,
+						0,726.0941816535367,241.5,0.0,
+						0.0,0.0,1.0,0.0,
+						0.0,0.0,0.0,1.0};
+		this.size=new NyARIntSize(640,480);
+		this.pmat=new NyARPerspectiveProjectionMatrix();
+		this.pmat.setValue(pj);
+		NyARCameraDistortionFactorV2 dist_factor=new NyARCameraDistortionFactorV2();
+		dist_factor.setValue(df);
+		this.dist_factor=dist_factor;
+	}
+	/**
+	 * ストリームから読み出したデータでインスタンスを初期化します。
+	 * @param i_stream
+	 * @throws NyARRuntimeException
+	 */
+	public ParamLoader(InputStream i_stream)throws NyARRuntimeException
+	{
+		//読み出し
+		byte[] data=BinaryReader.toArray(i_stream);
+		BinaryReader bis=new BinaryReader(data,BinaryReader.ENDIAN_BIG);
+		//読み出したサイズでバージョンを決定
+		int[] version_table={136,144,152,176};
+		int version=-1;
+		for(int i=0;i<version_table.length;i++){
+			if(data.length%version_table[i]==0){
+				version=i+1;
+				break;
+			}
+		}
+		//一致しなければ無し
+		if(version==-1){
+			throw new NyARRuntimeException();
+		}
+		//size
+		this.size=new NyARIntSize();
+		this.size.setValue(bis.getInt(),bis.getInt());
+
+		//projection matrix
+		this.pmat=new NyARPerspectiveProjectionMatrix();
+		double[] pjv=bis.getDoubleArray(new double[16],12);
+		pjv[12]=pjv[13]=pjv[14]=0;pjv[15]=1;
+		this.pmat.setValue(pjv);
+		
+		//dist factor
+		switch(version)
+		{
+		case 1://Version1
+			NyARCameraDistortionFactorV2 dv2=new NyARCameraDistortionFactorV2();
+			dv2.setValue(bis.getDoubleArray(new double[NyARCameraDistortionFactorV2.NUM_OF_FACTOR]));
+			this.dist_factor=dv2;
+			break;
+		case 4://Version4
+			NyARCameraDistortionFactorV4 dv4=new NyARCameraDistortionFactorV4();
+			dv4.setValue(bis.getDoubleArray(new double[NyARCameraDistortionFactorV4.NUM_OF_FACTOR]));
+			this.dist_factor=dv4;
+			break;
+		default:
+			throw new NyARRuntimeException();
+		}
 	}
 }

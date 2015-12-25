@@ -46,7 +46,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
  * </pre>
  * </p>
  */
-public class NyARCameraDistortionFactorV2 implements INyARCameraDistortionFactor
+public class NyARCameraDistortionFactorV2 extends NyARCameraDistortionFactorImpl
 {
 	public final static int NUM_OF_FACTOR=4;
 	private static final int PD_LOOP = 3;
@@ -59,7 +59,7 @@ public class NyARCameraDistortionFactorV2 implements INyARCameraDistortionFactor
 	/**
 	 *  コピー元のオブジェクト。{@link NyARCameraDistortionFactorV2}クラスである必要があります。
 	 */
-	public void copyFrom(INyARCameraDistortionFactor i_ref)
+	public void copyFrom(NyARCameraDistortionFactorV2 i_ref)
 	{
 		NyARCameraDistortionFactorV2 inst=(NyARCameraDistortionFactorV2)i_ref;
 		this._f0=inst._f0;
@@ -92,34 +92,11 @@ public class NyARCameraDistortionFactorV2 implements INyARCameraDistortionFactor
 		o_factor[3]=this._f3;
 		return;
 	}
-	
-
 	public void changeScale(double i_x_scale,double i_y_scale)
 	{
 		this._f0=this._f0*i_x_scale;//X
 		this._f1=this._f1*i_y_scale;//Y
 		this._f2=this._f2/ (i_x_scale * i_y_scale);
-		return;
-	}
-	/**
-	 * この関数は、座標点を理想座標系から観察座標系へ変換します。
-	 * @param i_in
-	 * 変換元の座標
-	 * @param o_out
-	 * 変換後の座標を受け取るオブジェクト
-	 */
-	public final void ideal2Observ(NyARDoublePoint2d i_in, NyARDoublePoint2d o_out)
-	{
-		this.ideal2Observ(i_in.x,i_in.y, o_out);
-		return;
-	}
-	
-	/**
-	 * この関数は、座標点を理想座標系から観察座標系へ変換します。
-	 */
-	public final void ideal2Observ(NyARDoublePoint2d i_in, NyARIntPoint2d o_out)
-	{
-		this.ideal2Observ(i_in.x,i_in.y,o_out);
 		return;
 	}
 	
@@ -159,61 +136,17 @@ public class NyARCameraDistortionFactorV2 implements INyARCameraDistortionFactor
 		return;
 	}
 	
-	/**
-	 * この関数は、複数の座標点を、一括して理想座標系から観察座標系へ変換します。
-	 * i_inとo_outには、同じインスタンスを指定できます。
-	 */
-	public final void ideal2ObservBatch(NyARDoublePoint2d[] i_in, NyARDoublePoint2d[] o_out, int i_size)
-	{
-		double x, y;
-		final double d0 = this._f0;
-		final double d1 = this._f1;
-		final double d3 = this._f3;
-		final double d2_w = this._f2 / 100000000.0;
-		for (int i = 0; i < i_size; i++) {
-			x = (i_in[i].x - d0) * d3;
-			y = (i_in[i].y - d1) * d3;
-			if (x == 0.0 && y == 0.0) {
-				o_out[i].x = d0;
-				o_out[i].y = d1;
-			} else {
-				final double d = 1.0 - d2_w * (x * x + y * y);
-				o_out[i].x = x * d + d0;
-				o_out[i].y = y * d + d1;
-			}
-		}
-		return;
-	}
 
-	/**
-	 * この関数は、複数の座標点を、一括して理想座標系から観察座標系へ変換します。
-	 * i_inとo_outには、同じインスタンスを指定できます。
-	 */
-	public final void ideal2ObservBatch(NyARDoublePoint2d[] i_in, NyARIntPoint2d[] o_out, int i_size)
+	@Override
+	public final void observ2Ideal(int ix, int iy, NyARDoublePoint2d o_point)
 	{
-		double x, y;
-		final double d0 = this._f0;
-		final double d1 = this._f1;
-		final double d3 = this._f3;
-		final double d2_w = this._f2 / 100000000.0;
-		for (int i = 0; i < i_size; i++) {
-			x = (i_in[i].x - d0) * d3;
-			y = (i_in[i].y - d1) * d3;
-			if (x == 0.0 && y == 0.0) {
-				o_out[i].x = (int)d0;
-				o_out[i].y = (int)d1;
-			} else {
-				final double d = 1.0 - d2_w * (x * x + y * y);
-				o_out[i].x = (int)(x * d + d0);
-				o_out[i].y = (int)(y * d + d1);
-			}
-		}
+		this.observ2Ideal((double)ix,(double)iy, o_point);
 		return;
-	}
-	
+	}	
 	/**
 	 * この関数は、座標を観察座標系から理想座標系へ変換します。
 	 */
+	@Override
 	public final void observ2Ideal(double ix, double iy, NyARDoublePoint2d o_point)
 	{
 		double z02, z0, p, q, z, px, py, opttmp_1;
@@ -246,21 +179,57 @@ public class NyARCameraDistortionFactorV2 implements INyARCameraDistortionFactor
 		o_point.y = py / this._f3 + d1;
 		return;
 	}
+	
 	/**
-	 * {@link #observ2Ideal(double, double, NyARDoublePoint2d)}のラッパーです。
-	 */	
-	public final void observ2Ideal(NyARDoublePoint2d i_in, NyARDoublePoint2d o_point)
-	{
-		this.observ2Ideal(i_in.x,i_in.y,o_point);
-	}
-	/**
-	 * 座標配列全てに対して、{@link #observ2Ideal(double, double, NyARDoublePoint2d)}を適応します。
+	 * この関数は、複数の座標点を、一括して理想座標系から観察座標系へ変換します。
+	 * i_inとo_outには、同じインスタンスを指定できます。
 	 */
-	public final void observ2IdealBatch(NyARDoublePoint2d[] i_in, NyARDoublePoint2d[] o_out, int i_size)
+	final public void ideal2ObservBatch(NyARDoublePoint2d[] i_in, NyARDoublePoint2d[] o_out, int i_size)
 	{
-		for(int i=i_size-1;i>=0;i--){
-			this.observ2Ideal(i_in[i].x,i_in[i].y,o_out[i]);
+		double x, y;
+		final double d0 = this._f0;
+		final double d1 = this._f1;
+		final double d3 = this._f3;
+		final double d2_w = this._f2 / 100000000.0;
+		for (int i = 0; i < i_size; i++) {
+			x = (i_in[i].x - d0) * d3;
+			y = (i_in[i].y - d1) * d3;
+			if (x == 0.0 && y == 0.0) {
+				o_out[i].x = d0;
+				o_out[i].y = d1;
+			} else {
+				final double d = 1.0 - d2_w * (x * x + y * y);
+				o_out[i].x = x * d + d0;
+				o_out[i].y = y * d + d1;
+			}
 		}
 		return;
 	}
+
+	/**
+	 * この関数は、複数の座標点を、一括して理想座標系から観察座標系へ変換します。
+	 * i_inとo_outには、同じインスタンスを指定できます。
+	 */
+	final public void ideal2ObservBatch(NyARDoublePoint2d[] i_in, NyARIntPoint2d[] o_out, int i_size)
+	{
+		double x, y;
+		final double d0 = this._f0;
+		final double d1 = this._f1;
+		final double d3 = this._f3;
+		final double d2_w = this._f2 / 100000000.0;
+		for (int i = 0; i < i_size; i++) {
+			x = (i_in[i].x - d0) * d3;
+			y = (i_in[i].y - d1) * d3;
+			if (x == 0.0 && y == 0.0) {
+				o_out[i].x = (int)d0;
+				o_out[i].y = (int)d1;
+			} else {
+				final double d = 1.0 - d2_w * (x * x + y * y);
+				o_out[i].x = (int)(x * d + d0);
+				o_out[i].y = (int)(y * d + d1);
+			}
+		}
+		return;
+	}	
+	
 }

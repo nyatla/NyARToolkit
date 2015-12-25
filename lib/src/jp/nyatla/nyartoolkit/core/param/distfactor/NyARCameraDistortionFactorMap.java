@@ -30,13 +30,47 @@
  */
 package jp.nyatla.nyartoolkit.core.param.distfactor;
 
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
- * このクラスは、樽型歪み設定/解除クラスです。
+ * 事前に計算したマップを使った樽型歪み設定/解除クラスです。
+ * 観察座標→理想系座標のみキャッシュが働きます。
+ * {@link #changeScale(double, double)}は使用できません。
  */
-public interface INyARCameraDistortionFactor
+public class NyARCameraDistortionFactorMap extends NyARCameraDistortionFactorImpl
 {	
+	final private INyARCameraDistortionFactor _base_factor;
+	/** テーブル１行当たりのデータ数*/
+	protected int _stride;
+	/** X座標の変換テーブル*/
+	protected double[] _mapx;
+	/** Y座標の変換テーブル*/
+	protected double[] _mapy;
+	
+	public NyARCameraDistortionFactorMap(NyARIntSize i_screen_size,INyARCameraDistortionFactor i_base_factor)
+	{
+		this._base_factor=i_base_factor;
+		NyARDoublePoint2d opoint=new NyARDoublePoint2d();
+		
+		this._mapx=new double[i_screen_size.w*i_screen_size.h];
+		this._mapy=new double[i_screen_size.w*i_screen_size.h];
+		this._stride=i_screen_size.w;
+		int ptr=i_screen_size.h*i_screen_size.w-1;
+		//歪みマップを構築
+		for(int i=i_screen_size.h-1;i>=0;i--)
+		{
+			for(int i2=i_screen_size.w-1;i2>=0;i2--)
+			{
+				i_base_factor.observ2Ideal(i2,i, opoint);
+				this._mapx[ptr]=opoint.x;
+				this._mapy[ptr]=opoint.y;
+				ptr--;
+			}
+		}
+		return;
+		
+	}
 	/**
 	 * この関数は、歪みパラメータをスケール倍します。
 	 * パラメータ値は、スケール値の大きさだけ、拡大、又は縮小します。
@@ -45,16 +79,11 @@ public interface INyARCameraDistortionFactor
 	 * @param i_y_scale
 	 * y方向のパラメータ倍率
 	 */
-	public void changeScale(double i_x_scale,double i_y_scale);
-
-	/**
-	 * この関数は、座標点を理想座標系から観察座標系へ変換します。
-	 * @param i_in
-	 * 変換元の座標
-	 * @param o_out
-	 * 変換後の座標を受け取るオブジェクト
-	 */
-	public void ideal2Observ(NyARDoublePoint2d i_in, NyARDoublePoint2d o_out);
+	@Override
+	public void changeScale(double i_x_scale,double i_y_scale)
+	{
+		throw new NyARRuntimeException();
+	}
 	
 	/**
 	 * この関数は、座標点を理想座標系から観察座標系へ変換します。
@@ -63,16 +92,10 @@ public interface INyARCameraDistortionFactor
 	 * @param o_out
 	 * 変換後の座標を受け取るオブジェクト
 	 */
-	public void ideal2Observ(NyARDoublePoint2d i_in, NyARIntPoint2d o_out);
-	
-	/**
-	 * この関数は、座標点を理想座標系から観察座標系へ変換します。
-	 * @param i_in
-	 * 変換元の座標
-	 * @param o_out
-	 * 変換後の座標を受け取るオブジェクト
-	 */
-	public void ideal2Observ(double i_x,double i_y, NyARDoublePoint2d o_out);
+	public void ideal2Observ(double i_x,double i_y, NyARDoublePoint2d o_out)
+	{
+		this._base_factor.ideal2Observ(i_x,i_y, o_out);
+	}
 	
 	/**
 	 * この関数は、座標点を理想座標系から観察座標系へ変換します。
@@ -83,31 +106,10 @@ public interface INyARCameraDistortionFactor
 	 * @param o_out
 	 * 変換後の座標を受け取るオブジェクト
 	 */
-	public void ideal2Observ(double i_x,double i_y, NyARIntPoint2d o_out);
-	
-	/**
-	 * この関数は、複数の座標点を、一括して理想座標系から観察座標系へ変換します。
-	 * i_inとo_outには、同じインスタンスを指定できます。
-	 * @param i_in
-	 * 変換元の座標配列
-	 * @param o_out
-	 * 変換後の座標を受け取る配列
-	 * @param i_size
-	 * 変換する座標の個数。
-	 */
-	public void ideal2ObservBatch(NyARDoublePoint2d[] i_in, NyARDoublePoint2d[] o_out, int i_size);
-
-	/**
-	 * この関数は、複数の座標点を、一括して理想座標系から観察座標系へ変換します。
-	 * i_inとo_outには、同じインスタンスを指定できます。
-	 * @param i_in
-	 * 変換元の座標配列
-	 * @param o_out
-	 * 変換後の座標を受け取る配列
-	 * @param i_size
-	 * 変換する座標の個数。
-	 */
-	public void ideal2ObservBatch(NyARDoublePoint2d[] i_in, NyARIntPoint2d[] o_out, int i_size);
+	public void ideal2Observ(double i_x,double i_y, NyARIntPoint2d o_out)
+	{
+		this._base_factor.ideal2Observ(i_x,i_y,o_out);
+	}
 	
 	/**
 	 * この関数は、座標を観察座標系から理想座標系へ変換します。
@@ -118,43 +120,51 @@ public interface INyARCameraDistortionFactor
 	 * @param o_point
 	 * 変換後の座標を受け取るオブジェクト
 	 */
-	public void observ2Ideal(double ix, double iy, NyARDoublePoint2d o_point);
-
+	public void observ2Ideal(double ix, double iy, NyARDoublePoint2d o_point)
+	{
+		int idx=(int)ix+(int)iy*this._stride;
+		o_point.x=this._mapx[idx];
+		o_point.y=this._mapy[idx];
+		return;
+	}
+	@Override
+	public void observ2Ideal(int ix, int iy, NyARDoublePoint2d o_point)
+	{
+		int idx=ix+iy*this._stride;
+		o_point.x=this._mapx[idx];
+		o_point.y=this._mapy[idx];
+		return;
+	}
+	
 	/**
-	 * {@link #observ2Ideal(double, double, NyARDoublePoint2d)}のラッパーです。
-	 * i_inとo_pointには、同じオブジェクトを指定できます。
+	 * この関数は、複数の座標点を、一括して理想座標系から観察座標系へ変換します。
+	 * i_inとo_outには、同じインスタンスを指定できます。
 	 * @param i_in
-	 * @param o_point
-	 */	
-	public void observ2Ideal(NyARDoublePoint2d i_in, NyARDoublePoint2d o_point);
-
-	/**
-	 * この関数は、観察座標を理想座標へ変換します。
-	 * 入力できる値範囲は、コンストラクタに設定したスクリーンサイズの範囲内です。
-	 * @param ix
-	 * 観察座標の値
-	 * @param iy
-	 * 観察座標の値
-	 * @param o_point
-	 * 理想座標を受け取るオブジェクト。
-	 */	
-	public void observ2Ideal(int ix, int iy, NyARDoublePoint2d o_point);
-
-	/**
-	 * 座標配列全てに対して、{@link #observ2Ideal(double, double, NyARDoublePoint2d)}を適応します。
-	 * @param i_in
+	 * 変換元の座標配列
 	 * @param o_out
+	 * 変換後の座標を受け取る配列
 	 * @param i_size
+	 * 変換する座標の個数。
 	 */
-	public void observ2IdealBatch(NyARDoublePoint2d[] i_in, NyARDoublePoint2d[] o_out, int i_size);
-	
-	public void observ2IdealBatch(NyARIntPoint2d[] i_in, NyARDoublePoint2d[] o_out, int i_size);
+	public void ideal2ObservBatch(NyARDoublePoint2d[] i_in, NyARDoublePoint2d[] o_out, int i_size)
+	{
+		this._base_factor.ideal2ObservBatch(i_in, o_out,i_size);
+	}
 
-
-
-	
-	
-	
+	/**
+	 * この関数は、複数の座標点を、一括して理想座標系から観察座標系へ変換します。
+	 * i_inとo_outには、同じインスタンスを指定できます。
+	 * @param i_in
+	 * 変換元の座標配列
+	 * @param o_out
+	 * 変換後の座標を受け取る配列
+	 * @param i_size
+	 * 変換する座標の個数。
+	 */
+	public void ideal2ObservBatch(NyARDoublePoint2d[] i_in, NyARIntPoint2d[] o_out, int i_size)
+	{
+		this._base_factor.ideal2ObservBatch(i_in, o_out,i_size);		
+	}	
 	
 	
 }

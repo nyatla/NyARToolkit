@@ -66,7 +66,13 @@ public class RawFileTest
 	public RawFileTest()
 	{
 	}
-
+	private static NyARDoubleMatrix44 NYAR_RESULT=new NyARDoubleMatrix44(
+		new double[]{
+				0.5889935780367633,0.7915799449868498,0.1627505936273879,4.647435148216958,
+				0.8047896252681074,-0.5562226979358496,-0.2071954858624672,0.3642287695973503,
+				-0.0734862170224486,0.2530167998287477,-0.9646669243382139,145.81578516024368,
+				0,0,0,1
+		});
 	/**
 	 * この関数は、テスト関数の本体です。
 	 * カメラ設定ファイル、ARマーカのパターン読出しを読み込み、試験イメージに対してマーカ検出を実行します。
@@ -76,7 +82,7 @@ public class RawFileTest
 	public void Test_arDetectMarkerLite() throws Exception
 	{
 		// AR用カメラパラメタファイルをロード
-		NyARParam ap = NyARParam.createFromARParamFile(new FileInputStream(camera_file));
+		NyARParam ap = NyARParam.loadFromARParamFile(new FileInputStream(camera_file));
 		ap.changeScreenSize(320, 240);
 
 		// AR用のパターンコードを読み出し
@@ -104,12 +110,13 @@ public class RawFileTest
 		for (int i = 0; i < 10000; i++) {
 			// 変換行列を取得
 			ar.detectMarkerLite(ra, 100);
-//			ar.getTransmat(result_mat);
+			ar.getTransmat(result_mat);
 		}
 		Date d = new Date();
 		NyARDoublePoint3d ang=new NyARDoublePoint3d();
 		result_mat.getZXYAngle(ang);
 		System.out.println(d.getTime() - d2.getTime());
+		System.out.println(NYAR_RESULT.equals(result_mat));
 		System.out.print(		ar.getConfidence());
 		
 		
