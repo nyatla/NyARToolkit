@@ -76,7 +76,7 @@ public class NyARNftFreakFsetFile {
 			rd.coord2D.y=br.getFloat();
 			rd.coord3D.x=br.getFloat();
 			rd.coord3D.y=br.getFloat();
-			br.getBytes(rd.featureVec.v);
+			br.getByteArray(rd.featureVec.v);
 			rd.featureVec.angle=br.getFloat();
 			rd.featureVec.scale=br.getFloat();
 			rd.featureVec.maxima=br.getInt();

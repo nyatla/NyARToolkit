@@ -94,6 +94,11 @@ public class NyARNftIsetFile
 			this.dpi=i_dpi;
 			this.img=i_ref_buf;
 		}
+		public ReferenceImage(int i_w,int i_h,double i_dpi)
+		{
+			this(i_w,i_h,i_dpi,new byte[i_w*i_h]);
+		}
+		
 		/**
 		 * レイヤ2以降のイメージを生成する。
 		 * idxは{@link #dpi }のlength-1まで。
@@ -180,8 +185,8 @@ class IsetFileDataParserV5
 		int size=br.size();
 		int noi=br.getInt();
 		int jpeg_size=size-4-(4*(noi-1));
-		byte[] jpeg=br.getBytes(jpeg_size);
-		float[] ldpi=br.getFloats(noi-1);
+		byte[] jpeg=br.getByteArray(jpeg_size);
+		float[] ldpi=br.getFloatArray(noi-1);
 		
 		JpegIO.DecodeResult d;
 		try {
@@ -256,7 +261,7 @@ class ISetFileDataParserV4
 			int w=br.getInt();
 			int h=br.getInt();
 			double dpi=br.getDouble();
-			byte[] d=br.getBytes(w*h);
+			byte[] d=br.getByteArray(w*h);
 			this.ar2image[i]=new AR2ImageT(w,h,dpi,d);
 		}
 	}
