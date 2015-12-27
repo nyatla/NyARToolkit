@@ -29,9 +29,8 @@ import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 
 
 /**
- * このクラスは、オブジェクトを格納する可変長配列です。
- * 配列に、オブジェクトの実態を所有します。
- * このクラスの実体化は禁止しています。継承して使ってください。
+ * このクラスは、割当済のオブジェクトを格納する可変長配列です。
+ * 配列の要素には割当済のオブジェクトを格納します。
  * <p>継承クラスの実装方法 - 
  * 配列要素の生成シーケンスを実装するには、{@link #createElement}をオーバライドして、
  * コンストラクタから{@link #initInstance}を呼び出します。
@@ -148,18 +147,28 @@ public abstract class NyARObjectStack<T> extends NyARPointerStack<T>
 		}
 		this._length=i_reserv_length;
 	}
-	//override
+	@Override
 	public final void remove(int i_index)
 	{
-		if(i_index!=this._length-1){
+		final int len=this._length-1;
+		if(i_index!=len){
+		//末端以外の場合は前方詰めと差し替え
+			
+			//削除対象のオブジェクトを保存
 			T item=this._items[i_index];
-			//要素をシフト
-			super.remove(i_index);
+			//前方詰め
+			T[] items=this._items;
+			for(int i=i_index;i<len;i++)
+			{
+				items[i]=items[i+1];
+			}
 			//外したオブジェクトを末端に取り付ける
-			this._items[this._length]=item;
+			this._items[len]=item;
 		}
+		//要素数を1減らす
+		this._length--;
 	}
-	//override
+	@Override
 	public final void removeIgnoreOrder(int i_index)
 	{
 		assert(this._length>i_index && i_index>=0);

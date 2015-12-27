@@ -167,12 +167,11 @@ public class NyARPointerStack<T>
 	public void remove(int i_index)
 	{
 		assert(this._length>i_index && i_index>=0);
-		
 		if(i_index!=this._length-1){
-			int i;
+			//最後尾以外の場合は前方詰めをする。
 			final int len=this._length-1;
 			T[] items=this._items;
-			for(i=i_index;i<len;i++)
+			for(int i=i_index;i<len;i++)
 			{
 				items[i]=items[i+1];
 			}
