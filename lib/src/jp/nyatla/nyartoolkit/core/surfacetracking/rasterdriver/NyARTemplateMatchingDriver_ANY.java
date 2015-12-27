@@ -349,7 +349,7 @@ public class NyARTemplateMatchingDriver_ANY implements INyARTemplateMatchingDriv
 				t_ptr--;
 			}
 		}
-		int k = mtemp.num_of_pixels;
+		int k = mtemp.valid_pixels;
 		if (k == 0) {
 			return 0;
 		}

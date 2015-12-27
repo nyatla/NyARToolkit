@@ -85,31 +85,62 @@ public class BinaryReader
 	{
 		return this._bb.get();
 	}
-	public byte[] getBytes(byte[] buf)
+	public byte[] getByteArray(byte[] buf)
 	{
 		this._bb.get(buf,0,buf.length);
 		return buf;
 	}
-	public byte[] getBytes(int i_size)
+	public byte[] getByteArray(int i_size)
 	{
-		return getBytes(new byte[i_size]);
+		return getByteArray(new byte[i_size]);
 	}
 	public float getFloat()
 	{
 		return this._bb.getFloat();
 	}
-	public float[] getFloats(float[] ft) {
+	public float[] getFloatArray(float[] ft) {
 		for(int i=0;i<ft.length;i++){
 			ft[i]=this.getFloat();
 		}
 		return ft;
 	}
-	public float[] getFloats(int i_size)
+	public float[] getFloatArray(int i_size)
 	{
-		return this.getFloats(new float[i_size]);
+		return this.getFloatArray(new float[i_size]);
 	}	
 	public double getDouble()
 	{
 		return this._bb.getDouble();
+	}
+	/**
+	 * bにi_length個のdouble値を読み出します。
+	 * 読みだした値はbの先頭から格納されます。
+	 * @param b
+	 * @param i_lengrh
+	 * @return
+	 */
+	public double[] getDoubleArray(double[] b, int i_length) {
+		for(int i=0;i<i_length;i++){
+			b[i]=this.getDouble();
+		}
+		return b;
+	}
+	/**
+	 * bにbの長さだけdouble値を読み出します。
+	 * @param b
+	 * @return
+	 */
+	public double[] getDoubleArray(double[] b)
+	{
+		return this.getDoubleArray(b,b.length);
+	}
+	/**
+	 * 新たにi_lengthサイズの配列を生成して、要素数と同じ個数のdouble値を読み出します。
+	 * @param i_length
+	 * @return
+	 */
+	public double[] getDoubleArray(int i_length)
+	{
+		return this.getDoubleArray(new double[i_length]);
 	}
 }

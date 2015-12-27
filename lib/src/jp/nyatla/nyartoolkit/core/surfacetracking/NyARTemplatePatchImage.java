@@ -12,30 +12,30 @@ import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
  */
 public class NyARTemplatePatchImage
 {
-	public final static int AR2_TEMP_SCALE = 3;
+	public final static int AR2_TEMP_SCALE = 2;
 	public final static int AR2_TEMPLATE_NULL_PIXEL = 2000000000;
 	/**
 	 * テンプレートサイズ
 	 */
-	public int xsize;
+	final public int xsize;
 	/**
 	 * テンプレートサイズ
 	 */
-	public int ysize;
+	final public int ysize;
 	/**
 	 * x方向のテンプレート領域
 	 * xsize=xts*2+1
 	 */
-	public int xts;
+	final public int xts;
 	/**
 	 * y方向のテンプレート領域
 	 * ysize=yts*2+1
 	 */
-	public int yts;
+	final public int yts;
 	/**
 	 * テンプレートイメージ。この値はARToolkitNFTと異なり、生データであるので注意すること！
 	 */
-	public int[] img;
+	final public int[] img;
 	/**
 	 * length of vector *img
 	 */
@@ -47,14 +47,8 @@ public class NyARTemplatePatchImage
 	/**
 	 * 有効なピクセルの数
 	 */
-	public int num_of_pixels;
-	/**
-	 * 有効なピクセルの平均値
-	 */
-	public int ave;
+	public int valid_pixels;
 	
-
-
 	/**
 	 * 1bitを中心に、(i_tx*2+1)*(i_ty*2+1)のテンプレートを生成する。
 	 * @param i_tx
@@ -65,13 +59,13 @@ public class NyARTemplatePatchImage
 		this.xts = i_tx;
 		this.yts = i_ty;
 
-		int xsize, ysize;
-		this.xsize = xsize = i_tx*2 + 1;
-		this.ysize = ysize = i_ty*2 + 1;
-		this.img = new int[xsize * ysize];
+
+		this.xsize = i_tx*2 + 1;
+		this.ysize = i_ty*2 + 1;
+		this.img = new int[this.xsize * this.ysize];
 	}
 
-	private NyARDoublePoint2d __in=new NyARDoublePoint2d();
+	final private NyARDoublePoint2d __in=new NyARDoublePoint2d();
 	
 	/**
 	 * 元ar2GenTemplate関数。
@@ -89,8 +83,8 @@ public class NyARTemplatePatchImage
 		int[] img = this.img;
 		int img1_ptr=0;
 		int k = 0;
-		int r1=0;
-		int r2=0;
+		int sum2=0;
+		int sum=0;
 	    NyARDoublePoint2d ideal=this.__in;
 		for(int  j = -(this.yts); j <= this.yts; j++ ) {
 			for(int  i = -(this.xts); i <= this.xts; i++ )
@@ -116,8 +110,8 @@ public class NyARTemplatePatchImage
 				    	img[img1_ptr] = AR2_TEMPLATE_NULL_PIXEL;
 				    }else{
 					    int ret = img[img1_ptr] =0xff & i_source.img[iy*i_source.width+ix];
-						r1+=ret*ret;
-						r2+=ret;
+						sum2+=ret*ret;
+						sum+=ret;
 						k++;
 				    }
 				    //byte値はint化
@@ -125,11 +119,10 @@ public class NyARTemplatePatchImage
 				img1_ptr++;
 			}
 		}
-		int ave= r2/k;
-		this.vlen = (int)Math.sqrt((double)(r1-2*r2*ave+ave*ave*k));
-		this.sum_of_img=r2;
-		this.ave=ave;
-		this.num_of_pixels=k;
+		int vlen= sum2-sum*sum/k;
+		this.vlen = (int)Math.sqrt((double)(vlen));
+		this.sum_of_img=sum;
+		this.valid_pixels=k;
 		return;
 	}	
 }

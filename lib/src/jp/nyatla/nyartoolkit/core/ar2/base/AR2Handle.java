@@ -810,7 +810,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 		}
 		err = ar2GetTransMat(this._icp, this.trans1, this.pos2d, this.pos3d, num, trans);
 //CheckPoint
-		System.out.println(err==2.130385114332656);
+		System.out.println(err==2.1303851143326673);
 	
 
 //
@@ -871,7 +871,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 	{
 		NyARDoublePoint2d[] screenCoord=NyARDoublePoint2d.createArray(num);
 		NyARDoublePoint3d[] worldCoord=NyARDoublePoint3d.createArray(num);
-		float dx,dy,dz;
+		double dx,dy,dz;
 	    dx = dy = dz = 0.0f;
 	    for(int i = 0; i < num; i++ ) {
 	        dx += pos3d[i][0];
@@ -956,7 +956,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 		//	arMalloc( _template->wimg1, int,  xsize*ysize );
 		//	arMalloc( _template->wimg2, int,  xsize*ysize );
 	
-		if( ar2GenTemplateSub(cparam, trans, imageSet, featurePoints, num, _template) < 0 ) {
+		if( ar2SetTemplateSub(cparam, trans, imageSet, featurePoints, num, _template) < 0 ) {
 //			ar2FreeTemplate( _template );
 			return null;
 		}
@@ -1357,7 +1357,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 	
 	    return 0;
 	}
-	static int ar2GenTemplateSub(ARParamLT cparam, NyARDoubleMatrix44 trans, NyARNftIsetFile imageSet,
+	static int ar2SetTemplateSub(ARParamLT cparam, NyARDoubleMatrix44 trans, NyARNftIsetFile imageSet,
 			  NyAR2FeaturePoints featurePoints, int num,AR2TemplateT template_ )
 	{
 		double    mx, my;
@@ -1541,9 +1541,9 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 	{
 		NyARDoubleMatrix44 DEST_MAT=new NyARDoubleMatrix44(
 				new double[]{
-				0.983216579802738	,0.004789670338920735	,-0.182379395452632	,-190.59060778155634,
-				0.012860128650301084,-0.9989882776886819	,0.04309405286235391,64.04490608650205,
-				-0.18198846949444153,-0.04471620834836307	,-0.9822833723761636,616.6427501051592,
+				0.9832165798027188,0.0047896703389198,-0.18237939545273588,-190.59060778155964,
+				0.012860128650288684,-0.9989882776886859,0.0430940528622663,64.04490608649942,
+				-0.1819884694945465,-0.044716208348275166,-0.9822833723761482,616.6427501051554,
 				0,0,0,1});
 		NyARDoubleMatrix44 SRC_MAT=new NyARDoubleMatrix44(new double[]{
 			0.984363556,	0.00667689135,	-0.176022261,	-191.179672,
@@ -1557,8 +1557,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 			String fsetfile="../Data/testcase/pinball.fset";
 			String isetfile="../Data/testcase/pinball.iset5";
 			//カメラパラメータ
-			NyARParam param=NyARParam.createFromARParamFile(new FileInputStream(cparam));
-			param.changeScreenSize(640,480);
+			NyARParam param=NyARParam.loadFromARParamFile(new FileInputStream(cparam),640,480,NyARParam.DISTFACTOR_RAW);
 			NyARDoublePoint2d d=new NyARDoublePoint2d();
 			param.getDistortionFactor().ideal2Observ(100,100, d);
 			param.getDistortionFactor().observ2Ideal(100,100, d);

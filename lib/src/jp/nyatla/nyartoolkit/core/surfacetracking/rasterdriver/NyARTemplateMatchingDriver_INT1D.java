@@ -16,9 +16,9 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
  */
 public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDriver
 {
-	private final static int AR2_DEFAULT_SEARCH_SIZE = 25;
-	private INyARGrayscaleRaster _i_ref_raster;
-	private byte[] _mbuf;
+	final private static int AR2_DEFAULT_SEARCH_SIZE = 25;
+	final private INyARGrayscaleRaster _i_ref_raster;
+	final private byte[] _mbuf;
 	public NyARTemplateMatchingDriver_INT1D(INyARGrayscaleRaster i_ref_raster)
 	{
 		assert(i_ref_raster.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
@@ -51,7 +51,7 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 			}
 		}		
 	}
-	NyARIntPoint2d _search_area=new NyARIntPoint2d();
+	final private NyARIntPoint2d _search_area=new NyARIntPoint2d();
 	/**
 	 * 検索ウインドウの範囲を指定する。
 	 * @param i_px
@@ -187,7 +187,7 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 		assert(i_template.xsize*i_template.ysize<100*100);
 
 		//NULLピクセルを持つテンプレートか判定する。
-		boolean is_full_template=i_template.xsize*i_template.ysize==i_template.num_of_pixels;
+		boolean is_full_template=i_template.xsize*i_template.ysize==i_template.valid_pixels;
 
 		NyARIntSize s = this._i_ref_raster.getSize();
 		int yts = i_template.yts;
@@ -327,9 +327,9 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 	private static int ar2GetBestMatchingSubFineFull(int[] i_buf,int i_stride,NyARTemplatePatchImage mtemp, int sx, int sy)
 	{
 		int[] tmp_buf = mtemp.img;
-		int r1=0;
-		int r2=0;
-		int r3=0;
+		int sum2=0;
+		int sum1=0;
+		int sum3=0;
 		int t_ptr = 0;
 		int[] src_buf = i_buf;
 		int s_ptr = ((sy -(mtemp.yts * NyARTemplatePatchImage.AR2_TEMP_SCALE)) * i_stride + sx - (mtemp.xts * NyARTemplatePatchImage.AR2_TEMP_SCALE));
@@ -341,9 +341,9 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 				int sn2 = src_buf[s_ptr+NyARTemplatePatchImage.AR2_TEMP_SCALE];// w = *(p2+0);// + *(p2+1) + *(p2+2);
 				int sn3 = src_buf[s_ptr+NyARTemplatePatchImage.AR2_TEMP_SCALE*2];// w = *(p2+0);// + *(p2+1) + *(p2+2);
 				int sn4 = src_buf[s_ptr+NyARTemplatePatchImage.AR2_TEMP_SCALE*3];// w = *(p2+0);// + *(p2+1) + *(p2+2);
-				r1+=sn1*sn1+sn2*sn2+sn3*sn3+sn4*sn4;
-				r2+=sn1+sn2+sn3+sn4;
-				r3+=tmp_buf[t_ptr]*sn1+tmp_buf[t_ptr+1]*sn2+tmp_buf[t_ptr+2]*sn3+tmp_buf[t_ptr+3]*sn4;			
+				sum2+=sn1*sn1+sn2*sn2+sn3*sn3+sn4*sn4;
+				sum1+=sn1+sn2+sn3+sn4;
+				sum3+=tmp_buf[t_ptr]*sn1+tmp_buf[t_ptr+1]*sn2+tmp_buf[t_ptr+2]*sn3+tmp_buf[t_ptr+3]*sn4;			
 				s_ptr += NyARTemplatePatchImage.AR2_TEMP_SCALE*4;
 				t_ptr+=4;
 			}
@@ -351,9 +351,9 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 				int tn=tmp_buf[t_ptr];
 				if (tn != NyARTemplatePatchImage.AR2_TEMPLATE_NULL_PIXEL) {
 					int sn = src_buf[s_ptr];// w = *(p2+0);// + *(p2+1) + *(p2+2);
-					r1+=sn*sn;
-					r2+=sn;
-					r3+=tn*sn;
+					sum2+=sn*sn;
+					sum1+=sn;
+					sum3+=tn*sn;
 				}
 				s_ptr += NyARTemplatePatchImage.AR2_TEMP_SCALE;
 				t_ptr++;
@@ -361,16 +361,12 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 
 			s_ptr+=padding;
 		}
-		int k = mtemp.num_of_pixels;
-		int ave = r2/k;
-		//vlen=∑(Sn-AVE)^2
-		int vlen=r1-(2*ave*r2)+(k*ave*ave);
-		//wval=∑(Tn-AVET)*(Sn-AVES))
-		int wval=r3-mtemp.sum_of_img*ave-r2*mtemp.ave+ave*mtemp.ave*k;
+		sum3 -= sum1 * mtemp.sum_of_img / mtemp.valid_pixels;
+		int vlen=sum2-sum1*sum1/mtemp.valid_pixels;
 		if (vlen == 0){
 			return 0;
 		} else {
-			return wval * 100 / mtemp.vlen * 100 / (int) Math.sqrt(vlen);
+			return sum3 * 100 / mtemp.vlen * 100 / (int) Math.sqrt(vlen);
 		}
 	}
 	/**
@@ -386,9 +382,9 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 	private static int ar2GetBestMatchingSubFine(int[] i_buf,int i_stride,NyARTemplatePatchImage mtemp, int sx, int sy)
 	{
 		int[] tmp_buf = mtemp.img;
-		int r1=0;
-		int r2=0;
-		int r3=0;
+		int sum2=0;
+		int sum1=0;
+		int sum3=0;
 		int t_ptr = 0;
 		int[] src_buf = i_buf;
 		int s_ptr = ((sy -(mtemp.yts * NyARTemplatePatchImage.AR2_TEMP_SCALE)) * i_stride + sx - (mtemp.xts * NyARTemplatePatchImage.AR2_TEMP_SCALE));
@@ -400,30 +396,30 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 				tn=tmp_buf[t_ptr];
 				if (tn != NyARTemplatePatchImage.AR2_TEMPLATE_NULL_PIXEL) {
 					int sn = src_buf[s_ptr];// w = *(p2+0);// + *(p2+1) + *(p2+2);
-					r1+=sn*sn;
-					r2+=sn;
-					r3+=tn*sn;
+					sum2+=sn*sn;
+					sum1+=sn;
+					sum3+=tn*sn;
 				}
 				tn=tmp_buf[t_ptr+1];
 				if (tn != NyARTemplatePatchImage.AR2_TEMPLATE_NULL_PIXEL) {
 					int sn = src_buf[s_ptr+NyARTemplatePatchImage.AR2_TEMP_SCALE];// w = *(p2+0);// + *(p2+1) + *(p2+2);
-					r1+=sn*sn;
-					r2+=sn;
-					r3+=tn*sn;
+					sum2+=sn*sn;
+					sum1+=sn;
+					sum3+=tn*sn;
 				}
 				tn=tmp_buf[t_ptr+2];
 				if (tn != NyARTemplatePatchImage.AR2_TEMPLATE_NULL_PIXEL) {
 					int sn = src_buf[s_ptr+NyARTemplatePatchImage.AR2_TEMP_SCALE*2];// w = *(p2+0);// + *(p2+1) + *(p2+2);
-					r1+=sn*sn;
-					r2+=sn;
-					r3+=tn*sn;
+					sum2+=sn*sn;
+					sum1+=sn;
+					sum3+=tn*sn;
 				}
 				tn=tmp_buf[t_ptr+3];
 				if (tn != NyARTemplatePatchImage.AR2_TEMPLATE_NULL_PIXEL) {
 					int sn = src_buf[s_ptr+NyARTemplatePatchImage.AR2_TEMP_SCALE*3];// w = *(p2+0);// + *(p2+1) + *(p2+2);
-					r1+=sn*sn;
-					r2+=sn;
-					r3+=tn*sn;
+					sum2+=sn*sn;
+					sum1+=sn;
+					sum3+=tn*sn;
 				}
 				s_ptr += NyARTemplatePatchImage.AR2_TEMP_SCALE*4;
 				t_ptr+=4;
@@ -432,9 +428,9 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 				int tn=tmp_buf[t_ptr];
 				if (tn != NyARTemplatePatchImage.AR2_TEMPLATE_NULL_PIXEL) {
 					int sn = src_buf[s_ptr];// w = *(p2+0);// + *(p2+1) + *(p2+2);
-					r1+=sn*sn;
-					r2+=sn;
-					r3+=tn*sn;
+					sum2+=sn*sn;
+					sum1+=sn;
+					sum3+=tn*sn;
 				}
 				s_ptr += NyARTemplatePatchImage.AR2_TEMP_SCALE;
 				t_ptr++;
@@ -442,19 +438,12 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 
 			s_ptr+=padding;
 		}
-		int k = mtemp.num_of_pixels;
-		if (k == 0) {
-			return 0;
-		}
-		int ave = r2/k;
-		//vlen=∑(Sn-AVE)^2
-		int vlen=r1-(2*ave*r2)+(k*ave*ave);
-		//wval=∑(Tn-AVET)*(Sn-AVES))
-		int wval=r3-mtemp.sum_of_img*ave-r2*mtemp.ave+ave*mtemp.ave*k;
+		sum3 -= sum1 * mtemp.sum_of_img / mtemp.valid_pixels;
+		int vlen=sum2-sum1*sum1/mtemp.valid_pixels;
 		if (vlen == 0){
 			return 0;
 		} else {
-			return wval * 100 / mtemp.vlen * 100 / (int) Math.sqrt(vlen);
+			return sum3 * 100 / mtemp.vlen * 100 / (int) Math.sqrt(vlen);
 		}
 	}
 }

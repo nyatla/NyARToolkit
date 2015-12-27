@@ -82,8 +82,7 @@ public class RawFileTest
 	public void Test_arDetectMarkerLite() throws Exception
 	{
 		// AR用カメラパラメタファイルをロード
-		NyARParam ap = NyARParam.loadFromARParamFile(new FileInputStream(camera_file));
-		ap.changeScreenSize(320, 240);
+		NyARParam ap = NyARParam.loadFromARParamFile(new FileInputStream(camera_file),320,240);
 
 		// AR用のパターンコードを読み出し
 		NyARCode code = NyARCode.createFromARPattFile(new FileInputStream(code_file),16, 16);
