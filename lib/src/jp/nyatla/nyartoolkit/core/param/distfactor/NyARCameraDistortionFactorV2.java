@@ -48,57 +48,25 @@ import jp.nyatla.nyartoolkit.core.types.*;
  */
 public class NyARCameraDistortionFactorV2 extends NyARCameraDistortionFactorImpl
 {
-	public final static int NUM_OF_FACTOR=4;
-	private static final int PD_LOOP = 3;
-	private double _f0;//x0
-	private double _f1;//y0
-	private double _f2;//100000000.0*f
-	private double _f3;//s
+	final public static int NUM_OF_FACTOR=4;
+	final private static int PD_LOOP = 3;
+	final private double _f0;//x0
+	final private double _f1;//y0
+	final private double _f2;//100000000.0*f
+	final private double _f3;//s
 	
-	
-	/**
-	 *  コピー元のオブジェクト。{@link NyARCameraDistortionFactorV2}クラスである必要があります。
-	 */
-	public void copyFrom(NyARCameraDistortionFactorV2 i_ref)
+	public NyARCameraDistortionFactorV2(NyARCameraDistortionFactorV2 i_copyfrom,double i_x_scale,double i_y_scale)
 	{
-		NyARCameraDistortionFactorV2 inst=(NyARCameraDistortionFactorV2)i_ref;
-		this._f0=inst._f0;
-		this._f1=inst._f1;
-		this._f2=inst._f2;
-		this._f3=inst._f3;
-		return;
+		this(new double[]{i_copyfrom._f0,i_copyfrom._f1,i_copyfrom._f2,i_copyfrom._f3},i_x_scale,i_y_scale);
+	}
+	public NyARCameraDistortionFactorV2(double[] i_factor,double i_x_scale,double i_y_scale)
+	{
+		this._f0=i_factor[0]*i_x_scale;
+		this._f1=i_factor[1]*i_y_scale;
+		this._f2=i_factor[2]/ (i_x_scale * i_y_scale);
+		this._f3=i_factor[3];
 	}
 
-	/**
-	 * 歪みパラメータ値を格納した配列。4要素である必要があります。
-	 */
-	public void setValue(double[] i_factor)
-	{
-		this._f0=i_factor[0];
-		this._f1=i_factor[1];
-		this._f2=i_factor[2];
-		this._f3=i_factor[3];
-		return;
-	}
-	
-	/**
-	 * 歪みパラメータ値の出力先配列。4要素である必要があります。
-	 */
-	public void getValue(double[] o_factor)
-	{
-		o_factor[0]=this._f0;
-		o_factor[1]=this._f1;
-		o_factor[2]=this._f2;
-		o_factor[3]=this._f3;
-		return;
-	}
-	public void changeScale(double i_x_scale,double i_y_scale)
-	{
-		this._f0=this._f0*i_x_scale;//X
-		this._f1=this._f1*i_y_scale;//Y
-		this._f2=this._f2/ (i_x_scale * i_y_scale);
-		return;
-	}
 	
 	/**
 	 * この関数は、座標点を理想座標系から観察座標系へ変換します。

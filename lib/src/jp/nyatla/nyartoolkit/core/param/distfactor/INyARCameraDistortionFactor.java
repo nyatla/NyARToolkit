@@ -38,16 +38,6 @@ import jp.nyatla.nyartoolkit.core.types.*;
 public interface INyARCameraDistortionFactor
 {	
 	/**
-	 * この関数は、歪みパラメータをスケール倍します。
-	 * パラメータ値は、スケール値の大きさだけ、拡大、又は縮小します。
-	 * @param i_x_scale
-	 * x方向のパラメータ倍率
-	 * @param i_y_scale
-	 * y方向のパラメータ倍率
-	 */
-	public void changeScale(double i_x_scale,double i_y_scale);
-
-	/**
 	 * この関数は、座標点を理想座標系から観察座標系へ変換します。
 	 * @param i_in
 	 * 変換元の座標

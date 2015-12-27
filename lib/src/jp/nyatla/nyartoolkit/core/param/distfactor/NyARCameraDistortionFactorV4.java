@@ -38,28 +38,106 @@ import jp.nyatla.nyartoolkit.core.types.*;
 public class NyARCameraDistortionFactorV4 extends NyARCameraDistortionFactorImpl
 {	
 	public final static int NUM_OF_FACTOR=9;
-	private double _k1;
-	private double _k2;
-	private double _p1;
-	private double _p2;
-	private double _fx;
-	private double _fy;
-	private double _x0;
-	private double _y0;
-	private double _s;
+	final private double _k1;
+	final private double _k2;
+	final private double _p1;
+	final private double _p2;
+	final private double _fx;
+	final private double _fy;
+	final private double _x0;
+	final private double _y0;
+	final private double _s;
+	
+	/**
+	 * この関数は、配列の値を歪みパラメータ値として、このインスタンスにセットします。
+	 * @param i_factor
+	 * 歪みパラメータ値を格納した配列。
+	 */
+	public NyARCameraDistortionFactorV4(double[] i_factor,double i_x_scale,double i_y_scale)
+	{
+		this._k1=i_factor[0];
+		this._k2=i_factor[1];
+		this._p1=i_factor[2];
+		this._p2=i_factor[3];
+		this._fx=i_factor[4]* i_x_scale;   /*  fx  */
+		this._fy=i_factor[5]* i_y_scale;   /*  fy  */
+		this._x0=i_factor[6]* i_x_scale;   /*  x0  */
+		this._y0=i_factor[7]* i_y_scale;   /*  y0  */
+		this._s =i_factor[8];
+	}
+	public NyARCameraDistortionFactorV4(NyARCameraDistortionFactorV4 i_copyfrom,double i_x_scale, double i_y_scale)
+	{
+		this(new double[]{i_copyfrom._k1,i_copyfrom._k2,i_copyfrom._p1,i_copyfrom._p2,i_copyfrom._fx,i_copyfrom._fy,i_copyfrom._x0,i_copyfrom._y0,i_copyfrom._s},i_x_scale,i_y_scale);
+		return;
+	}
+	
+	/**
+	 * @param i_width
+	 * パラメータを生成したスクリーンの幅。
+	 * @param i_height
+	 * パラメータを生成したスクリーンの高さ。
+	 * @param i_intrinsic_matrix
+	 * 3x3 matrix
+	 * このパラメータは、OpenCVのcvCalibrateCamera2関数が出力するintrinsic_matrixの値と合致します。
+	 * @param i_distortion_coeffs
+	 * 4x1 vector
+	 * このパラメータは、OpenCVのcvCalibrateCamera2関数が出力するdistortion_coeffsの値と合致します。
+	 */
+	public NyARCameraDistortionFactorV4(int i_width,int i_height,double[] i_intrinsic_matrix,double[] i_distortion_coeffs,double i_x_scale,double i_y_scale)
+	{
+		double k1=i_distortion_coeffs[0];
+		double k2=i_distortion_coeffs[1];
+		double p1=i_distortion_coeffs[2];
+		double p2=i_distortion_coeffs[3];
+		double fx=i_intrinsic_matrix[0*3+0];//0,0
+		double fy=i_intrinsic_matrix[1*3+1];//1,1
+		double x0=i_intrinsic_matrix[0*3+2];//0,2
+		double y0=i_intrinsic_matrix[1*3+2];//1,2
+		//sパラメータを計算するためのスケール1のインスタンス
+		NyARCameraDistortionFactorV4 td=new NyARCameraDistortionFactorV4(new double[]{k1,k2,p1,p2,fx,fy,x0,y0,1},1,1);		
+		this._k1=k1;
+		this._k2=k2;
+		this._p1=p1;
+		this._p2=p2;
+		this._fx=fx* i_x_scale;   /*  fx  */
+		this._fy=fy* i_y_scale;   /*  fy  */
+		this._x0=x0* i_x_scale;   /*  x0  */
+		this._y0=y0* i_y_scale;   /*  y0  */
+		this._s=td.getSizeFactor(x0, y0, i_width,i_height);
+	}
+
+	/**
+	 * この関数は、パラメータ値を配列へ返します。
+	 * o_factorには要素数{@link #NUM_OF_FACTOR}の
+	 * @param o_factor
+	 * 歪みパラメータ値の出力先配列。
+	 */
+	final public void getValue(double[] o_factor)
+	{
+		o_factor[0]=this._k1;
+		o_factor[1]=this._k2;
+		o_factor[2]=this._p1;
+		o_factor[3]=this._p2;
+		o_factor[4]=this._fx;
+		o_factor[5]=this._fy;
+		o_factor[6]=this._x0;
+		o_factor[7]=this._y0;
+		o_factor[8]=this._s;
+	}
+	
+	
 	private double getSizeFactor(double x0,double y0, int xsize, int ysize)
 	{
-	    double  ox, oy;
+
 	    double  olen, ilen;
 	    double  sf1;
 
 	    double sf = 100.0;
 
-	    ox = 0.0;
-	    oy = y0;
+
 	    olen = x0;
 	    NyARDoublePoint2d itmp=new NyARDoublePoint2d();
-	    this.observ2Ideal(ox, oy,itmp);
+	    this.observ2Ideal(0, y0,itmp);
 	    ilen = x0 - itmp.x;
 	    //printf("Olen = %f, Ilen = %f, s = %f\n", olen, ilen, ilen / olen);
 	    if( ilen > 0 ) {
@@ -67,10 +145,9 @@ public class NyARCameraDistortionFactorV4 extends NyARCameraDistortionFactorImpl
 	        if( sf1 < sf ) sf = sf1;
 	    }
 
-	    ox = xsize;
-	    oy = y0;
+
 	    olen = xsize - x0;
-	    this.observ2Ideal(ox, oy,itmp);
+	    this.observ2Ideal(xsize, y0,itmp);
 	    ilen = itmp.x - x0;
 	    //printf("Olen = %f, Ilen = %f, s = %f\n", olen, ilen, ilen / olen);
 	    if( ilen > 0 ) {
@@ -78,10 +155,9 @@ public class NyARCameraDistortionFactorV4 extends NyARCameraDistortionFactorImpl
 	        if( sf1 < sf ) sf = sf1;
 	    }
 
-	    ox = x0;
-	    oy = 0.0;
+
 	    olen = y0;
-	    this.observ2Ideal(ox, oy,itmp);
+	    this.observ2Ideal(x0,0,itmp);
 	    ilen = y0 - itmp.y;
 	    //printf("Olen = %f, Ilen = %f, s = %f\n", olen, ilen, ilen / olen);
 	    if( ilen > 0 ) {
@@ -89,10 +165,9 @@ public class NyARCameraDistortionFactorV4 extends NyARCameraDistortionFactorImpl
 	        if( sf1 < sf ) sf = sf1;
 	    }
 
-	    ox = x0;
-	    oy = ysize;
+
 	    olen = ysize - y0;
-	    this.observ2Ideal(ox, oy,itmp);
+	    this.observ2Ideal(x0, ysize,itmp);
 	    ilen = itmp.y - y0;
 	    //printf("Olen = %f, Ilen = %f, s = %f\n", olen, ilen, ilen / olen);
 	    if( ilen > 0 ) {
@@ -101,9 +176,8 @@ public class NyARCameraDistortionFactorV4 extends NyARCameraDistortionFactorImpl
 	    }
 
 
-	    ox = 0.0;
-	    oy = 0.0;
-	    this.observ2Ideal(ox, oy,itmp);
+
+	    this.observ2Ideal(0, 0,itmp);
 	    ilen = x0 - itmp.x;
 	    olen = x0;
 	    if( ilen > 0 ) {
@@ -117,9 +191,8 @@ public class NyARCameraDistortionFactorV4 extends NyARCameraDistortionFactorImpl
 	        if( sf1 < sf ) sf = sf1;
 	    }
 
-	    ox = xsize;
-	    oy = 0.0;
-	    this.observ2Ideal(ox, oy,itmp);
+
+	    this.observ2Ideal(xsize, 0,itmp);
 	    ilen = itmp.x - x0;
 	    olen = xsize - x0;
 	    //printf("Olen = %f, Ilen = %f, s = %f\n", olen, ilen, ilen / olen);
@@ -135,9 +208,8 @@ public class NyARCameraDistortionFactorV4 extends NyARCameraDistortionFactorImpl
 	        if( sf1 < sf ) sf = sf1;
 	    }
 
-	    ox = 0.0;
-	    oy = ysize;
-	    this.observ2Ideal(ox, oy,itmp);
+
+	    this.observ2Ideal(0, ysize,itmp);
 	    ilen = x0 - itmp.x;
 	    olen = x0;
 	    //printf("Olen = %f, Ilen = %f, s = %f\n", olen, ilen, ilen / olen);
@@ -153,9 +225,7 @@ public class NyARCameraDistortionFactorV4 extends NyARCameraDistortionFactorImpl
 	        if( sf1 < sf ) sf = sf1;
 	    }
 
-	    ox = xsize;
-	    oy = ysize;
-	    this.observ2Ideal(ox, oy,itmp);
+	    this.observ2Ideal(xsize, ysize,itmp);
 	    ilen = itmp.x - x0;
 	    olen = xsize - x0;
 	    //printf("Olen = %f, Ilen = %f, s = %f\n", olen, ilen, ilen / olen);
@@ -184,95 +254,10 @@ public class NyARCameraDistortionFactorV4 extends NyARCameraDistortionFactorImpl
 	{
 		return this._s;
 	}
-	/**
-	 * この関数は、参照元から歪みパラメータ値をコピーします。
-	 * @param i_ref
-	 * コピー元のオブジェクト。
-	 */
-	public void copyFrom(NyARCameraDistortionFactorV4 i_ref)
-	{
-		this._k1=i_ref._k1;
-		this._k2=i_ref._k2;
-		this._p1=i_ref._p1;
-		this._p2=i_ref._p2;
-		this._fx=i_ref._fx;
-		this._fy=i_ref._fy;
-		this._x0=i_ref._x0;
-		this._y0=i_ref._y0;
-		this._s=i_ref._s;
-	}
-	/**
-	 * @param i_size
-	 * @param i_intrinsic_matrix
-	 * 3x3 matrix
-	 * このパラメータは、OpenCVのcvCalibrateCamera2関数が出力するintrinsic_matrixの値と合致します。
-	 * @param i_distortion_coeffs
-	 * 4x1 vector
-	 * このパラメータは、OpenCVのcvCalibrateCamera2関数が出力するdistortion_coeffsの値と合致します。
-	 */
-	public void setValue(NyARIntSize i_size,double[] i_intrinsic_matrix,double[] i_distortion_coeffs)
-	{
-		this._k1=i_distortion_coeffs[0];
-		this._k2=i_distortion_coeffs[1];
-		this._p1=i_distortion_coeffs[2];
-		this._p2=i_distortion_coeffs[3];
-		this._fx=i_intrinsic_matrix[0*3+0];//0,0
-		this._fy=i_intrinsic_matrix[1*3+1];//1,1
-		this._x0=i_intrinsic_matrix[0*3+2];//0,2
-		this._y0=i_intrinsic_matrix[1*3+2];//1,2
-		this._s=1.0;
-		//update s
-		this._s=this.getSizeFactor(this._x0, this._y0, i_size.w,i_size.h);		
-	}
 
-	/**
-	 * この関数は、配列の値を歪みパラメータ値として、このインスタンスにセットします。
-	 * @param i_factor
-	 * 歪みパラメータ値を格納した配列。
-	 */
-	public void setValue(double[] i_factor)
-	{
-		this._k1=i_factor[0];
-		this._k2=i_factor[1];
-		this._p1=i_factor[2];
-		this._p2=i_factor[3];
-		this._fx=i_factor[4];
-		this._fy=i_factor[5];
-		this._x0=i_factor[6];
-		this._y0=i_factor[7];
-		this._s =i_factor[8];
-	}
-	
-	/**
-	 * この関数は、パラメータ値を配列へ返します。
-	 * o_factorには要素数{@link #NUM_OF_FACTOR}の
-	 * @param o_factor
-	 * 歪みパラメータ値の出力先配列。
-	 */
-	public void getValue(double[] o_factor)
-	{
-		o_factor[0]=this._k1;
-		o_factor[1]=this._k2;
-		o_factor[2]=this._p1;
-		o_factor[3]=this._p2;
-		o_factor[4]=this._fx;
-		o_factor[5]=this._fy;
-		o_factor[6]=this._x0;
-		o_factor[7]=this._y0;
-		o_factor[8]=this._s;
-	}
-	
-	/**
-	 */
-	@Override
-	public void changeScale(double i_x_scale,double i_y_scale)
-	{
-		this._fx = this._fx * i_x_scale;   /*  fx  */
-		this._fy = this._fy * i_y_scale;   /*  fy  */
-		this._x0 = this._x0 * i_x_scale;   /*  x0  */
-		this._y0 = this._y0 * i_y_scale;   /*  y0  */
-	    return;
-	}
+
+
+
 
 
 	
@@ -455,6 +440,5 @@ public class NyARCameraDistortionFactorV4 extends NyARCameraDistortionFactorImpl
 		}
 		return;
 	}	
-	
 	
 }

@@ -40,17 +40,19 @@ import jp.nyatla.nyartoolkit.core.types.*;
  */
 public class NyARCameraDistortionFactorLT extends NyARCameraDistortionFactorImpl
 {	
-    private double[] _i2o;
-    private double[] _o2i;
-    private int      _xsize;
-    private int      _ysize;
-    private int      _xOff;
-    private int      _yOff;
+	final public static int AR_PARAM_LT_DEFAULT_OFFSET =15;
+	   	
+    final private double[] _i2o;
+    final private double[] _o2i;
+    final private int      _xsize;
+    final private int      _ysize;
+    final private int      _xOff;
+    final private int      _yOff;
 		
-	public NyARCameraDistortionFactorLT(NyARIntSize i_screen_size,int i_offset,INyARCameraDistortionFactor i_base_factor)
+	public NyARCameraDistortionFactorLT(int i_screen_width,int i_screen_height,int i_offset,INyARCameraDistortionFactor i_base_factor)
 	{
-	    this._xsize = i_screen_size.w + i_offset*2;
-	    this._ysize = i_screen_size.h + i_offset*2;
+	    this._xsize = i_screen_width + i_offset*2;
+	    this._ysize = i_screen_height + i_offset*2;
 	    this._xOff = i_offset;
 	    this._yOff = i_offset;
 	    this._i2o=new double[this._xsize*this._ysize*2];
@@ -70,19 +72,8 @@ public class NyARCameraDistortionFactorLT extends NyARCameraDistortionFactorImpl
 		return;
 		
 	}
-	/**
-	 * この関数は、歪みパラメータをスケール倍します。
-	 * パラメータ値は、スケール値の大きさだけ、拡大、又は縮小します。
-	 * @param i_x_scale
-	 * x方向のパラメータ倍率
-	 * @param i_y_scale
-	 * y方向のパラメータ倍率
-	 */
-	@Override
-	public void changeScale(double i_x_scale,double i_y_scale)
-	{
-		throw new NyARRuntimeException();
-	}
+
+
 	
 	/**
 	 * この関数は、座標点を理想座標系から観察座標系へ変換します。

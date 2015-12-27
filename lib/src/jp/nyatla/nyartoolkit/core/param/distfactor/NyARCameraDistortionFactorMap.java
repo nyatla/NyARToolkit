@@ -30,7 +30,6 @@
  */
 package jp.nyatla.nyartoolkit.core.param.distfactor;
 
-import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
@@ -42,25 +41,25 @@ public class NyARCameraDistortionFactorMap extends NyARCameraDistortionFactorImp
 {	
 	final private INyARCameraDistortionFactor _base_factor;
 	/** テーブル１行当たりのデータ数*/
-	protected int _stride;
+	final protected int _stride;
 	/** X座標の変換テーブル*/
-	protected double[] _mapx;
+	final protected double[] _mapx;
 	/** Y座標の変換テーブル*/
-	protected double[] _mapy;
+	final protected double[] _mapy;
 	
-	public NyARCameraDistortionFactorMap(NyARIntSize i_screen_size,INyARCameraDistortionFactor i_base_factor)
+	public NyARCameraDistortionFactorMap(int i_screen_width,int i_screen_height,INyARCameraDistortionFactor i_base_factor)
 	{
 		this._base_factor=i_base_factor;
 		NyARDoublePoint2d opoint=new NyARDoublePoint2d();
 		
-		this._mapx=new double[i_screen_size.w*i_screen_size.h];
-		this._mapy=new double[i_screen_size.w*i_screen_size.h];
-		this._stride=i_screen_size.w;
-		int ptr=i_screen_size.h*i_screen_size.w-1;
+		this._mapx=new double[i_screen_width*i_screen_height];
+		this._mapy=new double[i_screen_width*i_screen_height];
+		this._stride=i_screen_width;
+		int ptr=i_screen_height*i_screen_width-1;
 		//歪みマップを構築
-		for(int i=i_screen_size.h-1;i>=0;i--)
+		for(int i=i_screen_height-1;i>=0;i--)
 		{
-			for(int i2=i_screen_size.w-1;i2>=0;i2--)
+			for(int i2=i_screen_width-1;i2>=0;i2--)
 			{
 				i_base_factor.observ2Ideal(i2,i, opoint);
 				this._mapx[ptr]=opoint.x;
@@ -71,19 +70,8 @@ public class NyARCameraDistortionFactorMap extends NyARCameraDistortionFactorImp
 		return;
 		
 	}
-	/**
-	 * この関数は、歪みパラメータをスケール倍します。
-	 * パラメータ値は、スケール値の大きさだけ、拡大、又は縮小します。
-	 * @param i_x_scale
-	 * x方向のパラメータ倍率
-	 * @param i_y_scale
-	 * y方向のパラメータ倍率
-	 */
-	@Override
-	public void changeScale(double i_x_scale,double i_y_scale)
-	{
-		throw new NyARRuntimeException();
-	}
+
+
 	
 	/**
 	 * この関数は、座標点を理想座標系から観察座標系へ変換します。
