@@ -13,10 +13,16 @@ public class BinaryFeatureStore
 	public BinaryFeatureStore(int bytesPerFeature)
 	{
 		this.mNumBytesPerFeature=bytesPerFeature;
+		this.mPoints=null;
+		this.mFeatures=null;
 	}
-    public BinaryFeatureStore(){
-    	this(0);
-    }
+	public BinaryFeatureStore(int bytesPerFeature,byte[] i_descripters,FeaturePointStack i_points)
+	{
+		this.mNumBytesPerFeature=bytesPerFeature;
+		this.mPoints=i_points;
+		this.mFeatures=i_descripters;
+	}
+
 
     /**
      * Resize the feature store to hold NUMFEATURES.

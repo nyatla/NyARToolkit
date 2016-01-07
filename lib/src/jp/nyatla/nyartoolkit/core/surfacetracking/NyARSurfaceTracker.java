@@ -269,7 +269,7 @@ public class NyARSurfaceTracker
 			NyARParam param2=NyARParam.loadFromARParamFile(new FileInputStream(cparam),640,480,NyARParam.DISTFACTOR_LT_ARTK2);
 
 			
-			NyARGrayscaleRaster gs=NyARGrayscaleRaster.createInstance(640,480);
+			INyARGrayscaleRaster gs=NyARGrayscaleRaster.createInstance(640,480);
 			//試験画像の準備
 			{
 				INyARRgbRaster rgb=NyARRgbRaster.createInstance(640,480,NyARBufferType.BYTE1D_B8G8R8X8_32);

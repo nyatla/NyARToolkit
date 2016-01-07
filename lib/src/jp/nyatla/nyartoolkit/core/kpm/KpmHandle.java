@@ -21,7 +21,7 @@ public class KpmHandle {
 	int procMode;
 	int detectedMaxFeature;
 	KpmRefData[] refDataSet;
-	KpmInputDataSet inDataSet;
+	KpmInputDataSet inDataSet=new KpmInputDataSet();
 	KpmResult[] result;
 	int resultNum;
 	final public static int KpmPose6DOF = 1;
@@ -377,7 +377,7 @@ public class KpmHandle {
 
 		return 0;
 	}
-	int kpmSetRefDataSet(NyARNftFreakFsetFile i_refDataSet)
+	public int kpmSetRefDataSet(NyARNftFreakFsetFile i_refDataSet)
 	{
 //	    FeatureVector       featureVector;
 //	    this.refDataSet=new KpmRefData[1];
@@ -397,12 +397,12 @@ public class KpmHandle {
         for (int k = 0; k < i_refDataSet.page_info.length; k++) {
             for (int m = 0; m < i_refDataSet.page_info[k].image_info.length; m++)
             {
-            	int page_id=i_refDataSet.page_info[m].page_no;
-        		List<byte[]> dl=new ArrayList<byte[]>();
+            	int image_no=i_refDataSet.page_info[k].image_info[m].image_no;
         		List<Point3d> p3dl=new ArrayList<Point3d>();
         		List<FeaturePoint> fpl=new ArrayList<FeaturePoint>();
+        		int desc_len=0;
             	for(int i=0;i<i_refDataSet.ref_point.length;i++){
-            		if(i_refDataSet.ref_point[i].pageNo==page_id){
+            		if(i_refDataSet.ref_point[i].refImageNo==image_no){
             			NyARNftFreakFsetFile.RefDataSet t=i_refDataSet.ref_point[i];
             			FeaturePoint fp=new FeaturePoint(); 
             			fp.x=t.coord2D.x;
@@ -411,15 +411,25 @@ public class KpmHandle {
             			fp.scale=t.featureVec.scale;
             			fp.maxima=t.featureVec.maxima>1?true:false;
             			fpl.add(fp);
-            			//
-            			byte[] description=new byte[i_refDataSet.ref_point[i].featureVec.v.length];
-            			dl.add(description);
+            			//descripterはサイズだけ先に計算
+            			desc_len+=i_refDataSet.ref_point[i].featureVec.v.length;
             			//
             			Point3d point3d=new Point3d();
             			point3d.x=t.coord3D.x;
             			point3d.y=t.coord3D.y;
             			p3dl.add(point3d);
             			
+            		}
+            	}
+            	//descripterの生成
+        		byte[] dl=new byte[desc_len];
+            	int l=0;
+            	for(int i=0;i<i_refDataSet.ref_point.length;i++){
+            		if(i_refDataSet.ref_point[i].refImageNo==image_no){
+            			for(int j=0;j<i_refDataSet.ref_point[i].featureVec.v.length;j++){
+	            			dl[l]=i_refDataSet.ref_point[i].featureVec.v[j];
+	            			l++;
+            			}
             		}
             	}
             	FeaturePointStack fps=new FeaturePointStack(fpl.size());
@@ -436,7 +446,7 @@ public class KpmHandle {
             	}
             	this.freakMatcher.addFreakFeaturesAndDescriptors(
             			fps,
-            			dl.toArray(new byte[0][0]),
+            			dl,
                         p3v,
                         i_refDataSet.page_info[k].image_info[m].w,
                         i_refDataSet.page_info[k].image_info[m].h,

@@ -913,7 +913,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 		//	arMalloc( _template->wimg1, int,  xsize*ysize );
 		//	arMalloc( _template->wimg2, int,  xsize*ysize );
 	
-		if( ar2GenTemplateSub(cparam, trans, imageSet, featurePoints, num, _template) < 0 ) {
+		if( ar2SetTemplateSub(cparam, trans, imageSet, featurePoints, num, _template) < 0 ) {
 //			ar2FreeTemplate( _template );
 			return null;
 		}

@@ -42,23 +42,26 @@ public class VisualDatabaseFacade
     }
 */   
     public void addFreakFeaturesAndDescriptors(FeaturePointStack featurePoints,
-                                                              byte[][] descriptors,
+                                                              byte[] descriptors,
                                                               Point3dVector points3D,
                                                               int width,
                                                               int height,
                                                               int image_id){
 //        std::shared_ptr<Keyframe<96> > keyframe(new Keyframe<96>());
-        Keyframe keyframe=new Keyframe(96);
-        keyframe.setWidth(width);
-        keyframe.setHeight(height);
-        keyframe.store().setNumBytesPerFeature(96);
-        keyframe.store().points().resize(featurePoints.size());
-        keyframe.store().points() = featurePoints;
-        keyframe.store().features().resize(descriptors.size());
-        keyframe.store().features() = descriptors;
+        Keyframe keyframe=new Keyframe(
+        	96,
+        	width,height,
+        	new BinaryFeatureStore(96,descriptors,featurePoints));
+//        keyframe.setWidth(width);
+//        keyframe.setHeight(height);
+//        keyframe.store().setNumBytesPerFeature(96);
+//        keyframe.store().points().resize(featurePoints.getLength());
+//        keyframe.store().points() = featurePoints;
+//        keyframe.store().features().resize(descriptors.size());
+//        keyframe.store().features() = descriptors;
         keyframe.buildIndex();
         mVisualDbImpl.mVdb.addKeyframe(keyframe, image_id);
-        mVisualDbImpl.mPoint3d[image_id] = points3D;
+        mVisualDbImpl.mPoint3d.put(image_id,points3D);
     }
 /*    
     void computeFreakFeaturesAndDescriptors(unsigned char* grayImage,

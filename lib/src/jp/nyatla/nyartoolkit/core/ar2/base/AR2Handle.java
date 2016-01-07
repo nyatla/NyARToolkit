@@ -1562,7 +1562,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 			param.getDistortionFactor().ideal2Observ(100,100, d);
 			param.getDistortionFactor().observ2Ideal(100,100, d);
 			
-			NyARGrayscaleRaster gs=NyARGrayscaleRaster.createInstance(640,480);
+			INyARGrayscaleRaster gs=NyARGrayscaleRaster.createInstance(640,480);
 			//試験画像の準備
 			{
 				INyARRgbRaster rgb=NyARRgbRaster.createInstance(640,480,NyARBufferType.BYTE1D_B8G8R8X8_32);

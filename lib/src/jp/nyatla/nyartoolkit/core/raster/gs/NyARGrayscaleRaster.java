@@ -61,7 +61,7 @@ public abstract class NyARGrayscaleRaster implements INyARGrayscaleRaster
 	 * falseの場合、初期のバッファはnullになります。インスタンスを生成したのちに、{@link #wrapBuffer}を使って割り当ててください。
 	 * @throws NyARRuntimeException
 	 */	
-	public static NyARGrayscaleRaster createInstance(int i_width, int i_height, int i_raster_type,boolean i_is_alloc)
+	public static INyARGrayscaleRaster createInstance(int i_width, int i_height, int i_raster_type,boolean i_is_alloc)
 	{
 		switch(i_raster_type){
 		case NyARBufferType.INT1D_GRAY_8:
@@ -77,7 +77,7 @@ public abstract class NyARGrayscaleRaster implements INyARGrayscaleRaster
 	 * ラスタのサイズ
 	 * @throws NyARRuntimeException
 	 */
-	public static NyARGrayscaleRaster createInstance(int i_width, int i_height)
+	public static INyARGrayscaleRaster createInstance(int i_width, int i_height)
 	{
 		return NyARGrayscaleRaster.createInstance(i_width,i_height,true);
 	}
@@ -94,7 +94,7 @@ public abstract class NyARGrayscaleRaster implements INyARGrayscaleRaster
 	 * falseの場合、初期のバッファはnullになります。インスタンスを生成したのちに、{@link #wrapBuffer}を使って割り当ててください。
 	 * @throws NyARRuntimeException
 	 */
-	public static NyARGrayscaleRaster createInstance(int i_width, int i_height, boolean i_is_alloc)
+	public static INyARGrayscaleRaster createInstance(int i_width, int i_height, boolean i_is_alloc)
 	{		
 		return NyARGrayscaleRaster.createInstance(i_width,i_height,NyARBufferType.INT1D_GRAY_8, i_is_alloc);
 	}	

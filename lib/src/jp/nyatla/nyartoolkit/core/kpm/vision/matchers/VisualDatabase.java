@@ -2,6 +2,7 @@ package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
 
 import java.util.Map;
 
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.kpm.BinomialPyramid32f;
 import jp.nyatla.nyartoolkit.core.kpm.Point2d;
 import jp.nyatla.nyartoolkit.core.kpm.vision.Keyframe;
@@ -110,9 +111,9 @@ public class VisualDatabase<FEATURE_EXTRACTOR extends FREAKExtractor, STORE exte
 		}
 
 		// Find the features on the image
-		this.mQueryKeyframe = new Keyframe(96);// .reset(new keyframe_t());
-		this.mQueryKeyframe.setWidth((int) pyramid.images()[0].getWidth());
-		this.mQueryKeyframe.setHeight((int) pyramid.images()[0].getHeight());
+		this.mQueryKeyframe = new Keyframe(
+			96,(int) pyramid.images()[0].getWidth(),(int) pyramid.images()[0].getHeight(),
+			new BinaryFeatureStore(96));// .reset(new keyframe_t());
 		FindFeatures(this.mQueryKeyframe, pyramid, this.mDetector,
 				this.mFeatureExtractor);
 		// LOG_INFO("Found %d features in query",
@@ -569,6 +570,19 @@ public class VisualDatabase<FEATURE_EXTRACTOR extends FREAKExtractor, STORE exte
 
 	// Robust homography estimation
 	RobustHomography mRobustHomography;
+
+	public void addKeyframe(Keyframe keyframe, int image_id)
+	{
+//        typename keyframe_map_t::iterator it = mKeyframeMap.find(id);
+//        if(it != mKeyframeMap.end()) {
+//            throw EXCEPTION("ID already exists");
+//        }
+		if(this.mKeyframeMap.containsKey(image_id)){
+			throw new NyARRuntimeException();
+		}
+        
+        mKeyframeMap.put(image_id,keyframe);
+	}
 
 
 

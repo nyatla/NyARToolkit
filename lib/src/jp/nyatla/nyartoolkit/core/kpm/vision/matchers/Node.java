@@ -5,10 +5,20 @@ import jp.nyatla.nyartoolkit.core.kpm.vision.math.Hamming;
 
 
 public class Node {
-	public Node(int i_NUM_BYTES_PER_FEATURE,int id){
+	public Node(int i_NUM_BYTES_PER_FEATURE,int id)
+	{
 		this.mId=id;
 		this.mLeaf=true;
 		this.mCenter=new byte[i_NUM_BYTES_PER_FEATURE];
+	}
+	public Node(int i_NUM_BYTES_PER_FEATURE,int id,byte[] i_feature,int i_st)
+	{
+		this.mId=id;
+		this.mLeaf=true;
+		this.mCenter=new byte[i_NUM_BYTES_PER_FEATURE];
+		for(int i=0;i<i_NUM_BYTES_PER_FEATURE;i++){
+			this.mCenter[i]=i_feature[i+i_st];
+		}
 	}
     /**
      * Set/Get leaf flag
@@ -47,6 +57,19 @@ public class Node {
 	public int[] reverseIndex() { return mReverseIndex; }
 //    inline const std::vector<int>& reverseIndex() const { return mReverseIndex; }
 //    
+	public void reserveChildren(int i_size)
+	{
+		this.mChildren=new Node[i_size];
+		_num_of_children=0;
+	}
+    private int _num_of_children;
+	public void children_push_back(Node new_node)
+	{
+		this.mChildren[_num_of_children]=new_node;
+		_num_of_children++;
+		// TODO Auto-generated method stub
+		
+	}	
     /**
      * Get a queue of all the children nodes sorted by distance from node center.
      */
@@ -103,7 +126,11 @@ public class Node {
     private Node[] mChildren;
     
     // Index of the features at this node
-    int[] mReverseIndex;	
+    private int[] mReverseIndex;
+    public void resizeReverseIndex(int i_size){
+    	this.mReverseIndex=new int[i_size];
+    }
+
 	
 	
 }

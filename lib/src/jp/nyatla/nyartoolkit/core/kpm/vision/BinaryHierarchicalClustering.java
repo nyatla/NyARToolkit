@@ -1,10 +1,18 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.BinarykMedoids;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.Node;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.NodePtrStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.PriorityQueueItem;
+import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
+import jp.nyatla.nyartoolkit.core.math.NyARLCGsRandomizer;
+import jp.nyatla.nyartoolkit.j2se.ArrayUtils;
 
 public class BinaryHierarchicalClustering {
 	public class Queue extends PriorityQueue<PriorityQueueItem> {
@@ -13,9 +21,21 @@ public class BinaryHierarchicalClustering {
 	}
 
 	final private int _NUM_BYTES_PER_FEATURE;
-
-	public BinaryHierarchicalClustering(int NUM_BYTES_PER_FEATURE) {
+    // Clustering algorithm
+	final private BinarykMedoids mBinarykMedoids;
+    // Maximum nodes to pop off the priority queue
+//    private int mMaxNodesToPop;
+    // Minimum number of feature at a node
+    private int mMinFeaturePerNode;
+    
+	public BinaryHierarchicalClustering(int NUM_BYTES_PER_FEATURE,int i_NumHypotheses,int i_NumCenters,int i_MaxNodesToPop,int i_MinFeaturesPerNode) {
 		this._NUM_BYTES_PER_FEATURE = NUM_BYTES_PER_FEATURE;
+		
+//        mIndex.setNumHypotheses(128);
+//        mIndex.setNumCenters(8);
+        this.mMaxNodesToPop=0;
+        this.mMinFeaturePerNode=16;
+        this.mBinarykMedoids=new BinarykMedoids(NUM_BYTES_PER_FEATURE,new NyARLCGsRandomizer(1234),8,i_NumHypotheses);
 	}
 
 	// typedef Node<NUM_BYTES_PER_FEATURE> node_t;
@@ -109,7 +129,15 @@ public class BinaryHierarchicalClustering {
 
 	// Maximum nodes to pop off the priority queue
 	int mMaxNodesToPop;
-
+	
+	private int mNextNodeId=0;
+    /**
+     * Get the next node id
+     */
+    private synchronized int nextNodeId(){
+        return this.mNextNodeId++;
+    }
+    
 	//
 	// // Minimum number of feature at a node
 	// int mMinFeaturePerNode;
@@ -169,4 +197,79 @@ public class BinaryHierarchicalClustering {
 			}
 		}
 	}
+    void build(byte[] features, int num_features) {
+    	int[] indices=new int[num_features];
+        for(int i = 0; i < indices.length; i++) {
+            indices[i] = (int)i;
+        }
+        this.build(features, num_features, indices,indices.length);
+    }
+    void build(byte[] features, int num_features, int[] indices, int num_indices) {
+        mRoot=new Node(_NUM_BYTES_PER_FEATURE,this.nextNodeId());
+        mRoot.leaf(false);
+        this.build(mRoot, features, num_features, indices, num_indices);
+    }
+    
+    void build(Node node, byte[] features, int num_features, int[] indices, int num_indices) {
+        // Check if there are enough features to cluster.
+        // If not, then assign all features to the same cluster.
+        if(num_indices <= math_utils.max2(mBinarykMedoids.k(),this.mMinFeaturePerNode)) {
+            node.leaf(true);
+            node.resizeReverseIndex(num_indices);
+            for(int i = 0; i < num_indices; i++) {
+                node.reverseIndex()[i] = indices[i];
+            }
+        } else {
+            Map<Integer,List<Integer>> cluster_map=new HashMap<Integer,List<Integer>>();
+            
+            // Perform clustering
+            mBinarykMedoids.assign(features, num_features, indices, num_indices);
+            
+            // Get a list of features for each cluster center
+            int[] assignment = mBinarykMedoids.assignment();
+//            ASSERT(assignment.size() == num_indices, "Assignment size wrong");
+            for(int i = 0; i < assignment.length; i++) {
+//                ASSERT(assignment[i] != -1, "Assignment is invalid");
+//                ASSERT(assignment[i] < num_indices, "Assignment out of range");
+//                ASSERT(indices[assignment[i]] < num_features, "Assignment out of range");
+                
+//                cluster_map[indices[assignment[i]]].push_back(indices[i]);
+            	List<Integer> li=cluster_map.get(indices[assignment[i]]);
+            	if(li==null){
+            		li=new ArrayList<Integer>();
+            		cluster_map.put(indices[assignment[i]],li);
+            	}
+            	li.add(indices[i]);
+            }
+
+            // If there is only 1 cluster then make this node a leaf
+            if(cluster_map.size() == 1) {
+                node.leaf(true);
+                node.resizeReverseIndex(num_indices);
+                for(int i = 0; i < num_indices; i++) {
+                    node.reverseIndex()[i] = indices[i];
+                }
+                return;
+            }
+            ここまで
+            // Create a new node for each cluster center
+            node.reserveChildren(cluster_map.size());
+            for(Map.Entry<Integer,List<Integer>> l : cluster_map.entrySet()) {
+            	int first=l.getKey();
+                Node new_node = new Node(_NUM_BYTES_PER_FEATURE,nextNodeId(),features,first*_NUM_BYTES_PER_FEATURE);
+                new_node.leaf(false);
+                
+                // Make the new node a child of the input node
+                node.children_push_back(new_node);
+                
+                // Recursively build the tree
+                int[] v=ArrayUtils.toIntArray_impl(l.getValue(),0,l.getValue().size());
+                
+                this.build(new_node, features, num_features, v, (int)v.length);
+            }            
+            
+
+
+        }
+    }
 }

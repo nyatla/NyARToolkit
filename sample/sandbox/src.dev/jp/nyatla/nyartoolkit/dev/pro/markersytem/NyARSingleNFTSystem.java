@@ -66,14 +66,14 @@ public class NyARSingleNFTSystem extends NyARSingleCameraSystem
 				return;
 			}
 			if(this.updateKpm(i_sensor)){
-				this._stracker.resetLog();
+				this._stracker.resetTrackingLog();
 				return;
 			}
 			this._is_found=false;
 			return;
 		}else{
 			if(this.updateKpm(i_sensor)){
-				this._stracker.resetLog();
+				this._stracker.resetTrackingLog();
 				this._is_found=true;
 				return;
 			}
