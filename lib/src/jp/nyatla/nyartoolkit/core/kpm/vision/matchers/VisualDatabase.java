@@ -88,7 +88,8 @@ public class VisualDatabase<FEATURE_EXTRACTOR extends FREAKExtractor, STORE exte
 
 	public boolean query(INyARGrayscaleRaster image) {
 		// Allocate pyramid
-		if (this.mPyramid.images().length == 0
+//		if (this.mPyramid.images().length == 0
+		if (this.mPyramid.images()==null
 				|| this.mPyramid.images()[0].getWidth() != image.getWidth()
 				|| this.mPyramid.images()[0].getHeight() != image.getHeight()) {
 			int num_octaves = BinomialPyramid32f.numOctaves(
@@ -551,10 +552,10 @@ public class VisualDatabase<FEATURE_EXTRACTOR extends FREAKExtractor, STORE exte
 	Keyframe mQueryKeyframe;
 	//
 	// // Map of keyframe
-	KeyframeMap mKeyframeMap;
+	final private KeyframeMap mKeyframeMap=new KeyframeMap();
 	//
 	// // Pyramid builder
-	BinomialPyramid32f mPyramid;
+	final private BinomialPyramid32f mPyramid=new BinomialPyramid32f();
 	//
 	// Interest point detector (DoG, etc)
 	private DoGScaleInvariantDetector mDetector = new DoGScaleInvariantDetector();

@@ -2,6 +2,8 @@ package jp.nyatla.nyartoolkit.core.kpm.vision;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -220,7 +222,7 @@ public class BinaryHierarchicalClustering {
                 node.reverseIndex()[i] = indices[i];
             }
         } else {
-            Map<Integer,List<Integer>> cluster_map=new HashMap<Integer,List<Integer>>();
+            Map<Integer,List<Integer>> cluster_map=new LinkedHashMap<Integer,List<Integer>>();
             
             // Perform clustering
             mBinarykMedoids.assign(features, num_features, indices, num_indices);
@@ -251,7 +253,6 @@ public class BinaryHierarchicalClustering {
                 }
                 return;
             }
-            ここまで
             // Create a new node for each cluster center
             node.reserveChildren(cluster_map.size());
             for(Map.Entry<Integer,List<Integer>> l : cluster_map.entrySet()) {

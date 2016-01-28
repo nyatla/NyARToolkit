@@ -13,7 +13,7 @@ import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 
 public class VisualDatabaseFacade
 {
-	class Point3dMap extends HashMap<Integer,Point3dVector>{
+	class Point3dMap extends LinkedHashMap<Integer,Point3dVector>{
 		
 	}
     class VisualDatabaseImpl{
@@ -23,7 +23,7 @@ public class VisualDatabaseFacade
     	public VisualDatabase<FREAKExtractor, BinaryFeatureStore, BinaryFeatureMatcher> mVdb;
 
 //        std::unique_ptr<vdb_t> mVdb;
-        public Point3dMap mPoint3d;
+        public Point3dMap mPoint3d=new Point3dMap();
     }
     public VisualDatabaseFacade(){
         this.mVisualDbImpl=new VisualDatabaseImpl();
@@ -62,6 +62,7 @@ public class VisualDatabaseFacade
         keyframe.buildIndex();
         mVisualDbImpl.mVdb.addKeyframe(keyframe, image_id);
         mVisualDbImpl.mPoint3d.put(image_id,points3D);
+        return;
     }
 /*    
     void computeFreakFeaturesAndDescriptors(unsigned char* grayImage,

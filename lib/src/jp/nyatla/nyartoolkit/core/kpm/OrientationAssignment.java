@@ -39,7 +39,7 @@ public class OrientationAssignment {
         this.mHistogram=new float[num_bins];
         
         // Allocate gradient images
-        this.mGradients=new KpmImage[this.mNumOctaves*this.mNumScalesPerOctave];
+        this.mGradients=new GradientsImage[this.mNumOctaves*this.mNumScalesPerOctave];
         for(int i = 0; i < num_octaves; i++) {
             for(int j = 0; j < num_scales_per_octave; j++) {
 //                mGradients[i*num_scales_per_octave+j].alloc(IMAGE_F32,
@@ -48,7 +48,7 @@ public class OrientationAssignment {
 //                                                            AUTO_STEP,
 //                                                            2);
             	//これKpmImageじゃなくて単純なfloatbufferにしようあとで。どうせバッファオーバフローで落ちるから。
-                mGradients[i*num_scales_per_octave+j]=new KpmImage(fine_width>>i,fine_height>>i);
+                mGradients[i*num_scales_per_octave+j]=new GradientsImage(fine_width>>i,fine_height>>i);
                 
             }
         }    	
@@ -103,7 +103,7 @@ public class OrientationAssignment {
 //        ASSERT(y < mGradients[octave*mNumScalesPerOctave+scale].height(), "y must be less than the image height");
         
         int level = octave*mNumScalesPerOctave+scale;
-        KpmImage g = mGradients[level];
+        GradientsImage g = mGradients[level];
         float[] g_buf=(float[])g.getBuffer();
 //        ASSERT(g.channels() == 2, "Number of channels should be 2");
         
@@ -232,12 +232,12 @@ public class OrientationAssignment {
     /**
      * @return Vector of images.
      */
-    public KpmImage[] images(){ return this.mGradients; }
+    public GradientsImage[] images(){ return this.mGradients; }
     
     /**
      * Get a gradient image at an index.
      */
-    public KpmImage get(int i){ return mGradients[i]; }
+    public GradientsImage get(int i){ return mGradients[i]; }
     
     
     private int mNumOctaves;
@@ -267,7 +267,7 @@ public class OrientationAssignment {
     private float[] mHistogram;
     
     // Vector of gradient images
-    private KpmImage[] mGradients;
+    private GradientsImage[] mGradients;
     
     
     /**

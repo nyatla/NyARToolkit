@@ -326,6 +326,7 @@ public class BinomialPyramid32f extends GaussianScaleSpacePyramid
             apply_filter(mPyramid[i*mNumScalesPerOctave+1], mPyramid[i*mNumScalesPerOctave]);
             apply_filter_twice(mPyramid[i*mNumScalesPerOctave+2], mPyramid[i*mNumScalesPerOctave+1]);
         }
+        return;
     }
     void apply_filter(KpmImage dst, INyARGrayscaleRaster src)
     {
