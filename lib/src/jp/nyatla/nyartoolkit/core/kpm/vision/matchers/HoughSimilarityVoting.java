@@ -203,6 +203,10 @@ public class HoughSimilarityVoting {
 		// Compute the bin location
 		mapCorrespondenceResult fBinRet = new mapCorrespondenceResult();
 		mapVoteToBin(fBinRet, x, y, angle, scale);
+		this.mfBinX=fBinRet.x;
+		this.mfBinY=fBinRet.y;
+		this.mfBinScale=fBinRet.scale;
+		this.mfBinAngle=fBinRet.angle;
 		binX = (int) Math.floor(mfBinX - 0.5f);
 		binY = (int) Math.floor(mfBinY - 0.5f);
 		binAngle = (int) Math.floor(mfBinAngle - 0.5f);

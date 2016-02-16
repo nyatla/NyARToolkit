@@ -84,6 +84,9 @@ public class GaussianScaleSpacePyramid {
 		} else if (octave >= this.mNumOctaves) {
 			result.octave = this.mNumOctaves - 1;
 			result.scale = this.mNumScalesPerOctave - 1;
+		}else{
+			result.octave=octave;
+			result.scale=scale;
 		}
 		assert (octave >= 0);// , "Octave must be positive");
 		assert (octave < this.mNumOctaves);// ,

@@ -198,8 +198,8 @@ public class math_utils
      */
     //void MultiplyPointSimilarityInhomogenous(T xp[2], const T H[9], const T x[2]) {
     public static void MultiplyPointSimilarityInhomogenous(float[] xp,int idx, float[] H, float[] x,int idx2) {
-        xp[idx*2+0] = H[0]*x[idx2*2+0] + H[1]*x[idx2*2+1] + H[2];
-        xp[idx*2+1] = H[3]*x[idx2*2+0] + H[4]*x[idx2*2+1] + H[5];
+        xp[idx+0] = H[0]*x[idx2+0] + H[1]*x[idx2+1] + H[2];
+        xp[idx+1] = H[3]*x[idx2+0] + H[4]*x[idx2+1] + H[5];
     }
 //
 //    /**

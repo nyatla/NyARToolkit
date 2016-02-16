@@ -35,7 +35,7 @@ public class RobustHomography {
 	private void init(float cauchyScale, int maxNumHypotheses, int maxTrials,
 			int chunkSize) {
 		this.mHyp = new float[9 * maxNumHypotheses];
-		this.mHypCosts = new CostPair[maxNumHypotheses];
+		this.mHypCosts = CostPair.createArray(maxNumHypotheses);
 
 		mCauchyScale = cauchyScale;
 		mMaxNumHypotheses = maxNumHypotheses;
@@ -55,7 +55,14 @@ public class RobustHomography {
 	public static class CostPair {
 		public float first;
 		public int second;
-
+		public static CostPair[] createArray(int i_size)
+		{
+			CostPair[] r=new CostPair[i_size];
+			for(int i=0;i<i_size;i++){
+				r[i]=new CostPair();
+			}
+			return r;
+		}
 		public static boolean operator_lt(CostPair _Left, CostPair _Right) { // test
 																				// if
 																				// _Left
@@ -156,10 +163,10 @@ public class RobustHomography {
 
 			// Check if the four points are geometrically valid
 			if (!geometry.Homography4PointsGeometricallyConsistent(
-					p[tmp_i[hyp_perm + 0] << 1], p[tmp_i[hyp_perm + 1] << 1],
-					p[tmp_i[hyp_perm + 2] << 1], p[tmp_i[hyp_perm + 3] << 1],
-					q[tmp_i[hyp_perm + 0] << 1], q[tmp_i[hyp_perm + 1] << 1],
-					q[tmp_i[hyp_perm + 2] << 1], q[tmp_i[hyp_perm + 3] << 1])) {
+					p[tmp_i[hyp_perm + 0]], p[tmp_i[hyp_perm + 1]],
+					p[tmp_i[hyp_perm + 2]], p[tmp_i[hyp_perm + 3]],
+					q[tmp_i[hyp_perm + 0]], q[tmp_i[hyp_perm + 1]],
+					q[tmp_i[hyp_perm + 2]], q[tmp_i[hyp_perm + 3]])) {
 				continue;
 			}/*
 			 * boolean SolveHomography4Points(float[] H, float[] x1, float[] x2,
@@ -169,10 +176,10 @@ public class RobustHomography {
 			float[] Ht = new float[9];
 			// Compute the homography
 			if (!homography_solver.SolveHomography4Points(Ht,
-					p[tmp_i[hyp_perm + 0] << 1], p[tmp_i[hyp_perm + 1] << 1],
-					p[tmp_i[hyp_perm + 2] << 1], p[tmp_i[hyp_perm + 3] << 1],
-					q[tmp_i[hyp_perm + 0] << 1], q[tmp_i[hyp_perm + 1] << 1],
-					q[tmp_i[hyp_perm + 2] << 1], q[tmp_i[hyp_perm + 3] << 1])) {
+					p[tmp_i[hyp_perm + 0]], p[tmp_i[hyp_perm + 1]],
+					p[tmp_i[hyp_perm + 2]], p[tmp_i[hyp_perm + 3]],
+					q[tmp_i[hyp_perm + 0]], q[tmp_i[hyp_perm + 1]],
+					q[tmp_i[hyp_perm + 2]], q[tmp_i[hyp_perm + 3]])) {
 				continue;
 			}
 			System.arraycopy(Ht, 0, hyp, num_hypotheses * 9, 9);
@@ -216,10 +223,7 @@ public class RobustHomography {
 				// const T* H_cur = &hyp[hyp_costs[j].second*9];
 				int H_cur = hyp_costs[j].second * 9;
 				for (int k = i; k < this_chunk_end; k++) {
-					hyp_costs[j].first += CauchyProjectiveReprojectionCost(
-							Utils.arraysubset(H, H_cur, 9), p[tmp_i[hyp_perm
-									+ k] << 1], q[tmp_i[hyp_perm + k] << 1],
-							one_over_scale2);
+					hyp_costs[j].first += CauchyProjectiveReprojectionCost(Utils.arraysubset(hyp, H_cur, 9), p[tmp_i[hyp_perm+ k]], q[tmp_i[hyp_perm + k]],one_over_scale2);
 				}
 			}
 

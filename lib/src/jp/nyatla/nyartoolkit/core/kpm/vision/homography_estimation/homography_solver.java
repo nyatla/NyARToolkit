@@ -78,7 +78,7 @@ public class homography_solver {
 		A[A_ptr + 5] = 0;
 
 		A[A_ptr + 6] = xp.x * x.x;//xp[0] * x[0];
-		A[A_ptr + 7] = xp.y * x.y;//xp[0] * x[1];
+		A[A_ptr + 7] = xp.x * x.y;//xp[0] * x[1];
 		A[A_ptr + 8] = xp.x;//xp[0];
 
 		// ZeroVector3(A+9);

@@ -29,11 +29,22 @@ public class BinaryFeatureStore
      */
     public void resize(int numFeatures)
     {
-    	byte[] old=this.mFeatures;
-    	//サイズを変えるときはコピーする。
+    	byte[] old_features=this.mFeatures;
+    	FeaturePointStack old_points=this.mPoints;
         this.mFeatures=new byte[this.mNumBytesPerFeature*numFeatures];
-        System.arraycopy(this.mFeatures,0,old,0,Math.min(old.length,numFeatures));
-        this.mPoints=new FeaturePointStack(numFeatures);
+        
+        this.mPoints=new FeaturePointStack(numFeatures);    		
+    	if(old_features!=null){
+	    	//サイズを変えるときはコピーする。
+	        System.arraycopy(old_features,0,this.mFeatures,0,Math.min(old_features.length,numFeatures*this.mNumBytesPerFeature));
+    	}
+		if(old_points!=null){
+			for(int i=0;i<old_points.getLength();i++){
+				FeaturePoint fp=this.mPoints.prePush();
+				fp.set(old_points.getItem(i));
+			}
+		}
+		return;
     }
     
     /**

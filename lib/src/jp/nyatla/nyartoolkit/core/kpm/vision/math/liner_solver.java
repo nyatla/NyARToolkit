@@ -8,6 +8,9 @@ public class liner_solver {
     static float DotProduct9(float[] a,float[] b) {
         return a[0]*b[0] + a[1]*b[1] + a[2]*b[2] + a[3]*b[3] + a[4]*b[4] + a[5]*b[5] + a[6]*b[6] + a[7]*b[7] + a[8]*b[8];
     }
+    static float DotProduct9(float[] a,int a_ptr,float[] b,int b_ptr) {
+        return a[a_ptr+0]*b[0+b_ptr] + a[a_ptr+1]*b[1+b_ptr] + a[a_ptr+2]*b[2+b_ptr] + a[a_ptr+3]*b[3+b_ptr] + a[a_ptr+4]*b[4+b_ptr] + a[a_ptr+5]*b[5+b_ptr] + a[a_ptr+6]*b[6+b_ptr] + a[a_ptr+7]*b[7+b_ptr] + a[a_ptr+8]*b[8+b_ptr];
+    }
     
     /**
      * Sum sqaured.
@@ -15,6 +18,10 @@ public class liner_solver {
     static float SumSquares9(float[] x) {
         return DotProduct9(x, x);
     }
+    static float SumSquares9(float[] x,int x_i) {
+        return DotProduct9(x,x_i, x,x_i);
+    }
+    
     static int MaxIndex(float[] x,int len) {
         int index = 0;
         for(int i=1;i<len;i++){
@@ -49,7 +56,7 @@ public class liner_solver {
      */
 static //    void AccumulateProjection9(T x[9], const T e[9], const T a[9]) {
     void AccumulateProjection9(float[] x,int xi, float[] e,int ei,float[] a,int ai) {
-        float d = DotProduct9(Utils.arraysubset(a,ai,9), e);
+        float d = DotProduct9(Utils.arraysubset(a,ai,9),Utils.arraysubset(e,ei,9));
         x[xi+0] -= d*e[ei+0];
         x[xi+1] -= d*e[ei+1];
         x[xi+2] -= d*e[ei+2];
@@ -278,7 +285,7 @@ static //    boolean OrthogonalizePivot8x9Basis0(T Q[8*9], T A[8*9]) {
 //    float OrthogonalizeIdentity8x9(float x[9], const T Q[72], int i) {
     static float OrthogonalizeIdentity8x9(float[] x,int x_ptr,float[] Q, int i) {
         ScaleVector9(x,x_ptr, Q,0, -Q[i]);
-        x[i] = 1+x[i];
+        x[i+x_ptr] = 1+x[i+x_ptr];
         
         AccumulateScaledVector9(x,x_ptr, Q,9,  -Q[9 +i]);
         AccumulateScaledVector9(x,x_ptr, Q,18, -Q[18+i]);
@@ -288,7 +295,7 @@ static //    boolean OrthogonalizePivot8x9Basis0(T Q[8*9], T A[8*9]) {
         AccumulateScaledVector9(x,x_ptr, Q,54, -Q[54+i]);
         AccumulateScaledVector9(x,x_ptr, Q,63, -Q[63+i]);
         
-        float ss = SumSquares9(x);
+        float ss = SumSquares9(x,x_ptr);
         if(ss == 0) {
             return 0;
         }

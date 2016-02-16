@@ -15,8 +15,9 @@ import jp.nyatla.nyartoolkit.core.kpm.vision.math.geometry;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.liner_algebr;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.raster.gs.format.NyARGsRaster_INT1D_GRAY_8;
 
-public class VisualDatabase<FEATURE_EXTRACTOR extends FREAKExtractor, STORE extends BinaryFeatureStore, MATCHER extends BinaryFeatureMatcher> {
+public class VisualDatabase<STORE extends BinaryFeatureStore> {
 	private static float kLaplacianThreshold = 3;
 	private static float kEdgeThreshold = 4;
 	private static int kMaxNumFeatures = 300;
@@ -30,7 +31,7 @@ public class VisualDatabase<FEATURE_EXTRACTOR extends FREAKExtractor, STORE exte
 	private static int kBytesPerFeature = 96;
 
 	private static boolean kUseFeatureIndex = true;
-	private final static int NUM_BYTES_PER_FEATURE = 96;
+	public final static int NUM_BYTES_PER_FEATURE = 96;
 
 	public VisualDatabase() {
 		this.mDetector.setLaplacianThreshold(kLaplacianThreshold);
@@ -41,13 +42,14 @@ public class VisualDatabase<FEATURE_EXTRACTOR extends FREAKExtractor, STORE exte
 		this.mMinNumInliers = kMinNumInliers;
 
 		this.mUseFeatureIndex = kUseFeatureIndex;
+		this.mFeatureExtractor=new FREAKExtractor();
 	}
 
 	/**
 	 * Find feature points in an image.
 	 */
-	void FindFeatures(Keyframe keyframe, GaussianScaleSpacePyramid pyramid,
-			DoGScaleInvariantDetector detector, FEATURE_EXTRACTOR extractor) {
+	static void FindFeatures(Keyframe keyframe, GaussianScaleSpacePyramid pyramid,
+			DoGScaleInvariantDetector detector, FREAKExtractor extractor) {
 		// ASSERT(pyramid, "Pyramid is NULL");
 		// ASSERT(detector, "Detector is NULL");
 		// ASSERT(pyramid->images().size() > 0, "Pyramid is empty");
@@ -97,8 +99,8 @@ public class VisualDatabase<FEATURE_EXTRACTOR extends FREAKExtractor, STORE exte
 					kMinCoarseSize);
 			mPyramid.alloc(image.getWidth(), image.getHeight(), num_octaves);
 		}
-
-		// Build the pyramid
+		long p=((NyARGsRaster_INT1D_GRAY_8)(image)).allPixels();
+		// Build the pyramid		
 		mPyramid.build(image);
 
 		return query(mPyramid);
@@ -141,7 +143,7 @@ public class VisualDatabase<FEATURE_EXTRACTOR extends FREAKExtractor, STORE exte
 			query[q_ptr + 0] = query_point.x;
 			query[q_ptr + 1] = query_point.y;
 			query[q_ptr + 2] = query_point.angle;
-			query[3] = query_point.scale;
+			query[q_ptr + 3] = query_point.scale;
 
 			int r_ptr = i * 4;
 			ref[r_ptr + 0] = ref_point.x;
@@ -169,13 +171,15 @@ public class VisualDatabase<FEATURE_EXTRACTOR extends FREAKExtractor, STORE exte
 
 	boolean query(Keyframe query_keyframe) {
 		// mMatchedInliers.clear();
-		// mMatchedId = -1;
+		this. mMatchedId = -1;
+		int last_inliers=0;
 
 		FeaturePointStack query_points = query_keyframe.store().points();
 		// Loop over all the images in the database
 		// typename keyframe_map_t::const_iterator it = mKeyframeMap.begin();
 		// for(; it != mKeyframeMap.end(); it++) {
 		for (Map.Entry<Integer, Keyframe> i : mKeyframeMap.entrySet()) {
+			//MAPの順番がC++だと8->0->1->2...7だから0で比較すること
 			Keyframe second = i.getValue();
 			int first = i.getKey();
 			// TIMED("Find Matches (1)") {
@@ -296,11 +300,12 @@ public class VisualDatabase<FEATURE_EXTRACTOR extends FREAKExtractor, STORE exte
 			// }
 
 			// std::cout<<"inliers-"<<inliers.size()<<std::endl;
-			if (inliers.getLength() >= mMinNumInliers
-					&& inliers.getLength() > mMatchedInliers.getLength()) {
+			if (inliers.getLength() >= mMinNumInliers && inliers.getLength() > last_inliers) {
 				indexing.CopyVector(mMatchedGeometry, 0, H, 0, 9);
 				// CopyVector9(mMatchedGeometry, H);
+				//現状は毎回生成してるからセットで。
 				mMatchedInliers = inliers;// mMatchedInliers.swap(inliers);
+				last_inliers=inliers.getLength();
 				mMatchedId = first;
 			}
 		}
@@ -385,8 +390,8 @@ public class VisualDatabase<FEATURE_EXTRACTOR extends FREAKExtractor, STORE exte
 		for (int i = 0; i < matches.getLength(); i++) {
 			dstPoints[i].x = p1.getItem(matches.getItem(i).ins).x;
 			dstPoints[i].y = p1.getItem(matches.getItem(i).ins).y;
-			srcPoints[i].x = p1.getItem(matches.getItem(i).ref).x;
-			srcPoints[i].y = p1.getItem(matches.getItem(i).ref).y;
+			srcPoints[i].x = p2.getItem(matches.getItem(i).ref).x;
+			srcPoints[i].y = p2.getItem(matches.getItem(i).ref).y;
 		}
 
 		//
@@ -561,16 +566,16 @@ public class VisualDatabase<FEATURE_EXTRACTOR extends FREAKExtractor, STORE exte
 	private DoGScaleInvariantDetector mDetector = new DoGScaleInvariantDetector();
 
 	// Feature Extractor (FREAK, etc).
-	FEATURE_EXTRACTOR mFeatureExtractor;
+	final FREAKExtractor mFeatureExtractor;
 	//
 	// // Feature matcher
-	MATCHER mMatcher;
+	final BinaryFeatureMatcher mMatcher=new BinaryFeatureMatcher(NUM_BYTES_PER_FEATURE);
 
 	// Similarity voter
-	HoughSimilarityVoting mHoughSimilarityVoting;
+	HoughSimilarityVoting mHoughSimilarityVoting=new HoughSimilarityVoting();
 
 	// Robust homography estimation
-	RobustHomography mRobustHomography;
+	final RobustHomography mRobustHomography=new RobustHomography();
 
 	public void addKeyframe(Keyframe keyframe, int image_id)
 	{

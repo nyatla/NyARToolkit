@@ -41,8 +41,8 @@ public class kpmMatching {
 //	    icpData.num = i;
 //	    icpData.screenCoord = &sCoord[0];
 //	    icpData.worldCoord  = &wCoord[0];
-	    NyARIcpPlane icp_planer=new NyARIcpPlane(cparamLT);
-	    if(icp_planer.icpGetInitXw2Xc_from_PlanarData(sCoord, wCoord, matchData.getLength(), initMatXw2Xc)){
+	    NyARIcpPlane icp_planer=new NyARIcpPlane(cparamLT.getPerspectiveProjectionMatrix());
+	    if(!icp_planer.icpGetInitXw2Xc_from_PlanarData(sCoord, wCoord, matchData.getLength(), initMatXw2Xc)){
 	    	return -1;
 	    }
 	    /*
@@ -52,7 +52,7 @@ public class kpmMatching {
 	        printf("\n");
 	    }
 	    */
-	    NyARIcpPoint icp_point=new NyARIcpPoint(cparamLT);
+	    NyARIcpPoint icp_point=new NyARIcpPoint(cparamLT.getPerspectiveProjectionMatrix());
 	    icp_point.icpPoint(sCoord, wCoord, matchData.getLength(), initMatXw2Xc, kpmResult.camPose, kpmResult.resultparams);
 
 

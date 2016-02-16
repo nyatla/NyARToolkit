@@ -53,7 +53,8 @@ public class KpmHandle {
 		this.inDataSet.coord = null;
 		this.inDataSet.num = 0;
 
-		this.result = null;
+		this.result = new KpmResult[1];
+		this.result[0]=new KpmResult();
 		this.resultNum = 0;
 
 	}
@@ -333,8 +334,8 @@ public class KpmHandle {
 
 //				this.result[pageLoop].pageNo = this.refDataSet[pageLoop].pageNo;
 				this.result[pageLoop].camPoseF = -1;
-				if (this.result[pageLoop].skipF)
-					continue;
+//				if (this.result[pageLoop].skipF)
+//					continue;
 
 				matchStack matches = this.freakMatcher.inliers();
 				int matched_image_id = this.freakMatcher.matchedId();
@@ -409,7 +410,7 @@ public class KpmHandle {
             			fp.y=t.coord2D.y;
             			fp.angle=t.featureVec.angle;
             			fp.scale=t.featureVec.scale;
-            			fp.maxima=t.featureVec.maxima>1?true:false;
+            			fp.maxima=t.featureVec.maxima>0?true:false;
             			fpl.add(fp);
             			//descripterはサイズだけ先に計算
             			desc_len+=i_refDataSet.ref_point[i].featureVec.v.length;

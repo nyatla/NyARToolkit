@@ -24,17 +24,17 @@ public class homography
     public static void MultiplyPointHomographyInhomogenous(Point2d xp,float[] H, Point2d[] x,int x_idx) {
         float w = H[6]*x[x_idx].x + H[7]*x[x_idx].y + H[8];
         xp.x = (H[0]*x[x_idx].x + H[1]*x[x_idx].y + H[2])/w;
-        xp.y = (H[3]*x[x_idx].y + H[4]*x[x_idx].y + H[5])/w;
+        xp.y = (H[3]*x[x_idx].x + H[4]*x[x_idx].y + H[5])/w;
     }
     public static void MultiplyPointHomographyInhomogenous(Point2d xp,float[] H, float x,float y) {
         float w = H[6]*x + H[7]*y + H[8];
         xp.x = (H[0]*x + H[1]*y + H[2])/w;
-        xp.y = (H[3]*y + H[4]*y + H[5])/w;
+        xp.y = (H[3]*x + H[4]*y + H[5])/w;
     }    
     public static void MultiplyPointHomographyInhomogenous(Point2d xp,float[] H, Point2d x) {
         float w = H[6]*x.x + H[7]*x.y + H[8];
         xp.x = (H[0]*x.x + H[1]*x.y + H[2])/w;
-        xp.y = (H[3]*x.y + H[4]*x.y + H[5])/w;
+        xp.y = (H[3]*x.x + H[4]*x.y + H[5])/w;
     }
 
 //    boolean HomographyPointsGeometricallyConsistent(const T H[9], const T* x, int size) {
@@ -51,8 +51,8 @@ public class homography
         }
         
         int x1_ptr = i_x_ptr;
-        int x2_ptr = i_x_ptr+2;
-        int x3_ptr = i_x_ptr+4;
+        int x2_ptr = i_x_ptr+1;
+        int x3_ptr = i_x_ptr+2;
         
         Point2d xp1_ptr = xp1;
         Point2d xp2_ptr = xp2;
@@ -66,8 +66,8 @@ public class homography
         MultiplyPointHomographyInhomogenous(xp2, H,x, x2_ptr);
         MultiplyPointHomographyInhomogenous(xp3, H,x, x3_ptr);
         
-        xp1.set(first_xp1);//indexing.CopyVector2(first_xp1,0, xp1,0);
-        xp2.set(first_xp2);//indexing.CopyVector2(first_xp2,0, xp2,0);
+        first_xp1.set(xp1);//indexing.CopyVector2(first_xp1,0, xp1,0);
+        first_xp2.set(xp2);//indexing.CopyVector2(first_xp2,0, xp2,0);
 //    	public boolean Homography4PointsGeometricallyConsistent(float[] x1, float[] x2, float[] x3, float[] x4,float[] x1p,float[] x2p,float[] x3p,float[] x4p) {
         
         
@@ -82,9 +82,9 @@ public class homography
         //
         
         for(int i = 3; i < size; i++) {
-            x1_ptr += 2;
-            x2_ptr += 2;
-            x3_ptr += 2;
+            x1_ptr += 1;
+            x2_ptr += 1;
+            x3_ptr += 1;
             
             MultiplyPointHomographyInhomogenous(xp1_ptr, H, x,x3_ptr);
             
@@ -105,7 +105,7 @@ public class homography
         //
         
         if(!geometry.Homography3PointsGeometricallyConsistent(
-        		x[x2_ptr],x[x2_ptr],x[0],
+        		x[x2_ptr],x[x3_ptr],x[0],
         		xp2_ptr, xp3_ptr, first_xp1)) {
             return false;
         }

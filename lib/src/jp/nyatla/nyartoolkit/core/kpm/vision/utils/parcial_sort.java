@@ -73,9 +73,6 @@ public class parcial_sort {
 					a[i]=a[j];
 					a[j]=t;
 					i++; j--;
-					
-					
-					i++; j--;
 				}
 			} while (i<=j);
 			if(j<k_minus_1) l=i;

@@ -18,9 +18,9 @@ public class VisualDatabaseFacade
 	}
     class VisualDatabaseImpl{
     	public VisualDatabaseImpl(){
-    		mVdb=new VisualDatabase<FREAKExtractor, BinaryFeatureStore, BinaryFeatureMatcher>();
+    		mVdb=new VisualDatabase<BinaryFeatureStore>();
     	}
-    	public VisualDatabase<FREAKExtractor, BinaryFeatureStore, BinaryFeatureMatcher> mVdb;
+    	public VisualDatabase<BinaryFeatureStore> mVdb;
 
 //        std::unique_ptr<vdb_t> mVdb;
         public Point3dMap mPoint3d=new Point3dMap();

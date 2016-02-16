@@ -84,7 +84,7 @@ public class Node {
 //        std::vector<queue_item_t> v(mChildren.size());
         PriorityQueueItem[] v =new PriorityQueueItem[this.mChildren.length];
         for(int i = 0; i < v.length; i++) {
-            int d = Hamming.HammingDistance(this.mChildren[i].mCenter,0, feature,i_ptr);
+            int d = Hamming.HammingDistance(this.mCenter.length,this.mChildren[i].mCenter,0, feature,i_ptr);
             v[i] = new PriorityQueueItem(this.mChildren[i], d);
             if(d < mind) {
                 mind = d;

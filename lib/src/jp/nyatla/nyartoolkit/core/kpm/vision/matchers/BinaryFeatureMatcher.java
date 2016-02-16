@@ -131,7 +131,8 @@ public class BinaryFeatureMatcher {
                     }
                     
 //                    ASSERT(FEATURE_SIZE == 96, "Only 96 bytes supported now");
-                    int d = Hamming.HammingDistance(features1.features(),f1,features2.features(),features2.feature(v[j]));
+//                    int d = Hamming.HammingDistance(features1.features(),f1,features2.features(),features2.feature(v[j]));
+                    int d = Hamming.HammingDistance(VisualDatabase.NUM_BYTES_PER_FEATURE,features1.features(),f1,features2.features(),features2.feature(v[j]));
                     if(d < first_best) {
                         second_best = first_best;
                         first_best = d;

@@ -124,6 +124,7 @@ public class DoGScaleInvariantDetector {
 
 		// Detect minima and maximum in Laplacian images
 		// TIMED("Non-max suppression") {
+		//数が合わない
 		extractFeatures(pyramid, this.mLaplacianPyramid);
 		// }
 
@@ -358,7 +359,7 @@ public class DoGScaleInvariantDetector {
 
 	private static float bilinear_interpolation(KpmImage im, float x, float y) {
 		return bilinear_interpolation((float[]) im.getBuffer(), im.getWidth(),
-				im.getHeight(), 1, x, y);
+				im.getHeight(),im.getWidth(), x, y);
 	}
 
 	/**
@@ -434,6 +435,7 @@ public class DoGScaleInvariantDetector {
 
 			int octave = laplacian.octaveFromIndex((int) i);
 			int scale = laplacian.scaleFromIndex((int) i);
+
 
 			if (im0.getWidth() == im1.getWidth()
 					&& im0.getWidth() == im2.getWidth()) { // All images are the
@@ -576,6 +578,7 @@ public class DoGScaleInvariantDetector {
 					int im1_yp1 = im1.get(row + 1);
 
 					for (int col = 2; col < end_x; col++) {
+
 						float value = im1b[im1_y + col];
 
 						// Check laplacian score
@@ -834,12 +837,15 @@ public class DoGScaleInvariantDetector {
 							bilinear_upsample_point(tmp, col, row, octave);
 							fp.x = tmp[0];
 							fp.y = tmp[1];
-							// mFeaturePoints.push_back(fp);
+if(this.mFeaturePoints.getLength()==905){
+	System.out.println("##");
+}
 						}
 					}
 				}
 			}
 		}
+		return;
 	}
 
 	/**
@@ -1221,7 +1227,7 @@ public class DoGScaleInvariantDetector {
 		float[] tmp = new float[5];
 		bilinear_downsample_point(tmp, x, y, 1);
 		x_div_2 = tmp[0];
-		y_div_2 = tmp[0];
+		y_div_2 = tmp[1];
 		assert x_div_2 - 0.5f >= 0;// ASSERT(x_div_2-0.5f >= 0,
 									// "x_div_2 out of bounds out of bounds for interpolation");
 		assert y_div_2 - 0.5f >= 0;// ASSERT(y_div_2-0.5f >= 0,

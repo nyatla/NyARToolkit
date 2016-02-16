@@ -5,7 +5,7 @@ package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
  * This class represents an entry in a priority queue to revisit certains nodes
  * in a back-trace.
  */
-public class PriorityQueueItem {
+public class PriorityQueueItem implements Comparable {
 
 	public PriorityQueueItem() {
 		this.mNode = null;
@@ -42,5 +42,15 @@ public class PriorityQueueItem {
 	private Node mNode;
 	// Distance from cluster center
 	private int mDistance;
+	@Override
+	public int compareTo(Object o) {
+		PriorityQueueItem p=(PriorityQueueItem)o;
+		if(this.mDistance>p.mDistance){
+			return 1;
+		}else if(this.mDistance<p.mDistance){
+			return -1;
+		}
+		return 0;
+	}
 
 }
