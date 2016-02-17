@@ -64,7 +64,7 @@ public class GaussianScaleSpacePyramid {
 		int octave = (int) Math.floor(math_utils.log2(sigma));
 		// scale = logk(s/2^octave)
 		// Here we ROUND the scale to an integer value
-		double fscale = Math.log(sigma / (float) (1 << octave))
+		double fscale = Math.log(sigma / (double) (1 << octave))
 				* this.mOneOverLogK;
 		int scale = (int) math_utils.round(fscale);
 
@@ -136,10 +136,10 @@ public class GaussianScaleSpacePyramid {
      * @param[in] octave The octave to downsample (x,y) to
      */
     public static void bilinear_downsample_point(Point2d ret,
-                                          float x,
-                                          float y,
+                                          double x,
+                                          double y,
                                           int octave) {
-        float a, b;
+    	double a, b;
         a = 1.f/(1<<octave);
         b = 0.5f*a-0.5f;
         ret.x = x*a+b;

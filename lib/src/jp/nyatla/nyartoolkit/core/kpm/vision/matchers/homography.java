@@ -13,32 +13,32 @@ public class homography
      * H[9]
      */
 //    public static void MultiplyPointHomographyInhomogenous(float xp, float yp, float[] H, float x, float y) {
-    public static void MultiplyPointHomographyInhomogenous(float[] v, float[] H, float x, float y) {
-        float w = H[6]*x + H[7]*y + H[8];
+    public static void MultiplyPointHomographyInhomogenous(double[] v, double[] H, double x, double y) {
+    	double w = H[6]*x + H[7]*y + H[8];
         v[0] = (H[0]*x + H[1]*y + H[2])/w;//XP
         v[1] = (H[3]*x + H[4]*y + H[5])/w;//YP
     }
     /**
      * Multiply an in-homogenous point by a similarity.
      */
-    public static void MultiplyPointHomographyInhomogenous(Point2d xp,float[] H, Point2d[] x,int x_idx) {
-        float w = H[6]*x[x_idx].x + H[7]*x[x_idx].y + H[8];
+    public static void MultiplyPointHomographyInhomogenous(Point2d xp,double[] H, Point2d[] x,int x_idx) {
+    	double w = H[6]*x[x_idx].x + H[7]*x[x_idx].y + H[8];
         xp.x = (H[0]*x[x_idx].x + H[1]*x[x_idx].y + H[2])/w;
         xp.y = (H[3]*x[x_idx].x + H[4]*x[x_idx].y + H[5])/w;
     }
-    public static void MultiplyPointHomographyInhomogenous(Point2d xp,float[] H, float x,float y) {
-        float w = H[6]*x + H[7]*y + H[8];
+    public static void MultiplyPointHomographyInhomogenous(Point2d xp,double[] H, double x,double y) {
+    	double w = H[6]*x + H[7]*y + H[8];
         xp.x = (H[0]*x + H[1]*y + H[2])/w;
         xp.y = (H[3]*x + H[4]*y + H[5])/w;
     }    
-    public static void MultiplyPointHomographyInhomogenous(Point2d xp,float[] H, Point2d x) {
-        float w = H[6]*x.x + H[7]*x.y + H[8];
+    public static void MultiplyPointHomographyInhomogenous(Point2d xp,double[] H, Point2d x) {
+    	double w = H[6]*x.x + H[7]*x.y + H[8];
         xp.x = (H[0]*x.x + H[1]*x.y + H[2])/w;
         xp.y = (H[3]*x.x + H[4]*x.y + H[5])/w;
     }
 
 //    boolean HomographyPointsGeometricallyConsistent(const T H[9], const T* x, int size) {
-    public static boolean HomographyPointsGeometricallyConsistent(float[] H, Point2d[] x,int i_x_ptr, int size) {
+    public static boolean HomographyPointsGeometricallyConsistent(double[] H, Point2d[] x,int i_x_ptr, int size) {
         Point2d xp1=new Point2d();
         Point2d xp2=new Point2d();
         Point2d xp3=new Point2d();

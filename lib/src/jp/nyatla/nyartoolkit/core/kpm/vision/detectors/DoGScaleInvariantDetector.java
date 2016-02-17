@@ -14,14 +14,14 @@ public class DoGScaleInvariantDetector {
 	final static public int kMaxNumOrientations = 36;
 
 	public static class FeaturePoint {
-		public float x, y;
-		public float angle;
+		public double x, y;
+		public double angle;
 		public int octave;
 		public int scale;
-		public float sp_scale;
-		public float score;
-		public float sigma;
-		public float edge_score;
+		public double sp_scale;
+		public double score;
+		public double sigma;
+		public double edge_score;
 
 		public FeaturePoint() {
 		}
@@ -78,7 +78,7 @@ public class DoGScaleInvariantDetector {
 		this.mEdgeThreshold = 10;
 		this.mMaxSubpixelDistanceSqr = (3 * 3);
 		this.setMaxNumFeaturePoints(kMaxNumFeaturePoints);
-		this.mOrientations = new float[kMaxNumOrientations];
+		this.mOrientations = new double[kMaxNumOrientations];
 	}
 
 	/**
@@ -147,11 +147,11 @@ public class DoGScaleInvariantDetector {
 	/**
 	 * Get/Set the Laplacian absolute threshold.
 	 */
-	public float laplacianThreshold() {
+	public double laplacianThreshold() {
 		return mLaplacianThreshold;
 	}
 
-	public void setLaplacianThreshold(float tr) {
+	public void setLaplacianThreshold(double tr) {
 		this.mLaplacianThreshold = tr;
 	}
 
@@ -170,11 +170,11 @@ public class DoGScaleInvariantDetector {
 	/**
 	 * Get/Set the edge threshold.
 	 */
-	public float edgeThreshold() {
+	public double edgeThreshold() {
 		return this.mEdgeThreshold;
 	}
 
-	public void setEdgeThreshold(float tr) {
+	public void setEdgeThreshold(double tr) {
 		this.mEdgeThreshold = tr;
 	}
 
@@ -212,7 +212,7 @@ public class DoGScaleInvariantDetector {
 	private int mNumBucketsY;
 
 	private static class BucketPair {
-		public float first;
+		public double first;
 		public int second;
 	}
 
@@ -231,9 +231,9 @@ public class DoGScaleInvariantDetector {
 			BucketPair[] items = this._items;
 			for (int i = 0; i < n; i++) {
 				int max_idx = i;
-				float max = items[max_idx].first;
+				double max = items[max_idx].first;
 				for (int i2 = i + 1; i2 < this._length; i2++) {
-					float test = items[i2].first;
+					double test = items[i2].first;
 					if (max < test) {
 						max = test;
 						max_idx = i2;
@@ -272,10 +272,10 @@ public class DoGScaleInvariantDetector {
 	final private DoGPyramid mLaplacianPyramid=new DoGPyramid();
 
 	// Laplacian score threshold
-	private float mLaplacianThreshold;
+	private double mLaplacianThreshold;
 
 	// Edge threshold
-	private float mEdgeThreshold;
+	private double mEdgeThreshold;
 
 	// Vector of extracted feature points
 	private FeaturePointStack mFeaturePoints;
@@ -284,23 +284,23 @@ public class DoGScaleInvariantDetector {
 	private int mMaxNumFeaturePoints;
 
 	// Maximum update allowed for sub-pixel refinement
-	private float mMaxSubpixelDistanceSqr;
+	private double mMaxSubpixelDistanceSqr;
 
 	// Orientation assignment
 	final private OrientationAssignment mOrientationAssignment=new OrientationAssignment();
 
 	// Vector of orientations. Pre-allocated to the maximum
 	// number of orientations per feature point.
-	private float[] mOrientations;
+	private double[] mOrientations;
 
-	private static float bilinear_interpolation(float[] im, int width,
-			int height, int step, float x, float y) {
+	private static double bilinear_interpolation(double[] im, int width,
+			int height, int step, double x, double y) {
 		int xp, yp;
 		int xp_plus_1, yp_plus_1;
-		float w0, w1, w2, w3;
+		double w0, w1, w2, w3;
 		int p0;
 		int p1;
-		float res;
+		double res;
 
 		// Integer casting and floor should be the same since (x,y) are always
 		// positive
@@ -357,8 +357,8 @@ public class DoGScaleInvariantDetector {
 		return res;
 	}
 
-	private static float bilinear_interpolation(KpmImage im, float x, float y) {
-		return bilinear_interpolation((float[]) im.getBuffer(), im.getWidth(),
+	private static double bilinear_interpolation(KpmImage im, double x, double y) {
+		return bilinear_interpolation((double[]) im.getBuffer(), im.getWidth(),
 				im.getHeight(),im.getWidth(), x, y);
 	}
 
@@ -376,10 +376,10 @@ public class DoGScaleInvariantDetector {
 	 * @param[in] y Y location on detected image
 	 * @param[in] octave The octave of the detected image
 	 */
-	private static void bilinear_upsample_point(float[] xyp, float x, float y,
+	private static void bilinear_upsample_point(double[] xyp, double x, double y,
 			int octave) {
-		float a, b;
-		a = (float) Math.pow(2.f, octave - 1) - 0.5f;
+		double a, b;
+		a = (double) Math.pow(2.f, octave - 1) - 0.5f;
 		b = (1 << octave);
 		xyp[0] = (x * b) + a;
 		xyp[1] = (y * b) + a;
@@ -395,18 +395,18 @@ public class DoGScaleInvariantDetector {
 	 * @param[in] y Y location on fine image
 	 * @param[in] octave The octave to downsample (x,y) to
 	 */
-	private void bilinear_downsample_point(float[] xyp, float x, float y,
+	private void bilinear_downsample_point(double[] xyp, double x, double y,
 			int octave) {
-		float a, b;
+		double a, b;
 		a = 1.f / (1 << octave);
 		b = 0.5f * a - 0.5f;
 		xyp[0] = x * a + b;
 		xyp[1] = y * a + b;
 	}
 
-	private void bilinear_downsample_point(float[] xysp, float x, float y,
-			float s, int octave) {
-		float a, b;
+	private void bilinear_downsample_point(double[] xysp, double x, double y,
+			double s, int octave) {
+		double a, b;
 		a = 1.f / (1 << octave);
 		b = 0.5f * a - 0.5f;
 		xysp[0] = x * a + b;
@@ -423,15 +423,15 @@ public class DoGScaleInvariantDetector {
 		// Clear old features
 		mFeaturePoints.clear();
 
-		float laplacianSqrThreshold = math_utils.sqr(mLaplacianThreshold);
+		double laplacianSqrThreshold = math_utils.sqr(mLaplacianThreshold);
 
 		for (int i = 1; i < mLaplacianPyramid.size() - 1; i++) {
 			KpmImage im0 = laplacian.get(i - 1);
 			KpmImage im1 = laplacian.get(i);
 			KpmImage im2 = laplacian.get(i + 1);
-			float[] im0b = (float[]) im0.getBuffer();
-			float[] im1b = (float[]) im1.getBuffer();
-			float[] im2b = (float[]) im2.getBuffer();
+			double[] im0b = (double[]) im0.getBuffer();
+			double[] im1b = (double[]) im1.getBuffer();
+			double[] im2b = (double[]) im2.getBuffer();
 
 			int octave = laplacian.octaveFromIndex((int) i);
 			int scale = laplacian.scaleFromIndex((int) i);
@@ -460,7 +460,7 @@ public class DoGScaleInvariantDetector {
 					int im2_yp1 = im2.get(row + 1);
 
 					for (int col = 1; col < width_minus_1; col++) {
-						float value = im1b[im1_y + col];
+						double value = im1b[im1_y + col];
 
 						// Check laplacian score
 						if (math_utils.sqr(value) < laplacianSqrThreshold) {
@@ -543,9 +543,9 @@ public class DoGScaleInvariantDetector {
 							fp.octave = octave;
 							fp.scale = scale;
 							fp.score = value;
-							fp.sigma = (float) pyramid.effectiveSigma(octave,
+							fp.sigma =  pyramid.effectiveSigma(octave,
 									scale);
-							float[] tmp = new float[2];
+							double[] tmp = new double[2];
 							bilinear_upsample_point(tmp, col, row, octave);
 							fp.x = tmp[0];
 							fp.y = tmp[1];
@@ -579,7 +579,7 @@ public class DoGScaleInvariantDetector {
 
 					for (int col = 2; col < end_x; col++) {
 
-						float value = im1b[im1_y + col];
+						double value = im1b[im1_y + col];
 
 						// Check laplacian score
 						if (math_utils.sqr(value) < laplacianSqrThreshold) {
@@ -587,8 +587,8 @@ public class DoGScaleInvariantDetector {
 						}
 
 						// Compute downsampled point location
-						float ds_x = col * 0.5f - 0.25f;
-						float ds_y = row * 0.5f - 0.25f;
+						double ds_x = col * 0.5f - 0.25f;
+						double ds_y = row * 0.5f - 0.25f;
 
 						boolean extrema = false;
 						if (
@@ -692,9 +692,9 @@ public class DoGScaleInvariantDetector {
 							fp.octave = octave;
 							fp.scale = scale;
 							fp.score = value;
-							fp.sigma = (float) pyramid.effectiveSigma(octave,
+							fp.sigma =  pyramid.effectiveSigma(octave,
 									scale);
-							float[] tmp = new float[2];
+							double[] tmp = new double[2];
 							bilinear_upsample_point(tmp, col, row, octave);
 							fp.x = tmp[0];
 							fp.y = tmp[1];
@@ -724,15 +724,15 @@ public class DoGScaleInvariantDetector {
 					int im2_yp1 = im2.get(row + 1);
 
 					for (int col = 1; col < width_minus_1; col++) {
-						float value = im1b[im1_y + col];
+						double value = im1b[im1_y + col];
 
 						// Check laplacian score
 						if (math_utils.sqr(value) < laplacianSqrThreshold) {
 							continue;
 						}
 
-						float us_x = (col << 1) + 0.5f;
-						float us_y = (row << 1) + 0.5f;
+						double us_x = (col << 1) + 0.5f;
+						double us_y = (row << 1) + 0.5f;
 
 						boolean extrema = false;
 						if (value > im1b[im1_ym1 + col - 1]
@@ -831,15 +831,12 @@ public class DoGScaleInvariantDetector {
 							fp.octave = octave;
 							fp.scale = scale;
 							fp.score = value;
-							fp.sigma = (float) pyramid.effectiveSigma(octave,
+							fp.sigma =  pyramid.effectiveSigma(octave,
 									scale);
-							float[] tmp = new float[2];
+							double[] tmp = new double[2];
 							bilinear_upsample_point(tmp, col, row, octave);
 							fp.x = tmp[0];
 							fp.y = tmp[1];
-if(this.mFeaturePoints.getLength()==905){
-	System.out.println("##");
-}
 						}
 					}
 				}
@@ -851,7 +848,7 @@ if(this.mFeaturePoints.getLength()==905){
 	/**
 	 * Solve a 3x3 symmetric linear system.
 	 */
-	boolean SolveSymmetricLinearSystem3x3(float[] x, float[] A, float[] b) {
+	boolean SolveSymmetricLinearSystem3x3(double[] x, double[] A, double[] b) {
 		NyARDoubleMatrix33 m = new NyARDoubleMatrix33();
 		m.m00 = A[0];
 		m.m01 = A[1];
@@ -865,9 +862,9 @@ if(this.mFeaturePoints.getLength()==905){
 		if (!m.inverse(m)) {
 			return false;
 		}
-		x[0] = (float) (m.m00 * b[0] + m.m01 * b[1] + m.m02 * b[2]);
-		x[1] = (float) (m.m10 * b[0] + m.m11 * b[1] + m.m12 * b[2]);
-		x[2] = (float) (m.m20 * b[0] + m.m21 * b[1] + m.m22 * b[2]);
+		x[0] = (m.m00 * b[0] + m.m01 * b[1] + m.m02 * b[2]);
+		x[1] = (m.m10 * b[0] + m.m11 * b[1] + m.m12 * b[2]);
+		x[2] = (m.m20 * b[0] + m.m21 * b[1] + m.m22 * b[2]);
 		return true;
 	}
 
@@ -875,15 +872,15 @@ if(this.mFeaturePoints.getLength()==905){
 	 * Sub-pixel refinement.
 	 */
 	public void findSubpixelLocations(GaussianScaleSpacePyramid pyramid) {
-		float[] tmp = new float[2];
-		float[] A = new float[9];
-		float[] b = new float[3];
-		float[] u = new float[3];
+		double[] tmp = new double[2];
+		double[] A = new double[9];
+		double[] b = new double[3];
+		double[] u = new double[3];
 		int x, y;
-		float xp, yp;
+		double xp, yp;
 		int num_points;
-		float laplacianSqrThreshold;
-		float hessianThreshold;
+		double laplacianSqrThreshold;
+		double hessianThreshold;
 
 		num_points = 0;
 		laplacianSqrThreshold = math_utils.sqr(mLaplacianThreshold);
@@ -935,7 +932,7 @@ if(this.mFeaturePoints.getLength()==905){
 			// Compute a linear estimate of the intensity
 			// ASSERT(kp.score == lap1.get<float>(y)[x],
 			// "Score is not consistent with the DoG image");
-			float[] lap1_buf = (float[]) lap1.getBuffer();
+			double[] lap1_buf = (double[]) lap1.getBuffer();
 			kp.score = lap1_buf[lap1.get(y) + x]
 					- (b[0] * u[0] + b[1] * u[1] + b[2] * u[2]);
 
@@ -959,7 +956,7 @@ if(this.mFeaturePoints.getLength()==905){
 					&& kp.y >= 0
 					&& kp.y < mLaplacianPyramid.images()[0].getHeight()) {
 				// Update the sigma
-				kp.sigma = (float) pyramid.effectiveSigma(kp.octave,
+				kp.sigma =  pyramid.effectiveSigma(kp.octave,
 						kp.sp_scale);
 				mFeaturePoints.getItem(num_points++).set(kp);
 			}
@@ -1000,7 +997,7 @@ if(this.mFeaturePoints.getLength()==905){
 	 * Find feature orientations.
 	 */
 	private void findFeatureOrientations(GaussianScaleSpacePyramid pyramid) {
-		float[] tmp = new float[3];
+		double[] tmp = new double[3];
 		if (!mFindOrientation) {
 			for (int i = 0; i < mFeaturePoints.getLength(); i++) {
 				mFeaturePoints.getItem(i).angle = 0;
@@ -1017,7 +1014,7 @@ if(this.mFeaturePoints.getLength()==905){
 
 		// Compute an orientation for each feature point
 		for (int i = 0; i < mFeaturePoints.getLength(); i++) {
-			float x, y, s;
+			double x, y, s;
 
 			// Down sample the point to the detected octave
 			bilinear_downsample_point(tmp, mFeaturePoints.getItem(i).x,
@@ -1071,7 +1068,7 @@ if(this.mFeaturePoints.getLength()==905){
 	// const Image& lap0,const Image& lap1,const Image& lap2,
 	// int x,int y)
 
-	private boolean ComputeSubpixelHessian(float[] H, float[] b, KpmImage lap0,
+	private boolean ComputeSubpixelHessian(double[] H, double[] b, KpmImage lap0,
 			KpmImage lap1, KpmImage lap2, int x, int y) {
 
 		if (lap0.getWidth() == lap1.getWidth()
@@ -1103,13 +1100,13 @@ if(this.mFeaturePoints.getLength()==905){
 	// float H[9],float b[3],
 	// const Image& lap0,const Image& lap1,const Image& lap2,
 	// int x,int y)
-	private void ComputeSubpixelHessianCoarseOctavePair(float H[], float b[],
+	private void ComputeSubpixelHessianCoarseOctavePair(double H[], double b[],
 			KpmImage lap0, KpmImage lap1, KpmImage lap2, int x, int y) {
-		float val;
-		float x_mul_2, y_mul_2;
-		float Dx, Dy, Ds;
-		float Dxx, Dyy, Dxy;
-		float Dss, Dxs, Dys;
+		double val;
+		double x_mul_2, y_mul_2;
+		double Dx, Dy, Ds;
+		double Dxx, Dyy, Dxy;
+		double Dss, Dxs, Dys;
 
 		assert (x - 1) >= 0 && (x + 1) < lap1.getWidth();// ASSERT((x-1) >= 0 &&
 															// (x+1) <
@@ -1141,7 +1138,7 @@ if(this.mFeaturePoints.getLength()==905){
 		int lap2_p = lap2.get(y) + x;
 		int lap2_pp1 = lap2.get(y + 1) + x;
 
-		float[] tmp = new float[5];
+		double[] tmp = new double[5];
 		// Upsample the point to the higher octave
 		bilinear_upsample_point(tmp, x, y, 1);
 		x_mul_2 = tmp[0];
@@ -1156,8 +1153,8 @@ if(this.mFeaturePoints.getLength()==905){
 		Dxy = tmp[4];
 		// Interpolate the VALUE at the finer octave
 		val = bilinear_interpolation(lap0, x_mul_2, y_mul_2);
-		float[] lap2buf = (float[]) lap2.getBuffer();
-		float[] lap1buf = (float[]) lap1.getBuffer();
+		double[] lap2buf = (double[]) lap2.getBuffer();
+		double[] lap1buf = (double[]) lap1.getBuffer();
 
 		Ds = 0.5f * (lap2buf[lap2_p + 0] - val);
 		Dss = val + (-2.f * lap1buf[lap1_p + 0]) + lap2buf[lap2_p + 0];
@@ -1187,13 +1184,13 @@ if(this.mFeaturePoints.getLength()==905){
 	// float H[9],float b[3],
 	// const Image& lap0,const Image& lap1,const Image& lap2,
 	// int x,int y)
-	private void ComputeSubpixelHessianFineOctavePair(float[] H, float[] b,
+	private void ComputeSubpixelHessianFineOctavePair(double[] H, double[] b,
 			KpmImage lap0, KpmImage lap1, KpmImage lap2, int x, int y) {
-		float x_div_2, y_div_2;
-		float val;
-		float Dx, Dy, Ds;
-		float Dxx, Dyy, Dxy;
-		float Dss, Dxs, Dys;
+		double x_div_2, y_div_2;
+		double val;
+		double Dx, Dy, Ds;
+		double Dxx, Dyy, Dxy;
+		double Dss, Dxs, Dys;
 
 		assert (x - 1) >= 0 && (x + 1) < lap1.getWidth();// ASSERT((x-1) >= 0 &&
 															// (x+1) <
@@ -1224,7 +1221,7 @@ if(this.mFeaturePoints.getLength()==905){
 											// &lap0.get<float>(y+1)[x];
 		int lap1_p = lap1.get(y) + x;// const float* lap1_p =
 										// &lap1.get<float>(y)[x];
-		float[] tmp = new float[5];
+		double[] tmp = new double[5];
 		bilinear_downsample_point(tmp, x, y, 1);
 		x_div_2 = tmp[0];
 		y_div_2 = tmp[1];
@@ -1257,8 +1254,8 @@ if(this.mFeaturePoints.getLength()==905){
 		// Dys = 0.25f*((lap0_pm1[0] + bilinear_interpolation(lap2, x_div_2,
 		// y_div_2+.5f)) -
 		// (lap0_pp1[0] + bilinear_interpolation(lap2, x_div_2, y_div_2-.5f)));
-		float[] lap0_buf = (float[]) lap0.getBuffer();
-		float[] lap1_buf = (float[]) lap1.getBuffer();
+		double[] lap0_buf = (double[]) lap0.getBuffer();
+		double[] lap1_buf = (double[]) lap1.getBuffer();
 
 		Ds = 0.5f * (val - lap0_buf[lap0_p + 0]);
 		Dss = lap0_buf[lap0_p + 0] + (-2.f * lap1_buf[lap1_p + 0]) + val;
@@ -1291,7 +1288,7 @@ if(this.mFeaturePoints.getLength()==905){
 	// float& Dxx,float& Dyy,float& Dxy,
 	// const Image& im,
 	// int x,int y)
-	private void ComputeSubpixelDerivatives(float[] dn, KpmImage im, int x,
+	private void ComputeSubpixelDerivatives(double[] dn, KpmImage im, int x,
 			int y) {
 		// Sanity checks
 		// ASSERT((x-1) >= 0 && (x+1) < im.width(), "x out of bounds");
@@ -1302,7 +1299,7 @@ if(this.mFeaturePoints.getLength()==905){
 		// const float* pm1 = &im.get<float>(y-1)[x];
 		// const float* p = &im.get<float>(y)[x];
 		// const float* pp1 = &im.get<float>(y+1)[x];
-		float[] im_buf = (float[]) im.getBuffer();
+		double[] im_buf = (double[]) im.getBuffer();
 		int pm1 = im.get(y - 1) + x;
 		int p = im.get(y) + x;
 		int pp1 = im.get(y + 1) + x;
@@ -1323,11 +1320,11 @@ if(this.mFeaturePoints.getLength()==905){
 	// float H[9],float b[3],
 	// const Image& lap0,const Image& lap1,const Image& lap2,
 	// int x,int y)
-	private void ComputeSubpixelHessianSameOctave(float[] H, float[] b,
+	private void ComputeSubpixelHessianSameOctave(double[] H, double[] b,
 			KpmImage lap0, KpmImage lap1, KpmImage lap2, int x, int y) {
-		float Dx, Dy, Ds;
-		float Dxx, Dyy, Dxy;
-		float Dss, Dxs, Dys;
+		double Dx, Dy, Ds;
+		double Dxx, Dyy, Dxy;
+		double Dss, Dxs, Dys;
 
 		assert (x - 1) >= 0 && (x + 1) < lap1.getWidth();// ASSERT((x-1) >= 0 &&
 															// (x+1) <
@@ -1366,7 +1363,7 @@ if(this.mFeaturePoints.getLength()==905){
 		int lap2_pp1 = lap2.get(y + 1) + x;// const float* lap2_pp1 =
 											// &lap2.get<float>(y+1)[x];
 
-		float[] tmp = new float[5];
+		double[] tmp = new double[5];
 		// Compute spatial derivatives
 		// ComputeSubpixelDerivatives(Dx, Dy, Dxx, Dyy, Dxy, lap1, x, y);
 		ComputeSubpixelDerivatives(tmp, lap1, x, y);
@@ -1375,9 +1372,9 @@ if(this.mFeaturePoints.getLength()==905){
 		Dxx = tmp[2];
 		Dyy = tmp[3];
 		Dxy = tmp[4];
-		float[] lap0buf = (float[]) lap0.getBuffer();
-		float[] lap1buf = (float[]) lap1.getBuffer();
-		float[] lap2buf = (float[]) lap2.getBuffer();
+		double[] lap0buf = (double[]) lap0.getBuffer();
+		double[] lap1buf = (double[]) lap1.getBuffer();
+		double[] lap2buf = (double[]) lap2.getBuffer();
 		// Compute scale derivates
 		Ds = 0.5f * (lap2buf[lap2_p + 0] - lap0buf[lap0_p + 0]);
 		Dss = lap0buf[lap0_p + 0] + (-2.f * lap1buf[lap1_p + 0])
@@ -1403,12 +1400,12 @@ if(this.mFeaturePoints.getLength()==905){
 	}
 
 	// inline bool ComputeEdgeScore(float& score, const float H[9]) {
-	private boolean ComputeEdgeScore(float[] score, float[] H) {
-		float det;
+	private boolean ComputeEdgeScore(double[] score, double[] H) {
+		double det;
 
-		float Dxx = H[0];
-		float Dyy = H[4];
-		float Dxy = H[1];
+		double Dxx = H[0];
+		double Dyy = H[4];
+		double Dxy = H[1];
 
 		det = (Dxx * Dyy) - math_utils.sqr(Dxy);
 
@@ -1423,7 +1420,7 @@ if(this.mFeaturePoints.getLength()==905){
 		return true;
 	}
 
-	float ClipScalar(float x, float min, float max) {
+	double ClipScalar(double x, double min, double max) {
 		if (x < min) {
 			x = min;
 		} else if (x > max) {
@@ -1438,8 +1435,8 @@ if(this.mFeaturePoints.getLength()==905){
 
 		int num_buckets = num_buckets_X * num_buckets_Y;
 		int num_points_per_bucket = max_points / num_buckets;
-		int dx = (int) Math.ceil((float) width / num_buckets_X);
-		int dy = (int) Math.ceil((float) height / num_buckets_Y);
+		int dx = (int) Math.ceil( width / num_buckets_X);
+		int dy = (int) Math.ceil( height / num_buckets_Y);
 
 		//
 		// Clear the previous state

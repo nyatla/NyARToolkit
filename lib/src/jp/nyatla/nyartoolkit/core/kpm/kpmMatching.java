@@ -11,7 +11,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 
 public class kpmMatching {
-	private float error;
+	private double error;
 	public static int kpmUtilGetPose_binary(ARParamLT cparamLT,
 			matchStack matchData, Point3dVector refDataSet,
 			FeaturePointStack inputDataSet, KpmResult kpmResult)

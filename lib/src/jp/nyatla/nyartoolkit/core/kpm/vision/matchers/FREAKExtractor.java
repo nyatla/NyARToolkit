@@ -28,57 +28,57 @@ public class FREAKExtractor {
 	 * SIGMA value for the center receptor and the receptors in all the rings.
 	 */
 
-	final private static float freak84_sigma_center = 0.100000f;
-	final private static float freak84_sigma_ring0 = 0.175000f;
-	final private static float freak84_sigma_ring1 = 0.250000f;
-	final private static float freak84_sigma_ring2 = 0.325000f;
-	final private static float freak84_sigma_ring3 = 0.400000f;
-	final private static float freak84_sigma_ring4 = 0.475000f;
-	final private static float freak84_sigma_ring5 = 0.550000f;
+	final private static double freak84_sigma_center = 0.100000f;
+	final private static double freak84_sigma_ring0 = 0.175000f;
+	final private static double freak84_sigma_ring1 = 0.250000f;
+	final private static double freak84_sigma_ring2 = 0.325000f;
+	final private static double freak84_sigma_ring3 = 0.400000f;
+	final private static double freak84_sigma_ring4 = 0.475000f;
+	final private static double freak84_sigma_ring5 = 0.550000f;
 
 	/**
 	 * (x,y) locations of each receptor in the ring.
 	 */
 
-	final private static float[] freak84_points_ring0 = { 0.000000f, 0.362783f,
+	final private static double[] freak84_points_ring0 = { 0.000000f, 0.362783f,
 			-0.314179f, 0.181391f, -0.314179f, -0.181391f, -0.000000f,
 			-0.362783f, 0.314179f, -0.181391f, 0.314179f, 0.181391f };
-	final private static float[] freak84_points_ring1 = { -0.595502f,
+	final private static double[] freak84_points_ring1 = { -0.595502f,
 			0.000000f, -0.297751f, -0.515720f, 0.297751f, -0.515720f,
 			0.595502f, -0.000000f, 0.297751f, 0.515720f, -0.297751f, 0.515720f };
-	final private static float[] freak84_points_ring2 = { -0.000000f,
+	final private static double[] freak84_points_ring2 = { -0.000000f,
 			-0.741094f, 0.641806f, -0.370547f, 0.641806f, 0.370547f, 0.000000f,
 			0.741094f, -0.641806f, 0.370547f, -0.641806f, -0.370547f };
-	final private static float[] freak84_points_ring3 = { 0.847306f,
+	final private static double[] freak84_points_ring3 = { 0.847306f,
 			-0.000000f, 0.423653f, 0.733789f, -0.423653f, 0.733789f,
 			-0.847306f, 0.000000f, -0.423653f, -0.733789f, 0.423653f,
 			-0.733789f };
-	final private static float[] freak84_points_ring4 = { 0.000000f, 0.930969f,
+	final private static double[] freak84_points_ring4 = { 0.000000f, 0.930969f,
 			-0.806243f, 0.465485f, -0.806243f, -0.465485f, -0.000000f,
 			-0.930969f, 0.806243f, -0.465485f, 0.806243f, 0.465485f };
-	final private static float[] freak84_points_ring5 = { -1.000000f,
+	final private static double[] freak84_points_ring5 = { -1.000000f,
 			0.000000f, -0.500000f, -0.866025f, 0.500000f, -0.866025f,
 			1.000000f, -0.000000f, 0.500000f, 0.866025f, -0.500000f, 0.866025f };
 
 	// Receptor locations
-	final private float[] mPointRing0 = new float[12];
-	final private float[] mPointRing1 = new float[12];
-	final private float[] mPointRing2 = new float[12];
-	final private float[] mPointRing3 = new float[12];
-	final private float[] mPointRing4 = new float[12];
-	final private float[] mPointRing5 = new float[12];
+	final private double[] mPointRing0 = new double[12];
+	final private double[] mPointRing1 = new double[12];
+	final private double[] mPointRing2 = new double[12];
+	final private double[] mPointRing3 = new double[12];
+	final private double[] mPointRing4 = new double[12];
+	final private double[] mPointRing5 = new double[12];
 
 	// Sigma value
-	private float mSigmaCenter;
-	private float mSigmaRing0;
-	private float mSigmaRing1;
-	private float mSigmaRing2;
-	private float mSigmaRing3;
-	private float mSigmaRing4;
-	private float mSigmaRing5;
+	private double mSigmaCenter;
+	private double mSigmaRing0;
+	private double mSigmaRing1;
+	private double mSigmaRing2;
+	private double mSigmaRing3;
+	private double mSigmaRing4;
+	private double mSigmaRing5;
 
 	// Scale expansion factor
-	private float mExpansionFactor;
+	private double mExpansionFactor;
 
 	/**
 	 * Implements the FREAK extractor.
@@ -87,16 +87,16 @@ public class FREAKExtractor {
 		receptor() {
 		}
 
-		receptor(float _x, float _y, float _s) {
+		receptor(double _x, double _y, double _s) {
 			this.x = _x;
 			this.y = _y;
 			this.s = _s;
 		}
 
-		float x, y, s;
+		double x, y, s;
 	};
 
-	private void CopyVector(float[] out, float[] in, int len) {
+	private void CopyVector(double[] out, double[] in, int len) {
 		System.arraycopy(in, 0, out, 0, len);
 	}
 
@@ -221,11 +221,11 @@ public class FREAKExtractor {
 	 */
 	void ExtractFREAK84(BinaryFeatureStore store,
 			GaussianScaleSpacePyramid pyramid, FeaturePoint[] points,
-			float[] points_ring0, float[] points_ring1, float[] points_ring2,
-			float[] points_ring3, float[] points_ring4, float[] points_ring5,
-			float sigma_center, float sigma_ring0, float sigma_ring1,
-			float sigma_ring2, float sigma_ring3, float sigma_ring4,
-			float sigma_ring5, float expansion_factor) {
+			double[] points_ring0, double[] points_ring1, double[] points_ring2,
+			double[] points_ring3, double[] points_ring4, double[] points_ring5,
+			double sigma_center, double sigma_ring0, double sigma_ring1,
+			double sigma_ring2, double sigma_ring3, double sigma_ring4,
+			double sigma_ring5, double expansion_factor) {
 		// ASSERT(pyramid, "Pyramid is NULL");
 		// ASSERT(store.size() == points.size(),
 		// "Feature store has not been allocated");
@@ -259,12 +259,12 @@ public class FREAKExtractor {
 			int i_desc_idx,// unsigned char desc[84],
 			byte[] i_desc,// unsigned char desc[84],
 			GaussianScaleSpacePyramid pyramid, FeaturePoint point,
-			float[] points_ring0, float[] points_ring1, float[] points_ring2,
-			float[] points_ring3, float[] points_ring4, float[] points_ring5,
-			float sigma_center, float sigma_ring0, float sigma_ring1,
-			float sigma_ring2, float sigma_ring3, float sigma_ring4,
-			float sigma_ring5, float expansion_factor) {
-		float[] samples = new float[37];
+			double[] points_ring0, double[] points_ring1, double[] points_ring2,
+			double[] points_ring3, double[] points_ring4, double[] points_ring5,
+			double sigma_center, double sigma_ring0, double sigma_ring1,
+			double sigma_ring2, double sigma_ring3, double sigma_ring4,
+			double sigma_ring5, double expansion_factor) {
+		double[] samples = new double[37];
 
 		// Create samples
 		if (!SamplePyramidFREAK84(samples, pyramid, point, points_ring0,
@@ -284,27 +284,27 @@ public class FREAKExtractor {
 	/**
 	 * Sample all the receptors from the pyramid given a single point.
 	 */
-	boolean SamplePyramidFREAK84(float[] samples,
+	boolean SamplePyramidFREAK84(double[] samples,
 			GaussianScaleSpacePyramid pyramid, FeaturePoint point,
-			float[] points_ring0, float[] points_ring1, float[] points_ring2,
-			float[] points_ring3, float[] points_ring4, float[] points_ring5,
-			float sigma_center, float sigma_ring0, float sigma_ring1,
-			float sigma_ring2, float sigma_ring3, float sigma_ring4,
-			float sigma_ring5, float expansion_factor) {
-		float[] S = new float[9];
+			double[] points_ring0, double[] points_ring1, double[] points_ring2,
+			double[] points_ring3, double[] points_ring4, double[] points_ring5,
+			double sigma_center, double sigma_ring0, double sigma_ring1,
+			double sigma_ring2, double sigma_ring3, double sigma_ring4,
+			double sigma_ring5, double expansion_factor) {
+		double[] S = new double[9];
 
-		float[] c = new float[2];
-		float[] r0 = new float[2 * 6];
-		float[] r1 = new float[2 * 6];
-		float[] r2 = new float[2 * 6];
-		float[] r3 = new float[2 * 6];
-		float[] r4 = new float[2 * 6];
-		float[] r5 = new float[2 * 6];
+		double[] c = new double[2];
+		double[] r0 = new double[2 * 6];
+		double[] r1 = new double[2 * 6];
+		double[] r2 = new double[2 * 6];
+		double[] r3 = new double[2 * 6];
+		double[] r4 = new double[2 * 6];
+		double[] r5 = new double[2 * 6];
 
-		float sc, s0, s1, s2, s3, s4, s5;
+		double sc, s0, s1, s2, s3, s4, s5;
 
 		// Ensure the scale of the similarity transform is at least "1".
-		float transform_scale = point.scale * expansion_factor;
+		double transform_scale = point.scale * expansion_factor;
 		if (transform_scale < 1) {
 			transform_scale = 1;
 		}
@@ -501,7 +501,7 @@ public class FREAKExtractor {
 	/**
 	 * Compute the descriptor given the 37 samples from each receptor.
 	 */
-	void CompareFREAK84(byte[] desc,int i_desc_index,float[] samples) {
+	void CompareFREAK84(byte[] desc,int i_desc_index,double[] samples) {
 		int pos = 0;
 		for (int i = 0; i < 84; i++) {
 			desc[i_desc_index+i] = 0;
@@ -569,8 +569,8 @@ public class FREAKExtractor {
 	/**
 	 * Sample a receptor given (x,y,octave,scale) and a pyramid.
 	 */
-	private float SampleReceptor(GaussianScaleSpacePyramid pyramid, float x,
-			float y, int octave, int scale) {
+	private double SampleReceptor(GaussianScaleSpacePyramid pyramid, double x,
+			double y, int octave, int scale) {
 		// Get the correct image from the pyramid
 		KpmImage image = pyramid.get(octave, scale);
 
@@ -584,7 +584,7 @@ public class FREAKExtractor {
 	/**
 	 * Sample a receptor given (x,y) given an image.
 	 */
-	private float SampleReceptor(KpmImage image, float x, float y) {
+	private double SampleReceptor(KpmImage image, double x, double y) {
 		return SampleReceptorBilinear(image, x, y);
 	}
 
@@ -592,7 +592,7 @@ public class FREAKExtractor {
 	 * Sample a receptor given (x,y) given an image using bilinear
 	 * interpolation.
 	 */
-	private float SampleReceptorBilinear(KpmImage image, float x, float y) {
+	private double SampleReceptorBilinear(KpmImage image, double x, double y) {
 		x = ClipScalar(x, 0, image.getWidth() - 2);
 		y = ClipScalar(y, 0, image.getHeight() - 2);
 		return interpole.bilinear_interpolation(image, x, y);
@@ -601,7 +601,7 @@ public class FREAKExtractor {
 	/**
 	 * Clip a scalar to be within a range.
 	 */
-	float ClipScalar(float x, float min, float max) {
+	double ClipScalar(double x, double min, double max) {
 		if (x < min) {
 			x = min;
 		} else if (x > max) {

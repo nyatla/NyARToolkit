@@ -13,17 +13,17 @@ public class indexing {
             x[i+i_ptr] = x[i+i_ptr-1]+1;
         }
     }
-    public static void CopyVector2(float[] dst,int i_dst_idx, float[] src,int i_src_idx) {
+    public static void CopyVector2(double[] dst,int i_dst_idx, double[] src,int i_src_idx) {
     	CopyVector(dst,i_dst_idx,src,i_src_idx,2);
     }    
-    public static void CopyVector(float[] dst,int i_dst_idx, float[] src,int i_src_idx,int i_len) {
+    public static void CopyVector(double[] dst,int i_dst_idx, double[] src,int i_src_idx,int i_len) {
     	for(int i=0;i<i_len;i++){
     		dst[i_dst_idx+i]=src[i_src_idx+i];
     	}
     }  
-	public static float min4(float a1, float a2, float a3, float a4)
+	public static double min4(double a1, double a2, double a3, double a4)
 	{
-		float r=a1;
+		double r=a1;
 		if(r>a2){
 			r=a2;
 		}

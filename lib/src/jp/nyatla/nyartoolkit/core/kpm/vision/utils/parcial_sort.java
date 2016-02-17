@@ -11,9 +11,9 @@ public class parcial_sort {
      * @param[in] n size of a
      * @param[in] k kth element starting from 1, i.e. 1st smallest, 2nd smallest, etc.
      */
-    float PartialSort(float a[], int n, int k) {
+	double PartialSort(double a[], int n, int k) {
 		int i, j, l, m, k_minus_1;
-		float x;
+		double x;
         
 //        ASSERT(n > 0, "n must be positive");
 //        ASSERT(k > 0, "k must be positive");
@@ -30,7 +30,7 @@ public class parcial_sort {
 				while(x<a[j]) j--;
 				if(i<=j) {
 //					std::swap(a[i], a[j]);
-					float t=a[i];
+					double t=a[i];
 					a[i]=a[j];
 					a[j]=t;
 					i++; j--;
@@ -44,7 +44,7 @@ public class parcial_sort {
     /**
      * Find the median of an array.
      */
-    float FastMedian(float a[], int n) {
+	double FastMedian(double a[], int n) {
 		return PartialSort(a, n, (((n&1)==1)?((n)/2):(((n)/2)-1)));
     	
 //		return PartialSort(a, n, (((n)&1)?((n)/2):(((n)/2)-1)));

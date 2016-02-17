@@ -779,7 +779,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 
 			if( result.sim > this.simThresh )
 			{
-				this._cparam.arParamObserv2IdealLTf((float)result.pos2d[0],(float)result.pos2d[1], this.pos2d[num]);
+				this._cparam.arParamObserv2IdealLTf(result.pos2d[0],result.pos2d[1], this.pos2d[num]);
 
 //				arParamObserv2Ideal(this->cparam->dist_factor, result.pos2d[0],  result.pos2d[1],
 //									&this->pos2d[num][0], &this->pos2d[num][1], this->cparam->dist_function_version);
@@ -980,8 +980,8 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 
 	    ix = hx / h;
 	    iy = hy / h;	    
-	    cparam.arParamIdeal2ObservLTf((float)ix,(float)iy, o_s);
-	    cparam.arParamObserv2IdealLTf((float)o_s.x,(float)o_s.y, tmp);
+	    cparam.arParamIdeal2ObservLTf(ix,iy, o_s);
+	    cparam.arParamObserv2IdealLTf(o_s.x,o_s.y, tmp);
 //	    arParamIdeal2Observ( cparam->dist_factor, ix, iy, sx, sy, cparam->dist_function_version );
 //	    arParamObserv2Ideal( cparam->dist_factor, *sx, *sy, &ix1, &iy1, cparam->dist_function_version);
 	    if( (ix-tmp.x)*(ix-tmp.x) + (iy-tmp.y)*(iy-tmp.y) > 1.0f ){
@@ -1006,7 +1006,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 		    double ix = hx / h;
 		    double iy = hy / h;
 		    
-		    cparam.arParamIdeal2ObservLTf((float)ix,(float)iy, o_s);
+		    cparam.arParamIdeal2ObservLTf(ix,iy, o_s);
 	//	    arParamIdeal2Observ( cparam->dist_factor, (ARdouble)ix, (ARdouble)iy, &sxTemp, &syTemp, cparam->dist_function_version );
 	//	    o_s.x = (double)sxTemp;
 	//	    o_s.y = (double)syTemp;
@@ -1041,7 +1041,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 	        b1  = trans.m03 - trans.m23* sx;
 	        b2  = trans.m13 - trans.m23* sy;
 	    }else{
-		    cparam.arParamObserv2IdealLTf((float)sx,(float)sy,in);
+		    cparam.arParamObserv2IdealLTf(sx,sy,in);
 	//
 	//	    arParamObserv2Ideal( cparam->dist_factor, (ARdouble)sx, (ARdouble)sy, &ix, &iy, cparam->dist_function_version);	    
 	//	    arUtilMatMuldff(cparam.->mat, trans, wtrans );
@@ -1351,7 +1351,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
         sum3 -= sum1 * mtemp.sum / mtemp.validNum;
         int _vlen = sum2 - sum1*sum1/mtemp.validNum;
         if( _vlen == 0 ) val[0] = 0;
-        else            val[0] = sum3 * 100 / mtemp.vlen * 100 / (int)Math.sqrt((float)_vlen);
+        else            val[0] = sum3 * 100 / mtemp.vlen * 100 / (int)Math.sqrt(_vlen);
 
 
 	
@@ -1391,7 +1391,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
             ix2 = ix - (template_.xts1)*AR2_TEMP_SCALE;
             for( i = -(template_.xts1); i <= template_.xts2; i++, ix2+=AR2_TEMP_SCALE ) {
 
-                if(cparam.arParamObserv2IdealLTf((float)ix2, (float)iy2,s) < 0 ) {
+                if(cparam.arParamObserv2IdealLTf(ix2, iy2,s) < 0 ) {
                     img1[img1_ptr++] = AR2_TEMPLATE_NULL_PIXEL;
                     continue;
                 }
@@ -1413,7 +1413,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
         if( k == 0 ) return -1;
 
         vlen = sum2 - sum*sum/k;
-        template_.vlen = (int)Math.sqrt((float)vlen);
+        template_.vlen = (int)Math.sqrt(vlen);
         template_.sum = sum;
         template_.validNum = k;		
 		return 0;

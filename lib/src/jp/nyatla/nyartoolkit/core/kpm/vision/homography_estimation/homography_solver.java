@@ -12,9 +12,9 @@ public class homography_solver {
 	 * deviation is sqrt(2).
 	 */
 	static boolean Condition4Points2d(Point2d xp1, Point2d xp2, Point2d xp3,
-			Point2d xp4, float[] mus, // ms[2],sの3要素
+			Point2d xp4, double[] mus, // ms[2],sの3要素
 			Point2d x1, Point2d x2, Point2d x3, Point2d x4) {
-		float[] d1 = new float[2], d2 = new float[2], d3 = new float[2], d4 = new float[2];
+		double[] d1 = new double[2], d2 = new double[2], d3 = new double[2], d4 = new double[2];
 
 		mus[0] = (x1.x + x2.x + x3.x + x4.x) / 4;
 		mus[1] = (x1.y + x2.y + x3.y + x4.y) / 4;
@@ -41,17 +41,17 @@ public class homography_solver {
 		d4[1] = x4[1] - mus[1];
 
  */
-		float ds1 = (float) Math.sqrt(d1[0] * d1[0] + d1[1] * d1[1]);
-		float ds2 = (float) Math.sqrt(d2[0] * d2[0] + d2[1] * d2[1]);
-		float ds3 = (float) Math.sqrt(d3[0] * d3[0] + d3[1] * d3[1]);
-		float ds4 = (float) Math.sqrt(d4[0] * d4[0] + d4[1] * d4[1]);
-		float d = (ds1 + ds2 + ds3 + ds4) / 4;
+		double ds1 = (double) Math.sqrt(d1[0] * d1[0] + d1[1] * d1[1]);
+		double ds2 = (double) Math.sqrt(d2[0] * d2[0] + d2[1] * d2[1]);
+		double ds3 = (double) Math.sqrt(d3[0] * d3[0] + d3[1] * d3[1]);
+		double ds4 = (double) Math.sqrt(d4[0] * d4[0] + d4[1] * d4[1]);
+		double d = (ds1 + ds2 + ds3 + ds4) / 4;
 
 		if (d == 0) {
 			return false;
 		}
 
-		float s = (float) ((1 / d) * math_utils.SQRT2);
+		double s = (double) ((1 / d) * math_utils.SQRT2);
 		mus[2] = s;
 		xp1.x = d1[0] * s;
 		xp1.y = d1[1] * s;
@@ -68,7 +68,7 @@ public class homography_solver {
 	/**
 	 * Add a point to the homography constraint matrix.
 	 */
-	static void AddHomographyPointContraint(float A[], int A_ptr, Point2d x, Point2d xp) {
+	static void AddHomographyPointContraint(double A[], int A_ptr, Point2d x, Point2d xp) {
 		A[A_ptr + 0] = -x.x;//[0];
 		A[A_ptr + 1] = -x.y;//[1];
 		A[A_ptr + 2] = -1;
@@ -98,7 +98,7 @@ public class homography_solver {
 	 * Construct the homography constraint matrix from 4 point correspondences.
 	 */
 	static void Homography4PointsInhomogeneousConstraint(
-			float[] A,// [72],
+			double[] A,// [72],
 			Point2d x1, Point2d x2, Point2d x3, Point2d x4, Point2d xp1,
 			Point2d xp2, Point2d xp3, Point2d xp4) {
 		AddHomographyPointContraint(A, 0, x1, xp1);
@@ -110,10 +110,10 @@ public class homography_solver {
 	/**
 	 * Solve for the homography given four 2D point correspondences.
 	 */
-	static boolean SolveHomography4PointsInhomogenous(float[] H, Point2d x1,
+	static boolean SolveHomography4PointsInhomogenous(double[] H, Point2d x1,
 			Point2d x2, Point2d x3, Point2d x4, Point2d xp1, Point2d xp2,
 			Point2d xp3, Point2d xp4) {
-		float[] A = new float[72];
+		double[] A = new double[72];
 		Homography4PointsInhomogeneousConstraint(A, x1, x2, x3, x4, xp1, xp2,
 				xp3, xp4);
 		if (!liner_solver.SolveNullVector8x9Destructive(H, A)) {
@@ -137,18 +137,18 @@ public class homography_solver {
 	// float xp2[2],
 	// float xp3[2],
 	// float xp4[2]) {
-	boolean SolveHomography4Points(float[] H, Point2d x1, Point2d x2,
+	boolean SolveHomography4Points(double[] H, Point2d x1, Point2d x2,
 			Point2d x3, Point2d x4, Point2d xp1, Point2d xp2, Point2d xp3,
 			Point2d xp4) {
-		float[] Hn = new float[9];
+		double[] Hn = new double[9];
 
 		// T s, sp;
 		// T t[2], tp[2];
 
 		Point2d x1p = new Point2d(), x2p = new Point2d(), x3p = new Point2d(), x4p = new Point2d();
 		Point2d xp1p = new Point2d(), xp2p = new Point2d(), xp3p = new Point2d(), xp4p = new Point2d();
-		float[] ts = new float[3];
-		float[] tps = new float[3];
+		double[] ts = new double[3];
+		double[] tps = new double[3];
 		//
 		// Condition the points
 		//
@@ -190,25 +190,25 @@ public class homography_solver {
 	 * void DenormalizeHomography(T Hp[9], const T H[9], T s, const T t[2], T
 	 * sp, const T tp[2]) {
 	 */
-	static void DenormalizeHomography(float[] Hp, float[] H, float[] ts, float tps[]) {
-		float sp = tps[2];
-		float a = H[6] * tps[0];
-		float b = H[7] * tps[0];
-		float c = H[0] / sp;
-		float d = H[1] / sp;
-		float apc = a + c;
-		float bpd = b + d;
+	static void DenormalizeHomography(double[] Hp, double[] H, double[] ts, double tps[]) {
+		double sp = tps[2];
+		double a = H[6] * tps[0];
+		double b = H[7] * tps[0];
+		double c = H[0] / sp;
+		double d = H[1] / sp;
+		double apc = a + c;
+		double bpd = b + d;
 
-		float e = H[6] * tps[1];
-		float f = H[7] * tps[1];
-		float g = H[3] / sp;
-		float h = H[4] / sp;
-		float epg = e + g;
-		float fph = f + h;
+		double e = H[6] * tps[1];
+		double f = H[7] * tps[1];
+		double g = H[3] / sp;
+		double h = H[4] / sp;
+		double epg = e + g;
+		double fph = f + h;
 
-		float s = ts[2];
-		float stx = s * ts[0];
-		float sty = s * ts[1];
+		double s = ts[2];
+		double stx = s * ts[0];
+		double sty = s * ts[1];
 
 		Hp[0] = s * apc;
 		Hp[1] = s * bpd;

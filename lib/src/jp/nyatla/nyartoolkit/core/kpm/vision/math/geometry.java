@@ -13,7 +13,7 @@ public class geometry {
 	 * @param[in] C Arbitrary third point
 	 */
 //	float LinePointSide(float A[2], float B[], const T C[2]) {
-	public static float LinePointSide(Point2d A, Point2d B,Point2d C) {
+	public static double LinePointSide(Point2d A, Point2d B,Point2d C) {
 //		return ((B[0]-A[0])*(C[1]-A[1])-(B[1]-A[1])*(C[0]-A[0]));
 		return ((B.x-A.x)*(C.y-A.y)-(B.y-A.y)*(C.x-A.x));
 	}
@@ -52,15 +52,15 @@ public class geometry {
     /**
      * Compute the area of a triangle.
      */
-    static float AreaOfTriangle(Point2d u,Point2d v) {
+    static double AreaOfTriangle(Point2d u,Point2d v) {
 //		T a = u[0]*v[1] - u[1]*v[0];
-		float a = u.x*v.y - u.y*v.x;
-		return (float) (Math.abs(a)*0.5);
+    	double a = u.x*v.y - u.y*v.x;
+		return (double) (Math.abs(a)*0.5);
 	}
 	/**
 	 * Find the smallest area for each triangle formed by 4 points.
 	 */
-	public static float SmallestTriangleArea(Point2d x1, Point2d x2, Point2d x3,Point2d x4)
+	public static double SmallestTriangleArea(Point2d x1, Point2d x2, Point2d x3,Point2d x4)
 	{
 		Point2d v12=new Point2d();
 		Point2d v13=new Point2d();
@@ -74,10 +74,10 @@ public class geometry {
 		SubVector2(v32, x2, x3);
 		SubVector2(v34, x4, x3);
 		
-	    float a1 = AreaOfTriangle(v12, v13);
-	    float a2 = AreaOfTriangle(v13, v14);
-	    float a3 = AreaOfTriangle(v12, v14);
-	    float a4 = AreaOfTriangle(v32, v34);
+		double a1 = AreaOfTriangle(v12, v13);
+		double a2 = AreaOfTriangle(v13, v14);
+		double a3 = AreaOfTriangle(v12, v14);
+	    double a4 = AreaOfTriangle(v32, v34);
 		
 		return indexing.min4(a1, a2, a3, a4);
 	}

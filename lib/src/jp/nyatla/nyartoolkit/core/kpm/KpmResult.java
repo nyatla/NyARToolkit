@@ -7,7 +7,7 @@ public class KpmResult {
 	final public NyARDoubleMatrix44                 camPose=new NyARDoubleMatrix44();
 	final public NyARTransMatResultParam			resultparams=new NyARTransMatResultParam();
     public int                       pageNo;
-    public float                     error;
+    public double                     error;
     public int                       inlierNum;
     public int                       camPoseF;
     public boolean                   skipF;

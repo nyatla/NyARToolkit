@@ -13,7 +13,7 @@ import jp.nyatla.nyartoolkit.core.kpm.vision.utils.parcial_sort;
  * Robust homography estimation.
  */
 public class RobustHomography {
-	final static float HOMOGRAPHY_DEFAULT_CAUCHY_SCALE = 0.01f;
+	final static double HOMOGRAPHY_DEFAULT_CAUCHY_SCALE = 0.01f;
 	final static int HOMOGRAPHY_DEFAULT_NUM_HYPOTHESES = 1024;
 	final static int HOMOGRAPHY_DEFAULT_MAX_TRIALS = 1064;
 	final static int HOMOGRAPHY_DEFAULT_CHUNK_SIZE = 50;
@@ -24,7 +24,7 @@ public class RobustHomography {
 				HOMOGRAPHY_DEFAULT_MAX_TRIALS, HOMOGRAPHY_DEFAULT_CHUNK_SIZE);
 	}
 
-	public RobustHomography(float cauchyScale, int maxNumHypotheses,
+	public RobustHomography(double cauchyScale, int maxNumHypotheses,
 			int maxTrials, int chunkSize) {
 		this.init(cauchyScale, maxNumHypotheses, maxTrials, chunkSize);
 	}
@@ -32,9 +32,9 @@ public class RobustHomography {
 	/**
 	 * Initalize the RANSAC parameters.
 	 */
-	private void init(float cauchyScale, int maxNumHypotheses, int maxTrials,
+	private void init(double cauchyScale, int maxNumHypotheses, int maxTrials,
 			int chunkSize) {
-		this.mHyp = new float[9 * maxNumHypotheses];
+		this.mHyp = new double[9 * maxNumHypotheses];
 		this.mHypCosts = CostPair.createArray(maxNumHypotheses);
 
 		mCauchyScale = cauchyScale;
@@ -47,13 +47,13 @@ public class RobustHomography {
 	// private:
 	//
 	// // Temporary memory for RANSAC
-	private float[] mHyp;
+	private double[] mHyp;
 	private CostPair[] mHypCosts;
 	private int[] mTmpi;
 
 	// std::vector< std::pair<T, int> > mHypCosts;
 	public static class CostPair {
-		public float first;
+		public double first;
 		public int second;
 		public static CostPair[] createArray(int i_size)
 		{
@@ -76,7 +76,7 @@ public class RobustHomography {
 	}
 
 	// RANSAC params
-	float mCauchyScale;
+	double mCauchyScale;
 	int mMaxNumHypotheses;
 	int mMaxTrials;
 	int mChunkSize;
@@ -88,7 +88,7 @@ public class RobustHomography {
 	public // boolean find(float H[9], const T* p, const T* q, int num_points, const T*
 	// test_points, int num_test_points) {
 
-	boolean find(float[] H, Point2d[] p, Point2d[] q, int num_points,
+	boolean find(double[] H, Point2d[] p, Point2d[] q, int num_points,
 			Point2d[] test_points, int num_test_points) {
 		mTmpi = new int[2 * num_points];
 		return PreemptiveRobustHomography(H, p, q, num_points, test_points,
@@ -109,16 +109,16 @@ public class RobustHomography {
 	// int max_num_hypotheses = HOMOGRAPHY_DEFAULT_NUM_HYPOTHESES,
 	// int max_trials = HOMOGRAPHY_DEFAULT_MAX_TRIALS,
 	// int chunk_size = HOMOGRAPHY_DEFAULT_CHUNK_SIZE) {
-	public boolean PreemptiveRobustHomography(float[] H, Point2d[] p,
+	public boolean PreemptiveRobustHomography(double[] H, Point2d[] p,
 			Point2d[] q, int num_points, Point2d[] test_points,
-			int num_test_points, float[] hyp /* 9*max_num_hypotheses */,
+			int num_test_points, double[] hyp /* 9*max_num_hypotheses */,
 			int[] tmp_i /* 2*num_points */,
-			CostPair[] hyp_costs /* max_num_hypotheses */, float scale,
+			CostPair[] hyp_costs /* max_num_hypotheses */, double scale,
 			int max_num_hypotheses, int max_trials, int chunk_size) {
 		int hyp_perm;// ptr表現
 		int point_perm;// ptr表現
-		float one_over_scale2;
-		float min_cost;
+		double one_over_scale2;
+		double min_cost;
 		int num_hypotheses, num_hypotheses_remaining, min_index;
 		int cur_chunk_size, next_chunk, this_chunk_end;
 		int trial;
@@ -173,7 +173,7 @@ public class RobustHomography {
 			 * float[] x3, float[] x4, float[] xp1, float[] xp2, float[] xp3,
 			 * float[] xp4) {
 			 */
-			float[] Ht = new float[9];
+			double[] Ht = new double[9];
 			// Compute the homography
 			if (!homography_solver.SolveHomography4Points(Ht,
 					p[tmp_i[hyp_perm + 0]], p[tmp_i[hyp_perm + 1]],
@@ -186,7 +186,7 @@ public class RobustHomography {
 
 			// Check the test points
 			if (num_test_points > 0) {
-				float[] hyps = Utils.arraysubset(hyp, num_hypotheses * 9, 9);
+				double[] hyps = Utils.arraysubset(hyp, num_hypotheses * 9, 9);
 				if (!homography.HomographyPointsGeometricallyConsistent(hyps,
 						test_points, 0, num_test_points)) {
 					continue;
@@ -253,8 +253,8 @@ public class RobustHomography {
 	/**
 	 * Normalize a homography such that H(3,3) = 1.
 	 */
-	void NormalizeHomography(float[] H) {
-		float one_over = (float) (1. / H[8]);
+	void NormalizeHomography(double[] H) {
+		double one_over =  (1. / H[8]);
 		H[0] *= one_over;
 		H[1] *= one_over;
 		H[2] *= one_over;
@@ -266,19 +266,19 @@ public class RobustHomography {
 		H[8] *= one_over;
 	}
 
-	float sqr(float x) {
+	double sqr(double x) {
 		return x * x;
 	};
 
-	float CauchyCost(float x, float one_over_scale2) {
-		return (float) Math.log(1. + sqr(x) * one_over_scale2);
+	double CauchyCost(double x, double one_over_scale2) {
+		return  Math.log(1. + sqr(x) * one_over_scale2);
 	}
 
-	float CauchyCost(float x0, float x1, float one_over_scale2) {
-		return (float) Math.log(1 + (x0 * x0 + x1 * x1) * one_over_scale2);
+	double CauchyCost(double x0, double x1, double one_over_scale2) {
+		return  Math.log(1 + (x0 * x0 + x1 * x1) * one_over_scale2);
 	}
 
-	float CauchyCost(float[] x, float one_over_scale2) {
+	double CauchyCost(double[] x, double one_over_scale2) {
 		return CauchyCost(x[0], x[1], one_over_scale2);
 	}
 
@@ -287,10 +287,10 @@ public class RobustHomography {
 	 */
 	// float CauchyProjectiveReprojectionCost(float H[9], const T p[2], const T
 	// q[2], T one_over_scale2) {
-	float CauchyProjectiveReprojectionCost(float[] H, Point2d p, Point2d q,
-			float one_over_scale2) {
-		float[] pp = new float[2];
-		float[] f = new float[2];
+	double CauchyProjectiveReprojectionCost(double[] H, Point2d p, Point2d q,
+			double one_over_scale2) {
+		double[] pp = new double[2];
+		double[] f = new double[2];
 
 		// homography.MultiplyPointHomographyInhomogenous(pp[0], pp[1], H, p[0],
 		// p[1]);
@@ -305,10 +305,10 @@ public class RobustHomography {
 	/**
 	 * Compute the Cauchy reprojection cost for H*p_i-q_i.
 	 */
-	float CauchyProjectiveReprojectionCost(float[] H, Point2d p[], Point2d q[],
-			int num_points, float one_over_scale2) {
+	double CauchyProjectiveReprojectionCost(double[] H, Point2d p[], Point2d q[],
+			int num_points, double one_over_scale2) {
 		int i;
-		float total_cost;
+		double total_cost;
 		int ptr = 0;
 		total_cost = 0;
 		for (i = 0; i < num_points; i++, ptr += 1) {

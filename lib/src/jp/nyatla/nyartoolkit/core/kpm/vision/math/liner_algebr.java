@@ -1,27 +1,27 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.math;
 
 public class liner_algebr {
-	static float Cofactor2x2(float a, float b, float c) {
+	static double Cofactor2x2(double a, double b, double c) {
 		return (a * c) - (b * b);
 	}
-	static float Cofactor2x2(float a, float b, float c, float d)
+	static double Cofactor2x2(double a, double b, double c, double d)
 	{
 		return (a * d) - (b * c);
 	}	
-	public static float Determinant3x3(float[] A) {
-        float C1 = Cofactor2x2(A[4], A[5], A[7], A[8]);
-        float C2 = Cofactor2x2(A[3], A[5], A[6], A[8]);
-        float C3 = Cofactor2x2(A[3], A[4], A[6], A[7]);
+	public static double Determinant3x3(double[] A) {
+		double C1 = Cofactor2x2(A[4], A[5], A[7], A[8]);
+        double C2 = Cofactor2x2(A[3], A[5], A[6], A[8]);
+        double C3 = Cofactor2x2(A[3], A[4], A[6], A[7]);
 		return (A[0] * C1) - (A[1] * C2) + (A[2] * C3);
 	}    	
-	public static boolean MatrixInverse3x3(float[] B,float[] A, float threshold) {
-		float det = Determinant3x3(A);
+	public static boolean MatrixInverse3x3(double[] B,double[] A, double threshold) {
+		double det = Determinant3x3(A);
 		
 		if(Math.abs(det) <= threshold) {
 			return false;
 		}
 		
-		float one_over_det = (float) (1./det);
+		double one_over_det = (double) (1./det);
 		
 		B[0] = Cofactor2x2(A[4], A[5], A[7], A[8]) * one_over_det;
 		B[1] = Cofactor2x2(A[2], A[1], A[8], A[7]) * one_over_det;

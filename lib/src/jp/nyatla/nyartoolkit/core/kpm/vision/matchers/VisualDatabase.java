@@ -18,15 +18,15 @@ import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.gs.format.NyARGsRaster_INT1D_GRAY_8;
 
 public class VisualDatabase<STORE extends BinaryFeatureStore> {
-	private static float kLaplacianThreshold = 3;
-	private static float kEdgeThreshold = 4;
+	private static double kLaplacianThreshold = 3;
+	private static double kEdgeThreshold = 4;
 	private static int kMaxNumFeatures = 300;
 	private static int kMinCoarseSize = 8;
 
 	private static int kHomographyInlierThreshold = 3;
 	private static int kMinNumInliers = 8;
 
-	private static float kHoughBinDelta = 1;
+	private static double kHoughBinDelta = 1;
 
 	private static int kBytesPerFeature = 96;
 
@@ -131,8 +131,8 @@ public class VisualDatabase<STORE extends BinaryFeatureStore> {
 	int FindHoughSimilarity(HoughSimilarityVoting hough, FeaturePointStack p1,
 			FeaturePointStack p2, matchStack matches, int insWidth,
 			int insHeigth, int refWidth, int refHeight) {
-		float[] query = new float[4 * matches.getLength()];
-		float[] ref = new float[4 * matches.getLength()];
+		double[] query = new double[4 * matches.getLength()];
+		double[] ref = new double[4 * matches.getLength()];
 
 		// Extract the data from the features
 		for (int i = 0; i < matches.getLength(); i++) {
@@ -152,8 +152,8 @@ public class VisualDatabase<STORE extends BinaryFeatureStore> {
 			ref[r_ptr + 3] = ref_point.scale;
 		}
 
-		float dx = insWidth + (insWidth * 0.2f);
-		float dy = insHeigth + (insHeigth * 0.2f);
+		double dx = insWidth + (insWidth * 0.2f);
+		double dy = insHeigth + (insHeigth * 0.2f);
 
 		hough.init(-dx, dx, -dy, dy, 0, 0, 12, 10);
 		hough.setObjectCenterInReference(refWidth >> 1, refHeight >> 1);
@@ -225,7 +225,7 @@ public class VisualDatabase<STORE extends BinaryFeatureStore> {
 			// Estimate the transformation between the two images
 			//
 
-			float[] H = new float[9];
+			double[] H = new double[9];
 			// TIMED("Estimate Homography (1)") {
 			if (!EstimateHomography(H, query_points, ref_points, hough_matches,
 					mHomographyInlierThreshold, mRobustHomography,
@@ -318,9 +318,9 @@ public class VisualDatabase<STORE extends BinaryFeatureStore> {
 	/**
 	 * Find the inliers given a homography and a set of correspondences.
 	 */
-	void FindInliers(matchStack inliers, float[] H, FeaturePointStack p1,
-			FeaturePointStack p2, matchStack matches, float threshold) {
-		float threshold2 = math_utils.sqr(threshold);
+	void FindInliers(matchStack inliers, double[] H, FeaturePointStack p1,
+			FeaturePointStack p2, matchStack matches, double threshold) {
+		double threshold2 = math_utils.sqr(threshold);
 		// reserve(matches.size());
 		for (int i = 0; i < matches.getLength(); i++) {
 			Point2d xp = new Point2d();// float xp[2];
@@ -329,7 +329,7 @@ public class VisualDatabase<STORE extends BinaryFeatureStore> {
 					p2.getItem(matches.getItem(i).ref).y);
 			// float d2 = sqr(xp[0]-p1[matches[i].ins].x) +
 			// sqr(xp[1]-p1[matches[i].ins].y);
-			float d2 = math_utils.sqr(xp.x
+			double d2 = math_utils.sqr(xp.x
 					- p1.getItem(matches.getItem(i).ins).x)
 					+ math_utils.sqr(xp.y
 							- p1.getItem(matches.getItem(i).ins).y);
@@ -345,7 +345,7 @@ public class VisualDatabase<STORE extends BinaryFeatureStore> {
 	 */
 	void FindHoughMatches(matchStack out_matches, HoughSimilarityVoting hough,
 			FeaturePointStack p1, FeaturePointStack p2, matchStack in_matches,
-			int binIndex, float binDelta) {
+			int binIndex, double binDelta) {
 
 		HoughSimilarityVoting.Bins bin = hough.getBinsFromIndex(binIndex);
 
@@ -353,7 +353,7 @@ public class VisualDatabase<STORE extends BinaryFeatureStore> {
 
 		int n = (int) hough.getSubBinLocationIndices().length;
 		// const float* vote_loc = hough.getSubBinLocations().data();
-		float[] vote_loc = hough.getSubBinLocations();// .data();
+		double[] vote_loc = hough.getSubBinLocations();// .data();
 		int vote_ptr = 0;
 		// ASSERT(n <= in_matches.size(), "Should be the same");
 		HoughSimilarityVoting.mapCorrespondenceResult d = new HoughSimilarityVoting.mapCorrespondenceResult();
@@ -376,8 +376,8 @@ public class VisualDatabase<STORE extends BinaryFeatureStore> {
 	/**
 	 * Estimate the homography between a set of correspondences.
 	 */
-	boolean EstimateHomography(float[] H, FeaturePointStack p1,
-			FeaturePointStack p2, matchStack matches, float threshold,
+	boolean EstimateHomography(double[] H, FeaturePointStack p1,
+			FeaturePointStack p2, matchStack matches, double threshold,
 			RobustHomography estimator, int refWidth, int refHeight) {
 
 		Point2d[] srcPoints = Point2d.createArray(matches.getLength());
@@ -434,28 +434,28 @@ public class VisualDatabase<STORE extends BinaryFeatureStore> {
 	 */
 	// boolean CheckHomographyHeuristics(float H[9], int refWidth, int
 	// refHeight) {
-	boolean CheckHomographyHeuristics(float[] H, int refWidth, int refHeight) {
+	boolean CheckHomographyHeuristics(double[] H, int refWidth, int refHeight) {
 		Point2d p0p = new Point2d();
 		Point2d p1p = new Point2d();
 		Point2d p2p = new Point2d();
 		Point2d p3p = new Point2d();
 
-		float[] Hinv = new float[9];
+		double[] Hinv = new double[9];
 		if (!liner_algebr.MatrixInverse3x3(Hinv, H, 1e-5f)) {
 			return false;
 		}
 
 		Point2d p0 = new Point2d(0, 0);
-		Point2d p1 = new Point2d((float) refWidth, 0);
-		Point2d p2 = new Point2d((float) refWidth, (float) refHeight);
-		Point2d p3 = new Point2d(0, (float) refHeight);
+		Point2d p1 = new Point2d((double) refWidth, 0);
+		Point2d p2 = new Point2d((double) refWidth, (double) refHeight);
+		Point2d p3 = new Point2d(0, (double) refHeight);
 
 		homography.MultiplyPointHomographyInhomogenous(p0p, Hinv, p0);
 		homography.MultiplyPointHomographyInhomogenous(p1p, Hinv, p1);
 		homography.MultiplyPointHomographyInhomogenous(p2p, Hinv, p2);
 		homography.MultiplyPointHomographyInhomogenous(p3p, Hinv, p3);
 
-		float tr = refWidth * refHeight * 0.0001f;
+		double tr = refWidth * refHeight * 0.0001f;
 		if (geometry.SmallestTriangleArea(p0p, p1p, p2p, p3p) < tr) {
 			return false;
 		}
@@ -544,7 +544,7 @@ public class VisualDatabase<STORE extends BinaryFeatureStore> {
 	// private:
 	//
 	private int mMinNumInliers;
-	private float mHomographyInlierThreshold;
+	private double mHomographyInlierThreshold;
 	//
 	// Set to true if the feature index is enabled
 	private boolean mUseFeatureIndex;
@@ -552,7 +552,7 @@ public class VisualDatabase<STORE extends BinaryFeatureStore> {
 	//
 	matchStack mMatchedInliers;
 	// id_t mMatchedId;
-	float[] mMatchedGeometry = new float[12];
+	double[] mMatchedGeometry = new double[12];
 	//
 	Keyframe mQueryKeyframe;
 	//

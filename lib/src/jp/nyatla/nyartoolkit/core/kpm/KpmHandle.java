@@ -131,7 +131,7 @@ public class KpmHandle {
 				for (i = 0; i < this.inDataSet.num; i++) {
 
 					// #if BINARY_FEATURE
-					float x = points.getItem(i).x, y = points.getItem(i).y;
+					double x = points.getItem(i).x, y = points.getItem(i).y;
 					for (j = 0; j < FREAK_SUB_DIMENSION; j++) {
 						featureVector.sf[i].v[j] = descriptors[i
 								* FREAK_SUB_DIMENSION + j];
@@ -148,8 +148,8 @@ public class KpmHandle {
 					if (this.cparamLT != null) {
 						NyARDoublePoint2d tmp = new NyARDoublePoint2d();
 						this.cparamLT.arParamIdeal2ObservLTf(x, y, tmp);
-						this.inDataSet.coord[i].x = (float) tmp.x;
-						this.inDataSet.coord[i].y = (float) tmp.y;
+						this.inDataSet.coord[i].x =  tmp.x;
+						this.inDataSet.coord[i].y =  tmp.y;
 					} else {
 						this.inDataSet.coord[i].x = x;
 						this.inDataSet.coord[i].y = y;

@@ -1,12 +1,12 @@
 package jp.nyatla.nyartoolkit.core.kpm;
 
 public class Point2d {
-	public float x;
-	public float y;
+	public double x;
+	public double y;
 	public Point2d(){
 	}
 
-	public Point2d(float i, float j) {
+	public Point2d(double i, double j) {
 		this.x=i;
 		this.y=j;
 	}

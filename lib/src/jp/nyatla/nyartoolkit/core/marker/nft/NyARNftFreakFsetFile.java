@@ -12,8 +12,8 @@ import jp.nyatla.nyartoolkit.j2se.BinaryReader;
 public class NyARNftFreakFsetFile {
 	public static class FloatPoint2d
 	{
-		public float x;
-		public float y;
+		public double x;
+		public double y;
 	}	
 	public static class ImageInfo
 	{
@@ -39,8 +39,8 @@ public class NyARNftFreakFsetFile {
 	public static class FreakFeature {
 		final public static int FREAK_SUB_DIMENSION = 96;
 		final public byte[] v = new byte[FREAK_SUB_DIMENSION];
-		public float angle;
-		public float scale;
+		public double angle;
+		public double scale;
 		public int maxima;
 	}
 	public static class RefDataSet

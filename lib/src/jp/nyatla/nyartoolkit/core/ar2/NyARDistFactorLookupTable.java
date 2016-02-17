@@ -27,16 +27,16 @@ public class NyARDistFactorLookupTable
 	        for(int i = 0; i < this.xsize; i++ ) {
 	        	int ptr=(j*this.xsize+i)*2;
 	        	i_base_factor.ideal2Observ(i-i_offset_x,j-i_offset_y, tmp);
-	        	this.i2o[ptr+0]=(float)tmp.x;
-	        	this.i2o[ptr+1]=(float)tmp.y;
+	        	this.i2o[ptr+0]=tmp.x;
+	        	this.i2o[ptr+1]=tmp.y;
 	        	i_base_factor.observ2Ideal(i-i_offset_x,j-i_offset_y, tmp);
-	        	this.o2i[ptr+0]=(float)tmp.x;
-	        	this.o2i[ptr+1]=(float)tmp.y;	        	
+	        	this.o2i[ptr+0]=tmp.x;
+	        	this.o2i[ptr+1]=tmp.y;	        	
 	        }
 	    }
 	}
 	
-	public int arParamIdeal2ObservLTf(float ix, float  iy,NyARDoublePoint2d o)
+	public int arParamIdeal2ObservLTf(double ix, double  iy,NyARDoublePoint2d o)
 	{
 	    int      px, py;
 	    
@@ -51,7 +51,7 @@ public class NyARDistFactorLookupTable
 	    o.y = this.i2o[lt+1];
 	    return 0;
 	}
-	public int arParamObserv2IdealLTf(float  ox, float  oy,NyARDoublePoint2d o)
+	public int arParamObserv2IdealLTf(double  ox, double  oy,NyARDoublePoint2d o)
 	{
 	    int      px, py;
 	    

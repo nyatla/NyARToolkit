@@ -132,9 +132,9 @@ public class DoGPyramid
 //        ASSERT(im1.height() == im2.height(), "Images must have the same height");
         
         // Compute diff
-    	float[] p0=(float[])d.getBuffer();
-    	float[] p1=(float[])im1.getBuffer();
-    	float[] p2=(float[])im2.getBuffer();
+    	double[] p0=(double[])d.getBuffer();
+    	double[] p1=(double[])im1.getBuffer();
+    	double[] p2=(double[])im2.getBuffer();
         for(int i = 0; i < im1.getHeight(); i++) {
 //            float* p0 = d.get<float>(i);
 //            const float* p1 = im1.get<float>(i);

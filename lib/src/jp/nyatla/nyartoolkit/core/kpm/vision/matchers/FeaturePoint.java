@@ -5,7 +5,7 @@ package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
  */
 public class FeaturePoint
 {
-    public FeaturePoint(float i_x,float i_y,float i_angle,float i_scale,boolean i_maxima)
+    public FeaturePoint(double i_x,double i_y,double i_angle,double i_scale,boolean i_maxima)
     {
     	this.x=i_x;
     	this.y=i_y;
@@ -13,7 +13,7 @@ public class FeaturePoint
     	this.scale=i_scale;
     	this.maxima=i_maxima;
     }
-    public FeaturePoint(float i_x,float i_y,float i_angle,float i_scale,float i_maxima)
+    public FeaturePoint(double i_x,double i_y,double i_angle,double i_scale,double i_maxima)
     {
     	this(0,0,0,0,true);
     }    	
@@ -31,17 +31,17 @@ public class FeaturePoint
 	/** 
      * The (x,y) location of the center of the feature.
      */
-    public float x, y;
+    public double x, y;
 
     /**
      * The orientation of the feature in the range [0,2*pi)
      */
-    public float angle;
+    public double angle;
 
     /**
      * The radius (scale) of the feature in the image.
      */
-    public float scale;
+    public double scale;
 
     /**
      * TRUE if this is maxima, FALSE if a minima.

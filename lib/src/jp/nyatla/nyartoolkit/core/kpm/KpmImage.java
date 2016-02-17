@@ -8,11 +8,11 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 public class KpmImage implements INyARRaster
 {
 	private NyARIntSize _size;
-	private float[] _buf;
+	private double[] _buf;
 	public KpmImage(int i_width, int i_height)
 	{
 		this._size=new NyARIntSize(i_width,i_height);
-		this._buf=new float[i_width*i_height];
+		this._buf=new double[i_width*i_height];
 	}
 	@Override
 	public int getWidth() {

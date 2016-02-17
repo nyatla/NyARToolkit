@@ -13,17 +13,17 @@ public class interpole {
      * @param[in] x x-location to interpolate
      * @param[in] y y-location to interpolate
      */
-     public static float bilinear_interpolation(float[] im,
+     public static double bilinear_interpolation(double[] im,
                                        int width,
                                        int height,
-                                       float x,
-                                       float y) {
+                                       double x,
+                                       double y) {
         int xp, yp;
         int xp_plus_1, yp_plus_1;
-        float w0, w1, w2, w3;
+        double w0, w1, w2, w3;
 //        const Tin* p0;
 //        const Tin* p1;
-        float res;
+        double res;
         
 //        // Integer casting and floor should be the same since (x,y) are always positive
 //        ASSERT((int)std::floor(x) == (int)x, "floor() and cast not the same");
@@ -96,9 +96,9 @@ public class interpole {
      * @param[in] x
      * @param[in] y
      */
-     public static float bilinear_interpolation(KpmImage im,
-            float x,
-            float y) {
-    	return bilinear_interpolation((float[])im.getBuffer(), im.getWidth(), im.getHeight(), x, y);
+     public static double bilinear_interpolation(KpmImage im,
+    		 double x,
+    		 double y) {
+    	return bilinear_interpolation((double[])im.getBuffer(), im.getWidth(), im.getHeight(), x, y);
     }
 }

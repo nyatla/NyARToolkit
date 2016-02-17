@@ -3,8 +3,8 @@ package jp.nyatla.nyartoolkit.core.kpm;
 public class FreakFeature {
 	final public static int FREAK_SUB_DIMENSION = 96;
 	final public byte[] v = new byte[FREAK_SUB_DIMENSION];
-	public float angle;
-	public float scale;
+	public double angle;
+	public double scale;
 	public int maxima;
 
 	protected FreakFeature() {

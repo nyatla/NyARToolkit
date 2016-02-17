@@ -23,10 +23,10 @@ public class OrientationAssignment {
                int num_octaves,
                int num_scales_per_octave,
                int num_bins,
-               float gaussian_expansion_factor,
-               float support_region_expansion_factor,
+               double gaussian_expansion_factor,
+               double support_region_expansion_factor,
                int num_smoothing_iterations,
-               float peak_threshold)
+               double peak_threshold)
     {
         this.mNumOctaves = num_octaves;
         this.mNumScalesPerOctave = num_scales_per_octave;
@@ -36,7 +36,7 @@ public class OrientationAssignment {
         this.mNumSmoothingIterations = num_smoothing_iterations;
         this.mPeakThreshold = peak_threshold;
         
-        this.mHistogram=new float[num_bins];
+        this.mHistogram=new double[num_bins];
         
         // Allocate gradient images
         this.mGradients=new GradientsImage[this.mNumOctaves*this.mNumScalesPerOctave];
@@ -66,19 +66,19 @@ public class OrientationAssignment {
             // Compute gradient image
 //            ASSERT(im.width() == im.step()/sizeof(float), "Step size must be equal to width for now");
             ComputePolarGradients(
-            	(float[])mGradients[i].getBuffer(),
-            	(float[])im.getBuffer(),
+            	(double[])mGradients[i].getBuffer(),
+            	(double[])im.getBuffer(),
 	              im.getWidth(),
 	              im.getHeight());
         }    	
     }
     public static class FloatVector{
-    	public FloatVector(float[] mOrientations, int i)
+    	public FloatVector(double[] mOrientations, int i)
     	{
     		this.v=mOrientations;
     		this.num=i;
 		}
-		public float[] v;
+		public double[] v;
     	public int num;
     }
     /**
@@ -87,15 +87,15 @@ public class OrientationAssignment {
     public void compute(
 		FloatVector angles,
 		int octave,int scale,
-		float x,float y,float sigma)
+		double x,double y,double sigma)
     {
         int xi, yi;
-        float radius;
-        float radius2;
+        double radius;
+        double radius2;
         int x0, y0;
         int x1, y1;
-        float max_height;
-        float gw_sigma, gw_scale;
+        double max_height;
+        double gw_sigma, gw_scale;
         
 //        ASSERT(x >= 0, "x must be positive");
 //        ASSERT(x < mGradients[octave*mNumScalesPerOctave+scale].width(), "x must be less than the image width");
@@ -104,7 +104,7 @@ public class OrientationAssignment {
         
         int level = octave*mNumScalesPerOctave+scale;
         GradientsImage g = mGradients[level];
-        float[] g_buf=(float[])g.getBuffer();
+        double[] g_buf=(double[])g.getBuffer();
 //        ASSERT(g.channels() == 2, "Number of channels should be 2");
         
         max_height = 0;
@@ -127,7 +127,7 @@ public class OrientationAssignment {
         
         // Radius of the support region
         radius  = mSupportRegionExpansionFactor*gw_sigma;
-        radius2 = (float)Math.ceil(math_utils.sqr(radius));
+        radius2 = Math.ceil(math_utils.sqr(radius));
         
         // Box around feature point
         x0 = xi-(int)(radius+0.5f);
@@ -146,28 +146,28 @@ public class OrientationAssignment {
         
         // Build up the orientation histogram
         for(int yp = y0; yp <= y1; yp++) {
-            float dy = yp-y;
-            float dy2 = math_utils.sqr(dy);
+        	double dy = yp-y;
+        	double dy2 = math_utils.sqr(dy);
             
             int y_ptr = g.get(yp);
             
             for(int xp = x0; xp <= x1; xp++) {
-                float dx = xp-x;
-                float r2 = math_utils.sqr(dx)+dy2;
+            	double dx = xp-x;
+            	double r2 = math_utils.sqr(dx)+dy2;
                 
                 // Only use the gradients within the circular window
                 if(r2 > radius2) {
                     continue;
                 }
                 int g2_ptr=y_ptr+(xp<<1);	//const float* g = &y_ptr[xp<<1];
-                float angle = g_buf[g2_ptr+0];//const float& angle = g[0];
-                float mag   = g_buf[g2_ptr+1];//const float& mag   = g[1];
+                double angle = g_buf[g2_ptr+0];//const float& angle = g[0];
+                double mag   = g_buf[g2_ptr+1];//const float& mag   = g[1];
                 
                 // Compute the gaussian weight based on distance from center of keypoint
-                float w = math_utils.fastexp6(r2*gw_scale);
+                double w = math_utils.fastexp6(r2*gw_scale);
                 
                 // Compute the sub-bin location
-                float fbin  = (float)(mNumBins*angle*math_utils.ONE_OVER_2PI);
+                double fbin  = (double)(mNumBins*angle*math_utils.ONE_OVER_2PI);
                 
                 // Vote to the orientation histogram with a bilinear update
                 this.bilinear_histogram_update(this.mHistogram, fbin, w*mag, mNumBins);
@@ -177,7 +177,7 @@ public class OrientationAssignment {
         // The orientation histogram is smoothed with a Gaussian
         for(int iter = 0; iter < mNumSmoothingIterations; iter++) {
             // sigma=1
-            float kernel[] = {
+        	double kernel[] = {
                 0.274068619061197f,
                 0.451862761877606f,
                 0.274068619061197f};
@@ -200,14 +200,14 @@ public class OrientationAssignment {
         
         // Find all the peaks.
         for(int i = 0; i < mNumBins; i++) {
-            float p0[]  = {(float)i, mHistogram[i]};
-            float pm1[] = {(float)(i-1), mHistogram[(i-1+mNumBins)%mNumBins]};
-            float pp1[] = {(float)(i+1), mHistogram[(i+1+mNumBins)%mNumBins]};
+        	double p0[]  = {i, mHistogram[i]};
+        	double pm1[] = {(i-1), mHistogram[(i-1+mNumBins)%mNumBins]};
+        	double pp1[] = {(i+1), mHistogram[(i+1+mNumBins)%mNumBins]};
             
             // Ensure that "p0" is a relative peak w.r.t. the two neighbors
             if((mHistogram[i] > mPeakThreshold*max_height) && (p0[1] > pm1[1]) && (p0[1] > pp1[1])) {
-                float A, B, C, fbin;
-                float[] R=new float[3];
+            	double A, B, C, fbin;
+            	double[] R=new double[3];
                 // The default sub-pixel bin location is the discrete location if the quadratic
                 // fitting fails.
                 fbin = i;
@@ -221,7 +221,7 @@ public class OrientationAssignment {
                 
                 // The sub-pixel angle needs to be in the range [0,2*pi)
 //                angles[num_angles] = std::fmod((2.f*PI)*((fbin+0.5f+(float)mNumBins)/(float)mNumBins), 2.f*PI);
-                angles.v[angles.num] = (float)((2.f*math_utils.PI)*((fbin+0.5f+(float)mNumBins)/(float)mNumBins))%(float)(2.f*math_utils.PI);
+                angles.v[angles.num] = ((2.f*math_utils.PI)*((fbin+0.5+(double)mNumBins)/(double)mNumBins))%(double)(2.f*math_utils.PI);
                 
                 // Increment the number of angles
                 angles.num++;
@@ -249,11 +249,11 @@ public class OrientationAssignment {
     // Factor to expand the Gaussian weighting function. The Gaussian sigma is computed
     // by expanding the feature point scale. The feature point scale represents the isometric
     // size of the feature. 
-    private float mGaussianExpansionFactor;
+    private double mGaussianExpansionFactor;
     
     // Factor to expand the support region. This factor is multipled by the expanded
     // Gaussian sigma. It essentially acts at the "window" to collect gradients in.
-    private float mSupportRegionExpansionFactor;
+    private double mSupportRegionExpansionFactor;
     
     // Number of binomial smoothing iterations of the orientation histogram. The histogram
     // is smoothed before find the peaks.
@@ -261,10 +261,10 @@ public class OrientationAssignment {
     
     // All the supporting peaks which are X percent of the absolute peak are considered
     // dominant orientations. 
-    private float mPeakThreshold;
+    private double mPeakThreshold;
     
     // Orientation histogram
-    private float[] mHistogram;
+    private double[] mHistogram;
     
     // Vector of gradient images
     private GradientsImage[] mGradients;
@@ -278,9 +278,9 @@ public class OrientationAssignment {
      * @param[in] magnitude Magnitude of the vote
      * @param[in] num_bin Number of bins in the histogram
      */
-    private void bilinear_histogram_update(float[] hist,
-                                          float fbin,
-                                          float magnitude,
+    private void bilinear_histogram_update(double[] hist,
+    		double fbin,
+    		double magnitude,
                                           int num_bins) {
 //        ASSERT(hist != NULL, "Histogram pointer is NULL");
 //        ASSERT((fbin+0.5f) > 0 && (fbin-0.5f) < num_bins, "Decimal bin position index out of range");
@@ -288,8 +288,8 @@ public class OrientationAssignment {
 //        ASSERT(num_bins >= 0, "Number bins must be positive");
         
         int bin = (int)Math.floor(fbin-0.5f);
-        float w2 = fbin-(float)bin-0.5f;
-        float w1 = (1.f-w2);
+        double w2 = fbin-(double)bin-0.5f;
+        double w1 = (1.f-w2);
         int b1 = (bin+num_bins)%num_bins;
         int b2 = (bin+1)%num_bins;
         
@@ -310,11 +310,11 @@ public class OrientationAssignment {
      * @param[in] x Source histogram
      * @param[in] kernel
      */
-    public void SmoothOrientationHistogram(float[] y,float[] x,int n,float[] kernel) {
-    	float first = x[0];
-    	float prev = x[n-1];
+    public void SmoothOrientationHistogram(double[] y,double[] x,int n,double[] kernel) {
+    	double first = x[0];
+    	double prev = x[n-1];
         for(int i = 0; i < n-1; i++) {
-        	float cur = x[i];
+        	double cur = x[i];
             y[i] = kernel[0]*prev + kernel[1]*cur + kernel[2]*x[i+1];
             prev = cur;
         }
@@ -323,8 +323,8 @@ public class OrientationAssignment {
  
     
     void ComputePolarGradients(
-    		float[] gradient,
-            float[] im,
+    		double[] gradient,
+    		double[] im,
             int width,
             int height)
     {
@@ -337,7 +337,7 @@ public class OrientationAssignment {
 		int width_minus_1;
 		int height_minus_1;
 
-		float dx, dy;
+		double dx, dy;
 		int p_ptr;
 		int pm1_ptr;
 		int pp1_ptr;
@@ -354,24 +354,24 @@ public class OrientationAssignment {
 		dx=im[p_ptr+1]-im[p_ptr+0];//dx = p_ptr[1] - p_ptr[0];
 		dy = im[pp1_ptr+0] - im[pm1_ptr+0];//dy = pp1_ptr[0] - pm1_ptr[0];
 //		SET_GRADIENT(dx, dy)
-		gradient[gradient_ptr++] = (float) (Math.atan2(dy, dx)+math_utils.PI);//*(gradient++) = std::atan2(dy, dx)+PI;
-		gradient[gradient_ptr++] = (float) Math.sqrt(dx*dx+dy*dy);//*(gradient++) = std::sqrt(dx*dx+dy*dy);
+		gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx)+math_utils.PI);//*(gradient++) = std::atan2(dy, dx)+PI;
+		gradient[gradient_ptr++] = (double) Math.sqrt(dx*dx+dy*dy);//*(gradient++) = std::sqrt(dx*dx+dy*dy);
 		p_ptr++; pm1_ptr++; pp1_ptr++;   		
 		
 		for(int col = 1; col < width_minus_1; col++) {
 			dx = im[p_ptr+1] - im[p_ptr-1];//dx = p_ptr[1] - p_ptr[-1];
 			dy = im[pp1_ptr+0] - im[pm1_ptr+0];//dy = pp1_ptr[0] - pm1_ptr[0];
 //			SET_GRADIENT(dx, dy)
-			gradient[gradient_ptr++] = (float) (Math.atan2(dy, dx)+math_utils.PI);//*(gradient++) = std::atan2(dy, dx)+PI;
-			gradient[gradient_ptr++] = (float) Math.sqrt(dx*dx+dy*dy);//*(gradient++) = std::sqrt(dx*dx+dy*dy);
+			gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx)+math_utils.PI);//*(gradient++) = std::atan2(dy, dx)+PI;
+			gradient[gradient_ptr++] = (double) Math.sqrt(dx*dx+dy*dy);//*(gradient++) = std::sqrt(dx*dx+dy*dy);
 			p_ptr++; pm1_ptr++; pp1_ptr++;   		
 		}
 		
 		dx = im[p_ptr+0] - im[p_ptr-1];//dx = p_ptr[0] - p_ptr[-1];
 		dy = im[pp1_ptr+0] - im[pm1_ptr+0];//dy = pp1_ptr[0] - pm1_ptr[0];
 //		SET_GRADIENT(dx, dy)
-		gradient[gradient_ptr++] = (float) (Math.atan2(dy, dx)+math_utils.PI);//*(gradient++) = std::atan2(dy, dx)+PI;
-		gradient[gradient_ptr++] = (float) Math.sqrt(dx*dx+dy*dy);//*(gradient++) = std::sqrt(dx*dx+dy*dy);
+		gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx)+math_utils.PI);//*(gradient++) = std::atan2(dy, dx)+PI;
+		gradient[gradient_ptr++] = (double) Math.sqrt(dx*dx+dy*dy);//*(gradient++) = std::sqrt(dx*dx+dy*dy);
 		p_ptr++; pm1_ptr++; pp1_ptr++;   		
 
 		// Non-border pixels
@@ -383,23 +383,23 @@ public class OrientationAssignment {
 			dx = im[p_ptr+1] - im[p_ptr+0];
 			dy = im[pp1_ptr+0] - im[pm1_ptr+0];
 //			SET_GRADIENT(dx, dy)
-			gradient[gradient_ptr++] = (float) (Math.atan2(dy, dx)+math_utils.PI);//*(gradient++) = std::atan2(dy, dx)+PI;
-			gradient[gradient_ptr++] = (float) Math.sqrt(dx*dx+dy*dy);//*(gradient++) = std::sqrt(dx*dx+dy*dy);
+			gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx)+math_utils.PI);//*(gradient++) = std::atan2(dy, dx)+PI;
+			gradient[gradient_ptr++] = (double) Math.sqrt(dx*dx+dy*dy);//*(gradient++) = std::sqrt(dx*dx+dy*dy);
 			p_ptr++; pm1_ptr++; pp1_ptr++;   		
 			
 			for(int col = 1; col < width_minus_1; col++) {
 				dx = im[p_ptr+1] - im[p_ptr-1];
 				dy = im[pp1_ptr+0] - im[pm1_ptr+0];
 //				SET_GRADIENT(dx, dy)
-				gradient[gradient_ptr++] = (float) (Math.atan2(dy, dx)+math_utils.PI);//*(gradient++) = std::atan2(dy, dx)+PI;
-				gradient[gradient_ptr++] = (float) Math.sqrt(dx*dx+dy*dy);//*(gradient++) = std::sqrt(dx*dx+dy*dy);
+				gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx)+math_utils.PI);//*(gradient++) = std::atan2(dy, dx)+PI;
+				gradient[gradient_ptr++] = (double) Math.sqrt(dx*dx+dy*dy);//*(gradient++) = std::sqrt(dx*dx+dy*dy);
 				p_ptr++; pm1_ptr++; pp1_ptr++;   		
 			}		
 			dx = im[p_ptr+0] - im[p_ptr-1];
 			dy = im[pp1_ptr+0] - im[pm1_ptr+0];
 //			SET_GRADIENT(dx, dy)
-			gradient[gradient_ptr++] = (float) (Math.atan2(dy, dx)+math_utils.PI);//*(gradient++) = std::atan2(dy, dx)+PI;
-			gradient[gradient_ptr++] = (float) Math.sqrt(dx*dx+dy*dy);//*(gradient++) = std::sqrt(dx*dx+dy*dy);
+			gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx)+math_utils.PI);//*(gradient++) = std::atan2(dy, dx)+PI;
+			gradient[gradient_ptr++] = (double) Math.sqrt(dx*dx+dy*dy);//*(gradient++) = std::sqrt(dx*dx+dy*dy);
 			p_ptr++; pm1_ptr++; pp1_ptr++;   		
 		}
 
@@ -411,16 +411,16 @@ public class OrientationAssignment {
 		dx = im[p_ptr+1] - im[p_ptr+0];
 		dy = im[pp1_ptr+0] - im[pm1_ptr+0];
 //		SET_GRADIENT(dx, dy)
-		gradient[gradient_ptr++] = (float) (Math.atan2(dy, dx)+math_utils.PI);//*(gradient++) = std::atan2(dy, dx)+PI;
-		gradient[gradient_ptr++] = (float) Math.sqrt(dx*dx+dy*dy);//*(gradient++) = std::sqrt(dx*dx+dy*dy);
+		gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx)+math_utils.PI);//*(gradient++) = std::atan2(dy, dx)+PI;
+		gradient[gradient_ptr++] = (double) Math.sqrt(dx*dx+dy*dy);//*(gradient++) = std::sqrt(dx*dx+dy*dy);
 		p_ptr++; pm1_ptr++; pp1_ptr++;
 	
 		for(int col = 1; col < width_minus_1; col++) {
 			dx = im[p_ptr+1] - im[p_ptr-1];
 			dy = im[pp1_ptr+0] - im[pm1_ptr+0];
 //			SET_GRADIENT(dx, dy)
-			gradient[gradient_ptr++] = (float) (Math.atan2(dy, dx)+math_utils.PI);//*(gradient++) = std::atan2(dy, dx)+PI;
-			gradient[gradient_ptr++] = (float) Math.sqrt(dx*dx+dy*dy);//*(gradient++) = std::sqrt(dx*dx+dy*dy);
+			gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx)+math_utils.PI);//*(gradient++) = std::atan2(dy, dx)+PI;
+			gradient[gradient_ptr++] = (double) Math.sqrt(dx*dx+dy*dy);//*(gradient++) = std::sqrt(dx*dx+dy*dy);
 			p_ptr++; pm1_ptr++; pp1_ptr++;
 
 		}
@@ -428,8 +428,8 @@ public class OrientationAssignment {
 		dx = im[p_ptr+0]   - im[p_ptr-1];
 		dy = im[pp1_ptr+0] - im[pm1_ptr+0];
 //		SET_GRADIENT(dx, dy)
-		gradient[gradient_ptr++] = (float) (Math.atan2(dy, dx)+math_utils.PI);//*(gradient++) = std::atan2(dy, dx)+PI;
-		gradient[gradient_ptr++] = (float) Math.sqrt(dx*dx+dy*dy);//*(gradient++) = std::sqrt(dx*dx+dy*dy);
+		gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx)+math_utils.PI);//*(gradient++) = std::atan2(dy, dx)+PI;
+		gradient[gradient_ptr++] = (double) Math.sqrt(dx*dx+dy*dy);//*(gradient++) = std::sqrt(dx*dx+dy*dy);
 		p_ptr++; pm1_ptr++; pp1_ptr++;
     }
 }

@@ -30,8 +30,8 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 @field      paramLTf The lookup table.
 */
 public class ARParamLT extends NyARParam{
-    public float[] i2o;
-    public float[] o2i;
+    public double[] i2o;
+    public double[] o2i;
     public int      xsize;
     public int      ysize;
     public int      xOff;
@@ -72,22 +72,22 @@ public class ARParamLT extends NyARParam{
 	    this.ysize = this._screen_size.h + i_offset*2;
 	    this.xOff = i_offset;
 	    this.yOff = i_offset;
-	    this.i2o=new float[this.xsize*this.ysize*2];
-	    this.o2i=new float[this.xsize*this.ysize*2];
+	    this.i2o=new double[this.xsize*this.ysize*2];
+	    this.o2i=new double[this.xsize*this.ysize*2];
 	    NyARDoublePoint2d tmp=new NyARDoublePoint2d();//
 	    for(int j = 0; j < this.ysize; j++ ) {
 	        for(int i = 0; i < this.xsize; i++ ) {
 	        	int ptr=(j*this.xsize+i)*2;
 	        	i_dist_factor.ideal2Observ(i-i_offset,j-i_offset, tmp);
-	        	this.i2o[ptr+0]=(float)tmp.x;
-	        	this.i2o[ptr+1]=(float)tmp.y;
+	        	this.i2o[ptr+0]=tmp.x;
+	        	this.i2o[ptr+1]=tmp.y;
 	        	i_dist_factor.observ2Ideal(i-i_offset,j-i_offset, tmp);
-	        	this.o2i[ptr+0]=(float)tmp.x;
-	        	this.o2i[ptr+1]=(float)tmp.y;	        	
+	        	this.o2i[ptr+0]=tmp.x;
+	        	this.o2i[ptr+1]=tmp.y;	        	
 	        }
 	    }
 	}
-	public int arParamIdeal2ObservLTf(float  ix, float  iy,NyARDoublePoint2d o)
+	public int arParamIdeal2ObservLTf(double  ix, double  iy,NyARDoublePoint2d o)
 	{
 	    int      px, py;
 	    
@@ -102,7 +102,7 @@ public class ARParamLT extends NyARParam{
 	    o.y = this.i2o[lt+1];
 	    return 0;
 	}
-	public int arParamObserv2IdealLTf(float  ox, float  oy,NyARDoublePoint2d o)
+	public int arParamObserv2IdealLTf(double  ox, double  oy,NyARDoublePoint2d o)
 	{
 	    int      px, py;
 	    

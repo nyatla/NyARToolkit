@@ -46,7 +46,7 @@ public class HoughSimilarityVoting {
 	/**
          *
          */
-	void init(float minX, float maxX, float minY, float maxY, int numXBins,
+	void init(double minX, double maxX, double minY, double maxY, int numXBins,
 			int numYBins, int numAngleBins, int numScaleBins) {
 		mMinX = minX;
 		mMaxX = maxX;
@@ -64,7 +64,7 @@ public class HoughSimilarityVoting {
 		mB = mNumXBins * mNumYBins * mNumAngleBins;
 
 		mScaleK = 10;
-		mScaleOneOverLogK = (float) (1.f / Math.log(mScaleK));
+		mScaleOneOverLogK = (double) (1.f / Math.log(mScaleK));
 
 		// If the number of bins for (x,y) are not set, then we adjust the
 		// number of bins automatically.
@@ -79,7 +79,7 @@ public class HoughSimilarityVoting {
 	/**
 	 * The location of the center of the object in the reference image.
 	 */
-	public void setObjectCenterInReference(float x, float y) {
+	public void setObjectCenterInReference(double x, double y) {
 		mCenterX = x;
 		mCenterY = y;
 	}
@@ -128,10 +128,10 @@ public class HoughSimilarityVoting {
 	// float& fBinY,
 	// float& fBinAngle,
 	// float& fBinScale,
-			float x, float y, float angle, float scale) {
+			double x, double y, double angle, double scale) {
 		fBin.x = mNumXBins * SafeDivision(x - mMinX, mMaxX - mMinX);
 		fBin.y = mNumYBins * SafeDivision(y - mMinY, mMaxY - mMinY);
-		fBin.angle = (float) (mNumAngleBins * ((angle + math_utils.PI) * (1 / (2 * math_utils.PI))));
+		fBin.angle = (double) (mNumAngleBins * ((angle + math_utils.PI) * (1 / (2 * math_utils.PI))));
 		fBin.scale = mNumScaleBins
 				* SafeDivision(scale - mMinScale, mMaxScale - mMinScale);
 	}
@@ -173,7 +173,7 @@ public class HoughSimilarityVoting {
 	 * @param[in] angle (-pi,pi]
 	 * @param[in] scale
 	 */
-	boolean vote(float x, float y, float angle, float scale) {
+	boolean vote(double x, double y, double angle, double scale) {
 		int binX;
 		int binY;
 		int binAngle;
@@ -265,7 +265,7 @@ public class HoughSimilarityVoting {
 		return true;
 	}
 
-	void vote(float[] ins, float[] ref, int size) {
+	void vote(double[] ins, double[] ref, int size) {
 		int num_features_that_cast_vote;
 
 		mVotes.clear();
@@ -273,7 +273,7 @@ public class HoughSimilarityVoting {
 			return;
 		}
 
-		mSubBinLocations = new float[size * 4];
+		mSubBinLocations = new double[size * 4];
 		mSubBinLocationIndices = new int[size];
 		if (mAutoAdjustXYNumBins) {
 			autoAdjustXYNumBins(ins, ref, size);
@@ -311,7 +311,7 @@ public class HoughSimilarityVoting {
 
 		// mSubBinLocations.resize(num_features_that_cast_vote*4);
 		// mSubBinLocationIndices.resize(num_features_that_cast_vote);
-		float[] n1 = new float[num_features_that_cast_vote * 4];
+		double[] n1 = new double[num_features_that_cast_vote * 4];
 		int[] n2 = new int[num_features_that_cast_vote];
 		System.arraycopy(mSubBinLocations, 0, n1, 0, n1.length);
 		System.arraycopy(mSubBinLocationIndices, 0, n2, 0, n2.length);
@@ -320,34 +320,34 @@ public class HoughSimilarityVoting {
 	}
 
 	static class mapCorrespondenceResult {
-		float x, y, angle, scale;
+		double x, y, angle, scale;
 	}
 
 	/**
 	 * Safe division (x/y).
 	 */
-	float SafeDivision(float x, float y) {
+	double SafeDivision(double x, double y) {
 		return x / (y == 0 ? 1 : y);
 	}
 
 	/**
 	 * Create a similarity matrix.
 	 */
-	void Similarity2x2(float S[], float angle, float scale) {
-		float c = (float) (scale * Math.cos(angle));
-		float s = (float) (scale * Math.sin(angle));
+	void Similarity2x2(double S[], double angle, double scale) {
+		double c = (scale * Math.cos(angle));
+		double s = (scale * Math.sin(angle));
 		S[0] = c;
 		S[1] = -s;
 		S[2] = s;
 		S[3] = c;
 	}
 
-	void mapCorrespondence(mapCorrespondenceResult r, float ins_x, float ins_y,
-			float ins_angle, float ins_scale, float ref_x, float ref_y,
-			float ref_angle, float ref_scale) {
-		float[] S = new float[4];
-		float[] tp = new float[2];
-		float tx, ty;
+	void mapCorrespondence(mapCorrespondenceResult r, double ins_x, double ins_y,
+			double ins_angle, double ins_scale, double ref_x, double ref_y,
+			double ref_angle, double ref_scale) {
+		double[] S = new double[4];
+		double[] tp = new double[2];
+		double tx, ty;
 
 		//
 		// Angle
@@ -370,7 +370,7 @@ public class HoughSimilarityVoting {
 		r.scale = SafeDivision(ins_scale, ref_scale);
 		Similarity2x2(S, r.angle, r.scale);
 
-		r.scale = (float) (Math.log(r.scale) * mScaleOneOverLogK);
+		r.scale = (double) (Math.log(r.scale) * mScaleOneOverLogK);
 
 		//
 		// Position
@@ -395,7 +395,7 @@ public class HoughSimilarityVoting {
 	/**
 	 * @return Sub-bin locations for each correspondence
 	 */
-	public float[] getSubBinLocations() {
+	public double[] getSubBinLocations() {
 		return mSubBinLocations;
 	}
 
@@ -407,7 +407,7 @@ public class HoughSimilarityVoting {
 	}
 
 	static public class getMaximumNumberOfVotesResult {
-		public float votes;
+		public double votes;
 		public int index;
 	}
 
@@ -440,9 +440,9 @@ public class HoughSimilarityVoting {
 	// scale, int index) const;
 	//
 
-	public void getBinDistance(mapCorrespondenceResult distbin, float insBinX,
-			float insBinY, float insBinAngle, float insBinScale, float refBinX,
-			float refBinY, float refBinAngle, float refBinScale) {
+	public void getBinDistance(mapCorrespondenceResult distbin, double insBinX,
+			double insBinY, double insBinAngle, double insBinScale, double refBinX,
+			double refBinY, double refBinAngle, double refBinScale) {
 		//
 		// (x,y,scale)
 		//
@@ -455,9 +455,9 @@ public class HoughSimilarityVoting {
 		// Angle
 		//
 
-		float d1 = Math.abs(insBinAngle - refBinAngle);
-		float d2 = (float) mNumAngleBins - d1;
-		distbin.angle = (float) math_utils.min2(d1, d2);
+		double d1 = Math.abs(insBinAngle - refBinAngle);
+		double d2 = (double) mNumAngleBins - d1;
+		distbin.angle = (double) math_utils.min2(d1, d2);
 
 		// ASSERT(distBinAngle >= 0, "distBinAngle must not be negative");
 	}
@@ -547,32 +547,32 @@ public class HoughSimilarityVoting {
 	private int mRefImageHeight;
 
 	// Center of object in reference image
-	private float mCenterX;
-	private float mCenterY;
+	private double mCenterX;
+	private double mCenterY;
 
 	// Set to true if the XY number of bins should be adjusted
 	private boolean mAutoAdjustXYNumBins;
 
 	// Min/Max (x,y,scale). The angle includes all angles (-pi,pi).
-	private float mMinX;
-	private float mMaxX;
-	private float mMinY;
-	private float mMaxY;
-	private float mMinScale;
-	private float mMaxScale;
+	private double mMinX;
+	private double mMaxX;
+	private double mMinY;
+	private double mMaxY;
+	private double mMinScale;
+	private double mMaxScale;
 
-	private float mScaleK;
-	private float mScaleOneOverLogK;
+	private double mScaleK;
+	private double mScaleOneOverLogK;
 
 	private int mNumXBins;
 	private int mNumYBins;
 	private int mNumAngleBins;
 	private int mNumScaleBins;
 
-	private float mfBinX;
-	private float mfBinY;
-	private float mfBinAngle;
-	private float mfBinScale;
+	private double mfBinX;
+	private double mfBinY;
+	private double mfBinAngle;
+	private double mfBinScale;
 
 	private int mA; // mNumXBins*mNumYBins
 	private int mB; // mNumXBins*mNumYBins*mNumAngleBins
@@ -583,7 +583,7 @@ public class HoughSimilarityVoting {
 
 	final hash_t mVotes = new hash_t();
 
-	float[] mSubBinLocations;
+	double[] mSubBinLocations;
 	int[] mSubBinLocationIndices;
 
 	/**
@@ -608,9 +608,9 @@ public class HoughSimilarityVoting {
 	/**
 	 * Set the number of bins for translation based on the correspondences.
 	 */
-	private void autoAdjustXYNumBins(float[] ins, float[] ref, int size) {
+	private void autoAdjustXYNumBins(double[] ins, double[] ref, int size) {
 		int max_dim = math_utils.max2(mRefImageWidth, mRefImageHeight);
-		float[] projected_dim = new float[size];
+		double[] projected_dim = new double[size];
 
 		// ASSERT(size > 0, "size must be positive");
 		// ASSERT(mRefImageWidth > 0, "width must be positive");
@@ -623,21 +623,21 @@ public class HoughSimilarityVoting {
 			// const float* ref_ptr = &ref[i<<2];
 
 			// Scale is the 3rd component
-			float ins_scale = ins[ins_ptr + 3];
-			float ref_scale = ref[ref_ptr + 3];
+			double ins_scale = ins[ins_ptr + 3];
+			double ref_scale = ref[ref_ptr + 3];
 
 			// Project the max_dim via the scale
-			float scale = SafeDivision(ins_scale, ref_scale);
+			double scale = SafeDivision(ins_scale, ref_scale);
 			projected_dim[i] = scale * max_dim;
 		}
 
 		// Find the median projected dim
 		// float median_proj_dim = FastMedian<float>(&projected_dim[0],
 		// (int)projected_dim.size());
-		float median_proj_dim = FastMedian(projected_dim, projected_dim.length);
+		double median_proj_dim = FastMedian(projected_dim, projected_dim.length);
 
 		// Compute the bin size a fraction of the median projected dim
-		float bin_size = 0.25f * median_proj_dim;
+		double bin_size = 0.25f * median_proj_dim;
 
 		mNumXBins = math_utils
 				.max2(5, (int) Math.ceil((mMaxX - mMinX) / bin_size));
@@ -651,7 +651,7 @@ public class HoughSimilarityVoting {
 	/**
 	 * Find the median of an array.
 	 */
-	private float FastMedian(float a[], int n) {
+	private double FastMedian(double a[], int n) {
 		// return PartialSort(a, n, (((n)&1)?((n)/2):(((n)/2)-1)));
 		return PartialSort(a, n, ((((n) & 1) == 1) ? ((n) / 2)
 				: (((n) / 2) - 1)));
@@ -666,9 +666,9 @@ public class HoughSimilarityVoting {
 	 * @param[in] k kth element starting from 1, i.e. 1st smallest, 2nd
 	 *            smallest, etc.
 	 */
-	private float PartialSort(float[] a, int n, int k) {
+	private double PartialSort(double[] a, int n, int k) {
 		int i, j, l, m, k_minus_1;
-		float x;
+		double x;
 
 		// ASSERT(n > 0, "n must be positive");
 		// ASSERT(k > 0, "k must be positive");
@@ -688,7 +688,7 @@ public class HoughSimilarityVoting {
 					j--;
 				if (i <= j) {
 					// std::swap<T>(a[i],a[j]); // FIXME:
-					float t = a[i];
+					double t = a[i];
 					a[i] = a[j];
 					a[j] = t;
 					// std::swap(a[i], a[j]);

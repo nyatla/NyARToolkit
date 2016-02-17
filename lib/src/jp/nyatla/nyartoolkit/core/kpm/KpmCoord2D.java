@@ -1,9 +1,9 @@
 package jp.nyatla.nyartoolkit.core.kpm;
 
 public class KpmCoord2D {
-    public float             x;
-    public float             y;
-	public KpmCoord2D(float i_x, float i_y) {
+    public double             x;
+    public double             y;
+	public KpmCoord2D(double i_x, double i_y) {
 		this.x=i_x;
 		this.y=i_y;
 	}
@@ -17,7 +17,7 @@ public class KpmCoord2D {
 		}
 		return a;
 	}
-	public void set(float i_x, float i_y) 
+	public void set(double i_x, double i_y) 
 	{
 		this.x=i_x;
 		this.y=i_y;

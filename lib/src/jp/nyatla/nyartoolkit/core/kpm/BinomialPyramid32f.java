@@ -7,7 +7,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 public class BinomialPyramid32f extends GaussianScaleSpacePyramid
 {
     private int[] mTemp_us16;
-    private float[] mTemp_f32_1;
+    private double[] mTemp_f32_1;
 //    private float[] mTemp_f32_2;	
 	public void alloc(int width,int height,int num_octaves)
     {
@@ -21,7 +21,7 @@ public class BinomialPyramid32f extends GaussianScaleSpacePyramid
 			}
 		}
 		this.mTemp_us16=new int[width*height];
-		this.mTemp_f32_1=new float[width*height];
+		this.mTemp_f32_1=new double[width*height];
 //		this.mTemp_f32_2=new float[width*height];
 		this.mNumOctaves = num_octaves;		
 	}
@@ -39,7 +39,7 @@ public class BinomialPyramid32f extends GaussianScaleSpacePyramid
         }
         return num_octaves;
     }
-    private void binomial_4th_order(float[] dst,int[] tmp,int[] src,int width,int height)
+    private void binomial_4th_order(double[] dst,int[] tmp,int[] src,int width,int height)
     {
 		int tmp_ptr=0;
 
@@ -167,7 +167,7 @@ public class BinomialPyramid32f extends GaussianScaleSpacePyramid
 			dst[dst_ptr] = (((tmp[p]<<1)+(tmp[p]<<2)) + ((tmp[pm1]+tmp[pp1])<<2) + (tmp[pm2]+tmp[pp2]))*(1.f/256.f);
 		}
     }
-    private void binomial_4th_order(float[] dst,float[] tmp,float[] src,int width,int height)
+    private void binomial_4th_order(double[] dst,double[] tmp,double[] src,int width,int height)
     {
 		int tmp_ptr=0;
 
@@ -287,7 +287,7 @@ public class BinomialPyramid32f extends GaussianScaleSpacePyramid
     }   
     
     
-    private void downsample_bilinear(float[] dst,float[] src, int src_width, int src_height)
+    private void downsample_bilinear(double[] dst,double[] src, int src_width, int src_height)
     {
         int src_ptr1;
         int src_ptr2;
@@ -317,8 +317,8 @@ public class BinomialPyramid32f extends GaussianScaleSpacePyramid
         for(int i = 1; i < mNumOctaves; i++) {
             // Downsample
             downsample_bilinear(
-            	(float[])mPyramid[i*mNumScalesPerOctave].getBuffer(),
-            	(float[])mPyramid[i*mNumScalesPerOctave-1].getBuffer(),
+            	(double[])mPyramid[i*mNumScalesPerOctave].getBuffer(),
+            	(double[])mPyramid[i*mNumScalesPerOctave-1].getBuffer(),
                 mPyramid[i*mNumScalesPerOctave-1].getWidth(),
                 mPyramid[i*mNumScalesPerOctave-1].getHeight());
             
@@ -331,12 +331,12 @@ public class BinomialPyramid32f extends GaussianScaleSpacePyramid
     void apply_filter(KpmImage dst, INyARGrayscaleRaster src)
     {
     	assert(src.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
-        binomial_4th_order((float[])dst.getBuffer(),this.mTemp_us16,(int[])src.getBuffer(),src.getWidth(),src.getHeight());
+        binomial_4th_order((double[])dst.getBuffer(),this.mTemp_us16,(int[])src.getBuffer(),src.getWidth(),src.getHeight());
     }    
     void apply_filter(KpmImage dst, KpmImage src)
     {
         binomial_4th_order(
-        	(float[])dst.getBuffer(),this.mTemp_f32_1,(float[])src.getBuffer(),src.getWidth(),src.getHeight());
+        	(double[])dst.getBuffer(),this.mTemp_f32_1,(double[])src.getBuffer(),src.getWidth(),src.getHeight());
     }    
     void apply_filter_twice(KpmImage dst,KpmImage src)
     {

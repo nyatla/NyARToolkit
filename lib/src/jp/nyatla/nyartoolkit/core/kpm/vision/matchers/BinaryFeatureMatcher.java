@@ -82,7 +82,7 @@ public class BinaryFeatureMatcher {
                 	t.set(i, best_index);
                 } else {
                     // Ratio test
-                    float r = (float)first_best / (float)second_best;
+                	double r = (double)first_best / (double)second_best;
                     if(r < mThreshold) {
                     	match_t t=this.mMatches.prePush();
                     	t.set(i, best_index);
@@ -153,7 +153,7 @@ public class BinaryFeatureMatcher {
                     	t.set((int)i, best_index);
                     } else {
                         // Ratio test
-                        float r = (float)first_best / (float)second_best;
+                    	double r = (double)first_best / (double)second_best;
                         if(r < mThreshold) {
 //                            mMatches.push_back(match_t((int)i, best_index));
                         	match_t t=mMatches.prePush();
@@ -165,7 +165,7 @@ public class BinaryFeatureMatcher {
 //            ASSERT(mMatches.size() <= features1->size(), "Number of matches should be lower");
             return mMatches.getLength();
         }
-        private static float sqr(float a){
+        private static double sqr(double a){
         	return a*a;
         }
         /**
@@ -176,8 +176,8 @@ public class BinaryFeatureMatcher {
          */
         int match(BinaryFeatureStore features1,
                      BinaryFeatureStore features2,
-                     float[] H, //float[9]
-                     float tr)
+                     double[] H, //float[9]
+                     double tr)
         {
 
         	this.mMatches=new matchStack(features1.size());
@@ -187,9 +187,9 @@ public class BinaryFeatureMatcher {
                 return 0;
             }
             
-            float tr_sqr = sqr(tr);
+            double tr_sqr = sqr(tr);
             
-            float[] Hinv=new float[9];
+            double[] Hinv=new double[9];
             if(!liner_algebr.MatrixInverse3x3(Hinv, H, 0.f)) {
 //                ASSERT(0, "Failed to compute matrix inverse");
                 return 0;
@@ -205,8 +205,8 @@ public class BinaryFeatureMatcher {
                 FeaturePoint p1 = features1.point(i);
                 
                 // Map p1 to p2 space through H
-                float xp1, yp1;
-                float[] tmp=new float[2];
+                double xp1, yp1;
+                double[] tmp=new double[2];
                 homography.MultiplyPointHomographyInhomogenous(tmp, Hinv, p1.x, p1.y);
                 xp1=tmp[0];
                 yp1=tmp[1];
@@ -249,7 +249,7 @@ public class BinaryFeatureMatcher {
 //                        mMatches.push_back(match_t((int)i, best_index));
                     } else {
                         // Ratio test
-                        float r = (float)first_best / (float)second_best;
+                    	double r = (double)first_best / (double)second_best;
                         if(r < mThreshold) {
 //                            mMatches.push_back(match_t((int)i, best_index));
                         	match_t t=mMatches.prePush();
@@ -276,7 +276,7 @@ public class BinaryFeatureMatcher {
         private matchStack mMatches;
         
         // Threshold on the 1st and 2nd best matches
-        private float mThreshold;
+        private double mThreshold;
         
 
 

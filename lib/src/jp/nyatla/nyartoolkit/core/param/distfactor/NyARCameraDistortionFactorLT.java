@@ -62,11 +62,11 @@ public class NyARCameraDistortionFactorLT extends NyARCameraDistortionFactorImpl
 	        for(int i = 0; i < this._xsize; i++ ) {
 	        	int ptr=(j*this._xsize+i)*2;
 	        	i_base_factor.ideal2Observ(i-i_offset,j-i_offset, tmp);
-	        	this._i2o[ptr+0]=(float)tmp.x;
-	        	this._i2o[ptr+1]=(float)tmp.y;
+	        	this._i2o[ptr+0]=(double)tmp.x;
+	        	this._i2o[ptr+1]=(double)tmp.y;
 	        	i_base_factor.observ2Ideal(i-i_offset,j-i_offset, tmp);
-	        	this._o2i[ptr+0]=(float)tmp.x;
-	        	this._o2i[ptr+1]=(float)tmp.y;	        	
+	        	this._o2i[ptr+0]=(double)tmp.x;
+	        	this._o2i[ptr+1]=(double)tmp.y;	        	
 	        }
 	    }
 		return;
