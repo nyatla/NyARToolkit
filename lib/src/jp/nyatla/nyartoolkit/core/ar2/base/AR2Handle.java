@@ -16,7 +16,6 @@ import java.io.FileInputStream;
 import jp.nyatla.nyartoolkit.core.icp.NyARIcp;
 import jp.nyatla.nyartoolkit.core.icp.NyARIcpPoint;
 import jp.nyatla.nyartoolkit.core.icp.NyARIcpPointRobust;
-import jp.nyatla.nyartoolkit.core.kpm.ARParamLT;
 import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftDataSet;
 import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftFsetFile;
 import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftFsetFile.NyAR2FeatureCoord;

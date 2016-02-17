@@ -6,8 +6,8 @@ import java.io.FileNotFoundException;
 import java.util.Date;
 
 
-import jp.nyatla.nyartoolkit.core.kpm.ARParamLT;
-import jp.nyatla.nyartoolkit.core.kpm.KpmHandle;
+import jp.nyatla.nyartoolkit.core.ar2.base.ARParamLT;
+import jp.nyatla.nyartoolkit.core.kpm.base.KpmHandle;
 import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftFreakFsetFile;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
@@ -50,7 +50,15 @@ public class KpmBenchmark
 			NyARNftFreakFsetFile f = NyARNftFreakFsetFile.loadFromfset3File(new FileInputStream(new File(fset3file)));
 			KpmHandle kpm=new KpmHandle(new ARParamLT(param));
 			kpm.kpmSetRefDataSet(f);
+			long st=System.currentTimeMillis();
 			kpm.kpmMatching(gs);
+			System.out.println(System.currentTimeMillis()-st);
+			NyARDoubleMatrix44 TEST_PATT=new NyARDoubleMatrix44(new double[]{	0.9843635410774265,0.006676891783837065,-0.17602226595996517,-191.17967199668533,
+				0.011597578022657571,-0.9995697471256431,0.02694098764508235,63.00280574839347,
+				-0.17576664981496215,-0.028561157958401542,-0.9840174516078957	,611.7587155355864,
+				0,0,0,1});
+			System.out.println(TEST_PATT.equals(kpm.result[0].camPose));
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
