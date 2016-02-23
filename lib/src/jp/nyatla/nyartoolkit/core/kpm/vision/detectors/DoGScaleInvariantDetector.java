@@ -68,37 +68,58 @@ public class DoGScaleInvariantDetector {
 			return n;
 		}
 	}
+	// True if the orientation should be assigned
+	final private boolean mFindOrientation;
 
-	public DoGScaleInvariantDetector() {
-		this.mWidth = 0;
-		this.mHeight = 0;
+	// DoG pyramid
+	final private DoGPyramid mLaplacianPyramid;
+
+	/** Laplacian score threshold */
+	final private double mLaplacianThreshold;
+
+	/** Edge threshold */
+	final private double mEdgeThreshold;
+
+	/** Vector of extracted feature points */
+	final private FeaturePointStack mFeaturePoints;
+
+	// Maximum number of feature points
+	final private int mMaxNumFeaturePoints;
+
+	// Maximum update allowed for sub-pixel refinement
+	final private double mMaxSubpixelDistanceSqr;
+
+	// Orientation assignment
+	final private OrientationAssignment mOrientationAssignment;
+	
+	/** Buckets for pruning points
+	 * std::vector<std::vector<std::vector<std::pair<float, size_t> > > >
+	 */
+	final private BucketStack[][] mBuckets;
+	
+	public DoGScaleInvariantDetector(GaussianScaleSpacePyramid i_pyramid,double i_LaplacianThreshold,double i_EdgeThreshold,int i_MaxNumFeaturePoints)
+	{
 		this.mNumBucketsX = 10;
 		this.mNumBucketsY = 10;
 		this.mFindOrientation = true;
-		this.mLaplacianThreshold = 0;
-		this.mEdgeThreshold = 10;
+		this.mLaplacianThreshold = i_LaplacianThreshold;
+		this.mEdgeThreshold = i_EdgeThreshold;
+		this.mFeaturePoints = new FeaturePointStack(2000);//この2000は適当		
+		this.mMaxNumFeaturePoints=i_MaxNumFeaturePoints;
 		this.mMaxSubpixelDistanceSqr = (3 * 3);
-		this.setMaxNumFeaturePoints(kMaxNumFeaturePoints);
 		this.mOrientations = new double[kMaxNumOrientations];
+		this.mLaplacianPyramid=new DoGPyramid(i_pyramid);
+		this.mWidth = i_pyramid.images()[0].getWidth();
+		this.mHeight = i_pyramid.images()[0].getHeight();
+		this.mOrientationAssignment=new OrientationAssignment(
+				i_pyramid.images()[0].getWidth(),i_pyramid.images()[0].getHeight(),i_pyramid.numOctaves(),
+				i_pyramid.numScalesPerOctave(), kMaxNumOrientations, 3, 1.5f, 5,0.8f);
+		this.mBuckets = createBucketPairArray(mNumBucketsX, mNumBucketsY,300);
+
 	}
 
-	/**
-	 * Allocate memory.
-	 */
-	public void alloc(GaussianScaleSpacePyramid pyramid) {
-		mLaplacianPyramid.alloc(pyramid);
 
-		mOrientationAssignment.alloc(pyramid.images()[0].getWidth(),
-				pyramid.images()[0].getHeight(), pyramid.numOctaves(),
-				pyramid.numScalesPerOctave(), kMaxNumOrientations, 3, 1.5f, 5,
-				0.8f);
 
-		mWidth = pyramid.images()[0].getWidth();
-		mHeight = pyramid.images()[0].getHeight();
-
-		// Allocate bucket container
-		mBuckets = createBucketPairArray(mNumBucketsX, mNumBucketsY,300);
-	}
 
 	/**
 	 * @return Width/Height of configured image
@@ -145,50 +166,50 @@ public class DoGScaleInvariantDetector {
 		// }
 	}
 
-	/**
-	 * Get/Set the Laplacian absolute threshold.
-	 */
-	public double laplacianThreshold() {
-		return mLaplacianThreshold;
-	}
-
-	public void setLaplacianThreshold(double tr) {
-		this.mLaplacianThreshold = tr;
-	}
-
-	/**
-	 * Get/Set the maximum number of feature point.
-	 */
-	public int maxNumFeaturePoints() {
-		return this.mMaxNumFeaturePoints;
-	}
-
-	public void setMaxNumFeaturePoints(int n) {
-		this.mMaxNumFeaturePoints = n;
-		this.mFeaturePoints = new FeaturePointStack(2000);
-	}
-
-	/**
-	 * Get/Set the edge threshold.
-	 */
-	public double edgeThreshold() {
-		return this.mEdgeThreshold;
-	}
-
-	public void setEdgeThreshold(double tr) {
-		this.mEdgeThreshold = tr;
-	}
-
-	/**
-	 * Set/Get find orientations.
-	 */
-	void setFindOrientation(boolean b) {
-		this.mFindOrientation = b;
-	}
-
-	public boolean findOrientation() {
-		return this.mFindOrientation;
-	}
+//	/**
+//	 * Get/Set the Laplacian absolute threshold.
+//	 */
+//	public double laplacianThreshold() {
+//		return mLaplacianThreshold;
+//	}
+//
+//	public void setLaplacianThreshold(double i_LaplacianThreshold) {
+//		this.mLaplacianThreshold = tr;
+//	}
+//
+//	/**
+//	 * Get/Set the maximum number of feature point.
+//	 */
+//	public int maxNumFeaturePoints() {
+//		return this.mMaxNumFeaturePoints;
+//	}
+//
+//	public void setMaxNumFeaturePoints(int n) {
+//		this.mMaxNumFeaturePoints = n;
+//		this.mFeaturePoints = new FeaturePointStack(2000);
+//	}
+//
+//	/**
+//	 * Get/Set the edge threshold.
+//	 */
+//	public double edgeThreshold() {
+//		return this.mEdgeThreshold;
+//	}
+//
+//	public void setEdgeThreshold(double tr) {
+//		this.mEdgeThreshold = tr;
+//	}
+//
+//	/**
+//	 * Set/Get find orientations.
+//	 */
+//	void setFindOrientation(boolean b) {
+//		this.mFindOrientation = b;
+//	}
+//
+//	public boolean findOrientation() {
+//		return this.mFindOrientation;
+//	}
 
 	/**
 	 * @return Feature points
@@ -205,12 +226,12 @@ public class DoGScaleInvariantDetector {
 	}
 
 	// Width/Height of configured image
-	private int mWidth;
-	private int mHeight;
+	final private int mWidth;
+	final private int mHeight;
 
 	// Number of buckets in X/Y
-	private int mNumBucketsX;
-	private int mNumBucketsY;
+	final private int mNumBucketsX;
+	final private int mNumBucketsY;
 
 	private static class BucketPair {
 		public double first;
@@ -261,34 +282,8 @@ public class DoGScaleInvariantDetector {
 		return r;
 	}
 
-	// Buckets for pruning points
-	// std::vector<std::vector<std::vector<std::pair<float, size_t> > > >
-	// mBuckets;
-	BucketStack[][] mBuckets;
 
-	// True if the orientation should be assigned
-	private boolean mFindOrientation;
 
-	// DoG pyramid
-	final private DoGPyramid mLaplacianPyramid=new DoGPyramid();
-
-	// Laplacian score threshold
-	private double mLaplacianThreshold;
-
-	// Edge threshold
-	private double mEdgeThreshold;
-
-	// Vector of extracted feature points
-	private FeaturePointStack mFeaturePoints;
-
-	// Maximum number of feature points
-	private int mMaxNumFeaturePoints;
-
-	// Maximum update allowed for sub-pixel refinement
-	private double mMaxSubpixelDistanceSqr;
-
-	// Orientation assignment
-	final private OrientationAssignment mOrientationAssignment=new OrientationAssignment();
 
 	// Vector of orientations. Pre-allocated to the maximum
 	// number of orientations per feature point.
@@ -978,7 +973,7 @@ public class DoGScaleInvariantDetector {
 		// ASSERT(mBuckets[0].size() == mNumBucketsY,
 		// "Buckets are not allocated");
 
-		FeaturePointStack points = new FeaturePointStack(2000);// 適当
+		FeaturePointStack points = new FeaturePointStack(2000);// 適当　DoGScaleInvariantDetector.mFeaturePointsと同じくらいないとダメ
 		PruneDoGFeatures(mBuckets, points, mFeaturePoints, (int) mNumBucketsX,
 				(int) mNumBucketsY, (int) mWidth, (int) mHeight,
 				(int) mMaxNumFeaturePoints);

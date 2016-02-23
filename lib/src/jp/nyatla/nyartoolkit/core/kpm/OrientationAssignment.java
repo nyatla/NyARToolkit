@@ -3,30 +3,46 @@ package jp.nyatla.nyartoolkit.core.kpm;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.GaussianScaleSpacePyramid;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 
-public class OrientationAssignment {
-    public OrientationAssignment()
-    {
-    	this.mNumOctaves=0;
-    	this.mNumScalesPerOctave=0;
-    	this.mGaussianExpansionFactor=0;
-    	this.mSupportRegionExpansionFactor=0;
-    	this.mNumSmoothingIterations=0;
-    	this.mPeakThreshold=0;
-    }
-
+public class OrientationAssignment
+{
+    final private int mNumOctaves;
+    final private int mNumScalesPerOctave;
     
-    /**
-     * Allocate memory.
-     */
-    public void alloc(int fine_width,
-               int fine_height,
-               int num_octaves,
-               int num_scales_per_octave,
-               int num_bins,
-               double gaussian_expansion_factor,
-               double support_region_expansion_factor,
-               int num_smoothing_iterations,
-               double peak_threshold)
+    // Number of bins in the histogram
+    final private int mNumBins;
+    
+    // Factor to expand the Gaussian weighting function. The Gaussian sigma is computed
+    // by expanding the feature point scale. The feature point scale represents the isometric
+    // size of the feature. 
+    final private double mGaussianExpansionFactor;
+    
+    // Factor to expand the support region. This factor is multipled by the expanded
+    // Gaussian sigma. It essentially acts at the "window" to collect gradients in.
+    final private double mSupportRegionExpansionFactor;
+    
+    // Number of binomial smoothing iterations of the orientation histogram. The histogram
+    // is smoothed before find the peaks.
+    final private int mNumSmoothingIterations;
+    
+    // All the supporting peaks which are X percent of the absolute peak are considered
+    // dominant orientations. 
+    final private double mPeakThreshold;
+    
+    // Orientation histogram
+    final private double[] mHistogram;
+    
+    // Vector of gradient images
+    final private GradientsImage[] mGradients;
+    
+    public OrientationAssignment(int fine_width,
+            int fine_height,
+            int num_octaves,
+            int num_scales_per_octave,
+            int num_bins,
+            double gaussian_expansion_factor,
+            double support_region_expansion_factor,
+            int num_smoothing_iterations,
+            double peak_threshold)
     {
         this.mNumOctaves = num_octaves;
         this.mNumScalesPerOctave = num_scales_per_octave;
@@ -51,8 +67,48 @@ public class OrientationAssignment {
                 mGradients[i*num_scales_per_octave+j]=new GradientsImage(fine_width>>i,fine_height>>i);
                 
             }
-        }    	
+        }
     }
+
+    
+//    /**
+//     * Allocate memory.
+//     */
+//    public void alloc(int fine_width,
+//               int fine_height,
+//               int num_octaves,
+//               int num_scales_per_octave,
+//               int num_bins,
+//               double gaussian_expansion_factor,
+//               double support_region_expansion_factor,
+//               int num_smoothing_iterations,
+//               double peak_threshold)
+//    {
+//        this.mNumOctaves = num_octaves;
+//        this.mNumScalesPerOctave = num_scales_per_octave;
+//        this.mNumBins = num_bins;
+//        this.mGaussianExpansionFactor = gaussian_expansion_factor;
+//        this.mSupportRegionExpansionFactor = support_region_expansion_factor;
+//        this.mNumSmoothingIterations = num_smoothing_iterations;
+//        this.mPeakThreshold = peak_threshold;
+//        
+//        this.mHistogram=new double[num_bins];
+//        
+//        // Allocate gradient images
+//        this.mGradients=new GradientsImage[this.mNumOctaves*this.mNumScalesPerOctave];
+//        for(int i = 0; i < num_octaves; i++) {
+//            for(int j = 0; j < num_scales_per_octave; j++) {
+////                mGradients[i*num_scales_per_octave+j].alloc(IMAGE_F32,
+////                                                            fine_width>>i,
+////                                                            fine_height>>i,
+////                                                            AUTO_STEP,
+////                                                            2);
+//            	//これKpmImageじゃなくて単純なfloatbufferにしようあとで。どうせバッファオーバフローで落ちるから。
+//                mGradients[i*num_scales_per_octave+j]=new GradientsImage(fine_width>>i,fine_height>>i);
+//                
+//            }
+//        }    	
+//    }
     
     /**
      * Compute the gradients given a pyramid.
@@ -240,34 +296,7 @@ public class OrientationAssignment {
     public GradientsImage get(int i){ return mGradients[i]; }
     
     
-    private int mNumOctaves;
-    private int mNumScalesPerOctave;
-    
-    // Number of bins in the histogram
-    private int mNumBins;
-    
-    // Factor to expand the Gaussian weighting function. The Gaussian sigma is computed
-    // by expanding the feature point scale. The feature point scale represents the isometric
-    // size of the feature. 
-    private double mGaussianExpansionFactor;
-    
-    // Factor to expand the support region. This factor is multipled by the expanded
-    // Gaussian sigma. It essentially acts at the "window" to collect gradients in.
-    private double mSupportRegionExpansionFactor;
-    
-    // Number of binomial smoothing iterations of the orientation histogram. The histogram
-    // is smoothed before find the peaks.
-    private int mNumSmoothingIterations;
-    
-    // All the supporting peaks which are X percent of the absolute peak are considered
-    // dominant orientations. 
-    private double mPeakThreshold;
-    
-    // Orientation histogram
-    private double[] mHistogram;
-    
-    // Vector of gradient images
-    private GradientsImage[] mGradients;
+
     
     
     /**

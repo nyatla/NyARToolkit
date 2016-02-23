@@ -16,7 +16,8 @@ import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 
-public class VisualDatabase<STORE extends BinaryFeatureStore> {
+public class VisualDatabase<STORE extends BinaryFeatureStore>
+{
 	private static double kLaplacianThreshold = 3;
 	private static double kEdgeThreshold = 4;
 	private static int kMaxNumFeatures = 300;
@@ -32,8 +33,10 @@ public class VisualDatabase<STORE extends BinaryFeatureStore> {
 	private static boolean kUseFeatureIndex = true;
 	public final static int NUM_BYTES_PER_FEATURE = 96;
 
-	// // Pyramid builder
+	/** Pyramid builder */
 	final private BinomialPyramid32f mPyramid;
+	/** Interest point detector (DoG, etc) */
+	final private DoGScaleInvariantDetector mDetector;
 	
 	
 	
@@ -42,9 +45,10 @@ public class VisualDatabase<STORE extends BinaryFeatureStore> {
 		this.mPyramid=new BinomialPyramid32f(
 			i_width,i_height,
 			BinomialPyramid32f.octavesFromMinimumCoarsestSize(i_width,i_height,kMinCoarseSize));
-		this.mDetector.setLaplacianThreshold(kLaplacianThreshold);
-		this.mDetector.setEdgeThreshold(kEdgeThreshold);
-		this.mDetector.setMaxNumFeaturePoints(kMaxNumFeatures);
+		this.mDetector = new DoGScaleInvariantDetector(this.mPyramid,kLaplacianThreshold,kEdgeThreshold,kMaxNumFeatures);
+//		this.mDetector.setLaplacianThreshold(kLaplacianThreshold);
+//		this.mDetector.setEdgeThreshold(kEdgeThreshold);
+//		this.mDetector.setMaxNumFeaturePoints(kMaxNumFeatures);
 
 		this.mHomographyInlierThreshold = kHomographyInlierThreshold;
 		this.mMinNumInliers = kMinNumInliers;
@@ -111,7 +115,7 @@ public class VisualDatabase<STORE extends BinaryFeatureStore> {
 		// Allocate detector
 		if (this.mDetector.width() != pyramid.images()[0].getWidth()
 				|| this.mDetector.height() != pyramid.images()[0].getHeight()) {
-			this.mDetector.alloc(pyramid);
+			throw new NyARRuntimeException();
 		}
 
 		// Find the features on the image
@@ -495,10 +499,8 @@ public class VisualDatabase<STORE extends BinaryFeatureStore> {
 	//
 	// // Map of keyframe
 	final private KeyframeMap mKeyframeMap=new KeyframeMap();
-	//
-	//
-	// Interest point detector (DoG, etc)
-	private DoGScaleInvariantDetector mDetector = new DoGScaleInvariantDetector();
+
+
 
 	// Feature Extractor (FREAK, etc).
 	final FREAKExtractor mFeatureExtractor;

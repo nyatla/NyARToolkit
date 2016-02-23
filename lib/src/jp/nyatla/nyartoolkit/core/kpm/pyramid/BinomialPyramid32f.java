@@ -42,7 +42,31 @@ public class BinomialPyramid32f extends GaussianScaleSpacePyramid
 		}
 		return num_octaves;
 	}
-	
+    public void build(INyARGrayscaleRaster i_raster)
+    {
+        assert(i_raster.getSize().isEqualSize(this.mPyramid[0].getSize()));
+        assert(this.mPyramid.length == mNumOctaves*mNumScalesPerOctave);
+        
+        // First octave
+        apply_filter(mPyramid[0],i_raster);
+        apply_filter(mPyramid[1], mPyramid[0]);
+        apply_filter_twice(mPyramid[2], mPyramid[1]);
+        
+        // Remaining octaves
+        for(int i = 1; i < mNumOctaves; i++) {
+            // Downsample
+            downsample_bilinear(
+            	(double[])mPyramid[i*mNumScalesPerOctave].getBuffer(),
+            	(double[])mPyramid[i*mNumScalesPerOctave-1].getBuffer(),
+                mPyramid[i*mNumScalesPerOctave-1].getWidth(),
+                mPyramid[i*mNumScalesPerOctave-1].getHeight());
+            
+            // Apply binomial filters
+            apply_filter(mPyramid[i*mNumScalesPerOctave+1], mPyramid[i*mNumScalesPerOctave]);
+            apply_filter_twice(mPyramid[i*mNumScalesPerOctave+2], mPyramid[i*mNumScalesPerOctave+1]);
+        }
+        return;
+    }	
     private void binomial_4th_order(double[] dst,int[] tmp,int[] src,int width,int height)
     {
 		int tmp_ptr=0;
@@ -277,42 +301,18 @@ public class BinomialPyramid32f extends GaussianScaleSpacePyramid
             }
         }
     }
-    public void build(INyARGrayscaleRaster i_raster)
-    {
-        assert(i_raster.getSize().isEqualSize(this.mPyramid[0].getSize()));
-        assert(this.mPyramid.length == mNumOctaves*mNumScalesPerOctave);
-        
-        // First octave
-        apply_filter(mPyramid[0],i_raster);
-        apply_filter(mPyramid[1], mPyramid[0]);
-        apply_filter_twice(mPyramid[2], mPyramid[1]);
-        
-        // Remaining octaves
-        for(int i = 1; i < mNumOctaves; i++) {
-            // Downsample
-            downsample_bilinear(
-            	(double[])mPyramid[i*mNumScalesPerOctave].getBuffer(),
-            	(double[])mPyramid[i*mNumScalesPerOctave-1].getBuffer(),
-                mPyramid[i*mNumScalesPerOctave-1].getWidth(),
-                mPyramid[i*mNumScalesPerOctave-1].getHeight());
-            
-            // Apply binomial filters
-            apply_filter(mPyramid[i*mNumScalesPerOctave+1], mPyramid[i*mNumScalesPerOctave]);
-            apply_filter_twice(mPyramid[i*mNumScalesPerOctave+2], mPyramid[i*mNumScalesPerOctave+1]);
-        }
-        return;
-    }
-    void apply_filter(KpmImage dst, INyARGrayscaleRaster src)
+
+    private void apply_filter(KpmImage dst, INyARGrayscaleRaster src)
     {
     	assert(src.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
         binomial_4th_order((double[])dst.getBuffer(),this.mTemp_us16,(int[])src.getBuffer(),src.getWidth(),src.getHeight());
     }    
-    void apply_filter(KpmImage dst, KpmImage src)
+    private void apply_filter(KpmImage dst, KpmImage src)
     {
         binomial_4th_order(
         	(double[])dst.getBuffer(),this.mTemp_f32_1,(double[])src.getBuffer(),src.getWidth(),src.getHeight());
     }    
-    void apply_filter_twice(KpmImage dst,KpmImage src)
+    private void apply_filter_twice(KpmImage dst,KpmImage src)
     {
     	KpmImage tmp=new KpmImage(src.getWidth(),src.getHeight());
         apply_filter(tmp, src);
