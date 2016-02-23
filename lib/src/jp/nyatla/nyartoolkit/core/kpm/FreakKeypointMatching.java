@@ -55,14 +55,12 @@ public class FreakKeypointMatching {
 
 	}
 
-	public int kpmMatching(INyARGrayscaleRaster inImage) {
-
-		int procMode;
+	public int kpmMatching(INyARGrayscaleRaster inImage)
+	{
 		FeatureVector featureVector = new FeatureVector();
 		int i, j;
 		int ret;
 
-		procMode = this.procMode;
 
 		this.freakMatcher.query(inImage);
 		this.inDataSet.num = featureVector.num = (int) this.freakMatcher

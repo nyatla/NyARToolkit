@@ -1,9 +1,6 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -14,7 +11,6 @@ import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.Node;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.NodePtrStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.PriorityQueueItem;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
-import jp.nyatla.nyartoolkit.core.kpm.vision.utils.UnSortedMap;
 import jp.nyatla.nyartoolkit.core.math.NyARLCGsRandomizer;
 import jp.nyatla.nyartoolkit.j2se.ArrayUtils;
 

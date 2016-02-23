@@ -4,6 +4,7 @@ import jp.nyatla.nyartoolkit.core.kpm.DoGPyramid;
 import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
 import jp.nyatla.nyartoolkit.core.kpm.OrientationAssignment;
 import jp.nyatla.nyartoolkit.core.kpm.OrientationAssignment.FloatVector;
+import jp.nyatla.nyartoolkit.core.kpm.pyramid.GaussianScaleSpacePyramid;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
