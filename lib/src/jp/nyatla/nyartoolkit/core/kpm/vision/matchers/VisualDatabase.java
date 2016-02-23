@@ -32,7 +32,16 @@ public class VisualDatabase<STORE extends BinaryFeatureStore> {
 	private static boolean kUseFeatureIndex = true;
 	public final static int NUM_BYTES_PER_FEATURE = 96;
 
-	public VisualDatabase() {
+	// // Pyramid builder
+	final private BinomialPyramid32f mPyramid;
+	
+	
+	
+	public VisualDatabase(int i_width,int i_height)
+	{
+		this.mPyramid=new BinomialPyramid32f(
+			i_width,i_height,
+			BinomialPyramid32f.octavesFromMinimumCoarsestSize(i_width,i_height,kMinCoarseSize));
 		this.mDetector.setLaplacianThreshold(kLaplacianThreshold);
 		this.mDetector.setEdgeThreshold(kEdgeThreshold);
 		this.mDetector.setMaxNumFeaturePoints(kMaxNumFeatures);
@@ -89,14 +98,8 @@ public class VisualDatabase<STORE extends BinaryFeatureStore> {
 
 	public boolean query(INyARGrayscaleRaster image) {
 		// Allocate pyramid
-//		if (this.mPyramid.images().length == 0
-		if (this.mPyramid.images()==null
-				|| this.mPyramid.images()[0].getWidth() != image.getWidth()
-				|| this.mPyramid.images()[0].getHeight() != image.getHeight()) {
-			int num_octaves = BinomialPyramid32f.numOctaves(
-					(int) image.getWidth(), (int) image.getHeight(),
-					kMinCoarseSize);
-			mPyramid.alloc(image.getWidth(), image.getHeight(), num_octaves);
+		if(!image.getSize().isEqualSize(this.mPyramid.images()[0].getWidth(),this.mPyramid.images()[0].getHeight())){
+			throw new NyARRuntimeException();
 		}
 		// Build the pyramid		
 		mPyramid.build(image);
@@ -493,8 +496,6 @@ public class VisualDatabase<STORE extends BinaryFeatureStore> {
 	// // Map of keyframe
 	final private KeyframeMap mKeyframeMap=new KeyframeMap();
 	//
-	// // Pyramid builder
-	final private BinomialPyramid32f mPyramid=new BinomialPyramid32f();
 	//
 	// Interest point detector (DoG, etc)
 	private DoGScaleInvariantDetector mDetector = new DoGScaleInvariantDetector();

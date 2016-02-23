@@ -36,7 +36,7 @@ public class FreakKeypointMatching {
 	}
 
 	public FreakKeypointMatching(ARParamLT cparamLT, NyARIntSize size, int poseMode) {
-		this.freakMatcher = new VisualDatabaseFacade();
+		this.freakMatcher = new VisualDatabaseFacade(size.w,size.h);
 
 		this.cparamLT = cparamLT;
 		this.poseMode = poseMode;

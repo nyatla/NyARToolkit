@@ -3,7 +3,6 @@ import java.util.*;
 
 import jp.nyatla.nyartoolkit.core.kpm.Point3dVector;
 import jp.nyatla.nyartoolkit.core.kpm.vision.Keyframe;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.BinaryFeatureMatcher;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.BinaryFeatureStore;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.VisualDatabase;
@@ -15,17 +14,14 @@ public class VisualDatabaseFacade
 	class Point3dMap extends LinkedHashMap<Integer,Point3dVector>{
 		
 	}
-    class VisualDatabaseImpl{
-    	public VisualDatabaseImpl(){
-    		mVdb=new VisualDatabase<BinaryFeatureStore>();
-    	}
-    	public VisualDatabase<BinaryFeatureStore> mVdb;
-    	public Point3dMap mPoint3d=new Point3dMap();
+	final private VisualDatabase<BinaryFeatureStore> mVisualDbImpl;
+	final private Point3dMap mPoint3d;
+
+    public VisualDatabaseFacade(int i_width,int i_height)
+    {
+    	this.mVisualDbImpl=new VisualDatabase<BinaryFeatureStore>(i_width,i_height);
+    	this.mPoint3d=new Point3dMap();
     }
-    public VisualDatabaseFacade(){
-        this.mVisualDbImpl=new VisualDatabaseImpl();
-    }
-    private VisualDatabaseImpl mVisualDbImpl;
 
     public void addFreakFeaturesAndDescriptors(FeaturePointStack featurePoints,
                                                               byte[] descriptors,
@@ -40,37 +36,37 @@ public class VisualDatabaseFacade
         	new BinaryFeatureStore(96,descriptors,featurePoints));
 
         keyframe.buildIndex();
-        mVisualDbImpl.mVdb.addKeyframe(keyframe, image_id);
-        mVisualDbImpl.mPoint3d.put(image_id,points3D);
+        mVisualDbImpl.addKeyframe(keyframe, image_id);
+        mPoint3d.put(image_id,points3D);
         return;
     }
 
     public boolean query(INyARGrayscaleRaster grayImage){
-        return mVisualDbImpl.mVdb.query(grayImage);
+        return mVisualDbImpl.query(grayImage);
     }
  
     
     public FeaturePointStack getQueryFeaturePoints()
     {
-        return mVisualDbImpl.mVdb.queryKeyframe().store().points();
+        return mVisualDbImpl.queryKeyframe().store().points();
     }
     public byte[] getQueryDescriptors()
     {
-        return mVisualDbImpl.mVdb.queryKeyframe().store().features();
+        return mVisualDbImpl.queryKeyframe().store().features();
     }
 
 	public matchStack inliers() {
 		// TODO Auto-generated method stub
-		return mVisualDbImpl.mVdb.inliers();
+		return mVisualDbImpl.inliers();
 	}
 
 	public int matchedId() {
-        return mVisualDbImpl.mVdb.matchedId();
+        return mVisualDbImpl.matchedId();
 	}
 
     public Point3dVector get3DFeaturePoints(int image_id)
     {
-        return mVisualDbImpl.mPoint3d.get(image_id);
+        return mPoint3d.get(image_id);
     }	
 
 
