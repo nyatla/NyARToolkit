@@ -14,7 +14,6 @@ import jp.nyatla.nyartoolkit.core.kpm.vision.math.liner_algebr;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
-import jp.nyatla.nyartoolkit.core.raster.gs.format.NyARGsRaster_INT1D_GRAY_8;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 
 public class VisualDatabase<STORE extends BinaryFeatureStore> {
@@ -469,53 +468,6 @@ public class VisualDatabase<STORE extends BinaryFeatureStore> {
 		return this.mMatchedInliers;
 	}
 
-	//
-	// /**
-	// * Query the visual database.
-	// */
-	// bool query(const GaussianScaleSpacePyramid* pyramid) throw(Exception);
-	// bool query(const keyframe_t* query_keyframe) throw(Exception);
-	//
-	// /**
-	// * Erase an ID.
-	// */
-	// bool erase(id_t id);
-	//
-	// /**
-	// * @return Keyframe
-	// */
-	// const keyframe_ptr_t keyframe(id_t id) {
-	// typename keyframe_map_t::const_iterator it = mKeyframeMap.find(id);
-	// if(it != mKeyframeMap.end()) {
-	// return it->second;
-	// } else {
-	// return keyframe_ptr_t();
-	// }
-	// }
-	//
-	// /**
-	// * @return Query store
-	// */
-	// const keyframe_ptr_t queryKeyframe() const { return mQueryKeyframe; }
-	//
-	// const size_t databaseCount() const { return mKeyframeMap.size(); }
-	//
-	// /**
-	// * @return Matcher
-	// */
-	// const MATCHER& matcher() const { return mMatcher; }
-	//
-	// /**
-	// * @return Feature extractor
-	// */
-	// const FEATURE_EXTRACTOR& featureExtractor() const { return
-	// mFeatureExtractor; }
-	//
-	// /**
-	// * @return Inlier
-	// */
-	// const matches_t& inliers() const { return mMatchedInliers; }
-	//
 	 /**
 	 * Get the mathced id.
 	 */
@@ -523,25 +475,8 @@ public class VisualDatabase<STORE extends BinaryFeatureStore> {
 		return mMatchedId;
 	}	
 	
-	// /**
-	// * @return Matched geometry matrix
-	// */
-	// const float* matchedGeometry() const { return mMatchedGeometry; }
-	//
-	// /**
-	// * Get the detector.
-	// */
-	// inline detector_t& detector() { return mDetector; }
-	// inline const detector_t& detector() const { return mDetector; }
-	//
-	// /**
-	// * Set/Get minimum number of inliers.
-	// */
-	// inline void setMinNumInliers(size_t n) { mMinNumInliers = n; }
-	// inline size_t minNumInliers() const { return mMinNumInliers; }
-	//
-	// private:
-	//
+
+
 	private int mMinNumInliers;
 	private double mHomographyInlierThreshold;
 	//
