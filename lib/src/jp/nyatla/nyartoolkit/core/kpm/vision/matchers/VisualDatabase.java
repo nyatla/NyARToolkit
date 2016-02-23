@@ -3,7 +3,6 @@ package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
 import java.util.Map;
 
 import jp.nyatla.nyartoolkit.core.kpm.BinomialPyramid32f;
-import jp.nyatla.nyartoolkit.core.kpm.Point2d;
 import jp.nyatla.nyartoolkit.core.kpm.vision.Keyframe;
 import jp.nyatla.nyartoolkit.core.kpm.vision.KeyframeMap;
 import jp.nyatla.nyartoolkit.core.kpm.vision.detectors.DoGScaleInvariantDetector;
@@ -16,6 +15,7 @@ import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.gs.format.NyARGsRaster_INT1D_GRAY_8;
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 
 public class VisualDatabase<STORE extends BinaryFeatureStore> {
 	private static double kLaplacianThreshold = 3;
@@ -323,7 +323,7 @@ public class VisualDatabase<STORE extends BinaryFeatureStore> {
 		double threshold2 = math_utils.sqr(threshold);
 		// reserve(matches.size());
 		for (int i = 0; i < matches.getLength(); i++) {
-			Point2d xp = new Point2d();// float xp[2];
+			NyARDoublePoint2d xp = new NyARDoublePoint2d();// float xp[2];
 			homography.MultiplyPointHomographyInhomogenous(xp, H,
 					p2.getItem(matches.getItem(i).ref).x,
 					p2.getItem(matches.getItem(i).ref).y);
@@ -380,8 +380,8 @@ public class VisualDatabase<STORE extends BinaryFeatureStore> {
 			FeaturePointStack p2, matchStack matches, double threshold,
 			RobustHomography estimator, int refWidth, int refHeight) {
 
-		Point2d[] srcPoints = Point2d.createArray(matches.getLength());
-		Point2d[] dstPoints = Point2d.createArray(matches.getLength());
+		NyARDoublePoint2d[] srcPoints = NyARDoublePoint2d.createArray(matches.getLength());
+		NyARDoublePoint2d[] dstPoints = NyARDoublePoint2d.createArray(matches.getLength());
 
 		//
 		// Copy correspondences
@@ -398,7 +398,7 @@ public class VisualDatabase<STORE extends BinaryFeatureStore> {
 		// Create test points for geometric verification
 		//
 
-		Point2d[] test_points = Point2d.createArray(8);
+		NyARDoublePoint2d[] test_points = NyARDoublePoint2d.createArray(8);
 		test_points[0].x = 0;
 		test_points[0].y = 0;
 		test_points[1].x = refWidth;
@@ -435,20 +435,20 @@ public class VisualDatabase<STORE extends BinaryFeatureStore> {
 	// boolean CheckHomographyHeuristics(float H[9], int refWidth, int
 	// refHeight) {
 	boolean CheckHomographyHeuristics(double[] H, int refWidth, int refHeight) {
-		Point2d p0p = new Point2d();
-		Point2d p1p = new Point2d();
-		Point2d p2p = new Point2d();
-		Point2d p3p = new Point2d();
+		NyARDoublePoint2d p0p = new NyARDoublePoint2d();
+		NyARDoublePoint2d p1p = new NyARDoublePoint2d();
+		NyARDoublePoint2d p2p = new NyARDoublePoint2d();
+		NyARDoublePoint2d p3p = new NyARDoublePoint2d();
 
 		double[] Hinv = new double[9];
 		if (!liner_algebr.MatrixInverse3x3(Hinv, H, 1e-5f)) {
 			return false;
 		}
 
-		Point2d p0 = new Point2d(0, 0);
-		Point2d p1 = new Point2d((double) refWidth, 0);
-		Point2d p2 = new Point2d((double) refWidth, (double) refHeight);
-		Point2d p3 = new Point2d(0, (double) refHeight);
+		NyARDoublePoint2d p0 = new NyARDoublePoint2d(0, 0);
+		NyARDoublePoint2d p1 = new NyARDoublePoint2d((double) refWidth, 0);
+		NyARDoublePoint2d p2 = new NyARDoublePoint2d((double) refWidth, (double) refHeight);
+		NyARDoublePoint2d p3 = new NyARDoublePoint2d(0, (double) refHeight);
 
 		homography.MultiplyPointHomographyInhomogenous(p0p, Hinv, p0);
 		homography.MultiplyPointHomographyInhomogenous(p1p, Hinv, p1);

@@ -1,14 +1,15 @@
 package jp.nyatla.nyartoolkit.core.kpm;
 
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
-public class Point3dVector extends NyARObjectStack<Point3d>{
+public class Point3dVector extends NyARObjectStack<NyARDoublePoint3d>{
 
 	public Point3dVector(int i_length) {
-		super(i_length, Point3d.class);
+		super(i_length, NyARDoublePoint3d.class);
 	}
-	protected Point3d createElement()
+	protected NyARDoublePoint3d createElement()
 	{
-		return new Point3d();
+		return new NyARDoublePoint3d();
 	}
 }

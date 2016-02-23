@@ -1,8 +1,8 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.detectors;
 
 import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
-import jp.nyatla.nyartoolkit.core.kpm.Point2d;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 
 public class GaussianScaleSpacePyramid {
 	// Number of octaves
@@ -135,7 +135,7 @@ public class GaussianScaleSpacePyramid {
      * @param[in] y Y location on fine image
      * @param[in] octave The octave to downsample (x,y) to
      */
-    public static void bilinear_downsample_point(Point2d ret,
+    public static void bilinear_downsample_point(NyARDoublePoint2d ret,
                                           double x,
                                           double y,
                                           int octave) {

@@ -1,6 +1,6 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.homography_estimation;
 
-import jp.nyatla.nyartoolkit.core.kpm.Point2d;
+
 import jp.nyatla.nyartoolkit.core.kpm.Utils;
 import jp.nyatla.nyartoolkit.core.kpm.vision.match.indexing;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.homography;
@@ -8,6 +8,7 @@ import jp.nyatla.nyartoolkit.core.kpm.vision.math.geometry;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.rand;
 import jp.nyatla.nyartoolkit.core.kpm.vision.utils.parcial_sort;
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 
 /**
  * Robust homography estimation.
@@ -88,8 +89,8 @@ public class RobustHomography {
 	public // boolean find(float H[9], const T* p, const T* q, int num_points, const T*
 	// test_points, int num_test_points) {
 
-	boolean find(double[] H, Point2d[] p, Point2d[] q, int num_points,
-			Point2d[] test_points, int num_test_points) {
+	boolean find(double[] H, NyARDoublePoint2d[] p, NyARDoublePoint2d[] q, int num_points,
+			NyARDoublePoint2d[] test_points, int num_test_points) {
 		mTmpi = new int[2 * num_points];
 		return PreemptiveRobustHomography(H, p, q, num_points, test_points,
 				num_test_points, mHyp, mTmpi, mHypCosts, mCauchyScale,
@@ -109,8 +110,8 @@ public class RobustHomography {
 	// int max_num_hypotheses = HOMOGRAPHY_DEFAULT_NUM_HYPOTHESES,
 	// int max_trials = HOMOGRAPHY_DEFAULT_MAX_TRIALS,
 	// int chunk_size = HOMOGRAPHY_DEFAULT_CHUNK_SIZE) {
-	public boolean PreemptiveRobustHomography(double[] H, Point2d[] p,
-			Point2d[] q, int num_points, Point2d[] test_points,
+	public boolean PreemptiveRobustHomography(double[] H, NyARDoublePoint2d[] p,
+			NyARDoublePoint2d[] q, int num_points, NyARDoublePoint2d[] test_points,
 			int num_test_points, double[] hyp /* 9*max_num_hypotheses */,
 			int[] tmp_i /* 2*num_points */,
 			CostPair[] hyp_costs /* max_num_hypotheses */, double scale,
@@ -287,7 +288,7 @@ public class RobustHomography {
 	 */
 	// float CauchyProjectiveReprojectionCost(float H[9], const T p[2], const T
 	// q[2], T one_over_scale2) {
-	double CauchyProjectiveReprojectionCost(double[] H, Point2d p, Point2d q,
+	double CauchyProjectiveReprojectionCost(double[] H, NyARDoublePoint2d p, NyARDoublePoint2d q,
 			double one_over_scale2) {
 		double[] pp = new double[2];
 		double[] f = new double[2];
@@ -305,7 +306,7 @@ public class RobustHomography {
 	/**
 	 * Compute the Cauchy reprojection cost for H*p_i-q_i.
 	 */
-	double CauchyProjectiveReprojectionCost(double[] H, Point2d p[], Point2d q[],
+	double CauchyProjectiveReprojectionCost(double[] H, NyARDoublePoint2d p[], NyARDoublePoint2d q[],
 			int num_points, double one_over_scale2) {
 		int i;
 		double total_cost;

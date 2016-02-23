@@ -1,9 +1,10 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.homography_estimation;
 
-import jp.nyatla.nyartoolkit.core.kpm.Point2d;
+
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.liner_algebr;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.liner_solver;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 
 public class homography_solver {
 
@@ -11,9 +12,9 @@ public class homography_solver {
 	 * Condition four 2D points such that the mean is zero and the standard
 	 * deviation is sqrt(2).
 	 */
-	static boolean Condition4Points2d(Point2d xp1, Point2d xp2, Point2d xp3,
-			Point2d xp4, double[] mus, // ms[2],sの3要素
-			Point2d x1, Point2d x2, Point2d x3, Point2d x4) {
+	static boolean Condition4Points2d(NyARDoublePoint2d xp1, NyARDoublePoint2d xp2, NyARDoublePoint2d xp3,
+			NyARDoublePoint2d xp4, double[] mus, // ms[2],sの3要素
+			NyARDoublePoint2d x1, NyARDoublePoint2d x2, NyARDoublePoint2d x3, NyARDoublePoint2d x4) {
 		double[] d1 = new double[2], d2 = new double[2], d3 = new double[2], d4 = new double[2];
 
 		mus[0] = (x1.x + x2.x + x3.x + x4.x) / 4;
@@ -68,7 +69,7 @@ public class homography_solver {
 	/**
 	 * Add a point to the homography constraint matrix.
 	 */
-	static void AddHomographyPointContraint(double A[], int A_ptr, Point2d x, Point2d xp) {
+	static void AddHomographyPointContraint(double A[], int A_ptr, NyARDoublePoint2d x, NyARDoublePoint2d xp) {
 		A[A_ptr + 0] = -x.x;//[0];
 		A[A_ptr + 1] = -x.y;//[1];
 		A[A_ptr + 2] = -1;
@@ -99,8 +100,8 @@ public class homography_solver {
 	 */
 	static void Homography4PointsInhomogeneousConstraint(
 			double[] A,// [72],
-			Point2d x1, Point2d x2, Point2d x3, Point2d x4, Point2d xp1,
-			Point2d xp2, Point2d xp3, Point2d xp4) {
+			NyARDoublePoint2d x1, NyARDoublePoint2d x2, NyARDoublePoint2d x3, NyARDoublePoint2d x4, NyARDoublePoint2d xp1,
+			NyARDoublePoint2d xp2, NyARDoublePoint2d xp3, NyARDoublePoint2d xp4) {
 		AddHomographyPointContraint(A, 0, x1, xp1);
 		AddHomographyPointContraint(A, 18, x2, xp2);
 		AddHomographyPointContraint(A, 36, x3, xp3);
@@ -110,9 +111,9 @@ public class homography_solver {
 	/**
 	 * Solve for the homography given four 2D point correspondences.
 	 */
-	static boolean SolveHomography4PointsInhomogenous(double[] H, Point2d x1,
-			Point2d x2, Point2d x3, Point2d x4, Point2d xp1, Point2d xp2,
-			Point2d xp3, Point2d xp4) {
+	static boolean SolveHomography4PointsInhomogenous(double[] H, NyARDoublePoint2d x1,
+			NyARDoublePoint2d x2, NyARDoublePoint2d x3, NyARDoublePoint2d x4, NyARDoublePoint2d xp1, NyARDoublePoint2d xp2,
+			NyARDoublePoint2d xp3, NyARDoublePoint2d xp4) {
 		double[] A = new double[72];
 		Homography4PointsInhomogeneousConstraint(A, x1, x2, x3, x4, xp1, xp2,
 				xp3, xp4);
@@ -137,16 +138,16 @@ public class homography_solver {
 	// float xp2[2],
 	// float xp3[2],
 	// float xp4[2]) {
-	boolean SolveHomography4Points(double[] H, Point2d x1, Point2d x2,
-			Point2d x3, Point2d x4, Point2d xp1, Point2d xp2, Point2d xp3,
-			Point2d xp4) {
+	boolean SolveHomography4Points(double[] H, NyARDoublePoint2d x1, NyARDoublePoint2d x2,
+			NyARDoublePoint2d x3, NyARDoublePoint2d x4, NyARDoublePoint2d xp1, NyARDoublePoint2d xp2, NyARDoublePoint2d xp3,
+			NyARDoublePoint2d xp4) {
 		double[] Hn = new double[9];
 
 		// T s, sp;
 		// T t[2], tp[2];
 
-		Point2d x1p = new Point2d(), x2p = new Point2d(), x3p = new Point2d(), x4p = new Point2d();
-		Point2d xp1p = new Point2d(), xp2p = new Point2d(), xp3p = new Point2d(), xp4p = new Point2d();
+		NyARDoublePoint2d x1p = new NyARDoublePoint2d(), x2p = new NyARDoublePoint2d(), x3p = new NyARDoublePoint2d(), x4p = new NyARDoublePoint2d();
+		NyARDoublePoint2d xp1p = new NyARDoublePoint2d(), xp2p = new NyARDoublePoint2d(), xp3p = new NyARDoublePoint2d(), xp4p = new NyARDoublePoint2d();
 		double[] ts = new double[3];
 		double[] tps = new double[3];
 		//

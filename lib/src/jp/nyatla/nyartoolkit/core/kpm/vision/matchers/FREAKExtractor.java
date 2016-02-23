@@ -1,10 +1,11 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
 
 import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
-import jp.nyatla.nyartoolkit.core.kpm.Point2d;
+
 import jp.nyatla.nyartoolkit.core.kpm.vision.detectors.GaussianScaleSpacePyramid;
 import jp.nyatla.nyartoolkit.core.kpm.vision.detectors.interpole;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 
 public class FREAKExtractor {
 	/**
@@ -575,7 +576,7 @@ public class FREAKExtractor {
 		KpmImage image = pyramid.get(octave, scale);
 
 		// Downsample the point to the octave
-		Point2d p = new Point2d();
+		NyARDoublePoint2d p = new NyARDoublePoint2d();
 		GaussianScaleSpacePyramid.bilinear_downsample_point(p, x, y, octave);
 		// Sample the receptor
 		return SampleReceptor(image, p.x, p.y);
