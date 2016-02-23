@@ -2,12 +2,10 @@ package jp.nyatla.nyartoolkit.core.ar2;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.util.Date;
 
 
-import jp.nyatla.nyartoolkit.core.ar2.base.ARParamLT;
-import jp.nyatla.nyartoolkit.core.kpm.base.KpmHandle;
+import jp.nyatla.nyartoolkit.base.attoolkit5.ARParamLT;
+import jp.nyatla.nyartoolkit.base.attoolkit5.kpm.KpmHandle;
 import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftFreakFsetFile;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;

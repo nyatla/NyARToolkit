@@ -1,19 +1,19 @@
-package jp.nyatla.nyartoolkit.core.kpm;
+package jp.nyatla.nyartoolkit.base.attoolkit5.kpm;
 
 import java.util.List;
 import java.util.ArrayList;
 
 import jp.nyatla.nyartoolkit.base.attoolkit5.ARParamLT;
-import jp.nyatla.nyartoolkit.core.kpm.vision.facade.VisualDatabaseFacade;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FeaturePoint;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FeaturePointStack;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.matchStack;
+import jp.nyatla.nyartoolkit.base.attoolkit5.kpm.vision.facade.VisualDatabaseFacade;
+import jp.nyatla.nyartoolkit.base.attoolkit5.kpm.vision.matchers.FeaturePoint;
+import jp.nyatla.nyartoolkit.base.attoolkit5.kpm.vision.matchers.FeaturePointStack;
+import jp.nyatla.nyartoolkit.base.attoolkit5.kpm.vision.matchers.matchStack;
 import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftFreakFsetFile;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
-public class FreakKeypointMatching {
+public class KpmHandle {
 	private final static int FREAK_SUB_DIMENSION = 96;
 	VisualDatabaseFacade freakMatcher;
 	final ARParamLT cparamLT;
@@ -36,11 +36,11 @@ public class FreakKeypointMatching {
 	final public static int KpmProcTwoThirdSize = 5;
 	final public static int KpmDefaultProcMode = KpmProcFullSize;
 
-	public FreakKeypointMatching(ARParamLT cparamLT) {
+	public KpmHandle(ARParamLT cparamLT) {
 		this(cparamLT, cparamLT.getScreenSize(), KpmPose6DOF);
 	}
 
-	public FreakKeypointMatching(ARParamLT cparamLT, NyARIntSize size, int poseMode) {
+	public KpmHandle(ARParamLT cparamLT, NyARIntSize size, int poseMode) {
 		this.freakMatcher = new VisualDatabaseFacade();
 
 		this.cparamLT = cparamLT;
