@@ -69,7 +69,7 @@ public class FreakKeypointMatching {
 
 		if (this.inDataSet.num != 0) {
 
-			this.inDataSet.coord = KpmCoord2D.creaeArray(this.inDataSet.num);
+			this.inDataSet.coord = NyARDoublePoint2d.createArray(this.inDataSet.num);
 
 			featureVector.sf = FreakFeature.createArray(this.inDataSet.num);
 
