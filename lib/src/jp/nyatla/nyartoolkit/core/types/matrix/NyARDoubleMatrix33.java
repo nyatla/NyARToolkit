@@ -65,6 +65,13 @@ public class NyARDoubleMatrix33 implements INyARDoubleMatrix
 		}
 		return ret;
 	}
+	public NyARDoubleMatrix33()
+	{
+	}
+	public NyARDoubleMatrix33(double[] i_value)
+	{
+		this.setValue(i_value);
+	}	
 	/**
 	 * この関数は、要素数9の配列を、行列にセットします。
 	 */	
