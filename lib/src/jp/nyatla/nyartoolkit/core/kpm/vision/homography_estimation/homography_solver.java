@@ -1,10 +1,12 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.homography_estimation;
 
 
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.HomographyMat;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.liner_algebr;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.liner_solver;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 
 public class homography_solver {
 
@@ -111,16 +113,15 @@ public class homography_solver {
 	/**
 	 * Solve for the homography given four 2D point correspondences.
 	 */
-	static boolean SolveHomography4PointsInhomogenous(double[] H, NyARDoublePoint2d x1,
+	static boolean SolveHomography4PointsInhomogenous(NyARDoubleMatrix33 H, NyARDoublePoint2d x1,
 			NyARDoublePoint2d x2, NyARDoublePoint2d x3, NyARDoublePoint2d x4, NyARDoublePoint2d xp1, NyARDoublePoint2d xp2,
 			NyARDoublePoint2d xp3, NyARDoublePoint2d xp4) {
 		double[] A = new double[72];
-		Homography4PointsInhomogeneousConstraint(A, x1, x2, x3, x4, xp1, xp2,
-				xp3, xp4);
+		Homography4PointsInhomogeneousConstraint(A, x1, x2, x3, x4, xp1, xp2,xp3, xp4);
 		if (!liner_solver.SolveNullVector8x9Destructive(H, A)) {
 			return false;
 		}
-		if (Math.abs(liner_algebr.Determinant3x3(H)) < 1e-5) {
+		if (Math.abs(H.determinant()) < 1e-5) {
 			return false;
 		}
 		return true;
@@ -138,10 +139,9 @@ public class homography_solver {
 	// float xp2[2],
 	// float xp3[2],
 	// float xp4[2]) {
-	boolean SolveHomography4Points(double[] H, NyARDoublePoint2d x1, NyARDoublePoint2d x2,
+	boolean SolveHomography4Points(HomographyMat H, NyARDoublePoint2d x1, NyARDoublePoint2d x2,
 			NyARDoublePoint2d x3, NyARDoublePoint2d x4, NyARDoublePoint2d xp1, NyARDoublePoint2d xp2, NyARDoublePoint2d xp3,
 			NyARDoublePoint2d xp4) {
-		double[] Hn = new double[9];
 
 		// T s, sp;
 		// T t[2], tp[2];
@@ -165,7 +165,7 @@ public class homography_solver {
 		// Solve for the homography
 		//
 
-		if (!SolveHomography4PointsInhomogenous(Hn, x1p, x2p, x3p, x4p, xp1p,
+		if (!SolveHomography4PointsInhomogenous(H, x1p, x2p, x3p, x4p, xp1p,
 				xp2p, xp3p, xp4p)) {
 			return false;
 		}
@@ -173,54 +173,10 @@ public class homography_solver {
 		//
 		// Denomalize the computed homography
 		//
-
-		DenormalizeHomography(H, Hn, ts, tps);
-
+		H.denormalizeHomography(ts, tps);
 		return true;
 	}
 
-	/**
-	 * Denomalize the homograhy H.
-	 * 
-	 * Hp = inv(Tp)*H*T
-	 * 
-	 * where T and Tp are the noramalizing transformations for the points that
-	 * were used to compute H.
-	 */
-	/**
-	 * void DenormalizeHomography(T Hp[9], const T H[9], T s, const T t[2], T
-	 * sp, const T tp[2]) {
-	 */
-	static void DenormalizeHomography(double[] Hp, double[] H, double[] ts, double tps[]) {
-		double sp = tps[2];
-		double a = H[6] * tps[0];
-		double b = H[7] * tps[0];
-		double c = H[0] / sp;
-		double d = H[1] / sp;
-		double apc = a + c;
-		double bpd = b + d;
 
-		double e = H[6] * tps[1];
-		double f = H[7] * tps[1];
-		double g = H[3] / sp;
-		double h = H[4] / sp;
-		double epg = e + g;
-		double fph = f + h;
 
-		double s = ts[2];
-		double stx = s * ts[0];
-		double sty = s * ts[1];
-
-		Hp[0] = s * apc;
-		Hp[1] = s * bpd;
-		Hp[2] = H[8] * tps[0] + H[2] / sp - stx * apc - sty * bpd;
-
-		Hp[3] = s * epg;
-		Hp[4] = s * fph;
-		Hp[5] = H[8] * tps[1] + H[5] / sp - stx * epg - sty * fph;
-
-		Hp[6] = H[6] * s;
-		Hp[7] = H[7] * s;
-		Hp[8] = H[8] - Hp[6] * ts[0] - Hp[7] * ts[1];
-	}
 }

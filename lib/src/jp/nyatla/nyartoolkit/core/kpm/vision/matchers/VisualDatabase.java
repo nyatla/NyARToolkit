@@ -15,6 +15,7 @@ import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 
 public class VisualDatabase<STORE extends BinaryFeatureStore>
 {
@@ -230,7 +231,7 @@ public class VisualDatabase<STORE extends BinaryFeatureStore>
 			// Estimate the transformation between the two images
 			//
 
-			double[] H = new double[9];
+			HomographyMat H = new HomographyMat();
 			// TIMED("Estimate Homography (1)") {
 			if (!EstimateHomography(H, query_points, ref_points, hough_matches,
 					mHomographyInlierThreshold, mRobustHomography,
@@ -306,7 +307,8 @@ public class VisualDatabase<STORE extends BinaryFeatureStore>
 
 			// std::cout<<"inliers-"<<inliers.size()<<std::endl;
 			if (inliers.getLength() >= mMinNumInliers && inliers.getLength() > last_inliers) {
-				indexing.CopyVector(mMatchedGeometry, 0, H, 0, 9);
+//				indexing.CopyVector(mMatchedGeometry, 0, H, 0, 9);
+				H.getValue(mMatchedGeometry);
 				// CopyVector9(mMatchedGeometry, H);
 				//現状は毎回生成してるからセットで。
 				mMatchedInliers = inliers;// mMatchedInliers.swap(inliers);
@@ -323,7 +325,7 @@ public class VisualDatabase<STORE extends BinaryFeatureStore>
 	/**
 	 * Find the inliers given a homography and a set of correspondences.
 	 */
-	void FindInliers(matchStack inliers, double[] H, FeaturePointStack p1,
+	void FindInliers(matchStack inliers, NyARDoubleMatrix33 H, FeaturePointStack p1,
 			FeaturePointStack p2, matchStack matches, double threshold) {
 		double threshold2 = math_utils.sqr(threshold);
 		// reserve(matches.size());
@@ -381,7 +383,7 @@ public class VisualDatabase<STORE extends BinaryFeatureStore>
 	/**
 	 * Estimate the homography between a set of correspondences.
 	 */
-	boolean EstimateHomography(double[] H, FeaturePointStack p1,
+	boolean EstimateHomography(HomographyMat H, FeaturePointStack p1,
 			FeaturePointStack p2, matchStack matches, double threshold,
 			RobustHomography estimator, int refWidth, int refHeight) {
 
@@ -439,26 +441,20 @@ public class VisualDatabase<STORE extends BinaryFeatureStore>
 	 */
 	// boolean CheckHomographyHeuristics(float H[9], int refWidth, int
 	// refHeight) {
-	boolean CheckHomographyHeuristics(double[] H, int refWidth, int refHeight) {
+	boolean CheckHomographyHeuristics(NyARDoubleMatrix33 H, int refWidth, int refHeight) {
 		NyARDoublePoint2d p0p = new NyARDoublePoint2d();
 		NyARDoublePoint2d p1p = new NyARDoublePoint2d();
 		NyARDoublePoint2d p2p = new NyARDoublePoint2d();
 		NyARDoublePoint2d p3p = new NyARDoublePoint2d();
 
-		double[] Hinv = new double[9];
-		if (!liner_algebr.MatrixInverse3x3(Hinv, H, 1e-5f)) {
+		HomographyMat hinv=new HomographyMat();
+		if(!hinv.inverse(H)){
 			return false;
 		}
-
-		NyARDoublePoint2d p0 = new NyARDoublePoint2d(0, 0);
-		NyARDoublePoint2d p1 = new NyARDoublePoint2d((double) refWidth, 0);
-		NyARDoublePoint2d p2 = new NyARDoublePoint2d((double) refWidth, (double) refHeight);
-		NyARDoublePoint2d p3 = new NyARDoublePoint2d(0, (double) refHeight);
-
-		homography.MultiplyPointHomographyInhomogenous(p0p, Hinv, p0);
-		homography.MultiplyPointHomographyInhomogenous(p1p, Hinv, p1);
-		homography.MultiplyPointHomographyInhomogenous(p2p, Hinv, p2);
-		homography.MultiplyPointHomographyInhomogenous(p3p, Hinv, p3);
+		hinv.multiplyPointHomographyInhomogenous(0,0,p0p);
+		hinv.multiplyPointHomographyInhomogenous(refWidth,0,p1p);
+		hinv.multiplyPointHomographyInhomogenous(refWidth,refHeight,p2p);
+		hinv.multiplyPointHomographyInhomogenous(0,refHeight,p3p);
 
 		double tr = refWidth * refHeight * 0.0001f;
 		if (geometry.SmallestTriangleArea(p0p, p1p, p2p, p3p) < tr) {
@@ -493,7 +489,7 @@ public class VisualDatabase<STORE extends BinaryFeatureStore>
 	//
 	matchStack mMatchedInliers;
 	// id_t mMatchedId;
-	double[] mMatchedGeometry = new double[12];
+	double[] mMatchedGeometry = new double[9];
 	//
 	Keyframe mQueryKeyframe;
 	//

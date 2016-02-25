@@ -2,6 +2,7 @@ package jp.nyatla.nyartoolkit.core.kpm.vision.math;
 
 import jp.nyatla.nyartoolkit.core.kpm.Utils;
 import jp.nyatla.nyartoolkit.core.kpm.vision.match.indexing;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 
 public class liner_solver {
 
@@ -308,12 +309,12 @@ static //    boolean OrthogonalizePivot8x9Basis0(T Q[8*9], T A[8*9]) {
     
     
 //    boolean OrthogonalizeIdentity8x9(T x[9], const T Q[72]) {
-    static boolean OrthogonalizeIdentity8x9(double[] x,double[] Q)
+    static boolean OrthogonalizeIdentity8x9(NyARDoubleMatrix33 x,double[] Q)
     {
     	double[] w=new double[9];
     	double[] X=new double[9*9];
         
-        w[0] = OrthogonalizeIdentity8x9(X,0,    Q, 0);
+        w[0] = OrthogonalizeIdentity8x9(X,0,  Q, 0);
         w[1] = OrthogonalizeIdentity8x9(X,9,  Q, 1);
         w[2] = OrthogonalizeIdentity8x9(X,18, Q, 2);
         w[3] = OrthogonalizeIdentity8x9(X,27, Q, 3);
@@ -327,8 +328,16 @@ static //    boolean OrthogonalizePivot8x9Basis0(T Q[8*9], T A[8*9]) {
         if(w[index] == 0) {
             return false;
         }
-        
-        indexing.CopyVector(x,0, X,index*9,9);
+        x.m00=X[index*9+0];
+        x.m01=X[index*9+1];
+        x.m02=X[index*9+2];
+        x.m10=X[index*9+3];
+        x.m11=X[index*9+4];
+        x.m12=X[index*9+5];
+        x.m20=X[index*9+6];
+        x.m21=X[index*9+7];
+        x.m22=X[index*9+8];
+//        indexing.CopyVector(x,0, X,index*9,9);
         
         return true;
     }    
@@ -337,7 +346,7 @@ static //    boolean OrthogonalizePivot8x9Basis0(T Q[8*9], T A[8*9]) {
      * A is destroyed in the process. This system is solved using QR 
      * decomposition with Gram-Schmidt.
      */
-    public static boolean SolveNullVector8x9Destructive(double[] x,double[] A) {
+    public static boolean SolveNullVector8x9Destructive(NyARDoubleMatrix33 x,double[] A) {
     	double[] Q=new double[72];
         
         if(!OrthogonalizePivot8x9Basis0(Q, A)) return false;

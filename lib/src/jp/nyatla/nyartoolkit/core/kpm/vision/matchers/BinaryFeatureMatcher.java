@@ -3,6 +3,8 @@ package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
 import jp.nyatla.nyartoolkit.core.kpm.vision.BinaryHierarchicalClustering;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.Hamming;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.liner_algebr;
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
 public class BinaryFeatureMatcher {
@@ -168,6 +170,9 @@ public class BinaryFeatureMatcher {
         private static double sqr(double a){
         	return a*a;
         }
+
+	
+
         /**
          * Match two feature stores given a homography from the features in store 1 to
          * store 2. The THRESHOLD is a spatial threshold in pixels to restrict the number
@@ -176,7 +181,7 @@ public class BinaryFeatureMatcher {
          */
         int match(BinaryFeatureStore features1,
                      BinaryFeatureStore features2,
-                     double[] H, //float[9]
+                     NyARDoubleMatrix33 H, //float[9]
                      double tr)
         {
 
@@ -189,11 +194,12 @@ public class BinaryFeatureMatcher {
             
             double tr_sqr = sqr(tr);
             
-            double[] Hinv=new double[9];
-            if(!liner_algebr.MatrixInverse3x3(Hinv, H, 0.f)) {
-//                ASSERT(0, "Failed to compute matrix inverse");
-                return 0;
-            }
+
+            HomographyMat ht=new HomographyMat();
+            ht.setValue(H);
+			if(!ht.inverse(ht)){
+				return 0;
+			}
             
 //            mMatches.reserve(features1.size());
             for(int i = 0; i < features1.size(); i++) {
@@ -205,11 +211,8 @@ public class BinaryFeatureMatcher {
                 FeaturePoint p1 = features1.point(i);
                 
                 // Map p1 to p2 space through H
-                double xp1, yp1;
-                double[] tmp=new double[2];
-                homography.MultiplyPointHomographyInhomogenous(tmp, Hinv, p1.x, p1.y);
-                xp1=tmp[0];
-                yp1=tmp[1];
+                NyARDoublePoint2d tmp=new NyARDoublePoint2d();
+                ht.multiplyPointHomographyInhomogenous(p1.x, p1.y,tmp);
                 
                 // Search for 1st and 2nd best match
                 for(int j = 0; j < features2.size(); j++) {
@@ -221,7 +224,7 @@ public class BinaryFeatureMatcher {
                     }
                     
                     // Check spatial constraint
-                    if(sqr(xp1-p2.x) + sqr(yp1-p2.y) > tr_sqr) {
+                    if(sqr(tmp.x-p2.x) + sqr(tmp.y-p2.y) > tr_sqr) {
                         continue;
                     }
                     

@@ -1,31 +1,40 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
 
 
-import jp.nyatla.nyartoolkit.core.kpm.Utils;
-import jp.nyatla.nyartoolkit.core.kpm.vision.match.indexing;
+
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.geometry;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
+import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 
 public class homography
 {
 	
     /**
      * Multiply an in-homogenous point by a similarity.
-     * H[9]
+     * H[9] この関数は実装済みだからあとで消す。
      */
 //    public static void MultiplyPointHomographyInhomogenous(float xp, float yp, float[] H, float x, float y) {
-    public static void MultiplyPointHomographyInhomogenous(double[] v, double[] H, double x, double y) {
-    	double w = H[6]*x + H[7]*y + H[8];
-        v[0] = (H[0]*x + H[1]*y + H[2])/w;//XP
-        v[1] = (H[3]*x + H[4]*y + H[5])/w;//YP
+    public static void MultiplyPointHomographyInhomogenous(double[] v, NyARDoubleMatrix33 H, double x, double y) {
+    	double w = H.m20*x + H.m21*y + H.m22;
+        v[0] = (H.m00*x + H.m01*y + H.m02)/w;//XP
+        v[1] = (H.m10*x + H.m11*y + H.m12)/w;//YP
+    }
+    public static void MultiplyPointHomographyInhomogenous(NyARDoublePoint2d v, NyARDoubleMatrix33 H, double x, double y) {
+    	double w = H.m20*x + H.m21*y + H.m22;
+        v.x = (H.m00*x + H.m01*y + H.m02)/w;//XP
+        v.y = (H.m10*x + H.m11*y + H.m12)/w;//YP
     }
     /**
      * Multiply an in-homogenous point by a similarity.
      */
-    public static void MultiplyPointHomographyInhomogenous(NyARDoublePoint2d xp,double[] H, NyARDoublePoint2d[] x,int x_idx) {
-    	double w = H[6]*x[x_idx].x + H[7]*x[x_idx].y + H[8];
-        xp.x = (H[0]*x[x_idx].x + H[1]*x[x_idx].y + H[2])/w;
-        xp.y = (H[3]*x[x_idx].x + H[4]*x[x_idx].y + H[5])/w;
+    public static void MultiplyPointHomographyInhomogenous(NyARDoublePoint2d xp,NyARDoubleMatrix33 H, NyARDoublePoint2d[] x,int x_idx) {
+    	
+//    	double w = H[6]*x[x_idx].x + H[7]*x[x_idx].y + H[8];
+ //       xp.x = (H[0]*x[x_idx].x + H[1]*x[x_idx].y + H[2])/w;
+ //       xp.y = (H[3]*x[x_idx].x + H[4]*x[x_idx].y + H[5])/w;
+    	double w = H.m20*x[x_idx].x + H.m21*x[x_idx].y + H.m22;
+        xp.x = (H.m00*x[x_idx].x + H.m01*x[x_idx].y + H.m02)/w;
+        xp.y = (H.m10*x[x_idx].x + H.m11*x[x_idx].y + H.m12)/w;
     }
     public static void MultiplyPointHomographyInhomogenous(NyARDoublePoint2d xp,double[] H, double x,double y) {
     	double w = H[6]*x + H[7]*y + H[8];
@@ -39,7 +48,7 @@ public class homography
     }
 
 //    boolean HomographyPointsGeometricallyConsistent(const T H[9], const T* x, int size) {
-    public static boolean HomographyPointsGeometricallyConsistent(double[] H, NyARDoublePoint2d[] x,int i_x_ptr, int size) {
+    public static boolean HomographyPointsGeometricallyConsistent(NyARDoubleMatrix33 H, NyARDoublePoint2d[] x,int i_x_ptr, int size) {
     	NyARDoublePoint2d xp1=new NyARDoublePoint2d();
     	NyARDoublePoint2d xp2=new NyARDoublePoint2d();
     	NyARDoublePoint2d xp3=new NyARDoublePoint2d();
