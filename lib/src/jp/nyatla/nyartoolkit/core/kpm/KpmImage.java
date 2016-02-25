@@ -5,15 +5,15 @@ import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
-public class KpmImage implements INyARRaster
-{
+public class KpmImage implements INyARRaster {
 	private NyARIntSize _size;
 	private double[] _buf;
-	public KpmImage(int i_width, int i_height)
-	{
-		this._size=new NyARIntSize(i_width,i_height);
-		this._buf=new double[i_width*i_height];
+
+	public KpmImage(int i_width, int i_height) {
+		this._size = new NyARIntSize(i_width, i_height);
+		this._buf = new double[i_width * i_height];
 	}
+
 	@Override
 	public int getWidth() {
 		return this._size.w;
@@ -40,8 +40,7 @@ public class KpmImage implements INyARRaster
 	}
 
 	@Override
-	public boolean isEqualBufferType(int i_type_value)
-	{
+	public boolean isEqualBufferType(int i_type_value) {
 		return false;
 	}
 
@@ -56,14 +55,13 @@ public class KpmImage implements INyARRaster
 	}
 
 	@Override
-	public Object createInterface(Class<?> i_iid)
-	{
+	public Object createInterface(Class<?> i_iid) {
 		throw new NyARRuntimeException();
 	}
-	
-	//これどうにかしよう
+
+	// これどうにかしよう
 	public int get(int i_row) {
-		return this._size.w*i_row;
+		return this._size.w * i_row;
 	}
 
 }
