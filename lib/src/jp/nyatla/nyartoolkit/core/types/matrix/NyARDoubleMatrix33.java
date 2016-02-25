@@ -169,6 +169,14 @@ public class NyARDoubleMatrix33 implements INyARDoubleMatrix
 		
 		return true;
 	}
+	public final double determinant()
+	{
+		final double a12,a13,a22,a23,a32,a33;
+		a12=this.m01;a13=this.m02;
+		a22=this.m11;a23=this.m12;
+		a32=this.m21;a33=this.m22;		
+		return this.m00*(a22*a33-a23*a32)+this.m10*(a32*a13-a33*a12)+this.m20*(a12*a23-a13*a22);
+	}
 	/**
 	 * この関数は、行列を回転行列として、ZXY系の角度値を計算します。
 	 * @param o_out
