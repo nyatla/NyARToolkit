@@ -12,11 +12,7 @@ public class FeaturePoint
     	this.angle=i_angle;
     	this.scale=i_scale;
     	this.maxima=i_maxima;
-    }
-    public FeaturePoint(double i_x,double i_y,double i_angle,double i_scale,double i_maxima)
-    {
-    	this(0,0,0,0,true);
-    }    	
+    }   	
 
     public FeaturePoint() {
 	}
