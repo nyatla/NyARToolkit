@@ -22,11 +22,30 @@ public class Hamming {
         
         return (x * h01) >> 24;         // returns left 8 bits of x + (x<<8) + (x<<16) + (x<<24) + ...
     }
+    private static int HammingDistance64(long a,long b)
+    {
+    	long bits=a^b;
+        bits = (bits & 0x5555555555555555L) + (bits >> 1 & 0x5555555555555555L);
+        bits = (bits & 0x3333333333333333L) + (bits >> 2 & 0x3333333333333333L);
+        bits = (bits & 0x0f0f0f0f0f0f0f0fL) + (bits >> 4 & 0x0f0f0f0f0f0f0f0fL);
+        bits = (bits & 0x00ff00ff00ff00ffL) + (bits >> 8 & 0x00ff00ff00ff00ffL);
+        bits = (bits & 0x0000ffff0000ffffL) + (bits >> 16 & 0x0000ffff0000ffffL);
+        bits = (bits & 0x00000000ffffffffL) + (bits >> 32 & 0x00000000ffffffffL);
+        return (int)bits;
+    }
+
+    
     private static int HammingDistance32(byte[] a,int a_idx,byte[] b,int b_idx)
     {
     	int ai=((0xff&a[a_idx+0])<<24)|((0xff&a[a_idx+1])<<16)|((0xff&a[a_idx+2])<<8)|((0xff&a[a_idx+3]));
     	int bi=((0xff&b[b_idx+0])<<24)|((0xff&b[b_idx+1])<<16)|((0xff&b[b_idx+2])<<8)|((0xff&b[b_idx+3]));
     	return HammingDistance32(ai,bi);
+    }
+    private static int HammingDistance64(byte[] a,int a_idx,byte[] b,int b_idx)
+    {
+    	long ai=((0xffL&a[a_idx+0])<<56)|((0xffL&a[a_idx+1])<<48)|((0xffL&a[a_idx+2])<<40)|((0xffL&a[a_idx+3])<<32)|((0xffL&a[a_idx+4])<<24)|((0xffL&a[a_idx+5])<<16)|((0xffL&a[a_idx+6])<<8)|((0xffL&a[a_idx+7]));
+    	long bi=((0xffL&b[b_idx+0])<<56)|((0xffL&b[b_idx+1])<<48)|((0xffL&b[b_idx+2])<<40)|((0xffL&b[b_idx+3])<<32)|((0xffL&b[b_idx+4])<<24)|((0xffL&b[b_idx+5])<<16)|((0xffL&b[b_idx+6])<<8)|((0xffL&b[b_idx+7]));
+    	return HammingDistance64(ai,bi);
     }
     
     
@@ -41,11 +60,20 @@ public class Hamming {
     	}
     	return dist;
     }
+    public static int HammingDistance768_2(byte[] a,int a_ptr, byte[] b,int b_ptr)
+    {
+    	int dist=0;
+    	for(int i=0;i<12;i++){
+    		dist+=HammingDistance64(a,i*8+a_ptr,b,i*8+b_ptr);
+    	}
+    	return dist;
+    }
     
     public static int HammingDistance(int i_length,byte[] a,int a_ptr, byte[] b,int b_ptr) {
         switch(i_length) {
             case 96:
-                return HammingDistance768(a,a_ptr,b,b_ptr);
+//            	int v1=HammingDistance768(a,a_ptr,b,b_ptr);
+            	return HammingDistance768_2(a,a_ptr,b,b_ptr);
         };
         throw new NyARRuntimeException();
     }
