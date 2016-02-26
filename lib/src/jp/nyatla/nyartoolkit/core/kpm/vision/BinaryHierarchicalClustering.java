@@ -7,6 +7,7 @@ import java.util.PriorityQueue;
 import java.util.TreeMap;
 
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.BinarykMedoids;
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.Node;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.NodePtrStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.PriorityQueueItem;
@@ -56,7 +57,7 @@ public class BinaryHierarchicalClustering {
 	/**
 	 * Query the tree for a reverse index.
 	 */
-	public int query(byte[] feature, int i_ptr) {
+	public int query(byte[] feature) {
 		mNumNodesPopped = 0;
 		mQueryReverseIndex = new int[0];
 
@@ -65,7 +66,7 @@ public class BinaryHierarchicalClustering {
 		// }
 		this.mQueue.clear();
 
-		query(mQueue, mRoot, feature, i_ptr);
+		this.query(mQueue, mRoot, feature);
 
 		return (int) mQueryReverseIndex.length;
 	}
@@ -171,7 +172,8 @@ public class BinaryHierarchicalClustering {
 	/**
 	 * Recursive function query function.
 	 */
-	private void query(Queue queue, Node node, byte[] feature, int i_ptr) {
+	private void query(Queue queue, Node node, byte[] feature)
+	{
 
 		if (node.leaf()) {
 			// Insert all the leaf indices into the query index
@@ -182,9 +184,9 @@ public class BinaryHierarchicalClustering {
 			return;
 		} else {
 			NodePtrStack nodes = new NodePtrStack(1000);
-			node.nearest(nodes, queue, feature, i_ptr);
+			node.nearest(nodes, queue, feature);
 			for (int i = 0; i < nodes.getLength(); i++) {
-				query(queue, nodes.getItem(i), feature, i_ptr);
+				query(queue, nodes.getItem(i), feature);
 			}
 
 			// Pop a node from the queue
@@ -193,25 +195,25 @@ public class BinaryHierarchicalClustering {
 				Node q = queue.poll().node();// pop();
 				// queue.pop();
 				mNumNodesPopped++;
-				query(queue, q, feature, i_ptr);
+				query(queue, q, feature);
 			}
 		}
 	}
-    void build(byte[] features, int num_features) {
-    	int[] indices=new int[num_features];
+    void build(FeaturePointStack features) {
+    	int[] indices=new int[features.getLength()];
         for(int i = 0; i < indices.length; i++) {
             indices[i] = (int)i;
         }
-        this.build(features, num_features, indices,indices.length);
+        this.build(features, indices,indices.length);
     }
-    void build(byte[] features, int num_features, int[] indices, int num_indices) {
+    void build(FeaturePointStack features, int[] indices, int num_indices) {
         mRoot=new Node(_NUM_BYTES_PER_FEATURE,this.nextNodeId());
         mRoot.leaf(false);
-        this.build(mRoot, features, num_features, indices, num_indices);
+        this.build(mRoot, features, indices, num_indices);
         return;
     }
     
-    void build(Node node, byte[] features, int num_features, int[] indices, int num_indices) {
+    void build(Node node, FeaturePointStack features, int[] indices, int num_indices) {
         // Check if there are enough features to cluster.
         // If not, then assign all features to the same cluster.
         if(num_indices <= math_utils.max2(mBinarykMedoids.k(),this.mMinFeaturePerNode)) {
@@ -224,7 +226,7 @@ public class BinaryHierarchicalClustering {
         	Map<Integer,List<Integer>> cluster_map=new TreeMap<Integer,List<Integer>>();
             
             // Perform clustering
-            mBinarykMedoids.assign(features, num_features, indices, num_indices);
+            mBinarykMedoids.assign(features, indices, num_indices);
             
             // Get a list of features for each cluster center
             int[] assignment = mBinarykMedoids.assignment();
@@ -257,7 +259,7 @@ public class BinaryHierarchicalClustering {
             for(Map.Entry<Integer,List<Integer>> l : cluster_map.entrySet())
             {
             	int first=l.getKey();
-                Node new_node = new Node(_NUM_BYTES_PER_FEATURE,nextNodeId(),features,first*_NUM_BYTES_PER_FEATURE);
+                Node new_node = new Node(nextNodeId(),features.getItem(first));
                 new_node.leaf(false);
                 
                 // Make the new node a child of the input node
@@ -266,7 +268,7 @@ public class BinaryHierarchicalClustering {
                 // Recursively build the tree
                 int[] v=ArrayUtils.toIntArray_impl(l.getValue(),0,l.getValue().size());
                 
-                this.build(new_node, features, num_features, v, (int)v.length);
+                this.build(new_node, features, v, (int)v.length);
             }            
             
 

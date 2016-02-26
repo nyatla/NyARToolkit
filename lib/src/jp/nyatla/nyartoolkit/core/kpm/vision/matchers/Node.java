@@ -11,14 +11,12 @@ public class Node {
 		this.mLeaf=true;
 		this.mCenter=new byte[i_NUM_BYTES_PER_FEATURE];
 	}
-	public Node(int i_NUM_BYTES_PER_FEATURE,int id,byte[] i_feature,int i_st)
+	public Node(int id,FeaturePoint i_feature)
 	{
 		this.mId=id;
 		this.mLeaf=true;
-		this.mCenter=new byte[i_NUM_BYTES_PER_FEATURE];
-		for(int i=0;i<i_NUM_BYTES_PER_FEATURE;i++){
-			this.mCenter[i]=i_feature[i+i_st];
-		}
+		this.mCenter=new byte[i_feature.descripter.length];
+		System.arraycopy(i_feature.descripter,0,this.mCenter,0,i_feature.descripter.length);
 	}
     /**
      * Set/Get leaf flag
@@ -75,7 +73,7 @@ public class Node {
      */
     public void nearest(NodePtrStack nodes,
     		BinaryHierarchicalClustering.Queue queue,
-                        byte[] feature,int i_ptr)
+                        byte[] feature)
     {
         int mind = Integer.MAX_VALUE;
         int mini = -1;
@@ -84,7 +82,7 @@ public class Node {
 //        std::vector<queue_item_t> v(mChildren.size());
         PriorityQueueItem[] v =new PriorityQueueItem[this.mChildren.length];
         for(int i = 0; i < v.length; i++) {
-            int d = Hamming.HammingDistance(this.mCenter.length,this.mChildren[i].mCenter,0, feature,i_ptr);
+            int d = Hamming.HammingDistance(this.mCenter.length,this.mChildren[i].mCenter,0, feature,0);
             v[i] = new PriorityQueueItem(this.mChildren[i], d);
             if(d < mind) {
                 mind = d;

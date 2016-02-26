@@ -5,13 +5,16 @@ package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
  */
 public class FeaturePoint
 {
-    public FeaturePoint(double i_x,double i_y,double i_angle,double i_scale,boolean i_maxima)
+    final public byte[] descripter=new byte[96];
+
+	public FeaturePoint(double i_x,double i_y,double i_angle,double i_scale,boolean i_maxima,byte[] i_descripter)
     {
     	this.x=i_x;
     	this.y=i_y;
     	this.angle=i_angle;
     	this.scale=i_scale;
     	this.maxima=i_maxima;
+		System.arraycopy(i_descripter, 0, this.descripter, 0, this.descripter.length);
     }   	
 
     public FeaturePoint() {
@@ -23,7 +26,8 @@ public class FeaturePoint
 		this.angle=i_src.angle;
 		this.scale=i_src.scale;
 		this.maxima=i_src.maxima;
-	}  
+		System.arraycopy(i_src.descripter, 0, this.descripter, 0, this.descripter.length);
+	}
 	/** 
      * The (x,y) location of the center of the feature.
      */

@@ -1,5 +1,6 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
 
+
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
 public class FeaturePointStack extends NyARObjectStack<FeaturePoint> implements Cloneable

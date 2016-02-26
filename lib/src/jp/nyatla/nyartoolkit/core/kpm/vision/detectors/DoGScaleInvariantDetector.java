@@ -14,7 +14,7 @@ public class DoGScaleInvariantDetector {
 	final static public int kMaxNumFeaturePoints = 5000;
 	final static public int kMaxNumOrientations = 36;
 
-	public static class FeaturePoint {
+	public static class DogFeaturePoint {
 		public double x, y;
 		public double angle;
 		public int octave;
@@ -24,14 +24,14 @@ public class DoGScaleInvariantDetector {
 		public double sigma;
 		public double edge_score;
 
-		public FeaturePoint() {
+		public DogFeaturePoint() {
 		}
 
-		public FeaturePoint(FeaturePoint i_src) {
+		public DogFeaturePoint(DogFeaturePoint i_src) {
 			this.set(i_src);
 		}
 
-		public void set(FeaturePoint i_src) {
+		public void set(DogFeaturePoint i_src) {
 			this.x = i_src.x;
 			this.y = i_src.y;
 			this.angle = i_src.angle;
@@ -45,15 +45,15 @@ public class DoGScaleInvariantDetector {
 
 	}; // FeaturePoint
 
-	public static class FeaturePointStack extends NyARObjectStack<FeaturePoint>
+	public static class DogFeaturePointStack extends NyARObjectStack<DogFeaturePoint>
 			implements Cloneable {
-		public FeaturePointStack(int i_length) {
-			super(i_length, FeaturePoint.class);
+		public DogFeaturePointStack(int i_length) {
+			super(i_length, DogFeaturePoint.class);
 		}
 
 		@Override
-		final protected FeaturePoint createElement() {
-			return new FeaturePoint();
+		final protected DogFeaturePoint createElement() {
+			return new DogFeaturePoint();
 		}
 
 		/**
@@ -61,7 +61,7 @@ public class DoGScaleInvariantDetector {
 		 */
 		@Override
 		final public Object clone() {
-			FeaturePointStack n = new FeaturePointStack(this._items.length);
+			DogFeaturePointStack n = new DogFeaturePointStack(this._items.length);
 			for (int i = 0; i < this._length; i++) {
 				n.prePush().set(this._items[i]);
 			}
@@ -81,7 +81,7 @@ public class DoGScaleInvariantDetector {
 	final private double mEdgeThreshold;
 
 	/** Vector of extracted feature points */
-	final private FeaturePointStack mFeaturePoints;
+	final private DogFeaturePointStack mFeaturePoints;
 
 	// Maximum number of feature points
 	final private int mMaxNumFeaturePoints;
@@ -104,7 +104,7 @@ public class DoGScaleInvariantDetector {
 		this.mFindOrientation = true;
 		this.mLaplacianThreshold = i_LaplacianThreshold;
 		this.mEdgeThreshold = i_EdgeThreshold;
-		this.mFeaturePoints = new FeaturePointStack(2000);//この2000は適当		
+		this.mFeaturePoints = new DogFeaturePointStack(2000);//この2000は適当		
 		this.mMaxNumFeaturePoints=i_MaxNumFeaturePoints;
 		this.mMaxSubpixelDistanceSqr = (3 * 3);
 		this.mOrientations = new double[kMaxNumOrientations];
@@ -214,7 +214,7 @@ public class DoGScaleInvariantDetector {
 	/**
 	 * @return Feature points
 	 */
-	public FeaturePointStack features() {
+	public DogFeaturePointStack features() {
 		return this.mFeaturePoints;
 	}
 
@@ -535,7 +535,7 @@ public class DoGScaleInvariantDetector {
 						}
 
 						if (extrema) {
-							FeaturePoint fp = this.mFeaturePoints.prePush();
+							DogFeaturePoint fp = this.mFeaturePoints.prePush();
 							fp.octave = octave;
 							fp.scale = scale;
 							fp.score = value;
@@ -684,7 +684,7 @@ public class DoGScaleInvariantDetector {
 						}
 
 						if (extrema) {
-							FeaturePoint fp = this.mFeaturePoints.prePush();
+							DogFeaturePoint fp = this.mFeaturePoints.prePush();
 							fp.octave = octave;
 							fp.scale = scale;
 							fp.score = value;
@@ -823,7 +823,7 @@ public class DoGScaleInvariantDetector {
 						}
 
 						if (extrema) {
-							FeaturePoint fp = this.mFeaturePoints.prePush();
+							DogFeaturePoint fp = this.mFeaturePoints.prePush();
 							fp.octave = octave;
 							fp.scale = scale;
 							fp.score = value;
@@ -883,7 +883,7 @@ public class DoGScaleInvariantDetector {
 		hessianThreshold = (math_utils.sqr(mEdgeThreshold + 1) / mEdgeThreshold);
 
 		for (int i = 0; i < mFeaturePoints.getLength(); i++) {
-			FeaturePoint kp = mFeaturePoints.getItem(i);
+			DogFeaturePoint kp = mFeaturePoints.getItem(i);
 			assert kp.scale < mLaplacianPyramid.numScalePerOctave();
 			// ASSERT(kp.scale < mLaplacianPyramid.numScalePerOctave(),
 			// "Feature point scale is out of bounds");
@@ -973,7 +973,7 @@ public class DoGScaleInvariantDetector {
 		// ASSERT(mBuckets[0].size() == mNumBucketsY,
 		// "Buckets are not allocated");
 
-		FeaturePointStack points = new FeaturePointStack(2000);// 適当　DoGScaleInvariantDetector.mFeaturePointsと同じくらいないとダメ
+		DogFeaturePointStack points = new DogFeaturePointStack(2000);// 適当　DoGScaleInvariantDetector.mFeaturePointsと同じくらいないとダメ
 		PruneDoGFeatures(mBuckets, points, mFeaturePoints, (int) mNumBucketsX,
 				(int) mNumBucketsY, (int) mWidth, (int) mHeight,
 				(int) mMaxNumFeaturePoints);
@@ -1002,7 +1002,7 @@ public class DoGScaleInvariantDetector {
 		}
 
 		int num_angles;
-		FeaturePoint[] mTmpOrientatedFeaturePoints = new FeaturePoint[mFeaturePoints
+		DogFeaturePoint[] mTmpOrientatedFeaturePoints = new DogFeaturePoint[mFeaturePoints
 				.getLength() * kMaxNumOrientations];
 		int mTmpOrientatedFeaturePoints_n = 0;
 		// Compute the gradient pyramid
@@ -1042,7 +1042,7 @@ public class DoGScaleInvariantDetector {
 			for (int j = 0; j < num_angles; j++) {
 				// Copy the feature point
 				//
-				FeaturePoint fp = new FeaturePoint(mFeaturePoints.getItem(i));
+				DogFeaturePoint fp = new DogFeaturePoint(mFeaturePoints.getItem(i));
 				// Update the orientation
 				fp.angle = mOrientations[j];
 				// Store oriented feature point
@@ -1053,7 +1053,7 @@ public class DoGScaleInvariantDetector {
 		// すごく無駄なことしてる。
 		mFeaturePoints.clear();
 		for (int i = 0; i < mTmpOrientatedFeaturePoints_n; i++) {
-			FeaturePoint fp = mFeaturePoints.prePush();
+			DogFeaturePoint fp = mFeaturePoints.prePush();
 			fp.set(mTmpOrientatedFeaturePoints[i]);
 		}
 
@@ -1425,8 +1425,8 @@ public class DoGScaleInvariantDetector {
 		return x;
 	}
 
-	void PruneDoGFeatures(BucketStack[][] buckets, FeaturePointStack outPoints,
-			FeaturePointStack inPoints, int num_buckets_X, int num_buckets_Y,
+	void PruneDoGFeatures(BucketStack[][] buckets, DogFeaturePointStack outPoints,
+			DogFeaturePointStack inPoints, int num_buckets_X, int num_buckets_Y,
 			int width, int height, int max_points) {
 
 		int num_buckets = num_buckets_X * num_buckets_Y;
@@ -1449,7 +1449,7 @@ public class DoGScaleInvariantDetector {
 		// Insert each features into a bucket
 		//
 		for (int i = 0; i < inPoints.getLength(); i++) {
-			FeaturePoint p = inPoints.getItem(i);
+			DogFeaturePoint p = inPoints.getItem(i);
 			int binX = (int) (p.x / dx);
 			int binY = (int) (p.y / dy);
 			// buckets[binX][binY].push_back(std::make_pair(std::abs(p.score),
@@ -1486,7 +1486,7 @@ public class DoGScaleInvariantDetector {
 				bucket.partialSort(n);
 
 				for (int k = 0; k < n; k++) {
-					FeaturePoint p = outPoints.prePush();
+					DogFeaturePoint p = outPoints.prePush();
 					p.set(inPoints.getItem(bucket.getItem(k).second));
 				}
 			}

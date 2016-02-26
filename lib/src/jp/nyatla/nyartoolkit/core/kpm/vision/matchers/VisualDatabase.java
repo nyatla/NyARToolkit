@@ -81,20 +81,19 @@ public class VisualDatabase<STORE extends BinaryFeatureStore>
 		// Copy the points
 		//
 
-		FeaturePoint[] points = new FeaturePoint[detector.features()
-				.getLength()];
-		for (int i = 0; i < detector.features().getLength(); i++) {
-			DoGScaleInvariantDetector.FeaturePoint p = detector.features()
-					.getItem(i);
-			points[i] = new FeaturePoint(p.x, p.y, p.angle, p.sigma,
-					p.score > 0);
-		}
+//		FeaturePoint[] points = new FeaturePoint[detector.features()
+//				.getLength()];
+//		for (int i = 0; i < detector.features().getLength(); i++) {
+//			DoGScaleInvariantDetector.DogFeaturePoint p = detector.features().getItem(i);
+//			points[i] = new FeaturePoint(p.x, p.y, p.angle, p.sigma,
+//					p.score > 0);
+//		}
 
 		//
 		// Extract features
 		//
 
-		extractor.extract(keyframe.store(), pyramid, points);
+		extractor.extract(keyframe.store(), pyramid, detector.features());
 	}
     /**
      * @return Query store
@@ -122,7 +121,7 @@ public class VisualDatabase<STORE extends BinaryFeatureStore>
 		// Find the features on the image
 		this.mQueryKeyframe = new Keyframe(
 			96,(int) pyramid.images()[0].getWidth(),(int) pyramid.images()[0].getHeight(),
-			new BinaryFeatureStore(96));// .reset(new keyframe_t());
+			new BinaryFeatureStore());// .reset(new keyframe_t());
 		FindFeatures(this.mQueryKeyframe, pyramid, this.mDetector,
 				this.mFeatureExtractor);
 		// LOG_INFO("Found %d features in query",
@@ -180,12 +179,11 @@ public class VisualDatabase<STORE extends BinaryFeatureStore>
 		this. mMatchedId = -1;
 		int last_inliers=0;
 
-		FeaturePointStack query_points = query_keyframe.store().points();
+		FeaturePointStack query_points = query_keyframe.store();
 		// Loop over all the images in the database
 		// typename keyframe_map_t::const_iterator it = mKeyframeMap.begin();
 		// for(; it != mKeyframeMap.end(); it++) {
 		for (Map.Entry<Integer, Keyframe> i : mKeyframeMap.entrySet()) {
-			//MAPの順番がC++だと8->0->1->2...7だから0で比較すること
 			Keyframe second = i.getValue();
 			int first = i.getKey();
 			// TIMED("Find Matches (1)") {
@@ -201,7 +199,7 @@ public class VisualDatabase<STORE extends BinaryFeatureStore>
 			}
 			// }
 
-			FeaturePointStack ref_points = second.store().points();
+			FeaturePointStack ref_points = second.store();
 			// std::cout<<"ref_points-"<<ref_points.size()<<std::endl;
 			// std::cout<<"query_points-"<<query_points.size()<<std::endl;
 

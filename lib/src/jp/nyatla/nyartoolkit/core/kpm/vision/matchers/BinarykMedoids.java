@@ -74,7 +74,7 @@ public class BinarykMedoids {
 	/**
 	 * Assign featurs to a cluster center
 	 */
-	public void assign(byte[] features, int num_features, int[] indices,
+	public void assign(FeaturePointStack features, int[] indices,
 			int num_indices) {
 		// ASSERT(mK == mCenters.size(),
 		// "k should match the number of cluster centers");
@@ -100,7 +100,7 @@ public class BinarykMedoids {
 			ArrayShuffle(this.mRandIndices, (int) mRandIndices.length, mK);
 
 			// Assign features to the centers
-			int dist = assign(mHypAssignment, features, num_features, indices,
+			int dist = assign(mHypAssignment, features, indices,
 					num_indices, this.mRandIndices, mK);
 
 			if (dist < best_dist) {
@@ -122,7 +122,7 @@ public class BinarykMedoids {
 
 	}
 
-	public int assign(int[] assignment, byte[] features, int num_features,
+	public int assign(int[] assignment, FeaturePointStack features,
 			int[] indices, int num_indices, int[] centers, int num_centers) {
 		// ASSERT(assignment.size() == num_indices,
 		// "Assignment size is incorrect");
@@ -137,9 +137,7 @@ public class BinarykMedoids {
 			// Find the closest center
 			for (int j = 0; j < num_centers; j++) {
 				// Compute the distance from the center
-				int dist = Hamming.HammingDistance(96,features, indices[i]
-						* NUM_BYTES_PER_FEATURE, features, indices[centers[j]]
-						* NUM_BYTES_PER_FEATURE);
+				int dist = Hamming.HammingDistance(96,features.getItem(indices[i]).descripter,0, features.getItem(indices[centers[j]]).descripter,0);
 				if (dist < best_dist) {
 					assignment[i] = centers[j];
 					best_dist = dist;

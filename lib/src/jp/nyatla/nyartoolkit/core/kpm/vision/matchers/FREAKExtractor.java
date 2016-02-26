@@ -1,8 +1,10 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
 
 import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
+import jp.nyatla.nyartoolkit.core.kpm.LongDescripter;
 
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.GaussianScaleSpacePyramid;
+import jp.nyatla.nyartoolkit.core.kpm.vision.detectors.DoGScaleInvariantDetector;
 import jp.nyatla.nyartoolkit.core.kpm.vision.detectors.interpole;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
@@ -207,10 +209,10 @@ public class FREAKExtractor {
 	 * Extract a 96 byte descriptor.
 	 */
 	void extract(BinaryFeatureStore store, GaussianScaleSpacePyramid pyramid,
-			FeaturePoint[] points) {
-
-		store.setNumBytesPerFeature(96);
-		store.resize(points.length);
+			DoGScaleInvariantDetector.DogFeaturePointStack points)
+	{
+//		store.setLength(points.length);//これはいらない。リセットする。
+		store.clear();
 		ExtractFREAK84(store, pyramid, points, mPointRing0, mPointRing1,
 				mPointRing2, mPointRing3, mPointRing4, mPointRing5,
 				mSigmaCenter, mSigmaRing0, mSigmaRing1, mSigmaRing2,
@@ -221,7 +223,7 @@ public class FREAKExtractor {
 	 * Extract the descriptors for all the feature points.
 	 */
 	void ExtractFREAK84(BinaryFeatureStore store,
-			GaussianScaleSpacePyramid pyramid, FeaturePoint[] points,
+			GaussianScaleSpacePyramid pyramid, DoGScaleInvariantDetector.DogFeaturePointStack points,
 			double[] points_ring0, double[] points_ring1, double[] points_ring2,
 			double[] points_ring3, double[] points_ring4, double[] points_ring5,
 			double sigma_center, double sigma_ring0, double sigma_ring1,
@@ -230,36 +232,34 @@ public class FREAKExtractor {
 		// ASSERT(pyramid, "Pyramid is NULL");
 		// ASSERT(store.size() == points.size(),
 		// "Feature store has not been allocated");
-		int num_points = 0;
-		for (int i = 0; i < points.length; i++) {
-
-			if (!ExtractFREAK84(store.feature(num_points), store.features(),
-					pyramid, points[i], points_ring0, points_ring1,
+		for (int i = 0; i < points.getLength(); i++) {
+			FeaturePoint sp=store.prePush();
+			DoGScaleInvariantDetector.DogFeaturePoint pt=points.getItem(i);
+			if (!ExtractFREAK84(sp.descripter,
+					pyramid,pt, points_ring0, points_ring1,
 					points_ring2, points_ring3, points_ring4, points_ring5,
 					sigma_center, sigma_ring0, sigma_ring1, sigma_ring2,
 					sigma_ring3, sigma_ring4, sigma_ring5, expansion_factor
 
 			)) {
+				store.pop();
 				continue;
 			}
-			store.points().prePush().set(points[i]);
-
+			sp.angle=pt.angle;
+			sp.x=pt.x;
+			sp.y=pt.y;
+			sp.scale=pt.sigma;
+			sp.maxima=pt.score>0;
 //			store.point(num_points).set(points[i]);
-			num_points++;
 		}
-		// ASSERT(num_points == points.size(), "Should be same size");
-
-		// Shrink store down to the number of valid points
-		store.resize(num_points);
 	}
 
 	/**
 	 * Extract a descriptor from the pyramid for a single point.
 	 */
 	boolean ExtractFREAK84(
-			int i_desc_idx,// unsigned char desc[84],
 			byte[] i_desc,// unsigned char desc[84],
-			GaussianScaleSpacePyramid pyramid, FeaturePoint point,
+			GaussianScaleSpacePyramid pyramid, DoGScaleInvariantDetector.DogFeaturePoint point,
 			double[] points_ring0, double[] points_ring1, double[] points_ring2,
 			double[] points_ring3, double[] points_ring4, double[] points_ring5,
 			double sigma_center, double sigma_ring0, double sigma_ring1,
@@ -277,7 +277,7 @@ public class FREAKExtractor {
 		}
 
 		// Once samples are created compute descriptor
-		CompareFREAK84(i_desc,i_desc_idx, samples);
+		CompareFREAK84(i_desc, samples);
 
 		return true;
 	}
@@ -286,7 +286,7 @@ public class FREAKExtractor {
 	 * Sample all the receptors from the pyramid given a single point.
 	 */
 	boolean SamplePyramidFREAK84(double[] samples,
-			GaussianScaleSpacePyramid pyramid, FeaturePoint point,
+			GaussianScaleSpacePyramid pyramid, DoGScaleInvariantDetector.DogFeaturePoint point,
 			double[] points_ring0, double[] points_ring1, double[] points_ring2,
 			double[] points_ring3, double[] points_ring4, double[] points_ring5,
 			double sigma_center, double sigma_ring0, double sigma_ring1,
@@ -305,7 +305,8 @@ public class FREAKExtractor {
 		double sc, s0, s1, s2, s3, s4, s5;
 
 		// Ensure the scale of the similarity transform is at least "1".
-		double transform_scale = point.scale * expansion_factor;
+//		double transform_scale = point.scale * expansion_factor;
+		double transform_scale = point.sigma * expansion_factor;
 		if (transform_scale < 1) {
 			transform_scale = 1;
 		}
@@ -502,14 +503,14 @@ public class FREAKExtractor {
 	/**
 	 * Compute the descriptor given the 37 samples from each receptor.
 	 */
-	void CompareFREAK84(byte[] desc,int i_desc_index,double[] samples) {
+	void CompareFREAK84(byte[] desc,double[] samples) {
 		int pos = 0;
 		for (int i = 0; i < 84; i++) {
-			desc[i_desc_index+i] = 0;
+			desc[i] = 0;
 		}// ZeroVector(desc, 84);
 		for (int i = 0; i < 37; i++) {
 			for (int j = i + 1; j < 37; j++) {
-				bitstring_set_bit(desc,i_desc_index, pos, (samples[i] < samples[j]) ? 1 : 0);
+				bitstring_set_bit(desc,0, pos, (samples[i] < samples[j]) ? 1 : 0);
 				pos++;
 			}
 		}

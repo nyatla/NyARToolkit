@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.ArrayList;
 
 import jp.nyatla.nyartoolkit.base.attoolkit5.ARParamLT;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.kpm.vision.facade.VisualDatabaseFacade;
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.BinaryFeatureStore;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.matchStack;
@@ -66,17 +68,17 @@ public class FreakKeypointMatching {
 
 			this.inDataSet.coord = NyARDoublePoint2d.createArray(this.inDataSet.num);
 
-			featureVector.sf = FreakFeature.createArray(this.inDataSet.num);
+//			featureVector.sf = FreakFeature.createArray(this.inDataSet.num);
 
 			FeaturePointStack points = this.freakMatcher.getQueryFeaturePoints();
-			byte[] descriptors = this.freakMatcher.getQueryDescriptors();
+//			byte[] descriptors = this.freakMatcher.getQueryDescriptors();
 
 			for (i = 0; i < this.inDataSet.num; i++) {
 
 				double x = points.getItem(i).x, y = points.getItem(i).y;
-				for (j = 0; j < FREAK_SUB_DIMENSION; j++) {
-					featureVector.sf[i].v[j] = descriptors[i * FREAK_SUB_DIMENSION + j];
-				}
+//				for (j = 0; j < FREAK_SUB_DIMENSION; j++) {
+//					featureVector.sf[i].v[j] = descriptors[i * FREAK_SUB_DIMENSION + j];
+//				}
 				if (this.cparamLT != null) {
 					NyARDoublePoint2d tmp = new NyARDoublePoint2d();
 					this.cparamLT.arParamObserv2IdealLTf(x, y, tmp);
@@ -127,7 +129,6 @@ public class FreakKeypointMatching {
 				int image_no = i_refDataSet.page_info[k].image_info[m].image_no;
 				List<NyARDoublePoint3d> p3dl = new ArrayList<NyARDoublePoint3d>();
 				List<FeaturePoint> fpl = new ArrayList<FeaturePoint>();
-				int desc_len = 0;
 				for (int i = 0; i < i_refDataSet.ref_point.length; i++) {
 					if (i_refDataSet.ref_point[i].refImageNo == image_no) {
 						NyARNftFreakFsetFile.RefDataSet t = i_refDataSet.ref_point[i];
@@ -137,9 +138,11 @@ public class FreakKeypointMatching {
 						fp.angle = t.featureVec.angle;
 						fp.scale = t.featureVec.scale;
 						fp.maxima = t.featureVec.maxima > 0 ? true : false;
+						if(i_refDataSet.ref_point[i].featureVec.v.length!=96){
+							throw new NyARRuntimeException();
+						}
+						System.arraycopy(i_refDataSet.ref_point[i].featureVec.v, 0, fp.descripter, 0,96);
 						fpl.add(fp);
-						// descripterはサイズだけ先に計算
-						desc_len += i_refDataSet.ref_point[i].featureVec.v.length;
 						//
 						NyARDoublePoint3d point3d = new NyARDoublePoint3d();
 						point3d.x = t.coord3D.x;
@@ -148,18 +151,7 @@ public class FreakKeypointMatching {
 
 					}
 				}
-				// descripterの生成
-				byte[] dl = new byte[desc_len];
-				int l = 0;
-				for (int i = 0; i < i_refDataSet.ref_point.length; i++) {
-					if (i_refDataSet.ref_point[i].refImageNo == image_no) {
-						for (int j = 0; j < i_refDataSet.ref_point[i].featureVec.v.length; j++) {
-							dl[l] = i_refDataSet.ref_point[i].featureVec.v[j];
-							l++;
-						}
-					}
-				}
-				FeaturePointStack fps = new FeaturePointStack(fpl.size());
+				BinaryFeatureStore fps = new BinaryFeatureStore(fpl.size());
 				for (FeaturePoint i : fpl) {
 					FeaturePoint p = fps.prePush();
 					p.set(i);
@@ -171,7 +163,7 @@ public class FreakKeypointMatching {
 					p.y = i.y;
 					p.z = i.z;
 				}
-				this.freakMatcher.addFreakFeaturesAndDescriptors(fps, dl, p3v,
+				this.freakMatcher.addFreakFeaturesAndDescriptors(fps, p3v,
 						i_refDataSet.page_info[k].image_info[m].w, i_refDataSet.page_info[k].image_info[m].h, db_id++);
 			}
 		}

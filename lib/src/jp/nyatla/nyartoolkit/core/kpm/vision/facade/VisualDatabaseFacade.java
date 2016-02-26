@@ -23,8 +23,7 @@ public class VisualDatabaseFacade
     	this.mPoint3d=new Point3dMap();
     }
 
-    public void addFreakFeaturesAndDescriptors(FeaturePointStack featurePoints,
-                                                              byte[] descriptors,
+    public void addFreakFeaturesAndDescriptors(BinaryFeatureStore featurePoints,
                                                               Point3dVector points3D,
                                                               int width,
                                                               int height,
@@ -33,7 +32,7 @@ public class VisualDatabaseFacade
         Keyframe keyframe=new Keyframe(
         	96,
         	width,height,
-        	new BinaryFeatureStore(96,descriptors,featurePoints));
+        	featurePoints);
 
         keyframe.buildIndex();
         mVisualDbImpl.addKeyframe(keyframe, image_id);
@@ -48,12 +47,12 @@ public class VisualDatabaseFacade
     
     public FeaturePointStack getQueryFeaturePoints()
     {
-        return mVisualDbImpl.queryKeyframe().store().points();
+        return mVisualDbImpl.queryKeyframe().store();
     }
-    public byte[] getQueryDescriptors()
-    {
-        return mVisualDbImpl.queryKeyframe().store().features();
-    }
+//    public byte[] getQueryDescriptors()
+//    {
+//        return mVisualDbImpl.queryKeyframe().store().features();
+//    }
 
 	public matchStack inliers() {
 		// TODO Auto-generated method stub

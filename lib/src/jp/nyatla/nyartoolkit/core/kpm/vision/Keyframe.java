@@ -28,7 +28,7 @@ public class Keyframe {
 //        mIndex.setNumCenters(8);
 //        mIndex.setMaxNodesToPop(8);
 //        mIndex.setMinFeaturesPerNode(16);
-        mIndex.build(this.mStore.features(), (int)mStore.size());
+        mIndex.build(this.mStore);
     }
 	final int NUM_BYTES_PER_FEATURE;
 
