@@ -4,17 +4,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.j2se.BinaryReader;
 
 /**
  * FREAK用のfsetファイル形式(fset3)データを格納します。 KpmRefDataSetの一部と同じです。
  */
-public class NyARNftFreakFsetFile {
-	public static class FloatPoint2d
-	{
-		public double x;
-		public double y;
-	}	
+public class NyARNftFreakFsetFile {	
 	public static class ImageInfo
 	{
 		public ImageInfo(int i_w, int i_h, int i_image_no) {
@@ -45,8 +42,8 @@ public class NyARNftFreakFsetFile {
 	}
 	public static class RefDataSet
 	{
-	    final public FloatPoint2d        coord2D=new FloatPoint2d();
-	    final public FloatPoint2d        coord3D=new FloatPoint2d();      // millimetres.
+	    final public NyARDoublePoint2d        coord2D=new NyARDoublePoint2d();
+	    final public NyARDoublePoint2d        coord3D=new NyARDoublePoint2d();      // millimetres.
 	    final public FreakFeature      featureVec=new FreakFeature();
 	    public int               pageNo;
 	    public int               refImageNo;
