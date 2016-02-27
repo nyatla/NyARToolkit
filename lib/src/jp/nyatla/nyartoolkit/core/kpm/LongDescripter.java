@@ -4,10 +4,10 @@ package jp.nyatla.nyartoolkit.core.kpm;
  * 84bitデスクリプタ
  *
  */
-public class LongDescripter84
+public class LongDescripter
 {
 	final public long[] _desc;
-	public LongDescripter84(int i_bits)
+	public LongDescripter(int i_bits)
 	{
 		//64bit単位で計算
 		this._desc=new long[(i_bits+63)/64];
