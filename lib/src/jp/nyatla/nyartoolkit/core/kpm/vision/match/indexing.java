@@ -13,9 +13,8 @@ public class indexing {
             x[i+i_ptr] = x[i+i_ptr-1]+1;
         }
     }
-    public static void CopyVector2(double[] dst,int i_dst_idx, double[] src,int i_src_idx) {
-    	CopyVector(dst,i_dst_idx,src,i_src_idx,2);
-    }    
+
+  
     public static void CopyVector(double[] dst,int i_dst_idx, double[] src,int i_src_idx,int i_len) {
     	for(int i=0;i<i_len;i++){
     		dst[i_dst_idx+i]=src[i_src_idx+i];

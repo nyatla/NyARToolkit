@@ -1,11 +1,9 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
 
 import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
-import jp.nyatla.nyartoolkit.core.kpm.LongDescripter;
-
+import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DogFeaturePoint;
+import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DogFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.GaussianScaleSpacePyramid;
-import jp.nyatla.nyartoolkit.core.kpm.vision.detectors.DoGScaleInvariantDetector;
-import jp.nyatla.nyartoolkit.core.kpm.vision.detectors.interpole;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 
@@ -120,96 +118,15 @@ public class FREAKExtractor {
 		mSigmaRing5 = freak84_sigma_ring5;
 
 		mExpansionFactor = 7;
-
-		// ASSERT(sizeof(freak84_points_ring0) == 48,
-		// "Size should be 48 bytes");
-		// ASSERT(sizeof(freak84_points_ring1) == 48,
-		// "Size should be 48 bytes");
-		// ASSERT(sizeof(freak84_points_ring2) == 48,
-		// "Size should be 48 bytes");
-		// ASSERT(sizeof(freak84_points_ring3) == 48,
-		// "Size should be 48 bytes");
-		// ASSERT(sizeof(freak84_points_ring4) == 48,
-		// "Size should be 48 bytes");
-		// ASSERT(sizeof(freak84_points_ring5) == 48,
-		// "Size should be 48 bytes");
 	}
 
-	// /**
-	// * Get a set of tests for an 84 byte descriptor.
-	// */
-	// void layout84(std::vector<receptor>& receptors,
-	// std::vector<std::vector<int> >& tests) {
-	// const int ring_size = 6;
-	// const int num_rings = 6;
-	//
-	// const float radius_m = 4;
-	// const float radius_b = 2;
-	//
-	// const float sigma_m = 2;
-	// const float sigma_b = std::sqrt(2);
-	//
-	// float max_radius = -1;
-	// float max_sigma = -1;
-	//
-	// float delta_theta = (2.f*PI)/ring_size;
-	// for(int i = 0; i < num_rings+1; i++) {
-	// float sigma = std::log(sigma_m*i+sigma_b);
-	//
-	// if(i == 0) {
-	// receptor r;
-	// r.x = 0;
-	// r.y = 0;
-	// r.s = sigma;
-	//
-	// receptors.push_back(r);
-	// } else {
-	// float radius = std::log(radius_m*i+radius_b);
-	//
-	// for(int j = 0; j < ring_size; j++) {
-	//
-	// float theta = j*delta_theta+i*PI/2.f;
-	//
-	// receptor r;
-	// r.x = radius*std::cos(theta);
-	// r.y = radius*std::sin(theta);
-	// r.s = sigma;
-	//
-	// receptors.push_back(r);
-	// }
-	//
-	// if(radius > max_radius) {
-	// max_radius = radius;
-	// }
-	// }
-	//
-	// if(sigma > max_sigma) {
-	// max_sigma = sigma;
-	// }
-	// }
-	//
-	// // Normalize
-	// for(size_t i = 0; i < receptors.size(); i++) {
-	// receptors[i].x /= max_radius;
-	// receptors[i].y /= max_radius;
-	// receptors[i].s /= max_sigma;
-	// }
-	//
-	// // Generate tests
-	// tests.resize(receptors.size());
-	// for(size_t i = 0; i < receptors.size(); i++) {
-	// for(size_t j = i+1; j < receptors.size(); j++) {
-	// tests[i].push_back((int)j);
-	// }
-	// }
-	// }
-	//
-	//
+
+
 	/**
 	 * Extract a 96 byte descriptor.
 	 */
 	void extract(BinaryFeatureStore store, GaussianScaleSpacePyramid pyramid,
-			DoGScaleInvariantDetector.DogFeaturePointStack points)
+			DogFeaturePointStack points)
 	{
 //		store.setLength(points.length);//これはいらない。リセットする。
 		store.clear();
@@ -223,7 +140,7 @@ public class FREAKExtractor {
 	 * Extract the descriptors for all the feature points.
 	 */
 	void ExtractFREAK84(BinaryFeatureStore store,
-			GaussianScaleSpacePyramid pyramid, DoGScaleInvariantDetector.DogFeaturePointStack points,
+			GaussianScaleSpacePyramid pyramid, DogFeaturePointStack points,
 			double[] points_ring0, double[] points_ring1, double[] points_ring2,
 			double[] points_ring3, double[] points_ring4, double[] points_ring5,
 			double sigma_center, double sigma_ring0, double sigma_ring1,
@@ -234,7 +151,7 @@ public class FREAKExtractor {
 		// "Feature store has not been allocated");
 		for (int i = 0; i < points.getLength(); i++) {
 			FeaturePoint sp=store.prePush();
-			DoGScaleInvariantDetector.DogFeaturePoint pt=points.getItem(i);
+			DogFeaturePoint pt=points.getItem(i);
 			if (!ExtractFREAK84(sp.descripter,
 					pyramid,pt, points_ring0, points_ring1,
 					points_ring2, points_ring3, points_ring4, points_ring5,
@@ -259,7 +176,7 @@ public class FREAKExtractor {
 	 */
 	boolean ExtractFREAK84(
 			byte[] i_desc,// unsigned char desc[84],
-			GaussianScaleSpacePyramid pyramid, DoGScaleInvariantDetector.DogFeaturePoint point,
+			GaussianScaleSpacePyramid pyramid, DogFeaturePoint point,
 			double[] points_ring0, double[] points_ring1, double[] points_ring2,
 			double[] points_ring3, double[] points_ring4, double[] points_ring5,
 			double sigma_center, double sigma_ring0, double sigma_ring1,
@@ -286,7 +203,7 @@ public class FREAKExtractor {
 	 * Sample all the receptors from the pyramid given a single point.
 	 */
 	boolean SamplePyramidFREAK84(double[] samples,
-			GaussianScaleSpacePyramid pyramid, DoGScaleInvariantDetector.DogFeaturePoint point,
+			GaussianScaleSpacePyramid pyramid, DogFeaturePoint point,
 			double[] points_ring0, double[] points_ring1, double[] points_ring2,
 			double[] points_ring3, double[] points_ring4, double[] points_ring5,
 			double sigma_center, double sigma_ring0, double sigma_ring1,
@@ -527,47 +444,7 @@ public class FREAKExtractor {
 		bitstring[i_desc_index+(pos / 8)] |= (bit << (pos % 8));
 	}
 
-	// inline unsigned char bitstring_get_bit(const unsigned char* bitstring,
-	// int pos) {
-	// return (bitstring[pos/8] >> (pos%8)) & 1;
-	// }
-	//
-	// /**
-	// * Sample a receptor given (x,y) given an image using bilinear
-	// interpolation.
-	// */
-	// inline float SampleReceptorBilinear(const Image& image,
-	// float x,
-	// float y) {
-	// x = ClipScalar<float>(x, 0, image.width()-2);
-	// y = ClipScalar<float>(y, 0, image.height()-2);
-	// return bilinear_interpolation<float>(image, x, y);
-	// }
-	//
-	// /**
-	// * Sample a receptor given (x,y) given an image using nearest neighbor.
-	// */
-	// inline float SampleReceptorNN(const Image& image,
-	// float x,
-	// float y) {
-	// x = ClipScalar<float>(x, 0, image.width()-1);
-	// y = ClipScalar<float>(y, 0, image.height()-1);
-	// return image.get<float>((int)y)[(int)x];
-	// }
-	//
-	// /**
-	// * Sample a receptor given (x,y) given an image.
-	// */
-	// inline float SampleReceptor(const Image& image,
-	// float x,
-	// float y) {
-	// #ifdef FREAK_BILINEAR_SAMPLE
-	// return SampleReceptorBilinear(image, x, y);
-	// #else
-	// return SampleReceptorNN(image, x, y);
-	// #endif
-	// }
-	//
+
 	/**
 	 * Sample a receptor given (x,y,octave,scale) and a pyramid.
 	 */
@@ -611,234 +488,4 @@ public class FREAKExtractor {
 		}
 		return x;
 	}
-
-	//
-	// /**
-	// * Compute the descriptor given the 37 samples from each receptor.
-	// */
-	// inline void CompareFREAK84(unsigned char desc[84], const float
-	// samples[37]) {
-	// int pos = 0;
-	// ZeroVector(desc, 84);
-	// for(int i = 0; i < 37; i++) {
-	// for(int j = i+1; j < 37; j++) {
-	// bitstring_set_bit(desc, pos, samples[i] < samples[j]);
-	// pos++;
-	// }
-	// }
-	// ASSERT(pos == 666, "Position is not within range");
-	// }
-	//
-	// /**
-	// * Extract a descriptor from the pyramid for a single point.
-	// */
-	// inline bool ExtractFREAK84(unsigned char desc[84],
-	// const GaussianScaleSpacePyramid* pyramid,
-	// const FeaturePoint& point,
-	// const float points_ring0[12],
-	// const float points_ring1[12],
-	// const float points_ring2[12],
-	// const float points_ring3[12],
-	// const float points_ring4[12],
-	// const float points_ring5[12],
-	// float sigma_center,
-	// float sigma_ring0,
-	// float sigma_ring1,
-	// float sigma_ring2,
-	// float sigma_ring3,
-	// float sigma_ring4,
-	// float sigma_ring5,
-	// float expansion_factor
-	// #ifdef FREAK_DEBUG
-	// ,
-	// float mapped_ring0[12],
-	// float mapped_ring1[12],
-	// float mapped_ring2[12],
-	// float mapped_ring3[12],
-	// float mapped_ring4[12],
-	// float mapped_ring5[12],
-	// float mapped_center[2],
-	// float& mapped_s0,
-	// float& mapped_s1,
-	// float& mapped_s2,
-	// float& mapped_s3,
-	// float& mapped_s4,
-	// float& mapped_s5,
-	// float& mapped_sc
-	// #endif
-	// ) {
-	// float samples[37];
-	//
-	// // Create samples
-	// if(!SamplePyramidFREAK84(samples,
-	// pyramid,
-	// point,
-	// points_ring0,
-	// points_ring1,
-	// points_ring2,
-	// points_ring3,
-	// points_ring4,
-	// points_ring5,
-	// sigma_center,
-	// sigma_ring0,
-	// sigma_ring1,
-	// sigma_ring2,
-	// sigma_ring3,
-	// sigma_ring4,
-	// sigma_ring5,
-	// expansion_factor
-	// #ifdef FREAK_DEBUG
-	// ,
-	// mapped_ring0,
-	// mapped_ring1,
-	// mapped_ring2,
-	// mapped_ring3,
-	// mapped_ring4,
-	// mapped_ring5,
-	// mapped_center,
-	// mapped_s0,
-	// mapped_s1,
-	// mapped_s2,
-	// mapped_s3,
-	// mapped_s4,
-	// mapped_s5,
-	// mapped_sc
-	// #endif
-	// )) {
-	// return false;
-	// }
-	//
-	// // Once samples are created compute descriptor
-	// CompareFREAK84(desc, samples);
-	//
-	// return true;
-	// }
-	//
-	// /**
-	// * Extract the descriptors for all the feature points.
-	// */
-	// inline void ExtractFREAK84(BinaryFeatureStore& store,
-	// const GaussianScaleSpacePyramid* pyramid,
-	// const std::vector<FeaturePoint>& points,
-	// const float points_ring0[12],
-	// const float points_ring1[12],
-	// const float points_ring2[12],
-	// const float points_ring3[12],
-	// const float points_ring4[12],
-	// const float points_ring5[12],
-	// float sigma_center,
-	// float sigma_ring0,
-	// float sigma_ring1,
-	// float sigma_ring2,
-	// float sigma_ring3,
-	// float sigma_ring4,
-	// float sigma_ring5,
-	// float expansion_factor
-	// #ifdef FREAK_DEBUG
-	// ,
-	// std::vector<Point2d<float> >& mapped_ring0,
-	// std::vector<Point2d<float> >& mapped_ring1,
-	// std::vector<Point2d<float> >& mapped_ring2,
-	// std::vector<Point2d<float> >& mapped_ring3,
-	// std::vector<Point2d<float> >& mapped_ring4,
-	// std::vector<Point2d<float> >& mapped_ring5,
-	// std::vector<Point2d<float> >& mapped_ringC,
-	// std::vector<float>& mapped_s0,
-	// std::vector<float>& mapped_s1,
-	// std::vector<float>& mapped_s2,
-	// std::vector<float>& mapped_s3,
-	// std::vector<float>& mapped_s4,
-	// std::vector<float>& mapped_s5,
-	// std::vector<float>& mapped_sc
-	// #endif
-	//
-	// ) {
-	// ASSERT(pyramid, "Pyramid is NULL");
-	// ASSERT(store.size() == points.size(),
-	// "Feature store has not been allocated");
-	// size_t num_points = 0;
-	// for(size_t i = 0; i < points.size(); i++) {
-	//
-	// #ifdef FREAK_DEBUG
-	// std::vector<Point2d<float> > tmp_p0(6);
-	// std::vector<Point2d<float> > tmp_p1(6);
-	// std::vector<Point2d<float> > tmp_p2(6);
-	// std::vector<Point2d<float> > tmp_p3(6);
-	// std::vector<Point2d<float> > tmp_p4(6);
-	// std::vector<Point2d<float> > tmp_p5(6);
-	// Point2d<float> tmp_pc;
-	// float tmp_s0;
-	// float tmp_s1;
-	// float tmp_s2;
-	// float tmp_s3;
-	// float tmp_s4;
-	// float tmp_s5;
-	// float tmp_sc;
-	// #endif
-	//
-	// if(!ExtractFREAK84(store.feature(num_points),
-	// pyramid,
-	// points[i],
-	// points_ring0,
-	// points_ring1,
-	// points_ring2,
-	// points_ring3,
-	// points_ring4,
-	// points_ring5,
-	// sigma_center,
-	// sigma_ring0,
-	// sigma_ring1,
-	// sigma_ring2,
-	// sigma_ring3,
-	// sigma_ring4,
-	// sigma_ring5,
-	// expansion_factor
-	// #ifdef FREAK_DEBUG
-	// ,
-	// (float*)&tmp_p0[0],
-	// (float*)&tmp_p1[0],
-	// (float*)&tmp_p2[0],
-	// (float*)&tmp_p3[0],
-	// (float*)&tmp_p4[0],
-	// (float*)&tmp_p5[0],
-	// (float*)&tmp_pc,
-	// tmp_s0,
-	// tmp_s1,
-	// tmp_s2,
-	// tmp_s3,
-	// tmp_s4,
-	// tmp_s5,
-	// tmp_sc
-	// #endif
-	// )) {
-	// continue;
-	// }
-	// #ifdef FREAK_DEBUG
-	// mapped_ring0.insert(mapped_ring0.end(), tmp_p0.begin(), tmp_p0.end());
-	// mapped_ring1.insert(mapped_ring1.end(), tmp_p1.begin(), tmp_p1.end());
-	// mapped_ring2.insert(mapped_ring2.end(), tmp_p2.begin(), tmp_p2.end());
-	// mapped_ring3.insert(mapped_ring3.end(), tmp_p3.begin(), tmp_p3.end());
-	// mapped_ring4.insert(mapped_ring4.end(), tmp_p4.begin(), tmp_p4.end());
-	// mapped_ring5.insert(mapped_ring5.end(), tmp_p5.begin(), tmp_p5.end());
-	// mapped_ringC.push_back(tmp_pc);
-	//
-	// mapped_s0.push_back(tmp_s0);
-	// mapped_s1.push_back(tmp_s1);
-	// mapped_s2.push_back(tmp_s2);
-	// mapped_s3.push_back(tmp_s3);
-	// mapped_s4.push_back(tmp_s4);
-	// mapped_s5.push_back(tmp_s5);
-	// mapped_sc.push_back(tmp_sc);
-	// #endif
-	//
-	// store.point(num_points) = points[i];
-	// num_points++;
-	// }
-	// ASSERT(num_points == points.size(), "Should be same size");
-	//
-	// // Shrink store down to the number of valid points
-	// store.resize(num_points);
-	// }
-	//
-	// } // vision
 }

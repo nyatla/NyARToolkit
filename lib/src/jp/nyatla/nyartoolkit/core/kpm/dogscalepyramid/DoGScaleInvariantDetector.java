@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.core.kpm.vision.detectors;
+package jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid;
 
 import jp.nyatla.nyartoolkit.core.kpm.DoGPyramid;
 import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
@@ -14,60 +14,8 @@ public class DoGScaleInvariantDetector {
 	final static public int kMaxNumFeaturePoints = 5000;
 	final static public int kMaxNumOrientations = 36;
 
-	public static class DogFeaturePoint {
-		public double x, y;
-		public double angle;
-		public int octave;
-		public int scale;
-		public double sp_scale;
-		public double score;
-		public double sigma;
-		public double edge_score;
-
-		public DogFeaturePoint() {
-		}
-
-		public DogFeaturePoint(DogFeaturePoint i_src) {
-			this.set(i_src);
-		}
-
-		public void set(DogFeaturePoint i_src) {
-			this.x = i_src.x;
-			this.y = i_src.y;
-			this.angle = i_src.angle;
-			this.octave = i_src.octave;
-			this.scale = i_src.scale;
-			this.sp_scale = i_src.sp_scale;
-			this.score = i_src.score;
-			this.sigma = i_src.sigma;
-			this.edge_score = i_src.edge_score;
-		}
-
-	}; // FeaturePoint
-
-	public static class DogFeaturePointStack extends NyARObjectStack<DogFeaturePoint>
-			implements Cloneable {
-		public DogFeaturePointStack(int i_length) {
-			super(i_length, DogFeaturePoint.class);
-		}
-
-		@Override
-		final protected DogFeaturePoint createElement() {
-			return new DogFeaturePoint();
-		}
-
-		/**
-		 * DeepCopy これあとで消してね。
-		 */
-		@Override
-		final public Object clone() {
-			DogFeaturePointStack n = new DogFeaturePointStack(this._items.length);
-			for (int i = 0; i < this._length; i++) {
-				n.prePush().set(this._items[i]);
-			}
-			return n;
-		}
-	}
+	
+	
 	// True if the orientation should be assigned
 	final private boolean mFindOrientation;
 
@@ -166,50 +114,7 @@ public class DoGScaleInvariantDetector {
 		// }
 	}
 
-//	/**
-//	 * Get/Set the Laplacian absolute threshold.
-//	 */
-//	public double laplacianThreshold() {
-//		return mLaplacianThreshold;
-//	}
-//
-//	public void setLaplacianThreshold(double i_LaplacianThreshold) {
-//		this.mLaplacianThreshold = tr;
-//	}
-//
-//	/**
-//	 * Get/Set the maximum number of feature point.
-//	 */
-//	public int maxNumFeaturePoints() {
-//		return this.mMaxNumFeaturePoints;
-//	}
-//
-//	public void setMaxNumFeaturePoints(int n) {
-//		this.mMaxNumFeaturePoints = n;
-//		this.mFeaturePoints = new FeaturePointStack(2000);
-//	}
-//
-//	/**
-//	 * Get/Set the edge threshold.
-//	 */
-//	public double edgeThreshold() {
-//		return this.mEdgeThreshold;
-//	}
-//
-//	public void setEdgeThreshold(double tr) {
-//		this.mEdgeThreshold = tr;
-//	}
-//
-//	/**
-//	 * Set/Get find orientations.
-//	 */
-//	void setFindOrientation(boolean b) {
-//		this.mFindOrientation = b;
-//	}
-//
-//	public boolean findOrientation() {
-//		return this.mFindOrientation;
-//	}
+
 
 	/**
 	 * @return Feature points

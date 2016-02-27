@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.core.kpm.vision.detectors;
+package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
 
 import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
 
