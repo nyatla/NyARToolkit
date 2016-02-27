@@ -1,6 +1,5 @@
 package jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid;
 
-import jp.nyatla.nyartoolkit.core.kpm.DoGPyramid;
 import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
 import jp.nyatla.nyartoolkit.core.kpm.OrientationAssignment;
 import jp.nyatla.nyartoolkit.core.kpm.OrientationAssignment.FloatVector;

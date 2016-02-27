@@ -425,23 +425,38 @@ public class FREAKExtractor {
 		for (int i = 0; i < 84; i++) {
 			desc[i] = 0;
 		}// ZeroVector(desc, 84);
+		//[7 6 5 4 3 2 1 0, 15 14 13 12 11 10 9 8, 23 22 21 20 19 18 17 16, ...]
+
 		for (int i = 0; i < 37; i++) {
 			for (int j = i + 1; j < 37; j++) {
-				bitstring_set_bit(desc,0, pos, (samples[i] < samples[j]) ? 1 : 0);
+				if(samples[i] < samples[j]){
+					desc[(pos / 8)] |= (1 << (pos % 8));
+				}else{
+					desc[(pos / 8)] |= (0 << (pos % 8));
+				}
 				pos++;
 			}
 		}
-		// ASSERT(pos == 666, "Position is not within range");
+		return;
 	}
+	void CompareFREAK84(long[] desc ,double[] samples) {
+		int pos = 0;//84bitだと・・・
+		for (int i = 0; i < 84; i++) {
+			desc[i] = 0;
+		}// ZeroVector(desc, 84);
+		//[63..0]
 
-	/**
-	 * Set a bit in a bit string represented as an array of UNSIGNED CHAR bytes.
-	 * The ordering on the bits is as follows:
-	 * 
-	 * [7 6 5 4 3 2 1 0, 15 14 13 12 11 10 9 8, 23 22 21 20 19 18 17 15, ...]
-	 */
-	private void bitstring_set_bit(byte[] bitstring,int i_desc_index, int pos, int bit) {
-		bitstring[i_desc_index+(pos / 8)] |= (bit << (pos % 8));
+		for (int i = 0; i < 37; i++) {
+			for (int j = i + 1; j < 37; j++) {
+				if(samples[i] < samples[j]){
+					desc[(pos / 64)] |= (1L << (pos % 64));
+				}else{
+					desc[(pos / 64)] |= (0L << (pos % 64));
+				}
+				pos++;
+			}
+		}
+		return;
 	}
 
 
