@@ -17,7 +17,7 @@ import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 
-public class VisualDatabase<STORE extends BinaryFeatureStore>
+public class VisualDatabase<STORE extends FreakFeaturePointStack>
 {
 	private static double kLaplacianThreshold = 3;
 	private static double kEdgeThreshold = 4;
@@ -121,7 +121,7 @@ public class VisualDatabase<STORE extends BinaryFeatureStore>
 		// Find the features on the image
 		this.mQueryKeyframe = new Keyframe(
 			96,(int) pyramid.images()[0].getWidth(),(int) pyramid.images()[0].getHeight(),
-			new BinaryFeatureStore());// .reset(new keyframe_t());
+			new FreakFeaturePointStack());// .reset(new keyframe_t());
 		FindFeatures(this.mQueryKeyframe, pyramid, this.mDetector,
 				this.mFeatureExtractor);
 		// LOG_INFO("Found %d features in query",
@@ -133,16 +133,16 @@ public class VisualDatabase<STORE extends BinaryFeatureStore>
 	/**
 	 * Vote for a similarity transformation.
 	 */
-	int FindHoughSimilarity(HoughSimilarityVoting hough, FeaturePointStack p1,
-			FeaturePointStack p2, matchStack matches, int insWidth,
+	int FindHoughSimilarity(HoughSimilarityVoting hough, FreakFeaturePointStack p1,
+			FreakFeaturePointStack p2, matchStack matches, int insWidth,
 			int insHeigth, int refWidth, int refHeight) {
 		double[] query = new double[4 * matches.getLength()];
 		double[] ref = new double[4 * matches.getLength()];
 
 		// Extract the data from the features
 		for (int i = 0; i < matches.getLength(); i++) {
-			FeaturePoint query_point = p1.getItem(matches.getItem(i).ins);
-			FeaturePoint ref_point = p2.getItem(matches.getItem(i).ref);
+			FreakFeaturePoint query_point = p1.getItem(matches.getItem(i).ins);
+			FreakFeaturePoint ref_point = p2.getItem(matches.getItem(i).ref);
 
 			int q_ptr = i * 4;
 			query[q_ptr + 0] = query_point.x;
@@ -179,7 +179,7 @@ public class VisualDatabase<STORE extends BinaryFeatureStore>
 		this. mMatchedId = -1;
 		int last_inliers=0;
 
-		FeaturePointStack query_points = query_keyframe.store();
+		FreakFeaturePointStack query_points = query_keyframe.store();
 		// Loop over all the images in the database
 		// typename keyframe_map_t::const_iterator it = mKeyframeMap.begin();
 		// for(; it != mKeyframeMap.end(); it++) {
@@ -199,7 +199,7 @@ public class VisualDatabase<STORE extends BinaryFeatureStore>
 			}
 			// }
 
-			FeaturePointStack ref_points = second.store();
+			FreakFeaturePointStack ref_points = second.store();
 			// std::cout<<"ref_points-"<<ref_points.size()<<std::endl;
 			// std::cout<<"query_points-"<<query_points.size()<<std::endl;
 
@@ -323,8 +323,8 @@ public class VisualDatabase<STORE extends BinaryFeatureStore>
 	/**
 	 * Find the inliers given a homography and a set of correspondences.
 	 */
-	void FindInliers(matchStack inliers, NyARDoubleMatrix33 H, FeaturePointStack p1,
-			FeaturePointStack p2, matchStack matches, double threshold) {
+	void FindInliers(matchStack inliers, NyARDoubleMatrix33 H, FreakFeaturePointStack p1,
+			FreakFeaturePointStack p2, matchStack matches, double threshold) {
 		double threshold2 = math_utils.sqr(threshold);
 		// reserve(matches.size());
 		for (int i = 0; i < matches.getLength(); i++) {
@@ -349,7 +349,7 @@ public class VisualDatabase<STORE extends BinaryFeatureStore>
 	 * Get only the matches that are consistent based on the hough votes.
 	 */
 	void FindHoughMatches(matchStack out_matches, HoughSimilarityVoting hough,
-			FeaturePointStack p1, FeaturePointStack p2, matchStack in_matches,
+			FreakFeaturePointStack p1, FreakFeaturePointStack p2, matchStack in_matches,
 			int binIndex, double binDelta) {
 
 		HoughSimilarityVoting.Bins bin = hough.getBinsFromIndex(binIndex);
@@ -381,8 +381,8 @@ public class VisualDatabase<STORE extends BinaryFeatureStore>
 	/**
 	 * Estimate the homography between a set of correspondences.
 	 */
-	boolean EstimateHomography(HomographyMat H, FeaturePointStack p1,
-			FeaturePointStack p2, matchStack matches, double threshold,
+	boolean EstimateHomography(HomographyMat H, FreakFeaturePointStack p1,
+			FreakFeaturePointStack p2, matchStack matches, double threshold,
 			RobustHomography estimator, int refWidth, int refHeight) {
 
 		NyARDoublePoint2d[] srcPoints = NyARDoublePoint2d.createArray(matches.getLength());

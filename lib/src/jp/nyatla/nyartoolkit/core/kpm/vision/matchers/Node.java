@@ -11,7 +11,7 @@ public class Node {
 		this.mLeaf=true;
 		this.mCenter=new byte[i_NUM_BYTES_PER_FEATURE];
 	}
-	public Node(int id,FeaturePoint i_feature)
+	public Node(int id,FreakFeaturePoint i_feature)
 	{
 		this.mId=id;
 		this.mLeaf=true;

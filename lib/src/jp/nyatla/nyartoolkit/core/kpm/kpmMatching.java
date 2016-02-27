@@ -1,8 +1,8 @@
 package jp.nyatla.nyartoolkit.core.kpm;
 
 import jp.nyatla.nyartoolkit.base.attoolkit5.ARParamLT;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FeaturePoint;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FeaturePointStack;
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePoint;
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.matchStack;
 import jp.nyatla.nyartoolkit.core.icp.NyARIcpPlane;
 import jp.nyatla.nyartoolkit.core.icp.NyARIcpPoint;
@@ -15,7 +15,7 @@ public class kpmMatching {
 	private double error;
 
 	public static int kpmUtilGetPose_binary(ARParamLT cparamLT, matchStack matchData, Point3dVector refDataSet,
-			FeaturePointStack inputDataSet, KpmResult kpmResult) {
+			FreakFeaturePointStack inputDataSet, KpmResult kpmResult) {
 		// ICPHandleT *icpHandle;
 		// ICPDataT icpData;
 		// ICP2DCoordT *sCoord;

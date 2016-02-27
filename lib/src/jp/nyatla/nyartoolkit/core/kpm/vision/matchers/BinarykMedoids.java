@@ -74,7 +74,7 @@ public class BinarykMedoids {
 	/**
 	 * Assign featurs to a cluster center
 	 */
-	public void assign(FeaturePointStack features, int[] indices,
+	public void assign(FreakFeaturePointStack features, int[] indices,
 			int num_indices) {
 		// ASSERT(mK == mCenters.size(),
 		// "k should match the number of cluster centers");
@@ -122,7 +122,7 @@ public class BinarykMedoids {
 
 	}
 
-	public int assign(int[] assignment, FeaturePointStack features,
+	public int assign(int[] assignment, FreakFeaturePointStack features,
 			int[] indices, int num_indices, int[] centers, int num_centers) {
 		// ASSERT(assignment.size() == num_indices,
 		// "Assignment size is incorrect");

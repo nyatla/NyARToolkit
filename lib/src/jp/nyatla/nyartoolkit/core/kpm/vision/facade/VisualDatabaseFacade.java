@@ -3,8 +3,7 @@ import java.util.*;
 
 import jp.nyatla.nyartoolkit.core.kpm.Point3dVector;
 import jp.nyatla.nyartoolkit.core.kpm.vision.Keyframe;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.BinaryFeatureStore;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FeaturePointStack;
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.VisualDatabase;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.matchStack;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
@@ -14,16 +13,16 @@ public class VisualDatabaseFacade
 	class Point3dMap extends LinkedHashMap<Integer,Point3dVector>{
 		
 	}
-	final private VisualDatabase<BinaryFeatureStore> mVisualDbImpl;
+	final private VisualDatabase<FreakFeaturePointStack> mVisualDbImpl;
 	final private Point3dMap mPoint3d;
 
     public VisualDatabaseFacade(int i_width,int i_height)
     {
-    	this.mVisualDbImpl=new VisualDatabase<BinaryFeatureStore>(i_width,i_height);
+    	this.mVisualDbImpl=new VisualDatabase<FreakFeaturePointStack>(i_width,i_height);
     	this.mPoint3d=new Point3dMap();
     }
 
-    public void addFreakFeaturesAndDescriptors(BinaryFeatureStore featurePoints,
+    public void addFreakFeaturesAndDescriptors(FreakFeaturePointStack featurePoints,
                                                               Point3dVector points3D,
                                                               int width,
                                                               int height,
@@ -45,7 +44,7 @@ public class VisualDatabaseFacade
     }
  
     
-    public FeaturePointStack getQueryFeaturePoints()
+    public FreakFeaturePointStack getQueryFeaturePoints()
     {
         return mVisualDbImpl.queryKeyframe().store();
     }

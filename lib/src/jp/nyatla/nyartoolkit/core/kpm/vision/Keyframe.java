@@ -1,6 +1,6 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision;
 
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.BinaryFeatureStore;
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePointStack;
 
 public class Keyframe {
 
@@ -15,7 +15,7 @@ public class Keyframe {
 	// }
 
 	public Keyframe(int i_NUM_BYTES_PER_FEATURE, int width, int height,
-			BinaryFeatureStore i_binaryFeatureStore) {
+			FreakFeaturePointStack i_binaryFeatureStore) {
 		this.NUM_BYTES_PER_FEATURE = i_NUM_BYTES_PER_FEATURE;
 		this.mWidth = width;
 		this.mHeight = height;
@@ -51,7 +51,7 @@ public class Keyframe {
 	/**
 	 * @return Feature store.
 	 */
-	public BinaryFeatureStore store() {
+	public FreakFeaturePointStack store() {
 		return mStore;
 	}
 
@@ -86,7 +86,7 @@ public class Keyframe {
 	final private int mHeight;
 
 	// Feature store
-	private final BinaryFeatureStore mStore;
+	private final FreakFeaturePointStack mStore;
 
 	// Feature index
 	private final BinaryHierarchicalClustering mIndex;

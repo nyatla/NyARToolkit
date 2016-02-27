@@ -7,7 +7,7 @@ import java.util.PriorityQueue;
 import java.util.TreeMap;
 
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.BinarykMedoids;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FeaturePointStack;
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.Node;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.NodePtrStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.PriorityQueueItem;
@@ -199,21 +199,21 @@ public class BinaryHierarchicalClustering {
 			}
 		}
 	}
-    void build(FeaturePointStack features) {
+    void build(FreakFeaturePointStack features) {
     	int[] indices=new int[features.getLength()];
         for(int i = 0; i < indices.length; i++) {
             indices[i] = (int)i;
         }
         this.build(features, indices,indices.length);
     }
-    void build(FeaturePointStack features, int[] indices, int num_indices) {
+    void build(FreakFeaturePointStack features, int[] indices, int num_indices) {
         mRoot=new Node(_NUM_BYTES_PER_FEATURE,this.nextNodeId());
         mRoot.leaf(false);
         this.build(mRoot, features, indices, num_indices);
         return;
     }
     
-    void build(Node node, FeaturePointStack features, int[] indices, int num_indices) {
+    void build(Node node, FreakFeaturePointStack features, int[] indices, int num_indices) {
         // Check if there are enough features to cluster.
         // If not, then assign all features to the same cluster.
         if(num_indices <= math_utils.max2(mBinarykMedoids.k(),this.mMinFeaturePerNode)) {

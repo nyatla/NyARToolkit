@@ -39,7 +39,7 @@ public class BinaryFeatureMatcher {
 	 * 
 	 * @return Number of matches
 	 */
-	public int match(BinaryFeatureStore features1, BinaryFeatureStore features2)
+	public int match(FreakFeaturePointStack features1, FreakFeaturePointStack features2)
 	{
 
 		this.mMatches = new matchStack(features1.getLength());
@@ -55,7 +55,7 @@ public class BinaryFeatureMatcher {
 			int best_index = Integer.MAX_VALUE;
 
 			// Search for 1st and 2nd best match
-			FeaturePoint p1 = features1.getItem(i);
+			FreakFeaturePoint p1 = features1.getItem(i);
 			for (int j = 0; j < features2.getLength(); j++) {
 				// Both points should be a MINIMA or MAXIMA
 				if (p1.maxima != features2.getItem(j).maxima) {
@@ -101,7 +101,7 @@ public class BinaryFeatureMatcher {
 	 * 
 	 * @return Number of matches
 	 */
-	int match(BinaryFeatureStore features1, BinaryFeatureStore features2, BinaryHierarchicalClustering index2) {
+	int match(FreakFeaturePointStack features1, FreakFeaturePointStack features2, BinaryHierarchicalClustering index2) {
 		this.mMatches = new matchStack(features1.getLength());
 
 		if (features1.getLength() == 0 || features2.getLength() == 0) {
@@ -117,7 +117,7 @@ public class BinaryFeatureMatcher {
 			// Perform an indexed nearest neighbor lookup
 			index2.query(features1.getItem(i).descripter);
 
-			FeaturePoint p1 = features1.getItem(i);
+			FreakFeaturePoint p1 = features1.getItem(i);
 
 			// Search for 1st and 2nd best match
 			int[] v = index2.reverseIndex();
@@ -174,7 +174,7 @@ public class BinaryFeatureMatcher {
 	 * 
 	 * @return Number of matches
 	 */
-	int match(BinaryFeatureStore features1, BinaryFeatureStore features2, NyARDoubleMatrix33 H,double tr) {
+	int match(FreakFeaturePointStack features1, FreakFeaturePointStack features2, NyARDoubleMatrix33 H,double tr) {
 
 		this.mMatches = new matchStack(features1.getLength());
 
@@ -197,7 +197,7 @@ public class BinaryFeatureMatcher {
 			int best_index = Integer.MAX_VALUE;// std::numeric_limits<int>::max();
 
 
-			FeaturePoint p1 = features1.getItem(i);
+			FreakFeaturePoint p1 = features1.getItem(i);
 
 			// Map p1 to p2 space through H
 			NyARDoublePoint2d tmp = new NyARDoublePoint2d();
@@ -205,7 +205,7 @@ public class BinaryFeatureMatcher {
 
 			// Search for 1st and 2nd best match
 			for (int j = 0; j < features2.getLength(); j++) {
-				FeaturePoint p2 = features2.getItem(j);
+				FreakFeaturePoint p2 = features2.getItem(j);
 
 				// Both points should be a MINIMA or MAXIMA
 				if (p1.maxima != p2.maxima) {

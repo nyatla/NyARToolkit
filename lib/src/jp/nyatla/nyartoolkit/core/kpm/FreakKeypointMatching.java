@@ -6,9 +6,8 @@ import java.util.ArrayList;
 import jp.nyatla.nyartoolkit.base.attoolkit5.ARParamLT;
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.kpm.vision.facade.VisualDatabaseFacade;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.BinaryFeatureStore;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FeaturePoint;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FeaturePointStack;
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePoint;
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.matchStack;
 import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftFreakFsetFile;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
@@ -70,7 +69,7 @@ public class FreakKeypointMatching {
 
 //			featureVector.sf = FreakFeature.createArray(this.inDataSet.num);
 
-			FeaturePointStack points = this.freakMatcher.getQueryFeaturePoints();
+			FreakFeaturePointStack points = this.freakMatcher.getQueryFeaturePoints();
 //			byte[] descriptors = this.freakMatcher.getQueryDescriptors();
 
 			for (i = 0; i < this.inDataSet.num; i++) {
@@ -128,11 +127,11 @@ public class FreakKeypointMatching {
 			for (int m = 0; m < i_refDataSet.page_info[k].image_info.length; m++) {
 				int image_no = i_refDataSet.page_info[k].image_info[m].image_no;
 				List<NyARDoublePoint3d> p3dl = new ArrayList<NyARDoublePoint3d>();
-				List<FeaturePoint> fpl = new ArrayList<FeaturePoint>();
+				List<FreakFeaturePoint> fpl = new ArrayList<FreakFeaturePoint>();
 				for (int i = 0; i < i_refDataSet.ref_point.length; i++) {
 					if (i_refDataSet.ref_point[i].refImageNo == image_no) {
 						NyARNftFreakFsetFile.RefDataSet t = i_refDataSet.ref_point[i];
-						FeaturePoint fp = new FeaturePoint();
+						FreakFeaturePoint fp = new FreakFeaturePoint();
 						fp.x = t.coord2D.x;
 						fp.y = t.coord2D.y;
 						fp.angle = t.featureVec.angle;
@@ -151,9 +150,9 @@ public class FreakKeypointMatching {
 
 					}
 				}
-				BinaryFeatureStore fps = new BinaryFeatureStore(fpl.size());
-				for (FeaturePoint i : fpl) {
-					FeaturePoint p = fps.prePush();
+				FreakFeaturePointStack fps = new FreakFeaturePointStack(fpl.size());
+				for (FreakFeaturePoint i : fpl) {
+					FreakFeaturePoint p = fps.prePush();
 					p.set(i);
 				}
 				Point3dVector p3v = new Point3dVector(p3dl.size());

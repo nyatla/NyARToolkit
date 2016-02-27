@@ -125,7 +125,7 @@ public class FREAKExtractor {
 	/**
 	 * Extract a 96 byte descriptor.
 	 */
-	void extract(BinaryFeatureStore store, GaussianScaleSpacePyramid pyramid,
+	void extract(FreakFeaturePointStack store, GaussianScaleSpacePyramid pyramid,
 			DogFeaturePointStack points)
 	{
 //		store.setLength(points.length);//これはいらない。リセットする。
@@ -139,7 +139,7 @@ public class FREAKExtractor {
 	/**
 	 * Extract the descriptors for all the feature points.
 	 */
-	void ExtractFREAK84(BinaryFeatureStore store,
+	void ExtractFREAK84(FreakFeaturePointStack store,
 			GaussianScaleSpacePyramid pyramid, DogFeaturePointStack points,
 			double[] points_ring0, double[] points_ring1, double[] points_ring2,
 			double[] points_ring3, double[] points_ring4, double[] points_ring5,
@@ -150,7 +150,7 @@ public class FREAKExtractor {
 		// ASSERT(store.size() == points.size(),
 		// "Feature store has not been allocated");
 		for (int i = 0; i < points.getLength(); i++) {
-			FeaturePoint sp=store.prePush();
+			FreakFeaturePoint sp=store.prePush();
 			DogFeaturePoint pt=points.getItem(i);
 			if (!ExtractFREAK84(sp.descripter,
 					pyramid,pt, points_ring0, points_ring1,
