@@ -63,7 +63,7 @@ public class BinaryFeatureMatcher {
 				}
 
 				// ASSERT(FEATURE_SIZE == 96, "Only 96 bytes supported now");
-				int d = Hamming.HammingDistance(VisualDatabase.NUM_BYTES_PER_FEATURE,features1.getItem(i).descripter, 0, features2.getItem(j).descripter,0);
+				int d = features1.getItem(i).descripter.hammingDistance(features2.getItem(j).descripter);
 				if (d < first_best) {
 					second_best = first_best;
 					first_best = d;
@@ -130,7 +130,7 @@ public class BinaryFeatureMatcher {
 				// ASSERT(FEATURE_SIZE == 96, "Only 96 bytes supported now");
 				// int d =
 				// Hamming.HammingDistance(features1.features(),f1,features2.features(),features2.feature(v[j]));
-				int d = Hamming.HammingDistance(VisualDatabase.NUM_BYTES_PER_FEATURE, features1.getItem(i).descripter,0,features2.getItem(v[j]).descripter,0);
+				int d = features1.getItem(i).descripter.hammingDistance(features2.getItem(v[j]).descripter);
 				if (d < first_best) {
 					second_best = first_best;
 					first_best = d;
@@ -219,7 +219,7 @@ public class BinaryFeatureMatcher {
 
 				// ASSERT(FEATURE_SIZE == 96, "Only 96 bytes supported now");
 				// int d = HammingDistance768((unsigned int*)f1,(unsigned int*)features2->feature(j));
-				int d = Hamming.HammingDistance768(features1.getItem(i).descripter,0, features2.getItem(j).descripter,0);
+				int d = features1.getItem(i).descripter.hammingDistance(features2.getItem(j).descripter);
 				if (d < first_best) {
 					second_best = first_best;
 					first_best = d;

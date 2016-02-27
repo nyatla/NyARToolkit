@@ -1,22 +1,23 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
 
+import jp.nyatla.nyartoolkit.core.kpm.LongDescripter;
 import jp.nyatla.nyartoolkit.core.kpm.vision.BinaryHierarchicalClustering;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.Hamming;
 
 
 public class Node {
-	public Node(int i_NUM_BYTES_PER_FEATURE,int id)
+	public Node(int id)
 	{
 		this.mId=id;
 		this.mLeaf=true;
-		this.mCenter=new byte[i_NUM_BYTES_PER_FEATURE];
+		this.mCenter=new LongDescripter(96*8);
 	}
 	public Node(int id,FreakFeaturePoint i_feature)
 	{
 		this.mId=id;
 		this.mLeaf=true;
-		this.mCenter=new byte[i_feature.descripter.length];
-		System.arraycopy(i_feature.descripter,0,this.mCenter,0,i_feature.descripter.length);
+		this.mCenter=new LongDescripter(96*8);
+		this.mCenter.setValue(i_feature.descripter);
 	}
     /**
      * Set/Get leaf flag
@@ -34,21 +35,8 @@ public class Node {
 		return this.mId;
 	}
 	
-//    typedef int node_id_t;
-//    typedef Node<NUM_BYTES_PER_FEATURE> node_t;
-//    typedef PriorityQueueItem<NUM_BYTES_PER_FEATURE> queue_item_t;
-//    typedef std::priority_queue<queue_item_t> queue_t;
-//    
 
-//    
-
-
-//    /**
-//     * @return Get children
-//     */
-//    inline std::vector<node_t*>& children() { return mChildren; }
-//    inline const std::vector<node_t*>& children() const { return mChildren; }
-//    
+  
     /**
      * @return Get the reverse index
      */
@@ -73,7 +61,7 @@ public class Node {
      */
     public void nearest(NodePtrStack nodes,
     		BinaryHierarchicalClustering.Queue queue,
-                        byte[] feature)
+                        LongDescripter feature)
     {
         int mind = Integer.MAX_VALUE;
         int mini = -1;
@@ -82,7 +70,7 @@ public class Node {
 //        std::vector<queue_item_t> v(mChildren.size());
         PriorityQueueItem[] v =new PriorityQueueItem[this.mChildren.length];
         for(int i = 0; i < v.length; i++) {
-            int d = Hamming.HammingDistance(this.mCenter.length,this.mChildren[i].mCenter,0, feature,0);
+            int d = this.mChildren[i].mCenter.hammingDistance(feature);
             v[i] = new PriorityQueueItem(this.mChildren[i], d);
             if(d < mind) {
                 mind = d;
@@ -112,10 +100,10 @@ public class Node {
 //private:
 //    
 //    // ID of the node
-    private int mId;
+    final private int mId;
 //    
 //    // Feature center
-    private byte mCenter[];
+    final private LongDescripter mCenter;
 //    
 //    // True if a leaf node
     private boolean mLeaf;

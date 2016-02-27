@@ -1,12 +1,11 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.math;
 
-import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 
 public class Hamming {
     /**
      * Hamming distance for 32 bits.
      */
-    private static int HammingDistance32(int a,int b)
+    public static int HammingDistance32(int a,int b)
     {
         final int m1  = 0x55555555; // 0101...
         final int m2  = 0x33333333; // 00110011..
@@ -22,7 +21,7 @@ public class Hamming {
         
         return (x * h01) >> 24;         // returns left 8 bits of x + (x<<8) + (x<<16) + (x<<24) + ...
     }
-    private static int HammingDistance64(long a,long b)
+    public static int HammingDistance64(long a,long b)
     {
     	long bits=a^b;
         bits = (bits & 0x5555555555555555L) + (bits >> 1 & 0x5555555555555555L);
@@ -49,32 +48,9 @@ public class Hamming {
     }
     
     
-    /**
-     * Hamming distance for 768 bits (96 bytes)
-     */
-    public static int HammingDistance768(byte[] a,int a_ptr, byte[] b,int b_ptr)
-    {
-    	int dist=0;
-    	for(int i=0;i<24;i++){
-    		dist+=HammingDistance32(a,i*4+a_ptr,b,i*4+b_ptr);
-    	}
-    	return dist;
-    }
-    public static int HammingDistance768_2(byte[] a,int a_ptr, byte[] b,int b_ptr)
-    {
-    	int dist=0;
-    	for(int i=0;i<12;i++){
-    		dist+=HammingDistance64(a,i*8+a_ptr,b,i*8+b_ptr);
-    	}
-    	return dist;
-    }
+
+
+
     
-    public static int HammingDistance(int i_length,byte[] a,int a_ptr, byte[] b,int b_ptr) {
-        switch(i_length) {
-            case 96:
-//            	int v1=HammingDistance768(a,a_ptr,b,b_ptr);
-            	return HammingDistance768_2(a,a_ptr,b,b_ptr);
-        };
-        throw new NyARRuntimeException();
-    }
+
 }

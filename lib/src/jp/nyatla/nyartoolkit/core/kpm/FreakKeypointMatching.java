@@ -140,7 +140,7 @@ public class FreakKeypointMatching {
 						if(i_refDataSet.ref_point[i].featureVec.v.length!=96){
 							throw new NyARRuntimeException();
 						}
-						System.arraycopy(i_refDataSet.ref_point[i].featureVec.v, 0, fp.descripter, 0,96);
+						fp.descripter.setValueLe(i_refDataSet.ref_point[i].featureVec.v);
 						fpl.add(fp);
 						//
 						NyARDoublePoint3d point3d = new NyARDoublePoint3d();

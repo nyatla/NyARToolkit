@@ -137,7 +137,7 @@ public class BinarykMedoids {
 			// Find the closest center
 			for (int j = 0; j < num_centers; j++) {
 				// Compute the distance from the center
-				int dist = Hamming.HammingDistance(96,features.getItem(indices[i]).descripter,0, features.getItem(indices[centers[j]]).descripter,0);
+				int dist = features.getItem(indices[i]).descripter.hammingDistance(features.getItem(indices[centers[j]]).descripter);
 				if (dist < best_dist) {
 					assignment[i] = centers[j];
 					best_dist = dist;

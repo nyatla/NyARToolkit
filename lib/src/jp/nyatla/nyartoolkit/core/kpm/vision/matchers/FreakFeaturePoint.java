@@ -1,21 +1,23 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
 
+import jp.nyatla.nyartoolkit.core.kpm.LongDescripter;
+
 /**
  * Represents a feature point in the visual database.
  */
 public class FreakFeaturePoint
 {
-    final public byte[] descripter=new byte[96];
+    final public LongDescripter descripter=new LongDescripter(96*8);
 
-	public FreakFeaturePoint(double i_x,double i_y,double i_angle,double i_scale,boolean i_maxima,byte[] i_descripter)
-    {
-    	this.x=i_x;
-    	this.y=i_y;
-    	this.angle=i_angle;
-    	this.scale=i_scale;
-    	this.maxima=i_maxima;
-		System.arraycopy(i_descripter, 0, this.descripter, 0, this.descripter.length);
-    }   	
+//	public FreakFeaturePoint(double i_x,double i_y,double i_angle,double i_scale,boolean i_maxima,byte[] i_descripter)
+//    {
+//    	this.x=i_x;
+//    	this.y=i_y;
+//    	this.angle=i_angle;
+//    	this.scale=i_scale;
+//    	this.maxima=i_maxima;
+//    	this.descripter.setValueBe(i_descripter);
+//    }   	
 
     public FreakFeaturePoint() {
 	}
@@ -26,7 +28,7 @@ public class FreakFeaturePoint
 		this.angle=i_src.angle;
 		this.scale=i_src.scale;
 		this.maxima=i_src.maxima;
-		System.arraycopy(i_src.descripter, 0, this.descripter, 0, this.descripter.length);
+    	this.descripter.setValue(i_src.descripter);
 	}
 	/** 
      * The (x,y) location of the center of the feature.

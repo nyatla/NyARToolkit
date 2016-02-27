@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.TreeMap;
 
+import jp.nyatla.nyartoolkit.core.kpm.LongDescripter;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.BinarykMedoids;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.Node;
@@ -21,7 +22,7 @@ public class BinaryHierarchicalClustering {
 
 	}
 
-	final private int _NUM_BYTES_PER_FEATURE;
+	final public int _NUM_BYTES_PER_FEATURE;
     // Clustering algorithm
 	final private BinarykMedoids mBinarykMedoids;
     // Maximum nodes to pop off the priority queue
@@ -57,7 +58,7 @@ public class BinaryHierarchicalClustering {
 	/**
 	 * Query the tree for a reverse index.
 	 */
-	public int query(byte[] feature) {
+	public int query(LongDescripter feature) {
 		mNumNodesPopped = 0;
 		mQueryReverseIndex = new int[0];
 
@@ -172,7 +173,7 @@ public class BinaryHierarchicalClustering {
 	/**
 	 * Recursive function query function.
 	 */
-	private void query(Queue queue, Node node, byte[] feature)
+	private void query(Queue queue, Node node, LongDescripter feature)
 	{
 
 		if (node.leaf()) {
@@ -207,7 +208,7 @@ public class BinaryHierarchicalClustering {
         this.build(features, indices,indices.length);
     }
     void build(FreakFeaturePointStack features, int[] indices, int num_indices) {
-        mRoot=new Node(_NUM_BYTES_PER_FEATURE,this.nextNodeId());
+        mRoot=new Node(this.nextNodeId());
         mRoot.leaf(false);
         this.build(mRoot, features, indices, num_indices);
         return;

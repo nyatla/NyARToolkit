@@ -1,6 +1,7 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
 
 import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
+import jp.nyatla.nyartoolkit.core.kpm.LongDescripter;
 import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DogFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DogFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.GaussianScaleSpacePyramid;
@@ -175,7 +176,7 @@ public class FREAKExtractor {
 	 * Extract a descriptor from the pyramid for a single point.
 	 */
 	boolean ExtractFREAK84(
-			byte[] i_desc,// unsigned char desc[84],
+			LongDescripter i_desc,// unsigned char desc[84],
 			GaussianScaleSpacePyramid pyramid, DogFeaturePoint point,
 			double[] points_ring0, double[] points_ring1, double[] points_ring2,
 			double[] points_ring3, double[] points_ring4, double[] points_ring5,
@@ -439,23 +440,29 @@ public class FREAKExtractor {
 		}
 		return;
 	}
-	void CompareFREAK84(long[] desc ,double[] samples) {
+	void CompareFREAK84(LongDescripter desc ,double[] samples) {
 		int pos = 0;//84bitだと・・・
-		for (int i = 0; i < 84; i++) {
-			desc[i] = 0;
-		}// ZeroVector(desc, 84);
+//		for (int i = 0; i < 84; i++) {
+//			desc[i] = 0;
+//		}// ZeroVector(desc, 84);
 		//[63..0]
-
+		long tmp=0;
+		int idx=0;
 		for (int i = 0; i < 37; i++) {
 			for (int j = i + 1; j < 37; j++) {
 				if(samples[i] < samples[j]){
-					desc[(pos / 64)] |= (1L << (pos % 64));
-				}else{
-					desc[(pos / 64)] |= (0L << (pos % 64));
+					tmp |= (1L << (pos));
 				}
 				pos++;
+				if(pos==64){
+					pos=0;
+					desc._desc[idx]=tmp;
+					tmp=0;
+					idx++;
+				}
 			}
 		}
+		desc._desc[idx]=tmp;
 		return;
 	}
 
