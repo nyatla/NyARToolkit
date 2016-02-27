@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 
 import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftFsetFile;
 import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftIsetFile;
-import jp.nyatla.nyartoolkit.core.marker.nft.NyARSurfaceFeatures;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.param.distfactor.INyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;

@@ -1,8 +1,8 @@
 package jp.nyatla.nyartoolkit.core.surfacetracking.feature;
 
 import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftFsetFile;
-import jp.nyatla.nyartoolkit.core.marker.nft.NyARSurfaceFeatures;
 import jp.nyatla.nyartoolkit.core.param.distfactor.INyARCameraDistortionFactor;
+import jp.nyatla.nyartoolkit.core.surfacetracking.NyARSurfaceFeatures;
 import jp.nyatla.nyartoolkit.core.surfacetracking.NyARSurfaceTransMatrixSet;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;

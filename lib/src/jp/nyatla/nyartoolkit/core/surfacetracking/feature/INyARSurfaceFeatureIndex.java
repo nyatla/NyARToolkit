@@ -1,8 +1,8 @@
 package jp.nyatla.nyartoolkit.core.surfacetracking.feature;
 
 import jp.nyatla.nyartoolkit.core.surfacetracking.NyARFeatureCoordPtrList;
+import jp.nyatla.nyartoolkit.core.surfacetracking.NyARSurfaceFeatures;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
-import jp.nyatla.nyartoolkit.core.marker.nft.NyARSurfaceFeatures;
 /**
  * 特徴候補から、現在選択済みの候補o_posを参照して最適な候補を返します。
  * @author nyatla
