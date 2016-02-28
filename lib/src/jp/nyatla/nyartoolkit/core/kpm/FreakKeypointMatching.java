@@ -1,19 +1,17 @@
 package jp.nyatla.nyartoolkit.core.kpm;
 
-import java.util.List;
-import java.util.ArrayList;
+
 
 import jp.nyatla.nyartoolkit.base.attoolkit5.ARParamLT;
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.kpm.vision.facade.VisualDatabaseFacade;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePointStack;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakMatchPointSet;
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakMatchPointSetStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.matchStack;
 import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftFreakFsetFile;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
-import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
+
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 public class FreakKeypointMatching {
@@ -99,7 +97,7 @@ public class FreakKeypointMatching {
 					continue;
 
 				ret = kpmMatching.kpmUtilGetPose_binary(this.cparamLT, matches,
-						this.freakMatcher.get3DFeaturePoints(matched_image_id),
+						this.freakMatcher.getKeyFeaturePoints(matched_image_id).store(),
 						this.freakMatcher.getQueryFeaturePoints(), this.result[pageLoop]);
 				if (ret == 0) {
 					this.result[pageLoop].camPoseF = 0;
@@ -127,12 +125,18 @@ public class FreakKeypointMatching {
 		for (int k = 0; k < i_refDataSet.page_info.length; k++) {
 			for (int m = 0; m < i_refDataSet.page_info[k].image_info.length; m++) {
 				int image_no = i_refDataSet.page_info[k].image_info[m].image_no;
-				List<NyARDoublePoint3d> p3dl = new ArrayList<NyARDoublePoint3d>();
-				List<FreakFeaturePoint> fpl = new ArrayList<FreakFeaturePoint>();
+				int l=0;
+				//格納予定のデータ数を数える
+				for (int i = 0; i < i_refDataSet.ref_point.length; i++) {
+					if (i_refDataSet.ref_point[i].refImageNo == image_no) {
+						l++;
+					}
+				}
+				FreakMatchPointSetStack fps = new FreakMatchPointSetStack(l);				
 				for (int i = 0; i < i_refDataSet.ref_point.length; i++) {
 					if (i_refDataSet.ref_point[i].refImageNo == image_no) {
 						NyARNftFreakFsetFile.RefDataSet t = i_refDataSet.ref_point[i];
-						FreakMatchPointSet fp = new FreakMatchPointSet();
+						FreakMatchPointSetStack.Item fp = fps.prePush();
 						fp.x = t.coord2D.x;
 						fp.y = t.coord2D.y;
 						fp.angle = t.featureVec.angle;
@@ -142,28 +146,12 @@ public class FreakKeypointMatching {
 							throw new NyARRuntimeException();
 						}
 						fp.descripter.setValueLe(i_refDataSet.ref_point[i].featureVec.v);
-						fpl.add(fp);
-						//
-						NyARDoublePoint3d point3d = new NyARDoublePoint3d();
-						point3d.x = t.coord3D.x;
-						point3d.y = t.coord3D.y;
-						p3dl.add(point3d);
-
+						fp.pos3d.x=t.coord3D.x;
+						fp.pos3d.y=t.coord3D.y;
+						fp.pos3d.z=0;
 					}
 				}
-				FreakFeaturePointStack fps = new FreakFeaturePointStack(fpl.size());
-				for (FreakFeaturePoint i : fpl) {
-					FreakFeaturePoint p = fps.prePush();
-					p.set(i);
-				}
-				Point3dVector p3v = new Point3dVector(p3dl.size());
-				for (NyARDoublePoint3d i : p3dl) {
-					NyARDoublePoint3d p = p3v.prePush();
-					p.x = i.x;
-					p.y = i.y;
-					p.z = i.z;
-				}
-				this.freakMatcher.addFreakFeaturesAndDescriptors(fps, p3v,
+				this.freakMatcher.addFreakFeaturesAndDescriptors(fps,
 						i_refDataSet.page_info[k].image_info[m].w, i_refDataSet.page_info[k].image_info[m].h, db_id++);
 			}
 		}

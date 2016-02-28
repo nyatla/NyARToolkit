@@ -73,7 +73,7 @@ public class BinarykMedoids {
 	/**
 	 * Assign featurs to a cluster center
 	 */
-	public void assign(FreakFeaturePointStack features, int[] indices, int num_indices) {
+	public void assign(FreakMatchPointSetStack features, int[] indices, int num_indices) {
 		// ASSERT(mK == mCenters.size(),
 		// "k should match the number of cluster centers");
 		// ASSERT(num_features > 0, "Number of features must be positive");
@@ -98,7 +98,7 @@ public class BinarykMedoids {
 			ArrayShuffle(this.mRandIndices, (int) mRandIndices.length, mK);
 
 			// Assign features to the centers
-			int dist = assign(mHypAssignment, features, indices, num_indices, this.mRandIndices, mK);
+			int dist = this.assign(mHypAssignment, features, indices, num_indices, this.mRandIndices, mK);
 
 			if (dist < best_dist) {
 				// Move the best assignment
@@ -119,7 +119,7 @@ public class BinarykMedoids {
 
 	}
 
-	public int assign(int[] assignment, FreakFeaturePointStack features, int[] indices, int num_indices, int[] centers,
+	public int assign(int[] assignment, FreakMatchPointSetStack features, int[] indices, int num_indices, int[] centers,
 			int num_centers) {
 		// ASSERT(assignment.size() == num_indices,
 		// "Assignment size is incorrect");

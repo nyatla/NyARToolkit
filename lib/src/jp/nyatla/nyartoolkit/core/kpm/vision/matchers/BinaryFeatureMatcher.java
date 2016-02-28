@@ -9,7 +9,7 @@ import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
 public class BinaryFeatureMatcher {
 
-	public BinaryFeatureMatcher(int i_size) {
+	public BinaryFeatureMatcher() {
 		this.mThreshold = 0.7f;
 
 	}
@@ -39,7 +39,7 @@ public class BinaryFeatureMatcher {
 	 * 
 	 * @return Number of matches
 	 */
-	public int match(FreakFeaturePointStack features1, FreakFeaturePointStack features2)
+	public int match(FreakFeaturePointStack features1, FreakMatchPointSetStack features2)
 	{
 
 		this.mMatches = new matchStack(features1.getLength());
@@ -101,7 +101,7 @@ public class BinaryFeatureMatcher {
 	 * 
 	 * @return Number of matches
 	 */
-	int match(FreakFeaturePointStack features1, FreakFeaturePointStack features2, BinaryHierarchicalClustering index2) {
+	public int match(FreakFeaturePointStack features1, FreakMatchPointSetStack features2, BinaryHierarchicalClustering index2) {
 		this.mMatches = new matchStack(features1.getLength());
 
 		if (features1.getLength() == 0 || features2.getLength() == 0) {
@@ -174,7 +174,7 @@ public class BinaryFeatureMatcher {
 	 * 
 	 * @return Number of matches
 	 */
-	int match(FreakFeaturePointStack features1, FreakFeaturePointStack features2, NyARDoubleMatrix33 H,double tr) {
+	int match(FreakFeaturePointStack features1, FreakMatchPointSetStack features2, NyARDoubleMatrix33 H,double tr) {
 
 		this.mMatches = new matchStack(features1.getLength());
 

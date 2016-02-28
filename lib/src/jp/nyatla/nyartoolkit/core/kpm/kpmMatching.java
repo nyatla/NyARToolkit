@@ -3,6 +3,7 @@ package jp.nyatla.nyartoolkit.core.kpm;
 import jp.nyatla.nyartoolkit.base.attoolkit5.ARParamLT;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePointStack;
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakMatchPointSetStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.matchStack;
 import jp.nyatla.nyartoolkit.core.icp.NyARIcpPlane;
 import jp.nyatla.nyartoolkit.core.icp.NyARIcpPoint;
@@ -14,7 +15,7 @@ import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 public class kpmMatching {
 	private double error;
 
-	public static int kpmUtilGetPose_binary(ARParamLT cparamLT, matchStack matchData, Point3dVector refDataSet,
+	public static int kpmUtilGetPose_binary(ARParamLT cparamLT, matchStack matchData, FreakMatchPointSetStack refDataSet,
 			FreakFeaturePointStack inputDataSet, KpmResult kpmResult) {
 		// ICPHandleT *icpHandle;
 		// ICPDataT icpData;
@@ -33,8 +34,8 @@ public class kpmMatching {
 			sCoord[i].x = inputDataSet.getItem(matchData.getItem(i).ins).x;
 			sCoord[i].y = inputDataSet.getItem(matchData.getItem(i).ins).y;
 
-			wCoord[i].x = refDataSet.getItem(matchData.getItem(i).ref).x;
-			wCoord[i].y = refDataSet.getItem(matchData.getItem(i).ref).y;
+			wCoord[i].x = refDataSet.getItem(matchData.getItem(i).ref).pos3d.x;
+			wCoord[i].y = refDataSet.getItem(matchData.getItem(i).ref).pos3d.y;
 			wCoord[i].z = 0.0;
 		}
 

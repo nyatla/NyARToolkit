@@ -15,6 +15,7 @@ import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
+import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 
 public class VisualDatabase<STORE extends FreakFeaturePointStack>
@@ -29,10 +30,9 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 
 	private static double kHoughBinDelta = 1;
 
-	private static int kBytesPerFeature = 96;
 
 	private static boolean kUseFeatureIndex = true;
-	public final static int NUM_BYTES_PER_FEATURE = 96;
+
 
 	/** Pyramid builder */
 	final private BinomialPyramid32f mPyramid;
@@ -61,7 +61,7 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 	/**
 	 * Find feature points in an image.
 	 */
-	static void FindFeatures(Keyframe keyframe, GaussianScaleSpacePyramid pyramid,
+	static void FindFeatures(FreakFeaturePointStack keyframe, GaussianScaleSpacePyramid pyramid,
 			DoGScaleInvariantDetector detector, FREAKExtractor extractor) {
 		// ASSERT(pyramid, "Pyramid is NULL");
 		// ASSERT(detector, "Detector is NULL");
@@ -93,12 +93,12 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 		// Extract features
 		//
 
-		extractor.extract(keyframe.store(), pyramid, detector.features());
+		extractor.extract(keyframe, pyramid, detector.features());
 	}
     /**
      * @return Query store
      */
-    public Keyframe queryKeyframe(){ return mQueryKeyframe; }
+    public FreakFeaturePointStack queryKeyframe(){ return mQueryKeyframe; }
 
 	public boolean query(INyARGrayscaleRaster image) {
 		// Allocate pyramid
@@ -119,22 +119,20 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 		}
 
 		// Find the features on the image
-		this.mQueryKeyframe = new Keyframe(
-			(int) pyramid.images()[0].getWidth(),(int) pyramid.images()[0].getHeight(),
-			new FreakFeaturePointStack());// .reset(new keyframe_t());
+		this.mQueryKeyframe = new FreakFeaturePointStack();// .reset(new keyframe_t());
 		FindFeatures(this.mQueryKeyframe, pyramid, this.mDetector,
 				this.mFeatureExtractor);
 		// LOG_INFO("Found %d features in query",
 		// mQueryKeyframe->store().size());
 
-		return this.query(mQueryKeyframe);
+		return this.query(mQueryKeyframe,pyramid.images()[0].getSize());
 	}
 
 	/**
 	 * Vote for a similarity transformation.
 	 */
 	int FindHoughSimilarity(HoughSimilarityVoting hough, FreakFeaturePointStack p1,
-			FreakFeaturePointStack p2, matchStack matches, int insWidth,
+			FreakMatchPointSetStack p2, matchStack matches, int insWidth,
 			int insHeigth, int refWidth, int refHeight) {
 		double[] query = new double[4 * matches.getLength()];
 		double[] ref = new double[4 * matches.getLength()];
@@ -174,12 +172,12 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 
 	final static int SIZEDEF_matchStack = 9999;
 
-	boolean query(Keyframe query_keyframe) {
+	boolean query(FreakFeaturePointStack query_keyframe,NyARIntSize i_size) {
 		// mMatchedInliers.clear();
 		this. mMatchedId = -1;
 		int last_inliers=0;
 
-		FreakFeaturePointStack query_points = query_keyframe.store();
+		FreakFeaturePointStack query_points = query_keyframe;
 		// Loop over all the images in the database
 		// typename keyframe_map_t::const_iterator it = mKeyframeMap.begin();
 		// for(; it != mKeyframeMap.end(); it++) {
@@ -188,18 +186,17 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 			int first = i.getKey();
 			// TIMED("Find Matches (1)") {
 			if (mUseFeatureIndex) {
-				if (mMatcher.match(query_keyframe.store(), second.store(),
-						second.index()) < this.mMinNumInliers) {
+				if (mMatcher.match(query_keyframe, second.store(),second.index()) < this.mMinNumInliers) {
 					continue;
 				}
 			} else {
-				if (mMatcher.match(query_keyframe.store(), second.store()) < mMinNumInliers) {
+				if (mMatcher.match(query_keyframe, second.store()) < mMinNumInliers) {
 					continue;
 				}
 			}
 			// }
 
-			FreakFeaturePointStack ref_points = second.store();
+			FreakMatchPointSetStack ref_points = second.store();
 			// std::cout<<"ref_points-"<<ref_points.size()<<std::endl;
 			// std::cout<<"query_points-"<<query_points.size()<<std::endl;
 
@@ -211,7 +208,7 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 			// TIMED("Hough Voting (1)") {
 			max_hough_index = FindHoughSimilarity(mHoughSimilarityVoting,
 					query_points, ref_points, mMatcher.matches(),
-					query_keyframe.width(), query_keyframe.height(),
+					i_size.w, i_size.h,
 					second.width(), second.height());
 			if (max_hough_index < 0) {
 				continue;
@@ -256,7 +253,7 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 			//
 
 			// TIMED("Find Matches (2)") {
-			if (mMatcher.match(query_keyframe.store(), second.store(), H, 10) < mMinNumInliers) {
+			if (mMatcher.match(query_keyframe, second.store(), H, 10) < mMinNumInliers) {
 				continue;
 			}
 			// }
@@ -268,7 +265,7 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 			// TIMED("Hough Voting (2)") {
 			max_hough_index = FindHoughSimilarity(mHoughSimilarityVoting,
 					query_points, ref_points, mMatcher.matches(),
-					query_keyframe.width(), query_keyframe.height(),
+					i_size.w,i_size.h,
 					second.width(), second.height());
 			if (max_hough_index < 0) {
 				continue;
@@ -324,7 +321,7 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 	 * Find the inliers given a homography and a set of correspondences.
 	 */
 	void FindInliers(matchStack inliers, NyARDoubleMatrix33 H, FreakFeaturePointStack p1,
-			FreakFeaturePointStack p2, matchStack matches, double threshold) {
+			FreakMatchPointSetStack p2, matchStack matches, double threshold) {
 		double threshold2 = math_utils.sqr(threshold);
 		// reserve(matches.size());
 		for (int i = 0; i < matches.getLength(); i++) {
@@ -349,7 +346,7 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 	 * Get only the matches that are consistent based on the hough votes.
 	 */
 	void FindHoughMatches(matchStack out_matches, HoughSimilarityVoting hough,
-			FreakFeaturePointStack p1, FreakFeaturePointStack p2, matchStack in_matches,
+			FreakFeaturePointStack p1, FreakMatchPointSetStack p2, matchStack in_matches,
 			int binIndex, double binDelta) {
 
 		HoughSimilarityVoting.Bins bin = hough.getBinsFromIndex(binIndex);
@@ -382,7 +379,7 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 	 * Estimate the homography between a set of correspondences.
 	 */
 	boolean EstimateHomography(HomographyMat H, FreakFeaturePointStack p1,
-			FreakFeaturePointStack p2, matchStack matches, double threshold,
+			FreakMatchPointSetStack p2, matchStack matches, double threshold,
 			RobustHomography estimator, int refWidth, int refHeight) {
 
 		NyARDoublePoint2d[] srcPoints = NyARDoublePoint2d.createArray(matches.getLength());
@@ -489,7 +486,7 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 	// id_t mMatchedId;
 	double[] mMatchedGeometry = new double[9];
 	//
-	Keyframe mQueryKeyframe;
+	FreakFeaturePointStack mQueryKeyframe;
 	//
 	// // Map of keyframe
 	final private KeyframeMap mKeyframeMap=new KeyframeMap();
@@ -500,7 +497,7 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 	final FREAKExtractor mFeatureExtractor;
 	//
 	// // Feature matcher
-	final BinaryFeatureMatcher mMatcher=new BinaryFeatureMatcher(NUM_BYTES_PER_FEATURE);
+	final BinaryFeatureMatcher mMatcher=new BinaryFeatureMatcher();
 
 	// Similarity voter
 	HoughSimilarityVoting mHoughSimilarityVoting=new HoughSimilarityVoting();
@@ -519,6 +516,11 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 		}
         
         mKeyframeMap.put(image_id,keyframe);
+	}
+
+	public Keyframe getKeyFeatureFrame(int image_id)
+	{
+		return this.mKeyframeMap.get(image_id);
 	}
 
 
