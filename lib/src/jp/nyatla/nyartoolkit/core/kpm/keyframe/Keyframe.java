@@ -9,7 +9,7 @@ public class Keyframe {
 		this.mWidth = width;
 		this.mHeight = height;
 		this.mStore = i_binaryFeatureStore;
-		this.mIndex = new BinaryHierarchicalClustering(128,8,8,16);
+		this.mIndex = new BinaryHierarchicalClustering(i_binaryFeatureStore.getLength(),128,8,8,16);
 	}
     public void buildIndex()
     {

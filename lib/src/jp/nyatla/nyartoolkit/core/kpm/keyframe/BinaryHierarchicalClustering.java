@@ -27,11 +27,11 @@ public class BinaryHierarchicalClustering {
 	// Minimum number of feature at a node
 	final private int mMinFeaturePerNode;
 
-	public BinaryHierarchicalClustering(int i_NumHypotheses, int i_NumCenters, int i_MaxNodesToPop,
+	public BinaryHierarchicalClustering(int i_feature_num,int i_NumHypotheses, int i_NumCenters, int i_MaxNodesToPop,
 			int i_MinFeaturesPerNode) {
 		this.mMaxNodesToPop = i_MaxNodesToPop;
 		this.mMinFeaturePerNode = i_MinFeaturesPerNode;
-		this.mBinarykMedoids = new BinarykMedoids(new NyARLCGsRandomizer(1234), 8, i_NumHypotheses);
+		this.mBinarykMedoids = new BinarykMedoids(i_feature_num,new NyARLCGsRandomizer(1234), 8, i_NumHypotheses);
 	}
 
 	/**
@@ -155,7 +155,7 @@ public class BinaryHierarchicalClustering {
 			// Get a list of features for each cluster center
 			int[] assignment = mBinarykMedoids.assignment();
 			// ASSERT(assignment.size() == num_indices, "Assignment size wrong");
-			for (int i = 0; i < assignment.length; i++) {
+			for (int i = 0; i < num_indices; i++) {
 				// ASSERT(assignment[i] != -1, "Assignment is invalid");
 				// ASSERT(assignment[i] < num_indices, "Assignment out of range");
 				// ASSERT(indices[assignment[i]] < num_features, "Assignment out of range");

@@ -17,14 +17,18 @@ public class BinarykMedoids {
 
 	/** Assignment of each feature to a cluster center */
 	private int[] mAssignment;
+	private int[] mHypAssignment;
+	final private int[] _rand_index;
 	
-	public BinarykMedoids(NyARLCGsRandomizer i_rand, int i_k, int i_num_of_hypotheses) {
+	public BinarykMedoids(int i_feature_num,NyARLCGsRandomizer i_rand, int i_k, int i_num_of_hypotheses)
+	{
 		this.mK = i_k;
 		this.mCenters = new int[i_k];
 		this.mNumHypotheses = i_num_of_hypotheses;
 		this._tandom = i_rand;
-
-
+		this.mAssignment=new int[i_feature_num];
+		this.mHypAssignment=new int[i_feature_num];
+		this._rand_index=new int[i_feature_num];
 	}
 
 	public int k() {
@@ -64,48 +68,46 @@ public class BinarykMedoids {
 	/**
 	 * Assign featurs to a cluster center
 	 */
-	public void assign(FreakFeaturePoint[] features, int[] indices, int num_indices) {
+	public void assign(FreakFeaturePoint[] features, int[] indices, int num_indices)
+	{
+		int[] rand_indics = this._rand_index;
+		int[] assignment=this.mAssignment;
+		int[] hyp_assignment=this.mHypAssignment;
 
 
-		mAssignment = new int[num_indices];
-		int[] mHypAssignment = new int[num_indices];
-		int[] mRandIndices = new int[num_indices];
-
-
-		SequentialVector(mRandIndices, mRandIndices.length, 0);
+		SequentialVector(rand_indics, num_indices, 0);
 
 		int best_dist = Integer.MAX_VALUE;
 
-		for (int i = 0; i < mNumHypotheses; i++) {
+		for (int i = 0; i < this.mNumHypotheses; i++) {
 			// Shuffle the first "k" indices
-			ArrayShuffle(mRandIndices, (int) mRandIndices.length, mK);
+			ArrayShuffle(rand_indics, num_indices, this.mK);
 
 			// Assign features to the centers
-			int dist = assign(mHypAssignment, features, indices, num_indices, mRandIndices, mK);
+			int dist = assign(hyp_assignment, features, indices, num_indices, rand_indics, this.mK);
 
 			if (dist < best_dist) {
 				// Move the best assignment
 				// mAssignment.swap(mHypAssignment);
-				int[] tmp = mAssignment;
-				mAssignment = mHypAssignment;
-				mHypAssignment = tmp;
+				int[] tmp = assignment;
+				assignment = hyp_assignment;
+				hyp_assignment = tmp;
 
 				// CopyVector(&mCenters[0], &mRandIndices[0], mK);
-				for (int i2 = 0; i2 < mK; i2++) {
-					this.mCenters[i2] = mRandIndices[i2];
+				for (int i2 = 0; i2 < this.mK; i2++) {
+					this.mCenters[i2] = rand_indics[i2];
 				}
 				best_dist = dist;
 			}
 		}
+		this.mAssignment=assignment;
+		this.mHypAssignment=hyp_assignment;
 		return;
 	}
 
-	private static int assign(int[] assignment, FreakFeaturePoint[] features, int[] indices, int num_indices, int[] centers,int num_centers) {
-
-
-
+	private static int assign(int[] assignment, FreakFeaturePoint[] features, int[] indices, int num_indices, int[] centers,int num_centers)
+	{
 		int sum_dist = 0;
-
 		for (int i = 0; i < num_indices; i++) {
 			int best_dist = Integer.MAX_VALUE;
 			// Find the closest center
