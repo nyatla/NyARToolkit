@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.core.kpm.vision;
+package jp.nyatla.nyartoolkit.core.kpm.keyframe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,6 @@ import java.util.PriorityQueue;
 import java.util.TreeMap;
 
 import jp.nyatla.nyartoolkit.core.kpm.LongDescripter768;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.BinarykMedoids;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakMatchPointSetStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.Node;

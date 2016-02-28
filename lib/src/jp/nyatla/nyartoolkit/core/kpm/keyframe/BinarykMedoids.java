@@ -1,11 +1,23 @@
-package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
+package jp.nyatla.nyartoolkit.core.kpm.keyframe;
 
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePoint;
 import jp.nyatla.nyartoolkit.core.math.NyARLCGsRandomizer;
 
 public class BinarykMedoids {
 
 	final private NyARLCGsRandomizer _tandom;
+	// Number of cluster centers
+	final private int mK;
 
+	// Number of hypotheses to evaulate
+	final private int mNumHypotheses;
+
+	// Index of each cluster center
+	final private int[] mCenters;
+
+	/** Assignment of each feature to a cluster center */
+	private int[] mAssignment;
+	
 	public BinarykMedoids(NyARLCGsRandomizer i_rand, int i_k, int i_num_of_hypotheses) {
 		this.mK = i_k;
 		this.mCenters = new int[i_k];
@@ -15,28 +27,8 @@ public class BinarykMedoids {
 
 	}
 
-	//
-	//
-	// /**
-	// * Set/Get number of clusters
-	// */
-	// inline void setk(int k) {
-	// mK = k;
-	// mCenters.resize(k);
-	// }
 	public int k() {
 		return mK;
-	}
-
-	// /**
-	// * Set/Get number of hypotheses
-	// */
-	// public void setNumHypotheses(int n)
-	// {
-	// this.mNumHypotheses = n;
-	// }
-	public int numHypotheses() {
-		return this.mNumHypotheses;
 	}
 
 	/**
@@ -73,31 +65,23 @@ public class BinarykMedoids {
 	 * Assign featurs to a cluster center
 	 */
 	public void assign(FreakFeaturePoint[] features, int[] indices, int num_indices) {
-		// ASSERT(mK == mCenters.size(),
-		// "k should match the number of cluster centers");
-		// ASSERT(num_features > 0, "Number of features must be positive");
-		// ASSERT(num_indices <= num_features, "More indices than features");
-		// ASSERT(num_indices >= mK, "Not enough features");
+
 
 		mAssignment = new int[num_indices];
-		mHypAssignment = new int[num_indices];
-		mRandIndices = new int[num_indices];
-		for (int i = 0; i < num_indices; i++) {
-			mAssignment[i] = -1;
-			mHypAssignment[i] = -1;
-			mRandIndices[i] = -1;
-		}
+		int[] mHypAssignment = new int[num_indices];
+		int[] mRandIndices = new int[num_indices];
 
-		SequentialVector(this.mRandIndices, this.mRandIndices.length, 0);
+
+		SequentialVector(mRandIndices, mRandIndices.length, 0);
 
 		int best_dist = Integer.MAX_VALUE;
 
 		for (int i = 0; i < mNumHypotheses; i++) {
 			// Shuffle the first "k" indices
-			ArrayShuffle(this.mRandIndices, (int) mRandIndices.length, mK);
+			ArrayShuffle(mRandIndices, (int) mRandIndices.length, mK);
 
 			// Assign features to the centers
-			int dist = assign(mHypAssignment, features, indices, num_indices, this.mRandIndices, mK);
+			int dist = assign(mHypAssignment, features, indices, num_indices, mRandIndices, mK);
 
 			if (dist < best_dist) {
 				// Move the best assignment
@@ -108,18 +92,15 @@ public class BinarykMedoids {
 
 				// CopyVector(&mCenters[0], &mRandIndices[0], mK);
 				for (int i2 = 0; i2 < mK; i2++) {
-					this.mCenters[i2] = this.mRandIndices[i2];
+					this.mCenters[i2] = mRandIndices[i2];
 				}
 				best_dist = dist;
 			}
 		}
-		// ASSERT(mK == mCenters.size(),
-		// "k should match the number of cluster centers");
-
+		return;
 	}
 
-	public static int assign(int[] assignment, FreakFeaturePoint[] features, int[] indices, int num_indices, int[] centers,
-			int num_centers) {
+	private static int assign(int[] assignment, FreakFeaturePoint[] features, int[] indices, int num_indices, int[] centers,int num_centers) {
 
 
 
@@ -150,25 +131,5 @@ public class BinarykMedoids {
 		return this.mAssignment;
 	}
 
-	// /**
-	// * @return Centers
-	// */
-	// inline const std::vector<int>& centers() const { return mCenters; }
-
-	// Number of cluster centers
-	final private int mK;
-
-	// Number of hypotheses to evaulate
-	final private int mNumHypotheses;
-
-	// Index of each cluster center
-	final private int[] mCenters;
-
-	// Assignment of each feature to a cluster center
-	int[] mAssignment;
-	int[] mHypAssignment;
-
-	// Vector to store random indices
-	int[] mRandIndices;
 
 }

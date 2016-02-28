@@ -1,6 +1,5 @@
-package jp.nyatla.nyartoolkit.core.kpm.vision;
+package jp.nyatla.nyartoolkit.core.kpm.keyframe;
 
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakMatchPointSetStack;
 
 public class Keyframe {

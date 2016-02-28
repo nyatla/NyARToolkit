@@ -101,13 +101,9 @@ public class DoGPyramid {
 		double[] p0 = (double[]) d.getBuffer();
 		double[] p1 = (double[]) im1.getBuffer();
 		double[] p2 = (double[]) im2.getBuffer();
-		for (int i = 0; i < im1.getHeight(); i++) {
-			int p0_ptr = d.get(i);
-			int p1_ptr = im1.get(i);
-			int p2_ptr = im2.get(i);
-			for (int j = 0; j < im1.getWidth(); j++) {
-				p0[j + p0_ptr] = p1[j + p1_ptr] - p2[j + p2_ptr];
-			}
+		for (int i = im1.getWidth()*im1.getHeight()-1; i>=0 ; i--) {
+			p0[i] = p1[i] - p2[i];
 		}
+		return;
 	}
 }

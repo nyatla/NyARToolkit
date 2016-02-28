@@ -3,10 +3,10 @@ package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
 import java.util.Map;
 
 import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DoGScaleInvariantDetector;
+import jp.nyatla.nyartoolkit.core.kpm.keyframe.Keyframe;
+import jp.nyatla.nyartoolkit.core.kpm.keyframe.KeyframeMap;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.BinomialPyramid32f;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.GaussianScaleSpacePyramid;
-import jp.nyatla.nyartoolkit.core.kpm.vision.Keyframe;
-import jp.nyatla.nyartoolkit.core.kpm.vision.KeyframeMap;
 import jp.nyatla.nyartoolkit.core.kpm.vision.homography_estimation.RobustHomography;
 import jp.nyatla.nyartoolkit.core.kpm.vision.match.indexing;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.geometry;

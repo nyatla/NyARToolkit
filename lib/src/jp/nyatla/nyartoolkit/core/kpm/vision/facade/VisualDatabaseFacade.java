@@ -1,7 +1,7 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.facade;
 
 
-import jp.nyatla.nyartoolkit.core.kpm.vision.Keyframe;
+import jp.nyatla.nyartoolkit.core.kpm.keyframe.Keyframe;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakMatchPointSetStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.VisualDatabase;
