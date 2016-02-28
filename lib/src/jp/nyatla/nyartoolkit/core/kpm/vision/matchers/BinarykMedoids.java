@@ -7,9 +7,9 @@ public class BinarykMedoids {
 	final int NUM_BYTES_PER_FEATURE;
 	final private NyARLCGsRandomizer _tandom;
 
-	public BinarykMedoids(int _NUM_BYTES_PER_FEATURE,NyARLCGsRandomizer i_rand,int i_k,int i_num_of_hypotheses) {
+	public BinarykMedoids(int _NUM_BYTES_PER_FEATURE, NyARLCGsRandomizer i_rand, int i_k, int i_num_of_hypotheses) {
 		this.mK = i_k;
-		this.mCenters=new int[i_k];
+		this.mCenters = new int[i_k];
 		this.mNumHypotheses = i_num_of_hypotheses;
 		this._tandom = i_rand;
 		this.NUM_BYTES_PER_FEATURE = _NUM_BYTES_PER_FEATURE;
@@ -58,13 +58,12 @@ public class BinarykMedoids {
 	 * 
 	 * @param[in/out] v Array of elements
 	 * @param[in] pop_size Population size, or size of the array v
-	 * @param[in] sample_size The first SAMPLE_SIZE samples of v will be
-	 *            shuffled
+	 * @param[in] sample_size The first SAMPLE_SIZE samples of v will be shuffled
 	 * @param[in] seed Seed for random number generator
 	 */
 	void ArrayShuffle(int[] v, int pop_size, int sample_size) {
 		for (int i = 0; i < sample_size; i++) {
-			int k = this._tandom.rand()%pop_size;// int k = FastRandom(seed)%pop_size;
+			int k = this._tandom.rand() % pop_size;// int k = FastRandom(seed)%pop_size;
 			int t = v[i];
 			v[i] = v[k];
 			v[k] = t;
@@ -74,8 +73,7 @@ public class BinarykMedoids {
 	/**
 	 * Assign featurs to a cluster center
 	 */
-	public void assign(FreakFeaturePointStack features, int[] indices,
-			int num_indices) {
+	public void assign(FreakFeaturePointStack features, int[] indices, int num_indices) {
 		// ASSERT(mK == mCenters.size(),
 		// "k should match the number of cluster centers");
 		// ASSERT(num_features > 0, "Number of features must be positive");
@@ -100,8 +98,7 @@ public class BinarykMedoids {
 			ArrayShuffle(this.mRandIndices, (int) mRandIndices.length, mK);
 
 			// Assign features to the centers
-			int dist = assign(mHypAssignment, features, indices,
-					num_indices, this.mRandIndices, mK);
+			int dist = assign(mHypAssignment, features, indices, num_indices, this.mRandIndices, mK);
 
 			if (dist < best_dist) {
 				// Move the best assignment
@@ -122,8 +119,8 @@ public class BinarykMedoids {
 
 	}
 
-	public int assign(int[] assignment, FreakFeaturePointStack features,
-			int[] indices, int num_indices, int[] centers, int num_centers) {
+	public int assign(int[] assignment, FreakFeaturePointStack features, int[] indices, int num_indices, int[] centers,
+			int num_centers) {
 		// ASSERT(assignment.size() == num_indices,
 		// "Assignment size is incorrect");
 		// ASSERT(num_features > 0, "Number of features must be positive");
@@ -137,7 +134,8 @@ public class BinarykMedoids {
 			// Find the closest center
 			for (int j = 0; j < num_centers; j++) {
 				// Compute the distance from the center
-				int dist = features.getItem(indices[i]).descripter.hammingDistance(features.getItem(indices[centers[j]]).descripter);
+				int dist = features.getItem(indices[i]).descripter.hammingDistance(features
+						.getItem(indices[centers[j]]).descripter);
 				if (dist < best_dist) {
 					assignment[i] = centers[j];
 					best_dist = dist;
@@ -150,13 +148,13 @@ public class BinarykMedoids {
 		return sum_dist;
 	}
 
-	 /**
+	/**
 	 * @return Assignment vector
 	 */
-	 public int[] assignment(){
-		 return this.mAssignment;
-	 }
-	
+	public int[] assignment() {
+		return this.mAssignment;
+	}
+
 	// /**
 	// * @return Centers
 	// */
