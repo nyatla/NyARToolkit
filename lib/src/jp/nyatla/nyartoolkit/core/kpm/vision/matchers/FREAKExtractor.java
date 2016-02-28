@@ -85,18 +85,7 @@ public class FREAKExtractor {
 	/**
 	 * Implements the FREAK extractor.
 	 */
-	class receptor {
-		receptor() {
-		}
 
-		receptor(double _x, double _y, double _s) {
-			this.x = _x;
-			this.y = _y;
-			this.s = _s;
-		}
-
-		double x, y, s;
-	};
 
 	private void CopyVector(double[] out, double[] in, int len) {
 		System.arraycopy(in, 0, out, 0, len);
@@ -442,9 +431,6 @@ public class FREAKExtractor {
 	}
 	void CompareFREAK84(LongDescripter768 desc ,double[] samples) {
 		int pos = 0;//84bitだと・・・
-//		for (int i = 0; i < 84; i++) {
-//			desc[i] = 0;
-//		}// ZeroVector(desc, 84);
 		//[63..0]
 		long tmp=0;
 		int idx=0;
@@ -470,34 +456,16 @@ public class FREAKExtractor {
 	/**
 	 * Sample a receptor given (x,y,octave,scale) and a pyramid.
 	 */
-	private double SampleReceptor(GaussianScaleSpacePyramid pyramid, double x,
-			double y, int octave, int scale) {
+	private double SampleReceptor(GaussianScaleSpacePyramid pyramid, double x,double y, int octave, int scale){
 		// Get the correct image from the pyramid
 		KpmImage image = pyramid.get(octave, scale);
-
-		// Downsample the point to the octave
-		NyARDoublePoint2d p = new NyARDoublePoint2d();
-		GaussianScaleSpacePyramid.bilinear_downsample_point(p, x, y, octave);
-		// Sample the receptor
-		return SampleReceptor(image, p.x, p.y);
+        double a = 1.f/(1<<octave);
+        double b = 0.5f*a-0.5f;
+		return interpole.bilinear_interpolation(image, ClipScalar(x*a+b, 0, image.getWidth() - 2), ClipScalar(y*a+b, 0, image.getHeight() - 2));
 	}
 
-	/**
-	 * Sample a receptor given (x,y) given an image.
-	 */
-	private double SampleReceptor(KpmImage image, double x, double y) {
-		return SampleReceptorBilinear(image, x, y);
-	}
 
-	/**
-	 * Sample a receptor given (x,y) given an image using bilinear
-	 * interpolation.
-	 */
-	private double SampleReceptorBilinear(KpmImage image, double x, double y) {
-		x = ClipScalar(x, 0, image.getWidth() - 2);
-		y = ClipScalar(y, 0, image.getHeight() - 2);
-		return interpole.bilinear_interpolation(image, x, y);
-	}
+
 
 	/**
 	 * Clip a scalar to be within a range.

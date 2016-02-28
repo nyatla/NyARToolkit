@@ -1,6 +1,5 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
 
-import jp.nyatla.nyartoolkit.core.kpm.vision.math.Hamming;
 import jp.nyatla.nyartoolkit.core.math.NyARLCGsRandomizer;
 
 public class BinarykMedoids {
@@ -73,7 +72,7 @@ public class BinarykMedoids {
 	/**
 	 * Assign featurs to a cluster center
 	 */
-	public void assign(FreakMatchPointSetStack features, int[] indices, int num_indices) {
+	public void assign(FreakFeaturePoint[] features, int[] indices, int num_indices) {
 		// ASSERT(mK == mCenters.size(),
 		// "k should match the number of cluster centers");
 		// ASSERT(num_features > 0, "Number of features must be positive");
@@ -98,7 +97,7 @@ public class BinarykMedoids {
 			ArrayShuffle(this.mRandIndices, (int) mRandIndices.length, mK);
 
 			// Assign features to the centers
-			int dist = this.assign(mHypAssignment, features, indices, num_indices, this.mRandIndices, mK);
+			int dist = assign(mHypAssignment, features, indices, num_indices, this.mRandIndices, mK);
 
 			if (dist < best_dist) {
 				// Move the best assignment
@@ -119,13 +118,10 @@ public class BinarykMedoids {
 
 	}
 
-	public int assign(int[] assignment, FreakMatchPointSetStack features, int[] indices, int num_indices, int[] centers,
+	public static int assign(int[] assignment, FreakFeaturePoint[] features, int[] indices, int num_indices, int[] centers,
 			int num_centers) {
-		// ASSERT(assignment.size() == num_indices,
-		// "Assignment size is incorrect");
-		// ASSERT(num_features > 0, "Number of features must be positive");
-		// ASSERT(num_indices <= num_features, "More indices than features");
-		// ASSERT(num_centers > 0, "There must be at least 1 center");
+
+
 
 		int sum_dist = 0;
 
@@ -134,8 +130,7 @@ public class BinarykMedoids {
 			// Find the closest center
 			for (int j = 0; j < num_centers; j++) {
 				// Compute the distance from the center
-				int dist = features.getItem(indices[i]).descripter.hammingDistance(features
-						.getItem(indices[centers[j]]).descripter);
+				int dist = features[indices[i]].descripter.hammingDistance(features[indices[centers[j]]].descripter);
 				if (dist < best_dist) {
 					assignment[i] = centers[j];
 					best_dist = dist;
