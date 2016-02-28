@@ -1,6 +1,6 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
 
-import jp.nyatla.nyartoolkit.core.kpm.LongDescripter;
+import jp.nyatla.nyartoolkit.core.kpm.LongDescripter768;
 import jp.nyatla.nyartoolkit.core.kpm.vision.BinaryHierarchicalClustering;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.Hamming;
 
@@ -10,13 +10,13 @@ public class Node {
 	{
 		this.mId=id;
 		this.mLeaf=true;
-		this.mCenter=new LongDescripter(96*8);
+		this.mCenter=new LongDescripter768();
 	}
 	public Node(int id,FreakFeaturePoint i_feature)
 	{
 		this.mId=id;
 		this.mLeaf=true;
-		this.mCenter=new LongDescripter(96*8);
+		this.mCenter=new LongDescripter768();
 		this.mCenter.setValue(i_feature.descripter);
 	}
     /**
@@ -61,7 +61,7 @@ public class Node {
      */
     public void nearest(NodePtrStack nodes,
     		BinaryHierarchicalClustering.Queue queue,
-                        LongDescripter feature)
+                        LongDescripter768 feature)
     {
         int mind = Integer.MAX_VALUE;
         int mini = -1;
@@ -103,7 +103,7 @@ public class Node {
     final private int mId;
 //    
 //    // Feature center
-    final private LongDescripter mCenter;
+    final private LongDescripter768 mCenter;
 //    
 //    // True if a leaf node
     private boolean mLeaf;

@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.TreeMap;
 
-import jp.nyatla.nyartoolkit.core.kpm.LongDescripter;
+import jp.nyatla.nyartoolkit.core.kpm.LongDescripter768;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.BinarykMedoids;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.Node;
@@ -58,7 +58,7 @@ public class BinaryHierarchicalClustering {
 	/**
 	 * Query the tree for a reverse index.
 	 */
-	public int query(LongDescripter feature) {
+	public int query(LongDescripter768 feature) {
 		mNumNodesPopped = 0;
 		mQueryReverseIndex = new int[0];
 
@@ -173,7 +173,7 @@ public class BinaryHierarchicalClustering {
 	/**
 	 * Recursive function query function.
 	 */
-	private void query(Queue queue, Node node, LongDescripter feature)
+	private void query(Queue queue, Node node, LongDescripter768 feature)
 	{
 
 		if (node.leaf()) {
