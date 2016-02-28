@@ -4,15 +4,15 @@ import jp.nyatla.nyartoolkit.core.kpm.vision.math.Hamming;
 import jp.nyatla.nyartoolkit.core.math.NyARLCGsRandomizer;
 
 public class BinarykMedoids {
-	final int NUM_BYTES_PER_FEATURE;
+
 	final private NyARLCGsRandomizer _tandom;
 
-	public BinarykMedoids(int _NUM_BYTES_PER_FEATURE, NyARLCGsRandomizer i_rand, int i_k, int i_num_of_hypotheses) {
+	public BinarykMedoids(NyARLCGsRandomizer i_rand, int i_k, int i_num_of_hypotheses) {
 		this.mK = i_k;
 		this.mCenters = new int[i_k];
 		this.mNumHypotheses = i_num_of_hypotheses;
 		this._tandom = i_rand;
-		this.NUM_BYTES_PER_FEATURE = _NUM_BYTES_PER_FEATURE;
+
 
 	}
 

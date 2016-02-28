@@ -22,7 +22,6 @@ public class BinaryHierarchicalClustering {
 
 	}
 
-	final public int _NUM_BYTES_PER_FEATURE;
     // Clustering algorithm
 	final private BinarykMedoids mBinarykMedoids;
     // Maximum nodes to pop off the priority queue
@@ -30,14 +29,13 @@ public class BinaryHierarchicalClustering {
     // Minimum number of feature at a node
     private final int mMinFeaturePerNode;
     
-	public BinaryHierarchicalClustering(int NUM_BYTES_PER_FEATURE,int i_NumHypotheses,int i_NumCenters,int i_MaxNodesToPop,int i_MinFeaturesPerNode) {
-		this._NUM_BYTES_PER_FEATURE = NUM_BYTES_PER_FEATURE;
+	public BinaryHierarchicalClustering(int i_NumHypotheses,int i_NumCenters,int i_MaxNodesToPop,int i_MinFeaturesPerNode) {
 		
 //        mIndex.setNumHypotheses(128);
 //        mIndex.setNumCenters(8);
         this.mMaxNodesToPop=i_MaxNodesToPop;
         this.mMinFeaturePerNode=i_MinFeaturesPerNode;
-        this.mBinarykMedoids=new BinarykMedoids(NUM_BYTES_PER_FEATURE,new NyARLCGsRandomizer(1234),8,i_NumHypotheses);
+        this.mBinarykMedoids=new BinarykMedoids(new NyARLCGsRandomizer(1234),8,i_NumHypotheses);
 	}
 
 	// typedef Node<NUM_BYTES_PER_FEATURE> node_t;

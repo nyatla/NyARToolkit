@@ -120,7 +120,7 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 
 		// Find the features on the image
 		this.mQueryKeyframe = new Keyframe(
-			96,(int) pyramid.images()[0].getWidth(),(int) pyramid.images()[0].getHeight(),
+			(int) pyramid.images()[0].getWidth(),(int) pyramid.images()[0].getHeight(),
 			new FreakFeaturePointStack());// .reset(new keyframe_t());
 		FindFeatures(this.mQueryKeyframe, pyramid, this.mDetector,
 				this.mFeatureExtractor);

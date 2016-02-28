@@ -14,13 +14,12 @@ public class Keyframe {
 	// this.mIndex=new BinaryHierarchicalClustering(this.NUM_BYTES_PER_FEATURE);
 	// }
 
-	public Keyframe(int i_NUM_BYTES_PER_FEATURE, int width, int height,
+	public Keyframe(int width, int height,
 			FreakFeaturePointStack i_binaryFeatureStore) {
-		this.NUM_BYTES_PER_FEATURE = i_NUM_BYTES_PER_FEATURE;
 		this.mWidth = width;
 		this.mHeight = height;
 		this.mStore = i_binaryFeatureStore;
-		this.mIndex = new BinaryHierarchicalClustering(i_NUM_BYTES_PER_FEATURE,128,8,8,16);
+		this.mIndex = new BinaryHierarchicalClustering(128,8,8,16);
 	}
     public void buildIndex()
     {
@@ -30,7 +29,6 @@ public class Keyframe {
 //        mIndex.setMinFeaturesPerNode(16);
         mIndex.build(this.mStore);
     }
-	final int NUM_BYTES_PER_FEATURE;
 
 	/**
 	 * Get/Set image width.

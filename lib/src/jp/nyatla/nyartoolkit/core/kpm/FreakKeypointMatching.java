@@ -8,6 +8,7 @@ import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.kpm.vision.facade.VisualDatabaseFacade;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePointStack;
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakMatchPointSet;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.matchStack;
 import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftFreakFsetFile;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
@@ -131,7 +132,7 @@ public class FreakKeypointMatching {
 				for (int i = 0; i < i_refDataSet.ref_point.length; i++) {
 					if (i_refDataSet.ref_point[i].refImageNo == image_no) {
 						NyARNftFreakFsetFile.RefDataSet t = i_refDataSet.ref_point[i];
-						FreakFeaturePoint fp = new FreakFeaturePoint();
+						FreakMatchPointSet fp = new FreakMatchPointSet();
 						fp.x = t.coord2D.x;
 						fp.y = t.coord2D.y;
 						fp.angle = t.featureVec.angle;

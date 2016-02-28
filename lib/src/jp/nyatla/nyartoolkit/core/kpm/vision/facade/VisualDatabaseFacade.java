@@ -29,7 +29,6 @@ public class VisualDatabaseFacade
                                                               int image_id){
 
         Keyframe keyframe=new Keyframe(
-        	96,
         	width,height,
         	featurePoints);
 
