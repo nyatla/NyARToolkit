@@ -2,6 +2,7 @@ package jp.nyatla.nyartoolkit.core.kpm.vision.homography_estimation;
 
 
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.HomographyMat;
+import jp.nyatla.nyartoolkit.core.kpm.vision.math.Homography4PointsInhomogenousSolver;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.liner_algebr;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.liner_solver;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
@@ -71,43 +72,44 @@ public class homography_solver {
 	/**
 	 * Add a point to the homography constraint matrix.
 	 */
-	static void AddHomographyPointContraint(double A[], int A_ptr, NyARDoublePoint2d x, NyARDoublePoint2d xp) {
-		A[A_ptr + 0] = -x.x;//[0];
-		A[A_ptr + 1] = -x.y;//[1];
-		A[A_ptr + 2] = -1;
-		// ZeroVector3(A+3);
-		A[A_ptr + 3] = 0;
-		A[A_ptr + 4] = 0;
-		A[A_ptr + 5] = 0;
+	static void AddHomographyPointContraint(double A[][], int A_ptr, NyARDoublePoint2d x, NyARDoublePoint2d xp) {
 
-		A[A_ptr + 6] = xp.x * x.x;//xp[0] * x[0];
-		A[A_ptr + 7] = xp.x * x.y;//xp[0] * x[1];
-		A[A_ptr + 8] = xp.x;//xp[0];
+		A[A_ptr][0] = -x.x;//[0];
+		A[A_ptr][1] = -x.y;//[1];
+		A[A_ptr][2] = -1;
+		// ZeroVector3(A+3);
+		A[A_ptr][3] = 0;
+		A[A_ptr][4] = 0;
+		A[A_ptr][5] = 0;
+
+		A[A_ptr][6] = xp.x * x.x;//xp[0] * x[0];
+		A[A_ptr][7] = xp.x * x.y;//xp[0] * x[1];
+		A[A_ptr][8] = xp.x;//xp[0];
 
 		// ZeroVector3(A+9);
-		A[A_ptr + 9] = 0;
-		A[A_ptr + 10] = 0;
-		A[A_ptr + 11] = 0;
+		A[A_ptr+1][0] = 0;
+		A[A_ptr+1][1] = 0;
+		A[A_ptr+1][2] = 0;
 
-		A[A_ptr + 12] = -x.x;//-x[0];
-		A[A_ptr + 13] = -x.y;//-x[1];
-		A[A_ptr + 14] = -1;
-		A[A_ptr + 15] = xp.y * x.x;//xp[1] * x[0];
-		A[A_ptr + 16] = xp.y * x.y;//xp[1] * x[1];
-		A[A_ptr + 17] = xp.y;//xp[1];
+		A[A_ptr+1][3] = -x.x;//-x[0];
+		A[A_ptr+1][4] = -x.y;//-x[1];
+		A[A_ptr+1][5] = -1;
+		A[A_ptr+1][6] = xp.y * x.x;//xp[1] * x[0];
+		A[A_ptr+1][7] = xp.y * x.y;//xp[1] * x[1];
+		A[A_ptr+1][8] = xp.y;//xp[1];
 	}
 
 	/**
 	 * Construct the homography constraint matrix from 4 point correspondences.
 	 */
 	static void Homography4PointsInhomogeneousConstraint(
-			double[] A,// [72],
+			double[][] A,// [8][9],
 			NyARDoublePoint2d x1, NyARDoublePoint2d x2, NyARDoublePoint2d x3, NyARDoublePoint2d x4, NyARDoublePoint2d xp1,
 			NyARDoublePoint2d xp2, NyARDoublePoint2d xp3, NyARDoublePoint2d xp4) {
 		AddHomographyPointContraint(A, 0, x1, xp1);
-		AddHomographyPointContraint(A, 18, x2, xp2);
-		AddHomographyPointContraint(A, 36, x3, xp3);
-		AddHomographyPointContraint(A, 54, x4, xp4);
+		AddHomographyPointContraint(A, 2, x2, xp2);
+		AddHomographyPointContraint(A, 4, x3, xp3);
+		AddHomographyPointContraint(A, 6, x4, xp4);
 	}
 
 	/**
@@ -116,7 +118,7 @@ public class homography_solver {
 	static boolean SolveHomography4PointsInhomogenous(NyARDoubleMatrix33 H, NyARDoublePoint2d x1,
 			NyARDoublePoint2d x2, NyARDoublePoint2d x3, NyARDoublePoint2d x4, NyARDoublePoint2d xp1, NyARDoublePoint2d xp2,
 			NyARDoublePoint2d xp3, NyARDoublePoint2d xp4) {
-		double[] A = new double[72];
+		double[][] A = new double[8][9];
 		Homography4PointsInhomogeneousConstraint(A, x1, x2, x3, x4, xp1, xp2,xp3, xp4);
 		if (!liner_solver.SolveNullVector8x9Destructive(H, A)) {
 			return false;

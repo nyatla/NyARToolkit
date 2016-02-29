@@ -1,6 +1,6 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.math;
 
-import jp.nyatla.nyartoolkit.core.kpm.Utils;
+
 import jp.nyatla.nyartoolkit.core.kpm.vision.match.indexing;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 
@@ -37,17 +37,17 @@ public class liner_solver {
      *
      * dst += src*s
      */
-    static void AccumulateScaledVector9(double[] dst,int i_dst,double[] src,int i_src, double s)
+    static void AccumulateScaledVector9(double[] dst,double[] src,double s)
     {
-        dst[0+i_dst] += src[0+i_src]*s;
-        dst[1+i_dst] += src[1+i_src]*s;
-        dst[2+i_dst] += src[2+i_src]*s;
-        dst[3+i_dst] += src[3+i_src]*s;
-        dst[4+i_dst] += src[4+i_src]*s;
-        dst[5+i_dst] += src[5+i_src]*s;
-        dst[6+i_dst] += src[6+i_src]*s;
-        dst[7+i_dst] += src[7+i_src]*s;
-        dst[8+i_dst] += src[8+i_src]*s;
+        dst[0] += src[0]*s;
+        dst[1] += src[1]*s;
+        dst[2] += src[2]*s;
+        dst[3] += src[3]*s;
+        dst[4] += src[4]*s;
+        dst[5] += src[5]*s;
+        dst[6] += src[6]*s;
+        dst[7] += src[7]*s;
+        dst[8] += src[8]*s;
         return;
     }
     /**
@@ -56,289 +56,270 @@ public class liner_solver {
      * x = x - dot(a,e)*e
      */
 static //    void AccumulateProjection9(T x[9], const T e[9], const T a[9]) {
-    void AccumulateProjection9(double[] x,int xi, double[] e,int ei,double[] a,int ai) {
-	double d = DotProduct9(Utils.arraysubset(a,ai,9),Utils.arraysubset(e,ei,9));
-        x[xi+0] -= d*e[ei+0];
-        x[xi+1] -= d*e[ei+1];
-        x[xi+2] -= d*e[ei+2];
-        x[xi+3] -= d*e[ei+3];
-        x[xi+4] -= d*e[ei+4];
-        x[xi+5] -= d*e[ei+5];
-        x[xi+6] -= d*e[ei+6];
-        x[xi+7] -= d*e[ei+7];
-        x[xi+8] -= d*e[ei+8];
+    void AccumulateProjection9(double[] x,double[] e,double[] a) {
+	double d = DotProduct9(a,e);
+        x[0] -= d*e[0];
+        x[1] -= d*e[1];
+        x[2] -= d*e[2];
+        x[3] -= d*e[3];
+        x[4] -= d*e[4];
+        x[5] -= d*e[5];
+        x[6] -= d*e[6];
+        x[7] -= d*e[7];
+        x[8] -= d*e[8];
     }   
     
     /**
      * Swap the contents of two vectors.
      */
-    static void Swap9(double[] a,int a_ptr, double[] b,int b_ptr) {
+    static void Swap9(double[] a,double[] b) {
     	double tmp;
         for(int i=0;i<9;i++){
-        	tmp = a[i+a_ptr]; a[i+a_ptr] = b[i+b_ptr]; b[i+b_ptr]= tmp;
+        	tmp = a[i]; a[i] = b[i]; b[i]= tmp;
         }
-    }
-    static void ScaleVector9(double[] dst,int i_dst_ptr,double[] src,int src_ptr, double s) {
-        dst[i_dst_ptr+0] = src[src_ptr+0]*s;
-        dst[i_dst_ptr+1] = src[src_ptr+1]*s;
-        dst[i_dst_ptr+2] = src[src_ptr+2]*s;
-        dst[i_dst_ptr+3] = src[src_ptr+3]*s;
-        dst[i_dst_ptr+4] = src[src_ptr+4]*s;
-        dst[i_dst_ptr+5] = src[src_ptr+5]*s;
-        dst[i_dst_ptr+6] = src[src_ptr+6]*s;
-        dst[i_dst_ptr+7] = src[src_ptr+7]*s;
-        dst[i_dst_ptr+8] = src[src_ptr+8]*s;
+    }   
+    private static void ScaleVector9(double[] dst,double[] src, double s) {
+        dst[0] = src[0]*s;
+        dst[1] = src[1]*s;
+        dst[2] = src[2]*s;
+        dst[3] = src[3]*s;
+        dst[4] = src[4]*s;
+        dst[5] = src[5]*s;
+        dst[6] = src[6]*s;
+        dst[7] = src[7]*s;
+        dst[8] = src[8]*s;
     }    
+
     /**
      * \defgroup Project the rows of A onto the current basis set to identity a new orthogonal vector.
      * @{
      */
-static //    boolean OrthogonalizePivot8x9Basis0(T Q[8*9], T A[8*9]) {  
-    boolean OrthogonalizePivot8x9Basis0(double[] Q, double[] A)
+static boolean OrthogonalizePivot8x9Basis0(double[][] Q, double[][] A)
     {
-	double[] ss=new double[8];
-        ss[0] = SumSquares9(Utils.arraysubset(A,0,9));
-        ss[1] = SumSquares9(Utils.arraysubset(A,9,9));
-        ss[2] = SumSquares9(Utils.arraysubset(A,18,9));
-        ss[3] = SumSquares9(Utils.arraysubset(A,27,9));
-        ss[4] = SumSquares9(Utils.arraysubset(A,36,9));
-        ss[5] = SumSquares9(Utils.arraysubset(A,45,9));
-        ss[6] = SumSquares9(Utils.arraysubset(A,54,9));
-        ss[7] = SumSquares9(Utils.arraysubset(A,63,9));
-        
-//        int index = MaxIndex8(ss);
-        int index = MaxIndex(ss,8);
-        if(ss[index] == 0) {
-            return false;
-        }
-        
-        Swap9(A,0,A,index*9);
-        ScaleVector9(Q, 0,A,0, (double)(1.f/Math.sqrt(ss[index])));
-        indexing.CopyVector(Q,9, A,9, 63);
+		int index=0;
+		double ss=0;
+		for(int i=7;i>=0;i--){
+			double t=SumSquares9(A[i]);
+			if(t>ss){
+				ss=t;
+				index=i;
+			}
+		}
+		if(ss==0){
+			return false;
+		}
+        Swap9(A[0],A[index]);
+        ScaleVector9(Q[0],A[0], (double)(1.f/Math.sqrt(ss)));
+        indexing.CopyVector(Q[1],0, A[1],0,9);
+        indexing.CopyVector(Q[2],0, A[2],0,9);
+        indexing.CopyVector(Q[3],0, A[3],0,9);
+        indexing.CopyVector(Q[4],0, A[4],0,9);
+        indexing.CopyVector(Q[5],0, A[5],0,9);
+        indexing.CopyVector(Q[6],0, A[6],0,9);
+        indexing.CopyVector(Q[7],0, A[7],0,9);
         
         return true;
     }
 //    boolean OrthogonalizePivot8x9Basis1(T Q[8*9], T A[8*9]) {
-    static boolean OrthogonalizePivot8x9Basis1(double[] Q, double[] A) {
-        AccumulateProjection9(Q,9,  Q,0, A,9);
-        AccumulateProjection9(Q,18, Q,0, A,18);
-        AccumulateProjection9(Q,27, Q,0, A,27);
-        AccumulateProjection9(Q,36, Q,0, A,36);
-        AccumulateProjection9(Q,45, Q,0, A,45);
-        AccumulateProjection9(Q,54, Q,0, A,54);
-        AccumulateProjection9(Q,63, Q,0, A,63);
-
-        double[] ss=new double[7];
-        ss[0] = SumSquares9(Utils.arraysubset(Q,9,9));
-        ss[1] = SumSquares9(Utils.arraysubset(Q,18,9));
-        ss[2] = SumSquares9(Utils.arraysubset(Q,27,9));
-        ss[3] = SumSquares9(Utils.arraysubset(Q,36,9));
-        ss[4] = SumSquares9(Utils.arraysubset(Q,45,9));
-        ss[5] = SumSquares9(Utils.arraysubset(Q,54,9));
-        ss[6] = SumSquares9(Utils.arraysubset(Q,63,9));
-        
-//        int index = MaxIndex7(ss);
-        int index = MaxIndex(ss,7);
-        if(ss[index] == 0) {
-            return false;
-        }
-        
-        Swap9(Q,9, Q,9+index*9);
-        Swap9(A,9, A,9+index*9);
-        ScaleVector9(Q,9, Q,9, (double) (1.f/Math.sqrt(ss[index])));
+    static boolean OrthogonalizePivot8x9Basis1(double[][] Q, double[][] A)
+    {
+		int index=0;
+		double ss=0;
+		for(int i=6;i>=0;i--){
+	        AccumulateProjection9(Q[i+1], Q[0], A[i+1]);
+			double t=SumSquares9(Q[i+1]);
+			if(t>ss){
+				ss=t;
+				index=i;
+			}
+		}
+		if(ss==0){
+			return false;
+		}
+        Swap9(Q[1], Q[1+index]);
+        Swap9(A[1], A[1+index]);
+        ScaleVector9(Q[1], Q[1], (double) (1.f/Math.sqrt(ss)));
         
         return true;
     }
 //    boolean OrthogonalizePivot8x9Basis2(T Q[8*9], T A[8*9]) {  
-    static boolean OrthogonalizePivot8x9Basis2(double[] Q, double[] A) {
-        AccumulateProjection9(Q,18, Q,9, A,18);
-        AccumulateProjection9(Q,27, Q,9, A,27);
-        AccumulateProjection9(Q,36, Q,9, A,36);
-        AccumulateProjection9(Q,45, Q,9, A,45);
-        AccumulateProjection9(Q,54, Q,9, A,54);
-        AccumulateProjection9(Q,63, Q,9, A,63);
+    static boolean OrthogonalizePivot8x9Basis2(double[][] Q, double[][] A)
+    {
+		int index=0;
+		double ss=0;
+		for(int i=5;i>=0;i--){
+	        AccumulateProjection9(Q[i+2], Q[1], A[i+2]);
+			double t=SumSquares9(Q[i+2]);
+			if(t>ss){
+				ss=t;
+				index=i;
+			}
+		}
+		if(ss==0){
+			return false;
+		}        
         
-        double[] ss=new double[6];
-        ss[0] = SumSquares9(Utils.arraysubset(Q,18,9));
-        ss[1] = SumSquares9(Utils.arraysubset(Q,27,9));
-        ss[2] = SumSquares9(Utils.arraysubset(Q,36,9));
-        ss[3] = SumSquares9(Utils.arraysubset(Q,45,9));
-        ss[4] = SumSquares9(Utils.arraysubset(Q,54,9));
-        ss[5] = SumSquares9(Utils.arraysubset(Q,63,9));
-        
-        int index = MaxIndex(ss,6);
-        if(ss[index] == 0) {
-            return false;
-        }
-        Swap9(Q,18, Q,18+index*9);
-        Swap9(A,18, A,18+index*9);
-        ScaleVector9(Q,18, Q,18, (double)(1.f/Math.sqrt(ss[index])));
+
+        Swap9(Q[2], Q[2+index]);
+        Swap9(A[2], A[2+index]);
+        ScaleVector9(Q[2], Q[2], (double)(1.f/Math.sqrt(ss)));
         
         return true;
     }
     
-    static boolean OrthogonalizePivot8x9Basis3(double[] Q,double[] A) {
-        AccumulateProjection9(Q,27, Q,18, A,27);
-        AccumulateProjection9(Q,36, Q,18, A,36);
-        AccumulateProjection9(Q,45, Q,18, A,45);
-        AccumulateProjection9(Q,54, Q,18, A,54);
-        AccumulateProjection9(Q,63, Q,18, A,63);
+    static boolean OrthogonalizePivot8x9Basis3(double[][] Q,double[][] A)
+    {
+		int index=0;
+		double ss=0;
+		for(int i=4;i>=0;i--){
+	        AccumulateProjection9(Q[i+3], Q[2], A[i+3]);
+			double t=SumSquares9(Q[i+3]);
+			if(t>ss){
+				ss=t;
+				index=i;
+			}
+		}
+		if(ss==0){
+			return false;
+		}
+		
         
-        double[] ss=new double[5];
-        ss[0] = SumSquares9(Utils.arraysubset(Q,27,9));
-        ss[1] = SumSquares9(Utils.arraysubset(Q,36,9));
-        ss[2] = SumSquares9(Utils.arraysubset(Q,45,9));
-        ss[3] = SumSquares9(Utils.arraysubset(Q,54,9));
-        ss[4] = SumSquares9(Utils.arraysubset(Q,63,9));
-        
-        int index = MaxIndex(ss,5);
-        if(ss[index] == 0) {
-            return false;
-        }
-        
-        Swap9(Q,27, Q,27+index*9);
-        Swap9(A,27, A,27+index*9);
-        ScaleVector9(Q,27, Q,27,(double)(1.f/Math.sqrt(ss[index])));
+        Swap9(Q[3], Q[3+index]);
+        Swap9(A[3], A[3+index]);
+        ScaleVector9(Q[3], Q[3],(double)(1.f/Math.sqrt(ss)));
         
         return true;
     }
     
-    static boolean OrthogonalizePivot8x9Basis4(double[] Q,double[] A) {
-        AccumulateProjection9(Q,36, Q,27, A,36);
-        AccumulateProjection9(Q,45, Q,27, A,45);
-        AccumulateProjection9(Q,54, Q,27, A,54);
-        AccumulateProjection9(Q,63, Q,27, A,63);
+    static boolean OrthogonalizePivot8x9Basis4(double[][] Q,double[][] A)
+    {
+		int index=0;
+		double ss=0;
+		for(int i=3;i>=0;i--){
+	        AccumulateProjection9(Q[i+4], Q[3], A[i+4]);
+			double t=SumSquares9(Q[i+4]);
+			if(t>ss){
+				ss=t;
+				index=i;
+			}
+		}
+		if(ss==0){
+			return false;
+		}
         
-        double[] ss=new double[4];
-        ss[0] = SumSquares9(Utils.arraysubset(Q,36,9));
-        ss[1] = SumSquares9(Utils.arraysubset(Q,45,9));
-        ss[2] = SumSquares9(Utils.arraysubset(Q,54,9));
-        ss[3] = SumSquares9(Utils.arraysubset(Q,63,9));
-        
-        int index = MaxIndex(ss,4);
-        if(ss[index] == 0){
-            return false;
-        }
-        
-        Swap9(Q,36, Q,36+index*9);
-        Swap9(A,36, A,36+index*9);
-        ScaleVector9(Q,36, Q,36,(double)(1.f/Math.sqrt(ss[index])));
-        
-        return true;
-    }
-    
-    static boolean OrthogonalizePivot8x9Basis5(double[] Q,double[] A) {
-        AccumulateProjection9(Q,45, Q,36, A,45);
-        AccumulateProjection9(Q,54, Q,36, A,54);
-        AccumulateProjection9(Q,63, Q,36, A,63);
-        
-        double[] ss=new double[3];
-        ss[0] = SumSquares9(Utils.arraysubset(Q,45,9));
-        ss[1] = SumSquares9(Utils.arraysubset(Q,54,9));
-        ss[2] = SumSquares9(Utils.arraysubset(Q,63,9));
-        
-        int index = MaxIndex(ss,3);
-        if(ss[index] == 0) {
-            return false;
-        }
-        
-        Swap9(Q,45, Q,45+index*9);
-        Swap9(A,45, A,45+index*9);
-        ScaleVector9(Q,45, Q,45,(double)(1.f/Math.sqrt(ss[index])));
+        Swap9(Q[4],Q[4+index]);
+        Swap9(A[4],A[4+index]);
+        ScaleVector9(Q[4], Q[4],(double)(1.f/Math.sqrt(ss)));
         
         return true;
     }
     
-    static boolean OrthogonalizePivot8x9Basis6(double[] Q,double[] A) {
-        AccumulateProjection9(Q,54, Q,45, A,54);
-        AccumulateProjection9(Q,63, Q,45, A,63);
+    static boolean OrthogonalizePivot8x9Basis5(double[][] Q,double[][] A) {        
+		int index=0;
+		double ss=0;
+		for(int i=2;i>=0;i--){
+	        AccumulateProjection9(Q[i+5], Q[4], A[i+5]);
+			double t=SumSquares9(Q[i+5]);
+			if(t>ss){
+				ss=t;
+				index=i;
+			}
+		}
+		if(ss==0){
+			return false;
+		}        
+
         
-        double[] ss=new double[2];
-        ss[0] = SumSquares9(Utils.arraysubset(Q,54,9));
-        ss[1] = SumSquares9(Utils.arraysubset(Q,63,9));
-        
-        int index = MaxIndex(ss,2);
-        if(ss[index] == 0) {
-            return false;
-        }
-        
-        Swap9(Q,54, Q,54+index*9);
-        Swap9(A,54, A,54+index*9);
-        ScaleVector9(Q,54, Q,54,(double)(1.f/Math.sqrt(ss[index])));
+        Swap9(Q[5], Q[5+index]);
+        Swap9(A[5], A[5+index]);
+        ScaleVector9(Q[5], Q[5],(double)(1.f/Math.sqrt(ss)));
         
         return true;
     }
     
-    static boolean OrthogonalizePivot8x9Basis7(double[] Q,double[] A) {
-        AccumulateProjection9(Q,63, Q,54, A,63);
+    private static boolean OrthogonalizePivot8x9Basis6(double[][] Q,double[][] A) {
         
-        double ss = SumSquares9(Utils.arraysubset(Q,63,9));
+        int index=0;
+        AccumulateProjection9(Q[6], Q[5], A[6]);
+        double ss=SumSquares9(Q[6]);
+        AccumulateProjection9(Q[7], Q[5], A[7]);
+        double s2=SumSquares9(Q[7]);
+        if(ss<s2){
+        	ss=s2;
+        	index=1;
+        }
+        
+        Swap9(Q[6],Q[6+index]);
+        Swap9(A[6],A[6+index]);
+        ScaleVector9(Q[6], Q[6],(double)(1.f/Math.sqrt(ss)));
+        
+        return true;
+    }
+    
+    private static boolean OrthogonalizePivot8x9Basis7(double[][] Q,double[][] A) {
+        AccumulateProjection9(Q[7], Q[6], A[7]);        
+        double ss = SumSquares9(Q[7]);
         if(ss == 0) {
             return false;
         }
-        
-        Swap9(Q,63, Q,63);
-        Swap9(A,63, A,63);
-        ScaleVector9(Q,63, Q,63, (double)(1.f/Math.sqrt(ss)));
-        
+        ScaleVector9(Q[7],Q[7], (double)(1.f/Math.sqrt(ss)));
         return true;
     }
 //    float OrthogonalizeIdentity8x9(float x[9], const T Q[72], int i) {
-    static double OrthogonalizeIdentity8x9(double[] x,int x_ptr,double[] Q, int i) {
-        ScaleVector9(x,x_ptr, Q,0, -Q[i]);
-        x[i+x_ptr] = 1+x[i+x_ptr];
+    static double OrthogonalizeIdentity8x9(double[] x,double[][] Q, int i) {
+        ScaleVector9(x,Q[0], -Q[0][i]);
+        x[i] = 1+x[i];
         
-        AccumulateScaledVector9(x,x_ptr, Q,9,  -Q[9 +i]);
-        AccumulateScaledVector9(x,x_ptr, Q,18, -Q[18+i]);
-        AccumulateScaledVector9(x,x_ptr, Q,27, -Q[27+i]);
-        AccumulateScaledVector9(x,x_ptr, Q,36, -Q[36+i]);
-        AccumulateScaledVector9(x,x_ptr, Q,45, -Q[45+i]);
-        AccumulateScaledVector9(x,x_ptr, Q,54, -Q[54+i]);
-        AccumulateScaledVector9(x,x_ptr, Q,63, -Q[63+i]);
+        AccumulateScaledVector9(x,Q[1], -Q[1][i]);
+        AccumulateScaledVector9(x,Q[2], -Q[2][i]);
+        AccumulateScaledVector9(x,Q[3], -Q[3][i]);
+        AccumulateScaledVector9(x,Q[4], -Q[4][i]);
+        AccumulateScaledVector9(x,Q[5], -Q[5][i]);
+        AccumulateScaledVector9(x,Q[6], -Q[6][i]);
+        AccumulateScaledVector9(x,Q[7], -Q[7][i]);
         
-        double ss = SumSquares9(x,x_ptr);
+        double ss = SumSquares9(x);
         if(ss == 0) {
             return 0;
         }
         
         double w = (double) Math.sqrt(ss);
-        ScaleVector9(x,x_ptr, x,x_ptr, 1.f/w);
+        ScaleVector9(x, x, 1.f/w);
         
         return w;
     }    
     
     
 //    boolean OrthogonalizeIdentity8x9(T x[9], const T Q[72]) {
-    static boolean OrthogonalizeIdentity8x9(NyARDoubleMatrix33 x,double[] Q)
+    static boolean OrthogonalizeIdentity8x9(NyARDoubleMatrix33 x,double[][] Q)
     {
     	double[] w=new double[9];
-    	double[] X=new double[9*9];
+    	double[][] X=new double[9][9];
         
-        w[0] = OrthogonalizeIdentity8x9(X,0,  Q, 0);
-        w[1] = OrthogonalizeIdentity8x9(X,9,  Q, 1);
-        w[2] = OrthogonalizeIdentity8x9(X,18, Q, 2);
-        w[3] = OrthogonalizeIdentity8x9(X,27, Q, 3);
-        w[4] = OrthogonalizeIdentity8x9(X,36, Q, 4);
-        w[5] = OrthogonalizeIdentity8x9(X,45, Q, 5);
-        w[6] = OrthogonalizeIdentity8x9(X,54, Q, 6);
-        w[7] = OrthogonalizeIdentity8x9(X,63, Q, 7);
-        w[8] = OrthogonalizeIdentity8x9(X,72, Q, 8);
+        w[0] = OrthogonalizeIdentity8x9(X[0],Q, 0);
+        w[1] = OrthogonalizeIdentity8x9(X[1],Q, 1);
+        w[2] = OrthogonalizeIdentity8x9(X[2],Q, 2);
+        w[3] = OrthogonalizeIdentity8x9(X[3],Q, 3);
+        w[4] = OrthogonalizeIdentity8x9(X[4],Q, 4);
+        w[5] = OrthogonalizeIdentity8x9(X[5],Q, 5);
+        w[6] = OrthogonalizeIdentity8x9(X[6],Q, 6);
+        w[7] = OrthogonalizeIdentity8x9(X[7],Q, 7);
+        w[8] = OrthogonalizeIdentity8x9(X[8],Q, 8);
         
         int index = MaxIndex(w,9);
         if(w[index] == 0) {
             return false;
         }
-        x.m00=X[index*9+0];
-        x.m01=X[index*9+1];
-        x.m02=X[index*9+2];
-        x.m10=X[index*9+3];
-        x.m11=X[index*9+4];
-        x.m12=X[index*9+5];
-        x.m20=X[index*9+6];
-        x.m21=X[index*9+7];
-        x.m22=X[index*9+8];
-//        indexing.CopyVector(x,0, X,index*9,9);
-        
+        x.m00=X[index][0];
+        x.m01=X[index][1];
+        x.m02=X[index][2];
+        x.m10=X[index][3];
+        x.m11=X[index][4];
+        x.m12=X[index][5];
+        x.m20=X[index][6];
+        x.m21=X[index][7];
+        x.m22=X[index][8];
+
         return true;
     }    
     /**
@@ -346,8 +327,8 @@ static //    boolean OrthogonalizePivot8x9Basis0(T Q[8*9], T A[8*9]) {
      * A is destroyed in the process. This system is solved using QR 
      * decomposition with Gram-Schmidt.
      */
-    public static boolean SolveNullVector8x9Destructive(NyARDoubleMatrix33 x,double[] A) {
-    	double[] Q=new double[72];
+    public static boolean SolveNullVector8x9Destructive(NyARDoubleMatrix33 x,double[][] A) {
+    	double[][] Q=new double[8][9];
         
         if(!OrthogonalizePivot8x9Basis0(Q, A)) return false;
         if(!OrthogonalizePivot8x9Basis1(Q, A)) return false;
