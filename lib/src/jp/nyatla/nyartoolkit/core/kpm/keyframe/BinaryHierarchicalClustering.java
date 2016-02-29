@@ -150,10 +150,9 @@ public class BinaryHierarchicalClustering {
 			Map<Integer, List<Integer>> cluster_map = new TreeMap<Integer, List<Integer>>();
 
 			// Perform clustering
-			mBinarykMedoids.assign(features, indices, num_indices);
-
 			// Get a list of features for each cluster center
-			int[] assignment = mBinarykMedoids.assignment();
+			int[] assignment =this.mBinarykMedoids.assign(features, indices, num_indices);
+
 			// ASSERT(assignment.size() == num_indices, "Assignment size wrong");
 			for (int i = 0; i < num_indices; i++) {
 				// ASSERT(assignment[i] != -1, "Assignment is invalid");

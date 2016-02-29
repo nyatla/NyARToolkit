@@ -16,19 +16,19 @@ public class BinarykMedoids {
 	final private int[] mCenters;
 
 	/** Assignment of each feature to a cluster center */
-	private int[] mAssignment;
-	private int[] mHypAssignment;
+	final private int[] mAssignment;
+	final private int[] mHypAssignment;
 	final private int[] _rand_index;
 	
-	public BinarykMedoids(int i_feature_num,NyARLCGsRandomizer i_rand, int i_k, int i_num_of_hypotheses)
+	public BinarykMedoids(int i_max_feature_num,NyARLCGsRandomizer i_rand, int i_k, int i_num_of_hypotheses)
 	{
 		this.mK = i_k;
 		this.mCenters = new int[i_k];
 		this.mNumHypotheses = i_num_of_hypotheses;
 		this._tandom = i_rand;
-		this.mAssignment=new int[i_feature_num];
-		this.mHypAssignment=new int[i_feature_num];
-		this._rand_index=new int[i_feature_num];
+		this.mAssignment=new int[i_max_feature_num];
+		this.mHypAssignment=new int[i_max_feature_num];
+		this._rand_index=new int[i_max_feature_num];
 	}
 
 	public int k() {
@@ -38,7 +38,7 @@ public class BinarykMedoids {
 	/**
 	 * Create a sequential vector {x0+0, x0+1, x0+2, ...}
 	 */
-	void SequentialVector(int[] x, int n, int x0) {
+	private static void SequentialVector(int[] x, int n, int x0) {
 		if (n < 1) {
 			return;
 		}
@@ -56,7 +56,7 @@ public class BinarykMedoids {
 	 * @param[in] sample_size The first SAMPLE_SIZE samples of v will be shuffled
 	 * @param[in] seed Seed for random number generator
 	 */
-	void ArrayShuffle(int[] v, int pop_size, int sample_size) {
+	private void ArrayShuffle(int[] v, int pop_size, int sample_size) {
 		for (int i = 0; i < sample_size; i++) {
 			int k = this._tandom.rand() % pop_size;// int k = FastRandom(seed)%pop_size;
 			int t = v[i];
@@ -67,24 +67,29 @@ public class BinarykMedoids {
 
 	/**
 	 * Assign featurs to a cluster center
+	 * @param features
+	 * @param indices
+	 * @param i_num_indices
+	 * @return
+	 * num_indicesと同数の値を格納した配列を返します。
 	 */
-	public void assign(FreakFeaturePoint[] features, int[] indices, int num_indices)
+	public int[] assign(FreakFeaturePoint[] features, int[] indices, int i_num_indices)
 	{
 		int[] rand_indics = this._rand_index;
 		int[] assignment=this.mAssignment;
 		int[] hyp_assignment=this.mHypAssignment;
 
 
-		SequentialVector(rand_indics, num_indices, 0);
+		SequentialVector(rand_indics, i_num_indices, 0);
 
 		int best_dist = Integer.MAX_VALUE;
 
 		for (int i = 0; i < this.mNumHypotheses; i++) {
 			// Shuffle the first "k" indices
-			ArrayShuffle(rand_indics, num_indices, this.mK);
+			ArrayShuffle(rand_indics, i_num_indices, this.mK);
 
 			// Assign features to the centers
-			int dist = assign(hyp_assignment, features, indices, num_indices, rand_indics, this.mK);
+			int dist = assign(hyp_assignment, features, indices, i_num_indices, rand_indics, this.mK);
 
 			if (dist < best_dist) {
 				// Move the best assignment
@@ -100,9 +105,7 @@ public class BinarykMedoids {
 				best_dist = dist;
 			}
 		}
-		this.mAssignment=assignment;
-		this.mHypAssignment=hyp_assignment;
-		return;
+		return assignment;
 	}
 
 	private static int assign(int[] assignment, FreakFeaturePoint[] features, int[] indices, int num_indices, int[] centers,int num_centers)
@@ -124,13 +127,6 @@ public class BinarykMedoids {
 		}
 
 		return sum_dist;
-	}
-
-	/**
-	 * @return Assignment vector
-	 */
-	public int[] assignment() {
-		return this.mAssignment;
 	}
 
 
