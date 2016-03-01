@@ -4,6 +4,7 @@ import jp.nyatla.nyartoolkit.core.kpm.Utils;
 import jp.nyatla.nyartoolkit.core.kpm.vision.match.indexing;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.HomographyMat;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.homography;
+import jp.nyatla.nyartoolkit.core.kpm.vision.math.HomographySolver;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.geometry;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.rand;
@@ -92,6 +93,7 @@ public class RobustHomography {
 				mCauchyScale, mMaxNumHypotheses, mMaxTrials, mChunkSize);
 	}
 
+	private HomographySolver _homography_solver=new HomographySolver();
 	/**
 	 * Robustly solve for the homography given a set of correspondences.
 	 */
@@ -163,7 +165,7 @@ public class RobustHomography {
 			 * float[] xp2, float[] xp3, float[] xp4) {
 			 */
 			// Compute the homography
-			if (!homography_solver.SolveHomography4Points(hyp[num_hypotheses], p[tmp_i[hyp_perm + 0]], p[tmp_i[hyp_perm + 1]],
+			if (!this._homography_solver.solveHomography4Points(hyp[num_hypotheses], p[tmp_i[hyp_perm + 0]], p[tmp_i[hyp_perm + 1]],
 					p[tmp_i[hyp_perm + 2]], p[tmp_i[hyp_perm + 3]], q[tmp_i[hyp_perm + 0]], q[tmp_i[hyp_perm + 1]],
 					q[tmp_i[hyp_perm + 2]], q[tmp_i[hyp_perm + 3]])) {
 				continue;
@@ -238,10 +240,6 @@ public class RobustHomography {
 	}
 
 
-
-	double sqr(double x) {
-		return x * x;
-	};
 
 
 

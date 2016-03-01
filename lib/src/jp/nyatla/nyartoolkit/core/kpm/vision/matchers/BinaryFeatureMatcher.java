@@ -2,7 +2,6 @@ package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
 
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.BinaryHierarchicalClustering;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.Hamming;
-import jp.nyatla.nyartoolkit.core.kpm.vision.math.liner_algebr;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
