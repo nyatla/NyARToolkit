@@ -14,14 +14,6 @@ public class math_utils
 
     
     /**
-     * @return nearest rounding of x
-     */
-    final static public double round(double x)
-    {
-    	return Math.floor((x+0.5));
-    }
-    
-    /**
      * Base 2 log
      */
     final static public double log2(double x)

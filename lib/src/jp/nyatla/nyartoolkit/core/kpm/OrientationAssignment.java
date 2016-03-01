@@ -62,44 +62,8 @@ public class OrientationAssignment {
 		}
 	}
 
-	// /**
-	// * Allocate memory.
-	// */
-	// public void alloc(int fine_width,
-	// int fine_height,
-	// int num_octaves,
-	// int num_scales_per_octave,
-	// int num_bins,
-	// double gaussian_expansion_factor,
-	// double support_region_expansion_factor,
-	// int num_smoothing_iterations,
-	// double peak_threshold)
-	// {
-	// this.mNumOctaves = num_octaves;
-	// this.mNumScalesPerOctave = num_scales_per_octave;
-	// this.mNumBins = num_bins;
-	// this.mGaussianExpansionFactor = gaussian_expansion_factor;
-	// this.mSupportRegionExpansionFactor = support_region_expansion_factor;
-	// this.mNumSmoothingIterations = num_smoothing_iterations;
-	// this.mPeakThreshold = peak_threshold;
-	//
-	// this.mHistogram=new double[num_bins];
-	//
-	// // Allocate gradient images
-	// this.mGradients=new GradientsImage[this.mNumOctaves*this.mNumScalesPerOctave];
-	// for(int i = 0; i < num_octaves; i++) {
-	// for(int j = 0; j < num_scales_per_octave; j++) {
-	// // mGradients[i*num_scales_per_octave+j].alloc(IMAGE_F32,
-	// // fine_width>>i,
-	// // fine_height>>i,
-	// // AUTO_STEP,
-	// // 2);
-	// //これKpmImageじゃなくて単純なfloatbufferにしようあとで。どうせバッファオーバフローで落ちるから。
-	// mGradients[i*num_scales_per_octave+j]=new GradientsImage(fine_width>>i,fine_height>>i);
-	//
-	// }
-	// }
-	// }
+
+
 
 	/**
 	 * Compute the gradients given a pyramid.
@@ -353,31 +317,28 @@ public class OrientationAssignment {
 		dx = im[p_ptr + 1] - im[p_ptr + 0];// dx = p_ptr[1] - p_ptr[0];
 		dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];// dy = pp1_ptr[0] - pm1_ptr[0];
 		// SET_GRADIENT(dx, dy)
-		gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);// *(gradient++) = std::atan2(dy,
-																					// dx)+PI;
-		gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);// *(gradient++) = std::sqrt(dx*dx+dy*dy);
+		gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);
+		gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
 		p_ptr++;
 		pm1_ptr++;
 		pp1_ptr++;
 
 		for (int col = 1; col < width_minus_1; col++) {
-			dx = im[p_ptr + 1] - im[p_ptr - 1];// dx = p_ptr[1] - p_ptr[-1];
-			dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];// dy = pp1_ptr[0] - pm1_ptr[0];
+			dx = im[p_ptr + 1] - im[p_ptr - 1];
+			dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
 			// SET_GRADIENT(dx, dy)
-			gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);// *(gradient++) = std::atan2(dy,
-																						// dx)+PI;
-			gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);// *(gradient++) = std::sqrt(dx*dx+dy*dy);
+			gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);
+			gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
 			p_ptr++;
 			pm1_ptr++;
 			pp1_ptr++;
 		}
 
-		dx = im[p_ptr + 0] - im[p_ptr - 1];// dx = p_ptr[0] - p_ptr[-1];
-		dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];// dy = pp1_ptr[0] - pm1_ptr[0];
+		dx = im[p_ptr + 0] - im[p_ptr - 1];
+		dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
 		// SET_GRADIENT(dx, dy)
-		gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);// *(gradient++) = std::atan2(dy,
-																					// dx)+PI;
-		gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);// *(gradient++) = std::sqrt(dx*dx+dy*dy);
+		gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);
+		gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
 		p_ptr++;
 		pm1_ptr++;
 		pp1_ptr++;
@@ -391,9 +352,8 @@ public class OrientationAssignment {
 			dx = im[p_ptr + 1] - im[p_ptr + 0];
 			dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
 			// SET_GRADIENT(dx, dy)
-			gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);// *(gradient++) = std::atan2(dy,
-																						// dx)+PI;
-			gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);// *(gradient++) = std::sqrt(dx*dx+dy*dy);
+			gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);
+			gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
 			p_ptr++;
 			pm1_ptr++;
 			pp1_ptr++;
@@ -402,10 +362,8 @@ public class OrientationAssignment {
 				dx = im[p_ptr + 1] - im[p_ptr - 1];
 				dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
 				// SET_GRADIENT(dx, dy)
-				gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);// *(gradient++) =
-																							// std::atan2(dy, dx)+PI;
-				gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);// *(gradient++) =
-																					// std::sqrt(dx*dx+dy*dy);
+				gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);
+				gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
 				p_ptr++;
 				pm1_ptr++;
 				pp1_ptr++;
@@ -413,9 +371,8 @@ public class OrientationAssignment {
 			dx = im[p_ptr + 0] - im[p_ptr - 1];
 			dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
 			// SET_GRADIENT(dx, dy)
-			gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);// *(gradient++) = std::atan2(dy,
-																						// dx)+PI;
-			gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);// *(gradient++) = std::sqrt(dx*dx+dy*dy);
+			gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);
+			gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
 			p_ptr++;
 			pm1_ptr++;
 			pp1_ptr++;
@@ -429,9 +386,8 @@ public class OrientationAssignment {
 		dx = im[p_ptr + 1] - im[p_ptr + 0];
 		dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
 		// SET_GRADIENT(dx, dy)
-		gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);// *(gradient++) = std::atan2(dy,
-																					// dx)+PI;
-		gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);// *(gradient++) = std::sqrt(dx*dx+dy*dy);
+		gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);
+		gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
 		p_ptr++;
 		pm1_ptr++;
 		pp1_ptr++;
@@ -440,9 +396,8 @@ public class OrientationAssignment {
 			dx = im[p_ptr + 1] - im[p_ptr - 1];
 			dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
 			// SET_GRADIENT(dx, dy)
-			gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);// *(gradient++) = std::atan2(dy,
-																						// dx)+PI;
-			gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);// *(gradient++) = std::sqrt(dx*dx+dy*dy);
+			gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);
+			gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
 			p_ptr++;
 			pm1_ptr++;
 			pp1_ptr++;
@@ -452,9 +407,8 @@ public class OrientationAssignment {
 		dx = im[p_ptr + 0] - im[p_ptr - 1];
 		dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
 		// SET_GRADIENT(dx, dy)
-		gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);// *(gradient++) = std::atan2(dy,
-																					// dx)+PI;
-		gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);// *(gradient++) = std::sqrt(dx*dx+dy*dy);
+		gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);
+		gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
 		p_ptr++;
 		pm1_ptr++;
 		pp1_ptr++;
