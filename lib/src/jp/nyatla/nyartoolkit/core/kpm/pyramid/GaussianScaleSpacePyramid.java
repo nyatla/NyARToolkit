@@ -67,8 +67,8 @@ public class GaussianScaleSpacePyramid {
 		// Here we ROUND the scale to an integer value
 		double fscale = Math.log(sigma / (double) (1 << octave))
 				* this.mOneOverLogK;
-		int scale = (int) math_utils.round(fscale);
-
+		int scale = (int)Math.floor((fscale+0.5));
+		
 		// The last scale in an octave has the same sigma as the first scale
 		// of the next octave. We prefer coarser octaves for efficiency.
 		if (scale == this.mNumScalesPerOctave - 1) {

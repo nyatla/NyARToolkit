@@ -84,9 +84,7 @@ public class RobustHomography {
 	/**
 	 * Find the homography from a set of 2D correspondences. p,q,test_pointshaは0位置固定
 	 */
-	public// boolean find(float H[9], const T* p, const T* q, int num_points, const T*
-	// test_points, int num_test_points) {
-	boolean find(HomographyMat H, NyARDoublePoint2d[] p, NyARDoublePoint2d[] q, int num_points,
+	public boolean find(HomographyMat H, NyARDoublePoint2d[] p, NyARDoublePoint2d[] q, int num_points,
 			NyARDoublePoint2d[] test_points, int num_test_points) {
 		mTmpi = new int[2 * num_points];
 		return PreemptiveRobustHomography(H, p, q, num_points, test_points, num_test_points,this.mHyp, mTmpi, mHypCosts,
@@ -107,7 +105,7 @@ public class RobustHomography {
 	// int max_num_hypotheses = HOMOGRAPHY_DEFAULT_NUM_HYPOTHESES,
 	// int max_trials = HOMOGRAPHY_DEFAULT_MAX_TRIALS,
 	// int chunk_size = HOMOGRAPHY_DEFAULT_CHUNK_SIZE) {
-	public boolean PreemptiveRobustHomography(HomographyMat H, NyARDoublePoint2d[] p, NyARDoublePoint2d[] q, int num_points,
+	private boolean PreemptiveRobustHomography(HomographyMat H, NyARDoublePoint2d[] p, NyARDoublePoint2d[] q, int num_points,
 			NyARDoublePoint2d[] test_points, int num_test_points, HomographyMat[] hyp /* 9*max_num_hypotheses */,
 			int[] tmp_i /* 2*num_points */, CostPair[] hyp_costs /* max_num_hypotheses */, double scale,
 			int max_num_hypotheses, int max_trials, int chunk_size) {
@@ -137,7 +135,7 @@ public class RobustHomography {
 		hyp_perm = 0;
 		point_perm = num_points;
 
-		one_over_scale2 = 1 / math_utils.sqr(scale);
+		one_over_scale2 = 1 / (scale*scale);
 		chunk_size = math_utils.min2(chunk_size, num_points);
 
 

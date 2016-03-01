@@ -320,19 +320,15 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 	 */
 	void FindInliers(matchStack inliers, NyARDoubleMatrix33 H, FreakFeaturePointStack p1,
 			FreakMatchPointSetStack p2, matchStack matches, double threshold) {
-		double threshold2 = math_utils.sqr(threshold);
+		double threshold2 = (threshold*threshold);
+		NyARDoublePoint2d xp = new NyARDoublePoint2d();// float xp[2];
 		// reserve(matches.size());
 		for (int i = 0; i < matches.getLength(); i++) {
-			NyARDoublePoint2d xp = new NyARDoublePoint2d();// float xp[2];
-			homography.MultiplyPointHomographyInhomogenous(xp, H,
-					p2.getItem(matches.getItem(i).ref).x,
-					p2.getItem(matches.getItem(i).ref).y);
-			// float d2 = sqr(xp[0]-p1[matches[i].ins].x) +
-			// sqr(xp[1]-p1[matches[i].ins].y);
-			double d2 = math_utils.sqr(xp.x
-					- p1.getItem(matches.getItem(i).ins).x)
-					+ math_utils.sqr(xp.y
-							- p1.getItem(matches.getItem(i).ins).y);
+			homography.MultiplyPointHomographyInhomogenous(xp, H,p2.getItem(matches.getItem(i).ref).x,p2.getItem(matches.getItem(i).ref).y);
+			double t1=xp.x- p1.getItem(matches.getItem(i).ins).x;
+			double t2=xp.y- p1.getItem(matches.getItem(i).ins).y;
+
+			double d2 = (t1*t1)+ (t2*t2);
 			if (d2 <= threshold2) {
 				match_t t = inliers.prePush();
 				t.set(matches.getItem(i));

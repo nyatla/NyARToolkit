@@ -159,12 +159,12 @@ public class OrientationAssignment {
 			return;
 		}
 
-		gw_sigma = math_utils.max2(1.f, mGaussianExpansionFactor * sigma);
-		gw_scale = -1.f / (2 * math_utils.sqr(gw_sigma));
+		gw_sigma = math_utils.max2(1.f, this.mGaussianExpansionFactor * sigma);
+		gw_scale = -1.f / (2 * (gw_sigma*gw_sigma));
 
 		// Radius of the support region
-		radius = mSupportRegionExpansionFactor * gw_sigma;
-		radius2 = Math.ceil(math_utils.sqr(radius));
+		radius = this.mSupportRegionExpansionFactor * gw_sigma;
+		radius2 = Math.ceil(radius*radius);
 
 		// Box around feature point
 		x0 = xi - (int) (radius + 0.5f);
@@ -184,13 +184,13 @@ public class OrientationAssignment {
 		// Build up the orientation histogram
 		for (int yp = y0; yp <= y1; yp++) {
 			double dy = yp - y;
-			double dy2 = math_utils.sqr(dy);
+			double dy2 = (dy*dy);
 
 			int y_ptr = g.get(yp);
 
 			for (int xp = x0; xp <= x1; xp++) {
 				double dx = xp - x;
-				double r2 = math_utils.sqr(dx) + dy2;
+				double r2 = (dx*dx) + dy2;
 
 				// Only use the gradients within the circular window
 				if (r2 > radius2) {

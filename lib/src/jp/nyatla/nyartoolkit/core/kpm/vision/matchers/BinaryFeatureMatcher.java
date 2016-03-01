@@ -13,26 +13,8 @@ public class BinaryFeatureMatcher {
 
 	}
 
-	// public:
-	//
-	// typedef BinaryHierarchicalClustering<FEATURE_SIZE> index_t;
-	//
 
-	//
-	// /**
-	// * Set the ratio threshold between the 1st and 2nd best matches.
-	// */
-	// void setThreshold(float tr) {
-	// mThreshold = tr;
-	// }
-	//
-	// /**
-	// * @return Get the threshold
-	// */
-	// float threshold() const {
-	// return mThreshold;
-	// }
-	//
+
 	/**
 	 * Match two feature stores.
 	 * 
@@ -163,9 +145,7 @@ public class BinaryFeatureMatcher {
 		return mMatches.getLength();
 	}
 
-	private static double sqr(double a) {
-		return a * a;
-	}
+
 
 	/**
 	 * Match two feature stores given a homography from the features in store 1 to store 2. The THRESHOLD is a spatial
@@ -181,7 +161,7 @@ public class BinaryFeatureMatcher {
 			return 0;
 		}
 
-		double tr_sqr = sqr(tr);
+		double tr_sqr = tr*tr;
 
 		HomographyMat ht = new HomographyMat();
 		ht.setValue(H);
@@ -210,9 +190,10 @@ public class BinaryFeatureMatcher {
 				if (p1.maxima != p2.maxima) {
 					continue;
 				}
-
+				double tx=(tmp.x - p2.x);
+				double ty=(tmp.y - p2.y);
 				// Check spatial constraint
-				if (sqr(tmp.x - p2.x) + sqr(tmp.y - p2.y) > tr_sqr) {
+				if ((tx*tx)+(ty*ty) > tr_sqr) {
 					continue;
 				}
 
@@ -235,15 +216,15 @@ public class BinaryFeatureMatcher {
 				// If there isn't a SECOND_BEST, then always choose the FIRST_BEST.
 				// Otherwise, do a ratio test.
 				if (second_best == Integer.MAX_VALUE) {
-					match_t t = mMatches.prePush();
+					match_t t = this.mMatches.prePush();
 					t.set((int) i, best_index);
 					// mMatches.push_back(match_t((int)i, best_index));
 				} else {
 					// Ratio test
 					double r = (double) first_best / (double) second_best;
-					if (r < mThreshold) {
+					if (r < this.mThreshold) {
 						// mMatches.push_back(match_t((int)i, best_index));
-						match_t t = mMatches.prePush();
+						match_t t = this.mMatches.prePush();
 						t.set((int) i, best_index);
 					}
 				}

@@ -323,7 +323,7 @@ public class DoGScaleInvariantDetector {
 		// Clear old features
 		mFeaturePoints.clear();
 
-		double laplacianSqrThreshold = math_utils.sqr(mLaplacianThreshold);
+		double laplacianSqrThreshold = (this.mLaplacianThreshold*this.mLaplacianThreshold);
 
 		for (int i = 1; i < mLaplacianPyramid.size() - 1; i++) {
 			KpmImage im0 = laplacian.get(i - 1);
@@ -363,7 +363,7 @@ public class DoGScaleInvariantDetector {
 						double value = im1b[im1_y + col];
 
 						// Check laplacian score
-						if (math_utils.sqr(value) < laplacianSqrThreshold) {
+						if ((value*value) < laplacianSqrThreshold) {
 							continue;
 						}
 						boolean extrema = false;
@@ -482,7 +482,7 @@ public class DoGScaleInvariantDetector {
 						double value = im1b[im1_y + col];
 
 						// Check laplacian score
-						if (math_utils.sqr(value) < laplacianSqrThreshold) {
+						if ((value*value) < laplacianSqrThreshold) {
 							continue;
 						}
 
@@ -627,7 +627,7 @@ public class DoGScaleInvariantDetector {
 						double value = im1b[im1_y + col];
 
 						// Check laplacian score
-						if (math_utils.sqr(value) < laplacianSqrThreshold) {
+						if ((value*value) < laplacianSqrThreshold) {
 							continue;
 						}
 
@@ -783,8 +783,9 @@ public class DoGScaleInvariantDetector {
 		double hessianThreshold;
 
 		num_points = 0;
-		laplacianSqrThreshold = math_utils.sqr(mLaplacianThreshold);
-		hessianThreshold = (math_utils.sqr(mEdgeThreshold + 1) / mEdgeThreshold);
+		laplacianSqrThreshold =(this.mLaplacianThreshold*this.mLaplacianThreshold);
+		double te=(mEdgeThreshold + 1);
+		hessianThreshold = ((te*te) / mEdgeThreshold);
 
 		for (int i = 0; i < mFeaturePoints.getLength(); i++) {
 			DogFeaturePoint kp = mFeaturePoints.getItem(i);
@@ -816,10 +817,8 @@ public class DoGScaleInvariantDetector {
 				continue;
 			}
 
-			// If points move too much in the sub-pixel update, then the point
-			// probably
-			// unstable.
-			if (math_utils.sqr(u[0]) + math_utils.sqr(u[1]) > mMaxSubpixelDistanceSqr) {
+			// If points move too much in the sub-pixel update, then the point probably unstable.
+			if ((u[0]*u[0]) + (u[1]*u[1]) > mMaxSubpixelDistanceSqr) {
 				continue;
 			}
 
@@ -850,7 +849,7 @@ public class DoGScaleInvariantDetector {
 					mLaplacianPyramid.numScalePerOctave());
 
 			if (Math.abs(kp.edge_score) < hessianThreshold
-					&& math_utils.sqr(kp.score) >= laplacianSqrThreshold
+					&& (kp.score*kp.score) >= laplacianSqrThreshold
 					&& kp.x >= 0
 					&& kp.x < mLaplacianPyramid.images()[0].getWidth()
 					&& kp.y >= 0
@@ -1226,42 +1225,21 @@ public class DoGScaleInvariantDetector {
 		double Dxx, Dyy, Dxy;
 		double Dss, Dxs, Dys;
 
-		assert (x - 1) >= 0 && (x + 1) < lap1.getWidth();// ASSERT((x-1) >= 0 &&
-															// (x+1) <
-															// lap1.width(),
-															// "x out of bounds");
-		assert (y - 1) >= 0 && (y + 1) < lap1.getHeight();// ASSERT((y-1) >= 0
-															// && (y+1) <
-															// lap1.height(),
-															// "y out of bounds");
-		assert lap0.getWidth() == lap1.getWidth(); // ASSERT(lap0.width() ==
-													// lap1.width(),
-													// "Image dimensions inconsistent");
-		assert lap0.getWidth() == lap2.getWidth();// ASSERT(lap0.width() ==
-													// lap2.width(),
-													// "Image dimensions inconsistent");
-		assert lap0.getHeight() == lap1.getHeight();// ASSERT(lap0.height() ==
-													// lap1.height(),
-													// "Image dimensions inconsistent");
-		assert lap0.getHeight() == lap2.getHeight();// ASSERT(lap0.height() ==
-													// lap2.height(),
-													// "Image dimensions inconsistent");
+		assert (x - 1) >= 0 && (x + 1) < lap1.getWidth();
+		assert (y - 1) >= 0 && (y + 1) < lap1.getHeight();
+		assert lap0.getWidth() == lap1.getWidth();
+		assert lap0.getWidth() == lap2.getWidth();
+		assert lap0.getHeight() == lap1.getHeight();
+		assert lap0.getHeight() == lap2.getHeight();
 
-		int lap0_pm1 = lap0.get(y - 1) + x;// const float* lap0_pm1 =
-											// &lap0.get<float>(y-1)[x];
-		int lap0_p = lap0.get(y) + x;// const float* lap0_p =
-										// &lap0.get<float>(y)[x];
-		int lap0_pp1 = lap0.get(y + 1) + x;// const float* lap0_pp1 =
-											// &lap0.get<float>(y+1)[x];
+		int lap0_pm1 = lap0.get(y - 1) + x;
+		int lap0_p = lap0.get(y) + x;
+		int lap0_pp1 = lap0.get(y + 1) + x;
 
-		int lap1_p = lap1.get(y) + x;// const float* lap1_p =
-										// &lap1.get<float>(y)[x];
-		int lap2_pm1 = lap2.get(y - 1) + x;// const float* lap2_pm1 =
-											// &lap2.get<float>(y-1)[x];
-		int lap2_p = lap2.get(y) + x;// const float* lap2_p =
-										// &lap2.get<float>(y)[x];
-		int lap2_pp1 = lap2.get(y + 1) + x;// const float* lap2_pp1 =
-											// &lap2.get<float>(y+1)[x];
+		int lap1_p = lap1.get(y) + x;
+		int lap2_pm1 = lap2.get(y - 1) + x;
+		int lap2_p = lap2.get(y) + x;
+		int lap2_pp1 = lap2.get(y + 1) + x;
 
 		double[] tmp = new double[5];
 		// Compute spatial derivatives
@@ -1307,15 +1285,15 @@ public class DoGScaleInvariantDetector {
 		double Dyy = H[4];
 		double Dxy = H[1];
 
-		det = (Dxx * Dyy) - math_utils.sqr(Dxy);
+		det = (Dxx * Dyy) - (Dxy*Dxy);
 
 		// The determinant cannot be zero
 		if (det == 0) {
 			return false;
 		}
-
+		double t=Dxx + Dyy;
 		// Compute a score based on the local curvature
-		score[0] = math_utils.sqr(Dxx + Dyy) / det;
+		score[0] = (t*t) / det;
 
 		return true;
 	}
