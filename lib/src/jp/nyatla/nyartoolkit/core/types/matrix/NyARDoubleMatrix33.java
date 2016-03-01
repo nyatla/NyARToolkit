@@ -65,6 +65,23 @@ public class NyARDoubleMatrix33 implements INyARDoubleMatrix
 		}
 		return ret;
 	}
+	/**
+	 * インスタンスの値とi_matの値が同一かを返します。
+	 */	
+	@Override
+	public boolean equals(Object i_mat)
+	{
+		if(i_mat instanceof NyARDoubleMatrix33){
+			NyARDoubleMatrix33 m=(NyARDoubleMatrix33)i_mat;
+			if(	m.m00==this.m00 && m.m01==this.m01 && m.m02==this.m02 &&
+				m.m10==this.m10 && m.m11==this.m11 && m.m12==this.m12 &&
+				m.m20==this.m20 && m.m21==this.m21 && m.m22==this.m22)
+			{
+				return true;
+			}
+		}
+		return false;
+	}	
 	public NyARDoubleMatrix33()
 	{
 	}
