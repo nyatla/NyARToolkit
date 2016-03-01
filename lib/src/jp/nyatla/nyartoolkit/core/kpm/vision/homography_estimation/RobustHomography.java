@@ -1,6 +1,6 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.homography_estimation;
 
-import jp.nyatla.nyartoolkit.core.kpm.Utils;
+
 import jp.nyatla.nyartoolkit.core.kpm.vision.match.indexing;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.HomographyMat;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.homography;

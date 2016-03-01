@@ -174,29 +174,30 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 		// mMatchedInliers.clear();
 		this. mMatchedId = -1;
 		int last_inliers=0;
+		matchStack match_result=new matchStack(query_keyframe.getLength());
+		matchStack hough_matches = new matchStack(SIZEDEF_matchStack);
+		HomographyMat H = new HomographyMat();
 
-		FreakFeaturePointStack query_points = query_keyframe;
 		// Loop over all the images in the database
 		// typename keyframe_map_t::const_iterator it = mKeyframeMap.begin();
 		// for(; it != mKeyframeMap.end(); it++) {
 		for (Map.Entry<Integer, Keyframe> i : mKeyframeMap.entrySet()) {
 			Keyframe second = i.getValue();
 			int first = i.getKey();
-			// TIMED("Find Matches (1)") {
+			match_result.clear();
 			if (mUseFeatureIndex) {
-				if (mMatcher.match(query_keyframe, second.store(),second.index()) < this.mMinNumInliers) {
+				if (mMatcher.match(query_keyframe, second.store(),second.index(),match_result) < this.mMinNumInliers) {
 					continue;
 				}
 			} else {
-				if (mMatcher.match(query_keyframe, second.store()) < mMinNumInliers) {
+				if (mMatcher.match(query_keyframe, second.store(),match_result) < mMinNumInliers) {
 					continue;
 				}
 			}
 			// }
 
 			FreakMatchPointSetStack ref_points = second.store();
-			// std::cout<<"ref_points-"<<ref_points.size()<<std::endl;
-			// std::cout<<"query_points-"<<query_points.size()<<std::endl;
+
 
 			//
 			// Vote for a transformation based on the correspondences
@@ -205,7 +206,7 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 			int max_hough_index = -1;
 			// TIMED("Hough Voting (1)") {
 			max_hough_index = FindHoughSimilarity(mHoughSimilarityVoting,
-					query_points, ref_points, mMatcher.matches(),
+					query_keyframe, ref_points,match_result,
 					i_size.w, i_size.h,
 					second.width(), second.height());
 			if (max_hough_index < 0) {
@@ -213,10 +214,10 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 			}
 			// }
 
-			matchStack hough_matches = new matchStack(SIZEDEF_matchStack);
+			hough_matches.clear();
 			// TIMED("Find Hough Matches (1)") {
 			FindHoughMatches(hough_matches, mHoughSimilarityVoting,
-					query_points, ref_points, mMatcher.matches(),
+					query_keyframe, ref_points, match_result,
 					max_hough_index, kHoughBinDelta);
 			// }
 
@@ -224,9 +225,8 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 			// Estimate the transformation between the two images
 			//
 
-			HomographyMat H = new HomographyMat();
 			// TIMED("Estimate Homography (1)") {
-			if (!EstimateHomography(H, query_points, ref_points, hough_matches,
+			if (!EstimateHomography(H, query_keyframe, ref_points, hough_matches,
 					mHomographyInlierThreshold, mRobustHomography,
 					second.width(), second.height())) {
 				continue;
@@ -239,7 +239,7 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 
 			matchStack inliers = new matchStack(SIZEDEF_matchStack);
 			// TIMED("Find Inliers (1)") {
-			FindInliers(inliers, H, query_points, ref_points, hough_matches,
+			FindInliers(inliers, H, query_keyframe, ref_points, hough_matches,
 					mHomographyInlierThreshold);
 			if (inliers.getLength() < mMinNumInliers) {
 				continue;
@@ -250,8 +250,8 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 			// Use the estimated homography to find more inliers
 			//
 
-			// TIMED("Find Matches (2)") {
-			if (mMatcher.match(query_keyframe, second.store(), H, 10) < mMinNumInliers) {
+			match_result.clear();
+			if (mMatcher.match(query_keyframe, second.store(), H, 10,match_result) < mMinNumInliers) {
 				continue;
 			}
 			// }
@@ -262,7 +262,7 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 
 			// TIMED("Hough Voting (2)") {
 			max_hough_index = FindHoughSimilarity(mHoughSimilarityVoting,
-					query_points, ref_points, mMatcher.matches(),
+					query_keyframe, ref_points, match_result,
 					i_size.w,i_size.h,
 					second.width(), second.height());
 			if (max_hough_index < 0) {
@@ -272,7 +272,7 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 
 			// TIMED("Find Hough Matches (2)") {
 			FindHoughMatches(hough_matches, mHoughSimilarityVoting,
-					query_points, ref_points, mMatcher.matches(),
+					query_keyframe, ref_points, match_result,
 					max_hough_index, kHoughBinDelta);
 			// }
 
@@ -281,7 +281,7 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 			//
 
 			// TIMED("Estimate Homography (2)") {
-			if (!EstimateHomography(H, query_points, ref_points, hough_matches,
+			if (!EstimateHomography(H, query_keyframe, ref_points, hough_matches,
 					mHomographyInlierThreshold, mRobustHomography,
 					second.width(), second.height())) {
 				continue;
@@ -294,7 +294,7 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 
 			inliers.clear();
 			// TIMED("Find Inliers (2)") {
-			FindInliers(inliers, H, query_points, ref_points, hough_matches,
+			FindInliers(inliers, H, query_keyframe, ref_points, hough_matches,
 					mHomographyInlierThreshold);
 			// }
 
