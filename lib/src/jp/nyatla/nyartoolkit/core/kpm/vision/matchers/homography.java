@@ -36,16 +36,8 @@ public class homography
         xp.x = (H.m00*x[x_idx].x + H.m01*x[x_idx].y + H.m02)/w;
         xp.y = (H.m10*x[x_idx].x + H.m11*x[x_idx].y + H.m12)/w;
     }
-    public static void MultiplyPointHomographyInhomogenous(NyARDoublePoint2d xp,double[] H, double x,double y) {
-    	double w = H[6]*x + H[7]*y + H[8];
-        xp.x = (H[0]*x + H[1]*y + H[2])/w;
-        xp.y = (H[3]*x + H[4]*y + H[5])/w;
-    }    
-    public static void MultiplyPointHomographyInhomogenous(NyARDoublePoint2d xp,double[] H, NyARDoublePoint2d x) {
-    	double w = H[6]*x.x + H[7]*x.y + H[8];
-        xp.x = (H[0]*x.x + H[1]*x.y + H[2])/w;
-        xp.y = (H[3]*x.x + H[4]*x.y + H[5])/w;
-    }
+
+
 
 //    boolean HomographyPointsGeometricallyConsistent(const T H[9], const T* x, int size) {
     public static boolean HomographyPointsGeometricallyConsistent(NyARDoubleMatrix33 H, NyARDoublePoint2d[] x,int i_x_ptr, int size) {
