@@ -118,12 +118,6 @@ public class RobustHomography {
 		int trial;
 		int sample_size = 4;
 
-		// ASSERT(hyp.size() >= 9*max_num_hypotheses,
-		// "hyp vector should be of size 9*max_num_hypotheses");
-		// ASSERT(tmp_i.size() >= 2*num_points,
-		// "tmp_i vector should be of size 2*num_points");
-		// ASSERT(hyp_costs.size() >= max_num_hypotheses,
-		// "hyp_costs vector should be of size max_num_hypotheses");
 
 		// We need at least SAMPLE_SIZE points to sample from
 		if (num_points < sample_size) {
@@ -206,11 +200,12 @@ public class RobustHomography {
 			// Score each of the remaining hypotheses
 			for (int j = 0; j < num_hypotheses_remaining; j++) {
 				// const T* H_cur = &hyp[hyp_costs[j].second*9];
-				int H_cur = hyp_costs[j].second;
+				HomographyMat ht=hyp[hyp_costs[j].second];
+				double hf=0;
 				for (int k = i; k < this_chunk_end; k++) {
-					hyp_costs[j].first += CauchyProjectiveReprojectionCost(hyp[H_cur],
-							p[tmp_i[hyp_perm + k]], q[tmp_i[hyp_perm + k]], one_over_scale2);
+					hf += ht.cauchyProjectiveReprojectionCost(p[tmp_i[hyp_perm + k]], q[tmp_i[hyp_perm + k]], one_over_scale2);
 				}
+				hyp_costs[j].first=hf;
 			}
 
 			// Cut out half of the hypotheses
@@ -239,32 +234,17 @@ public class RobustHomography {
 
 
 
-
-
-	double CauchyCost(double x0, double x1, double one_over_scale2) {
-		return Math.log(1 + (x0 * x0 + x1 * x1) * one_over_scale2);
-	}
-
-	double CauchyCost(double[] x, double one_over_scale2) {
-		return CauchyCost(x[0], x[1], one_over_scale2);
-	}
-
-	/**
-	 * Compute the Cauchy reprojection cost for H*p-q.
-	 */
-	// float CauchyProjectiveReprojectionCost(float H[9], const T p[2], const T
-	// q[2], T one_over_scale2) {
-	double CauchyProjectiveReprojectionCost(NyARDoubleMatrix33 H, NyARDoublePoint2d p, NyARDoublePoint2d q, double one_over_scale2) {
-		double[] pp = new double[2];
-		double[] f = new double[2];
-
-		// homography.MultiplyPointHomographyInhomogenous(pp[0], pp[1], H, p[0],
-		// p[1]);
-		homography.MultiplyPointHomographyInhomogenous(pp, H, p.x, p.y);
-
-		f[0] = pp[0] - q.x;
-		f[1] = pp[1] - q.y;
-
-		return CauchyCost(f, one_over_scale2);
-	}
+//	/**
+//	 * Compute the Cauchy reprojection cost for H*p-q.
+//	 */
+//	// float CauchyProjectiveReprojectionCost(float H[9], const T p[2], const T
+//	// q[2], T one_over_scale2) {
+//	double CauchyProjectiveReprojectionCost(NyARDoubleMatrix33 H, NyARDoublePoint2d i_p, NyARDoublePoint2d i_q, double i_one_over_scale2)
+//	{
+//    	double w = H.m20*i_p.x + H.m21*i_p.y + H.m22;
+//        double vx = ((H.m00*i_p.x + H.m01*i_p.y + H.m02)/w)-i_q.x;//XP
+//        double vy = ((H.m10*i_p.x + H.m11*i_p.y + H.m12)/w)-i_q.y;//YP
+//		double T= Math.log(1 + (vx * vx + vy * vy) * i_one_over_scale2);
+//		return T;
+//	}
 }
