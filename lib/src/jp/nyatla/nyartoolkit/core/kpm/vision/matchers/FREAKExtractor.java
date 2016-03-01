@@ -461,7 +461,7 @@ public class FREAKExtractor {
 		KpmImage image = pyramid.get(octave, scale);
         double a = 1.f/(1<<octave);
         double b = 0.5f*a-0.5f;
-		return interpole.bilinear_interpolation(image, ClipScalar(x*a+b, 0, image.getWidth() - 2), ClipScalar(y*a+b, 0, image.getHeight() - 2));
+		return image.bilinearInterpolation(ClipScalar(x*a+b, 0, image.getWidth() - 2), ClipScalar(y*a+b, 0, image.getHeight() - 2));
 	}
 
 

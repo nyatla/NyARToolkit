@@ -14,8 +14,8 @@ public class BinomialPyramid32f extends GaussianScaleSpacePyramid
 		// Allocate the pyramid memory
 		this.mPyramid=new KpmImage[i_num_of_octaves*this.mNumScalesPerOctave];
 		for(int i = 0; i < i_num_of_octaves; i++) {
-			for(int j = 0; j < mNumScalesPerOctave; j++){
-				this.mPyramid[i*mNumScalesPerOctave+j]=new KpmImage(i_width>>i, i_height>>i);
+			for(int j = 0; j < this.mNumScalesPerOctave; j++){
+				this.mPyramid[i*this.mNumScalesPerOctave+j]=new KpmImage(i_width>>i, i_height>>i);
 			}
 		}
 		this.mTemp_us16=new int[i_width*i_height];

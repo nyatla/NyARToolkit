@@ -64,4 +64,36 @@ public class KpmImage implements INyARRaster {
 		return this._size.w * i_row;
 	}
 
+
+    /**
+     * Perform bilinear interpolation.
+     * Port from bilinear_interpolation function.
+     * @param[in] x x-location to interpolate
+     * @param[in] y y-location to interpolate
+     */
+	public double bilinearInterpolation(double x, double y)
+	{
+		double[] buf=this._buf;
+		int width=this._size.w;
+		double w0, w1, w2, w3;
+		// Compute location of 4 neighbor pixels
+		int xp = (int) x;
+		int yp = (int) y;
+		int xp_plus_1 = xp + 1;
+		int yp_plus_1 = yp + 1;
+
+
+		// Pointer to 2 image rows
+		int p0 = width * yp;// p0 = (const Tin*)((const unsigned char*)im+step*yp);
+		int p1 = p0 + width;// p1 = (const Tin*)((const unsigned char*)p0+step);
+
+		// Compute weights
+		w0 = (xp_plus_1 - x) * (yp_plus_1 - y);
+		w1 = (x - xp) * (yp_plus_1 - y);
+		w2 = (xp_plus_1 - x) * (y - yp);
+		w3 = (x - xp) * (y - yp);
+
+		// Compute weighted pixel
+		return w0 * buf[p0 + xp] + w1 * buf[p0 + xp_plus_1] + w2 * buf[p1 + xp] + w3 * buf[p1 + xp_plus_1];
+	}
 }

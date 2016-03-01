@@ -4,17 +4,13 @@ import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
 import jp.nyatla.nyartoolkit.core.kpm.OrientationAssignment;
 import jp.nyatla.nyartoolkit.core.kpm.OrientationAssignment.FloatVector;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.GaussianScaleSpacePyramid;
-import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
-
 
 public class DoGScaleInvariantDetector {
 	final static public int kMaxNumFeaturePoints = 5000;
 	final static public int kMaxNumOrientations = 36;
 
-	
-	
 	// True if the orientation should be assigned
 	final private boolean mFindOrientation;
 
@@ -38,35 +34,32 @@ public class DoGScaleInvariantDetector {
 
 	// Orientation assignment
 	final private OrientationAssignment mOrientationAssignment;
-	
-	/** Buckets for pruning points
-	 * std::vector<std::vector<std::vector<std::pair<float, size_t> > > >
+
+	/**
+	 * Buckets for pruning points std::vector<std::vector<std::vector<std::pair<float, size_t> > > >
 	 */
 	final private BucketStack[][] mBuckets;
-	
-	public DoGScaleInvariantDetector(GaussianScaleSpacePyramid i_pyramid,double i_LaplacianThreshold,double i_EdgeThreshold,int i_MaxNumFeaturePoints)
-	{
+
+	public DoGScaleInvariantDetector(GaussianScaleSpacePyramid i_pyramid, double i_LaplacianThreshold,
+			double i_EdgeThreshold, int i_MaxNumFeaturePoints) {
 		this.mNumBucketsX = 10;
 		this.mNumBucketsY = 10;
 		this.mFindOrientation = true;
 		this.mLaplacianThreshold = i_LaplacianThreshold;
 		this.mEdgeThreshold = i_EdgeThreshold;
-		this.mFeaturePoints = new DogFeaturePointStack(2000);//この2000は適当		
-		this.mMaxNumFeaturePoints=i_MaxNumFeaturePoints;
+		this.mFeaturePoints = new DogFeaturePointStack(2000);// この2000は適当
+		this.mMaxNumFeaturePoints = i_MaxNumFeaturePoints;
 		this.mMaxSubpixelDistanceSqr = (3 * 3);
 		this.mOrientations = new double[kMaxNumOrientations];
-		this.mLaplacianPyramid=new DoGPyramid(i_pyramid);
+		this.mLaplacianPyramid = new DoGPyramid(i_pyramid);
 		this.mWidth = i_pyramid.images()[0].getWidth();
 		this.mHeight = i_pyramid.images()[0].getHeight();
-		this.mOrientationAssignment=new OrientationAssignment(
-				i_pyramid.images()[0].getWidth(),i_pyramid.images()[0].getHeight(),i_pyramid.numOctaves(),
-				i_pyramid.numScalesPerOctave(), kMaxNumOrientations, 3, 1.5f, 5,0.8f);
-		this.mBuckets = createBucketPairArray(mNumBucketsX, mNumBucketsY,300);
+		this.mOrientationAssignment = new OrientationAssignment(i_pyramid.images()[0].getWidth(),
+				i_pyramid.images()[0].getHeight(), i_pyramid.numOctaves(), i_pyramid.numScalesPerOctave(),
+				kMaxNumOrientations, 3, 1.5f, 5, 0.8f);
+		this.mBuckets = createBucketPairArray(mNumBucketsX, mNumBucketsY, 300);
 
 	}
-
-
-
 
 	/**
 	 * @return Width/Height of configured image
@@ -93,7 +86,7 @@ public class DoGScaleInvariantDetector {
 
 		// Detect minima and maximum in Laplacian images
 		// TIMED("Non-max suppression") {
-		//数が合わない
+		// 数が合わない
 		extractFeatures(pyramid, this.mLaplacianPyramid);
 		// }
 
@@ -112,8 +105,6 @@ public class DoGScaleInvariantDetector {
 		findFeatureOrientations(pyramid);
 		// }
 	}
-
-
 
 	/**
 	 * @return Feature points
@@ -174,27 +165,23 @@ public class DoGScaleInvariantDetector {
 		}
 	}
 
-	public static BucketStack[][] createBucketPairArray(int x, int y,int pair_len) {
+	public static BucketStack[][] createBucketPairArray(int x, int y, int pair_len) {
 		System.out.println("Force set bucketpair size!!");
 		BucketStack[][] r = new BucketStack[x][];
 		for (int i = 0; i < r.length; i++) {
 			r[i] = new BucketStack[y];
-			for(int i2=0;i2<y;i2++){
-				r[i][i2]=new BucketStack(pair_len);
+			for (int i2 = 0; i2 < y; i2++) {
+				r[i][i2] = new BucketStack(pair_len);
 			}
 		}
 		return r;
 	}
 
-
-
-
 	// Vector of orientations. Pre-allocated to the maximum
 	// number of orientations per feature point.
 	private double[] mOrientations;
 
-	private static double bilinear_interpolation(double[] im, int width,
-			int height, int step, double x, double y) {
+	private static double bilinear_interpolation(double[] im, int width, int height, int step, double x, double y) {
 		int xp, yp;
 		int xp_plus_1, yp_plus_1;
 		double w0, w1, w2, w3;
@@ -204,13 +191,8 @@ public class DoGScaleInvariantDetector {
 
 		// Integer casting and floor should be the same since (x,y) are always
 		// positive
-		assert (int) Math.floor(x) == (int) x;// ASSERT((int)std::floor(x) ==
-												// (int)x,
-												// "floor() and cast not the same");
-		assert (int) Math.floor(y) == (int) y;// ASSERT((int)std::floor(y) ==
-												// (int)y,
-												// "floor() and cast not the same");
-
+		assert (int) Math.floor(x) == (int) x;
+		assert (int) Math.floor(y) == (int) y;
 		// Compute location of 4 neighbor pixels
 		xp = (int) x;
 		yp = (int) y;
@@ -218,17 +200,10 @@ public class DoGScaleInvariantDetector {
 		yp_plus_1 = yp + 1;
 
 		// Some sanity checks
-		assert yp >= 0 && yp < height;// ASSERT(yp >= 0 && yp < height,
-										// "yp out of bounds");
-		assert yp_plus_1 >= 0 && yp_plus_1 < height;// ASSERT(yp_plus_1 >= 0 &&
-													// yp_plus_1 < height,
-													// "yp_plus_1 out of bounds");
-		assert xp >= 0 && xp < width;// ASSERT(xp >= 0 && xp < width,
-										// "xp out of bounds");
-		assert xp_plus_1 >= 0 && xp_plus_1 < width;// ASSERT(xp_plus_1 >= 0 &&
-													// xp_plus_1 < width,
-													// "xp_plus_1 out of bounds");
-
+		assert yp >= 0 && yp < height;
+		assert yp_plus_1 >= 0 && yp_plus_1 < height;
+		assert xp >= 0 && xp < width;
+		assert xp_plus_1 >= 0 && xp_plus_1 < width;
 		// Pointer to 2 image rows
 		p0 = step * yp;// p0 = (const Tin*)((const unsigned char*)im+step*yp);
 		p1 = p0 + step;// p1 = (const Tin*)((const unsigned char*)p0+step);
@@ -239,32 +214,23 @@ public class DoGScaleInvariantDetector {
 		w2 = (xp_plus_1 - x) * (y - yp);
 		w3 = (x - xp) * (y - yp);
 
-		assert w0 >= 0 && w0 <= 1.0001; // ASSERT(w0 >= 0 && w0 <= 1.0001,
-										// "Out of range");
-		assert w1 >= 0 && w1 <= 1.0001; // ASSERT(w1 >= 0 && w1 <= 1.0001,
-										// "Out of range");
-		assert w2 >= 0 && w2 <= 1.0001; // ASSERT(w2 >= 0 && w2 <= 1.0001,
-										// "Out of range");
-		assert w3 >= 0 && w3 <= 1.0001; // ASSERT(w3 >= 0 && w3 <= 1.0001,
-										// "Out of range");
-		assert (w0 + w1 + w2 + w3) <= 1.0001;// ASSERT((w0+w1+w2+w3) <= 1.0001,
-												// "Out of range");
-
+		assert w0 >= 0 && w0 <= 1.0001;
+		assert w1 >= 0 && w1 <= 1.0001;
+		assert w2 >= 0 && w2 <= 1.0001;
+		assert w3 >= 0 && w3 <= 1.0001;
+		assert (w0 + w1 + w2 + w3) <= 1.0001;
 		// Compute weighted pixel
-		res = w0 * im[p0 + xp] + w1 * im[p0 + xp_plus_1] + w2 * im[p1 + xp]
-				+ w3 * im[p1 + xp_plus_1];
+		res = w0 * im[p0 + xp] + w1 * im[p0 + xp_plus_1] + w2 * im[p1 + xp] + w3 * im[p1 + xp_plus_1];
 
 		return res;
 	}
 
 	private static double bilinear_interpolation(KpmImage im, double x, double y) {
-		return bilinear_interpolation((double[]) im.getBuffer(), im.getWidth(),
-				im.getHeight(),im.getWidth(), x, y);
+		return bilinear_interpolation((double[]) im.getBuffer(), im.getWidth(), im.getHeight(), im.getWidth(), x, y);
 	}
 
 	/**
-	 * Use this function to upsample a point that has been found from a bilinear
-	 * downsample pyramid.
+	 * Use this function to upsample a point that has been found from a bilinear downsample pyramid.
 	 * 
 	 * xp = x*2^n + 2^(n-1) - 0.5 yp = y*2^n + 2^(n-1) - 0.5
 	 * 
@@ -276,8 +242,7 @@ public class DoGScaleInvariantDetector {
 	 * @param[in] y Y location on detected image
 	 * @param[in] octave The octave of the detected image
 	 */
-	private static void bilinear_upsample_point(double[] xyp, double x, double y,
-			int octave) {
+	private static void bilinear_upsample_point(double[] xyp, double x, double y, int octave) {
 		double a, b;
 		a = (double) Math.pow(2.f, octave - 1) - 0.5f;
 		b = (1 << octave);
@@ -286,8 +251,7 @@ public class DoGScaleInvariantDetector {
 	}
 
 	/**
-	 * Use this function to downsample a point to an octave that was found from
-	 * a bilinear downsampled pyramid.
+	 * Use this function to downsample a point to an octave that was found from a bilinear downsampled pyramid.
 	 * 
 	 * @param[out] xp Downsampled x location
 	 * @param[out] yp Downsampled y location
@@ -295,8 +259,7 @@ public class DoGScaleInvariantDetector {
 	 * @param[in] y Y location on fine image
 	 * @param[in] octave The octave to downsample (x,y) to
 	 */
-	private void bilinear_downsample_point(double[] xyp, double x, double y,
-			int octave) {
+	private void bilinear_downsample_point(double[] xyp, double x, double y, int octave) {
 		double a, b;
 		a = 1.f / (1 << octave);
 		b = 0.5f * a - 0.5f;
@@ -304,8 +267,7 @@ public class DoGScaleInvariantDetector {
 		xyp[1] = y * a + b;
 	}
 
-	private void bilinear_downsample_point(double[] xysp, double x, double y,
-			double s, int octave) {
+	private void bilinear_downsample_point(double[] xysp, double x, double y, double s, int octave) {
 		double a, b;
 		a = 1.f / (1 << octave);
 		b = 0.5f * a - 0.5f;
@@ -317,13 +279,12 @@ public class DoGScaleInvariantDetector {
 	/**
 	 * Extract the minima/maxima.
 	 */
-	public void extractFeatures(GaussianScaleSpacePyramid pyramid,
-			DoGPyramid laplacian) {
+	public void extractFeatures(GaussianScaleSpacePyramid pyramid, DoGPyramid laplacian) {
 
 		// Clear old features
 		mFeaturePoints.clear();
 
-		double laplacianSqrThreshold = (this.mLaplacianThreshold*this.mLaplacianThreshold);
+		double laplacianSqrThreshold = (this.mLaplacianThreshold * this.mLaplacianThreshold);
 
 		for (int i = 1; i < mLaplacianPyramid.size() - 1; i++) {
 			KpmImage im0 = laplacian.get(i - 1);
@@ -336,12 +297,10 @@ public class DoGScaleInvariantDetector {
 			int octave = laplacian.octaveFromIndex((int) i);
 			int scale = laplacian.scaleFromIndex((int) i);
 
-
-			if (im0.getWidth() == im1.getWidth()
-					&& im0.getWidth() == im2.getWidth()) { // All images are the
-															// same size
-			// ASSERT(im0.height() == im1.height(), "Height is inconsistent");
-			// ASSERT(im0.height() == im2.height(), "Height is inconsistent");
+			if (im0.getWidth() == im1.getWidth() && im0.getWidth() == im2.getWidth()) { // All images are the
+																						// same size
+				// ASSERT(im0.height() == im1.height(), "Height is inconsistent");
+				// ASSERT(im0.height() == im2.height(), "Height is inconsistent");
 
 				int width_minus_1 = im1.getWidth() - 1;
 				int heigh_minus_1 = im1.getHeight() - 1;
@@ -363,37 +322,25 @@ public class DoGScaleInvariantDetector {
 						double value = im1b[im1_y + col];
 
 						// Check laplacian score
-						if ((value*value) < laplacianSqrThreshold) {
+						if ((value * value) < laplacianSqrThreshold) {
 							continue;
 						}
 						boolean extrema = false;
-						if (value > im0b[im0_ym1 + col - 1]
-								&& value > im0b[im0_ym1 + col]
-								&& value > im0b[im0_ym1 + col + 1]
-								&& value > im0b[im0_y + col - 1]
-								&& value > im0b[im0_y + col]
-								&& value > im0b[im0_y + col + 1]
-								&& value > im0b[im0_yp1 + col - 1]
-								&& value > im0b[im0_yp1 + col]
+						if (value > im0b[im0_ym1 + col - 1] && value > im0b[im0_ym1 + col]
+								&& value > im0b[im0_ym1 + col + 1] && value > im0b[im0_y + col - 1]
+								&& value > im0b[im0_y + col] && value > im0b[im0_y + col + 1]
+								&& value > im0b[im0_yp1 + col - 1] && value > im0b[im0_yp1 + col]
 								&& value > im0b[im0_yp1 + col + 1] &&
 								/* im1 - 8 evaluations */
-								value > im1b[im1_ym1 + col - 1]
-								&& value > im1b[im1_ym1 + col]
-								&& value > im1b[im1_ym1 + col + 1]
-								&& value > im1b[im1_y + col - 1]
-								&& value > im1b[im1_y + col + 1]
-								&& value > im1b[im1_yp1 + col - 1]
-								&& value > im1b[im1_yp1 + col]
-								&& value > im1b[im1_yp1 + col + 1] &&
+								value > im1b[im1_ym1 + col - 1] && value > im1b[im1_ym1 + col]
+								&& value > im1b[im1_ym1 + col + 1] && value > im1b[im1_y + col - 1]
+								&& value > im1b[im1_y + col + 1] && value > im1b[im1_yp1 + col - 1]
+								&& value > im1b[im1_yp1 + col] && value > im1b[im1_yp1 + col + 1] &&
 								/* im2 - 9 evaluations */
-								value > im2b[im2_ym1 + col - 1]
-								&& value > im2b[im2_ym1 + col]
-								&& value > im2b[im2_ym1 + col + 1]
-								&& value > im2b[im2_y + col - 1]
-								&& value > im2b[im2_y + col]
-								&& value > im2b[im2_y + col + 1]
-								&& value > im2b[im2_yp1 + col - 1]
-								&& value > im2b[im2_yp1 + col]
+								value > im2b[im2_ym1 + col - 1] && value > im2b[im2_ym1 + col]
+								&& value > im2b[im2_ym1 + col + 1] && value > im2b[im2_y + col - 1]
+								&& value > im2b[im2_y + col] && value > im2b[im2_y + col + 1]
+								&& value > im2b[im2_yp1 + col - 1] && value > im2b[im2_yp1 + col]
 								&& value > im2b[im2_yp1 + col + 1]) { // if(NONMAX_CHECK(>,
 																		// value))
 																		// { //
@@ -401,33 +348,21 @@ public class DoGScaleInvariantDetector {
 																		// greater
 																		// than
 							extrema = true;
-						} else if (value < im0b[im0_ym1 + col - 1]
-								&& value < im0b[im0_ym1 + col]
-								&& value < im0b[im0_ym1 + col + 1]
-								&& value < im0b[im0_y + col - 1]
-								&& value < im0b[im0_y + col]
-								&& value < im0b[im0_y + col + 1]
-								&& value < im0b[im0_yp1 + col - 1]
-								&& value < im0b[im0_yp1 + col]
+						} else if (value < im0b[im0_ym1 + col - 1] && value < im0b[im0_ym1 + col]
+								&& value < im0b[im0_ym1 + col + 1] && value < im0b[im0_y + col - 1]
+								&& value < im0b[im0_y + col] && value < im0b[im0_y + col + 1]
+								&& value < im0b[im0_yp1 + col - 1] && value < im0b[im0_yp1 + col]
 								&& value < im0b[im0_yp1 + col + 1] &&
 								/* im1 - 8 evaluations */
-								value < im1b[im1_ym1 + col - 1]
-								&& value < im1b[im1_ym1 + col]
-								&& value < im1b[im1_ym1 + col + 1]
-								&& value < im1b[im1_y + col - 1]
-								&& value < im1b[im1_y + col + 1]
-								&& value < im1b[im1_yp1 + col - 1]
-								&& value < im1b[im1_yp1 + col]
-								&& value < im1b[im1_yp1 + col + 1] &&
+								value < im1b[im1_ym1 + col - 1] && value < im1b[im1_ym1 + col]
+								&& value < im1b[im1_ym1 + col + 1] && value < im1b[im1_y + col - 1]
+								&& value < im1b[im1_y + col + 1] && value < im1b[im1_yp1 + col - 1]
+								&& value < im1b[im1_yp1 + col] && value < im1b[im1_yp1 + col + 1] &&
 								/* im2 - 9 evaluations */
-								value < im2b[im2_ym1 + col - 1]
-								&& value < im2b[im2_ym1 + col]
-								&& value < im2b[im2_ym1 + col + 1]
-								&& value < im2b[im2_y + col - 1]
-								&& value < im2b[im2_y + col]
-								&& value < im2b[im2_y + col + 1]
-								&& value < im2b[im2_yp1 + col - 1]
-								&& value < im2b[im2_yp1 + col]
+								value < im2b[im2_ym1 + col - 1] && value < im2b[im2_ym1 + col]
+								&& value < im2b[im2_ym1 + col + 1] && value < im2b[im2_y + col - 1]
+								&& value < im2b[im2_y + col] && value < im2b[im2_y + col + 1]
+								&& value < im2b[im2_yp1 + col - 1] && value < im2b[im2_yp1 + col]
 								&& value < im2b[im2_yp1 + col + 1]) { // else
 																		// if(NONMAX_CHECK(<,
 																		// value))
@@ -443,8 +378,7 @@ public class DoGScaleInvariantDetector {
 							fp.octave = octave;
 							fp.scale = scale;
 							fp.score = value;
-							fp.sigma =  pyramid.effectiveSigma(octave,
-									scale);
+							fp.sigma = pyramid.effectiveSigma(octave, scale);
 							double[] tmp = new double[2];
 							bilinear_upsample_point(tmp, col, row, octave);
 							fp.x = tmp[0];
@@ -453,20 +387,10 @@ public class DoGScaleInvariantDetector {
 
 					}
 				}
-			} else if (im0.getWidth() == im1.getWidth()
-					&& (im1.getWidth() >> 1) == im2.getWidth()) { // 0,1 are the
-																	// same
-																	// size, 2
-																	// is half
-																	// size
-			// ASSERT(im0.height() == im1.height(), "Height is inconsistent");
-			// ASSERT((im1.height()>>1) == im2.height(),
-			// "Height is inconsistent");
+			} else if (im0.getWidth() == im1.getWidth() && (im1.getWidth() >> 1) == im2.getWidth()) {
 
-				int end_x = (int) Math
-						.floor(((im2.getWidth() - 1) - 0.5f) * 2.f + 0.5f);
-				int end_y = (int) Math
-						.floor(((im2.getHeight() - 1) - 0.5f) * 2.f + 0.5f);
+				int end_x = (int) Math.floor(((im2.getWidth() - 1) - 0.5f) * 2.f + 0.5f);
+				int end_y = (int) Math.floor(((im2.getHeight() - 1) - 0.5f) * 2.f + 0.5f);
 
 				for (int row = 2; row < end_y; row++) {
 					int im0_ym1 = im0.get(row - 1);
@@ -482,7 +406,7 @@ public class DoGScaleInvariantDetector {
 						double value = im1b[im1_y + col];
 
 						// Check laplacian score
-						if ((value*value) < laplacianSqrThreshold) {
+						if ((value * value) < laplacianSqrThreshold) {
 							continue;
 						}
 
@@ -493,97 +417,54 @@ public class DoGScaleInvariantDetector {
 						boolean extrema = false;
 						if (
 						/* im0 - 9 evaluations */
-						value > im0b[im0_ym1 + col - 1]
-								&& value > im0b[im0_ym1 + col]
-								&& value > im0b[im0_ym1 + col + 1]
-								&& value > im0b[im0_y + col - 1]
-								&& value > im0b[im0_y + col]
-								&& value > im0b[im0_y + col + 1]
-								&& value > im0b[im0_yp1 + col - 1]
-								&& value > im0b[im0_yp1 + col]
-								&& value > im0b[im0_yp1 + col + 1]
-								&&
+						value > im0b[im0_ym1 + col - 1] && value > im0b[im0_ym1 + col]
+								&& value > im0b[im0_ym1 + col + 1] && value > im0b[im0_y + col - 1]
+								&& value > im0b[im0_y + col] && value > im0b[im0_y + col + 1]
+								&& value > im0b[im0_yp1 + col - 1] && value > im0b[im0_yp1 + col]
+								&& value > im0b[im0_yp1 + col + 1] &&
 								/* im1 - 8 evaluations */
-								value > im1b[im1_ym1 + col - 1]
-								&& value > im1b[im1_ym1 + col]
-								&& value > im1b[im1_ym1 + col + 1]
-								&& value > im1b[im1_y + col - 1]
-								&& value > im1b[im1_y + col + 1]
-								&& value > im1b[im1_yp1 + col - 1]
-								&& value > im1b[im1_yp1 + col]
-								&& value > im1b[im1_yp1 + col + 1]
-								&&
+								value > im1b[im1_ym1 + col - 1] && value > im1b[im1_ym1 + col]
+								&& value > im1b[im1_ym1 + col + 1] && value > im1b[im1_y + col - 1]
+								&& value > im1b[im1_y + col + 1] && value > im1b[im1_yp1 + col - 1]
+								&& value > im1b[im1_yp1 + col] && value > im1b[im1_yp1 + col + 1] &&
 								/* im2 - 9 evaluations */
-								value > bilinear_interpolation(im2,
-										ds_x - 0.5f, ds_y - 0.5f)
-								&& value > bilinear_interpolation(im2, ds_x,
-										ds_y - 0.5f)
-								&& value > bilinear_interpolation(im2,
-										ds_x + 0.5f, ds_y - 0.5f)
-								&& value > bilinear_interpolation(im2,
-										ds_x - 0.5f, ds_y)
-								&& value > bilinear_interpolation(im2, ds_x,
-										ds_y)
-								&& value > bilinear_interpolation(im2,
-										ds_x + 0.5f, ds_y)
-								&& value > bilinear_interpolation(im2,
-										ds_x - 0.5f, ds_y + 0.5f)
-								&& value > bilinear_interpolation(im2, ds_x,
-										ds_y + 0.5f)
-								&& value > bilinear_interpolation(im2,
-										ds_x + 0.5f, ds_y + 0.5f)) { // if(NONMAX_CHECK(>,
-																		// value))
-																		// { //
-																		// strictly
-																		// greater
-																		// than
+								value > bilinear_interpolation(im2, ds_x - 0.5f, ds_y - 0.5f)
+								&& value > bilinear_interpolation(im2, ds_x, ds_y - 0.5f)
+								&& value > bilinear_interpolation(im2, ds_x + 0.5f, ds_y - 0.5f)
+								&& value > bilinear_interpolation(im2, ds_x - 0.5f, ds_y)
+								&& value > bilinear_interpolation(im2, ds_x, ds_y)
+								&& value > bilinear_interpolation(im2, ds_x + 0.5f, ds_y)
+								&& value > bilinear_interpolation(im2, ds_x - 0.5f, ds_y + 0.5f)
+								&& value > bilinear_interpolation(im2, ds_x, ds_y + 0.5f)
+								&& value > bilinear_interpolation(im2, ds_x + 0.5f, ds_y + 0.5f)) {
 							extrema = true;
 						} else if (
 						/* im0 - 9 evaluations */
-						value < im0b[im0_ym1 + col - 1]
-								&& value < im0b[im0_ym1 + col]
-								&& value < im0b[im0_ym1 + col + 1]
-								&& value < im0b[im0_y + col - 1]
-								&& value < im0b[im0_y + col]
-								&& value < im0b[im0_y + col + 1]
-								&& value < im0b[im0_yp1 + col - 1]
-								&& value < im0b[im0_yp1 + col]
-								&& value < im0b[im0_yp1 + col + 1]
-								&&
+						value < im0b[im0_ym1 + col - 1] && value < im0b[im0_ym1 + col]
+								&& value < im0b[im0_ym1 + col + 1] && value < im0b[im0_y + col - 1]
+								&& value < im0b[im0_y + col] && value < im0b[im0_y + col + 1]
+								&& value < im0b[im0_yp1 + col - 1] && value < im0b[im0_yp1 + col]
+								&& value < im0b[im0_yp1 + col + 1] &&
 								/* im1 - 8 evaluations */
-								value < im1b[im1_ym1 + col - 1]
-								&& value < im1b[im1_ym1 + col]
-								&& value < im1b[im1_ym1 + col + 1]
-								&& value < im1b[im1_y + col - 1]
-								&& value < im1b[im1_y + col + 1]
-								&& value < im1b[im1_yp1 + col - 1]
-								&& value < im1b[im1_yp1 + col]
-								&& value < im1b[im1_yp1 + col + 1]
-								&&
+								value < im1b[im1_ym1 + col - 1] && value < im1b[im1_ym1 + col]
+								&& value < im1b[im1_ym1 + col + 1] && value < im1b[im1_y + col - 1]
+								&& value < im1b[im1_y + col + 1] && value < im1b[im1_yp1 + col - 1]
+								&& value < im1b[im1_yp1 + col] && value < im1b[im1_yp1 + col + 1] &&
 								/* im2 - 9 evaluations */
-								value < bilinear_interpolation(im2,
-										ds_x - 0.5f, ds_y - 0.5f)
-								&& value < bilinear_interpolation(im2, ds_x,
-										ds_y - 0.5f)
-								&& value < bilinear_interpolation(im2,
-										ds_x + 0.5f, ds_y - 0.5f)
-								&& value < bilinear_interpolation(im2,
-										ds_x - 0.5f, ds_y)
-								&& value < bilinear_interpolation(im2, ds_x,
-										ds_y)
-								&& value < bilinear_interpolation(im2,
-										ds_x + 0.5f, ds_y)
-								&& value < bilinear_interpolation(im2,
-										ds_x - 0.5f, ds_y + 0.5f)
-								&& value < bilinear_interpolation(im2, ds_x,
-										ds_y + 0.5f)
-								&& value < bilinear_interpolation(im2,
-										ds_x + 0.5f, ds_y + 0.5f)) { // if(NONMAX_CHECK(<,
-																		// value))
-																		// { //
-																		// strictly
-																		// less
-																		// than
+								value < bilinear_interpolation(im2, ds_x - 0.5f, ds_y - 0.5f)
+								&& value < bilinear_interpolation(im2, ds_x, ds_y - 0.5f)
+								&& value < bilinear_interpolation(im2, ds_x + 0.5f, ds_y - 0.5f)
+								&& value < bilinear_interpolation(im2, ds_x - 0.5f, ds_y)
+								&& value < bilinear_interpolation(im2, ds_x, ds_y)
+								&& value < bilinear_interpolation(im2, ds_x + 0.5f, ds_y)
+								&& value < bilinear_interpolation(im2, ds_x - 0.5f, ds_y + 0.5f)
+								&& value < bilinear_interpolation(im2, ds_x, ds_y + 0.5f)
+								&& value < bilinear_interpolation(im2, ds_x + 0.5f, ds_y + 0.5f)) { // if(NONMAX_CHECK(<,
+																									// value))
+																									// { //
+																									// strictly
+																									// less
+																									// than
 							extrema = true;
 						}
 
@@ -592,8 +473,7 @@ public class DoGScaleInvariantDetector {
 							fp.octave = octave;
 							fp.scale = scale;
 							fp.score = value;
-							fp.sigma =  pyramid.effectiveSigma(octave,
-									scale);
+							fp.sigma = pyramid.effectiveSigma(octave, scale);
 							double[] tmp = new double[2];
 							bilinear_upsample_point(tmp, col, row, octave);
 							fp.x = tmp[0];
@@ -601,15 +481,17 @@ public class DoGScaleInvariantDetector {
 						}
 					}
 				}
-			} else if ((im0.getWidth() >> 1) == im1.getWidth()
-					&& (im0.getWidth() >> 1) == im2.getWidth()) { // 0 is twice
-																	// the size
-																	// of 1 and
-																	// 2
-			// ASSERT((im0.height()>>1) == im1.height(),
-			// "Height is inconsistent");
-			// ASSERT((im0.height()>>1) == im2.height(),
-			// "Height is inconsistent");
+			} else if ((im0.getWidth() >> 1) == im1.getWidth() && (im0.getWidth() >> 1) == im2.getWidth()) { // 0 is
+																												// twice
+																												// the
+																												// size
+																												// of 1
+																												// and
+																												// 2
+				// ASSERT((im0.height()>>1) == im1.height(),
+				// "Height is inconsistent");
+				// ASSERT((im0.height()>>1) == im2.height(),
+				// "Height is inconsistent");
 
 				int width_minus_1 = im1.getWidth() - 1;
 				int height_minus_1 = im1.getHeight() - 1;
@@ -627,7 +509,7 @@ public class DoGScaleInvariantDetector {
 						double value = im1b[im1_y + col];
 
 						// Check laplacian score
-						if ((value*value) < laplacianSqrThreshold) {
+						if ((value * value) < laplacianSqrThreshold) {
 							continue;
 						}
 
@@ -635,94 +517,56 @@ public class DoGScaleInvariantDetector {
 						double us_y = (row << 1) + 0.5f;
 
 						boolean extrema = false;
-						if (value > im1b[im1_ym1 + col - 1]
-								&& value > im1b[im1_ym1 + col]
-								&& value > im1b[im1_ym1 + col + 1]
-								&& value > im1b[im1_y + col - 1]
-								&& value > im1b[im1_y + col + 1]
-								&& value > im1b[im1_yp1 + col - 1]
-								&& value > im1b[im1_yp1 + col]
-								&& value > im1b[im1_yp1 + col + 1]
-								&&
+						if (value > im1b[im1_ym1 + col - 1] && value > im1b[im1_ym1 + col]
+								&& value > im1b[im1_ym1 + col + 1] && value > im1b[im1_y + col - 1]
+								&& value > im1b[im1_y + col + 1] && value > im1b[im1_yp1 + col - 1]
+								&& value > im1b[im1_yp1 + col] && value > im1b[im1_yp1 + col + 1] &&
 								/* im2 - 9 evaluations */
-								value > im2b[im2_ym1 + col - 1]
-								&& value > im2b[im2_ym1 + col]
-								&& value > im2b[im2_ym1 + col + 1]
-								&& value > im2b[im2_y + col - 1]
-								&& value > im2b[im2_y + col]
-								&& value > im2b[im2_y + col + 1]
-								&& value > im2b[im2_yp1 + col - 1]
-								&& value > im2b[im2_yp1 + col]
-								&& value > im2b[im2_yp1 + col + 1]
-								&&
+								value > im2b[im2_ym1 + col - 1] && value > im2b[im2_ym1 + col]
+								&& value > im2b[im2_ym1 + col + 1] && value > im2b[im2_y + col - 1]
+								&& value > im2b[im2_y + col] && value > im2b[im2_y + col + 1]
+								&& value > im2b[im2_yp1 + col - 1] && value > im2b[im2_yp1 + col]
+								&& value > im2b[im2_yp1 + col + 1] &&
 								/* im2 - 9 evaluations */
-								value > bilinear_interpolation(im0, us_x - 2.f,
-										us_y - 2.f)
-								&& value > bilinear_interpolation(im0, us_x,
-										us_y - 2.f)
-								&& value > bilinear_interpolation(im0,
-										us_x + 2.f, us_y - 2.f)
-								&& value > bilinear_interpolation(im0,
-										us_x - 2.f, us_y)
-								&& value > bilinear_interpolation(im0, us_x,
-										us_y)
-								&& value > bilinear_interpolation(im0,
-										us_x + 2.f, us_y)
-								&& value > bilinear_interpolation(im0,
-										us_x - 2.f, us_y + 2.f)
-								&& value > bilinear_interpolation(im0, us_x,
-										us_y + 2.f)
-								&& value > bilinear_interpolation(im0,
-										us_x + 2.f, us_y + 2.f)) { // if(NONMAX_CHECK(>,
-																	// value)) {
-																	// //
-																	// strictly
-																	// greater
-																	// than
+								value > bilinear_interpolation(im0, us_x - 2.f, us_y - 2.f)
+								&& value > bilinear_interpolation(im0, us_x, us_y - 2.f)
+								&& value > bilinear_interpolation(im0, us_x + 2.f, us_y - 2.f)
+								&& value > bilinear_interpolation(im0, us_x - 2.f, us_y)
+								&& value > bilinear_interpolation(im0, us_x, us_y)
+								&& value > bilinear_interpolation(im0, us_x + 2.f, us_y)
+								&& value > bilinear_interpolation(im0, us_x - 2.f, us_y + 2.f)
+								&& value > bilinear_interpolation(im0, us_x, us_y + 2.f)
+								&& value > bilinear_interpolation(im0, us_x + 2.f, us_y + 2.f)) { // if(NONMAX_CHECK(>,
+																									// value)) {
+																									// //
+																									// strictly
+																									// greater
+																									// than
 							extrema = true;
-						} else if (value < im1b[im1_ym1 + col - 1]
-								&& value < im1b[im1_ym1 + col]
-								&& value < im1b[im1_ym1 + col + 1]
-								&& value < im1b[im1_y + col - 1]
-								&& value < im1b[im1_y + col + 1]
-								&& value < im1b[im1_yp1 + col - 1]
-								&& value < im1b[im1_yp1 + col]
-								&& value < im1b[im1_yp1 + col + 1]
-								&&
+						} else if (value < im1b[im1_ym1 + col - 1] && value < im1b[im1_ym1 + col]
+								&& value < im1b[im1_ym1 + col + 1] && value < im1b[im1_y + col - 1]
+								&& value < im1b[im1_y + col + 1] && value < im1b[im1_yp1 + col - 1]
+								&& value < im1b[im1_yp1 + col] && value < im1b[im1_yp1 + col + 1] &&
 								/* im2 - 9 evaluations */
-								value < im2b[im2_ym1 + col - 1]
-								&& value < im2b[im2_ym1 + col]
-								&& value < im2b[im2_ym1 + col + 1]
-								&& value < im2b[im2_y + col - 1]
-								&& value < im2b[im2_y + col]
-								&& value < im2b[im2_y + col + 1]
-								&& value < im2b[im2_yp1 + col - 1]
-								&& value < im2b[im2_yp1 + col]
-								&& value < im2b[im2_yp1 + col + 1]
-								&&
+								value < im2b[im2_ym1 + col - 1] && value < im2b[im2_ym1 + col]
+								&& value < im2b[im2_ym1 + col + 1] && value < im2b[im2_y + col - 1]
+								&& value < im2b[im2_y + col] && value < im2b[im2_y + col + 1]
+								&& value < im2b[im2_yp1 + col - 1] && value < im2b[im2_yp1 + col]
+								&& value < im2b[im2_yp1 + col + 1] &&
 								/* im2 - 9 evaluations */
-								value < bilinear_interpolation(im0, us_x - 2.f,
-										us_y - 2.f)
-								&& value < bilinear_interpolation(im0, us_x,
-										us_y - 2.f)
-								&& value < bilinear_interpolation(im0,
-										us_x + 2.f, us_y - 2.f)
-								&& value < bilinear_interpolation(im0,
-										us_x - 2.f, us_y)
-								&& value < bilinear_interpolation(im0, us_x,
-										us_y)
-								&& value < bilinear_interpolation(im0,
-										us_x + 2.f, us_y)
-								&& value < bilinear_interpolation(im0,
-										us_x - 2.f, us_y + 2.f)
-								&& value < bilinear_interpolation(im0, us_x,
-										us_y + 2.f)
-								&& value < bilinear_interpolation(im0,
-										us_x + 2.f, us_y + 2.f)) { // if(NONMAX_CHECK(<,
-																	// value)) {
-																	// //
-																	// strictly
-																	// less than
+								value < bilinear_interpolation(im0, us_x - 2.f, us_y - 2.f)
+								&& value < bilinear_interpolation(im0, us_x, us_y - 2.f)
+								&& value < bilinear_interpolation(im0, us_x + 2.f, us_y - 2.f)
+								&& value < bilinear_interpolation(im0, us_x - 2.f, us_y)
+								&& value < bilinear_interpolation(im0, us_x, us_y)
+								&& value < bilinear_interpolation(im0, us_x + 2.f, us_y)
+								&& value < bilinear_interpolation(im0, us_x - 2.f, us_y + 2.f)
+								&& value < bilinear_interpolation(im0, us_x, us_y + 2.f)
+								&& value < bilinear_interpolation(im0, us_x + 2.f, us_y + 2.f)) { // if(NONMAX_CHECK(<,
+																									// value)) {
+																									// //
+																									// strictly
+																									// less than
 							extrema = true;
 						}
 
@@ -731,8 +575,7 @@ public class DoGScaleInvariantDetector {
 							fp.octave = octave;
 							fp.scale = scale;
 							fp.score = value;
-							fp.sigma =  pyramid.effectiveSigma(octave,
-									scale);
+							fp.sigma = pyramid.effectiveSigma(octave, scale);
 							double[] tmp = new double[2];
 							bilinear_upsample_point(tmp, col, row, octave);
 							fp.x = tmp[0];
@@ -783,17 +626,16 @@ public class DoGScaleInvariantDetector {
 		double hessianThreshold;
 
 		num_points = 0;
-		laplacianSqrThreshold =(this.mLaplacianThreshold*this.mLaplacianThreshold);
-		double te=(mEdgeThreshold + 1);
-		hessianThreshold = ((te*te) / mEdgeThreshold);
+		laplacianSqrThreshold = (this.mLaplacianThreshold * this.mLaplacianThreshold);
+		double te = (mEdgeThreshold + 1);
+		hessianThreshold = ((te * te) / mEdgeThreshold);
 
 		for (int i = 0; i < mFeaturePoints.getLength(); i++) {
 			DogFeaturePoint kp = mFeaturePoints.getItem(i);
 			assert kp.scale < mLaplacianPyramid.numScalePerOctave();
 			// ASSERT(kp.scale < mLaplacianPyramid.numScalePerOctave(),
 			// "Feature point scale is out of bounds");
-			int lap_index = kp.octave * mLaplacianPyramid.numScalePerOctave()
-					+ kp.scale;
+			int lap_index = kp.octave * mLaplacianPyramid.numScalePerOctave() + kp.scale;
 			// Downsample the feature point to the detection octave
 			bilinear_downsample_point(tmp, kp.x, kp.y, kp.octave);
 			xp = tmp[0];
@@ -818,7 +660,7 @@ public class DoGScaleInvariantDetector {
 			}
 
 			// If points move too much in the sub-pixel update, then the point probably unstable.
-			if ((u[0]*u[0]) + (u[1]*u[1]) > mMaxSubpixelDistanceSqr) {
+			if ((u[0] * u[0]) + (u[1] * u[1]) > mMaxSubpixelDistanceSqr) {
 				continue;
 			}
 
@@ -832,8 +674,7 @@ public class DoGScaleInvariantDetector {
 			// ASSERT(kp.score == lap1.get<float>(y)[x],
 			// "Score is not consistent with the DoG image");
 			double[] lap1_buf = (double[]) lap1.getBuffer();
-			kp.score = lap1_buf[lap1.get(y) + x]
-					- (b[0] * u[0] + b[1] * u[1] + b[2] * u[2]);
+			kp.score = lap1_buf[lap1.get(y) + x] - (b[0] * u[0] + b[1] * u[1] + b[2] * u[2]);
 
 			// Update the location:
 			// Apply the update on the downsampled location and then upsample
@@ -845,18 +686,13 @@ public class DoGScaleInvariantDetector {
 
 			// Update the scale
 			kp.sp_scale = kp.scale + u[2];
-			kp.sp_scale = ClipScalar(kp.sp_scale, 0,
-					mLaplacianPyramid.numScalePerOctave());
+			kp.sp_scale = ClipScalar(kp.sp_scale, 0, mLaplacianPyramid.numScalePerOctave());
 
-			if (Math.abs(kp.edge_score) < hessianThreshold
-					&& (kp.score*kp.score) >= laplacianSqrThreshold
-					&& kp.x >= 0
-					&& kp.x < mLaplacianPyramid.images()[0].getWidth()
-					&& kp.y >= 0
+			if (Math.abs(kp.edge_score) < hessianThreshold && (kp.score * kp.score) >= laplacianSqrThreshold
+					&& kp.x >= 0 && kp.x < mLaplacianPyramid.images()[0].getWidth() && kp.y >= 0
 					&& kp.y < mLaplacianPyramid.images()[0].getHeight()) {
 				// Update the sigma
-				kp.sigma =  pyramid.effectiveSigma(kp.octave,
-						kp.sp_scale);
+				kp.sigma = pyramid.effectiveSigma(kp.octave, kp.sp_scale);
 				mFeaturePoints.getItem(num_points++).set(kp);
 			}
 		}
@@ -877,9 +713,8 @@ public class DoGScaleInvariantDetector {
 		// "Buckets are not allocated");
 
 		DogFeaturePointStack points = new DogFeaturePointStack(2000);// 適当　DoGScaleInvariantDetector.mFeaturePointsと同じくらいないとダメ
-		PruneDoGFeatures(mBuckets, points, mFeaturePoints, (int) mNumBucketsX,
-				(int) mNumBucketsY, (int) mWidth, (int) mHeight,
-				(int) mMaxNumFeaturePoints);
+		PruneDoGFeatures(mBuckets, points, mFeaturePoints, (int) mNumBucketsX, (int) mNumBucketsY, (int) mWidth,
+				(int) mHeight, (int) mMaxNumFeaturePoints);
 		// オーバフローするから後で直す
 		mFeaturePoints.clear();
 		for (int i = 0; i < points.getLength(); i++) {
@@ -905,8 +740,8 @@ public class DoGScaleInvariantDetector {
 		}
 
 		int num_angles;
-		DogFeaturePoint[] mTmpOrientatedFeaturePoints = new DogFeaturePoint[mFeaturePoints
-				.getLength() * kMaxNumOrientations];
+		DogFeaturePoint[] mTmpOrientatedFeaturePoints = new DogFeaturePoint[mFeaturePoints.getLength()
+				* kMaxNumOrientations];
 		int mTmpOrientatedFeaturePoints_n = 0;
 		// Compute the gradient pyramid
 		mOrientationAssignment.computeGradients(pyramid);
@@ -916,10 +751,8 @@ public class DoGScaleInvariantDetector {
 			double x, y, s;
 
 			// Down sample the point to the detected octave
-			bilinear_downsample_point(tmp, mFeaturePoints.getItem(i).x,
-					mFeaturePoints.getItem(i).y,
-					mFeaturePoints.getItem(i).sigma,
-					mFeaturePoints.getItem(i).octave);
+			bilinear_downsample_point(tmp, mFeaturePoints.getItem(i).x, mFeaturePoints.getItem(i).y,
+					mFeaturePoints.getItem(i).sigma, mFeaturePoints.getItem(i).octave);
 			x = tmp[0];
 			y = tmp[1];
 			s = tmp[2];
@@ -928,18 +761,13 @@ public class DoGScaleInvariantDetector {
 			// by
 			// a tiny amount. Here we just clip it to be within the image
 			// bounds.
-			x = ClipScalar(
-					x,
-					0,
-					pyramid.get(mFeaturePoints.getItem(i).octave, 0).getWidth() - 1);
-			y = ClipScalar(y, 0,
-					pyramid.get(mFeaturePoints.getItem(i).octave, 0)
-							.getHeight() - 1);
+			x = ClipScalar(x, 0, pyramid.get(mFeaturePoints.getItem(i).octave, 0).getWidth() - 1);
+			y = ClipScalar(y, 0, pyramid.get(mFeaturePoints.getItem(i).octave, 0).getHeight() - 1);
 
 			FloatVector f = new FloatVector(mOrientations, 0);
 			// Compute dominant orientations
-			mOrientationAssignment.compute(f, mFeaturePoints.getItem(i).octave,
-					mFeaturePoints.getItem(i).scale, x, y, s);
+			mOrientationAssignment.compute(f, mFeaturePoints.getItem(i).octave, mFeaturePoints.getItem(i).scale, x, y,
+					s);
 			num_angles = f.num;
 			// Create a feature point for each angle
 			for (int j = 0; j < num_angles; j++) {
@@ -967,26 +795,20 @@ public class DoGScaleInvariantDetector {
 	// const Image& lap0,const Image& lap1,const Image& lap2,
 	// int x,int y)
 
-	private boolean ComputeSubpixelHessian(double[] H, double[] b, KpmImage lap0,
-			KpmImage lap1, KpmImage lap2, int x, int y) {
+	private boolean ComputeSubpixelHessian(double[] H, double[] b, KpmImage lap0, KpmImage lap1, KpmImage lap2, int x,
+			int y) {
 
-		if (lap0.getWidth() == lap1.getWidth()
-				&& lap1.getWidth() == lap2.getWidth()) {
-			assert lap0.getHeight() == lap1.getHeight()
-					&& lap1.getHeight() == lap2.getHeight();// ,
-															// "Width/height are not consistent");
+		if (lap0.getWidth() == lap1.getWidth() && lap1.getWidth() == lap2.getWidth()) {
+			assert lap0.getHeight() == lap1.getHeight() && lap1.getHeight() == lap2.getHeight();// ,
+																								// "Width/height are not consistent");
 			ComputeSubpixelHessianSameOctave(H, b, lap0, lap1, lap2, x, y);
-		} else if ((lap0.getWidth() == lap1.getWidth())
-				&& ((lap1.getWidth() >> 1) == lap2.getWidth())) {
-			assert (lap0.getHeight() == lap1.getHeight())
-					&& ((lap1.getHeight() >> 1) == lap2.getHeight());// ,
-																		// "Width/height are not consistent");
+		} else if ((lap0.getWidth() == lap1.getWidth()) && ((lap1.getWidth() >> 1) == lap2.getWidth())) {
+			assert (lap0.getHeight() == lap1.getHeight()) && ((lap1.getHeight() >> 1) == lap2.getHeight());// ,
+																											// "Width/height are not consistent");
 			ComputeSubpixelHessianFineOctavePair(H, b, lap0, lap1, lap2, x, y);
-		} else if (((lap0.getWidth() >> 1) == lap1.getWidth())
-				&& (lap1.getWidth() == lap2.getWidth())) {
-			assert ((lap0.getWidth() >> 1) == lap1.getWidth())
-					&& (lap1.getWidth() == lap2.getWidth());// ,
-															// "Width/height are not consistent");
+		} else if (((lap0.getWidth() >> 1) == lap1.getWidth()) && (lap1.getWidth() == lap2.getWidth())) {
+			assert ((lap0.getWidth() >> 1) == lap1.getWidth()) && (lap1.getWidth() == lap2.getWidth());// ,
+																										// "Width/height are not consistent");
 			ComputeSubpixelHessianCoarseOctavePair(H, b, lap0, lap1, lap2, x, y);
 		} else {
 			// ASSERT(0, "Image sizes are inconsistent");
@@ -999,8 +821,8 @@ public class DoGScaleInvariantDetector {
 	// float H[9],float b[3],
 	// const Image& lap0,const Image& lap1,const Image& lap2,
 	// int x,int y)
-	private void ComputeSubpixelHessianCoarseOctavePair(double H[], double b[],
-			KpmImage lap0, KpmImage lap1, KpmImage lap2, int x, int y) {
+	private void ComputeSubpixelHessianCoarseOctavePair(double H[], double b[], KpmImage lap0, KpmImage lap1,
+			KpmImage lap2, int x, int y) {
 		double val;
 		double x_mul_2, y_mul_2;
 		double Dx, Dy, Ds;
@@ -1083,56 +905,33 @@ public class DoGScaleInvariantDetector {
 	// float H[9],float b[3],
 	// const Image& lap0,const Image& lap1,const Image& lap2,
 	// int x,int y)
-	private void ComputeSubpixelHessianFineOctavePair(double[] H, double[] b,
-			KpmImage lap0, KpmImage lap1, KpmImage lap2, int x, int y) {
+	private void ComputeSubpixelHessianFineOctavePair(double[] H, double[] b, KpmImage lap0, KpmImage lap1,
+			KpmImage lap2, int x, int y) {
 		double x_div_2, y_div_2;
 		double val;
 		double Dx, Dy, Ds;
 		double Dxx, Dyy, Dxy;
 		double Dss, Dxs, Dys;
 
-		assert (x - 1) >= 0 && (x + 1) < lap1.getWidth();// ASSERT((x-1) >= 0 &&
-															// (x+1) <
-															// lap1.width(),
-															// "x out of bounds");
-		assert (y - 1) >= 0 && (y + 1) < lap1.getHeight();// ASSERT((y-1) >= 0
-															// && (y+1) <
-															// lap1.height(),
-															// "y out of bounds");
-		assert lap0.getWidth() == lap1.getWidth();// ASSERT(lap0.width() ==
-													// lap1.width(),
-													// "Image dimensions inconsistent");
-		assert (lap0.getWidth() >> 1) == lap2.getWidth();// ASSERT((lap0.width()>>1)
-															// == lap2.width(),
-															// "Image dimensions inconsistent");
-		assert lap0.getHeight() == lap1.getHeight();// ASSERT(lap0.height() ==
-													// lap1.height(),
-													// "Image dimensions inconsistent");
-		assert (lap0.getHeight() >> 1) == lap2.getHeight();// ASSERT((lap0.height()>>1)
-															// == lap2.height(),
-															// "Image dimensions inconsistent");
+		assert (x - 1) >= 0 && (x + 1) < lap1.getWidth();
+		assert (y - 1) >= 0 && (y + 1) < lap1.getHeight();
+		assert lap0.getWidth() == lap1.getWidth();
+		assert (lap0.getWidth() >> 1) == lap2.getWidth();
+		assert lap0.getHeight() == lap1.getHeight();
+		assert (lap0.getHeight() >> 1) == lap2.getHeight();
 
-		int lap0_pm1 = lap0.get(y - 1) + x;// const float* lap0_pm1 =
-											// &lap0.get<float>(y-1)[x];
-		int lap0_p = lap0.get(y) + x;// const float* lap0_p =
-										// &lap0.get<float>(y)[x];
-		int lap0_pp1 = lap0.get(y + 1) + x;// const float* lap0_pp1 =
-											// &lap0.get<float>(y+1)[x];
-		int lap1_p = lap1.get(y) + x;// const float* lap1_p =
-										// &lap1.get<float>(y)[x];
+		int lap0_pm1 = lap0.get(y - 1) + x;
+		int lap0_p = lap0.get(y) + x;
+		int lap0_pp1 = lap0.get(y + 1) + x;
+		int lap1_p = lap1.get(y) + x;
 		double[] tmp = new double[5];
 		bilinear_downsample_point(tmp, x, y, 1);
 		x_div_2 = tmp[0];
 		y_div_2 = tmp[1];
-		assert x_div_2 - 0.5f >= 0;// ASSERT(x_div_2-0.5f >= 0,
-									// "x_div_2 out of bounds out of bounds for interpolation");
-		assert y_div_2 - 0.5f >= 0;// ASSERT(y_div_2-0.5f >= 0,
-									// "y_div_2 out of bounds out of bounds for interpolation");
-		assert x_div_2 + 0.5f < lap2.getWidth();// ASSERT(x_div_2+0.5f <
-												// lap2.width(),
-												// "x_div_2 out of bounds out of bounds for interpolation");
-		assert y_div_2 + 0.5f < lap2.getHeight();// ,
-													// "y_div_2 out of bounds out of bounds for interpolation");
+		assert x_div_2 - 0.5f >= 0;
+		assert y_div_2 - 0.5f >= 0;
+		assert x_div_2 + 0.5f < lap2.getWidth();
+		assert y_div_2 + 0.5f < lap2.getHeight();
 
 		// Compute spatial derivatives
 		// ComputeSubpixelDerivatives(Dx, Dy, Dxx, Dyy, Dxy, lap1, x, y);
@@ -1143,27 +942,22 @@ public class DoGScaleInvariantDetector {
 		Dyy = tmp[3];
 		Dxy = tmp[4];
 		// Interpolate the VALUE at the coarser octave
-		val = bilinear_interpolation(lap2, x_div_2, y_div_2);
+		val = lap2.bilinearInterpolation(x_div_2, y_div_2);
 
-		// Ds = 0.5f*(val - lap0_p[0]);
-		// Dss = lap0_p[0] + (-2.f*lap1_p[0]) + val;
-		// Dxs = 0.25f*((lap0_p[-1] + bilinear_interpolation(lap2, x_div_2+.5f,
-		// y_div_2)) -
-		// (lap0_p[ 1] + bilinear_interpolation(lap2, x_div_2-.5f, y_div_2)));
-		// Dys = 0.25f*((lap0_pm1[0] + bilinear_interpolation(lap2, x_div_2,
-		// y_div_2+.5f)) -
-		// (lap0_pp1[0] + bilinear_interpolation(lap2, x_div_2, y_div_2-.5f)));
+
 		double[] lap0_buf = (double[]) lap0.getBuffer();
 		double[] lap1_buf = (double[]) lap1.getBuffer();
 
 		Ds = 0.5f * (val - lap0_buf[lap0_p + 0]);
 		Dss = lap0_buf[lap0_p + 0] + (-2.f * lap1_buf[lap1_p + 0]) + val;
-		Dxs = 0.25f * ((lap0_buf[lap0_p - 1] + bilinear_interpolation(lap2,
-				x_div_2 + .5f, y_div_2)) - (lap0_buf[lap0_p + 1] + bilinear_interpolation(
-				lap2, x_div_2 - .5f, y_div_2)));
-		Dys = 0.25f * ((lap0_buf[lap0_pm1 + 0] + bilinear_interpolation(lap2,
-				x_div_2, y_div_2 + .5f)) - (lap0_buf[lap0_pp1 + 0] + bilinear_interpolation(
-				lap2, x_div_2, y_div_2 - .5f)));
+		Dxs = 0.25f * (
+			(lap0_buf[lap0_p - 1]+lap2.bilinearInterpolation(x_div_2 + .5f, y_div_2)) 
+			-(lap0_buf[lap0_p + 1] + lap2.bilinearInterpolation(x_div_2 - .5f, y_div_2))
+		);
+		Dys = 0.25f * (
+			(lap0_buf[lap0_pm1 + 0] + lap2.bilinearInterpolation(x_div_2, y_div_2 + .5f))
+			-(lap0_buf[lap0_pp1 + 0] + lap2.bilinearInterpolation(x_div_2, y_div_2 - .5f))
+		);
 
 		// H
 		H[0] = Dxx;
@@ -1187,8 +981,7 @@ public class DoGScaleInvariantDetector {
 	// float& Dxx,float& Dyy,float& Dxy,
 	// const Image& im,
 	// int x,int y)
-	private void ComputeSubpixelDerivatives(double[] dn, KpmImage im, int x,
-			int y) {
+	private void ComputeSubpixelDerivatives(double[] dn, KpmImage im, int x, int y) {
 		// Sanity checks
 		// ASSERT((x-1) >= 0 && (x+1) < im.width(), "x out of bounds");
 		// ASSERT((y-1) >= 0 && (y+1) < im.height(), "y out of bounds");
@@ -1219,8 +1012,8 @@ public class DoGScaleInvariantDetector {
 	// float H[9],float b[3],
 	// const Image& lap0,const Image& lap1,const Image& lap2,
 	// int x,int y)
-	private void ComputeSubpixelHessianSameOctave(double[] H, double[] b,
-			KpmImage lap0, KpmImage lap1, KpmImage lap2, int x, int y) {
+	private void ComputeSubpixelHessianSameOctave(double[] H, double[] b, KpmImage lap0, KpmImage lap1, KpmImage lap2,
+			int x, int y) {
 		double Dx, Dy, Ds;
 		double Dxx, Dyy, Dxy;
 		double Dss, Dxs, Dys;
@@ -1255,8 +1048,7 @@ public class DoGScaleInvariantDetector {
 		double[] lap2buf = (double[]) lap2.getBuffer();
 		// Compute scale derivates
 		Ds = 0.5f * (lap2buf[lap2_p + 0] - lap0buf[lap0_p + 0]);
-		Dss = lap0buf[lap0_p + 0] + (-2.f * lap1buf[lap1_p + 0])
-				+ lap2buf[lap2_p + 0];
+		Dss = lap0buf[lap0_p + 0] + (-2.f * lap1buf[lap1_p + 0]) + lap2buf[lap2_p + 0];
 		Dxs = 0.25f * ((lap0buf[lap0_p - 1] - lap0buf[lap0_p + 1]) + (-lap2buf[lap2_p - 1] + lap2buf[lap2_p + 1]));
 		Dys = 0.25f * ((lap0buf[lap0_pm1 + 0] - lap0buf[lap0_pp1 + 0]) + (-lap2buf[lap2_pm1 + 0] + lap2buf[lap2_pp1 + 0]));
 
@@ -1285,15 +1077,15 @@ public class DoGScaleInvariantDetector {
 		double Dyy = H[4];
 		double Dxy = H[1];
 
-		det = (Dxx * Dyy) - (Dxy*Dxy);
+		det = (Dxx * Dyy) - (Dxy * Dxy);
 
 		// The determinant cannot be zero
 		if (det == 0) {
 			return false;
 		}
-		double t=Dxx + Dyy;
+		double t = Dxx + Dyy;
 		// Compute a score based on the local curvature
-		score[0] = (t*t) / det;
+		score[0] = (t * t) / det;
 
 		return true;
 	}
@@ -1307,14 +1099,13 @@ public class DoGScaleInvariantDetector {
 		return x;
 	}
 
-	void PruneDoGFeatures(BucketStack[][] buckets, DogFeaturePointStack outPoints,
-			DogFeaturePointStack inPoints, int num_buckets_X, int num_buckets_Y,
-			int width, int height, int max_points) {
+	void PruneDoGFeatures(BucketStack[][] buckets, DogFeaturePointStack outPoints, DogFeaturePointStack inPoints,
+			int num_buckets_X, int num_buckets_Y, int width, int height, int max_points) {
 
 		int num_buckets = num_buckets_X * num_buckets_Y;
 		int num_points_per_bucket = max_points / num_buckets;
-		int dx = (int) Math.ceil( width / num_buckets_X);
-		int dy = (int) Math.ceil( height / num_buckets_Y);
+		int dx = (int) Math.ceil(width / num_buckets_X);
+		int dy = (int) Math.ceil(height / num_buckets_Y);
 
 		//
 		// Clear the previous state
