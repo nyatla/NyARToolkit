@@ -15,6 +15,11 @@ public class HomographySolver
 	private boolean solveHomography4PointsInhomogenous(NyARDoubleMatrix33 i_homography_mat,
 			NyARDoublePoint2d x1, NyARDoublePoint2d x2, NyARDoublePoint2d x3, NyARDoublePoint2d x4,
 			NyARDoublePoint2d xp1,NyARDoublePoint2d xp2, NyARDoublePoint2d xp3, NyARDoublePoint2d xp4) {
+
+//		x1.setValue(0, 0);x2.setValue(10, 0);x3.setValue(10, 10);x4.setValue(0, 10);
+//		xp1.setValue(10, 10);xp2.setValue(10, 0);xp3.setValue(0, 0);xp4.setValue(0, 10);		
+		
+		
 		//Homography4PointsInhomogeneousConstraint
 		AddHomographyPointContraint(this._mat_A, 0, x1, xp1);
 		AddHomographyPointContraint(this._mat_A, 2, x2, xp2);
