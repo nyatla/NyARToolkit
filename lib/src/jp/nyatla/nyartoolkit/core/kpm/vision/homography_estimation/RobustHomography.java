@@ -5,6 +5,7 @@ import jp.nyatla.nyartoolkit.core.kpm.vision.match.indexing;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.HomographyMat;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.homography;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.HomographySolver;
+import jp.nyatla.nyartoolkit.core.kpm.vision.math.HomographySolver_O1;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.geometry;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.rand;
@@ -91,7 +92,7 @@ public class RobustHomography {
 				mCauchyScale, mMaxNumHypotheses, mMaxTrials, mChunkSize);
 	}
 
-	private HomographySolver _homography_solver=new HomographySolver();
+	private HomographySolver_O1 _homography_solver=new HomographySolver_O1();
 	/**
 	 * Robustly solve for the homography given a set of correspondences.
 	 */
@@ -162,7 +163,6 @@ public class RobustHomography {
 					q[tmp_i[hyp_perm + 2]], q[tmp_i[hyp_perm + 3]])) {
 				continue;
 			}
-
 			// Check the test points
 			if (num_test_points > 0) {
 				NyARDoubleMatrix33 hyps=hyp[num_hypotheses];
@@ -225,26 +225,9 @@ public class RobustHomography {
 		}
 
 		// Move the best hypothesis
-//		indexing.CopyVector(H, 0, hyp, min_index * 9, 9);
 		H.setValue(hyp[min_index]);
 		H.normalizeHomography();
 
 		return true;
 	}
-
-
-
-//	/**
-//	 * Compute the Cauchy reprojection cost for H*p-q.
-//	 */
-//	// float CauchyProjectiveReprojectionCost(float H[9], const T p[2], const T
-//	// q[2], T one_over_scale2) {
-//	double CauchyProjectiveReprojectionCost(NyARDoubleMatrix33 H, NyARDoublePoint2d i_p, NyARDoublePoint2d i_q, double i_one_over_scale2)
-//	{
-//    	double w = H.m20*i_p.x + H.m21*i_p.y + H.m22;
-//        double vx = ((H.m00*i_p.x + H.m01*i_p.y + H.m02)/w)-i_q.x;//XP
-//        double vy = ((H.m10*i_p.x + H.m11*i_p.y + H.m12)/w)-i_q.y;//YP
-//		double T= Math.log(1 + (vx * vx + vy * vy) * i_one_over_scale2);
-//		return T;
-//	}
 }

@@ -1,6 +1,7 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.math;
 
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.HomographyMat;
+import jp.nyatla.nyartoolkit.core.math.NyARMath;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 
@@ -11,19 +12,8 @@ import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 public class HomographySolver_O1
 {
 	private double[][] _mat_A=new double[8][9];
-	private boolean solveHomography4PointsInhomogenous(NyARDoubleMatrix33 i_homography_mat,
-			NyARDoublePoint2d x1, NyARDoublePoint2d x2, NyARDoublePoint2d x3, NyARDoublePoint2d x4,
-			NyARDoublePoint2d xp1,NyARDoublePoint2d xp2, NyARDoublePoint2d xp3, NyARDoublePoint2d xp4) {
-
-//		x1.setValue(0, 0);x2.setValue(10, 0);x3.setValue(10, 10);x4.setValue(0, 10);
-//		xp1.setValue(10, 10);xp2.setValue(10, 0);xp3.setValue(0, 0);xp4.setValue(0, 10);		
-		
-		
-		//Homography4PointsInhomogeneousConstraint
-		AddHomographyPointContraint(this._mat_A, 0, x1, xp1);
-		AddHomographyPointContraint(this._mat_A, 2, x2, xp2);
-		AddHomographyPointContraint(this._mat_A, 4, x3, xp3);
-		AddHomographyPointContraint(this._mat_A, 6, x4, xp4);
+	private boolean solveHomography4PointsInhomogenous(NyARDoubleMatrix33 i_homography_mat)
+	{
 		//SolveHomography4PointsInhomogenous
 		if (!this.solveNullVector8x9Destructive(i_homography_mat,this._mat_A)) {
 			return false;
@@ -33,52 +23,10 @@ public class HomographySolver_O1
 		}
 		return true;
 	}
-	
-	/**
-	 * Condition four 2D points such that the mean is zero and the standard
-	 * deviation is sqrt(2).
-	 */
-	private static boolean condition4Points2d(NyARDoublePoint2d xp1, NyARDoublePoint2d xp2, NyARDoublePoint2d xp3,
-			NyARDoublePoint2d xp4, double[] mus, // ms[2],sの3要素
-			NyARDoublePoint2d x1, NyARDoublePoint2d x2, NyARDoublePoint2d x3, NyARDoublePoint2d x4) {
 
 
-		double mus_0 = (x1.x + x2.x + x3.x + x4.x) / 4;
-		double mus_1 = (x1.y + x2.y + x3.y + x4.y) / 4;
-
-		double d1_0 = x1.x - mus_0;
-		double d1_1 = x1.y - mus_1;
-		double d2_0 = x2.x - mus_0;
-		double d2_1 = x2.y - mus_1;
-		double d3_0 = x3.x - mus_0;
-		double d3_1 = x3.y - mus_1;
-		double d4_0 = x4.x - mus_0;
-		double d4_1 = x4.y - mus_1;
-
-		double d = (Math.sqrt(d1_0 * d1_0 + d1_1 * d1_1) + Math.sqrt(d2_0 * d2_0 + d2_1 * d2_1) + Math.sqrt(d3_0 * d3_0 + d3_1 * d3_1) + Math.sqrt(d4_0 * d4_0 + d4_1 * d4_1)) / 4;
-
-		if (d == 0) {
-			return false;
-		}
-
-		double s = (double) ((1 / d) * math_utils.SQRT2);
-		xp1.x = d1_0 * s;
-		xp1.y = d1_1 * s;
-		xp2.x = d2_0 * s;
-		xp2.y = d2_1 * s;
-		xp3.x = d3_0 * s;
-		xp3.y = d3_1 * s;
-		xp4.x = d4_0 * s;
-		xp4.y = d4_1 * s;
-		mus[0] = mus_0;
-		mus[1] = mus_1;
-		mus[2] = s;
-
-		return true;
-	}
-
-
-
+	private final NyARDoublePoint2d[] _a1=new NyARDoublePoint2d[4];
+	private final NyARDoublePoint2d[] _a2=new NyARDoublePoint2d[4];
 
 
 
@@ -90,75 +38,124 @@ public class HomographySolver_O1
 			NyARDoublePoint2d x3, NyARDoublePoint2d x4, NyARDoublePoint2d xp1, NyARDoublePoint2d xp2, NyARDoublePoint2d xp3,
 			NyARDoublePoint2d xp4) {
 
-		// T s, sp;
-		// T t[2], tp[2];
-
-		NyARDoublePoint2d x1p = new NyARDoublePoint2d(), x2p = new NyARDoublePoint2d(), x3p = new NyARDoublePoint2d(), x4p = new NyARDoublePoint2d();
-		NyARDoublePoint2d xp1p = new NyARDoublePoint2d(), xp2p = new NyARDoublePoint2d(), xp3p = new NyARDoublePoint2d(), xp4p = new NyARDoublePoint2d();
-		double[] ts = new double[3];
-		double[] tps = new double[3];
-		//
-		// Condition the points
-		//
-
-		if (!condition4Points2d(x1p, x2p, x3p, x4p, ts, x1, x2, x3, x4)) {
-			return false;
-		}
-		if (!condition4Points2d(xp1p, xp2p, xp3p, xp4p, tps, xp1, xp2, xp3, xp4)) {
-			return false;
-		}
-
-		//
-		// Solve for the homography
-		//
-
-		if (!this.solveHomography4PointsInhomogenous(H, x1p, x2p, x3p, x4p, xp1p,xp2p, xp3p, xp4p))
+		NyARDoublePoint2d[] a1=this._a1;
+		NyARDoublePoint2d[] a2=this._a2;
+		a1[0]=x1;a1[1]=x2;a1[2]=x3;a1[3]=x4;
+		a2[0]=xp1;a2[1]=xp2;a2[2]=xp3;a2[3]=xp4;
+		double mus1_0=0;
+		double mus1_1=0;
+		double mus2_0=0;
+		double mus2_1=0;
+		double s1,s2;
+		{
+			/**
+			 * Condition four 2D points such that the mean is zero and the standard
+			 * deviation is sqrt(2).
+			 * condition4Points2d+AddHomographyPointContraint function
+			 */			
+			//condition4Points2d(a1,a2,this._mat_A);
+			for(int i=0;i<4;i++){
+				mus1_0+=a1[i].x;
+				mus1_1+=a1[i].y;
+				mus2_0+=a2[i].x;
+				mus2_1+=a2[i].y;
+			}
+			mus1_0/=4;
+			mus1_1/=4;
+			mus2_0/=4;
+			mus2_1/=4;
+			double dw1=0;
+			double dw2=0;
+			for(int i=0;i<4;i++){
+				double[] l;
+				double X1= a1[i].x - mus1_0;
+				double Y1= a1[i].y - mus1_1;		
+				double X2= a2[i].x - mus2_0;
+				double Y2= a2[i].y - mus2_1;
+				dw2+=Math.sqrt(X2 * X2 + Y2 * Y2);
+				dw1+=Math.sqrt(X1 * X1 + Y1 * Y1);
+				l=this._mat_A[i*2];
+				l[0]=-X1;
+				l[1]=-Y1;
+				l[6]=X2*X1;
+				l[7]=X2*Y1;
+				l[8]=X2;
+				l=this._mat_A[i*2+1];
+				l[3]=-X1;
+				l[4]=-Y1;
+				l[6]=Y2*X1;
+				l[7]=Y2*Y1;
+				l[8]=Y2;			
+			}
+			if(dw1*dw2==0){
+				return false;
+			}
+			s1=(4/dw1)* NyARMath.SQRT2;
+			s2=(4/dw2)* NyARMath.SQRT2;
+//			double ss=s1*s2;
+			for(int i=0;i<4;i++){
+				double[] l;
+				l=this._mat_A[i*2];
+				l[6]=(-l[0]*s1)*(l[8]*s2);//emulation calculation order.
+				l[7]=(-l[1]*s1)*(l[8]*s2);//emulation calculation order.			
+//				l[6]*=ss;
+//				l[7]*=ss;
+				l[0]*=s1;
+				l[1]*=s1;
+				l[2]=-1;
+				l[3]=l[4]=l[5]=0;
+				l[8]*=s2;
+				l=this._mat_A[i*2+1];
+				l[6]=(-l[3]*s1)*(l[8]*s2);//emulation calculation order.
+				l[7]=(-l[4]*s1)*(l[8]*s2);//emulation calculation order.
+//				l[6]*=ss;
+//				l[7]*=ss;
+				l[0]=l[1]=l[2]=0;
+				l[3]*=s1;
+				l[4]*=s1;
+				l[5]=-1;
+				l[8]*=s2;
+			}
+		}	
+		
+		if (!this.solveHomography4PointsInhomogenous(H))
 		{
 			return false;
 		}
 
+
 		//
 		// Denomalize the computed homography
 		//
-		H.denormalizeHomography(ts, tps);
+		{	//H.denormalizeHomography(ts, tps);
+	
+	
+			double stx = s1 * mus1_0;
+			double sty = s1 * mus1_1;
+	
+			double apc = (H.m20 * mus2_0) + (H.m00 / s2);
+			double bpd = (H.m21 * mus2_0) + (H.m01 / s2);
+			H.m00 = s1 * apc;
+			H.m01 = s1 * bpd;
+			H.m02 = H.m22 * mus2_0 + H.m02 / s2 - stx * apc - sty * bpd;
+	
+			double epg = (H.m20 * mus2_1) + (H.m10 / s2);
+			double fph = (H.m21 * mus2_1) + (H.m11 / s2);
+			H.m10 = s1 * epg;
+			H.m11 = s1 * fph;
+			H.m12 = H.m22 * mus2_1 + H.m12 / s2 - stx * epg - sty * fph;
+	
+			H.m20 = H.m20 * s1;
+			H.m21 = H.m21 * s1;
+			H.m22 = H.m22 - H.m20 * mus1_0 - H.m21 * mus1_1;
+		}
+		
+		
+		
 		return true;
 	}	
 	
 	
-	
-	
-	
-	/**
-	 * Add a point to the homography constraint matrix.
-	 */
-	private static void AddHomographyPointContraint(double A[][], int A_ptr, NyARDoublePoint2d x, NyARDoublePoint2d xp)
-	{
-
-		A[A_ptr][0] = -x.x;//[0];
-		A[A_ptr][1] = -x.y;//[1];
-		A[A_ptr][2] = -1;
-		// ZeroVector3(A+3);
-		A[A_ptr][3] = 0;
-		A[A_ptr][4] = 0;
-		A[A_ptr][5] = 0;
-
-		A[A_ptr][6] = xp.x * x.x;//xp[0] * x[0];
-		A[A_ptr][7] = xp.x * x.y;//xp[0] * x[1];
-		A[A_ptr][8] = xp.x;//xp[0];
-
-		// ZeroVector3(A+9);
-		A[A_ptr+1][0] = 0;
-		A[A_ptr+1][1] = 0;
-		A[A_ptr+1][2] = 0;
-
-		A[A_ptr+1][3] = -x.x;//-x[0];
-		A[A_ptr+1][4] = -x.y;//-x[1];
-		A[A_ptr+1][5] = -1;
-		A[A_ptr+1][6] = xp.y * x.x;//xp[1] * x[0];
-		A[A_ptr+1][7] = xp.y * x.y;//xp[1] * x[1];
-		A[A_ptr+1][8] = xp.y;//xp[1];
-	}
-
 
 
 	/**
