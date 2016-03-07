@@ -809,8 +809,8 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 			return false;
 		}
 		err = ar2GetTransMat(this._icp, this.trans1, this.pos2d, this.pos3d, num, trans);
-//CheckPoint
-		System.out.println(err==2.1303851143326673);
+//CheckPoint(20160307)
+		System.out.println(err==2.1303838027020645);
 	
 
 //
@@ -1541,9 +1541,9 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 	{
 		NyARDoubleMatrix44 DEST_MAT=new NyARDoubleMatrix44(
 				new double[]{
-				0.9832165798027188,0.0047896703389198,-0.18237939545273588,-190.59060778155964,
-				0.012860128650288684,-0.9989882776886859,0.0430940528622663,64.04490608649942,
-				-0.1819884694945465,-0.044716208348275166,-0.9822833723761482,616.6427501051554,
+						0.9832165682361184,0.004789697223621061,-0.18237945710280384,-190.59060790299358,
+						0.012860184615056927,-0.9989882709616935,0.04309419210331572,64.04490277502563,
+						-0.18198852802987958,-0.044716355753573425,-0.9822833548209547,616.6427596804766,
 				0,0,0,1});
 		NyARDoubleMatrix44 SRC_MAT=new NyARDoubleMatrix44(new double[]{
 			0.984363556,	0.00667689135,	-0.176022261,	-191.179672,
@@ -1557,7 +1557,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 			String fsetfile="../Data/testcase/pinball.fset";
 			String isetfile="../Data/testcase/pinball.iset5";
 			//カメラパラメータ
-			NyARParam param=NyARParam.loadFromARParamFile(new FileInputStream(cparam),640,480,NyARParam.DISTFACTOR_RAW);
+			NyARParam param=NyARParam.loadFromARParamFile(new FileInputStream(cparam),640,480,NyARParam.DISTFACTOR_LT_ARTK5);
 			NyARDoublePoint2d d=new NyARDoublePoint2d();
 			param.getDistortionFactor().ideal2Observ(100,100, d);
 			param.getDistortionFactor().observ2Ideal(100,100, d);
