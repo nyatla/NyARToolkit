@@ -4,10 +4,9 @@ package jp.nyatla.nyartoolkit.core.kpm;
 
 import jp.nyatla.nyartoolkit.base.attoolkit5.ARParamLT;
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
-import jp.nyatla.nyartoolkit.core.kpm.freak.FREAKExtractor;
-import jp.nyatla.nyartoolkit.core.kpm.vision.facade.VisualDatabaseFacade;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakMatchPointSetStack;
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.VisualDatabase;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.matchStack;
 import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftFreakFsetFile;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
@@ -17,7 +16,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 public class FreakKeypointMatching {
 	private final static int FREAK_SUB_DIMENSION = 96;
-	VisualDatabaseFacade freakMatcher;
+	final private VisualDatabase<FreakFeaturePointStack> freakMatcher;
 	final ARParamLT cparamLT;
 	int poseMode;
 	int xsize;
@@ -36,7 +35,7 @@ public class FreakKeypointMatching {
 	}
 
 	public FreakKeypointMatching(ARParamLT cparamLT, NyARIntSize size, int poseMode) {
-		this.freakMatcher = new VisualDatabaseFacade(size.w, size.h);
+		this.freakMatcher = new VisualDatabase<FreakFeaturePointStack>(size.w, size.h);
 
 		this.cparamLT = cparamLT;
 		this.poseMode = poseMode;
@@ -62,7 +61,7 @@ public class FreakKeypointMatching {
 //		extractor.extract(store, pyramid, points)
 
 		this.freakMatcher.query(inImage);
-		this.inDataSet.num  = (int) this.freakMatcher.getQueryFeaturePoints().getLength();
+		this.inDataSet.num  = (int) this.freakMatcher.queryKeyframe().getLength();
 
 		if (this.inDataSet.num != 0) {
 
@@ -70,7 +69,7 @@ public class FreakKeypointMatching {
 
 //			featureVector.sf = FreakFeature.createArray(this.inDataSet.num);
 
-			FreakFeaturePointStack points = this.freakMatcher.getQueryFeaturePoints();
+			FreakFeaturePointStack points = this.freakMatcher.queryKeyframe();
 //			byte[] descriptors = this.freakMatcher.getQueryDescriptors();
 
 			for (i = 0; i < this.inDataSet.num; i++) {
@@ -99,8 +98,8 @@ public class FreakKeypointMatching {
 					continue;
 
 				ret = kpmMatching.kpmUtilGetPose_binary(this.cparamLT, matches,
-						this.freakMatcher.getKeyFeaturePoints(matched_image_id).store(),
-						this.freakMatcher.getQueryFeaturePoints(), this.result[pageLoop]);
+						this.freakMatcher.getKeyFeatureFrame(matched_image_id).store(),
+						this.freakMatcher.queryKeyframe(), this.result[pageLoop]);
 				if (ret == 0) {
 					this.result[pageLoop].camPoseF = 0;
 					this.result[pageLoop].inlierNum = (int) matches.getLength();

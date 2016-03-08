@@ -481,7 +481,18 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
         
         mKeyframeMap.put(image_id,keyframe);
 	}
+    public void addFreakFeaturesAndDescriptors(FreakMatchPointSetStack featurePoints,int width,int height,int image_id)
+    {
 
+    	Keyframe keyframe=new Keyframe(
+        	width,height,
+        	featurePoints);
+
+        keyframe.buildIndex();
+        this.addKeyframe(keyframe, image_id);
+
+        return;
+    }
 	public Keyframe getKeyFeatureFrame(int image_id)
 	{
 		return this.mKeyframeMap.get(image_id);
