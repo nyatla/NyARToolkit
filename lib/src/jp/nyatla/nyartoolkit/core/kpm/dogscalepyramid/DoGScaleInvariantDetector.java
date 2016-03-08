@@ -360,6 +360,10 @@ public class DoGScaleInvariantDetector {
 
 						if (extrema) {
 							DogFeaturePoint fp = i_dog_fp.prePush();
+							if(fp==null){
+								prepush_warning();
+								break;
+							}
 							fp.octave = octave;
 							fp.scale = scale;
 							fp.score = value;
@@ -455,6 +459,10 @@ public class DoGScaleInvariantDetector {
 
 						if (extrema) {
 							DogFeaturePoint fp = i_dog_fp.prePush();
+							if(fp==null){
+								prepush_warning();
+								break;
+							}
 							fp.octave = octave;
 							fp.scale = scale;
 							fp.score = value;
@@ -557,6 +565,10 @@ public class DoGScaleInvariantDetector {
 
 						if (extrema) {
 							DogFeaturePoint fp = i_dog_fp.prePush();
+							if(fp==null){
+								prepush_warning();
+								break;
+							}
 							fp.octave = octave;
 							fp.scale = scale;
 							fp.score = value;
@@ -701,7 +713,12 @@ public class DoGScaleInvariantDetector {
 		// オーバフローするから後で直す
 		i_dog_fp.clear();
 		for (int i = 0; i < points.getLength(); i++) {
-			i_dog_fp.prePush().set(points.getItem(i));
+			DogFeaturePoint p=i_dog_fp.prePush();
+			if(p==null){
+				prepush_warning();
+				break;
+			}
+			p.set(points.getItem(i));
 		}
 		assert i_dog_fp.getLength() <= mMaxNumFeaturePoints;// ,
 																	// "Too many feature points");
@@ -767,6 +784,10 @@ public class DoGScaleInvariantDetector {
 		i_dog_fp.clear();
 		for (int i = 0; i < mTmpOrientatedFeaturePoints_n; i++) {
 			DogFeaturePoint fp = i_dog_fp.prePush();
+			if(fp==null){
+				prepush_warning();
+				break;
+			}			
 			fp.set(mTmpOrientatedFeaturePoints[i]);
 		}
 
@@ -1110,6 +1131,10 @@ public class DoGScaleInvariantDetector {
 			// buckets[binX][binY].push_back(std::make_pair(std::abs(p.score),
 			// i));
 			BucketPair b = buckets[binX][binY].prePush();
+			if(b==null){
+				prepush_warning();
+				break;
+			}
 			b.first = Math.abs(p.score);
 			b.second = i;
 		}
@@ -1142,9 +1167,16 @@ public class DoGScaleInvariantDetector {
 
 				for (int k = 0; k < n; k++) {
 					DogFeaturePoint p = outPoints.prePush();
+					if(p==null){
+						prepush_warning();
+						break;
+					}
 					p.set(inPoints.getItem(bucket.getItem(k).second));
 				}
 			}
 		}
+	}
+	private static void prepush_warning(){
+		System.out.println("DogFeaturePoint over flow");
 	}
 }

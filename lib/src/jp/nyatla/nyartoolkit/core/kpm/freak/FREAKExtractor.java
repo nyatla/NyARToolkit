@@ -142,6 +142,10 @@ public class FREAKExtractor {
 		// "Feature store has not been allocated");
 		for (int i = 0; i < points.getLength(); i++) {
 			FreakFeaturePoint sp=store.prePush();
+			if(sp==null){
+				prepush_wawning();
+				break;
+			}
 			DogFeaturePoint pt=points.getItem(i);
 			if (!ExtractFREAK84(sp.descripter,
 					pyramid,pt, points_ring0, points_ring1,
@@ -471,5 +475,8 @@ public class FREAKExtractor {
 			x = max;
 		}
 		return x;
+	}
+	private static void prepush_wawning(){
+		System.out.println("FreakExtructor stack overflow");
 	}
 }
