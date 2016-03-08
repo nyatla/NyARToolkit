@@ -4,6 +4,7 @@ package jp.nyatla.nyartoolkit.core.kpm;
 
 import jp.nyatla.nyartoolkit.base.attoolkit5.ARParamLT;
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
+import jp.nyatla.nyartoolkit.core.kpm.freak.FREAKExtractor;
 import jp.nyatla.nyartoolkit.core.kpm.vision.facade.VisualDatabaseFacade;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakMatchPointSetStack;
@@ -54,13 +55,14 @@ public class FreakKeypointMatching {
 
 	}
 
-	public int kpmMatching(INyARGrayscaleRaster inImage) {
-		FeatureVector featureVector = new FeatureVector();
-		int i, j;
+	public int kpmMatching(INyARGrayscaleRaster inImage)
+	{
+		int i;
 		int ret;
+//		extractor.extract(store, pyramid, points)
 
 		this.freakMatcher.query(inImage);
-		this.inDataSet.num = featureVector.num = (int) this.freakMatcher.getQueryFeaturePoints().getLength();
+		this.inDataSet.num  = (int) this.freakMatcher.getQueryFeaturePoints().getLength();
 
 		if (this.inDataSet.num != 0) {
 

@@ -1,10 +1,12 @@
-package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
+package jp.nyatla.nyartoolkit.core.kpm.freak;
 
 import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
 import jp.nyatla.nyartoolkit.core.kpm.LongDescripter768;
 import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DogFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DogFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.GaussianScaleSpacePyramid;
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePoint;
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 
@@ -42,9 +44,10 @@ public class FREAKExtractor {
 	 * (x,y) locations of each receptor in the ring.
 	 */
 
-	final private static double[] freak84_points_ring0 = { 0.000000f, 0.362783f,
-			-0.314179f, 0.181391f, -0.314179f, -0.181391f, -0.000000f,
-			-0.362783f, 0.314179f, -0.181391f, 0.314179f, 0.181391f };
+	final private static double[] freak84_points_ring0 = {
+		0.000000f, 0.362783f,	-0.314179f, 0.181391f,
+		-0.314179f, -0.181391f, -0.000000f,-0.362783f,
+		0.314179f, -0.181391f, 0.314179f, 0.181391f };
 	final private static double[] freak84_points_ring1 = { -0.595502f,
 			0.000000f, -0.297751f, -0.515720f, 0.297751f, -0.515720f,
 			0.595502f, -0.000000f, 0.297751f, 0.515720f, -0.297751f, 0.515720f };
@@ -109,13 +112,13 @@ public class FREAKExtractor {
 
 		mExpansionFactor = 7;
 	}
-
+	
 
 
 	/**
 	 * Extract a 96 byte descriptor.
 	 */
-	void extract(FreakFeaturePointStack store, GaussianScaleSpacePyramid pyramid,
+	public void extract(FreakFeaturePointStack store, GaussianScaleSpacePyramid pyramid,
 			DogFeaturePointStack points)
 	{
 //		store.setLength(points.length);//これはいらない。リセットする。
@@ -129,7 +132,7 @@ public class FREAKExtractor {
 	/**
 	 * Extract the descriptors for all the feature points.
 	 */
-	void ExtractFREAK84(FreakFeaturePointStack store,
+	private void ExtractFREAK84(FreakFeaturePointStack store,
 			GaussianScaleSpacePyramid pyramid, DogFeaturePointStack points,
 			double[] points_ring0, double[] points_ring1, double[] points_ring2,
 			double[] points_ring3, double[] points_ring4, double[] points_ring5,
@@ -227,18 +230,12 @@ public class FREAKExtractor {
 		c[1] = S[5];
 
 		// Locate ring 0 points
-		math_utils.MultiplyPointSimilarityInhomogenous(r0, 0, S, points_ring0,
-				0);
-		math_utils.MultiplyPointSimilarityInhomogenous(r0, 2, S, points_ring0,
-				2);
-		math_utils.MultiplyPointSimilarityInhomogenous(r0, 4, S, points_ring0,
-				4);
-		math_utils.MultiplyPointSimilarityInhomogenous(r0, 6, S, points_ring0,
-				6);
-		math_utils.MultiplyPointSimilarityInhomogenous(r0, 8, S, points_ring0,
-				8);
-		math_utils.MultiplyPointSimilarityInhomogenous(r0, 10, S, points_ring0,
-				10);
+		math_utils.MultiplyPointSimilarityInhomogenous(r0, 0, S, points_ring0,0);
+		math_utils.MultiplyPointSimilarityInhomogenous(r0, 2, S, points_ring0,2);
+		math_utils.MultiplyPointSimilarityInhomogenous(r0, 4, S, points_ring0,4);
+		math_utils.MultiplyPointSimilarityInhomogenous(r0, 6, S, points_ring0,6);
+		math_utils.MultiplyPointSimilarityInhomogenous(r0, 8, S, points_ring0,8);
+		math_utils.MultiplyPointSimilarityInhomogenous(r0, 10, S, points_ring0,10);
 
 		// Locate ring 1 points
 		math_utils.MultiplyPointSimilarityInhomogenous(r1, 0, S, points_ring1,
@@ -381,8 +378,7 @@ public class FREAKExtractor {
 		samples[26] = SampleReceptor(pyramid, r1[4], r1[5], lr.octave, lr.scale);
 		samples[27] = SampleReceptor(pyramid, r1[6], r1[7], lr.octave, lr.scale);
 		samples[28] = SampleReceptor(pyramid, r1[8], r1[9], lr.octave, lr.scale);
-		samples[29] = SampleReceptor(pyramid, r1[10], r1[11], lr.octave,
-				lr.scale);
+		samples[29] = SampleReceptor(pyramid, r1[10], r1[11], lr.octave,lr.scale);
 
 		//
 		// Locate and sample ring 0

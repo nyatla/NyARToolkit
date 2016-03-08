@@ -1,5 +1,6 @@
 package jp.nyatla.nyartoolkit.core.kpm;
 
+import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeature;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 
 public class KpmRefData {

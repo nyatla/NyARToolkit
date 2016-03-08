@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.core.kpm;
+package jp.nyatla.nyartoolkit.core.kpm.freak;
 
 public class FreakFeature {
 	final public static int FREAK_SUB_DIMENSION = 96;
@@ -7,7 +7,7 @@ public class FreakFeature {
 	public double scale;
 	public int maxima;
 
-	protected FreakFeature() {
+	public FreakFeature() {
 	}
 
 	public FreakFeature(byte[] i_bytes) {

@@ -1,13 +1,11 @@
 package jp.nyatla.nyartoolkit.core.kpm;
 
 import jp.nyatla.nyartoolkit.base.attoolkit5.ARParamLT;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakMatchPointSetStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.matchStack;
 import jp.nyatla.nyartoolkit.core.icp.NyARIcpPlane;
 import jp.nyatla.nyartoolkit.core.icp.NyARIcpPoint;
-import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResultParam;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
