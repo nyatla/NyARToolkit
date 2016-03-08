@@ -1,5 +1,7 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
 
+import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
+import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.BinaryHierarchicalClustering;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;

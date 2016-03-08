@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.core.kpm.freak;
+package jp.nyatla.nyartoolkit.core.kpm.vision;
 
 public class FreakFeature {
 	final public static int FREAK_SUB_DIMENSION = 96;

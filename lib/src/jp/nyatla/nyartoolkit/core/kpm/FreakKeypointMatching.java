@@ -4,7 +4,7 @@ package jp.nyatla.nyartoolkit.core.kpm;
 
 import jp.nyatla.nyartoolkit.base.attoolkit5.ARParamLT;
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePointStack;
+import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakMatchPointSetStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.VisualDatabase;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.matchStack;

@@ -18,11 +18,11 @@ public class MatrixCodeGen11 extends MatTable{
 	 * ベースクラス
 	 */
 	static abstract public class Factor{
-		public int lv;
-		public int idx;
-		private static int serial=0;
+		public long lv;
+		public long idx;
+		private static long serial=0;
 		public boolean zero;
-		public Factor(int i_lv,boolean i_zero ){
+		public Factor(long i_lv,boolean i_zero ){
 			this.lv=i_lv;
 			this.idx=serial;
 			this.zero=i_zero;
@@ -41,7 +41,7 @@ public class MatrixCodeGen11 extends MatTable{
 	}
 	public class ValueFactor extends Factor{
 		public String val;
-		public ValueFactor(String i_val,int i_lv){
+		public ValueFactor(String i_val,long i_lv){
 			super(i_lv,i_val.compareTo("0")==0);
 			this.val=i_val;
 		}
@@ -221,7 +221,7 @@ public class MatrixCodeGen11 extends MatTable{
 				int f=this.getCofactorFlag(r, c);
 				Factor val=new MatrixCodeGen11(this._size-1,this.getCofactor(r, c)).absStr(map);
 				//名前は転値
-				matstr+=String.format("this.m%d%d=(%s%s)/det;\n",c,r,f>0?"":"-", val);
+				matstr+=String.format("m%d_%d=(%s%s)/det;\n",c,r,f>0?"":"-", val);
 			}				
 		}
 		//MAPの結果をListに転送
@@ -242,7 +242,7 @@ public class MatrixCodeGen11 extends MatTable{
             @Override
             public int compare(
             	Map.Entry<Factor, Tag> entry1, Map.Entry<Factor, Tag> entry2) {
-            	int t=entry1.getValue().dst_section.idx-entry2.getValue().dst_section.idx;
+            	long t=entry1.getValue().dst_section.idx-entry2.getValue().dst_section.idx;
                 return t==0?0:(t>1?1:-1);
             }
         });
@@ -258,7 +258,7 @@ public class MatrixCodeGen11 extends MatTable{
 
 		
 		
-		MatrixCodeGen11 m33=new MatrixCodeGen11(10);
+		MatrixCodeGen11 m33=new MatrixCodeGen11(13);
 //		m33.setZero(0,0);m33.setZero(0,1);m33.setZero(0,2);
 //		m33.setZero(1,3);m33.setZero(1,4);m33.setZero(1,5);
 //		m33.setZero(2,0);m33.setZero(2,1);m33.setZero(2,2);

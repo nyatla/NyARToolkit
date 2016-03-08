@@ -5,6 +5,8 @@ import java.util.Map;
 import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DoGScaleInvariantDetector;
 import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DogFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FREAKExtractor;
+import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
+import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.Keyframe;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.KeyframeMap;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.BinomialPyramid32f;

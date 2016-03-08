@@ -1,5 +1,6 @@
 package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
 
+import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 

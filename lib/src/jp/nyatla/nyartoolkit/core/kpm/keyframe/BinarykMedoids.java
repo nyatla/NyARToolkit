@@ -1,6 +1,6 @@
 package jp.nyatla.nyartoolkit.core.kpm.keyframe;
 
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePoint;
+import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
 import jp.nyatla.nyartoolkit.core.math.NyARLCGsRandomizer;
 
 public class BinarykMedoids {

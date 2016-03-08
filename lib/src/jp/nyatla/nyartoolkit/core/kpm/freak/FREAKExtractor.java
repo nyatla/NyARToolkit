@@ -5,8 +5,6 @@ import jp.nyatla.nyartoolkit.core.kpm.LongDescripter768;
 import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DogFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DogFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.GaussianScaleSpacePyramid;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePoint;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 
