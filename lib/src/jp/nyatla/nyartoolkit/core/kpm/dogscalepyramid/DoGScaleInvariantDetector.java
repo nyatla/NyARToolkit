@@ -269,9 +269,6 @@ public class DoGScaleInvariantDetector {
 	 */
 	public void extractFeatures(GaussianScaleSpacePyramid pyramid, DoGPyramid laplacian,DogFeaturePointStack i_dog_fp)
 	{
-
-
-
 		double laplacianSqrThreshold = (this.mLaplacianThreshold * this.mLaplacianThreshold);
 
 		for (int i = 1; i < mLaplacianPyramid.size() - 1; i++) {

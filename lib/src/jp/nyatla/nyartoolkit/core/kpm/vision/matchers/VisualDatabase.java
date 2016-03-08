@@ -35,66 +35,23 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 	private static boolean kUseFeatureIndex = true;
 
 
-	/** Pyramid builder */
-	final private BinomialPyramid32f mPyramid;
-	/** Interest point detector (DoG, etc) */
-	final private DoGScaleInvariantDetector mDetector;
 	
+	final private NyARIntSize _image_size;
 	
 	
 	public VisualDatabase(int i_width,int i_height)
 	{
-		this.mFeatureExtractor=new FREAKExtractor();
-		this.mPyramid=new BinomialPyramid32f(
-			i_width,i_height,
-			BinomialPyramid32f.octavesFromMinimumCoarsestSize(i_width,i_height,kMinCoarseSize));
-		this.mDetector = new DoGScaleInvariantDetector(this.mPyramid,kLaplacianThreshold,kEdgeThreshold,kMaxNumFeatures);
-//		this.mDetector.setLaplacianThreshold(kLaplacianThreshold);
-//		this.mDetector.setEdgeThreshold(kEdgeThreshold);
-//		this.mDetector.setMaxNumFeaturePoints(kMaxNumFeatures);
-
+		this._image_size=new NyARIntSize(i_width,i_height);
+		
 		this.mHomographyInlierThreshold = kHomographyInlierThreshold;
 		this.mMinNumInliers = kMinNumInliers;
 
 		this.mUseFeatureIndex = kUseFeatureIndex;
 	}
 
-	final private DogFeaturePointStack _dog_feature_points = new DogFeaturePointStack(2000);// この2000は適当
 	
 	
 
-    /**
-     * @return Query store
-     */
-    public FreakFeaturePointStack queryKeyframe(){ return mQueryKeyframe; }
-
-	public boolean query(INyARGrayscaleRaster image) {
-		// Allocate pyramid
-		if(!image.getSize().isEqualSize(this.mPyramid.images()[0].getWidth(),this.mPyramid.images()[0].getHeight())){
-			throw new NyARRuntimeException();
-		}
-		// Build the pyramid		
-		this.mPyramid.build(image);
-
-		// Find the features on the image
-		this.mQueryKeyframe = new FreakFeaturePointStack();// .reset(new keyframe_t());
-		//
-		// Detect feature points
-		//
-		this.mDetector.detect(this.mPyramid,this._dog_feature_points);
-		//
-		// Extract features
-		//
-		this.mFeatureExtractor.extract(this.mQueryKeyframe, this.mPyramid,this._dog_feature_points);		
-		
-		
-		// LOG_INFO("Found %d features in query",
-		// mQueryKeyframe->store().size());
-
-		return this.query(mQueryKeyframe);
-		
-
-	}
 
 
 	/**
@@ -141,14 +98,14 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 
 	final static int SIZEDEF_matchStack = 9999;
 
-	private boolean query(FreakFeaturePointStack query_keyframe) {
+	public boolean query(FreakFeaturePointStack query_keyframe) {
 		// mMatchedInliers.clear();
 		this. mMatchedId = -1;
 		int last_inliers=0;
 		matchStack match_result=new matchStack(query_keyframe.getLength());
 		matchStack hough_matches = new matchStack(SIZEDEF_matchStack);
 		HomographyMat H = new HomographyMat();
-		NyARIntSize size=this.mPyramid.images()[0].getSize();
+		NyARIntSize size=this._image_size;
 
 		// Loop over all the images in the database
 		// typename keyframe_map_t::const_iterator it = mKeyframeMap.begin();
@@ -459,8 +416,6 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 
 
 
-	// Feature Extractor (FREAK, etc).
-	final FREAKExtractor mFeatureExtractor;
 	//
 	// // Feature matcher
 	final BinaryFeatureMatcher mMatcher=new BinaryFeatureMatcher();

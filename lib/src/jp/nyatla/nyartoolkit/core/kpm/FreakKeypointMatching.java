@@ -4,7 +4,11 @@ package jp.nyatla.nyartoolkit.core.kpm;
 
 import jp.nyatla.nyartoolkit.base.attoolkit5.ARParamLT;
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
+import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DoGScaleInvariantDetector;
+import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DogFeaturePointStack;
+import jp.nyatla.nyartoolkit.core.kpm.freak.FREAKExtractor;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePointStack;
+import jp.nyatla.nyartoolkit.core.kpm.pyramid.BinomialPyramid32f;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakMatchPointSetStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.VisualDatabase;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.matchStack;
@@ -33,6 +37,10 @@ public class FreakKeypointMatching {
 	public FreakKeypointMatching(ARParamLT cparamLT) {
 		this(cparamLT, cparamLT.getScreenSize(), KpmPose6DOF);
 	}
+	private static double kLaplacianThreshold = 3;
+	private static double kEdgeThreshold = 4;
+	private static int kMaxNumFeatures = 300;
+	private static int kMinCoarseSize = 8;
 
 	public FreakKeypointMatching(ARParamLT cparamLT, NyARIntSize size, int poseMode) {
 		this.freakMatcher = new VisualDatabase<FreakFeaturePointStack>(size.w, size.h);
@@ -51,30 +59,45 @@ public class FreakKeypointMatching {
 		this.result = new KpmResult[1];
 		this.result[0] = new KpmResult();
 		this.resultNum = 0;
+		this.mFeatureExtractor=new FREAKExtractor();
+		this.mPyramid=new BinomialPyramid32f(size.w,size.h,BinomialPyramid32f.octavesFromMinimumCoarsestSize(size.w,size.h,kMinCoarseSize));
+		this.mDogDetector = new DoGScaleInvariantDetector(this.mPyramid,kLaplacianThreshold,kEdgeThreshold,kMaxNumFeatures);
 
 	}
-
+	final private DogFeaturePointStack _dog_feature_points = new DogFeaturePointStack(2000);// この2000は適当
+	final FreakFeaturePointStack mQueryKeyframe=new FreakFeaturePointStack();
+	/** Pyramid builder */
+	final private BinomialPyramid32f mPyramid;
+	/** Interest point detector (DoG, etc) */
+	final private DoGScaleInvariantDetector mDogDetector;
+	final private FREAKExtractor mFeatureExtractor;
 	public int kpmMatching(INyARGrayscaleRaster inImage)
 	{
 		int i;
 		int ret;
-//		extractor.extract(store, pyramid, points)
+		FreakFeaturePointStack query_keypoint = this.mQueryKeyframe;
 
-		this.freakMatcher.query(inImage);
-		this.inDataSet.num  = (int) this.freakMatcher.queryKeyframe().getLength();
+		//Freak Extract
 
+		// Build the pyramid		
+		this.mPyramid.build(inImage);
+		// Detect feature points
+		this.mDogDetector.detect(this.mPyramid,this._dog_feature_points);
+		// Extract features
+		this.mFeatureExtractor.extract(query_keypoint, this.mPyramid,this._dog_feature_points);		
+		
+		
+		// LOG_INFO("Found %d features in query",
+		// mQueryKeyframe->store().size());
+
+		this.freakMatcher.query(query_keypoint);
+		this.inDataSet.num  = (int)query_keypoint.getLength();
 		if (this.inDataSet.num != 0) {
-
 			this.inDataSet.coord = NyARDoublePoint2d.createArray(this.inDataSet.num);
-
-//			featureVector.sf = FreakFeature.createArray(this.inDataSet.num);
-
-			FreakFeaturePointStack points = this.freakMatcher.queryKeyframe();
-//			byte[] descriptors = this.freakMatcher.getQueryDescriptors();
-
 			for (i = 0; i < this.inDataSet.num; i++) {
 
-				double x = points.getItem(i).x, y = points.getItem(i).y;
+				double x = query_keypoint.getItem(i).x;
+				double y = query_keypoint.getItem(i).y;
 //				for (j = 0; j < FREAK_SUB_DIMENSION; j++) {
 //					featureVector.sf[i].v[j] = descriptors[i * FREAK_SUB_DIMENSION + j];
 //				}
@@ -99,7 +122,7 @@ public class FreakKeypointMatching {
 
 				ret = kpmMatching.kpmUtilGetPose_binary(this.cparamLT, matches,
 						this.freakMatcher.getKeyFeatureFrame(matched_image_id).store(),
-						this.freakMatcher.queryKeyframe(), this.result[pageLoop]);
+						query_keypoint, this.result[pageLoop]);
 				if (ret == 0) {
 					this.result[pageLoop].camPoseF = 0;
 					this.result[pageLoop].inlierNum = (int) matches.getLength();
