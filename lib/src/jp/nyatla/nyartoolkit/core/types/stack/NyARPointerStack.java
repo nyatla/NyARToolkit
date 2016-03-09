@@ -151,6 +151,13 @@ public class NyARPointerStack<T>
 		return this._length;
 	}
 	/**
+	 * この関数は、データ長が0であるかを返します。
+	 * @return
+	 */
+	public boolean isEmpty() {
+		return this._length==0;
+	}	
+	/**
 	 * この関数は、配列の最大サイズを返します。
 	 * @return
 	 */
