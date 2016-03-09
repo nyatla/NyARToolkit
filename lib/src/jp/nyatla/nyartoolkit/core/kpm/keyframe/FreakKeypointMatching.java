@@ -2,10 +2,9 @@ package jp.nyatla.nyartoolkit.core.kpm.keyframe;
 
 
 
-import jp.nyatla.nyartoolkit.base.attoolkit5.ARParamLT;
+
 
 import jp.nyatla.nyartoolkit.core.kpm.KpmInputDataSet;
-import jp.nyatla.nyartoolkit.core.kpm.KpmRefData;
 import jp.nyatla.nyartoolkit.core.kpm.KpmResult;
 import jp.nyatla.nyartoolkit.core.kpm.kpmMatching;
 import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DoGScaleInvariantDetector;
@@ -96,14 +95,12 @@ public class FreakKeypointMatching {
 				this.inDataSet.coord[i].y = y;
 			}
 		}
-		if(!this.freakMatcher.query(query_keypoint,i_keymap)){
+		int matched_image_id=this.freakMatcher.query(query_keypoint,i_keymap);
+		if(matched_image_id<0){
 			return false;
 		}
+
 		matchStack matches = this.freakMatcher.inliers();
-		int matched_image_id = this.freakMatcher.matchedId();
-		if (matched_image_id < 0){
-			return false;
-		}
 		return kpmMatching.kpmUtilGetPose_binary(this._ref_cparam, matches,i_keymap.get(matched_image_id).store(),query_keypoint, this.result);
 	}
 

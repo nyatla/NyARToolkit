@@ -22,9 +22,9 @@ public class RobustHomography {
 	final static int HOMOGRAPHY_DEFAULT_MAX_TRIALS = 1064;
 	final static int HOMOGRAPHY_DEFAULT_CHUNK_SIZE = 50;
 
-	public RobustHomography() {
-		this(HOMOGRAPHY_DEFAULT_CAUCHY_SCALE, HOMOGRAPHY_DEFAULT_NUM_HYPOTHESES, HOMOGRAPHY_DEFAULT_MAX_TRIALS,
-				HOMOGRAPHY_DEFAULT_CHUNK_SIZE);
+	public RobustHomography()
+	{
+		this(HOMOGRAPHY_DEFAULT_CAUCHY_SCALE, HOMOGRAPHY_DEFAULT_NUM_HYPOTHESES, HOMOGRAPHY_DEFAULT_MAX_TRIALS,HOMOGRAPHY_DEFAULT_CHUNK_SIZE);
 	}
 
 	public RobustHomography(double cauchyScale, int maxNumHypotheses, int maxTrials, int chunkSize)
@@ -64,13 +64,8 @@ public class RobustHomography {
 			return r;
 		}
 
-		public static boolean operator_lt(CostPair _Left, CostPair _Right) { // test
-																				// if
-																				// _Left
-																				// <
-																				// _Right
-																				// for
-																				// pairs
+		// test if_Left<_Right for pairs
+		public static boolean operator_lt(CostPair _Left, CostPair _Right) {
 			return (_Left.first < _Right.first || (!(_Right.first < _Left.first) && _Left.second < _Right.second));
 		}
 

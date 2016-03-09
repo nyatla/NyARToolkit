@@ -66,9 +66,9 @@ public class VisualDatabase
 
 	final private static int SIZEDEF_matchStack = 9999;
 
-	public boolean query(FreakFeaturePointStack query_keyframe,KeyframeMap i_keymap) {
+	public int query(FreakFeaturePointStack query_keyframe,KeyframeMap i_keymap) {
 		// mMatchedInliers.clear();
-		this. mMatchedId = -1;
+		int mached_id = -1;
 		int last_inliers=0;
 		matchStack match_result=new matchStack(query_keyframe.getLength());
 		matchStack hough_matches = new matchStack(SIZEDEF_matchStack);
@@ -79,20 +79,20 @@ public class VisualDatabase
 		
 		for (Map.Entry<Integer, Keyframe> i : i_keymap.entrySet()) {
 			Keyframe second = i.getValue();
+			FreakMatchPointSetStack ref_points = second.store();
 			int first = i.getKey();
 			match_result.clear();
 			if (mUseFeatureIndex) {
-				if (mMatcher.match(query_keyframe, second.store(),second.index(),match_result) < this.mMinNumInliers) {
+				if (mMatcher.match(query_keyframe,ref_points,second.index(),match_result) < this.mMinNumInliers) {
 					continue;
 				}
 			} else {
-				if (mMatcher.match(query_keyframe, second.store(),match_result) < mMinNumInliers) {
+				if (mMatcher.match(query_keyframe,ref_points,match_result) < mMinNumInliers) {
 					continue;
 				}
 			}
 			// }
 
-			FreakMatchPointSetStack ref_points = second.store();
 
 
 			//
@@ -119,7 +119,7 @@ public class VisualDatabase
 
 			// TIMED("Estimate Homography (1)") {
 			if (!EstimateHomography(H, query_keyframe, ref_points, hough_matches,
-					mHomographyInlierThreshold, mRobustHomography,
+					mHomographyInlierThreshold,
 					second.width(), second.height())) {
 				continue;
 			}
@@ -143,7 +143,7 @@ public class VisualDatabase
 			//
 
 			match_result.clear();
-			if (mMatcher.match(query_keyframe, second.store(), H, 10,match_result) < mMinNumInliers) {
+			if (mMatcher.match(query_keyframe, ref_points, H, 10,match_result) < mMinNumInliers) {
 				continue;
 			}
 			// }
@@ -171,7 +171,7 @@ public class VisualDatabase
 
 			// TIMED("Estimate Homography (2)") {
 			if (!EstimateHomography(H, query_keyframe, ref_points, hough_matches,
-					mHomographyInlierThreshold, mRobustHomography,
+					mHomographyInlierThreshold,
 					second.width(), second.height())) {
 				continue;
 			}
@@ -195,14 +195,12 @@ public class VisualDatabase
 				//現状は毎回生成してるからセットで。
 				mMatchedInliers = inliers;// mMatchedInliers.swap(inliers);
 				last_inliers=inliers.getLength();
-				mMatchedId = first;
+				mached_id = first;
 			}
 		}
 
-		return mMatchedId >= 0;
+		return mached_id;
 	}
-
-	public int mMatchedId;
 
 	/**
 	 * Find the inliers given a homography and a set of correspondences.
@@ -256,17 +254,21 @@ public class VisualDatabase
 			}
 		}
 	}
+	
+	
+	// Robust homography estimation
+	final RobustHomography mRobustHomography=new RobustHomography();
 
 	/**
 	 * Estimate the homography between a set of correspondences.
 	 */
 	private boolean EstimateHomography(HomographyMat H, FreakFeaturePointStack p1,
-			FreakMatchPointSetStack p2, matchStack matches, double threshold,
-			RobustHomography estimator, int refWidth, int refHeight) {
+			FreakMatchPointSetStack p2, matchStack matches, double threshold, int refWidth, int refHeight) {
 
 		NyARDoublePoint2d[] srcPoints = NyARDoublePoint2d.createArray(matches.getLength());
 		NyARDoublePoint2d[] dstPoints = NyARDoublePoint2d.createArray(matches.getLength());
-
+	
+		
 		//
 		// Copy correspondences
 		//
@@ -297,7 +299,7 @@ public class VisualDatabase
 		//
 		// if(!estimator.find(H, (float*)&srcPoints[0], (float*)&dstPoints[0],
 		// (int)matches.size(), test_points, 4)) {
-		if (!estimator.find(H, srcPoints, dstPoints, (int) matches.getLength(),
+		if (!this.mRobustHomography.find(H, srcPoints, dstPoints, (int) matches.getLength(),
 				test_points, 4)) {
 			return false;
 		}
@@ -348,12 +350,7 @@ public class VisualDatabase
 		return this.mMatchedInliers;
 	}
 
-	 /**
-	 * Get the mathced id.
-	 */
-	public int matchedId() {
-		return mMatchedId;
-	}	
+
 	
 
 
@@ -379,8 +376,6 @@ public class VisualDatabase
 	// Similarity voter
 	final private HoughSimilarityVoting mHoughSimilarityVoting;
 
-	// Robust homography estimation
-	final RobustHomography mRobustHomography=new RobustHomography();
 
 
 
