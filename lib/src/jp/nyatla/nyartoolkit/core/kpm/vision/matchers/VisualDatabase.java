@@ -2,46 +2,37 @@ package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
 
 import java.util.Map;
 
-import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DoGScaleInvariantDetector;
-import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DogFeaturePointStack;
-import jp.nyatla.nyartoolkit.core.kpm.freak.FREAKExtractor;
+
+
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.Keyframe;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.KeyframeMap;
-import jp.nyatla.nyartoolkit.core.kpm.pyramid.BinomialPyramid32f;
-import jp.nyatla.nyartoolkit.core.kpm.pyramid.GaussianScaleSpacePyramid;
+
 import jp.nyatla.nyartoolkit.core.kpm.vision.homography_estimation.RobustHomography;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.geometry;
-import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
-import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
+
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
-import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 
-public class VisualDatabase<STORE extends FreakFeaturePointStack>
+public class VisualDatabase
 {
 	private static int kHomographyInlierThreshold = 3;
 	private static int kMinNumInliers = 8;
-
 	private static double kHoughBinDelta = 1;
-
-
 	private static boolean kUseFeatureIndex = true;
-
-
-	
-	final private NyARIntSize _image_size;
 	
 	
 	public VisualDatabase(int i_width,int i_height)
-	{
-		this._image_size=new NyARIntSize(i_width,i_height);
-		
+	{		
 		this.mHomographyInlierThreshold = kHomographyInlierThreshold;
 		this.mMinNumInliers = kMinNumInliers;
-
 		this.mUseFeatureIndex = kUseFeatureIndex;
+		this.mHoughSimilarityVoting=new HoughSimilarityVoting();		
+		double dx = i_width + (i_width * 0.2f);
+		double dy = i_height + (i_height * 0.2f);
+		this.mHoughSimilarityVoting.init(-dx, dx, -dy, dy, 0, 0, 12, 10);		
+		return;
 	}
 
 	
@@ -52,34 +43,16 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 	/**
 	 * Vote for a similarity transformation.
 	 */
-	int FindHoughSimilarity(HoughSimilarityVoting hough, FreakFeaturePointStack p1,
-			FreakMatchPointSetStack p2, matchStack matches, int insWidth,
-			int insHeigth, int refWidth, int refHeight) {
-		double[] query = new double[4 * matches.getLength()];
-		double[] ref = new double[4 * matches.getLength()];
+	private int FindHoughSimilarity(HoughSimilarityVoting hough, FreakFeaturePointStack p1,
+			FreakMatchPointSetStack p2, matchStack matches,int refWidth, int refHeight) {
+		FreakFeaturePoint[] query = new FreakFeaturePoint[matches.getLength()];
+		FreakFeaturePoint[] ref = new FreakFeaturePoint[matches.getLength()];
 
 		// Extract the data from the features
 		for (int i = 0; i < matches.getLength(); i++) {
-			FreakFeaturePoint query_point = p1.getItem(matches.getItem(i).ins);
-			FreakFeaturePoint ref_point = p2.getItem(matches.getItem(i).ref);
-
-			int q_ptr = i * 4;
-			query[q_ptr + 0] = query_point.x;
-			query[q_ptr + 1] = query_point.y;
-			query[q_ptr + 2] = query_point.angle;
-			query[q_ptr + 3] = query_point.scale;
-
-			int r_ptr = i * 4;
-			ref[r_ptr + 0] = ref_point.x;
-			ref[r_ptr + 1] = ref_point.y;
-			ref[r_ptr + 2] = ref_point.angle;
-			ref[r_ptr + 3] = ref_point.scale;
+			query[i]=p1.getItem(matches.getItem(i).ins);
+			ref[i]=p2.getItem(matches.getItem(i).ref);
 		}
-
-		double dx = insWidth + (insWidth * 0.2f);
-		double dy = insHeigth + (insHeigth * 0.2f);
-
-		hough.init(-dx, dx, -dy, dy, 0, 0, 12, 10);
 		hough.setObjectCenterInReference(refWidth >> 1, refHeight >> 1);
 		hough.setRefImageDimensions(refWidth, refHeight);
 		// hough.vote((float*)&query[0], (float*)&ref[0], (int)matches.size());
@@ -91,7 +64,7 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 		return (max.votes < 3) ? -1 : max.index;
 	}
 
-	final static int SIZEDEF_matchStack = 9999;
+	final private static int SIZEDEF_matchStack = 9999;
 
 	public boolean query(FreakFeaturePointStack query_keyframe,KeyframeMap i_keymap) {
 		// mMatchedInliers.clear();
@@ -100,8 +73,6 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 		matchStack match_result=new matchStack(query_keyframe.getLength());
 		matchStack hough_matches = new matchStack(SIZEDEF_matchStack);
 		HomographyMat H = new HomographyMat();
-		NyARIntSize size=this._image_size;
-
 		// Loop over all the images in the database
 		// typename keyframe_map_t::const_iterator it = mKeyframeMap.begin();
 		// for(; it != mKeyframeMap.end(); it++) {
@@ -131,7 +102,6 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 			// TIMED("Hough Voting (1)") {
 			max_hough_index = FindHoughSimilarity(mHoughSimilarityVoting,
 					query_keyframe, ref_points,match_result,
-					size.w, size.h,
 					second.width(), second.height());
 			if (max_hough_index < 0) {
 				continue;
@@ -140,9 +110,7 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 
 			hough_matches.clear();
 			// TIMED("Find Hough Matches (1)") {
-			FindHoughMatches(hough_matches, mHoughSimilarityVoting,
-					query_keyframe, ref_points, match_result,
-					max_hough_index, kHoughBinDelta);
+			FindHoughMatches(hough_matches,this.mHoughSimilarityVoting,match_result,max_hough_index, kHoughBinDelta);
 			// }
 
 			//
@@ -187,7 +155,6 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 			// TIMED("Hough Voting (2)") {
 			max_hough_index = FindHoughSimilarity(mHoughSimilarityVoting,
 					query_keyframe, ref_points, match_result,
-					size.w,size.h,
 					second.width(), second.height());
 			if (max_hough_index < 0) {
 				continue;
@@ -195,9 +162,7 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 			// }
 
 			// TIMED("Find Hough Matches (2)") {
-			FindHoughMatches(hough_matches, mHoughSimilarityVoting,
-					query_keyframe, ref_points, match_result,
-					max_hough_index, kHoughBinDelta);
+			FindHoughMatches(hough_matches, mHoughSimilarityVoting, match_result,max_hough_index, kHoughBinDelta);
 			// }
 
 			//
@@ -242,7 +207,7 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 	/**
 	 * Find the inliers given a homography and a set of correspondences.
 	 */
-	void FindInliers(matchStack inliers, NyARDoubleMatrix33 H, FreakFeaturePointStack p1,
+	private void FindInliers(matchStack inliers, NyARDoubleMatrix33 H, FreakFeaturePointStack p1,
 			FreakMatchPointSetStack p2, matchStack matches, double threshold) {
 		double threshold2 = (threshold*threshold);
 		NyARDoublePoint2d xp = new NyARDoublePoint2d();// float xp[2];
@@ -263,8 +228,7 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 	/**
 	 * Get only the matches that are consistent based on the hough votes.
 	 */
-	void FindHoughMatches(matchStack out_matches, HoughSimilarityVoting hough,
-			FreakFeaturePointStack p1, FreakMatchPointSetStack p2, matchStack in_matches,
+	private void FindHoughMatches(matchStack out_matches, HoughSimilarityVoting hough,matchStack in_matches,
 			int binIndex, double binDelta) {
 
 		HoughSimilarityVoting.Bins bin = hough.getBinsFromIndex(binIndex);
@@ -296,7 +260,7 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 	/**
 	 * Estimate the homography between a set of correspondences.
 	 */
-	boolean EstimateHomography(HomographyMat H, FreakFeaturePointStack p1,
+	private boolean EstimateHomography(HomographyMat H, FreakFeaturePointStack p1,
 			FreakMatchPointSetStack p2, matchStack matches, double threshold,
 			RobustHomography estimator, int refWidth, int refHeight) {
 
@@ -354,7 +318,7 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 	 */
 	// boolean CheckHomographyHeuristics(float H[9], int refWidth, int
 	// refHeight) {
-	boolean CheckHomographyHeuristics(NyARDoubleMatrix33 H, int refWidth, int refHeight) {
+	private boolean CheckHomographyHeuristics(NyARDoubleMatrix33 H, int refWidth, int refHeight) {
 		NyARDoublePoint2d p0p = new NyARDoublePoint2d();
 		NyARDoublePoint2d p1p = new NyARDoublePoint2d();
 		NyARDoublePoint2d p2p = new NyARDoublePoint2d();
@@ -413,7 +377,7 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 	final BinaryFeatureMatcher mMatcher=new BinaryFeatureMatcher();
 
 	// Similarity voter
-	HoughSimilarityVoting mHoughSimilarityVoting=new HoughSimilarityVoting();
+	final private HoughSimilarityVoting mHoughSimilarityVoting;
 
 	// Robust homography estimation
 	final RobustHomography mRobustHomography=new RobustHomography();

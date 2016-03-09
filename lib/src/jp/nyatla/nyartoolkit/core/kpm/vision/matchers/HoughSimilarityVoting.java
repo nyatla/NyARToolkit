@@ -3,6 +3,7 @@ package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 
 /**
@@ -46,8 +47,7 @@ public class HoughSimilarityVoting {
 	/**
          *
          */
-	void init(double minX, double maxX, double minY, double maxY, int numXBins,
-			int numYBins, int numAngleBins, int numScaleBins) {
+	public void init(double minX, double maxX, double minY, double maxY, int numXBins,int numYBins, int numAngleBins, int numScaleBins) {
 		mMinX = minX;
 		mMaxX = maxX;
 		mMinY = minY;
@@ -265,7 +265,7 @@ public class HoughSimilarityVoting {
 		return true;
 	}
 
-	void vote(double[] ins, double[] ref, int size) {
+	void vote(FreakFeaturePoint[] ins, FreakFeaturePoint[] ref, int size) {
 		int num_features_that_cast_vote;
 
 		mVotes.clear();
@@ -283,14 +283,12 @@ public class HoughSimilarityVoting {
 		for (int i = 0; i < size; i++) {
 			// const float* ins_ptr = &ins[i<<2];
 			// const float* ref_ptr = &ref[i<<2];
-			int ins_ptr = i << 2;
-			int ref_ptr = i << 2;
+//			int ins_ptr = i << 2;
+//			int ref_ptr = i << 2;
 
 			// Map the correspondence to a vote
 			mapCorrespondenceResult r = new mapCorrespondenceResult();
-			mapCorrespondence(r, ins[ins_ptr + 0], ins[ins_ptr + 1],
-					ins[ins_ptr + 2], ins[ins_ptr + 3], ref[ref_ptr + 0],
-					ref[ref_ptr + 1], ref[ref_ptr + 2], ref[ref_ptr + 3]);
+			mapCorrespondence(r, ins[i],ref[i]);
 
 			// Cast a vote
 			if (vote(r.x, r.y, r.angle, r.scale)) {
@@ -333,7 +331,7 @@ public class HoughSimilarityVoting {
 	/**
 	 * Create a similarity matrix.
 	 */
-	void Similarity2x2(double S[], double angle, double scale) {
+	private static void Similarity2x2(double S[], double angle, double scale) {
 		double c = (scale * Math.cos(angle));
 		double s = (scale * Math.sin(angle));
 		S[0] = c;
@@ -342,9 +340,7 @@ public class HoughSimilarityVoting {
 		S[3] = c;
 	}
 
-	void mapCorrespondence(mapCorrespondenceResult r, double ins_x, double ins_y,
-			double ins_angle, double ins_scale, double ref_x, double ref_y,
-			double ref_angle, double ref_scale) {
+	void mapCorrespondence(mapCorrespondenceResult r, FreakFeaturePoint ins,FreakFeaturePoint ref) {
 		double[] S = new double[4];
 		double[] tp = new double[2];
 		double tx, ty;
@@ -353,7 +349,7 @@ public class HoughSimilarityVoting {
 		// Angle
 		//
 
-		r.angle = ins_angle - ref_angle;
+		r.angle = ins.angle - ref.angle;
 		// Map angle to (-pi,pi]
 		if (r.angle <= -math_utils.PI) {
 			r.angle += (2 * math_utils.PI);
@@ -367,7 +363,7 @@ public class HoughSimilarityVoting {
 		// Scale
 		//
 
-		r.scale = SafeDivision(ins_scale, ref_scale);
+		r.scale = SafeDivision(ins.scale, ref.scale);
 		Similarity2x2(S, r.angle, r.scale);
 
 		r.scale = (double) (Math.log(r.scale) * mScaleOneOverLogK);
@@ -376,11 +372,11 @@ public class HoughSimilarityVoting {
 		// Position
 		//
 
-		tp[0] = S[0] * ref_x + S[1] * ref_y;
-		tp[1] = S[2] * ref_x + S[3] * ref_y;
+		tp[0] = S[0] * ref.x + S[1] * ref.y;
+		tp[1] = S[2] * ref.x + S[3] * ref.y;
 
-		tx = ins_x - tp[0];
-		ty = ins_y - tp[1];
+		tx = ins.x - tp[0];
+		ty = ins.y - tp[1];
 
 		r.x = S[0] * mCenterX + S[1] * mCenterY + tx;
 		r.y = S[2] * mCenterX + S[3] * mCenterY + ty;
@@ -472,7 +468,7 @@ public class HoughSimilarityVoting {
 	/**
 	 * Get the bins locations from an index.
 	 */
-	Bins getBinsFromIndex(int index) {
+	public Bins getBinsFromIndex(int index) {
 		int binX = ((index % mB) % mA) % mNumXBins;
 		int binY = (((index - binX) % mB) % mA) / mNumXBins;
 		int binAngle = ((index - binX - (binY * mNumXBins)) % mB) / mA;
@@ -485,62 +481,8 @@ public class HoughSimilarityVoting {
 		r.binScale = binScale;
 		return r;
 
-		// ASSERT(binX >= 0, "binX out of range");
-		// ASSERT(binX < mNumXBins, "binX out of range");
-		// ASSERT(binY >= 0, "binY out of range");
-		// ASSERT(binY < mNumYBins, "binY out of range");
-		// ASSERT(binAngle >= 0, "binAngle out of range");
-		// ASSERT(binAngle < mNumAngleBins, "binAngle out of range");
-		// ASSERT(binScale >= 0, "binScale out of range");
-		// ASSERT(binScale < mNumScaleBins, "binScale out of range");
-
-		// index = binX + (binY*mNumXBins) + (binAngle*A) + (binScale*B)
 	}
 
-	//
-	// /**
-	// * Get the sub-bin location from the voting parameters.
-	// */
-	// inline void mapVoteToBin(float& fBinX,
-	// float& fBinY,
-	// float& fBinAngle,
-	// float& fBinScale,
-	// float x,
-	// float y,
-	// float angle,
-	// float scale) const;
-	//
-	// /**
-	// * Compute the similarity vote from a correspondence.
-	// *
-	// * @param[out] x
-	// * @param[out] y
-	// * @param[out] angle range (-pi,pi]
-	// * @param[out] scale exponential of the scale such that scale =
-	// log(s)/log(k)
-	// * @param[in] ins_x
-	// * @param[in] ins_y
-	// * @param[in] ins_angle
-	// * @param[in] ins_scale
-	// * @param[in] ref_x
-	// * @param[in] ref_y
-	// * @param[in] ref_angle
-	// * @param[in] ref_scale
-	// * @see voteWithCorrespondences for description
-	// */
-	// inline void mapCorrespondence(float& x,
-	// float& y,
-	// float& angle,
-	// float& scale,
-	// float ins_x,
-	// float ins_y,
-	// float ins_angle,
-	// float ins_scale,
-	// float ref_x,
-	// float ref_y,
-	// float ref_angle,
-	// float ref_scale) const;
-	//
 
 	// Dimensions of reference image
 	private int mRefImageWidth;
@@ -608,7 +550,7 @@ public class HoughSimilarityVoting {
 	/**
 	 * Set the number of bins for translation based on the correspondences.
 	 */
-	private void autoAdjustXYNumBins(double[] ins, double[] ref, int size) {
+	private void autoAdjustXYNumBins(FreakFeaturePoint[] ins, FreakFeaturePoint[] ref, int size) {
 		int max_dim = math_utils.max2(mRefImageWidth, mRefImageHeight);
 		double[] projected_dim = new double[size];
 
@@ -617,14 +559,14 @@ public class HoughSimilarityVoting {
 		// ASSERT(mRefImageHeight > 0, "height must be positive");
 
 		for (int i = 0; i < size; i++) {
-			int ins_ptr = i << 2;
-			int ref_ptr = i << 2;
+//			int ins_ptr = i << 2;
+//			int ref_ptr = i << 2;
 			// const float* ins_ptr = &ins[i<<2];
 			// const float* ref_ptr = &ref[i<<2];
 
 			// Scale is the 3rd component
-			double ins_scale = ins[ins_ptr + 3];
-			double ref_scale = ref[ref_ptr + 3];
+			double ins_scale = ins[i].scale;//[ins_ptr + 3];
+			double ref_scale = ref[i].scale;//[ref_ptr + 3];
 
 			// Project the max_dim via the scale
 			double scale = SafeDivision(ins_scale, ref_scale);

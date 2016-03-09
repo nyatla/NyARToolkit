@@ -1,17 +1,17 @@
 package jp.nyatla.nyartoolkit.core.kpm;
 
-import jp.nyatla.nyartoolkit.base.attoolkit5.ARParamLT;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakMatchPointSetStack;
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.matchStack;
 import jp.nyatla.nyartoolkit.core.icp.NyARIcpPlane;
 import jp.nyatla.nyartoolkit.core.icp.NyARIcpPoint;
+import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 
 public class kpmMatching {
-	public static boolean kpmUtilGetPose_binary(ARParamLT cparamLT, matchStack matchData, FreakMatchPointSetStack refDataSet,
+	public static boolean kpmUtilGetPose_binary(NyARParam i_cparam, matchStack matchData, FreakMatchPointSetStack refDataSet,
 			FreakFeaturePointStack inputDataSet, KpmResult kpmResult) {
 		// ICPHandleT *icpHandle;
 		// ICPDataT icpData;
@@ -38,7 +38,7 @@ public class kpmMatching {
 		// icpData.num = i;
 		// icpData.screenCoord = &sCoord[0];
 		// icpData.worldCoord = &wCoord[0];
-		NyARIcpPlane icp_planer = new NyARIcpPlane(cparamLT.getPerspectiveProjectionMatrix());
+		NyARIcpPlane icp_planer = new NyARIcpPlane(i_cparam.getPerspectiveProjectionMatrix());
 		if (!icp_planer.icpGetInitXw2Xc_from_PlanarData(sCoord, wCoord, matchData.getLength(), initMatXw2Xc)) {
 			return false;
 		}
@@ -46,7 +46,7 @@ public class kpmMatching {
 		 * printf("--- Init pose ---\n"); for( int j = 0; j < 3; j++ ) { for( i = 0; i < 4; i++ ) printf(" %8.3f",
 		 * initMatXw2Xc[j][i]); printf("\n"); }
 		 */
-		NyARIcpPoint icp_point = new NyARIcpPoint(cparamLT.getPerspectiveProjectionMatrix());
+		NyARIcpPoint icp_point = new NyARIcpPoint(i_cparam.getPerspectiveProjectionMatrix());
 		icp_point.icpPoint(sCoord, wCoord, matchData.getLength(), initMatXw2Xc, kpmResult.camPose,
 				kpmResult.resultparams);
 
