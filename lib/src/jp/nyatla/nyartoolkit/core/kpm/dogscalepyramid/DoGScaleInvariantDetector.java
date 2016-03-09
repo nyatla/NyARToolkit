@@ -1,8 +1,7 @@
 package jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid;
 
 import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
-import jp.nyatla.nyartoolkit.core.kpm.OrientationAssignment;
-import jp.nyatla.nyartoolkit.core.kpm.OrientationAssignment.FloatVector;
+import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.OrientationAssignment.FloatVector;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.GaussianScaleSpacePyramid;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;

@@ -21,4 +21,5 @@ public class FreakFeaturePointStack extends NyARObjectStack<FreakFeaturePoint>
 		return new FreakFeaturePoint();
 	}
 
+
 }

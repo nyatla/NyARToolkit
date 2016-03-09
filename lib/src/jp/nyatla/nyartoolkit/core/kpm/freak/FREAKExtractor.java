@@ -119,8 +119,6 @@ public class FREAKExtractor {
 	public void extract(FreakFeaturePointStack store, GaussianScaleSpacePyramid pyramid,
 			DogFeaturePointStack points)
 	{
-//		store.setLength(points.length);//これはいらない。リセットする。
-		store.clear();
 		ExtractFREAK84(store, pyramid, points, mPointRing0, mPointRing1,
 				mPointRing2, mPointRing3, mPointRing4, mPointRing5,
 				mSigmaCenter, mSigmaRing0, mSigmaRing1, mSigmaRing2,

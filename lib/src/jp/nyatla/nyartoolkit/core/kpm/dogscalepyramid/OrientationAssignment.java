@@ -1,5 +1,7 @@
-package jp.nyatla.nyartoolkit.core.kpm;
+package jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid;
 
+import jp.nyatla.nyartoolkit.core.kpm.GradientsImage;
+import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.GaussianScaleSpacePyramid;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 

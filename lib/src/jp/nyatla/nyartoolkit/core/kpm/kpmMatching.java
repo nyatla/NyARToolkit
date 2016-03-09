@@ -11,9 +11,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 
 public class kpmMatching {
-	private double error;
-
-	public static int kpmUtilGetPose_binary(ARParamLT cparamLT, matchStack matchData, FreakMatchPointSetStack refDataSet,
+	public static boolean kpmUtilGetPose_binary(ARParamLT cparamLT, matchStack matchData, FreakMatchPointSetStack refDataSet,
 			FreakFeaturePointStack inputDataSet, KpmResult kpmResult) {
 		// ICPHandleT *icpHandle;
 		// ICPDataT icpData;
@@ -24,7 +22,7 @@ public class kpmMatching {
 		int i;
 
 		if (matchData.getLength() < 4) {
-			return -1;
+			return false;
 		}
 		NyARDoublePoint2d[] sCoord = NyARDoublePoint2d.createArray(matchData.getLength());
 		NyARDoublePoint3d[] wCoord = NyARDoublePoint3d.createArray(matchData.getLength());
@@ -42,7 +40,7 @@ public class kpmMatching {
 		// icpData.worldCoord = &wCoord[0];
 		NyARIcpPlane icp_planer = new NyARIcpPlane(cparamLT.getPerspectiveProjectionMatrix());
 		if (!icp_planer.icpGetInitXw2Xc_from_PlanarData(sCoord, wCoord, matchData.getLength(), initMatXw2Xc)) {
-			return -1;
+			return false;
 		}
 		/*
 		 * printf("--- Init pose ---\n"); for( int j = 0; j < 3; j++ ) { for( i = 0; i < 4; i++ ) printf(" %8.3f",
@@ -53,10 +51,10 @@ public class kpmMatching {
 				kpmResult.resultparams);
 
 		if (kpmResult.resultparams.last_error > 10.0f) {
-			return -1;
+			return false;
 		}
 
-		return 0;
+		return true;
 	}
 
 }

@@ -1,9 +1,13 @@
-package jp.nyatla.nyartoolkit.core.kpm;
+package jp.nyatla.nyartoolkit.core.kpm.keyframe;
 
 
 
 import jp.nyatla.nyartoolkit.base.attoolkit5.ARParamLT;
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
+import jp.nyatla.nyartoolkit.core.kpm.KpmInputDataSet;
+import jp.nyatla.nyartoolkit.core.kpm.KpmRefData;
+import jp.nyatla.nyartoolkit.core.kpm.KpmResult;
+import jp.nyatla.nyartoolkit.core.kpm.kpmMatching;
 import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DoGScaleInvariantDetector;
 import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DogFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FREAKExtractor;
@@ -29,7 +33,7 @@ public class FreakKeypointMatching {
 	int detectedMaxFeature;
 	KpmRefData[] refDataSet;
 	KpmInputDataSet inDataSet = new KpmInputDataSet();
-	public KpmResult[] result;
+	public KpmResult result;
 	int resultNum;
 	final public static int KpmPose6DOF = 1;
 	final public static int KpmPoseHomography = 2;
@@ -56,8 +60,7 @@ public class FreakKeypointMatching {
 		this.inDataSet.coord = null;
 		this.inDataSet.num = 0;
 
-		this.result = new KpmResult[1];
-		this.result[0] = new KpmResult();
+		this.result =new KpmResult();
 		this.resultNum = 0;
 		this.mFeatureExtractor=new FREAKExtractor();
 		this.mPyramid=new BinomialPyramid32f(size.w,size.h,BinomialPyramid32f.octavesFromMinimumCoarsestSize(size.w,size.h,kMinCoarseSize));
@@ -71,12 +74,10 @@ public class FreakKeypointMatching {
 	/** Interest point detector (DoG, etc) */
 	final private DoGScaleInvariantDetector mDogDetector;
 	final private FREAKExtractor mFeatureExtractor;
-	public int kpmMatching(INyARGrayscaleRaster inImage)
+	public boolean kpmMatching(INyARGrayscaleRaster inImage,KeyframeMap i_keymap)
 	{
-		int i;
-		int ret;
 		FreakFeaturePointStack query_keypoint = this.mQueryKeyframe;
-
+		query_keypoint.clear();
 		//Freak Extract
 
 		// Build the pyramid		
@@ -86,99 +87,40 @@ public class FreakKeypointMatching {
 		// Extract features
 		this.mFeatureExtractor.extract(query_keypoint, this.mPyramid,this._dog_feature_points);		
 		
+		if(query_keypoint.isEmpty()){
+			return false;
+		}
+
 		
 		// LOG_INFO("Found %d features in query",
 		// mQueryKeyframe->store().size());
 
-		this.freakMatcher.query(query_keypoint);
 		this.inDataSet.num  = (int)query_keypoint.getLength();
-		if (this.inDataSet.num != 0) {
-			this.inDataSet.coord = NyARDoublePoint2d.createArray(this.inDataSet.num);
-			for (i = 0; i < this.inDataSet.num; i++) {
-
-				double x = query_keypoint.getItem(i).x;
-				double y = query_keypoint.getItem(i).y;
-//				for (j = 0; j < FREAK_SUB_DIMENSION; j++) {
-//					featureVector.sf[i].v[j] = descriptors[i * FREAK_SUB_DIMENSION + j];
-//				}
-				if (this.cparamLT != null) {
-					NyARDoublePoint2d tmp = new NyARDoublePoint2d();
-					this.cparamLT.arParamObserv2IdealLTf(x, y, tmp);
-					this.inDataSet.coord[i].x = tmp.x;
-					this.inDataSet.coord[i].y = tmp.y;
-				} else {
-					this.inDataSet.coord[i].x = x;
-					this.inDataSet.coord[i].y = y;
-				}
-			}
-
-			for (int pageLoop = 0; pageLoop < this.resultNum; pageLoop++) {
-
-				this.result[pageLoop].camPoseF = -1;
-				matchStack matches = this.freakMatcher.inliers();
-				int matched_image_id = this.freakMatcher.matchedId();
-				if (matched_image_id < 0)
-					continue;
-
-				ret = kpmMatching.kpmUtilGetPose_binary(this.cparamLT, matches,
-						this.freakMatcher.getKeyFeatureFrame(matched_image_id).store(),
-						query_keypoint, this.result[pageLoop]);
-				if (ret == 0) {
-					this.result[pageLoop].camPoseF = 0;
-					this.result[pageLoop].inlierNum = (int) matches.getLength();
-				}
-			}
-		} else {
-			for (i = 0; i < this.resultNum; i++) {
-				this.result[i].camPoseF = -1;
+		this.inDataSet.coord = NyARDoublePoint2d.createArray(this.inDataSet.num);
+		for (int i = 0; i < this.inDataSet.num; i++) {
+			double x = query_keypoint.getItem(i).x;
+			double y = query_keypoint.getItem(i).y;
+			if (this.cparamLT != null) {
+				NyARDoublePoint2d tmp = new NyARDoublePoint2d();
+				this.cparamLT.arParamObserv2IdealLTf(x, y, tmp);
+				this.inDataSet.coord[i].x = tmp.x;
+				this.inDataSet.coord[i].y = tmp.y;
+			} else {
+				this.inDataSet.coord[i].x = x;
+				this.inDataSet.coord[i].y = y;
 			}
 		}
-
-		for (i = 0; i < this.resultNum; i++) {
-			this.result[i].skipF = false;
+		if(!this.freakMatcher.query(query_keypoint,i_keymap)){
+			return false;
 		}
-
-		return 0;
+		matchStack matches = this.freakMatcher.inliers();
+		int matched_image_id = this.freakMatcher.matchedId();
+		if (matched_image_id < 0){
+			return false;
+		}
+		return kpmMatching.kpmUtilGetPose_binary(this.cparamLT, matches,i_keymap.get(matched_image_id).store(),query_keypoint, this.result);
 	}
 
-	public int kpmSetRefDataSet(NyARNftFreakFsetFile i_refDataSet) {
 
-		this.resultNum = 1;
 
-		int db_id = 0;
-		for (int k = 0; k < i_refDataSet.page_info.length; k++) {
-			for (int m = 0; m < i_refDataSet.page_info[k].image_info.length; m++) {
-				int image_no = i_refDataSet.page_info[k].image_info[m].image_no;
-				int l=0;
-				//格納予定のデータ数を数える
-				for (int i = 0; i < i_refDataSet.ref_point.length; i++) {
-					if (i_refDataSet.ref_point[i].refImageNo == image_no) {
-						l++;
-					}
-				}
-				FreakMatchPointSetStack fps = new FreakMatchPointSetStack(l);				
-				for (int i = 0; i < i_refDataSet.ref_point.length; i++) {
-					if (i_refDataSet.ref_point[i].refImageNo == image_no) {
-						NyARNftFreakFsetFile.RefDataSet t = i_refDataSet.ref_point[i];
-						FreakMatchPointSetStack.Item fp = fps.prePush();
-						fp.x = t.coord2D.x;
-						fp.y = t.coord2D.y;
-						fp.angle = t.featureVec.angle;
-						fp.scale = t.featureVec.scale;
-						fp.maxima = t.featureVec.maxima > 0 ? true : false;
-						if(i_refDataSet.ref_point[i].featureVec.v.length!=96){
-							throw new NyARRuntimeException();
-						}
-						fp.descripter.setValueLe(i_refDataSet.ref_point[i].featureVec.v);
-						fp.pos3d.x=t.coord3D.x;
-						fp.pos3d.y=t.coord3D.y;
-						fp.pos3d.z=0;
-					}
-				}
-				this.freakMatcher.addFreakFeaturesAndDescriptors(fps,
-						i_refDataSet.page_info[k].image_info[m].w, i_refDataSet.page_info[k].image_info[m].h, db_id++);
-			}
-		}
-		return 0;
-	}
 }

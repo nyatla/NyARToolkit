@@ -2,24 +2,17 @@ package jp.nyatla.nyartoolkit.core.kpm.keyframe;
 
 import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakMatchPointSetStack;
 
+
 public class Keyframe {
 
-	public Keyframe(int width, int height,
-			FreakMatchPointSetStack i_binaryFeatureStore) {
+	public Keyframe(int width, int height,FreakMatchPointSetStack i_binaryFeatureStore)
+	{
 		this.mWidth = width;
 		this.mHeight = height;
 		this.mStore = i_binaryFeatureStore;
 		this.mIndex = new BinaryHierarchicalClustering(i_binaryFeatureStore.getLength(),128,8,8,16);
+        this.mIndex.build(this.mStore);
 	}
-    public void buildIndex()
-    {
-//        mIndex.setNumHypotheses(128);
-//        mIndex.setNumCenters(8);
-//        mIndex.setMaxNodesToPop(8);
-//        mIndex.setMinFeaturesPerNode(16);
-        mIndex.build(this.mStore);
-    }
-
 	/**
 	 * Get/Set image width.
 	 */
@@ -27,7 +20,6 @@ public class Keyframe {
 	public int width() {
 		return mWidth;
 	}
-
 	/**
 	 * Get/Set image height.
 	 */
@@ -35,7 +27,6 @@ public class Keyframe {
 	public int height() {
 		return mHeight;
 	}
-
 	/**
 	 * @return Feature store.
 	 */

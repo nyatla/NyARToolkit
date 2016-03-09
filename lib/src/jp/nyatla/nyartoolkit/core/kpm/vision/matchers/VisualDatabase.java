@@ -21,11 +21,6 @@ import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 
 public class VisualDatabase<STORE extends FreakFeaturePointStack>
 {
-	private static double kLaplacianThreshold = 3;
-	private static double kEdgeThreshold = 4;
-	private static int kMaxNumFeatures = 300;
-	private static int kMinCoarseSize = 8;
-
 	private static int kHomographyInlierThreshold = 3;
 	private static int kMinNumInliers = 8;
 
@@ -98,7 +93,7 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 
 	final static int SIZEDEF_matchStack = 9999;
 
-	public boolean query(FreakFeaturePointStack query_keyframe) {
+	public boolean query(FreakFeaturePointStack query_keyframe,KeyframeMap i_keymap) {
 		// mMatchedInliers.clear();
 		this. mMatchedId = -1;
 		int last_inliers=0;
@@ -111,7 +106,7 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 		// typename keyframe_map_t::const_iterator it = mKeyframeMap.begin();
 		// for(; it != mKeyframeMap.end(); it++) {
 		
-		for (Map.Entry<Integer, Keyframe> i : mKeyframeMap.entrySet()) {
+		for (Map.Entry<Integer, Keyframe> i : i_keymap.entrySet()) {
 			Keyframe second = i.getValue();
 			int first = i.getKey();
 			match_result.clear();
@@ -405,14 +400,11 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 	private boolean mUseFeatureIndex;
 
 	//
-	matchStack mMatchedInliers;
+	private matchStack mMatchedInliers;
 	// id_t mMatchedId;
-	double[] mMatchedGeometry = new double[9];
+	private double[] mMatchedGeometry = new double[9];
 	//
-	FreakFeaturePointStack mQueryKeyframe;
-	//
-	// // Map of keyframe
-	final private KeyframeMap mKeyframeMap=new KeyframeMap();
+
 
 
 
@@ -426,34 +418,9 @@ public class VisualDatabase<STORE extends FreakFeaturePointStack>
 	// Robust homography estimation
 	final RobustHomography mRobustHomography=new RobustHomography();
 
-	public void addKeyframe(Keyframe keyframe, int image_id)
-	{
-//        typename keyframe_map_t::iterator it = mKeyframeMap.find(id);
-//        if(it != mKeyframeMap.end()) {
-//            throw EXCEPTION("ID already exists");
-//        }
-		if(this.mKeyframeMap.containsKey(image_id)){
-			throw new NyARRuntimeException();
-		}
-        
-        mKeyframeMap.put(image_id,keyframe);
-	}
-    public void addFreakFeaturesAndDescriptors(FreakMatchPointSetStack featurePoints,int width,int height,int image_id)
-    {
 
-    	Keyframe keyframe=new Keyframe(
-        	width,height,
-        	featurePoints);
 
-        keyframe.buildIndex();
-        this.addKeyframe(keyframe, image_id);
 
-        return;
-    }
-	public Keyframe getKeyFeatureFrame(int image_id)
-	{
-		return this.mKeyframeMap.get(image_id);
-	}
 
 
 
