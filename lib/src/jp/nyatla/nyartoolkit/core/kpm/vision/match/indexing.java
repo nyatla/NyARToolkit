@@ -15,11 +15,7 @@ public class indexing {
     }
 
   
-    public static void CopyVector(double[] dst,int i_dst_idx, double[] src,int i_src_idx,int i_len) {
-    	for(int i=0;i<i_len;i++){
-    		dst[i_dst_idx+i]=src[i_src_idx+i];
-    	}
-    }  
+
 	public static double min4(double a1, double a2, double a3, double a4)
 	{
 		double r=a1;

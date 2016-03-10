@@ -85,7 +85,7 @@ public class RobustHomography {
 				mCauchyScale, mMaxNumHypotheses, mMaxTrials, mChunkSize);
 	}
 
-	private HomographySolver_O1 _homography_solver=new HomographySolver_O1();
+	final private HomographySolver _homography_solver=new HomographySolver_O1();
 	/**
 	 * Robustly solve for the homography given a set of correspondences.
 	 */

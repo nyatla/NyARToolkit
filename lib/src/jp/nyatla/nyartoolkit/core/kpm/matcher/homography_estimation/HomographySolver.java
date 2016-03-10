@@ -1,7 +1,6 @@
 package jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation;
 
 import jp.nyatla.nyartoolkit.core.kpm.matcher.HomographyMat;
-import jp.nyatla.nyartoolkit.core.kpm.vision.match.indexing;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
@@ -12,22 +11,21 @@ import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
  */
 public class HomographySolver
 {
-	private double[][] _mat_A=new double[8][9];
 	private boolean solveHomography4PointsInhomogenous(NyARDoubleMatrix33 i_homography_mat,
 			NyARDoublePoint2d x1, NyARDoublePoint2d x2, NyARDoublePoint2d x3, NyARDoublePoint2d x4,
 			NyARDoublePoint2d xp1,NyARDoublePoint2d xp2, NyARDoublePoint2d xp3, NyARDoublePoint2d xp4) {
+		double[][] _mat_A=new double[8][9];
 
 //		x1.setValue(0, 0);x2.setValue(10, 0);x3.setValue(10, 10);x4.setValue(0, 10);
 //		xp1.setValue(10, 10);xp2.setValue(10, 0);xp3.setValue(0, 0);xp4.setValue(0, 10);		
 		
-		
 		//Homography4PointsInhomogeneousConstraint
-		AddHomographyPointContraint(this._mat_A, 0, x1, xp1);
-		AddHomographyPointContraint(this._mat_A, 2, x2, xp2);
-		AddHomographyPointContraint(this._mat_A, 4, x3, xp3);
-		AddHomographyPointContraint(this._mat_A, 6, x4, xp4);
+		AddHomographyPointContraint(_mat_A, 0, x1, xp1);
+		AddHomographyPointContraint(_mat_A, 2, x2, xp2);
+		AddHomographyPointContraint(_mat_A, 4, x3, xp3);
+		AddHomographyPointContraint(_mat_A, 6, x4, xp4);
 		//SolveHomography4PointsInhomogenous
-		if (!this.solveNullVector8x9Destructive(i_homography_mat,this._mat_A)) {
+		if (!this.solveNullVector8x9Destructive(i_homography_mat,_mat_A)) {
 			return false;
 		}
 		if (Math.abs(i_homography_mat.determinant()) < 1e-5) {
@@ -260,13 +258,13 @@ public class HomographySolver
 		}
 		Swap9(A[0], A[index]);
 		ScaleVector9(Q[0], A[0], (double) (1.f / Math.sqrt(ss)));
-		indexing.CopyVector(Q[1], 0, A[1], 0, 9);
-		indexing.CopyVector(Q[2], 0, A[2], 0, 9);
-		indexing.CopyVector(Q[3], 0, A[3], 0, 9);
-		indexing.CopyVector(Q[4], 0, A[4], 0, 9);
-		indexing.CopyVector(Q[5], 0, A[5], 0, 9);
-		indexing.CopyVector(Q[6], 0, A[6], 0, 9);
-		indexing.CopyVector(Q[7], 0, A[7], 0, 9);
+		CopyVector(Q[1], 0, A[1], 0, 9);
+		CopyVector(Q[2], 0, A[2], 0, 9);
+		CopyVector(Q[3], 0, A[3], 0, 9);
+		CopyVector(Q[4], 0, A[4], 0, 9);
+		CopyVector(Q[5], 0, A[5], 0, 9);
+		CopyVector(Q[6], 0, A[6], 0, 9);
+		CopyVector(Q[7], 0, A[7], 0, 9);
 
 		return true;
 	}
@@ -434,12 +432,12 @@ public class HomographySolver
 
 		return w;
 	}
-	private final double[] OrthogonalizeIdentity8x9_X=new double[9];
+
 
 	// boolean OrthogonalizeIdentity8x9(T x[9], const T Q[72]) {
 	private boolean OrthogonalizeIdentity8x9(NyARDoubleMatrix33 x, double[][] Q)
 	{
-		double[] XX=this.OrthogonalizeIdentity8x9_X;
+		double[] XX=new double[9];
 		double max_w=0;
 		for(int i=8;i>=0;i--){
 			double w=OrthogonalizeIdentity8x9(XX, Q, i);
@@ -459,13 +457,13 @@ public class HomographySolver
 		return true;
 	}
 
-	private final double[][] _solveNullVector8x9Destructive_Q=new double[8][9];
+
 	/**
 	 * Solve for the null vector x of an 8x9 matrix A such A*x=0. The matrix A is destroyed in the process. This system
 	 * is solved using QR decomposition with Gram-Schmidt.
 	 */
 	private boolean solveNullVector8x9Destructive(NyARDoubleMatrix33 x, double[][] A) {
-		double[][] Q = this._solveNullVector8x9Destructive_Q;
+		double[][] Q = new double[8][9];
 
 		if (!OrthogonalizePivot8x9Basis0(Q, A))
 			return false;
@@ -485,5 +483,10 @@ public class HomographySolver
 			return false;
 
 		return OrthogonalizeIdentity8x9(x, Q);
-	}	
+	}
+	private static void CopyVector(double[] dst,int i_dst_idx, double[] src,int i_src_idx,int i_len) {
+    	for(int i=0;i<i_len;i++){
+    		dst[i_dst_idx+i]=src[i_src_idx+i];
+    	}
+    }  	
 }
