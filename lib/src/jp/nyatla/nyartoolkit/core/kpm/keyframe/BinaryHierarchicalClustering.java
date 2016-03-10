@@ -8,7 +8,6 @@ import java.util.TreeMap;
 
 import jp.nyatla.nyartoolkit.core.kpm.LongDescripter768;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
-import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 import jp.nyatla.nyartoolkit.core.math.NyARLCGsRandomizer;
 import jp.nyatla.nyartoolkit.j2se.ArrayUtils;
 

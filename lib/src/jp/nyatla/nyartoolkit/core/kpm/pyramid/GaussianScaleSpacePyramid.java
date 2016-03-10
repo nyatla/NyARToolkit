@@ -1,7 +1,6 @@
 package jp.nyatla.nyartoolkit.core.kpm.pyramid;
 
 import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
-import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 
 public class GaussianScaleSpacePyramid {

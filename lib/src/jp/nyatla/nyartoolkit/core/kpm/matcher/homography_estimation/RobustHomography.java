@@ -6,7 +6,6 @@ import jp.nyatla.nyartoolkit.core.kpm.matcher.HomographyMat;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.homography;
 import jp.nyatla.nyartoolkit.core.kpm.vision.match.indexing;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.geometry;
-import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 import jp.nyatla.nyartoolkit.core.kpm.vision.utils.parcial_sort;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;

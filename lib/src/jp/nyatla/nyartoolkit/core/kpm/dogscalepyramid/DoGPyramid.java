@@ -2,7 +2,6 @@ package jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid;
 
 import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.GaussianScaleSpacePyramid;
-import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 
 public class DoGPyramid {
 	public DoGPyramid(GaussianScaleSpacePyramid pyramid) {

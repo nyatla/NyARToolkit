@@ -91,8 +91,8 @@ public class HomographySolver_O1 extends HomographySolver
 			if(dw1*dw2==0){
 				return false;
 			}
-			s1=(4/dw1)* NyARMath.SQRT2;
-			s2=(4/dw2)* NyARMath.SQRT2;
+			s1=(4/dw1)* SQRT2;
+			s2=(4/dw2)* SQRT2;
 //			double ss=s1*s2;
 			for(int i=0;i<4;i++){
 				double[] l;

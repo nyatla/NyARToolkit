@@ -4,13 +4,15 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
-import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
+import jp.nyatla.nyartoolkit.core.math.NyARMath;
 
 /**
  * Hough voting for a similarity transformation based on a set of
  * correspondences.
  */
 public class HoughSimilarityVoting {
+	final static private double PI=NyARMath.PI;
+
 
 	// typedef std::unordered_map<unsigned int, unsigned int> hash_t;
 	// typedef std::pair<int /*size*/, int /*index*/> vote_t;
@@ -131,7 +133,7 @@ public class HoughSimilarityVoting {
 			double x, double y, double angle, double scale) {
 		fBin.x = mNumXBins * SafeDivision(x - mMinX, mMaxX - mMinX);
 		fBin.y = mNumYBins * SafeDivision(y - mMinY, mMaxY - mMinY);
-		fBin.angle = (double) (mNumAngleBins * ((angle + math_utils.PI) * (1 / (2 * math_utils.PI))));
+		fBin.angle = (double) (mNumAngleBins * ((angle + PI) * (1 / (2 * PI))));
 		fBin.scale = mNumScaleBins
 				* SafeDivision(scale - mMinScale, mMaxScale - mMinScale);
 	}
@@ -186,7 +188,7 @@ public class HoughSimilarityVoting {
 
 		// Check that the vote is within range
 		if (x < mMinX || x >= mMaxX || y < mMinY || y >= mMaxY
-				|| angle <= -math_utils.PI || angle > math_utils.PI
+				|| angle <= -PI || angle > PI
 				|| scale < mMinScale || scale >= mMaxScale) {
 			return false;
 		}
@@ -368,10 +370,10 @@ public class HoughSimilarityVoting {
 		FreakFeaturePoint ref=i_item.ref;
 		r.angle = ins.angle - ref.angle;
 		// Map angle to (-pi,pi]
-		if (r.angle <= -math_utils.PI) {
-			r.angle += (2 * math_utils.PI);
-		} else if (r.angle > math_utils.PI) {
-			r.angle -= (2 * math_utils.PI);
+		if (r.angle <= -PI) {
+			r.angle += (2 * PI);
+		} else if (r.angle > PI) {
+			r.angle -= (2 * PI);
 		}
 		// ASSERT(r.angle > -KpmMath.PI, "angle out of range");
 		// ASSERT(r.angle <= KpmMath.PI, "angle out of range");

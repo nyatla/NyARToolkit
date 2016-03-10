@@ -2,9 +2,12 @@ package jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid;
 
 import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.GaussianScaleSpacePyramid;
-import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
+import jp.nyatla.nyartoolkit.core.math.NyARMath;
 
 public class OrientationAssignment {
+	final static public double PI=NyARMath.PI;
+	final static private double ONE_OVER_2PI=       0.159154943091895;
+	
 	final private int mNumOctaves;
 	final private int mNumScalesPerOctave;
 
@@ -176,7 +179,7 @@ public class OrientationAssignment {
 				double w = fastexp6(r2 * gw_scale);
 
 				// Compute the sub-bin location
-				double fbin = (double) (mNumBins * angle * math_utils.ONE_OVER_2PI);
+				double fbin = (double) (mNumBins * angle * ONE_OVER_2PI);
 
 				// Vote to the orientation histogram with a bilinear update
 				this.bilinear_histogram_update(this.mHistogram, fbin, w * mag, mNumBins);
@@ -227,8 +230,8 @@ public class OrientationAssignment {
 
 				// The sub-pixel angle needs to be in the range [0,2*pi)
 				// angles[num_angles] = std::fmod((2.f*PI)*((fbin+0.5f+(float)mNumBins)/(float)mNumBins), 2.f*PI);
-				angles.v[angles.num] = ((2.f * math_utils.PI) * ((fbin + 0.5 + (double) mNumBins) / (double) mNumBins))
-						% (double) (2.f * math_utils.PI);
+				angles.v[angles.num] = ((2.f * PI) * ((fbin + 0.5 + (double) mNumBins) / (double) mNumBins))
+						% (double) (2.f * PI);
 
 				// Increment the number of angles
 				angles.num++;
@@ -325,7 +328,7 @@ public class OrientationAssignment {
 		dx = im[p_ptr + 1] - im[p_ptr + 0];// dx = p_ptr[1] - p_ptr[0];
 		dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];// dy = pp1_ptr[0] - pm1_ptr[0];
 		// SET_GRADIENT(dx, dy)
-		gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);
+		gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + PI);
 		gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
 		p_ptr++;
 		pm1_ptr++;
@@ -335,7 +338,7 @@ public class OrientationAssignment {
 			dx = im[p_ptr + 1] - im[p_ptr - 1];
 			dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
 			// SET_GRADIENT(dx, dy)
-			gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);
+			gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + PI);
 			gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
 			p_ptr++;
 			pm1_ptr++;
@@ -345,7 +348,7 @@ public class OrientationAssignment {
 		dx = im[p_ptr + 0] - im[p_ptr - 1];
 		dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
 		// SET_GRADIENT(dx, dy)
-		gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);
+		gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + PI);
 		gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
 		p_ptr++;
 		pm1_ptr++;
@@ -360,7 +363,7 @@ public class OrientationAssignment {
 			dx = im[p_ptr + 1] - im[p_ptr + 0];
 			dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
 			// SET_GRADIENT(dx, dy)
-			gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);
+			gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + PI);
 			gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
 			p_ptr++;
 			pm1_ptr++;
@@ -370,7 +373,7 @@ public class OrientationAssignment {
 				dx = im[p_ptr + 1] - im[p_ptr - 1];
 				dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
 				// SET_GRADIENT(dx, dy)
-				gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);
+				gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + PI);
 				gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
 				p_ptr++;
 				pm1_ptr++;
@@ -379,7 +382,7 @@ public class OrientationAssignment {
 			dx = im[p_ptr + 0] - im[p_ptr - 1];
 			dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
 			// SET_GRADIENT(dx, dy)
-			gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);
+			gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + PI);
 			gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
 			p_ptr++;
 			pm1_ptr++;
@@ -394,7 +397,7 @@ public class OrientationAssignment {
 		dx = im[p_ptr + 1] - im[p_ptr + 0];
 		dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
 		// SET_GRADIENT(dx, dy)
-		gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);
+		gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + PI);
 		gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
 		p_ptr++;
 		pm1_ptr++;
@@ -404,7 +407,7 @@ public class OrientationAssignment {
 			dx = im[p_ptr + 1] - im[p_ptr - 1];
 			dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
 			// SET_GRADIENT(dx, dy)
-			gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);
+			gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + PI);
 			gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
 			p_ptr++;
 			pm1_ptr++;
@@ -415,7 +418,7 @@ public class OrientationAssignment {
 		dx = im[p_ptr + 0] - im[p_ptr - 1];
 		dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
 		// SET_GRADIENT(dx, dy)
-		gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + math_utils.PI);
+		gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + PI);
 		gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
 		p_ptr++;
 		pm1_ptr++;
