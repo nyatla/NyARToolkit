@@ -28,6 +28,7 @@ package jp.nyatla.nyartoolkit.core.types.stack;
 import java.lang.reflect.Array;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.match_t;
 
 /**
  * このクラスは、オブジェクトの参照値を格納する可変長配列です。
@@ -154,9 +155,18 @@ public class NyARPointerStack<T>
 	 * この関数は、データ長が0であるかを返します。
 	 * @return
 	 */
-	public boolean isEmpty() {
+	public final boolean isEmpty() {
 		return this._length==0;
-	}	
+	}
+	public final void swap(int i_idx1,int i_idx_2)
+	{
+		if(i_idx1!=i_idx_2){
+			T[] list=this._items;
+			T tmp=list[i_idx1];
+			list[i_idx1]=list[i_idx_2];
+			list[i_idx_2]=tmp;
+		}
+	}
 	/**
 	 * この関数は、配列の最大サイズを返します。
 	 * @return
