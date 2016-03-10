@@ -11,8 +11,8 @@ import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DoGScaleInvariantDetector;
 import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DogFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FREAKExtractor;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePointStack;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.FeaturePairStack;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.VisualDatabase;
-import jp.nyatla.nyartoolkit.core.kpm.matcher.matchStack;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.BinomialPyramid32f;
 
 
@@ -100,7 +100,7 @@ public class FreakKeypointMatching {
 			return false;
 		}
 
-		matchStack matches = this.freakMatcher.inliers();
+		FeaturePairStack matches = this.freakMatcher.inliers();
 		return kpmMatching.kpmUtilGetPose_binary(this._ref_cparam, matches,i_keymap.get(matched_image_id).store(),query_keypoint, this.result);
 
 	}

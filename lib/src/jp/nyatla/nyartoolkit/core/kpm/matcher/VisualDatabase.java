@@ -6,11 +6,7 @@ import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.FreakMatchPointSetStack;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.Keyframe;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.KeyframeMap;
-import jp.nyatla.nyartoolkit.core.kpm.matcher.FeaturePairStack.Item;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.HoughSimilarityVoting.BinLocation;
-import jp.nyatla.nyartoolkit.core.kpm.matcher.HoughSimilarityVoting.Bins;
-import jp.nyatla.nyartoolkit.core.kpm.matcher.HoughSimilarityVoting.getMaximumNumberOfVotesResult;
-import jp.nyatla.nyartoolkit.core.kpm.matcher.HoughSimilarityVoting.mapCorrespondenceResult;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation.RobustHomography;
 
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.geometry;
@@ -47,7 +43,7 @@ public class VisualDatabase
 	/**
 	 * Vote for a similarity transformation.
 	 */
-	private int FindHoughSimilarity(HoughSimilarityVoting hough,matchStack matches,int refWidth, int refHeight) {
+	private int FindHoughSimilarity(HoughSimilarityVoting hough,FeaturePairStack matches,int refWidth, int refHeight) {
 //		FreakFeaturePoint[] query = new FreakFeaturePoint[matches.getLength()];
 //		FreakFeaturePoint[] ref = new FreakFeaturePoint[matches.getLength()];
 		FeaturePairStack feature_pair=new FeaturePairStack(matches.getLength());
@@ -83,7 +79,7 @@ public class VisualDatabase
 			FreakMatchPointSetStack ref_points = second.store();
 			int first = i.getKey();
 			//毎回作り直さんと行けない。
-			matchStack match_result=new matchStack(query_keyframe.getLength());
+			FeaturePairStack match_result=new FeaturePairStack(query_keyframe.getLength());
 			if (mUseFeatureIndex) {
 				if (mMatcher.match(query_keyframe,ref_points,second.index(),match_result) < this.mMinNumInliers) {
 					continue;
@@ -173,7 +169,7 @@ public class VisualDatabase
 	 * Find the inliers given a homography and a set of correspondences.
 	 */
 	private void FindInliers(NyARDoubleMatrix33 H, FreakFeaturePointStack p1,
-			FreakMatchPointSetStack p2, matchStack matches, double threshold) {
+			FreakMatchPointSetStack p2, FeaturePairStack matches, double threshold) {
 		double threshold2 = (threshold*threshold);
 		NyARDoublePoint2d xp = new NyARDoublePoint2d();// float xp[2];
 		// reserve(matches.size());
@@ -197,7 +193,7 @@ public class VisualDatabase
 	/**
 	 * Get only the matches that are consistent based on the hough votes.
 	 */
-	private void FindHoughMatches(HoughSimilarityVoting hough,matchStack in_matches,
+	private void FindHoughMatches(HoughSimilarityVoting hough,FeaturePairStack in_matches,
 			int binIndex, double binDelta) {
 
 		HoughSimilarityVoting.Bins bin = hough.getBinsFromIndex(binIndex);
@@ -237,7 +233,7 @@ public class VisualDatabase
 	 * Estimate the homography between a set of correspondences.
 	 */
 	private boolean EstimateHomography(HomographyMat H, FreakFeaturePointStack p1,
-			FreakMatchPointSetStack p2, matchStack matches, int refWidth, int refHeight) {
+			FreakMatchPointSetStack p2, FeaturePairStack matches, int refWidth, int refHeight) {
 
 		NyARDoublePoint2d[] srcPoints = NyARDoublePoint2d.createArray(matches.getLength());
 		NyARDoublePoint2d[] dstPoints = NyARDoublePoint2d.createArray(matches.getLength());
@@ -320,7 +316,7 @@ public class VisualDatabase
 
 		return true;
 	}
-	public matchStack inliers() {
+	public FeaturePairStack inliers() {
 		return this.mMatchedInliers;
 	}
 
@@ -335,7 +331,7 @@ public class VisualDatabase
 	private boolean mUseFeatureIndex;
 
 	//
-	private matchStack mMatchedInliers;
+	private FeaturePairStack mMatchedInliers;
 	// id_t mMatchedId;
 	private double[] mMatchedGeometry = new double[9];
 	//

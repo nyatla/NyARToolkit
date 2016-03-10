@@ -22,7 +22,7 @@ public class BinaryFeatureMatcher {
 	 * 
 	 * @return Number of matches
 	 */
-	public int match(FreakFeaturePointStack i_query, FreakMatchPointSetStack i_ref,matchStack i_maches)
+	public int match(FreakFeaturePointStack i_query, FreakMatchPointSetStack i_ref,FeaturePairStack i_maches)
 	{
 
 
@@ -61,14 +61,14 @@ public class BinaryFeatureMatcher {
 				// Otherwise, do a ratio test.
 				if (second_best == Integer.MAX_VALUE) {
 					// mMatches.push_back(match_t((int)i, best_index));
-					match_t t = i_maches.prePush();
+					FeaturePairStack.Item t = i_maches.prePush();
 					t.query=i_query.getItem(i);
 					t.ref=i_ref.getItem(best_index);
 				} else {
 					// Ratio test
 					double r = (double) first_best / (double) second_best;
 					if (r < mThreshold) {
-						match_t t = i_maches.prePush();
+						FeaturePairStack.Item t = i_maches.prePush();
 						t.query=i_query.getItem(i);
 						t.ref=i_ref.getItem(best_index);
 						// mMatches.push_back(match_t((int)i, best_index));
@@ -85,7 +85,7 @@ public class BinaryFeatureMatcher {
 	 * 
 	 * @return Number of matches
 	 */
-	public int match(FreakFeaturePointStack i_query, FreakMatchPointSetStack i_ref, BinaryHierarchicalClustering index2,matchStack i_maches)
+	public int match(FreakFeaturePointStack i_query, FreakMatchPointSetStack i_ref, BinaryHierarchicalClustering index2,FeaturePairStack i_maches)
 	{
 		if (i_query.getLength() == 0 || i_ref.getLength() == 0) {
 			return 0;
@@ -127,7 +127,7 @@ public class BinaryFeatureMatcher {
 				// If there isn't a SECOND_BEST, then always choose the FIRST_BEST.
 				// Otherwise, do a ratio test.
 				if (second_best == Integer.MAX_VALUE) {
-					match_t t = i_maches.prePush();
+					FeaturePairStack.Item t = i_maches.prePush();
 					t.query=i_query.getItem(i);
 					t.ref=i_ref.getItem(best_index);
 				} else {
@@ -135,7 +135,7 @@ public class BinaryFeatureMatcher {
 					double r = (double) first_best / (double) second_best;
 					if (r < mThreshold) {
 						// mMatches.push_back(match_t((int)i, best_index));
-						match_t t = i_maches.prePush();
+						FeaturePairStack.Item t = i_maches.prePush();
 						t.query=i_query.getItem(i);
 						t.ref=i_ref.getItem(best_index);
 					}
@@ -153,7 +153,7 @@ public class BinaryFeatureMatcher {
 	 * 
 	 * @return Number of matches
 	 */
-	public int match(FreakFeaturePointStack i_query, FreakMatchPointSetStack i_ref, NyARDoubleMatrix33 H,double tr,matchStack i_maches)
+	public int match(FreakFeaturePointStack i_query, FreakMatchPointSetStack i_ref, NyARDoubleMatrix33 H,double tr,FeaturePairStack i_maches)
 	{
 		if (i_query.getLength() == 0 || i_ref.getLength() == 0) {
 			return 0;
@@ -214,7 +214,7 @@ public class BinaryFeatureMatcher {
 				// If there isn't a SECOND_BEST, then always choose the FIRST_BEST.
 				// Otherwise, do a ratio test.
 				if (second_best == Integer.MAX_VALUE) {
-					match_t t = i_maches.prePush();
+					FeaturePairStack.Item t = i_maches.prePush();
 					t.query=i_query.getItem(i);
 					t.ref=i_ref.getItem(best_index);
 					// mMatches.push_back(match_t((int)i, best_index));
@@ -223,7 +223,7 @@ public class BinaryFeatureMatcher {
 					double r = (double) first_best / (double) second_best;
 					if (r < this.mThreshold) {
 						// mMatches.push_back(match_t((int)i, best_index));
-						match_t t = i_maches.prePush();
+						FeaturePairStack.Item t = i_maches.prePush();
 						t.query=i_query.getItem(i);
 						t.ref=i_ref.getItem(best_index);
 					}

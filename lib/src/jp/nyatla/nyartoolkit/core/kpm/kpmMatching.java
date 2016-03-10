@@ -2,7 +2,7 @@ package jp.nyatla.nyartoolkit.core.kpm;
 
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.FreakMatchPointSetStack;
-import jp.nyatla.nyartoolkit.core.kpm.matcher.matchStack;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.FeaturePairStack;
 import jp.nyatla.nyartoolkit.core.icp.NyARIcpPlane;
 import jp.nyatla.nyartoolkit.core.icp.NyARIcpPoint;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
@@ -11,7 +11,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 
 public class kpmMatching {
-	public static boolean kpmUtilGetPose_binary(NyARParam i_cparam, matchStack matchData, FreakMatchPointSetStack refDataSet,
+	public static boolean kpmUtilGetPose_binary(NyARParam i_cparam, FeaturePairStack matchData, FreakMatchPointSetStack refDataSet,
 			FreakFeaturePointStack inputDataSet, KpmResult kpmResult) {
 		// ICPHandleT *icpHandle;
 		// ICPDataT icpData;
