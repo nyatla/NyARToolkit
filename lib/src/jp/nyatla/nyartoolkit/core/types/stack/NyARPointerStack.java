@@ -28,7 +28,7 @@ package jp.nyatla.nyartoolkit.core.types.stack;
 import java.lang.reflect.Array;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.match_t;
+
 
 /**
  * このクラスは、オブジェクトの参照値を格納する可変長配列です。
