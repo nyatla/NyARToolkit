@@ -123,8 +123,11 @@ public class OrientationAssignment {
 		if (xi < 0 || xi >= g.getWidth() || yi < 0 || yi >= g.getHeight()) {
 			return;
 		}
-
-		gw_sigma = math_utils.max2(1.f, this.mGaussianExpansionFactor * sigma);
+		//gw_sigma = math_utils.max2(1.f, this.mGaussianExpansionFactor * sigma);
+		gw_sigma = this.mGaussianExpansionFactor * sigma;
+		if(gw_sigma<1.0){
+			gw_sigma=1.0;
+		}
 		gw_scale = -1.f / (2 * (gw_sigma*gw_sigma));
 
 		// Radius of the support region
@@ -138,13 +141,17 @@ public class OrientationAssignment {
 		y1 = yi + (int) (radius + 0.5f);
 
 		// Clip the box to be within the bounds of the image
-		x0 = math_utils.max2(0, x0);
-		x1 = math_utils.min2(x1, (int) g.getWidth() - 1);
-		y0 = math_utils.max2(0, y0);
-		y1 = math_utils.min2(y1, (int) g.getHeight() - 1);
+		int width_1=g.getWidth() - 1;
+		int height_1=g.getHeight() - 1;
+		if(x0<0){ x0=0;}//x0 = math_utils.max2(0, x0);
+		if(x1>width_1){x1=width_1;}//x1 = math_utils.min2(x1, (int) g.getWidth() - 1);
+		if(y0<0){y0=0;}//y0 = math_utils.max2(0, y0);
+		if(y1>height_1){y1=height_1;}//y1 = math_utils.min2(y1, (int) g.getHeight() - 1);
+		
+		
 
 		// Zero out the orientation histogram
-		math_utils.ZeroVector(this.mHistogram, mHistogram.length);
+		ZeroVector(this.mHistogram, mHistogram.length);
 
 		// Build up the orientation histogram
 		for (int yp = y0; yp <= y1; yp++) {
@@ -166,7 +173,7 @@ public class OrientationAssignment {
 				double mag = g_buf[g2_ptr + 1];// const float& mag = g[1];
 
 				// Compute the gaussian weight based on distance from center of keypoint
-				double w = math_utils.fastexp6(r2 * gw_scale);
+				double w = fastexp6(r2 * gw_scale);
 
 				// Compute the sub-bin location
 				double fbin = (double) (mNumBins * angle * math_utils.ONE_OVER_2PI);
@@ -205,16 +212,16 @@ public class OrientationAssignment {
 
 			// Ensure that "p0" is a relative peak w.r.t. the two neighbors
 			if ((mHistogram[i] > mPeakThreshold * max_height) && (p0[1] > pm1[1]) && (p0[1] > pp1[1])) {
-				double A, B, C, fbin;
+				double fbin;
 				double[] R = new double[3];
 				// The default sub-pixel bin location is the discrete location if the quadratic
 				// fitting fails.
 				fbin = i;
 
 				// Fit a quatratic to the three bins
-				if (math_utils.Quadratic3Points(R, pm1, p0, pp1)) {
+				if (Quadratic3Points(R, pm1, p0, pp1)) {
 					// If "QuadraticCriticalPoint" fails, then "fbin" is not updated.
-					math_utils.QuadraticCriticalPoint(R, R[0], R[1], R[2]);// チェックしなくていいの？
+					QuadraticCriticalPoint(R, R[0], R[1], R[2]);// チェックしなくていいの？
 					fbin = R[0];
 				}
 
@@ -414,4 +421,100 @@ public class OrientationAssignment {
 		pm1_ptr++;
 		pp1_ptr++;
 	}
+    final static private void ZeroVector(double[] x, int num_elements)
+    {
+    	for(int i=0;i<num_elements;i++){
+    		x[i]=0;
+    	}
+    }	
+    /**
+     * 0.01% error at 1.030
+     * 0.10% error at 1.520
+     * 1.00% error at 2.330
+     * 5.00% error at 3.285
+     */
+    final private static double fastexp6(double x) {
+        return (720+x*(720+x*(360+x*(120+x*(30+x*(6+x))))))*0.0013888888;
+    }	
+    /**
+     * Fit a quatratic to 3 points. The system of equations is:
+     *
+     * y0 = A*x0^2 + B*x0 + C
+     * y1 = A*x1^2 + B*x1 + C
+     * y2 = A*x2^2 + B*x2 + C
+     *
+     * This system of equations is solved for A,B,C.
+     *
+     * @param[out] A
+     * @param[out] B
+     * @param[out] C
+     * @param[in] p1 2D point 1
+     * @param[in] p2 2D point 2
+     * @param[in] p3 2D point 3
+     * @return True if the quatratic could be fit, otherwise false.
+     */
+	public static boolean Quadratic3Points(double r[],
+			double[] p1,
+			double[] p2,
+			double[] p3) {
+		double d1 = (p3[0]-p2[0])*(p3[0]-p1[0]);
+		double d2 = (p1[0]-p2[0])*(p3[0]-p1[0]);
+		double d3 = p1[0]-p2[0];
+        // If any of the denominators are zero then return FALSE.
+		if(d1 == 0 ||
+           d2 == 0 ||
+           d3 == 0) {
+			r[0] = 0;
+			r[1] = 0;
+			r[2] = 0;
+			return false;
+		}
+		else {
+			double a = p1[0]*p1[0];
+			double b = p2[0]*p2[0];
+			
+            // Solve for the coefficients A,B,C
+			double A,B;
+			r[0] =A= ((p3[1]-p2[1])/d1)-((p1[1]-p2[1])/d2);
+			r[1] =B= ((p1[1]-p2[1])+(A*(b-a)))/d3;
+			r[2]   = p1[1]-(A*a)-(B*p1[0]);
+			return true;
+		}
+	}
+    /**
+	 * Find the critical point of a quadratic.
+     *
+     * y = A*x^2 + B*x + C
+     *
+     * This function finds where "x" where dy/dx = 0.
+	 *
+     * @param[out] x Parameter of the critical point.
+     * @param[in] A
+     * @param[in] B
+     * @param[in] C
+	 * @return True on success.
+	 */
+	final public static boolean QuadraticCriticalPoint(double[] x, double A, double B, double C) {
+		if(A == 0) {
+			return false;
+		}
+		x[0] = -B/(2*A);
+		return true;
+	}
+//    /**
+//     * Evaluate a quatratic function.
+//     */
+//	final private static double QuadraticEval(double[] r,final double x) {
+////        return A*x*x + B*x + C;
+//        return r[0]*x*x + r[1]*x + r[2];
+//    }
+//    /**
+//     * Find the derivate of the quadratic at a point.
+//     */
+//	final private static double QuadraticDerivative(double x, double A, double B) {
+//        return 2*A*x + B;
+//    }
+
+	
+	
 }

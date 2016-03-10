@@ -62,7 +62,7 @@ public class GaussianScaleSpacePyramid {
 	 */
 	public void locate(double sigma, LocateResult result) {
 		// octave = floor(log2(s))
-		int octave = (int) Math.floor(math_utils.log2(sigma));
+		int octave = (int) Math.floor(Math.log(sigma) / Math.log(2));
 		// scale = logk(s/2^octave)
 		// Here we ROUND the scale to an integer value
 		double fscale = Math.log(sigma / (double) (1 << octave))

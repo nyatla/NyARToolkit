@@ -136,7 +136,10 @@ public class BinaryHierarchicalClustering {
 	private void build(Node node, FreakFeaturePoint[] features, int[] indices, int num_indices) {
 		// Check if there are enough features to cluster.
 		// If not, then assign all features to the same cluster.
-		if (num_indices <= math_utils.max2(mBinarykMedoids.k(), this.mMinFeaturePerNode)) {
+//		int t=math_utils.max2(mBinarykMedoids.k(), this.mMinFeaturePerNode);
+		int t=mBinarykMedoids.k();
+		if(t<this.mMinFeaturePerNode){t=this.mMinFeaturePerNode;}
+		if (num_indices <= t) {
 			node.leaf(true);
 			node.resizeReverseIndex(num_indices);
 			for (int i = 0; i < num_indices; i++) {

@@ -124,7 +124,8 @@ public class RobustHomography {
 		point_perm = num_points;
 
 		one_over_scale2 = 1 / (scale*scale);
-		chunk_size = math_utils.min2(chunk_size, num_points);
+//		chunk_size = math_utils.min2(chunk_size, num_points);
+		chunk_size = chunk_size<num_points?chunk_size:num_points;
 
 
 		// Fill two arrays from [0,num_points)
@@ -185,7 +186,8 @@ public class RobustHomography {
 		for (int i = 0; i < num_points && num_hypotheses_remaining > 2; i += cur_chunk_size) {
 
 			// Size of the current chunk
-			cur_chunk_size = math_utils.min2(chunk_size, num_points - i);
+//			cur_chunk_size = math_utils.min2(chunk_size, num_points - i);
+			cur_chunk_size = (chunk_size<num_points - i)?chunk_size:(num_points - i);
 
 			// End of the current chunk
 			this_chunk_end = i + cur_chunk_size;

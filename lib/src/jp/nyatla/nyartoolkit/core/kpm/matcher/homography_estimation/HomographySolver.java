@@ -1,7 +1,6 @@
 package jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation;
 
 import jp.nyatla.nyartoolkit.core.kpm.matcher.HomographyMat;
-import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 
@@ -11,6 +10,8 @@ import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
  */
 public class HomographySolver
 {
+	final static private double SQRT2=1.41421356237309504880;
+	
 	private boolean solveHomography4PointsInhomogenous(NyARDoubleMatrix33 i_homography_mat,
 			NyARDoublePoint2d x1, NyARDoublePoint2d x2, NyARDoublePoint2d x3, NyARDoublePoint2d x4,
 			NyARDoublePoint2d xp1,NyARDoublePoint2d xp2, NyARDoublePoint2d xp3, NyARDoublePoint2d xp4) {
@@ -65,7 +66,7 @@ public class HomographySolver
 			return false;
 		}
 
-		double s = (double) ((1 / d) * math_utils.SQRT2);
+		double s = (double) ((1 / d) * SQRT2);
 		mus[2] = s;
 		xp1.x = d1[0] * s;
 		xp1.y = d1[1] * s;

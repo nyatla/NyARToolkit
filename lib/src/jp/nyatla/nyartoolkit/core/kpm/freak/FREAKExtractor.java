@@ -6,7 +6,7 @@ import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DogFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DogFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.GaussianScaleSpacePyramid;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
-import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
+
 
 public class FREAKExtractor {
 	/**
@@ -222,90 +222,59 @@ public class FREAKExtractor {
 		}
 
 		// Transformation from canonical test locations to image
-		math_utils
-				.Similarity(S, point.x, point.y, point.angle, transform_scale);
+		Similarity(S, point.x, point.y, point.angle, transform_scale);
 
 		// Locate center points
 		c[0] = S[2];
 		c[1] = S[5];
 
 		// Locate ring 0 points
-		math_utils.MultiplyPointSimilarityInhomogenous(r0, 0, S, points_ring0,0);
-		math_utils.MultiplyPointSimilarityInhomogenous(r0, 2, S, points_ring0,2);
-		math_utils.MultiplyPointSimilarityInhomogenous(r0, 4, S, points_ring0,4);
-		math_utils.MultiplyPointSimilarityInhomogenous(r0, 6, S, points_ring0,6);
-		math_utils.MultiplyPointSimilarityInhomogenous(r0, 8, S, points_ring0,8);
-		math_utils.MultiplyPointSimilarityInhomogenous(r0, 10, S, points_ring0,10);
+		MultiplyPointSimilarityInhomogenous(r0, 0, S, points_ring0,0);
+		MultiplyPointSimilarityInhomogenous(r0, 2, S, points_ring0,2);
+		MultiplyPointSimilarityInhomogenous(r0, 4, S, points_ring0,4);
+		MultiplyPointSimilarityInhomogenous(r0, 6, S, points_ring0,6);
+		MultiplyPointSimilarityInhomogenous(r0, 8, S, points_ring0,8);
+		MultiplyPointSimilarityInhomogenous(r0, 10, S, points_ring0,10);
 
 		// Locate ring 1 points
-		math_utils.MultiplyPointSimilarityInhomogenous(r1, 0, S, points_ring1,
-				0);
-		math_utils.MultiplyPointSimilarityInhomogenous(r1, 2, S, points_ring1,
-				2);
-		math_utils.MultiplyPointSimilarityInhomogenous(r1, 4, S, points_ring1,
-				4);
-		math_utils.MultiplyPointSimilarityInhomogenous(r1, 6, S, points_ring1,
-				6);
-		math_utils.MultiplyPointSimilarityInhomogenous(r1, 8, S, points_ring1,
-				8);
-		math_utils.MultiplyPointSimilarityInhomogenous(r1, 10, S, points_ring1,
-				10);
+		MultiplyPointSimilarityInhomogenous(r1, 0, S, points_ring1, 0);
+		MultiplyPointSimilarityInhomogenous(r1, 2, S, points_ring1, 2);
+		MultiplyPointSimilarityInhomogenous(r1, 4, S, points_ring1, 4);
+		MultiplyPointSimilarityInhomogenous(r1, 6, S, points_ring1, 6);
+		MultiplyPointSimilarityInhomogenous(r1, 8, S, points_ring1, 8);
+		MultiplyPointSimilarityInhomogenous(r1, 10, S, points_ring1, 10);
 
 		// Locate ring 2 points
-		math_utils.MultiplyPointSimilarityInhomogenous(r2, 0, S, points_ring2,
-				0);
-		math_utils.MultiplyPointSimilarityInhomogenous(r2, 2, S, points_ring2,
-				2);
-		math_utils.MultiplyPointSimilarityInhomogenous(r2, 4, S, points_ring2,
-				4);
-		math_utils.MultiplyPointSimilarityInhomogenous(r2, 6, S, points_ring2,
-				6);
-		math_utils.MultiplyPointSimilarityInhomogenous(r2, 8, S, points_ring2,
-				8);
-		math_utils.MultiplyPointSimilarityInhomogenous(r2, 10, S, points_ring2,
-				10);
+		MultiplyPointSimilarityInhomogenous(r2, 0, S, points_ring2, 0);
+		MultiplyPointSimilarityInhomogenous(r2, 2, S, points_ring2, 2);
+		MultiplyPointSimilarityInhomogenous(r2, 4, S, points_ring2, 4);
+		MultiplyPointSimilarityInhomogenous(r2, 6, S, points_ring2, 6);
+		MultiplyPointSimilarityInhomogenous(r2, 8, S, points_ring2, 8);
+		MultiplyPointSimilarityInhomogenous(r2, 10, S, points_ring2, 10);
 
 		// Locate ring 3 points
-		math_utils.MultiplyPointSimilarityInhomogenous(r3, 0, S, points_ring3,
-				0);
-		math_utils.MultiplyPointSimilarityInhomogenous(r3, 2, S, points_ring3,
-				2);
-		math_utils.MultiplyPointSimilarityInhomogenous(r3, 4, S, points_ring3,
-				4);
-		math_utils.MultiplyPointSimilarityInhomogenous(r3, 6, S, points_ring3,
-				6);
-		math_utils.MultiplyPointSimilarityInhomogenous(r3, 8, S, points_ring3,
-				8);
-		math_utils.MultiplyPointSimilarityInhomogenous(r3, 10, S, points_ring3,
-				10);
+		MultiplyPointSimilarityInhomogenous(r3, 0, S, points_ring3, 0);
+		MultiplyPointSimilarityInhomogenous(r3, 2, S, points_ring3, 2);
+		MultiplyPointSimilarityInhomogenous(r3, 4, S, points_ring3, 4);
+		MultiplyPointSimilarityInhomogenous(r3, 6, S, points_ring3, 6);
+		MultiplyPointSimilarityInhomogenous(r3, 8, S, points_ring3, 8);
+		MultiplyPointSimilarityInhomogenous(r3, 10, S, points_ring3, 10);
 
 		// Locate ring 4 points
-		math_utils.MultiplyPointSimilarityInhomogenous(r4, 0, S, points_ring4,
-				0);
-		math_utils.MultiplyPointSimilarityInhomogenous(r4, 2, S, points_ring4,
-				2);
-		math_utils.MultiplyPointSimilarityInhomogenous(r4, 4, S, points_ring4,
-				4);
-		math_utils.MultiplyPointSimilarityInhomogenous(r4, 6, S, points_ring4,
-				6);
-		math_utils.MultiplyPointSimilarityInhomogenous(r4, 8, S, points_ring4,
-				8);
-		math_utils.MultiplyPointSimilarityInhomogenous(r4, 10, S, points_ring4,
-				10);
+		MultiplyPointSimilarityInhomogenous(r4, 0, S, points_ring4, 0);
+		MultiplyPointSimilarityInhomogenous(r4, 2, S, points_ring4, 2);
+		MultiplyPointSimilarityInhomogenous(r4, 4, S, points_ring4, 4);
+		MultiplyPointSimilarityInhomogenous(r4, 6, S, points_ring4, 6);
+		MultiplyPointSimilarityInhomogenous(r4, 8, S, points_ring4, 8);
+		MultiplyPointSimilarityInhomogenous(r4, 10, S, points_ring4, 10);
 
 		// Locate ring 5 points
-		math_utils.MultiplyPointSimilarityInhomogenous(r5, 0, S, points_ring5,
-				0);
-		math_utils.MultiplyPointSimilarityInhomogenous(r5, 2, S, points_ring5,
-				2);
-		math_utils.MultiplyPointSimilarityInhomogenous(r5, 4, S, points_ring5,
-				4);
-		math_utils.MultiplyPointSimilarityInhomogenous(r5, 6, S, points_ring5,
-				6);
-		math_utils.MultiplyPointSimilarityInhomogenous(r5, 8, S, points_ring5,
-				8);
-		math_utils.MultiplyPointSimilarityInhomogenous(r5, 10, S, points_ring5,
-				10);
+		MultiplyPointSimilarityInhomogenous(r5, 0, S, points_ring5, 0);
+		MultiplyPointSimilarityInhomogenous(r5, 2, S, points_ring5, 2);
+		MultiplyPointSimilarityInhomogenous(r5, 4, S, points_ring5, 4);
+		MultiplyPointSimilarityInhomogenous(r5, 6, S, points_ring5, 6);
+		MultiplyPointSimilarityInhomogenous(r5, 8, S, points_ring5, 8);
+		MultiplyPointSimilarityInhomogenous(r5, 10, S, points_ring5, 10);
 
 		// Transfer all the SIGMA values to the image
 		sc = sigma_center * transform_scale;
@@ -477,4 +446,24 @@ public class FREAKExtractor {
 	private static void prepush_wawning(){
 		System.out.println("FreakExtructor stack overflow");
 	}
+	
+    /**
+     * Multiply an in-homogenous point by a similarity.
+     */
+    //void MultiplyPointSimilarityInhomogenous(T xp[2], const T H[9], const T x[2]) {
+    public static void MultiplyPointSimilarityInhomogenous(double[] xp,int idx, double[] H, double[] x,int idx2) {
+        xp[idx+0] = H[0]*x[idx2+0] + H[1]*x[idx2+1] + H[2];
+        xp[idx+1] = H[3]*x[idx2+0] + H[4]*x[idx2+1] + H[5];
+    }
+    /**
+     * Create a similarity matrix.
+     */
+    public static void Similarity(double[] H, double x, double y, double angle, double scale) {
+    	double c = (double) (scale*Math.cos(angle));
+    	double s = (double) (scale*Math.sin(angle));
+        H[0] = c;	H[1] = -s;	H[2] = x;
+		H[3] = s;	H[4] = c;	H[5] = y;
+		H[6] = 0;	H[7] = 0;	H[8] = 1;
+    }	
+	
 }

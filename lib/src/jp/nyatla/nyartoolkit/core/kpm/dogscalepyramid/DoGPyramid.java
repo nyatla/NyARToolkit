@@ -74,7 +74,7 @@ public class DoGPyramid {
 	 * Get the octave from the Laplacian image index.
 	 */
 	public int octaveFromIndex(int index) {
-		return (int)Math.floor(math_utils.log2((mImages[0].getWidth() / this.mImages[index].getWidth()))+0.5);
+		return (int)Math.floor((Math.log((mImages[0].getWidth() / this.mImages[index].getWidth())) / Math.log(2))+0.5);
 
 	}
 

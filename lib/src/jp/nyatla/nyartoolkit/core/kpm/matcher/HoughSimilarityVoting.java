@@ -470,9 +470,10 @@ public class HoughSimilarityVoting {
 
 		double d1 = Math.abs(insBinAngle - refBinAngle);
 		double d2 = (double) mNumAngleBins - d1;
-		distbin.angle = (double) math_utils.min2(d1, d2);
+		//distbin.angle = (double) math_utils.min2(d1, d2);
+		distbin.angle = d1<d2?d1:d2;
 
-		// ASSERT(distBinAngle >= 0, "distBinAngle must not be negative");
+		return;
 	}
 
 	public class Bins {
@@ -568,7 +569,7 @@ public class HoughSimilarityVoting {
 	 * Set the number of bins for translation based on the correspondences.
 	 */
 	private void autoAdjustXYNumBins(FeaturePairStack i_point_pair) {
-		int max_dim = math_utils.max2(mRefImageWidth, mRefImageHeight);
+		int max_dim =mRefImageWidth>mRefImageHeight?mRefImageWidth:mRefImageHeight;//math_utils.max2(mRefImageWidth, mRefImageHeight);
 		double[] projected_dim = new double[i_point_pair.getLength()];
 
 		// ASSERT(size > 0, "size must be positive");
@@ -599,10 +600,12 @@ public class HoughSimilarityVoting {
 		// Compute the bin size a fraction of the median projected dim
 		double bin_size = 0.25f * median_proj_dim;
 
-		mNumXBins = math_utils
-				.max2(5, (int) Math.ceil((mMaxX - mMinX) / bin_size));
-		mNumYBins = math_utils
-				.max2(5, (int) Math.ceil((mMaxY - mMinY) / bin_size));
+		int t;
+		t=(int) Math.ceil((mMaxX - mMinX) / bin_size);
+		mNumXBins =(5>t?5:t);
+//		mNumXBins = math_utils.max2(5, );
+		t=(int) Math.ceil((mMaxY - mMinY) / bin_size);
+		mNumYBins =(5>t?5:t);
 
 		mA = mNumXBins * mNumYBins;
 		mB = mNumXBins * mNumYBins * mNumAngleBins;
