@@ -32,6 +32,7 @@ package jp.nyatla.nyartoolkit.core.math;
 public class NyARMath
 {
 	public final static double SQRT2=1.41421356237309504880;
+	final static public double PI=3.1415926535897932384626433832795;
 	
 	public final static double DBL_EPSILON=2.2204460492503131e-016;
 	/** 定数値。40^2*/
