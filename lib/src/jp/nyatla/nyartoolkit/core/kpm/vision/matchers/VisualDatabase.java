@@ -10,6 +10,7 @@ import jp.nyatla.nyartoolkit.core.kpm.keyframe.Keyframe;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.KeyframeMap;
 
 import jp.nyatla.nyartoolkit.core.kpm.vision.homography_estimation.RobustHomography;
+import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.HoughSimilarityVoting.BinLocation;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.geometry;
 
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
@@ -28,6 +29,7 @@ public class VisualDatabase
 		this.mHomographyInlierThreshold = kHomographyInlierThreshold;
 		this.mMinNumInliers = kMinNumInliers;
 		this.mUseFeatureIndex = kUseFeatureIndex;
+		//
 		this.mHoughSimilarityVoting=new HoughSimilarityVoting();		
 		double dx = i_width + (i_width * 0.2f);
 		double dy = i_height + (i_height * 0.2f);
@@ -45,18 +47,19 @@ public class VisualDatabase
 	 */
 	private int FindHoughSimilarity(HoughSimilarityVoting hough, FreakFeaturePointStack p1,
 			FreakMatchPointSetStack p2, matchStack matches,int refWidth, int refHeight) {
-		FreakFeaturePoint[] query = new FreakFeaturePoint[matches.getLength()];
-		FreakFeaturePoint[] ref = new FreakFeaturePoint[matches.getLength()];
-
+//		FreakFeaturePoint[] query = new FreakFeaturePoint[matches.getLength()];
+//		FreakFeaturePoint[] ref = new FreakFeaturePoint[matches.getLength()];
+		FeaturePairStack feature_pair=new FeaturePairStack(matches.getLength());
 		// Extract the data from the features
 		for (int i = 0; i < matches.getLength(); i++) {
-			query[i]=p1.getItem(matches.getItem(i).ins);
-			ref[i]=p2.getItem(matches.getItem(i).ref);
+			FeaturePairStack.Item item=feature_pair.prePush();
+			item.query	=p1.getItem(matches.getItem(i).ins);
+			item.ref	=p2.getItem(matches.getItem(i).ref);
 		}
 		hough.setObjectCenterInReference(refWidth >> 1, refHeight >> 1);
 		hough.setRefImageDimensions(refWidth, refHeight);
 		// hough.vote((float*)&query[0], (float*)&ref[0], (int)matches.size());
-		hough.vote(query, ref, matches.getLength());
+		hough.vote(feature_pair);
 
 		HoughSimilarityVoting.getMaximumNumberOfVotesResult max = new HoughSimilarityVoting.getMaximumNumberOfVotesResult();
 		hough.getMaximumNumberOfVotes(max);
@@ -64,14 +67,11 @@ public class VisualDatabase
 		return (max.votes < 3) ? -1 : max.index;
 	}
 
-	final private static int SIZEDEF_matchStack = 9999;
 
 	public int query(FreakFeaturePointStack query_keyframe,KeyframeMap i_keymap) {
 		// mMatchedInliers.clear();
 		int mached_id = -1;
 		int last_inliers=0;
-		matchStack match_result=new matchStack(query_keyframe.getLength());
-		matchStack hough_matches = new matchStack(SIZEDEF_matchStack);
 		HomographyMat H = new HomographyMat();
 		// Loop over all the images in the database
 		// typename keyframe_map_t::const_iterator it = mKeyframeMap.begin();
@@ -81,7 +81,8 @@ public class VisualDatabase
 			Keyframe second = i.getValue();
 			FreakMatchPointSetStack ref_points = second.store();
 			int first = i.getKey();
-			match_result.clear();
+			//毎回作り直さんと行けない。
+			matchStack match_result=new matchStack(query_keyframe.getLength());
 			if (mUseFeatureIndex) {
 				if (mMatcher.match(query_keyframe,ref_points,second.index(),match_result) < this.mMinNumInliers) {
 					continue;
@@ -108,9 +109,9 @@ public class VisualDatabase
 			}
 			// }
 
-			hough_matches.clear();
+
 			// TIMED("Find Hough Matches (1)") {
-			FindHoughMatches(hough_matches,this.mHoughSimilarityVoting,match_result,max_hough_index, kHoughBinDelta);
+			FindHoughMatches(this.mHoughSimilarityVoting,match_result,max_hough_index, kHoughBinDelta);
 			// }
 
 			//
@@ -118,8 +119,7 @@ public class VisualDatabase
 			//
 
 			// TIMED("Estimate Homography (1)") {
-			if (!EstimateHomography(H, query_keyframe, ref_points, hough_matches,
-					mHomographyInlierThreshold,
+			if (!EstimateHomography(H, query_keyframe, ref_points, match_result,
 					second.width(), second.height())) {
 				continue;
 			}
@@ -129,11 +129,10 @@ public class VisualDatabase
 			// Find the inliers
 			//
 
-			matchStack inliers = new matchStack(SIZEDEF_matchStack);
 			// TIMED("Find Inliers (1)") {
-			FindInliers(inliers, H, query_keyframe, ref_points, hough_matches,
+			FindInliers(H, query_keyframe, ref_points, match_result,
 					mHomographyInlierThreshold);
-			if (inliers.getLength() < mMinNumInliers) {
+			if (match_result.getLength() < mMinNumInliers) {
 				continue;
 			}
 			// }
@@ -162,7 +161,7 @@ public class VisualDatabase
 			// }
 
 			// TIMED("Find Hough Matches (2)") {
-			FindHoughMatches(hough_matches, mHoughSimilarityVoting, match_result,max_hough_index, kHoughBinDelta);
+			FindHoughMatches(mHoughSimilarityVoting, match_result,max_hough_index, kHoughBinDelta);
 			// }
 
 			//
@@ -170,8 +169,7 @@ public class VisualDatabase
 			//
 
 			// TIMED("Estimate Homography (2)") {
-			if (!EstimateHomography(H, query_keyframe, ref_points, hough_matches,
-					mHomographyInlierThreshold,
+			if (!EstimateHomography(H, query_keyframe, ref_points, match_result,
 					second.width(), second.height())) {
 				continue;
 			}
@@ -181,20 +179,19 @@ public class VisualDatabase
 			// Check if this is the best match based on number of inliers
 			//
 
-			inliers.clear();
 			// TIMED("Find Inliers (2)") {
-			FindInliers(inliers, H, query_keyframe, ref_points, hough_matches,
+			FindInliers(H, query_keyframe, ref_points, match_result,
 					mHomographyInlierThreshold);
 			// }
 
 			// std::cout<<"inliers-"<<inliers.size()<<std::endl;
-			if (inliers.getLength() >= mMinNumInliers && inliers.getLength() > last_inliers) {
+			if (match_result.getLength() >= mMinNumInliers && match_result.getLength() > last_inliers) {
 //				indexing.CopyVector(mMatchedGeometry, 0, H, 0, 9);
 				H.getValue(mMatchedGeometry);
 				// CopyVector9(mMatchedGeometry, H);
 				//現状は毎回生成してるからセットで。
-				mMatchedInliers = inliers;// mMatchedInliers.swap(inliers);
-				last_inliers=inliers.getLength();
+				mMatchedInliers = match_result;// mMatchedInliers.swap(inliers);
+				last_inliers=match_result.getLength();
 				mached_id = first;
 			}
 		}
@@ -205,11 +202,12 @@ public class VisualDatabase
 	/**
 	 * Find the inliers given a homography and a set of correspondences.
 	 */
-	private void FindInliers(matchStack inliers, NyARDoubleMatrix33 H, FreakFeaturePointStack p1,
+	private void FindInliers(NyARDoubleMatrix33 H, FreakFeaturePointStack p1,
 			FreakMatchPointSetStack p2, matchStack matches, double threshold) {
 		double threshold2 = (threshold*threshold);
 		NyARDoublePoint2d xp = new NyARDoublePoint2d();// float xp[2];
 		// reserve(matches.size());
+		int pos=0;
 		for (int i = 0; i < matches.getLength(); i++) {
 			homography.MultiplyPointHomographyInhomogenous(xp, H,p2.getItem(matches.getItem(i).ref).x,p2.getItem(matches.getItem(i).ref).y);
 			double t1=xp.x- p1.getItem(matches.getItem(i).ins).x;
@@ -217,42 +215,48 @@ public class VisualDatabase
 
 			double d2 = (t1*t1)+ (t2*t2);
 			if (d2 <= threshold2) {
-				match_t t = inliers.prePush();
-				t.set(matches.getItem(i));
+				matches.swap(i,pos);
+				pos++;
+			
 			}
 		}
+		matches.setLength(pos);
+		return;
 	}
 
 	/**
 	 * Get only the matches that are consistent based on the hough votes.
 	 */
-	private void FindHoughMatches(matchStack out_matches, HoughSimilarityVoting hough,matchStack in_matches,
+	private void FindHoughMatches(HoughSimilarityVoting hough,matchStack in_matches,
 			int binIndex, double binDelta) {
 
 		HoughSimilarityVoting.Bins bin = hough.getBinsFromIndex(binIndex);
 
-		out_matches.clear();
+	
 
 		int n = (int) hough.getSubBinLocationIndices().length;
 		// const float* vote_loc = hough.getSubBinLocations().data();
-		double[] vote_loc = hough.getSubBinLocations();// .data();
-		int vote_ptr = 0;
+		BinLocation[] vote_loc = hough.getSubBinLocations();// .data();
 		// ASSERT(n <= in_matches.size(), "Should be the same");
 		HoughSimilarityVoting.mapCorrespondenceResult d = new HoughSimilarityVoting.mapCorrespondenceResult();
-		for (int i = 0; i < n; i++, vote_ptr += 4) {
-			hough.getBinDistance(d, vote_loc[vote_ptr + 0],
-					vote_loc[vote_ptr + 1], vote_loc[vote_ptr + 2],
-					vote_loc[vote_ptr + 3], bin.binX + .5f, bin.binY + .5f,
+		//
+		int pos=0;
+		for (int i = 0; i < n; i++){
+			hough.getBinDistance(d, vote_loc[i].x,
+					vote_loc[i].y, vote_loc[i].angle,
+					vote_loc[i].scale, bin.binX + .5f, bin.binY + .5f,
 					bin.binAngle + .5f, bin.binScale + .5f);
 
-			if (d.x < binDelta && d.y < binDelta && d.angle < binDelta
-					&& d.scale < binDelta) {
+			if (d.x < binDelta && d.y < binDelta && d.angle < binDelta && d.scale < binDelta) {
+				//idxは昇順のはずだから詰める。
 				int idx = hough.getSubBinLocationIndices()[i];
-				// out_matches.push_back(in_matches[idx]);
-				match_t t = out_matches.prePush();
-				t.set(in_matches.getItem(idx));
+				in_matches.swap(idx, pos);
+				pos++;
+				
 			}
 		}
+		in_matches.setLength(pos);
+		return;
 	}
 	
 	
@@ -263,7 +267,7 @@ public class VisualDatabase
 	 * Estimate the homography between a set of correspondences.
 	 */
 	private boolean EstimateHomography(HomographyMat H, FreakFeaturePointStack p1,
-			FreakMatchPointSetStack p2, matchStack matches, double threshold, int refWidth, int refHeight) {
+			FreakMatchPointSetStack p2, matchStack matches, int refWidth, int refHeight) {
 
 		NyARDoublePoint2d[] srcPoints = NyARDoublePoint2d.createArray(matches.getLength());
 		NyARDoublePoint2d[] dstPoints = NyARDoublePoint2d.createArray(matches.getLength());

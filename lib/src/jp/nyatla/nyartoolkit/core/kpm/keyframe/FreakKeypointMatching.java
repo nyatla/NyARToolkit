@@ -102,6 +102,7 @@ public class FreakKeypointMatching {
 
 		matchStack matches = this.freakMatcher.inliers();
 		return kpmMatching.kpmUtilGetPose_binary(this._ref_cparam, matches,i_keymap.get(matched_image_id).store(),query_keypoint, this.result);
+
 	}
 
 

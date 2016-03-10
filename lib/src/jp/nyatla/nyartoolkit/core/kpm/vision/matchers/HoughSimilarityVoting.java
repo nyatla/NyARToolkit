@@ -265,18 +265,34 @@ public class HoughSimilarityVoting {
 		return true;
 	}
 
-	void vote(FreakFeaturePoint[] ins, FreakFeaturePoint[] ref, int size) {
+	static public class BinLocation{
+		public double x;
+		public double y;
+		public double angle;
+		public double scale;
+		public static BinLocation[] createArray(int i_length){
+			BinLocation[] r=new BinLocation[i_length];
+			for(int i=0;i<i_length;i++){
+				r[i]=new BinLocation();
+			}
+			return r;
+		}
+	}
+	
+	
+	void vote(FeaturePairStack i_point_pair) {
 		int num_features_that_cast_vote;
 
+		int size=i_point_pair.getLength();
 		mVotes.clear();
-		if (size == 0) {
+		if (size==0) {
 			return;
 		}
 
-		mSubBinLocations = new double[size * 4];
+		mSubBinLocations = BinLocation.createArray(size);
 		mSubBinLocationIndices = new int[size];
 		if (mAutoAdjustXYNumBins) {
-			autoAdjustXYNumBins(ins, ref, size);
+			this.autoAdjustXYNumBins(i_point_pair);
 		}
 
 		num_features_that_cast_vote = 0;
@@ -288,19 +304,16 @@ public class HoughSimilarityVoting {
 
 			// Map the correspondence to a vote
 			mapCorrespondenceResult r = new mapCorrespondenceResult();
-			mapCorrespondence(r, ins[i],ref[i]);
+			mapCorrespondence(r,i_point_pair.getItem(i));
 
 			// Cast a vote
 			if (vote(r.x, r.y, r.angle, r.scale)) {
-				int ptr_bin = num_features_that_cast_vote << 2;// float* ptr_bin
-																// =
-																// &mSubBinLocations[num_features_that_cast_vote<<2];
-				mSubBinLocations[ptr_bin + 0] = mfBinX;// ptr_bin[0] = mfBinX;
-				mSubBinLocations[ptr_bin + 1] = mfBinY;// ptr_bin[1] = mfBinY;
-				mSubBinLocations[ptr_bin + 2] = mfBinAngle;// ptr_bin[2] =
-															// mfBinAngle;
-				mSubBinLocations[ptr_bin + 3] = mfBinScale;// ptr_bin[3] =
-															// mfBinScale;
+//				int ptr_bin = num_features_that_cast_vote << 2;// float* ptr_bin
+				BinLocation ptr_bin=this.mSubBinLocations[num_features_that_cast_vote];
+				ptr_bin.x= mfBinX;// ptr_bin[0] = mfBinX;
+				ptr_bin.y = mfBinY;// ptr_bin[1] = mfBinY;
+				ptr_bin.angle= mfBinAngle;// ptr_bin[2] =  mfBinAngle;
+				ptr_bin.scale = mfBinScale;// ptr_bin[3] =  mfBinScale;
 
 				mSubBinLocationIndices[num_features_that_cast_vote] = i;
 				num_features_that_cast_vote++;
@@ -309,12 +322,13 @@ public class HoughSimilarityVoting {
 
 		// mSubBinLocations.resize(num_features_that_cast_vote*4);
 		// mSubBinLocationIndices.resize(num_features_that_cast_vote);
-		double[] n1 = new double[num_features_that_cast_vote * 4];
+		BinLocation[] n1 = new BinLocation[num_features_that_cast_vote];
 		int[] n2 = new int[num_features_that_cast_vote];
 		System.arraycopy(mSubBinLocations, 0, n1, 0, n1.length);
 		System.arraycopy(mSubBinLocationIndices, 0, n2, 0, n2.length);
 		mSubBinLocations = n1;
 		mSubBinLocationIndices = n2;
+		return;
 	}
 
 	static class mapCorrespondenceResult {
@@ -340,7 +354,7 @@ public class HoughSimilarityVoting {
 		S[3] = c;
 	}
 
-	void mapCorrespondence(mapCorrespondenceResult r, FreakFeaturePoint ins,FreakFeaturePoint ref) {
+	void mapCorrespondence(mapCorrespondenceResult r, FeaturePairStack.Item i_item) {
 		double[] S = new double[4];
 		double[] tp = new double[2];
 		double tx, ty;
@@ -348,7 +362,8 @@ public class HoughSimilarityVoting {
 		//
 		// Angle
 		//
-
+		FreakFeaturePoint ins=i_item.query;
+		FreakFeaturePoint ref=i_item.ref;
 		r.angle = ins.angle - ref.angle;
 		// Map angle to (-pi,pi]
 		if (r.angle <= -math_utils.PI) {
@@ -391,7 +406,7 @@ public class HoughSimilarityVoting {
 	/**
 	 * @return Sub-bin locations for each correspondence
 	 */
-	public double[] getSubBinLocations() {
+	public BinLocation[] getSubBinLocations() {
 		return mSubBinLocations;
 	}
 
@@ -525,7 +540,7 @@ public class HoughSimilarityVoting {
 
 	final hash_t mVotes = new hash_t();
 
-	double[] mSubBinLocations;
+	private BinLocation[] mSubBinLocations;
 	int[] mSubBinLocationIndices;
 
 	/**
@@ -550,23 +565,24 @@ public class HoughSimilarityVoting {
 	/**
 	 * Set the number of bins for translation based on the correspondences.
 	 */
-	private void autoAdjustXYNumBins(FreakFeaturePoint[] ins, FreakFeaturePoint[] ref, int size) {
+	private void autoAdjustXYNumBins(FeaturePairStack i_point_pair) {
 		int max_dim = math_utils.max2(mRefImageWidth, mRefImageHeight);
-		double[] projected_dim = new double[size];
+		double[] projected_dim = new double[i_point_pair.getLength()];
 
 		// ASSERT(size > 0, "size must be positive");
 		// ASSERT(mRefImageWidth > 0, "width must be positive");
 		// ASSERT(mRefImageHeight > 0, "height must be positive");
 
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i < i_point_pair.getLength(); i++) {
 //			int ins_ptr = i << 2;
 //			int ref_ptr = i << 2;
 			// const float* ins_ptr = &ins[i<<2];
 			// const float* ref_ptr = &ref[i<<2];
 
 			// Scale is the 3rd component
-			double ins_scale = ins[i].scale;//[ins_ptr + 3];
-			double ref_scale = ref[i].scale;//[ref_ptr + 3];
+			FeaturePairStack.Item item=i_point_pair.getItem(i);
+			double ins_scale = item.query.scale;//[ins_ptr + 3];
+			double ref_scale = item.ref.scale;//[ref_ptr + 3];
 
 			// Project the max_dim via the scale
 			double scale = SafeDivision(ins_scale, ref_scale);
