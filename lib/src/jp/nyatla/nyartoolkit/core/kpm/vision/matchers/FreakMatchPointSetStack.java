@@ -8,8 +8,7 @@ public class FreakMatchPointSetStack extends NyARObjectStack<FreakMatchPointSetS
 {
 	public class Item extends FreakFeaturePoint
 	{
-		public NyARDoublePoint3d pos3d=new NyARDoublePoint3d();
-
+		final public NyARDoublePoint3d pos3d=new NyARDoublePoint3d();
 	}	
 	public FreakMatchPointSetStack(int i_length)
 	{

@@ -2,9 +2,6 @@ package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
 
 import java.util.Map;
 
-
-
-import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.Keyframe;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.KeyframeMap;
@@ -45,16 +42,15 @@ public class VisualDatabase
 	/**
 	 * Vote for a similarity transformation.
 	 */
-	private int FindHoughSimilarity(HoughSimilarityVoting hough, FreakFeaturePointStack p1,
-			FreakMatchPointSetStack p2, matchStack matches,int refWidth, int refHeight) {
+	private int FindHoughSimilarity(HoughSimilarityVoting hough,matchStack matches,int refWidth, int refHeight) {
 //		FreakFeaturePoint[] query = new FreakFeaturePoint[matches.getLength()];
 //		FreakFeaturePoint[] ref = new FreakFeaturePoint[matches.getLength()];
 		FeaturePairStack feature_pair=new FeaturePairStack(matches.getLength());
 		// Extract the data from the features
 		for (int i = 0; i < matches.getLength(); i++) {
 			FeaturePairStack.Item item=feature_pair.prePush();
-			item.query	=p1.getItem(matches.getItem(i).ins);
-			item.ref	=p2.getItem(matches.getItem(i).ref);
+			item.query	=matches.getItem(i).query;
+			item.ref	=matches.getItem(i).ref;
 		}
 		hough.setObjectCenterInReference(refWidth >> 1, refHeight >> 1);
 		hough.setRefImageDimensions(refWidth, refHeight);
@@ -92,50 +88,31 @@ public class VisualDatabase
 					continue;
 				}
 			}
-			// }
-
-
 
 			//
 			// Vote for a transformation based on the correspondences
 			//
 			int max_hough_index = -1;
-			// TIMED("Hough Voting (1)") {
-			max_hough_index = FindHoughSimilarity(mHoughSimilarityVoting,
-					query_keyframe, ref_points,match_result,
-					second.width(), second.height());
+			max_hough_index = FindHoughSimilarity(mHoughSimilarityVoting,match_result,second.width(), second.height());
 			if (max_hough_index < 0) {
 				continue;
 			}
-			// }
-
-
-			// TIMED("Find Hough Matches (1)") {
 			FindHoughMatches(this.mHoughSimilarityVoting,match_result,max_hough_index, kHoughBinDelta);
-			// }
-
 			//
 			// Estimate the transformation between the two images
 			//
-
-			// TIMED("Estimate Homography (1)") {
-			if (!EstimateHomography(H, query_keyframe, ref_points, match_result,
-					second.width(), second.height())) {
+			if (!EstimateHomography(H, query_keyframe, ref_points, match_result,second.width(), second.height())) {
 				continue;
 			}
-			// }
 
 			//
 			// Find the inliers
 			//
 
-			// TIMED("Find Inliers (1)") {
-			FindInliers(H, query_keyframe, ref_points, match_result,
-					mHomographyInlierThreshold);
+			FindInliers(H, query_keyframe, ref_points, match_result,mHomographyInlierThreshold);
 			if (match_result.getLength() < mMinNumInliers) {
 				continue;
 			}
-			// }
 
 			//
 			// Use the estimated homography to find more inliers
@@ -145,44 +122,32 @@ public class VisualDatabase
 			if (mMatcher.match(query_keyframe, ref_points, H, 10,match_result) < mMinNumInliers) {
 				continue;
 			}
-			// }
 
 			//
 			// Vote for a similarity with new matches
 			//
 
 			// TIMED("Hough Voting (2)") {
-			max_hough_index = FindHoughSimilarity(mHoughSimilarityVoting,
-					query_keyframe, ref_points, match_result,
-					second.width(), second.height());
+			max_hough_index = FindHoughSimilarity(mHoughSimilarityVoting,match_result,second.width(), second.height());
 			if (max_hough_index < 0) {
 				continue;
 			}
-			// }
 
-			// TIMED("Find Hough Matches (2)") {
 			FindHoughMatches(mHoughSimilarityVoting, match_result,max_hough_index, kHoughBinDelta);
-			// }
 
 			//
 			// Re-estimate the homography
 			//
 
-			// TIMED("Estimate Homography (2)") {
-			if (!EstimateHomography(H, query_keyframe, ref_points, match_result,
-					second.width(), second.height())) {
+			if (!EstimateHomography(H, query_keyframe, ref_points, match_result,second.width(), second.height())) {
 				continue;
 			}
-			// }
 
 			//
 			// Check if this is the best match based on number of inliers
 			//
 
-			// TIMED("Find Inliers (2)") {
-			FindInliers(H, query_keyframe, ref_points, match_result,
-					mHomographyInlierThreshold);
-			// }
+			FindInliers(H, query_keyframe, ref_points, match_result,mHomographyInlierThreshold);
 
 			// std::cout<<"inliers-"<<inliers.size()<<std::endl;
 			if (match_result.getLength() >= mMinNumInliers && match_result.getLength() > last_inliers) {
@@ -209,9 +174,9 @@ public class VisualDatabase
 		// reserve(matches.size());
 		int pos=0;
 		for (int i = 0; i < matches.getLength(); i++) {
-			homography.MultiplyPointHomographyInhomogenous(xp, H,p2.getItem(matches.getItem(i).ref).x,p2.getItem(matches.getItem(i).ref).y);
-			double t1=xp.x- p1.getItem(matches.getItem(i).ins).x;
-			double t2=xp.y- p1.getItem(matches.getItem(i).ins).y;
+			homography.MultiplyPointHomographyInhomogenous(xp, H,matches.getItem(i).ref.x,matches.getItem(i).ref.y);
+			double t1=xp.x- matches.getItem(i).query.x;
+			double t2=xp.y- matches.getItem(i).query.y;
 
 			double d2 = (t1*t1)+ (t2*t2);
 			if (d2 <= threshold2) {
@@ -278,10 +243,10 @@ public class VisualDatabase
 		//
 
 		for (int i = 0; i < matches.getLength(); i++) {
-			dstPoints[i].x = p1.getItem(matches.getItem(i).ins).x;
-			dstPoints[i].y = p1.getItem(matches.getItem(i).ins).y;
-			srcPoints[i].x = p2.getItem(matches.getItem(i).ref).x;
-			srcPoints[i].y = p2.getItem(matches.getItem(i).ref).y;
+			dstPoints[i].x = matches.getItem(i).query.x;
+			dstPoints[i].y = matches.getItem(i).query.y;
+			srcPoints[i].x = matches.getItem(i).ref.x;
+			srcPoints[i].y = matches.getItem(i).ref.y;
 		}
 
 		//

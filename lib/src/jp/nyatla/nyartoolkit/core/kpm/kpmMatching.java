@@ -27,11 +27,11 @@ public class kpmMatching {
 		NyARDoublePoint2d[] sCoord = NyARDoublePoint2d.createArray(matchData.getLength());
 		NyARDoublePoint3d[] wCoord = NyARDoublePoint3d.createArray(matchData.getLength());
 		for (i = 0; i < matchData.getLength(); i++) {
-			sCoord[i].x = inputDataSet.getItem(matchData.getItem(i).ins).x;
-			sCoord[i].y = inputDataSet.getItem(matchData.getItem(i).ins).y;
+			sCoord[i].x = matchData.getItem(i).query.x;
+			sCoord[i].y = matchData.getItem(i).query.y;
 
-			wCoord[i].x = refDataSet.getItem(matchData.getItem(i).ref).pos3d.x;
-			wCoord[i].y = refDataSet.getItem(matchData.getItem(i).ref).pos3d.y;
+			wCoord[i].x = matchData.getItem(i).ref.pos3d.x;
+			wCoord[i].y = matchData.getItem(i).ref.pos3d.y;
 			wCoord[i].z = 0.0;
 		}
 
