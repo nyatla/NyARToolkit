@@ -1,14 +1,12 @@
-package jp.nyatla.nyartoolkit.core.kpm.vision.homography_estimation;
+package jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation;
 
 
+import jp.nyatla.nyartoolkit.core.kpm.keyframe.utils.rand;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.HomographyMat;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.homography;
 import jp.nyatla.nyartoolkit.core.kpm.vision.match.indexing;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.HomographyMat;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.homography;
-import jp.nyatla.nyartoolkit.core.kpm.vision.math.HomographySolver;
-import jp.nyatla.nyartoolkit.core.kpm.vision.math.HomographySolver_O1;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.geometry;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.math_utils;
-import jp.nyatla.nyartoolkit.core.kpm.vision.math.rand;
 import jp.nyatla.nyartoolkit.core.kpm.vision.utils.parcial_sort;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;

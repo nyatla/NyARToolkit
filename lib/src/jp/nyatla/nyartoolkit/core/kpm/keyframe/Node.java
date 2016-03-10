@@ -1,8 +1,7 @@
-package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
+package jp.nyatla.nyartoolkit.core.kpm.keyframe;
 
 import jp.nyatla.nyartoolkit.core.kpm.LongDescripter768;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
-import jp.nyatla.nyartoolkit.core.kpm.keyframe.BinaryHierarchicalClustering;
 
 
 public class Node {

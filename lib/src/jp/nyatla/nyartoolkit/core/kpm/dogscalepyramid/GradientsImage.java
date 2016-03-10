@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.core.kpm;
+package jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;

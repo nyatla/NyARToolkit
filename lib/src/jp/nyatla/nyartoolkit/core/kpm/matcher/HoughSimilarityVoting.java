@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
+package jp.nyatla.nyartoolkit.core.kpm.matcher;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -280,7 +280,7 @@ public class HoughSimilarityVoting {
 	}
 	
 	
-	void vote(FeaturePairStack i_point_pair) {
+	public void vote(FeaturePairStack i_point_pair) {
 		int num_features_that_cast_vote;
 
 		int size=i_point_pair.getLength();
@@ -331,8 +331,10 @@ public class HoughSimilarityVoting {
 		return;
 	}
 
-	static class mapCorrespondenceResult {
-		double x, y, angle, scale;
+	public static class mapCorrespondenceResult {
+		public double x, y;
+		public double angle;
+		public double scale;
 	}
 
 	/**
@@ -425,7 +427,7 @@ public class HoughSimilarityVoting {
 	/**
 	 * Get the bin that has the maximum number of votes
 	 */
-	void getMaximumNumberOfVotes(getMaximumNumberOfVotesResult v) {
+	public void getMaximumNumberOfVotes(getMaximumNumberOfVotesResult v) {
 		v.votes = 0;
 		v.index = -1;
 		// for(hash_t::const_iterator it = mVotes.begin(); it != mVotes.end();
@@ -473,7 +475,7 @@ public class HoughSimilarityVoting {
 		// ASSERT(distBinAngle >= 0, "distBinAngle must not be negative");
 	}
 
-	class Bins {
+	public class Bins {
 		public int binX;
 		public int binY;
 		public int binAngle;

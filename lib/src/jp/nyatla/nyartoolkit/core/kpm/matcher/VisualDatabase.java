@@ -1,13 +1,18 @@
-package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
+package jp.nyatla.nyartoolkit.core.kpm.matcher;
 
 import java.util.Map;
 
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePointStack;
+import jp.nyatla.nyartoolkit.core.kpm.keyframe.FreakMatchPointSetStack;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.Keyframe;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.KeyframeMap;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.FeaturePairStack.Item;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.HoughSimilarityVoting.BinLocation;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.HoughSimilarityVoting.Bins;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.HoughSimilarityVoting.getMaximumNumberOfVotesResult;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.HoughSimilarityVoting.mapCorrespondenceResult;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation.RobustHomography;
 
-import jp.nyatla.nyartoolkit.core.kpm.vision.homography_estimation.RobustHomography;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.HoughSimilarityVoting.BinLocation;
 import jp.nyatla.nyartoolkit.core.kpm.vision.math.geometry;
 
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;

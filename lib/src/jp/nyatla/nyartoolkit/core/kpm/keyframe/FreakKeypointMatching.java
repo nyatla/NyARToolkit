@@ -11,10 +11,10 @@ import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DoGScaleInvariantDetector;
 import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DogFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FREAKExtractor;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePointStack;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.VisualDatabase;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.matchStack;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.BinomialPyramid32f;
 
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.VisualDatabase;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.matchStack;
 
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;

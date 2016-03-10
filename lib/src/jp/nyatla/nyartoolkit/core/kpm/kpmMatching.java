@@ -1,8 +1,8 @@
 package jp.nyatla.nyartoolkit.core.kpm;
 
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePointStack;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakMatchPointSetStack;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.matchStack;
+import jp.nyatla.nyartoolkit.core.kpm.keyframe.FreakMatchPointSetStack;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.matchStack;
 import jp.nyatla.nyartoolkit.core.icp.NyARIcpPlane;
 import jp.nyatla.nyartoolkit.core.icp.NyARIcpPoint;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;

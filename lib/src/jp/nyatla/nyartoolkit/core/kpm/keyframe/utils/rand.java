@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.core.kpm.vision.math;
+package jp.nyatla.nyartoolkit.core.kpm.keyframe.utils;
 
 public class rand {
 	static final int FAST_RAND_MAX=32767;

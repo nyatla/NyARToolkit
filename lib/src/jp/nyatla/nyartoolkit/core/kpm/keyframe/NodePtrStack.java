@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
+package jp.nyatla.nyartoolkit.core.kpm.keyframe;
 
 import jp.nyatla.nyartoolkit.core.types.stack.NyARPointerStack;
 

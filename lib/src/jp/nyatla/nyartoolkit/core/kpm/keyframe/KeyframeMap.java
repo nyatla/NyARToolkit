@@ -4,7 +4,6 @@ package jp.nyatla.nyartoolkit.core.kpm.keyframe;
 import java.util.TreeMap;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
-import jp.nyatla.nyartoolkit.core.kpm.vision.matchers.FreakMatchPointSetStack;
 import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftFreakFsetFile;
 import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftFreakFsetFile.PageInfo;
 

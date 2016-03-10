@@ -1,8 +1,9 @@
-package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
+package jp.nyatla.nyartoolkit.core.kpm.matcher;
 
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.BinaryHierarchicalClustering;
+import jp.nyatla.nyartoolkit.core.kpm.keyframe.FreakMatchPointSetStack;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 
@@ -152,7 +153,7 @@ public class BinaryFeatureMatcher {
 	 * 
 	 * @return Number of matches
 	 */
-	int match(FreakFeaturePointStack i_query, FreakMatchPointSetStack i_ref, NyARDoubleMatrix33 H,double tr,matchStack i_maches)
+	public int match(FreakFeaturePointStack i_query, FreakMatchPointSetStack i_ref, NyARDoubleMatrix33 H,double tr,matchStack i_maches)
 	{
 		if (i_query.getLength() == 0 || i_ref.getLength() == 0) {
 			return 0;

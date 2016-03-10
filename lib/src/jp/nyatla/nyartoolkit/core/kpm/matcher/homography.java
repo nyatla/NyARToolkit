@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.core.kpm.vision.matchers;
+package jp.nyatla.nyartoolkit.core.kpm.matcher;
 
 
 
@@ -13,12 +13,6 @@ public class homography
      * Multiply an in-homogenous point by a similarity.
      * H[9] この関数は実装済みだからあとで消す。
      */
-//    public static void MultiplyPointHomographyInhomogenous(float xp, float yp, float[] H, float x, float y) {
-    public static void MultiplyPointHomographyInhomogenous(double[] v, NyARDoubleMatrix33 H, double x, double y) {
-    	double w = H.m20*x + H.m21*y + H.m22;
-        v[0] = (H.m00*x + H.m01*y + H.m02)/w;//XP
-        v[1] = (H.m10*x + H.m11*y + H.m12)/w;//YP
-    }
     public static void MultiplyPointHomographyInhomogenous(NyARDoublePoint2d v, NyARDoubleMatrix33 H, double x, double y) {
     	double w = H.m20*x + H.m21*y + H.m22;
         v.x = (H.m00*x + H.m01*y + H.m02)/w;//XP
