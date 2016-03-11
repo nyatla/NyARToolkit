@@ -4,9 +4,10 @@ import jp.nyatla.nyartoolkit.base.attoolkit5.kpm.Point2d;
 import jp.nyatla.nyartoolkit.base.attoolkit5.kpm.vision.math.liner_algebr;
 import jp.nyatla.nyartoolkit.base.attoolkit5.kpm.vision.math.liner_solver;
 import jp.nyatla.nyartoolkit.base.attoolkit5.kpm.vision.math.math_utils;
+import jp.nyatla.nyartoolkit.core.math.NyARMath;
 
 public class homography_solver {
-
+	final private static double SQRT2=NyARMath.SQRT2;
 	/**
 	 * Condition four 2D points such that the mean is zero and the standard
 	 * deviation is sqrt(2).
@@ -51,7 +52,7 @@ public class homography_solver {
 			return false;
 		}
 
-		double s = (double) ((1 / d) * math_utils.SQRT2);
+		double s = (double) ((1 / d) * SQRT2);
 		mus[2] = s;
 		xp1.x = d1[0] * s;
 		xp1.y = d1[1] * s;
