@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.core.kpm.sandbox.matrixlab2;
+package jp.nyatla.nyartoolkit.core.kpm.sandbox.matrixlab3;
 
 
 

@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.core.kpm.sandbox.matrixlab2;
+package jp.nyatla.nyartoolkit.core.kpm.sandbox.matrixlab3;
 
 
 import java.io.File;
@@ -12,7 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 
-public class MatrixCodeGen12{
+public class MatrixCodeGen13{
 	static public class Data{
 		final String func;
 		final String vname;
