@@ -116,8 +116,8 @@ public class FREAKExtractor {
 	/**
 	 * Extract a 96 byte descriptor.
 	 */
-	public void extract(FreakFeaturePointStack store, GaussianScaleSpacePyramid pyramid,
-			DogFeaturePointStack points)
+	public void extract( GaussianScaleSpacePyramid pyramid,
+			DogFeaturePointStack points,FreakFeaturePointStack store)
 	{
 		ExtractFREAK84(store, pyramid, points, mPointRing0, mPointRing1,
 				mPointRing2, mPointRing3, mPointRing4, mPointRing5,

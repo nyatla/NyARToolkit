@@ -1,66 +1,28 @@
 package jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid;
 
-import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
+
 import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
 import jp.nyatla.nyartoolkit.core.math.NyARMath;
-import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
-import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 public class GradientsImage
 {
 	final private static double PI=NyARMath.PI;
 	final private NyARIntSize _size;
-//	final private double[] _buf;
 	final private double[] _angle;
 	final private double[] _mag;
 
 	public GradientsImage(int i_width, int i_height) {
 		this._size = new NyARIntSize(i_width, i_height);
-//		this._buf = new double[i_width * i_height * 2];
 		this._angle = new double[i_width * i_height];
 		this._mag = new double[i_width * i_height];
 	}
 
-	public int getWidth() {
-		return this._size.w;
-	}
-
-	public int getHeight() {
-		return this._size.h;
-	}
-
-
-	public NyARIntSize getSize() {
-		return this._size;
-	}
 
 
 
 
-	public int getBufferType() {
-		return NyARBufferType.USER_DEFINE;
-	}
 
-
-	public boolean isEqualBufferType(int i_type_value) {
-		return false;
-	}
-
-
-	public boolean hasBuffer() {
-		return true;
-	}
-
-
-	public void wrapBuffer(Object i_ref_buf) {
-		NyARRuntimeException.notImplement();
-	}
-
-
-	public Object createInterface(Class<?> i_iid) {
-		throw new NyARRuntimeException();
-	}
 
 
 	/**

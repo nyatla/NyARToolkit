@@ -65,17 +65,16 @@ public class FreakKeypointMatching {
 		//Freak Extract
 
 
-		query_keypoint.clear();
 		
 		// Build the pyramid		
 		this.mPyramid.build(inImage);
-		// Clear old features
-		this._dog_feature_points.clear();	
 		// Detect feature points
+		this._dog_feature_points.clear();	
 		this.mDogDetector.detect(this.mPyramid,this._dog_feature_points);
 
 		// Extract features
-		this.mFeatureExtractor.extract(query_keypoint, this.mPyramid,this._dog_feature_points);		
+		query_keypoint.clear();
+		this.mFeatureExtractor.extract(this.mPyramid,this._dog_feature_points,query_keypoint);
 		
 		if(query_keypoint.isEmpty()){
 			return false;
