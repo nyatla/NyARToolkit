@@ -8,9 +8,9 @@ public class BinomialPyramid32f extends GaussianScaleSpacePyramid
 {
     final private int[] mTemp_us16;
     final private double[] mTemp_f32_1;
-    public BinomialPyramid32f(int i_width, int i_height, int i_num_of_octaves)
+    public BinomialPyramid32f(int i_width, int i_height, int i_num_of_octaves, int i_num_scales_per_octaves)
     {    	
-    	super(i_num_of_octaves, 3);
+    	super(i_num_of_octaves,i_num_scales_per_octaves);
 		// Allocate the pyramid memory
 		this.mPyramid=new KpmImage[i_num_of_octaves*this.mNumScalesPerOctave];
 		for(int i = 0; i < i_num_of_octaves; i++) {

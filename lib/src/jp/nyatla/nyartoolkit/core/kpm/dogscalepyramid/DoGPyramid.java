@@ -1,23 +1,21 @@
 package jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid;
 
-import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.GaussianScaleSpacePyramid;
 
 public class DoGPyramid {
-	public DoGPyramid(GaussianScaleSpacePyramid pyramid) {
-		assert pyramid.size() > 0;
+	public DoGPyramid(int i_width, int i_height, int i_num_of_octaves, int i_num_scales_per_octaves) {
 
-		int width = pyramid.get(0, 0).getWidth();
-		int height = pyramid.get(0, 0).getHeight();
 
-		this.mNumOctaves = pyramid.numOctaves();
-		this.mNumScalesPerOctave = pyramid.numScalesPerOctave() - 1;
+
+
+		this.mNumOctaves = i_num_of_octaves;
+		this.mNumScalesPerOctave = i_num_scales_per_octaves - 1;
 
 		// Allocate DoG images 同一サイズのDoG画像ピラミッドを作る
-		mImages = new KpmImage[this.mNumOctaves * this.mNumScalesPerOctave];
+		mImages = new LaplacianImage[this.mNumOctaves * this.mNumScalesPerOctave];
 		for (int i = 0; i < this.mNumOctaves; i++) {
 			for (int j = 0; j < this.mNumScalesPerOctave; j++) {
-				mImages[i * mNumScalesPerOctave + j] = new KpmImage(width >> i, height >> i);// 多分あってるんじゃないか的な
+				mImages[i * mNumScalesPerOctave + j] = new LaplacianImage(i_width >> i, i_height >> i);// 多分あってるんじゃないか的な
 			}
 		}
 	}
@@ -28,29 +26,23 @@ public class DoGPyramid {
 	public void compute(GaussianScaleSpacePyramid pyramid) {
 		for (int i = 0; i < this.mNumOctaves; i++) {
 			for (int j = 0; j < this.mNumScalesPerOctave; j++) {
-				difference_image_binomial(this.get(i, j), pyramid.get(i, j), pyramid.get(i, j + 1));
+				this.mImages[i * mNumScalesPerOctave + j].difference_image_binomial(pyramid.get(i, j), pyramid.get(i, j + 1));
 			}
 		}
 	}
 
-	/**
-	 * Get a Laplacian image at a level in the pyramid.
-	 */
-	public KpmImage get(int octave, int scale) {
-		return mImages[octave * mNumScalesPerOctave + scale];
-	}
 
 	/**
 	 * Get vector of images.
 	 */
-	public KpmImage[] images() {
+	public LaplacianImage[] images() {
 		return this.mImages;
 	}
 
 	/**
 	 * Get a Laplacian image at an index.
 	 */
-	public KpmImage get(int index) {
+	public LaplacianImage get(int index) {
 		return mImages[index];
 	}
 
@@ -85,25 +77,11 @@ public class DoGPyramid {
 	}
 
 	// DoG images
-	private KpmImage[] mImages;
+	private LaplacianImage[] mImages;
 
 	// Number of octaves and scales
 	private int mNumOctaves;
 	private int mNumScalesPerOctave;
 
-	/**
-	 * Compute the difference image.
-	 * 
-	 * d = im1 - im2
-	 */
-	private void difference_image_binomial(KpmImage d, KpmImage im1, KpmImage im2) {
-		// Compute diff
-		double[] p0 = (double[]) d.getBuffer();
-		double[] p1 = (double[]) im1.getBuffer();
-		double[] p2 = (double[]) im2.getBuffer();
-		for (int i = im1.getWidth()*im1.getHeight()-1; i>=0 ; i--) {
-			p0[i] = p1[i] - p2[i];
-		}
-		return;
-	}
+
 }

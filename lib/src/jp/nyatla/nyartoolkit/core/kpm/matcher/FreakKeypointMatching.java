@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.core.kpm.keyframe;
+package jp.nyatla.nyartoolkit.core.kpm.matcher;
 
 
 
@@ -11,8 +11,7 @@ import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DoGScaleInvariantDetector;
 import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DogFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FREAKExtractor;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePointStack;
-import jp.nyatla.nyartoolkit.core.kpm.matcher.FeaturePairStack;
-import jp.nyatla.nyartoolkit.core.kpm.matcher.VisualDatabase;
+import jp.nyatla.nyartoolkit.core.kpm.keyframe.KeyframeMap;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.BinomialPyramid32f;
 
 
@@ -48,8 +47,9 @@ public class FreakKeypointMatching {
 
 		this.result =new KpmResult();
 		this.mFeatureExtractor=new FREAKExtractor();
-		this.mPyramid=new BinomialPyramid32f(size.w,size.h,BinomialPyramid32f.octavesFromMinimumCoarsestSize(size.w,size.h,kMinCoarseSize));
-		this.mDogDetector = new DoGScaleInvariantDetector(this.mPyramid,kLaplacianThreshold,kEdgeThreshold,kMaxNumFeatures);
+		int octerves=BinomialPyramid32f.octavesFromMinimumCoarsestSize(size.w,size.h,kMinCoarseSize);
+		this.mPyramid=new BinomialPyramid32f(size.w,size.h,octerves,3);
+		this.mDogDetector = new DoGScaleInvariantDetector(size.w,size.h,octerves,3,kLaplacianThreshold,kEdgeThreshold,kMaxNumFeatures);
 	}
 	
 	final private DogFeaturePointStack _dog_feature_points = new DogFeaturePointStack(2000);// この2000は適当

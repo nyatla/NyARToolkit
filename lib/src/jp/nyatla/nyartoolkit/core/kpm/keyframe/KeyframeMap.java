@@ -12,6 +12,11 @@ public class KeyframeMap extends TreeMap<Integer,Keyframe>
 {
 	private static final long serialVersionUID = -2089174031892137840L;
 
+	/**
+	 * FsetFileデータから、page_idに一致したキーマップを生成します。
+	 * @param i_refDataSet
+	 * @param i_page_id
+	 */
 	public KeyframeMap(NyARNftFreakFsetFile i_refDataSet,int i_page_id)
 	{
 		PageInfo page_info=i_refDataSet.page_info[i_page_id];

@@ -3,7 +3,14 @@ package jp.nyatla.nyartoolkit.core.kpm.keyframe;
 
 
 public class Keyframe {
-
+	// Image width and height
+	final private int mWidth;
+	final private int mHeight;
+	// Feature store
+	private final FreakMatchPointSetStack mStore;
+	// Feature index
+	private final BinaryHierarchicalClustering mIndex;
+	
 	public Keyframe(int width, int height,FreakMatchPointSetStack i_binaryFeatureStore)
 	{
 		this.mWidth = width;
@@ -42,21 +49,5 @@ public class Keyframe {
 
 
 
-
-	//
-	// Serialization
-	//
-
-
-
-	// Image width and height
-	final private int mWidth;
-	final private int mHeight;
-
-	// Feature store
-	private final FreakMatchPointSetStack mStore;
-
-	// Feature index
-	private final BinaryHierarchicalClustering mIndex;
 
 }; // Keyframe
