@@ -1,7 +1,6 @@
 package jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid;
 
 
-import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.OrientationAssignment.FloatVector;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.GaussianScaleSpacePyramid;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
@@ -48,7 +47,7 @@ public class DoGScaleInvariantDetector {
 		this.mMaxNumFeaturePoints = i_MaxNumFeaturePoints;
 		this.mMaxSubpixelDistanceSqr = (3 * 3);
 		this.mOrientations = new double[kMaxNumOrientations];
-		this.mLaplacianPyramid = new DoGPyramid(i_width,i_height,i_octerv,i_num_of_scale_of_octerv);
+		this.mLaplacianPyramid = new DoGPyramid(i_width,i_height,i_octerv,i_num_of_scale_of_octerv-1);
 		this.mWidth = i_width;
 		this.mHeight = i_height;
 		this.mOrientationAssignment = new OrientationAssignment(i_width,i_height,i_octerv, i_num_of_scale_of_octerv,kMaxNumOrientations, 3, 1.5f, 5, 0.8f);
@@ -164,7 +163,7 @@ public class DoGScaleInvariantDetector {
 
 	// Vector of orientations. Pre-allocated to the maximum
 	// number of orientations per feature point.
-	private double[] mOrientations;
+	final private double[] mOrientations;
 
 
 
@@ -696,8 +695,7 @@ public class DoGScaleInvariantDetector {
 			double x, y, s;
 
 			// Down sample the point to the detected octave
-			bilinear_downsample_point(tmp, i_dog_fp.getItem(i).x, i_dog_fp.getItem(i).y,
-					i_dog_fp.getItem(i).sigma, i_dog_fp.getItem(i).octave);
+			bilinear_downsample_point(tmp, i_dog_fp.getItem(i).x, i_dog_fp.getItem(i).y,i_dog_fp.getItem(i).sigma, i_dog_fp.getItem(i).octave);
 			x = tmp[0];
 			y = tmp[1];
 			s = tmp[2];
@@ -709,11 +707,8 @@ public class DoGScaleInvariantDetector {
 			x = ClipScalar(x, 0, pyramid.get(i_dog_fp.getItem(i).octave, 0).getWidth() - 1);
 			y = ClipScalar(y, 0, pyramid.get(i_dog_fp.getItem(i).octave, 0).getHeight() - 1);
 
-			FloatVector f = new FloatVector(mOrientations, 0);
 			// Compute dominant orientations
-			mOrientationAssignment.compute(f, i_dog_fp.getItem(i).octave, i_dog_fp.getItem(i).scale, x, y,
-					s);
-			num_angles = f.num;
+			num_angles=mOrientationAssignment.compute(i_dog_fp.getItem(i).octave, i_dog_fp.getItem(i).scale, x, y,s,this.mOrientations);
 			// Create a feature point for each angle
 			for (int j = 0; j < num_angles; j++) {
 				// Copy the feature point
@@ -1009,7 +1004,7 @@ public class DoGScaleInvariantDetector {
 		return true;
 	}
 
-	double ClipScalar(double x, double min, double max) {
+	private static double ClipScalar(double x, double min, double max) {
 		if (x < min) {
 			x = min;
 		} else if (x > max) {

@@ -1,18 +1,17 @@
 package jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid;
 
-import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
+
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.GaussianScaleSpacePyramid;
-import jp.nyatla.nyartoolkit.core.math.NyARMath;
+
 
 public class OrientationAssignment {
-	final static public double PI=NyARMath.PI;
-	final static private double ONE_OVER_2PI=       0.159154943091895;
+
+
 	
 	final private int mNumOctaves;
 	final private int mNumScalesPerOctave;
 
-	// Number of bins in the histogram
-	final private int mNumBins;
+
 
 	// Factor to expand the Gaussian weighting function. The Gaussian sigma is computed
 	// by expanding the feature point scale. The feature point scale represents the isometric
@@ -32,7 +31,7 @@ public class OrientationAssignment {
 	final private double mPeakThreshold;
 
 	// Orientation histogram
-	final private double[] mHistogram;
+	final private BilinearHistogram mHistogram;
 
 	// Vector of gradient images
 	final private GradientsImage[] mGradients;
@@ -42,13 +41,12 @@ public class OrientationAssignment {
 			int num_smoothing_iterations, double peak_threshold) {
 		this.mNumOctaves = num_octaves;
 		this.mNumScalesPerOctave = num_scales_per_octave;
-		this.mNumBins = num_bins;
 		this.mGaussianExpansionFactor = gaussian_expansion_factor;
 		this.mSupportRegionExpansionFactor = support_region_expansion_factor;
 		this.mNumSmoothingIterations = num_smoothing_iterations;
 		this.mPeakThreshold = peak_threshold;
 
-		this.mHistogram = new double[num_bins];
+		this.mHistogram = new BilinearHistogram(num_bins);
 
 		// Allocate gradient images
 		this.mGradients = new GradientsImage[this.mNumOctaves * this.mNumScalesPerOctave];
@@ -75,448 +73,41 @@ public class OrientationAssignment {
 	public void computeGradients(GaussianScaleSpacePyramid pyramid) {
 		// Loop over each pyramid image and compute the gradients
 		for (int i = 0; i < pyramid.images().length; i++) {
-			KpmImage im = pyramid.images()[i];
-
-			// Compute gradient image
-			// ASSERT(im.width() == im.step()/sizeof(float), "Step size must be equal to width for now");
-			ComputePolarGradients((double[]) mGradients[i].getBuffer(), (double[]) im.getBuffer(), im.getWidth(),
-					im.getHeight());
+			this.mGradients[i].computePolarGradients(pyramid.images()[i]);
 		}
 	}
 
-	public static class FloatVector {
-		public FloatVector(double[] mOrientations, int i) {
-			this.v = mOrientations;
-			this.num = i;
-		}
 
-		public double[] v;
-		public int num;
-	}
 
 	/**
-	 * Compute orientations for a keypont.
+	 * Compute orientations for a keypoint.
 	 */
-	public void compute(FloatVector angles, int octave, int scale, double x, double y, double sigma) {
-		int xi, yi;
-		double radius;
-		double radius2;
-		int x0, y0;
-		int x1, y1;
-		double max_height;
-		double gw_sigma, gw_scale;
-
-		// ASSERT(x >= 0, "x must be positive");
-		// ASSERT(x < mGradients[octave*mNumScalesPerOctave+scale].width(), "x must be less than the image width");
-		// ASSERT(y >= 0, "y must be positive");
-		// ASSERT(y < mGradients[octave*mNumScalesPerOctave+scale].height(), "y must be less than the image height");
-
-		int level = octave * mNumScalesPerOctave + scale;
-		GradientsImage g = mGradients[level];
-		double[] g_buf = (double[]) g.getBuffer();
-		// ASSERT(g.channels() == 2, "Number of channels should be 2");
-
-		max_height = 0;
-		angles.num = 0;
-
-		xi = (int) (x + 0.5f);
-		yi = (int) (y + 0.5f);
-
-		// Check that the position is with the image bounds
-		if (xi < 0 || xi >= g.getWidth() || yi < 0 || yi >= g.getHeight()) {
-			return;
-		}
+	public int compute(int octave, int scale, double x, double y, double sigma,double[] i_angles)
+	{
 		//gw_sigma = math_utils.max2(1.f, this.mGaussianExpansionFactor * sigma);
-		gw_sigma = this.mGaussianExpansionFactor * sigma;
+		double gw_sigma = this.mGaussianExpansionFactor * sigma;
 		if(gw_sigma<1.0){
 			gw_sigma=1.0;
 		}
-		gw_scale = -1.f / (2 * (gw_sigma*gw_sigma));
 
 		// Radius of the support region
-		radius = this.mSupportRegionExpansionFactor * gw_sigma;
-		radius2 = Math.ceil(radius*radius);
-
-		// Box around feature point
-		x0 = xi - (int) (radius + 0.5f);
-		x1 = xi + (int) (radius + 0.5f);
-		y0 = yi - (int) (radius + 0.5f);
-		y1 = yi + (int) (radius + 0.5f);
-
-		// Clip the box to be within the bounds of the image
-		int width_1=g.getWidth() - 1;
-		int height_1=g.getHeight() - 1;
-		if(x0<0){ x0=0;}//x0 = math_utils.max2(0, x0);
-		if(x1>width_1){x1=width_1;}//x1 = math_utils.min2(x1, (int) g.getWidth() - 1);
-		if(y0<0){y0=0;}//y0 = math_utils.max2(0, y0);
-		if(y1>height_1){y1=height_1;}//y1 = math_utils.min2(y1, (int) g.getHeight() - 1);
-		
-		
+		double radius = this.mSupportRegionExpansionFactor * gw_sigma;
+		double gw_scale = -1.f / (2 * (gw_sigma*gw_sigma));
 
 		// Zero out the orientation histogram
-		ZeroVector(this.mHistogram, mHistogram.length);
-
-		// Build up the orientation histogram
-		for (int yp = y0; yp <= y1; yp++) {
-			double dy = yp - y;
-			double dy2 = (dy*dy);
-
-			int y_ptr = g.get(yp);
-
-			for (int xp = x0; xp <= x1; xp++) {
-				double dx = xp - x;
-				double r2 = (dx*dx) + dy2;
-
-				// Only use the gradients within the circular window
-				if (r2 > radius2) {
-					continue;
-				}
-				int g2_ptr = y_ptr + (xp << 1); // const float* g = &y_ptr[xp<<1];
-				double angle = g_buf[g2_ptr + 0];// const float& angle = g[0];
-				double mag = g_buf[g2_ptr + 1];// const float& mag = g[1];
-
-				// Compute the gaussian weight based on distance from center of keypoint
-				double w = fastexp6(r2 * gw_scale);
-
-				// Compute the sub-bin location
-				double fbin = (double) (mNumBins * angle * ONE_OVER_2PI);
-
-				// Vote to the orientation histogram with a bilinear update
-				this.bilinear_histogram_update(this.mHistogram, fbin, w * mag, mNumBins);
-			}
-		}
+		this.mHistogram.reset();
+		int level = octave * mNumScalesPerOctave + scale;
+		this.mGradients[level].buildOrientationHistogram(x, y, radius, gw_scale, this.mHistogram);
 
 		// The orientation histogram is smoothed with a Gaussian
-		for (int iter = 0; iter < mNumSmoothingIterations; iter++) {
-			// sigma=1
-			double kernel[] = { 0.274068619061197f, 0.451862761877606f, 0.274068619061197f };
-			this.SmoothOrientationHistogram(mHistogram, mHistogram, mNumBins, kernel);
-		}
-
-		// Find the peak of the histogram.
-		for (int i = 0; i < mNumBins; i++) {
-			if (mHistogram[i] > max_height) {
-				max_height = mHistogram[i];
-			}
-		}
-
-		// The max height should be positive.
-		if (max_height == 0) {
-			return;
-		}
-
-		// ASSERT(max_height > 0, "Maximum bin should be positive");
-
+		this.mHistogram.smoothOrientationHistogram(mNumSmoothingIterations);
+		
 		// Find all the peaks.
-		for (int i = 0; i < mNumBins; i++) {
-			double p0[] = { i, mHistogram[i] };
-			double pm1[] = { (i - 1), mHistogram[(i - 1 + mNumBins) % mNumBins] };
-			double pp1[] = { (i + 1), mHistogram[(i + 1 + mNumBins) % mNumBins] };
-
-			// Ensure that "p0" is a relative peak w.r.t. the two neighbors
-			if ((mHistogram[i] > mPeakThreshold * max_height) && (p0[1] > pm1[1]) && (p0[1] > pp1[1])) {
-				double fbin;
-				double[] R = new double[3];
-				// The default sub-pixel bin location is the discrete location if the quadratic
-				// fitting fails.
-				fbin = i;
-
-				// Fit a quatratic to the three bins
-				if (Quadratic3Points(R, pm1, p0, pp1)) {
-					// If "QuadraticCriticalPoint" fails, then "fbin" is not updated.
-					QuadraticCriticalPoint(R, R[0], R[1], R[2]);// チェックしなくていいの？
-					fbin = R[0];
-				}
-
-				// The sub-pixel angle needs to be in the range [0,2*pi)
-				// angles[num_angles] = std::fmod((2.f*PI)*((fbin+0.5f+(float)mNumBins)/(float)mNumBins), 2.f*PI);
-				angles.v[angles.num] = ((2.f * PI) * ((fbin + 0.5 + (double) mNumBins) / (double) mNumBins))
-						% (double) (2.f * PI);
-
-				// Increment the number of angles
-				angles.num++;
-			}
-		}
+		return this.mHistogram.findPeak(mPeakThreshold,i_angles);
 	}
 
-	/**
-	 * @return Vector of images.
-	 */
-	public GradientsImage[] images() {
-		return this.mGradients;
-	}
 
-	/**
-	 * Get a gradient image at an index.
-	 */
-	public GradientsImage get(int i) {
-		return mGradients[i];
-	}
 
-	/**
-	 * Update a histogram with bilinear interpolation.
-	 * 
-	 * @param[in/out] hist Histogram
-	 * @param[in] fbin Decimal bin position to vote
-	 * @param[in] magnitude Magnitude of the vote
-	 * @param[in] num_bin Number of bins in the histogram
-	 */
-	private void bilinear_histogram_update(double[] hist, double fbin, double magnitude, int num_bins) {
-		// ASSERT(hist != NULL, "Histogram pointer is NULL");
-		// ASSERT((fbin+0.5f) > 0 && (fbin-0.5f) < num_bins, "Decimal bin position index out of range");
-		// ASSERT(magnitude >= 0, "Magnitude cannot be negative");
-		// ASSERT(num_bins >= 0, "Number bins must be positive");
-
-		int bin = (int) Math.floor(fbin - 0.5f);
-		double w2 = fbin - (double) bin - 0.5f;
-		double w1 = (1.f - w2);
-		int b1 = (bin + num_bins) % num_bins;
-		int b2 = (bin + 1) % num_bins;
-
-		// ASSERT(w1 >= 0, "w1 must be positive");
-		// ASSERT(w2 >= 0, "w2 must be positive");
-		// ASSERT(b1 >= 0 && b1 < num_bins, "b1 bin index out of range");
-		// ASSERT(b2 >= 0 && b2 < num_bins, "b2 bin index out of range");
-
-		// Vote to 2 weighted bins
-		hist[b1] += w1 * magnitude;
-		hist[b2] += w2 * magnitude;
-	}
-
-	/**
-	 * Smooth the orientation histogram with a kernel.
-	 * 
-	 * @param[out] y Destination histogram (in-place processing supported)
-	 * @param[in] x Source histogram
-	 * @param[in] kernel
-	 */
-	public void SmoothOrientationHistogram(double[] y, double[] x, int n, double[] kernel) {
-		double first = x[0];
-		double prev = x[n - 1];
-		for (int i = 0; i < n - 1; i++) {
-			double cur = x[i];
-			y[i] = kernel[0] * prev + kernel[1] * cur + kernel[2] * x[i + 1];
-			prev = cur;
-		}
-		y[n - 1] = kernel[0] * prev + kernel[1] * x[n - 1] + kernel[2] * first;
-	}
-
-	void ComputePolarGradients(double[] gradient, double[] im, int width, int height) {
-
-		// #define SET_GRADIENT(dx, dy) \
-		// *(gradient++) = std::atan2(dy, dx)+PI; \
-		// *(gradient++) = std::sqrt(dx*dx+dy*dy); \
-		// p_ptr++; pm1_ptr++; pp1_ptr++; \
-
-		int width_minus_1;
-		int height_minus_1;
-
-		double dx, dy;
-		int p_ptr;
-		int pm1_ptr;
-		int pp1_ptr;
-
-		width_minus_1 = width - 1;
-		height_minus_1 = height - 1;
-		int gradient_ptr = 0;
-
-		// Top row
-		pm1_ptr = 0; // pm1_ptr = im;
-		p_ptr = 0; // p_ptr = im;
-		pp1_ptr = width;// pp1_ptr = p_ptr+width;
-
-		dx = im[p_ptr + 1] - im[p_ptr + 0];// dx = p_ptr[1] - p_ptr[0];
-		dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];// dy = pp1_ptr[0] - pm1_ptr[0];
-		// SET_GRADIENT(dx, dy)
-		gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + PI);
-		gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
-		p_ptr++;
-		pm1_ptr++;
-		pp1_ptr++;
-
-		for (int col = 1; col < width_minus_1; col++) {
-			dx = im[p_ptr + 1] - im[p_ptr - 1];
-			dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
-			// SET_GRADIENT(dx, dy)
-			gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + PI);
-			gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
-			p_ptr++;
-			pm1_ptr++;
-			pp1_ptr++;
-		}
-
-		dx = im[p_ptr + 0] - im[p_ptr - 1];
-		dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
-		// SET_GRADIENT(dx, dy)
-		gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + PI);
-		gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
-		p_ptr++;
-		pm1_ptr++;
-		pp1_ptr++;
-
-		// Non-border pixels
-		pm1_ptr = 0;// pm1_ptr = im;
-		p_ptr = pm1_ptr + width;
-		pp1_ptr = p_ptr + width;
-
-		for (int row = 1; row < height_minus_1; row++) {
-			dx = im[p_ptr + 1] - im[p_ptr + 0];
-			dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
-			// SET_GRADIENT(dx, dy)
-			gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + PI);
-			gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
-			p_ptr++;
-			pm1_ptr++;
-			pp1_ptr++;
-
-			for (int col = 1; col < width_minus_1; col++) {
-				dx = im[p_ptr + 1] - im[p_ptr - 1];
-				dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
-				// SET_GRADIENT(dx, dy)
-				gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + PI);
-				gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
-				p_ptr++;
-				pm1_ptr++;
-				pp1_ptr++;
-			}
-			dx = im[p_ptr + 0] - im[p_ptr - 1];
-			dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
-			// SET_GRADIENT(dx, dy)
-			gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + PI);
-			gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
-			p_ptr++;
-			pm1_ptr++;
-			pp1_ptr++;
-		}
-
-		// Lower row
-		p_ptr = height_minus_1 * width;// p_ptr = &im[height_minus_1*width];
-		pm1_ptr = p_ptr - width;
-		pp1_ptr = p_ptr;
-
-		dx = im[p_ptr + 1] - im[p_ptr + 0];
-		dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
-		// SET_GRADIENT(dx, dy)
-		gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + PI);
-		gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
-		p_ptr++;
-		pm1_ptr++;
-		pp1_ptr++;
-
-		for (int col = 1; col < width_minus_1; col++) {
-			dx = im[p_ptr + 1] - im[p_ptr - 1];
-			dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
-			// SET_GRADIENT(dx, dy)
-			gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + PI);
-			gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
-			p_ptr++;
-			pm1_ptr++;
-			pp1_ptr++;
-
-		}
-
-		dx = im[p_ptr + 0] - im[p_ptr - 1];
-		dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
-		// SET_GRADIENT(dx, dy)
-		gradient[gradient_ptr++] = (double) (Math.atan2(dy, dx) + PI);
-		gradient[gradient_ptr++] = (double) Math.sqrt(dx * dx + dy * dy);
-		p_ptr++;
-		pm1_ptr++;
-		pp1_ptr++;
-	}
-    final static private void ZeroVector(double[] x, int num_elements)
-    {
-    	for(int i=0;i<num_elements;i++){
-    		x[i]=0;
-    	}
-    }	
-    /**
-     * 0.01% error at 1.030
-     * 0.10% error at 1.520
-     * 1.00% error at 2.330
-     * 5.00% error at 3.285
-     */
-    final private static double fastexp6(double x) {
-        return (720+x*(720+x*(360+x*(120+x*(30+x*(6+x))))))*0.0013888888;
-    }	
-    /**
-     * Fit a quatratic to 3 points. The system of equations is:
-     *
-     * y0 = A*x0^2 + B*x0 + C
-     * y1 = A*x1^2 + B*x1 + C
-     * y2 = A*x2^2 + B*x2 + C
-     *
-     * This system of equations is solved for A,B,C.
-     *
-     * @param[out] A
-     * @param[out] B
-     * @param[out] C
-     * @param[in] p1 2D point 1
-     * @param[in] p2 2D point 2
-     * @param[in] p3 2D point 3
-     * @return True if the quatratic could be fit, otherwise false.
-     */
-	public static boolean Quadratic3Points(double r[],
-			double[] p1,
-			double[] p2,
-			double[] p3) {
-		double d1 = (p3[0]-p2[0])*(p3[0]-p1[0]);
-		double d2 = (p1[0]-p2[0])*(p3[0]-p1[0]);
-		double d3 = p1[0]-p2[0];
-        // If any of the denominators are zero then return FALSE.
-		if(d1 == 0 ||
-           d2 == 0 ||
-           d3 == 0) {
-			r[0] = 0;
-			r[1] = 0;
-			r[2] = 0;
-			return false;
-		}
-		else {
-			double a = p1[0]*p1[0];
-			double b = p2[0]*p2[0];
-			
-            // Solve for the coefficients A,B,C
-			double A,B;
-			r[0] =A= ((p3[1]-p2[1])/d1)-((p1[1]-p2[1])/d2);
-			r[1] =B= ((p1[1]-p2[1])+(A*(b-a)))/d3;
-			r[2]   = p1[1]-(A*a)-(B*p1[0]);
-			return true;
-		}
-	}
-    /**
-	 * Find the critical point of a quadratic.
-     *
-     * y = A*x^2 + B*x + C
-     *
-     * This function finds where "x" where dy/dx = 0.
-	 *
-     * @param[out] x Parameter of the critical point.
-     * @param[in] A
-     * @param[in] B
-     * @param[in] C
-	 * @return True on success.
-	 */
-	final public static boolean QuadraticCriticalPoint(double[] x, double A, double B, double C) {
-		if(A == 0) {
-			return false;
-		}
-		x[0] = -B/(2*A);
-		return true;
-	}
-//    /**
-//     * Evaluate a quatratic function.
-//     */
-//	final private static double QuadraticEval(double[] r,final double x) {
-////        return A*x*x + B*x + C;
-//        return r[0]*x*x + r[1]*x + r[2];
-//    }
-//    /**
-//     * Find the derivate of the quadratic at a point.
-//     */
-//	final private static double QuadraticDerivative(double x, double A, double B) {
-//        return 2*A*x + B;
-//    }
 
 	
 	

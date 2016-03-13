@@ -9,7 +9,7 @@ public class DoGPyramid {
 
 
 		this.mNumOctaves = i_num_of_octaves;
-		this.mNumScalesPerOctave = i_num_scales_per_octaves - 1;
+		this.mNumScalesPerOctave = i_num_scales_per_octaves;
 
 		// Allocate DoG images 同一サイズのDoG画像ピラミッドを作る
 		mImages = new LaplacianImage[this.mNumOctaves * this.mNumScalesPerOctave];
@@ -19,7 +19,6 @@ public class DoGPyramid {
 			}
 		}
 	}
-
 	/**
 	 * Compute the Difference-of-Gaussian from a Gaussian Pyramid.
 	 */
@@ -30,8 +29,6 @@ public class DoGPyramid {
 			}
 		}
 	}
-
-
 	/**
 	 * Get vector of images.
 	 */
