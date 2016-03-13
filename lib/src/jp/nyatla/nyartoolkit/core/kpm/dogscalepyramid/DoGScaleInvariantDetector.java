@@ -83,8 +83,6 @@ public class DoGScaleInvariantDetector {
 		// Detect minima and maximum in Laplacian images
 		// TIMED("Non-max suppression") {
 
-		// Clear old features
-		i_dog_feature_points.clear();		
 		this.extractFeatures(pyramid, this.mLaplacianPyramid,i_dog_feature_points);
 		// }
 
@@ -97,7 +95,6 @@ public class DoGScaleInvariantDetector {
 		// TIMED("pruneFeatures") {
 		pruneFeatures(i_dog_feature_points);
 		// }
-
 		// Compute dominant angles
 		// TIMED("Find Orientations") {
 		findFeatureOrientations(pyramid,i_dog_feature_points);
@@ -219,7 +216,7 @@ public class DoGScaleInvariantDetector {
 	/**
 	 * Extract the minima/maxima.
 	 */
-	public void extractFeatures(GaussianScaleSpacePyramid pyramid, DoGPyramid laplacian,DogFeaturePointStack i_dog_fp)
+	private void extractFeatures(GaussianScaleSpacePyramid pyramid, DoGPyramid laplacian,DogFeaturePointStack i_dog_fp)
 	{
 		double laplacianSqrThreshold = (this.mLaplacianThreshold * this.mLaplacianThreshold);
 

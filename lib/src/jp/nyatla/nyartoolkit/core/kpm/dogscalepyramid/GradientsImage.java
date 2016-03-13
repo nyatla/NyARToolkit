@@ -147,8 +147,8 @@ public class GradientsImage
 		p_ptr = 0; // p_ptr = im;
 		pp1_ptr = width;// pp1_ptr = p_ptr+width;
 
-		dx = im[p_ptr + 1] - im[p_ptr + 0];// dx = p_ptr[1] - p_ptr[0];
-		dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];// dy = pp1_ptr[0] - pm1_ptr[0];
+		dx = im[p_ptr + 1] - im[p_ptr];// dx = p_ptr[1] - p_ptr[0];
+		dy = im[pp1_ptr] - im[pm1_ptr];// dy = pp1_ptr[0] - pm1_ptr[0];
 		// SET_GRADIENT(dx, dy)
 		a_gradient[gradient_ptr] = (Math.atan2(dy, dx) + PI);
 		m_gradient[gradient_ptr] = Math.sqrt(dx * dx + dy * dy);
@@ -159,7 +159,7 @@ public class GradientsImage
 
 		for (int col = 1; col < width_minus_1; col++) {
 			dx = im[p_ptr + 1] - im[p_ptr - 1];
-			dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
+			dy = im[pp1_ptr] - im[pm1_ptr];
 			// SET_GRADIENT(dx, dy)
 			a_gradient[gradient_ptr] = (Math.atan2(dy, dx) + PI);
 			m_gradient[gradient_ptr] = Math.sqrt(dx * dx + dy * dy);
@@ -169,8 +169,8 @@ public class GradientsImage
 			pp1_ptr++;
 		}
 
-		dx = im[p_ptr + 0] - im[p_ptr - 1];
-		dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
+		dx = im[p_ptr] - im[p_ptr - 1];
+		dy = im[pp1_ptr] - im[pm1_ptr];
 		// SET_GRADIENT(dx, dy)
 		a_gradient[gradient_ptr] = (Math.atan2(dy, dx) + PI);
 		m_gradient[gradient_ptr] = Math.sqrt(dx * dx + dy * dy);
@@ -185,8 +185,8 @@ public class GradientsImage
 		pp1_ptr = p_ptr + width;
 
 		for (int row = 1; row < height_minus_1; row++) {
-			dx = im[p_ptr + 1] - im[p_ptr + 0];
-			dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
+			dx = im[p_ptr + 1] - im[p_ptr];
+			dy = im[pp1_ptr] - im[pm1_ptr];
 			// SET_GRADIENT(dx, dy)
 			a_gradient[gradient_ptr] = (Math.atan2(dy, dx) + PI);
 			m_gradient[gradient_ptr] = Math.sqrt(dx * dx + dy * dy);
@@ -197,7 +197,7 @@ public class GradientsImage
 
 			for (int col = 1; col < width_minus_1; col++) {
 				dx = im[p_ptr + 1] - im[p_ptr - 1];
-				dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
+				dy = im[pp1_ptr] - im[pm1_ptr];
 				// SET_GRADIENT(dx, dy)
 				a_gradient[gradient_ptr] = (Math.atan2(dy, dx) + PI);
 				m_gradient[gradient_ptr] = Math.sqrt(dx * dx + dy * dy);
@@ -206,8 +206,8 @@ public class GradientsImage
 				pm1_ptr++;
 				pp1_ptr++;
 			}
-			dx = im[p_ptr + 0] - im[p_ptr - 1];
-			dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
+			dx = im[p_ptr] - im[p_ptr - 1];
+			dy = im[pp1_ptr] - im[pm1_ptr];
 			// SET_GRADIENT(dx, dy)
 			a_gradient[gradient_ptr] = (Math.atan2(dy, dx) + PI);
 			m_gradient[gradient_ptr] = Math.sqrt(dx * dx + dy * dy);
@@ -222,8 +222,8 @@ public class GradientsImage
 		pm1_ptr = p_ptr - width;
 		pp1_ptr = p_ptr;
 
-		dx = im[p_ptr + 1] - im[p_ptr + 0];
-		dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
+		dx = im[p_ptr + 1] - im[p_ptr];
+		dy = im[pp1_ptr] - im[pm1_ptr];
 		// SET_GRADIENT(dx, dy)
 		a_gradient[gradient_ptr] = (Math.atan2(dy, dx) + PI);
 		m_gradient[gradient_ptr] = Math.sqrt(dx * dx + dy * dy);
@@ -234,7 +234,7 @@ public class GradientsImage
 
 		for (int col = 1; col < width_minus_1; col++) {
 			dx = im[p_ptr + 1] - im[p_ptr - 1];
-			dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
+			dy = im[pp1_ptr] - im[pm1_ptr];
 			// SET_GRADIENT(dx, dy)
 			a_gradient[gradient_ptr] = (Math.atan2(dy, dx) + PI);
 			m_gradient[gradient_ptr] = Math.sqrt(dx * dx + dy * dy);
@@ -245,8 +245,8 @@ public class GradientsImage
 
 		}
 
-		dx = im[p_ptr + 0] - im[p_ptr - 1];
-		dy = im[pp1_ptr + 0] - im[pm1_ptr + 0];
+		dx = im[p_ptr] - im[p_ptr - 1];
+		dy = im[pp1_ptr] - im[pm1_ptr];
 		// SET_GRADIENT(dx, dy)
 		a_gradient[gradient_ptr] = (Math.atan2(dy, dx) + PI);
 		m_gradient[gradient_ptr] = Math.sqrt(dx * dx + dy * dy);

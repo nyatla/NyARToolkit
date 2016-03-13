@@ -62,19 +62,27 @@ public class FreakKeypointMatching {
 	public boolean kpmMatching(INyARGrayscaleRaster inImage,KeyframeMap i_keymap)
 	{
 		FreakFeaturePointStack query_keypoint = this.mQueryKeyframe;
-		query_keypoint.clear();
 		//Freak Extract
 
+
+		query_keypoint.clear();
+		
 		// Build the pyramid		
 		this.mPyramid.build(inImage);
+		// Clear old features
+		this._dog_feature_points.clear();	
 		// Detect feature points
 		this.mDogDetector.detect(this.mPyramid,this._dog_feature_points);
+
 		// Extract features
 		this.mFeatureExtractor.extract(query_keypoint, this.mPyramid,this._dog_feature_points);		
 		
 		if(query_keypoint.isEmpty()){
 			return false;
 		}
+//	}
+//	System.out.println(query_keypoint.getLength());
+//	System.out.println(System.currentTimeMillis()-s);
 
 		
 		// LOG_INFO("Found %d features in query",
