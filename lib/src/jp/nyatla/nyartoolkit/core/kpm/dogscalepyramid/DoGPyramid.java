@@ -3,19 +3,16 @@ package jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.GaussianScaleSpacePyramid;
 
 public class DoGPyramid {
-	public DoGPyramid(int i_width, int i_height, int i_num_of_octaves, int i_num_scales_per_octaves) {
-
-
-
-
+	public DoGPyramid(int i_width, int i_height, int i_num_of_octaves, int i_num_scales_per_octaves)
+	{
 		this.mNumOctaves = i_num_of_octaves;
 		this.mNumScalesPerOctave = i_num_scales_per_octaves;
 
 		// Allocate DoG images 同一サイズのDoG画像ピラミッドを作る
-		mImages = new LaplacianImage[this.mNumOctaves * this.mNumScalesPerOctave];
+		this.mImages = new LaplacianImage[this.mNumOctaves * this.mNumScalesPerOctave];
 		for (int i = 0; i < this.mNumOctaves; i++) {
 			for (int j = 0; j < this.mNumScalesPerOctave; j++) {
-				mImages[i * mNumScalesPerOctave + j] = new LaplacianImage(i_width >> i, i_height >> i);// 多分あってるんじゃないか的な
+				this.mImages[i * this.mNumScalesPerOctave + j] = new LaplacianImage(i_width >> i, i_height >> i);// 多分あってるんじゃないか的な
 			}
 		}
 	}
@@ -29,12 +26,7 @@ public class DoGPyramid {
 			}
 		}
 	}
-	/**
-	 * Get vector of images.
-	 */
-	public LaplacianImage[] images() {
-		return this.mImages;
-	}
+
 
 	/**
 	 * Get a Laplacian image at an index.

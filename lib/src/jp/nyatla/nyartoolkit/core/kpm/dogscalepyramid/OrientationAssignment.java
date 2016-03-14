@@ -1,6 +1,7 @@
 package jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid;
 
 
+import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.artk5.GradientsImage;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.GaussianScaleSpacePyramid;
 
 
@@ -58,7 +59,7 @@ public class OrientationAssignment {
 				// AUTO_STEP,
 				// 2);
 				// これKpmImageじゃなくて単純なfloatbufferにしようあとで。どうせバッファオーバフローで落ちるから。
-				mGradients[i * num_scales_per_octave + j] = new GradientsImage(fine_width >> i, fine_height >> i);
+				this.mGradients[i * num_scales_per_octave + j] = new GradientsImage(fine_width >> i, fine_height >> i);
 
 			}
 		}

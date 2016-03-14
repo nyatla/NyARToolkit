@@ -71,33 +71,33 @@ public class DoGScaleInvariantDetector {
 	 * @param _i_dog_feature_points
 	 * 検出した特徴点
 	 */
-	public void detect(GaussianScaleSpacePyramid pyramid,DogFeaturePointStack i_dog_feature_points) {
+	public void detect(GaussianScaleSpacePyramid i_pyramid,DogFeaturePointStack i_dog_feature_points) {
 		// ASSERT(pyramid->numOctaves() > 0,
 		// "Pyramid does not contain any levels");
 
 		// Compute Laplacian images (DoG)
 		// TIMED("DoG Pyramid") {
-		mLaplacianPyramid.compute(pyramid);
+		this.mLaplacianPyramid.compute(i_pyramid);
 		// }
 
 		// Detect minima and maximum in Laplacian images
 		// TIMED("Non-max suppression") {
 
-		this.extractFeatures(pyramid, this.mLaplacianPyramid,i_dog_feature_points);
+		this.extractFeatures(i_pyramid, this.mLaplacianPyramid,i_dog_feature_points);
 		// }
 
 		// Sub-pixel refinement
 		// TIMED("Subpixel") {
-		findSubpixelLocations(pyramid,i_dog_feature_points);
+		this.findSubpixelLocations(i_pyramid,i_dog_feature_points);
 		// }
 
 		// Prune features
 		// TIMED("pruneFeatures") {
-		pruneFeatures(i_dog_feature_points);
+		this.pruneFeatures(i_dog_feature_points);
 		// }
 		// Compute dominant angles
 		// TIMED("Find Orientations") {
-		findFeatureOrientations(pyramid,i_dog_feature_points);
+		this.findFeatureOrientations(i_pyramid,i_dog_feature_points);
 		// }
 	}
 
@@ -423,17 +423,7 @@ public class DoGScaleInvariantDetector {
 						}
 					}
 				}
-			} else if ((im0.getWidth() >> 1) == im1.getWidth() && (im0.getWidth() >> 1) == im2.getWidth()) { // 0 is
-																												// twice
-																												// the
-																												// size
-																												// of 1
-																												// and
-																												// 2
-				// ASSERT((im0.height()>>1) == im1.height(),
-				// "Height is inconsistent");
-				// ASSERT((im0.height()>>1) == im2.height(),
-				// "Height is inconsistent");
+			} else if ((im0.getWidth() >> 1) == im1.getWidth() && (im0.getWidth() >> 1) == im2.getWidth()) {
 
 				int width_minus_1 = im1.getWidth() - 1;
 				int height_minus_1 = im1.getHeight() - 1;
@@ -527,39 +517,12 @@ public class DoGScaleInvariantDetector {
 		return;
 	}
 
-	/**
-	 * Solve a 3x3 symmetric linear system.
-	 */
-	boolean SolveSymmetricLinearSystem3x3(double[] x, double[] A, double[] b) {
-		NyARDoubleMatrix33 m = new NyARDoubleMatrix33();
-		m.m00 = A[0];
-		m.m01 = A[1];
-		m.m02 = A[2];
-		m.m10 = A[3];
-		m.m11 = A[4];
-		m.m12 = A[5];
-		m.m20 = A[6];
-		m.m21 = A[7];
-		m.m22 = A[8];
-		if (!m.inverse(m)) {
-			return false;
-		}
-		x[0] = (m.m00 * b[0] + m.m01 * b[1] + m.m02 * b[2]);
-		x[1] = (m.m10 * b[0] + m.m11 * b[1] + m.m12 * b[2]);
-		x[2] = (m.m20 * b[0] + m.m21 * b[1] + m.m22 * b[2]);
-		return true;
-	}
+
 
 	/**
 	 * Sub-pixel refinement.
 	 */
-	public void findSubpixelLocations(GaussianScaleSpacePyramid pyramid,DogFeaturePointStack i_dog_fp) {
-		double[] tmp = new double[2];
-		double[] A = new double[9];
-		double[] b = new double[3];
-		double[] u = new double[3];
-		int x, y;
-		double xp, yp;
+	private void findSubpixelLocations(GaussianScaleSpacePyramid pyramid,DogFeaturePointStack i_dog_fp) {
 		int num_points;
 		double laplacianSqrThreshold;
 		double hessianThreshold;
@@ -575,64 +538,24 @@ public class DoGScaleInvariantDetector {
 			// ASSERT(kp.scale < mLaplacianPyramid.numScalePerOctave(),
 			// "Feature point scale is out of bounds");
 			int lap_index = kp.octave * mLaplacianPyramid.numScalePerOctave() + kp.scale;
-			// Downsample the feature point to the detection octave
-			bilinear_downsample_point(tmp, kp.x, kp.y, kp.octave);
-			xp = tmp[0];
-			yp = tmp[1];
-			// Compute the discrete pixel location
-			x = (int) (xp + 0.5f);
-			y = (int) (yp + 0.5f);
 
 			// Get Laplacian images
-			LaplacianImage lap0 = mLaplacianPyramid.images()[lap_index - 1];
-			LaplacianImage lap1 = mLaplacianPyramid.images()[lap_index];
-			LaplacianImage lap2 = mLaplacianPyramid.images()[lap_index + 1];
+			LaplacianImage lap0 = mLaplacianPyramid.get(lap_index - 1);
+			LaplacianImage lap1 = mLaplacianPyramid.get(lap_index);
+			LaplacianImage lap2 = mLaplacianPyramid.get(lap_index + 1);
 
 			// Compute the Hessian
-			if (!ComputeSubpixelHessian(A, b, lap0, lap1, lap2, x, y)) {
+			if (!this.updateLocation(kp,lap0, lap1, lap2)) {
 				continue;
 			}
 
-			// A*u=b
-			if (!SolveSymmetricLinearSystem3x3(u, A, b)) {
-				continue;
-			}
-
-			// If points move too much in the sub-pixel update, then the point probably unstable.
-			if ((u[0] * u[0]) + (u[1] * u[1]) > mMaxSubpixelDistanceSqr) {
-				continue;
-			}
-
-			// Compute the edge score
-			if (!ComputeEdgeScore(tmp, A)) {
-				continue;
-			}
-			kp.edge_score = tmp[0];
-
-			// Compute a linear estimate of the intensity
-			// ASSERT(kp.score == lap1.get<float>(y)[x],
-			// "Score is not consistent with the DoG image");
-			double[] lap1_buf = (double[]) lap1.getBuffer();
-			kp.score = lap1_buf[lap1.get(y) + x] - (b[0] * u[0] + b[1] * u[1] + b[2] * u[2]);
-
-			// Update the location:
-			// Apply the update on the downsampled location and then upsample
-			// the result.
-			// bilinear_upsample_point(kp.x, kp.y, xp+u[0], yp+u[1], kp.octave);
-			bilinear_upsample_point(tmp, xp + u[0], yp + u[1], kp.octave);
-			kp.x = tmp[0];
-			kp.y = tmp[1];
-
-			// Update the scale
-			kp.sp_scale = kp.scale + u[2];
-			kp.sp_scale = ClipScalar(kp.sp_scale, 0, mLaplacianPyramid.numScalePerOctave());
 
 			if (Math.abs(kp.edge_score) < hessianThreshold && (kp.score * kp.score) >= laplacianSqrThreshold
-					&& kp.x >= 0 && kp.x < mLaplacianPyramid.images()[0].getWidth() && kp.y >= 0
-					&& kp.y < mLaplacianPyramid.images()[0].getHeight()) {
+					&& kp.x >= 0 && kp.x < mLaplacianPyramid.get(0).getWidth() && kp.y >= 0
+					&& kp.y < mLaplacianPyramid.get(0).getHeight()) {
 				// Update the sigma
 				kp.sigma = pyramid.effectiveSigma(kp.octave, kp.sp_scale);
-				i_dog_fp.getItem(num_points++).set(kp);
+				i_dog_fp.swap(i,num_points++);
 			}
 		}
 		i_dog_fp.setLength(num_points);
@@ -736,25 +659,85 @@ public class DoGScaleInvariantDetector {
 	// const Image& lap0,const Image& lap1,const Image& lap2,
 	// int x,int y)
 
-	private boolean ComputeSubpixelHessian(double[] H, double[] b, LaplacianImage lap0, LaplacianImage lap1, LaplacianImage lap2, int x,
-			int y) {
-
+	private boolean updateLocation(DogFeaturePoint kp,LaplacianImage lap0, LaplacianImage lap1, LaplacianImage lap2)
+	{
+		double[] tmp = new double[2];
+		double[] b = new double[3];
+		
+		
+		// Downsample the feature point to the detection octave
+		bilinear_downsample_point(tmp, kp.x, kp.y, kp.octave);
+		double xp = tmp[0];
+		double yp = tmp[1];
+		// Compute the discrete pixel location
+		int x = (int) (xp + 0.5f);
+		int y = (int) (yp + 0.5f);		
+		
+		double[] H=new double[9];
 		if (lap0.getWidth() == lap1.getWidth() && lap1.getWidth() == lap2.getWidth()) {
-			assert lap0.getHeight() == lap1.getHeight() && lap1.getHeight() == lap2.getHeight();// ,
-																								// "Width/height are not consistent");
+			//すべての画像サイズが同じ
+			assert lap0.getHeight() == lap1.getHeight() && lap1.getHeight() == lap2.getHeight();// "Width/height are not consistent");
 			ComputeSubpixelHessianSameOctave(H, b, lap0, lap1, lap2, x, y);
 		} else if ((lap0.getWidth() == lap1.getWidth()) && ((lap1.getWidth() >> 1) == lap2.getWidth())) {
-			assert (lap0.getHeight() == lap1.getHeight()) && ((lap1.getHeight() >> 1) == lap2.getHeight());// ,
-																											// "Width/height are not consistent");
+			//0,1が同じで2がその半分
+			assert (lap0.getHeight() == lap1.getHeight()) && ((lap1.getHeight() >> 1) == lap2.getHeight());// Width/height are not consistent");
 			ComputeSubpixelHessianFineOctavePair(H, b, lap0, lap1, lap2, x, y);
 		} else if (((lap0.getWidth() >> 1) == lap1.getWidth()) && (lap1.getWidth() == lap2.getWidth())) {
-			assert ((lap0.getWidth() >> 1) == lap1.getWidth()) && (lap1.getWidth() == lap2.getWidth());// ,
-																										// "Width/height are not consistent");
+			//0の半分が1,2
+			assert ((lap0.getWidth() >> 1) == lap1.getWidth()) && (lap1.getWidth() == lap2.getWidth());// Width/height are not consistent");
 			ComputeSubpixelHessianCoarseOctavePair(H, b, lap0, lap1, lap2, x, y);
 		} else {
 			// ASSERT(0, "Image sizes are inconsistent");
 			return false;
 		}
+		
+		// A*u=b	//		if (!SolveSymmetricLinearSystem3x3(u, H, b)) {
+		NyARDoubleMatrix33 m = new NyARDoubleMatrix33();
+		m.m00 = H[0];
+		m.m01 = H[1];
+		m.m02 = H[2];
+		m.m10 = H[3];
+		m.m11 = H[4];
+		m.m12 = H[5];
+		m.m20 = H[6];
+		m.m21 = H[7];
+		m.m22 = H[8];
+		if (!m.inverse(m)) {
+			return false;
+		}
+		double u0 = (m.m00 * b[0] + m.m01 * b[1] + m.m02 * b[2]);
+		double u1 = (m.m10 * b[0] + m.m11 * b[1] + m.m12 * b[2]);
+		double u2 = (m.m20 * b[0] + m.m21 * b[1] + m.m22 * b[2]);
+
+
+		// If points move too much in the sub-pixel update, then the point probably unstable.
+		if ((u0 * u0) + (u1 * u1) > mMaxSubpixelDistanceSqr) {
+			return false;
+		}
+
+		// Compute the edge score
+		if (!ComputeEdgeScore(tmp, H)) {
+			return false;
+		}		
+		kp.edge_score = tmp[0];
+
+		// Compute a linear estimate of the intensity
+		// ASSERT(kp.score == lap1.get<float>(y)[x],
+		// "Score is not consistent with the DoG image");
+		double[] lap1_buf = (double[]) lap1.getBuffer();
+		kp.score = lap1_buf[lap1.get(y) + x] - (b[0] * u0 + b[1] * u1 + b[2] * u2);
+
+		// Update the location:
+		// Apply the update on the downsampled location and then upsample
+		// the result.
+		// bilinear_upsample_point(kp.x, kp.y, xp+u[0], yp+u[1], kp.octave);
+		bilinear_upsample_point(tmp, xp + u0, yp + u1, kp.octave);
+		kp.x = tmp[0];
+		kp.y = tmp[1];
+
+		// Update the scale
+		kp.sp_scale = kp.scale + u2;
+		kp.sp_scale = ClipScalar(kp.sp_scale, 0, mLaplacianPyramid.numScalePerOctave());
 		return true;
 	}
 
@@ -770,31 +753,14 @@ public class DoGScaleInvariantDetector {
 		double Dxx, Dyy, Dxy;
 		double Dss, Dxs, Dys;
 
-		assert (x - 1) >= 0 && (x + 1) < lap1.getWidth();// ASSERT((x-1) >= 0 &&
-															// (x+1) <
-															// lap1.width(),
-															// "x out of bounds");
-		assert (y - 1) >= 0 && (y + 1) < lap1.getHeight();// ASSERT((y-1) >= 0
-															// && (y+1) <
-															// lap1.height(),
-															// "y out of bounds");
-		assert (lap0.getWidth() >> 1) == lap1.getWidth();// ASSERT((lap0.width()>>1)
-															// == lap1.width(),
-															// "Image dimensions inconsistent");
-		assert (lap0.getWidth() >> 1) == lap2.getWidth();// ASSERT((lap0.width()>>1)
-															// == lap2.width(),
-															// "Image dimensions inconsistent");
-		assert (lap0.getHeight() >> 1) == lap1.getHeight();// ASSERT((lap0.height()>>1)
-															// == lap1.height(),
-															// "Image dimensions inconsistent");
-		assert (lap0.getHeight() >> 1) == lap2.getHeight();// ASSERT((lap0.height()>>1)
-															// == lap2.height(),
-															// "Image dimensions inconsistent");
+		assert (x - 1) >= 0 && (x + 1) < lap1.getWidth();
+		assert (y - 1) >= 0 && (y + 1) < lap1.getHeight();
+		assert (lap0.getWidth() >> 1) == lap1.getWidth();
+		assert (lap0.getWidth() >> 1) == lap2.getWidth();
+		assert (lap0.getHeight() >> 1) == lap1.getHeight();
+		assert (lap0.getHeight() >> 1) == lap2.getHeight();
 
-		// const float* lap1_p = &lap1.get<float>(y)[x];;
-		// const float* lap2_pm1 = &lap2.get<float>(y-1)[x];
-		// const float* lap2_p = &lap2.get<float>(y)[x];
-		// const float* lap2_pp1 = &lap2.get<float>(y+1)[x];
+
 		int lap1_p = lap1.get(y) + x;
 		int lap2_pm1 = lap2.get(y - 1) + x;
 		int lap2_p = lap2.get(y) + x;
@@ -836,7 +802,7 @@ public class DoGScaleInvariantDetector {
 		H[7] = Dys;
 		H[8] = Dss;
 
-		// h
+		// b
 		b[0] = -Dx;
 		b[1] = -Dy;
 		b[2] = -Ds;
@@ -1012,9 +978,6 @@ public class DoGScaleInvariantDetector {
 
 	private void PruneDoGFeatures(DogFeaturePointStack outPoints, DogFeaturePointStack inPoints,
 			int num_buckets_X, int num_buckets_Y, int width, int height, int max_points) {
-
-
-
 		//
 		// Clear the previous state
 		//
@@ -1050,6 +1013,7 @@ public class DoGScaleInvariantDetector {
 		int num_buckets = num_buckets_X * num_buckets_Y;
 		int num_points_per_bucket = max_points / num_buckets;
 		
+		int idx=0;
 		//
 		// Do a partial sort on the first N points of each bucket
 		//
@@ -1082,10 +1046,14 @@ public class DoGScaleInvariantDetector {
 						prepush_warning();
 						break;
 					}
+//					inPoints.swap(idx++,bucket.getItem(k).second);
 					p.set(inPoints.getItem(bucket.getItem(k).second));
+//					System.out.println(bucket.getItem(k).second);
 				}
 			}
 		}
+//		inPoints.setLength(idx);
+		return;
 	}
 	private static void prepush_warning(){
 		System.out.println("DogFeaturePoint over flow");

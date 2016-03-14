@@ -1,30 +1,14 @@
 package jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid;
 
-
 import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
-import jp.nyatla.nyartoolkit.core.math.NyARMath;
-import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.artk5.GradientsImage;
 
-public class GradientsImage
-{
-	final private static double PI=NyARMath.PI;
-	final private NyARIntSize _size;
-	final private double[] _angle;
-	final private double[] _mag;
+public final class GradientsImage_O1 extends GradientsImage{
 
-	public GradientsImage(int i_width, int i_height) {
-		this._size = new NyARIntSize(i_width, i_height);
-		this._angle = new double[i_width * i_height];
-		this._mag = new double[i_width * i_height];
+	public GradientsImage_O1(int i_width, int i_height)
+	{
+		super(i_width, i_height);
 	}
-
-
-
-
-
-
-
-
 	/**
 	 * OrientationAssignment.computeの一部
 	 * @param x
@@ -216,7 +200,7 @@ public class GradientsImage
 		p_ptr++;
 		pm1_ptr++;
 		pp1_ptr++;
-	}	
+	}
 	
     /**
      * 0.01% error at 1.030
@@ -226,6 +210,6 @@ public class GradientsImage
      */
     final private static double fastexp6(double x) {
         return (720+x*(720+x*(360+x*(120+x*(30+x*(6+x))))))*0.0013888888;
-    }		
-	
+    }
+
 }

@@ -176,7 +176,4 @@ public class BilinearHistogram
 		x[0] = -B/(2*A);
 		return true;
 	}
-	public double length() {
-		return this.mHistogram.length;
-	}
 }
