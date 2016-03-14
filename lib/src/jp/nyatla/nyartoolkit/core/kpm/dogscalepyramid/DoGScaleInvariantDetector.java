@@ -1,16 +1,13 @@
 package jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid;
 
 
+import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.utils.AreaBuckit;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.GaussianScaleSpacePyramid;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
-import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
 public class DoGScaleInvariantDetector {
 	final static public int kMaxNumFeaturePoints = 5000;
 	final static public int kMaxNumOrientations = 36;
-
-	// True if the orientation should be assigned
-	final private boolean mFindOrientation;
 
 	// DoG pyramid
 	final private DoGPyramid mLaplacianPyramid;
@@ -21,6 +18,8 @@ public class DoGScaleInvariantDetector {
 	/** Edge threshold */
 	final private double mEdgeThreshold;
 
+	// number of orientations per feature point.
+	final private double[] mOrientations;
 
 
 	// Maximum number of feature points
@@ -35,135 +34,51 @@ public class DoGScaleInvariantDetector {
 	/**
 	 * Buckets for pruning points std::vector<std::vector<std::vector<std::pair<float, size_t> > > >
 	 */
-	final private BucketStack[][] mBuckets;
+	final private AreaBuckit mBuckets;
 
 	public DoGScaleInvariantDetector(int i_width,int i_height,int i_octerv,int i_num_of_scale_of_octerv, double i_LaplacianThreshold,
 			double i_EdgeThreshold, int i_MaxNumFeaturePoints) {
-		this.mNumBucketsX = 10;
-		this.mNumBucketsY = 10;
-		this.mFindOrientation = true;
+
 		this.mLaplacianThreshold = i_LaplacianThreshold;
 		this.mEdgeThreshold = i_EdgeThreshold;
 		this.mMaxNumFeaturePoints = i_MaxNumFeaturePoints;
 		this.mMaxSubpixelDistanceSqr = (3 * 3);
 		this.mOrientations = new double[kMaxNumOrientations];
 		this.mLaplacianPyramid = new DoGPyramid(i_width,i_height,i_octerv,i_num_of_scale_of_octerv-1);
-		this.mWidth = i_width;
-		this.mHeight = i_height;
 		this.mOrientationAssignment = new OrientationAssignment(i_width,i_height,i_octerv, i_num_of_scale_of_octerv,kMaxNumOrientations, 3, 1.5f, 5, 0.8f);
-		this.mBuckets = createBucketPairArray(mNumBucketsX, mNumBucketsY, 300);
-
+		this.mBuckets = new AreaBuckit(i_width,i_height,10,10,300);
+		this._tmp_fps=new DogFeaturePointStack(kMaxNumFeaturePoints);
 	}
 
-	/**
-	 * @return Width/Height of configured image
-	 */
-	public int width() {
-		return this.mWidth;
-	}
-
-	public int height() {
-		return this.mHeight;
-	}
+	final private DogFeaturePointStack _tmp_fps;
 
 	/**
 	 * Detect scale-invariant feature points given a pyramid.
 	 * @param _i_dog_feature_points
-	 * 検出した特徴点
+	 * 検出したDOG特徴点
 	 */
-	public void detect(GaussianScaleSpacePyramid i_pyramid,DogFeaturePointStack i_dog_feature_points) {
-		// ASSERT(pyramid->numOctaves() > 0,
-		// "Pyramid does not contain any levels");
+	public void detect(GaussianScaleSpacePyramid i_pyramid,DogFeaturePointStack i_dog_feature_points)
+	{
+		//clean up 1st feature stack
+		DogFeaturePointStack tmp_fp=this._tmp_fps;
+		this._tmp_fps.clear();
 
 		// Compute Laplacian images (DoG)
-		// TIMED("DoG Pyramid") {
 		this.mLaplacianPyramid.compute(i_pyramid);
-		// }
 
 		// Detect minima and maximum in Laplacian images
-		// TIMED("Non-max suppression") {
-
-		this.extractFeatures(i_pyramid, this.mLaplacianPyramid,i_dog_feature_points);
-		// }
+		this.extractFeatures(i_pyramid, this.mLaplacianPyramid,tmp_fp);
 
 		// Sub-pixel refinement
-		// TIMED("Subpixel") {
-		this.findSubpixelLocations(i_pyramid,i_dog_feature_points);
-		// }
+		this.findSubpixelLocations(i_pyramid,tmp_fp);
 
 		// Prune features
-		// TIMED("pruneFeatures") {
-		this.pruneFeatures(i_dog_feature_points);
-		// }
+		this.pruneFeatures(tmp_fp,this.mBuckets);
+
 		// Compute dominant angles
-		// TIMED("Find Orientations") {
-		this.findFeatureOrientations(i_pyramid,i_dog_feature_points);
-		// }
+		this.findFeatureOrientations(i_pyramid,tmp_fp,this.mBuckets,i_dog_feature_points);
+
 	}
-
-	// Width/Height of configured image
-	final private int mWidth;
-	final private int mHeight;
-
-	// Number of buckets in X/Y
-	final private int mNumBucketsX;
-	final private int mNumBucketsY;
-
-	private static class BucketPair {
-		public double first;
-		public int second;
-	}
-
-	private static class BucketStack extends NyARObjectStack<BucketPair> {
-		public BucketStack(int i_length) {
-			super(i_length, BucketPair.class);
-		}
-
-		@Override
-		protected BucketPair createElement() {
-			return new BucketPair();
-		}
-
-		// 先頭N個について降順で要素を選択する
-		public void partialSort(int n) {
-			BucketPair[] items = this._items;
-			for (int i = 0; i < n; i++) {
-				int max_idx = i;
-				double max = items[max_idx].first;
-				for (int i2 = i + 1; i2 < this._length; i2++) {
-					double test = items[i2].first;
-					if (max < test) {
-						max = test;
-						max_idx = i2;
-					}
-				}
-				if (i != max_idx) {
-					BucketPair t = items[i];
-					items[i] = items[max_idx];
-					items[max_idx] = t;
-				}
-			}
-		}
-	}
-
-	public static BucketStack[][] createBucketPairArray(int x, int y, int pair_len) {
-		System.out.println("Force set bucketpair size!!");
-		BucketStack[][] r = new BucketStack[x][];
-		for (int i = 0; i < r.length; i++) {
-			r[i] = new BucketStack[y];
-			for (int i2 = 0; i2 < y; i2++) {
-				r[i][i2] = new BucketStack(pair_len);
-			}
-		}
-		return r;
-	}
-
-	// Vector of orientations. Pre-allocated to the maximum
-	// number of orientations per feature point.
-	final private double[] mOrientations;
-
-
-
 
 
 	/**
@@ -275,12 +190,8 @@ public class DoGScaleInvariantDetector {
 								&& value > im2b[im2_ym1 + col + 1] && value > im2b[im2_y + col - 1]
 								&& value > im2b[im2_y + col] && value > im2b[im2_y + col + 1]
 								&& value > im2b[im2_yp1 + col - 1] && value > im2b[im2_yp1 + col]
-								&& value > im2b[im2_yp1 + col + 1]) { // if(NONMAX_CHECK(>,
-																		// value))
-																		// { //
-																		// strictly
-																		// greater
-																		// than
+								&& value > im2b[im2_yp1 + col + 1])
+						{
 							extrema = true;
 						} else if (value < im0b[im0_ym1 + col - 1] && value < im0b[im0_ym1 + col]
 								&& value < im0b[im0_ym1 + col + 1] && value < im0b[im0_y + col - 1]
@@ -297,13 +208,8 @@ public class DoGScaleInvariantDetector {
 								&& value < im2b[im2_ym1 + col + 1] && value < im2b[im2_y + col - 1]
 								&& value < im2b[im2_y + col] && value < im2b[im2_y + col + 1]
 								&& value < im2b[im2_yp1 + col - 1] && value < im2b[im2_yp1 + col]
-								&& value < im2b[im2_yp1 + col + 1]) { // else
-																		// if(NONMAX_CHECK(<,
-																		// value))
-																		// { //
-																		// strictly
-																		// less
-																		// than
+								&& value < im2b[im2_yp1 + col + 1])
+						{ 
 							extrema = true;
 						}
 
@@ -397,12 +303,8 @@ public class DoGScaleInvariantDetector {
 								&& value < im2.bilinearInterpolation(ds_x + 0.5f, ds_y)
 								&& value < im2.bilinearInterpolation(ds_x - 0.5f, ds_y + 0.5f)
 								&& value < im2.bilinearInterpolation(ds_x, ds_y + 0.5f)
-								&& value < im2.bilinearInterpolation(ds_x + 0.5f, ds_y + 0.5f)) { // if(NONMAX_CHECK(<,
-																									// value))
-																									// { //
-																									// strictly
-																									// less
-																									// than
+								&& value < im2.bilinearInterpolation(ds_x + 0.5f, ds_y + 0.5f)) 
+						{
 							extrema = true;
 						}
 
@@ -563,59 +465,44 @@ public class DoGScaleInvariantDetector {
 
 	/**
 	 * Prune the number of features.
+	 * @param i_buckets 
 	 */
-	private void pruneFeatures(DogFeaturePointStack i_dog_fp) {
-		if (i_dog_fp.getLength() <= mMaxNumFeaturePoints) {
+	private void pruneFeatures(DogFeaturePointStack i_in_dfps, AreaBuckit i_buckets) {
+		if (i_in_dfps.getLength() <= mMaxNumFeaturePoints) {
 			return;
 		}
-		// ASSERT(mBuckets.size() == mNumBucketsX, "Buckets are not allocated");
-		// ASSERT(mBuckets[0].size() == mNumBucketsY,
-		// "Buckets are not allocated");
-
-		DogFeaturePointStack points = new DogFeaturePointStack(2000);// 適当　DoGScaleInvariantDetector.mFeaturePointsと同じくらいないとダメ
-		PruneDoGFeatures(points, i_dog_fp, (int) mNumBucketsX, (int) mNumBucketsY, (int) mWidth,
-				(int) mHeight, (int) mMaxNumFeaturePoints);
-		// オーバフローするから後で直す
-		i_dog_fp.clear();
-		for (int i = 0; i < points.getLength(); i++) {
-			DogFeaturePoint p=i_dog_fp.prePush();
-			if(p==null){
-				prepush_warning();
-				break;
-			}
-			p.set(points.getItem(i));
+		// Clear the previous state
+		i_buckets.clear();
+		// Insert each features into a bucket
+		for (int i = 0; i < i_in_dfps.getLength(); i++) {
+			DogFeaturePoint p = i_in_dfps.getItem(i);
+			i_buckets.put(p.x,p.y,i,Math.abs(p.score));
 		}
-		assert i_dog_fp.getLength() <= mMaxNumFeaturePoints;// ,
-																	// "Too many feature points");
-
-		// ASSERT(mFeaturePoints.size() <= mMaxNumFeaturePoints,
-		// "Too many feature points");
 	}
-
 	/**
 	 * Find feature orientations.
 	 */
-	private void findFeatureOrientations(GaussianScaleSpacePyramid pyramid,DogFeaturePointStack i_dog_fp) {
+	private void findFeatureOrientations(GaussianScaleSpacePyramid i_pyramid, DogFeaturePointStack in_fps,
+			AreaBuckit i_buckit, DogFeaturePointStack i_ot_fps) 
+	{
 		double[] tmp = new double[3];
-		if (!mFindOrientation) {
-			for (int i = 0; i < i_dog_fp.getLength(); i++) {
-				i_dog_fp.getItem(i).angle = 0;
-			}
-			return;
-		}
 
-		int num_angles;
-		DogFeaturePoint[] mTmpOrientatedFeaturePoints = new DogFeaturePoint[i_dog_fp.getLength()* kMaxNumOrientations];
-		int mTmpOrientatedFeaturePoints_n = 0;
 		// Compute the gradient pyramid
-		mOrientationAssignment.computeGradients(pyramid);
+		mOrientationAssignment.computeGradients(i_pyramid);
+		i_ot_fps.clear();
 
 		// Compute an orientation for each feature point
-		for (int i = 0; i < i_dog_fp.getLength(); i++) {
+		for (int i = 0; i < i_buckit._buckit.length; i++)
+		{
+			if(i_buckit._buckit[i].first==0){
+				continue;
+			}
+			DogFeaturePoint dfp=in_fps.getItem(i_buckit._buckit[i].second);
+			
 			double x, y, s;
 
 			// Down sample the point to the detected octave
-			bilinear_downsample_point(tmp, i_dog_fp.getItem(i).x, i_dog_fp.getItem(i).y,i_dog_fp.getItem(i).sigma, i_dog_fp.getItem(i).octave);
+			bilinear_downsample_point(tmp, dfp.x, dfp.y,dfp.sigma,dfp.octave);
 			x = tmp[0];
 			y = tmp[1];
 			s = tmp[2];
@@ -624,33 +511,31 @@ public class DoGScaleInvariantDetector {
 			// by
 			// a tiny amount. Here we just clip it to be within the image
 			// bounds.
-			x = ClipScalar(x, 0, pyramid.get(i_dog_fp.getItem(i).octave, 0).getWidth() - 1);
-			y = ClipScalar(y, 0, pyramid.get(i_dog_fp.getItem(i).octave, 0).getHeight() - 1);
+			x = ClipScalar(x, 0, i_pyramid.get(dfp.octave, 0).getWidth() - 1);
+			y = ClipScalar(y, 0, i_pyramid.get(dfp.octave, 0).getHeight() - 1);
 
 			// Compute dominant orientations
-			num_angles=mOrientationAssignment.compute(i_dog_fp.getItem(i).octave, i_dog_fp.getItem(i).scale, x, y,s,this.mOrientations);
+			int num_angles=mOrientationAssignment.compute(dfp.octave, dfp.scale, x, y,s,this.mOrientations);
 			// Create a feature point for each angle
 			for (int j = 0; j < num_angles; j++) {
 				// Copy the feature point
-				//
-				DogFeaturePoint fp = new DogFeaturePoint(i_dog_fp.getItem(i));
-				// Update the orientation
-				fp.angle = mOrientations[j];
-				// Store oriented feature point
-				mTmpOrientatedFeaturePoints[mTmpOrientatedFeaturePoints_n] = (fp);
-				mTmpOrientatedFeaturePoints_n++;
+				DogFeaturePoint fp = i_ot_fps.prePush();
+				if(fp==null){
+					prepush_warning();
+					break;
+				}
+				fp.x = dfp.x;
+				fp.y = dfp.y;
+				fp.octave = dfp.octave;
+				fp.scale = dfp.scale;
+				fp.sp_scale = dfp.sp_scale;
+				fp.score = dfp.score;
+				fp.sigma = dfp.sigma;
+				fp.edge_score = dfp.edge_score;				
+				fp.angle=mOrientations[j];
 			}
 		}
-		// すごく無駄なことしてる。
-		i_dog_fp.clear();
-		for (int i = 0; i < mTmpOrientatedFeaturePoints_n; i++) {
-			DogFeaturePoint fp = i_dog_fp.prePush();
-			if(fp==null){
-				prepush_warning();
-				break;
-			}			
-			fp.set(mTmpOrientatedFeaturePoints[i]);
-		}
+		return;
 
 	}
 
@@ -947,7 +832,7 @@ public class DoGScaleInvariantDetector {
 	}
 
 	// inline bool ComputeEdgeScore(float& score, const float H[9]) {
-	private boolean ComputeEdgeScore(double[] score, double[] H) {
+	private static boolean ComputeEdgeScore(double[] score, double[] H) {
 		double det;
 
 		double Dxx = H[0];
@@ -976,85 +861,7 @@ public class DoGScaleInvariantDetector {
 		return x;
 	}
 
-	private void PruneDoGFeatures(DogFeaturePointStack outPoints, DogFeaturePointStack inPoints,
-			int num_buckets_X, int num_buckets_Y, int width, int height, int max_points) {
-		//
-		// Clear the previous state
-		//
-		outPoints.clear();
-		// outPoints.reserv(max_points);
-		BucketStack[][] buckets=this.mBuckets;
-		for (int i = 0; i < buckets.length; i++) {
-			for (int j = 0; j < buckets[i].length; j++) {
-				buckets[i][j].clear();
-			}
-		}
 
-		int dx = (int) Math.ceil(width / num_buckets_X);
-		int dy = (int) Math.ceil(height / num_buckets_Y);
-		//
-		// Insert each features into a bucket
-		//
-		for (int i = 0; i < inPoints.getLength(); i++) {
-			DogFeaturePoint p = inPoints.getItem(i);
-			int binX = (int) (p.x / dx);
-			int binY = (int) (p.y / dy);
-			// buckets[binX][binY].push_back(std::make_pair(std::abs(p.score),
-			// i));
-			BucketPair b = buckets[binX][binY].prePush();
-			if(b==null){
-				prepush_warning();
-				break;
-			}
-			b.first = Math.abs(p.score);
-			b.second = i;
-		}
-
-		int num_buckets = num_buckets_X * num_buckets_Y;
-		int num_points_per_bucket = max_points / num_buckets;
-		
-		int idx=0;
-		//
-		// Do a partial sort on the first N points of each bucket
-		//
-		for (int i = 0; i < buckets.length; i++) {
-			for (int j = 0; j < buckets[i].length; j++) {
-				BucketStack bucket = buckets[i][j];
-				int n = Math.min(bucket.getLength(), num_points_per_bucket);
-				if (n == 0) {
-					continue;
-				}
-				// ここはfirstの大きい方からn個を選択するコードで多分良い
-				// std::nth_element(bucket.begin(),
-				// bucket.begin()+n,
-				// bucket.end(), std::greater<std::pair<float, size_t> >());
-				//
-				// DEBUG_BLOCK(
-				// if(n > bucket.size()) {
-				// ASSERT(bucket[0].first >= bucket[n].first,
-				// "nth_element failed");
-				// }
-				// )
-				// for(int k = 0; k < n; k++) {
-				// outPoints.push_back(inPoints[bucket[k].second]);
-				// }
-				bucket.partialSort(n);
-
-				for (int k = 0; k < n; k++) {
-					DogFeaturePoint p = outPoints.prePush();
-					if(p==null){
-						prepush_warning();
-						break;
-					}
-//					inPoints.swap(idx++,bucket.getItem(k).second);
-					p.set(inPoints.getItem(bucket.getItem(k).second));
-//					System.out.println(bucket.getItem(k).second);
-				}
-			}
-		}
-//		inPoints.setLength(idx);
-		return;
-	}
 	private static void prepush_warning(){
 		System.out.println("DogFeaturePoint over flow");
 	}

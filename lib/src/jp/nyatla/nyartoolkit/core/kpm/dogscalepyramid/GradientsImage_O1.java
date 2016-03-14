@@ -2,6 +2,7 @@ package jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid;
 
 import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
 import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.artk5.GradientsImage;
+import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.utils.BilinearHistogram;
 
 public final class GradientsImage_O1 extends GradientsImage{
 

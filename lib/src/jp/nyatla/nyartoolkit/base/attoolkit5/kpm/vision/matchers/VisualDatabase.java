@@ -371,6 +371,7 @@ public class VisualDatabase<STORE extends BinaryFeatureStore> {
 				t.set(in_matches.getItem(idx));
 			}
 		}
+		return;
 	}
 
 	/**

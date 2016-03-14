@@ -2,7 +2,7 @@ package jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.artk5;
 
 
 import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
-import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.BilinearHistogram;
+import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.utils.BilinearHistogram;
 import jp.nyatla.nyartoolkit.core.math.NyARMath;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 

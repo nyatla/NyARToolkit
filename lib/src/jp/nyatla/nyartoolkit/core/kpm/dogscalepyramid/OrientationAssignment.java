@@ -2,17 +2,13 @@ package jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid;
 
 
 import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.artk5.GradientsImage;
+import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.utils.BilinearHistogram;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.GaussianScaleSpacePyramid;
 
 
 public class OrientationAssignment {
 
-
-	
-	final private int mNumOctaves;
 	final private int mNumScalesPerOctave;
-
-
 
 	// Factor to expand the Gaussian weighting function. The Gaussian sigma is computed
 	// by expanding the feature point scale. The feature point scale represents the isometric
@@ -40,7 +36,6 @@ public class OrientationAssignment {
 	public OrientationAssignment(int fine_width, int fine_height, int num_octaves, int num_scales_per_octave,
 			int num_bins, double gaussian_expansion_factor, double support_region_expansion_factor,
 			int num_smoothing_iterations, double peak_threshold) {
-		this.mNumOctaves = num_octaves;
 		this.mNumScalesPerOctave = num_scales_per_octave;
 		this.mGaussianExpansionFactor = gaussian_expansion_factor;
 		this.mSupportRegionExpansionFactor = support_region_expansion_factor;
@@ -50,23 +45,14 @@ public class OrientationAssignment {
 		this.mHistogram = new BilinearHistogram(num_bins);
 
 		// Allocate gradient images
-		this.mGradients = new GradientsImage[this.mNumOctaves * this.mNumScalesPerOctave];
+		this.mGradients = new GradientsImage[num_octaves * this.mNumScalesPerOctave];
 		for (int i = 0; i < num_octaves; i++) {
 			for (int j = 0; j < num_scales_per_octave; j++) {
-				// mGradients[i*num_scales_per_octave+j].alloc(IMAGE_F32,
-				// fine_width>>i,
-				// fine_height>>i,
-				// AUTO_STEP,
-				// 2);
-				// これKpmImageじゃなくて単純なfloatbufferにしようあとで。どうせバッファオーバフローで落ちるから。
 				this.mGradients[i * num_scales_per_octave + j] = new GradientsImage(fine_width >> i, fine_height >> i);
 
 			}
 		}
 	}
-
-
-
 
 	/**
 	 * Compute the gradients given a pyramid.
@@ -77,8 +63,6 @@ public class OrientationAssignment {
 			this.mGradients[i].computePolarGradients(pyramid.images()[i]);
 		}
 	}
-
-
 
 	/**
 	 * Compute orientations for a keypoint.
@@ -106,10 +90,5 @@ public class OrientationAssignment {
 		// Find all the peaks.
 		return this.mHistogram.findPeak(mPeakThreshold,i_angles);
 	}
-
-
-
-
-	
 	
 }

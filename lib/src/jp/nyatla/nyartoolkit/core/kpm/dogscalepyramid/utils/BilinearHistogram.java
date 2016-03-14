@@ -1,7 +1,10 @@
-package jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid;
+package jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.utils;
 
 import jp.nyatla.nyartoolkit.core.math.NyARMath;
 
+/**
+ * {@link OrientationAssignment}クラスの内部クラス。
+ */
 public class BilinearHistogram
 {
 	final static private double ONE_OVER_2PI=       0.159154943091895;	
