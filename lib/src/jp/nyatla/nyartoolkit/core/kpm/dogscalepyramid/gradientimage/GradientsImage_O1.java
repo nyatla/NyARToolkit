@@ -1,10 +1,10 @@
-package jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid;
+package jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.gradientimage;
 
 import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
-import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.artk5.GradientsImage;
 import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.utils.BilinearHistogram;
+import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.utils.FastMath;
 
-public final class GradientsImage_O1 extends GradientsImage{
+public final class GradientsImage_O1 extends GradientsImage_ARTK{
 
 	public GradientsImage_O1(int i_width, int i_height)
 	{
@@ -69,138 +69,100 @@ public final class GradientsImage_O1 extends GradientsImage{
 	}
 	public void computePolarGradients(KpmImage i_img)
 	{
-		double dx, dy;
 		double[] a_gradient=this._angle;
 		double[] m_gradient=this._mag;
+		double dx, dy;
 		int width=this._size.w;
 		int height=this._size.h;
 		assert this._size.isEqualSize(null);
 		double[] im=(double[])i_img.getBuffer();
 
 
-		int width_minus_1;
-		int height_minus_1;
 
 		int p_ptr;
-		int pm1_ptr;
-		int pp1_ptr;
 
-		width_minus_1 = width - 1;
-		height_minus_1 = height - 1;
-		int gradient_ptr = 0;
 
-		// Top row
-		pm1_ptr = 0; // pm1_ptr = im;
+		int width_minus_2 = width - 2;
+		int height_minus_2 = height - 2;
+
+
+		//Left Top
 		p_ptr = 0; // p_ptr = im;
-		pp1_ptr = width;// pp1_ptr = p_ptr+width;
-
 		dx = im[p_ptr + 1] - im[p_ptr];// dx = p_ptr[1] - p_ptr[0];
-		dy = im[pp1_ptr] - im[pm1_ptr];// dy = pp1_ptr[0] - pm1_ptr[0];
+		dy = im[p_ptr+width] - im[p_ptr];// dy = pp1_ptr[0] - pm1_ptr[0];
 		// SET_GRADIENT(dx, dy)
-		a_gradient[gradient_ptr] = (Math.atan2(dy, dx) + PI);
-		m_gradient[gradient_ptr] = Math.sqrt(dx * dx + dy * dy);
-		gradient_ptr++;
+		a_gradient[p_ptr] = FastMath.fastAtan2(dy, dx) + PI;
+		m_gradient[p_ptr] = Math.sqrt(dx * dx + dy * dy);
 		p_ptr++;
-		pm1_ptr++;
-		pp1_ptr++;
 
-		for (int col = 1; col < width_minus_1; col++) {
+		//Top row
+		for (int col = width_minus_2; col>0 ; col--) {
 			dx = im[p_ptr + 1] - im[p_ptr - 1];
-			dy = im[pp1_ptr] - im[pm1_ptr];
+			dy = im[p_ptr+width] - im[p_ptr];
 			// SET_GRADIENT(dx, dy)
-			a_gradient[gradient_ptr] = (Math.atan2(dy, dx) + PI);
-			m_gradient[gradient_ptr] = Math.sqrt(dx * dx + dy * dy);
-			gradient_ptr++;
+			a_gradient[p_ptr] = FastMath.fastAtan2(dy, dx) + PI;
+			m_gradient[p_ptr] = Math.sqrt(dx * dx + dy * dy);
 			p_ptr++;
-			pm1_ptr++;
-			pp1_ptr++;
 		}
 
+		//Right Top
 		dx = im[p_ptr] - im[p_ptr - 1];
-		dy = im[pp1_ptr] - im[pm1_ptr];
+		dy = im[p_ptr+width] - im[p_ptr];
 		// SET_GRADIENT(dx, dy)
-		a_gradient[gradient_ptr] = (Math.atan2(dy, dx) + PI);
-		m_gradient[gradient_ptr] = Math.sqrt(dx * dx + dy * dy);
-		gradient_ptr++;
-		p_ptr++;
-		pm1_ptr++;
-		pp1_ptr++;
+		a_gradient[p_ptr] = FastMath.fastAtan2(dy, dx) + PI;
+		m_gradient[p_ptr] = Math.sqrt(dx * dx + dy * dy);
 
-		// Non-border pixels
-		pm1_ptr = 0;// pm1_ptr = im;
-		p_ptr = pm1_ptr + width;
-		pp1_ptr = p_ptr + width;
 
-		for (int row = 1; row < height_minus_1; row++) {
+		//Non-Border
+		p_ptr =width;
+		for (int row = height_minus_2; row>0; row--) {
+			//Left
 			dx = im[p_ptr + 1] - im[p_ptr];
-			dy = im[pp1_ptr] - im[pm1_ptr];
+			dy = im[p_ptr+width] - im[p_ptr-width];
 			// SET_GRADIENT(dx, dy)
-			a_gradient[gradient_ptr] = (Math.atan2(dy, dx) + PI);
-			m_gradient[gradient_ptr] = Math.sqrt(dx * dx + dy * dy);
-			gradient_ptr++;
+			a_gradient[p_ptr] = FastMath.fastAtan2(dy, dx) + PI;
+			m_gradient[p_ptr] = Math.sqrt(dx * dx + dy * dy);
 			p_ptr++;
-			pm1_ptr++;
-			pp1_ptr++;
 
-			for (int col = 1; col < width_minus_1; col++) {
+			for (int col = width_minus_2; col>0 ; col--) {
 				dx = im[p_ptr + 1] - im[p_ptr - 1];
-				dy = im[pp1_ptr] - im[pm1_ptr];
+				dy = im[p_ptr+width] - im[p_ptr-width];
 				// SET_GRADIENT(dx, dy)
-				a_gradient[gradient_ptr] = (Math.atan2(dy, dx) + PI);
-				m_gradient[gradient_ptr] = Math.sqrt(dx * dx + dy * dy);
-				gradient_ptr++;
+				a_gradient[p_ptr] = FastMath.fastAtan2(dy, dx)+PI;//(Math.atan2(dy, dx) + PI);
+				m_gradient[p_ptr] = Math.sqrt(dx * dx + dy * dy);
 				p_ptr++;
-				pm1_ptr++;
-				pp1_ptr++;
 			}
+			//Right
 			dx = im[p_ptr] - im[p_ptr - 1];
-			dy = im[pp1_ptr] - im[pm1_ptr];
+			dy = im[p_ptr+width] - im[p_ptr-width];
 			// SET_GRADIENT(dx, dy)
-			a_gradient[gradient_ptr] = (Math.atan2(dy, dx) + PI);
-			m_gradient[gradient_ptr] = Math.sqrt(dx * dx + dy * dy);
-			gradient_ptr++;
+			a_gradient[p_ptr] = (FastMath.fastAtan2(dy, dx) + PI);
+			m_gradient[p_ptr] = Math.sqrt(dx * dx + dy * dy);
 			p_ptr++;
-			pm1_ptr++;
-			pp1_ptr++;
 		}
-
+		
 		// Lower row
-		p_ptr = height_minus_1 * width;// p_ptr = &im[height_minus_1*width];
-		pm1_ptr = p_ptr - width;
-		pp1_ptr = p_ptr;
-
+		p_ptr = (height-1) * width;// p_ptr = &im[height_minus_1*width];
 		dx = im[p_ptr + 1] - im[p_ptr];
-		dy = im[pp1_ptr] - im[pm1_ptr];
+		dy = im[p_ptr] - im[p_ptr - width];
 		// SET_GRADIENT(dx, dy)
-		a_gradient[gradient_ptr] = (Math.atan2(dy, dx) + PI);
-		m_gradient[gradient_ptr] = Math.sqrt(dx * dx + dy * dy);
-		gradient_ptr++;
+		a_gradient[p_ptr] = (FastMath.fastAtan2(dy, dx) + PI);
+		m_gradient[p_ptr] = Math.sqrt(dx * dx + dy * dy);
 		p_ptr++;
-		pm1_ptr++;
-		pp1_ptr++;
-
-		for (int col = 1; col < width_minus_1; col++) {
+		for (int col = width_minus_2; col>0 ; col--) {
 			dx = im[p_ptr + 1] - im[p_ptr - 1];
-			dy = im[pp1_ptr] - im[pm1_ptr];
+			dy = im[p_ptr] - im[p_ptr - width];
 			// SET_GRADIENT(dx, dy)
-			a_gradient[gradient_ptr] = (Math.atan2(dy, dx) + PI);
-			m_gradient[gradient_ptr] = Math.sqrt(dx * dx + dy * dy);
-			gradient_ptr++;
+			a_gradient[p_ptr] = (FastMath.fastAtan2(dy, dx) + PI);
+			m_gradient[p_ptr] = Math.sqrt(dx * dx + dy * dy);
 			p_ptr++;
-			pm1_ptr++;
-			pp1_ptr++;
 
 		}
-
 		dx = im[p_ptr] - im[p_ptr - 1];
-		dy = im[pp1_ptr] - im[pm1_ptr];
+		dy = im[p_ptr] - im[p_ptr - width];
 		// SET_GRADIENT(dx, dy)
-		a_gradient[gradient_ptr] = (Math.atan2(dy, dx) + PI);
-		m_gradient[gradient_ptr] = Math.sqrt(dx * dx + dy * dy);
-		gradient_ptr++;
-		p_ptr++;
-		pm1_ptr++;
-		pp1_ptr++;
+		a_gradient[p_ptr] = (FastMath.fastAtan2(dy, dx) + PI);
+		m_gradient[p_ptr] = Math.sqrt(dx * dx + dy * dy);
 	}
 	
     /**
@@ -211,6 +173,41 @@ public final class GradientsImage_O1 extends GradientsImage{
      */
     final private static double fastexp6(double x) {
         return (720+x*(720+x*(360+x*(120+x*(30+x*(6+x))))))*0.0013888888;
+    }
+    public static void main(String[] args){
+    	KpmImage in=new KpmImage(640,480);
+    	for(int i=0;i<640*480;i++){
+    		((double[])in.getBuffer())[i]=Math.random()*255;
+    	}
+    	GradientsImage_ARTK gs1=new GradientsImage_ARTK(640,480);
+    	GradientsImage_ARTK gs2=new GradientsImage_O1(640,480);
+    	
+       	gs1.computePolarGradients(in);
+       	gs2.computePolarGradients(in);
+		// Compute the gradient pyramid
+		for(int i2=0;i2<10;i2++){
+			long s=System.currentTimeMillis();
+			for(int i=0;i<50;i++){
+				gs1.computePolarGradients(in);
+			}
+			long s2=System.currentTimeMillis();
+			for(int i=0;i<50;i++){
+				gs2.computePolarGradients(in);
+			}
+			long e=System.currentTimeMillis();
+			double d=0;
+			for(int i=0;i<640*480;i++){
+				double t=((double[])gs1.getAngle())[i]-((double[])gs2.getAngle())[i];
+				double t2=((double[])gs1.getMag())[i]-((double[])gs2.getMag())[i];
+				d+=t+t2;
+			}
+			double ga1=(s2-s)/50f;
+			double ga2=(e-s2)/50f;
+			System.out.println("GS1="+ga1+"ms");
+			System.out.println("GS2="+ga2+"ms");
+			System.out.println("DIFF="+(ga2/ga1)+"    "+d);
+		}
+   	
     }
 
 }

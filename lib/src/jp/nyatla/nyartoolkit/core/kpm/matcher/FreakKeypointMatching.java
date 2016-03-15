@@ -64,8 +64,6 @@ public class FreakKeypointMatching {
 		FreakFeaturePointStack query_keypoint = this.mQueryKeyframe;
 		//Freak Extract
 
-
-		
 		// Build the pyramid		
 		this.mPyramid.build(inImage);
 		// Detect feature points

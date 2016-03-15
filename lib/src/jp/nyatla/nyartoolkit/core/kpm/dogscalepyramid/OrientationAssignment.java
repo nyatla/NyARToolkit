@@ -1,7 +1,8 @@
 package jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid;
 
 
-import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.artk5.GradientsImage;
+import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.gradientimage.GradientsImage_ARTK;
+import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.gradientimage.GradientsImage_O1;
 import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.utils.BilinearHistogram;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.GaussianScaleSpacePyramid;
 
@@ -31,7 +32,7 @@ public class OrientationAssignment {
 	final private BilinearHistogram mHistogram;
 
 	// Vector of gradient images
-	final private GradientsImage[] mGradients;
+	final private GradientsImage_ARTK[] mGradients;
 
 	public OrientationAssignment(int fine_width, int fine_height, int num_octaves, int num_scales_per_octave,
 			int num_bins, double gaussian_expansion_factor, double support_region_expansion_factor,
@@ -45,10 +46,10 @@ public class OrientationAssignment {
 		this.mHistogram = new BilinearHistogram(num_bins);
 
 		// Allocate gradient images
-		this.mGradients = new GradientsImage[num_octaves * this.mNumScalesPerOctave];
+		this.mGradients = new GradientsImage_ARTK[num_octaves * this.mNumScalesPerOctave];
 		for (int i = 0; i < num_octaves; i++) {
 			for (int j = 0; j < num_scales_per_octave; j++) {
-				this.mGradients[i * num_scales_per_octave + j] = new GradientsImage(fine_width >> i, fine_height >> i);
+				this.mGradients[i * num_scales_per_octave + j] = new GradientsImage_O1(fine_width >> i, fine_height >> i);
 
 			}
 		}

@@ -1,22 +1,29 @@
-package jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.artk5;
+package jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.gradientimage;
 
 
 import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
 import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.utils.BilinearHistogram;
+import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.utils.FastMath;
 import jp.nyatla.nyartoolkit.core.math.NyARMath;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
-public class GradientsImage
+public class GradientsImage_ARTK
 {
 	final protected static double PI=NyARMath.PI;
 	final protected NyARIntSize _size;
 	final protected double[] _angle;
 	final protected double[] _mag;
 
-	public GradientsImage(int i_width, int i_height) {
+	public GradientsImage_ARTK(int i_width, int i_height) {
 		this._size = new NyARIntSize(i_width, i_height);
 		this._angle = new double[i_width * i_height];
 		this._mag = new double[i_width * i_height];
+	}
+	public double[] getAngle(){
+		return this._angle;
+	}
+	public double[] getMag(){
+		return this._mag;
 	}
 
 	/**
@@ -68,7 +75,7 @@ public class GradientsImage
 				double mag = m_buf[g2_ptr];// const float& mag = g[1];
 
 				// Compute the gaussian weight based on distance from center of keypoint
-				double w = fastexp6(r2 * gw_scale);
+				double w = FastMath.fastexp6(r2 * gw_scale);
 
 
 				// Vote to the orientation histogram with a bilinear update
@@ -212,14 +219,6 @@ public class GradientsImage
 		pp1_ptr++;
 	}
 	
-    /**
-     * 0.01% error at 1.030
-     * 0.10% error at 1.520
-     * 1.00% error at 2.330
-     * 5.00% error at 3.285
-     */
-    final private static double fastexp6(double x) {
-        return (720+x*(720+x*(360+x*(120+x*(30+x*(6+x))))))*0.0013888888;
-    }		
+	
 	
 }

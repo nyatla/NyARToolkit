@@ -487,9 +487,8 @@ public class DoGScaleInvariantDetector {
 	{
 		double[] tmp = new double[3];
 
-		// Compute the gradient pyramid
+		// Compute the gradient pyramid		
 		mOrientationAssignment.computeGradients(i_pyramid);
-		i_ot_fps.clear();
 
 		// Compute an orientation for each feature point
 		for (int i = 0; i < i_buckit._buckit.length; i++)
