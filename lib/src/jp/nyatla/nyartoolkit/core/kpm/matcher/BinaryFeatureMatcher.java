@@ -8,15 +8,14 @@ import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 
 
-public class BinaryFeatureMatcher {
+public class BinaryFeatureMatcher
+{
+	// Threshold on the 1st and 2nd best matches
+	private double mThreshold;
 
 	public BinaryFeatureMatcher() {
 		this.mThreshold = 0.7f;
-
 	}
-
-
-
 	/**
 	 * Match two feature stores.
 	 * 
@@ -85,7 +84,7 @@ public class BinaryFeatureMatcher {
 	 * 
 	 * @return Number of matches
 	 */
-	public int match(FreakFeaturePointStack i_query, FreakMatchPointSetStack i_ref, BinaryHierarchicalClustering index2,FeaturePairStack i_maches)
+	public int match(FreakFeaturePointStack i_query, FreakMatchPointSetStack i_ref, BinaryHierarchicalClustering index2,FeaturePairStack i_result_maches)
 	{
 		if (i_query.getLength() == 0 || i_ref.getLength() == 0) {
 			return 0;
@@ -127,7 +126,7 @@ public class BinaryFeatureMatcher {
 				// If there isn't a SECOND_BEST, then always choose the FIRST_BEST.
 				// Otherwise, do a ratio test.
 				if (second_best == Integer.MAX_VALUE) {
-					FeaturePairStack.Item t = i_maches.prePush();
+					FeaturePairStack.Item t = i_result_maches.prePush();
 					t.query=i_query.getItem(i);
 					t.ref=i_ref.getItem(best_index);
 				} else {
@@ -135,14 +134,14 @@ public class BinaryFeatureMatcher {
 					double r = (double) first_best / (double) second_best;
 					if (r < mThreshold) {
 						// mMatches.push_back(match_t((int)i, best_index));
-						FeaturePairStack.Item t = i_maches.prePush();
+						FeaturePairStack.Item t = i_result_maches.prePush();
 						t.query=i_query.getItem(i);
 						t.ref=i_ref.getItem(best_index);
 					}
 				}
 			}
 		}
-		return i_maches.getLength();
+		return i_result_maches.getLength();
 	}
 
 
@@ -153,7 +152,7 @@ public class BinaryFeatureMatcher {
 	 * 
 	 * @return Number of matches
 	 */
-	public int match(FreakFeaturePointStack i_query, FreakMatchPointSetStack i_ref, NyARDoubleMatrix33 H,double tr,FeaturePairStack i_maches)
+	public int match(FreakFeaturePointStack i_query, FreakMatchPointSetStack i_ref, InverseHomographyMat i_hinv,double tr,FeaturePairStack i_maches)
 	{
 		if (i_query.getLength() == 0 || i_ref.getLength() == 0) {
 			return 0;
@@ -161,11 +160,7 @@ public class BinaryFeatureMatcher {
 
 		double tr_sqr = tr*tr;
 
-		HomographyMat ht = new HomographyMat();
-		ht.setValue(H);
-		if (!ht.inverse(ht)) {
-			return 0;
-		}
+
 		NyARDoublePoint2d tmp = new NyARDoublePoint2d();
 		// mMatches.reserve(features1.size());
 		for (int i = 0; i < i_query.getLength(); i++) {
@@ -177,7 +172,7 @@ public class BinaryFeatureMatcher {
 			FreakFeaturePoint fptr1 = i_query.getItem(i);
 
 			// Map p1 to p2 space through H
-			ht.multiplyPointHomographyInhomogenous(fptr1.x, fptr1.y, tmp);
+			i_hinv.multiplyPointHomographyInhomogenous(fptr1.x, fptr1.y, tmp);
 			
 
 			// Search for 1st and 2nd best match
@@ -234,12 +229,6 @@ public class BinaryFeatureMatcher {
 		return i_maches.getLength();
 	}
 
-
-
-
-
-	// Threshold on the 1st and 2nd best matches
-	private double mThreshold;
 
 
 

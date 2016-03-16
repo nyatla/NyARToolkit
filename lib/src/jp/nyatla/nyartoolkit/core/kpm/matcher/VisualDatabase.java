@@ -95,6 +95,18 @@ public class VisualDatabase
 			if (!EstimateHomography(H, match_result,second.width(), second.height())) {
 				continue;
 			}
+			
+			//ここでHInv計算
+			InverseHomographyMat hinv=new InverseHomographyMat();
+			if(!hinv.inverse(H)){
+				continue;
+			}
+
+			// Apply some heuristics to the homography
+			if (!hinv.checkHomographyHeuristics(second.width(), second.height())) {
+				continue;
+			}
+			
 			//
 			// Find the inliers
 			//
@@ -109,7 +121,7 @@ public class VisualDatabase
 			//
 
 			match_result.clear();
-			if (mMatcher.match(query_keyframe, ref_points, H, 10,match_result) < mMinNumInliers) {
+			if (mMatcher.match(query_keyframe, ref_points, hinv, 10,match_result) < mMinNumInliers) {
 				continue;
 			}
 
@@ -129,14 +141,20 @@ public class VisualDatabase
 			if (!EstimateHomography(H, match_result,second.width(), second.height())) {
 				continue;
 			}
-
+			// Apply some heuristics to the homography
+			if(!hinv.inverse(H)){
+				continue;
+			}
+			if (!hinv.checkHomographyHeuristics(second.width(), second.height())) {
+				continue;
+			}
 			//
 			// Check if this is the best match based on number of inliers
 			//
 
 			FindInliers(H, match_result,mHomographyInlierThreshold);
 
-			// std::cout<<"inliers-"<<inliers.size()<<std::endl;
+			//ポイント数が最小値より大きい&&最高成績ならテンポラリチャンネルを差し替える。
 			if (match_result.getLength() >= mMinNumInliers && match_result.getLength() > last_inliers) {
 				//出力チャンネルを切り替え
 				tmp_ch=(tmp_ch+1)%2;
@@ -161,6 +179,8 @@ public class VisualDatabase
 
 		return true;
 	}
+	// Robust homography estimation
+	final RobustHomography mRobustHomography=new RobustHomography();
 
 	/**
 	 * Find the inliers given a homography and a set of correspondences.
@@ -190,8 +210,6 @@ public class VisualDatabase
 
 	
 	
-	// Robust homography estimation
-	final RobustHomography mRobustHomography=new RobustHomography();
 
 	/**
 	 * Estimate the homography between a set of correspondences.
@@ -237,45 +255,10 @@ public class VisualDatabase
 			return false;
 		}
 
-		//
-		// Apply some heuristics to the homography
-		//
 
-		if (!CheckHomographyHeuristics(H, refWidth, refHeight)) {
-			return false;
-		}
 
 		return true;
 	}
 
-	/**
-	 * Check if a homography is valid based on some heuristics.
-	 */
-	// boolean CheckHomographyHeuristics(float H[9], int refWidth, int
-	// refHeight) {
-	private boolean CheckHomographyHeuristics(NyARDoubleMatrix33 H, int refWidth, int refHeight) {
-		NyARDoublePoint2d p0p = new NyARDoublePoint2d();
-		NyARDoublePoint2d p1p = new NyARDoublePoint2d();
-		NyARDoublePoint2d p2p = new NyARDoublePoint2d();
-		NyARDoublePoint2d p3p = new NyARDoublePoint2d();
 
-		HomographyMat hinv=new HomographyMat();
-		if(!hinv.inverse(H)){
-			return false;
-		}
-		hinv.multiplyPointHomographyInhomogenous(0,0,p0p);
-		hinv.multiplyPointHomographyInhomogenous(refWidth,0,p1p);
-		hinv.multiplyPointHomographyInhomogenous(refWidth,refHeight,p2p);
-		hinv.multiplyPointHomographyInhomogenous(0,refHeight,p3p);
-
-		double tr = refWidth * refHeight * 0.0001f;
-		if (geometry.SmallestTriangleArea(p0p, p1p, p2p, p3p) < tr) {
-			return false;
-		}
-
-		if (!geometry.QuadrilateralConvex(p0p, p1p, p2p, p3p)) {
-			return false;
-		}
-		return true;
-	}
 }
