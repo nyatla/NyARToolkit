@@ -43,20 +43,16 @@ public class VisualDatabase
 	/**
 	 * Vote for a similarity transformation.
 	 */
-	private int FindHoughSimilarity(HoughSimilarityVoting hough,FeaturePairStack matches,int refWidth, int refHeight) {
+	private int FindHoughSimilarity(HoughSimilarityVoting hough,FeaturePairStack matches,int refWidth, int refHeight)
+	{
 //		FreakFeaturePoint[] query = new FreakFeaturePoint[matches.getLength()];
 //		FreakFeaturePoint[] ref = new FreakFeaturePoint[matches.getLength()];
-		FeaturePairStack feature_pair=new FeaturePairStack(matches.getLength());
 		// Extract the data from the features
-		for (int i = 0; i < matches.getLength(); i++) {
-			FeaturePairStack.Item item=feature_pair.prePush();
-			item.query	=matches.getItem(i).query;
-			item.ref	=matches.getItem(i).ref;
-		}
+
 		hough.setObjectCenterInReference(refWidth >> 1, refHeight >> 1);
 		hough.setRefImageDimensions(refWidth, refHeight);
 		// hough.vote((float*)&query[0], (float*)&ref[0], (int)matches.size());
-		hough.vote(feature_pair);
+		hough.vote(matches);
 
 		HoughSimilarityVoting.getMaximumNumberOfVotesResult max = new HoughSimilarityVoting.getMaximumNumberOfVotesResult();
 		hough.getMaximumNumberOfVotes(max);
@@ -172,7 +168,8 @@ public class VisualDatabase
 			FreakMatchPointSetStack p2, FeaturePairStack matches, double threshold) {
 		double threshold2 = (threshold*threshold);
 		NyARDoublePoint2d xp = new NyARDoublePoint2d();// float xp[2];
-		// reserve(matches.size());
+		//前方詰め
+
 		int pos=0;
 		for (int i = 0; i < matches.getLength(); i++) {
 			homography.MultiplyPointHomographyInhomogenous(xp, H,matches.getItem(i).ref.x,matches.getItem(i).ref.y);

@@ -91,7 +91,7 @@ public final class GradientsImage_O1 extends GradientsImage_ARTK{
 		dx = im[p_ptr + 1] - im[p_ptr];// dx = p_ptr[1] - p_ptr[0];
 		dy = im[p_ptr+width] - im[p_ptr];// dy = pp1_ptr[0] - pm1_ptr[0];
 		// SET_GRADIENT(dx, dy)
-		a_gradient[p_ptr] = FastMath.fastAtan2(dy, dx) + PI;
+		a_gradient[p_ptr] = FastMath.fastAtan2(dy, dx) + Math.PI;
 		m_gradient[p_ptr] = Math.sqrt(dx * dx + dy * dy);
 		p_ptr++;
 
@@ -100,7 +100,7 @@ public final class GradientsImage_O1 extends GradientsImage_ARTK{
 			dx = im[p_ptr + 1] - im[p_ptr - 1];
 			dy = im[p_ptr+width] - im[p_ptr];
 			// SET_GRADIENT(dx, dy)
-			a_gradient[p_ptr] = FastMath.fastAtan2(dy, dx) + PI;
+			a_gradient[p_ptr] = FastMath.fastAtan2(dy, dx) + Math.PI;
 			m_gradient[p_ptr] = Math.sqrt(dx * dx + dy * dy);
 			p_ptr++;
 		}
@@ -109,7 +109,7 @@ public final class GradientsImage_O1 extends GradientsImage_ARTK{
 		dx = im[p_ptr] - im[p_ptr - 1];
 		dy = im[p_ptr+width] - im[p_ptr];
 		// SET_GRADIENT(dx, dy)
-		a_gradient[p_ptr] = FastMath.fastAtan2(dy, dx) + PI;
+		a_gradient[p_ptr] = FastMath.fastAtan2(dy, dx) + Math.PI;
 		m_gradient[p_ptr] = Math.sqrt(dx * dx + dy * dy);
 
 
@@ -120,7 +120,7 @@ public final class GradientsImage_O1 extends GradientsImage_ARTK{
 			dx = im[p_ptr + 1] - im[p_ptr];
 			dy = im[p_ptr+width] - im[p_ptr-width];
 			// SET_GRADIENT(dx, dy)
-			a_gradient[p_ptr] = FastMath.fastAtan2(dy, dx) + PI;
+			a_gradient[p_ptr] = FastMath.fastAtan2(dy, dx) + Math.PI;
 			m_gradient[p_ptr] = Math.sqrt(dx * dx + dy * dy);
 			p_ptr++;
 
@@ -128,7 +128,7 @@ public final class GradientsImage_O1 extends GradientsImage_ARTK{
 				dx = im[p_ptr + 1] - im[p_ptr - 1];
 				dy = im[p_ptr+width] - im[p_ptr-width];
 				// SET_GRADIENT(dx, dy)
-				a_gradient[p_ptr] = FastMath.fastAtan2(dy, dx)+PI;//(Math.atan2(dy, dx) + PI);
+				a_gradient[p_ptr] = FastMath.fastAtan2(dy, dx)+Math.PI;//(Math.atan2(dy, dx) + PI);
 				m_gradient[p_ptr] = Math.sqrt(dx * dx + dy * dy);
 				p_ptr++;
 			}
@@ -136,7 +136,7 @@ public final class GradientsImage_O1 extends GradientsImage_ARTK{
 			dx = im[p_ptr] - im[p_ptr - 1];
 			dy = im[p_ptr+width] - im[p_ptr-width];
 			// SET_GRADIENT(dx, dy)
-			a_gradient[p_ptr] = (FastMath.fastAtan2(dy, dx) + PI);
+			a_gradient[p_ptr] = (FastMath.fastAtan2(dy, dx) + Math.PI);
 			m_gradient[p_ptr] = Math.sqrt(dx * dx + dy * dy);
 			p_ptr++;
 		}
@@ -146,14 +146,14 @@ public final class GradientsImage_O1 extends GradientsImage_ARTK{
 		dx = im[p_ptr + 1] - im[p_ptr];
 		dy = im[p_ptr] - im[p_ptr - width];
 		// SET_GRADIENT(dx, dy)
-		a_gradient[p_ptr] = (FastMath.fastAtan2(dy, dx) + PI);
+		a_gradient[p_ptr] = (FastMath.fastAtan2(dy, dx) + Math.PI);
 		m_gradient[p_ptr] = Math.sqrt(dx * dx + dy * dy);
 		p_ptr++;
 		for (int col = width_minus_2; col>0 ; col--) {
 			dx = im[p_ptr + 1] - im[p_ptr - 1];
 			dy = im[p_ptr] - im[p_ptr - width];
 			// SET_GRADIENT(dx, dy)
-			a_gradient[p_ptr] = (FastMath.fastAtan2(dy, dx) + PI);
+			a_gradient[p_ptr] = (FastMath.fastAtan2(dy, dx) + Math.PI);
 			m_gradient[p_ptr] = Math.sqrt(dx * dx + dy * dy);
 			p_ptr++;
 
@@ -161,7 +161,7 @@ public final class GradientsImage_O1 extends GradientsImage_ARTK{
 		dx = im[p_ptr] - im[p_ptr - 1];
 		dy = im[p_ptr] - im[p_ptr - width];
 		// SET_GRADIENT(dx, dy)
-		a_gradient[p_ptr] = (FastMath.fastAtan2(dy, dx) + PI);
+		a_gradient[p_ptr] = (FastMath.fastAtan2(dy, dx) + Math.PI);
 		m_gradient[p_ptr] = Math.sqrt(dx * dx + dy * dy);
 	}
 	
@@ -205,7 +205,7 @@ public final class GradientsImage_O1 extends GradientsImage_ARTK{
 			double ga2=(e-s2)/50f;
 			System.out.println("GS1="+ga1+"ms");
 			System.out.println("GS2="+ga2+"ms");
-			System.out.println("DIFF="+(ga2/ga1)+"    "+d);
+			System.out.println("DIFF="+(ga1/ga2)+"    "+d);
 		}
    	
     }
