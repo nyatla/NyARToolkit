@@ -52,8 +52,9 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 		this(
 			i_img.getWidth(),i_img.getHeight(),
 			getCompatibleRasterType(i_img),false);
-		//ラスタにBitmapをラップさせる
+//		//ラスタにBitmapをラップさせる
 		callWrapBuffer(this._raster,i_img);
+		this._buffered_image=i_img;
 	}
 	public NyARBufferedImageRaster(int i_width,int i_height,int i_raster_type,boolean i_is_alloc)
 	{
