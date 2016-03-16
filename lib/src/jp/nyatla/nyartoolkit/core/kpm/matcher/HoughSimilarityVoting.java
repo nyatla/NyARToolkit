@@ -12,125 +12,96 @@ import jp.nyatla.nyartoolkit.core.math.NyARMath;
  */
 public class HoughSimilarityVoting {
 	final static private double PI=NyARMath.PI;
+	private static double kHoughBinDelta = 1;	
+	// Dimensions of reference image
+	private int mRefImageWidth;
+	private int mRefImageHeight;
+	// Center of object in reference image
+	private double mCenterX;
+	private double mCenterY;
 
+	// Set to true if the XY number of bins should be adjusted
+	private boolean mAutoAdjustXYNumBins;
 
-	// typedef std::unordered_map<unsigned int, unsigned int> hash_t;
-	// typedef std::pair<int /*size*/, int /*index*/> vote_t;
-	// typedef std::vector<vote_t> vote_vector_t;
-	//
-	public HoughSimilarityVoting() {
-		mRefImageWidth = (0);
-		mRefImageHeight = (0);
-		mCenterX = (0);
-		mCenterY = (0);
-		mAutoAdjustXYNumBins = (true);
-		mMinX = (0);
-		mMaxX = (0);
-		mMinY = (0);
-		mMaxY = (0);
-		mMinScale = (0);
-		mMaxScale = (0);
-		mScaleK = (0);
-		mScaleOneOverLogK = (0);
-		mNumXBins = (0);
-		mNumYBins = (0);
-		mNumAngleBins = (0);
-		mNumScaleBins = (0);
-		mfBinX = (0);
-		mfBinY = (0);
-		mfBinAngle = (0);
-		mfBinScale = (0);
-		mA = (0);
-		mB = (0);
-	}
+	// Min/Max (x,y,scale). The angle includes all angles (-pi,pi).
+	private double mMinX;
+	private double mMaxX;
+	private double mMinY;
+	private double mMaxY;
+	private double mMinScale;
+	private double mMaxScale;
 
-	// ~HoughSimilarityVoting();
-	//
-	/**
-         *
-         */
-	public void init(double minX, double maxX, double minY, double maxY, int numXBins,int numYBins, int numAngleBins, int numScaleBins) {
-		mMinX = minX;
-		mMaxX = maxX;
-		mMinY = minY;
-		mMaxY = maxY;
-		mMinScale = -1;
-		mMaxScale = 1;
+	final private double mScaleK;
+	final private double mScaleOneOverLogK;
 
-		mNumXBins = numXBins;
-		mNumYBins = numYBins;
-		mNumAngleBins = numAngleBins;
-		mNumScaleBins = numScaleBins;
+	private int mNumXBins;
+	private int mNumYBins;
+	final private int mNumAngleBins;
+	final private int mNumScaleBins;
 
-		mA = mNumXBins * mNumYBins;
-		mB = mNumXBins * mNumYBins * mNumAngleBins;
+	private double mfBinX;
+	private double mfBinY;
+	private double mfBinAngle;
+	private double mfBinScale;
 
-		mScaleK = 10;
-		mScaleOneOverLogK = (double) (1.f / Math.log(mScaleK));
-
+	private int mA; // mNumXBins*mNumYBins
+	private int mB; // mNumXBins*mNumYBins*mNumAngleBins	
+	
+	
+	public HoughSimilarityVoting(double minX, double maxX, double minY, double maxY, int numXBins,int numYBins, int numAngleBins, int numScaleBins)
+	{
+		this.mRefImageWidth = (0);
+		this.mRefImageHeight = (0);
+		this.mCenterX = (0);
+		this.mCenterY = (0);
+		this.mfBinX = (0);
+		this.mfBinY = (0);
+		this.mfBinAngle = (0);
+		this.mfBinScale = (0);
+		this.mMinX = minX;
+		this.mMaxX = maxX;
+		this.mMinY = minY;
+		this.mMaxY = maxY;
+		this.mMinScale =-1;
+		this.mMaxScale = 1;
+		this.mScaleK = 10;
+		this.mScaleOneOverLogK = (double) (1.0 / Math.log(mScaleK));
+		this.mNumXBins = numXBins;
+		this.mNumYBins = numYBins;
+		this.mNumAngleBins = numAngleBins;
+		this.mNumScaleBins = numScaleBins;
+		this.mA = numXBins * numYBins;
+		this.mB = numXBins * numYBins * numAngleBins;
 		// If the number of bins for (x,y) are not set, then we adjust the
 		// number of bins automatically.
-		if (numXBins == 0 && numYBins == 0)
-			mAutoAdjustXYNumBins = true;
-		else
-			mAutoAdjustXYNumBins = false;
-
-		mVotes.clear();
+		if (numXBins == 0 && numYBins == 0){
+			this.mAutoAdjustXYNumBins = true;
+		}
+		else{
+			this.mAutoAdjustXYNumBins = false;
+		}
 	}
 
 	/**
 	 * The location of the center of the object in the reference image.
 	 */
-	public void setObjectCenterInReference(double x, double y) {
-		mCenterX = x;
-		mCenterY = y;
+	private void setObjectCenterInReference(double x, double y) {
+		this.mCenterX = x;
+		this.mCenterY = y;
 	}
 
 	/**
 	 * Set the dimensions fo the reference image
 	 */
-	public void setRefImageDimensions(int width, int height) {
-		mRefImageWidth = width;
-		mRefImageHeight = height;
+	private void setRefImageDimensions(int width, int height) {
+		this.mRefImageWidth = width;
+		this.mRefImageHeight = height;
 	}
 
-	//
-	// /**
-	// * Set the min/max of (x,y) for voting. Since we vote for the center of
-	// the
-	// * object. Sometimes the object center may be off the inspection image.
-	// */
-	// inline void setMinMaxXY(float minX, float maxX, float minY, float maxY) {
-	// mMinX = minX;
-	// mMaxX = maxX;
-	// mMinY = minY;
-	// mMaxY = maxY;
-	// mVotes.clear();
-	// }
-	//
-	// /**
-	// * Get the distance of two bin locations for each parameter.
-	// */
-	// inline void getBinDistance(float& distBinX,
-	// float& distBinY,
-	// float& distBinAngle,
-	// float& distBinScale,
-	// float insBinX,
-	// float insBinY,
-	// float insBinAngle,
-	// float insBinScale,
-	// float refBinX,
-	// float refBinY,
-	// float refBinAngle,
-	// float refBinScale) const;
+
 	//
 
-	void mapVoteToBin(mapCorrespondenceResult fBin,
-	// float& fBinX,
-	// float& fBinY,
-	// float& fBinAngle,
-	// float& fBinScale,
-			double x, double y, double angle, double scale) {
+	private void mapVoteToBin(mapCorrespondenceResult fBin,double x, double y, double angle, double scale) {
 		fBin.x = mNumXBins * SafeDivision(x - mMinX, mMaxX - mMinX);
 		fBin.y = mNumYBins * SafeDivision(y - mMinY, mMaxY - mMinY);
 		fBin.angle = (double) (mNumAngleBins * ((angle + PI) * (1 / (2 * PI))));
@@ -175,7 +146,7 @@ public class HoughSimilarityVoting {
 	 * @param[in] angle (-pi,pi]
 	 * @param[in] scale
 	 */
-	boolean vote(double x, double y, double angle, double scale) {
+	private boolean vote(double x, double y, double angle, double scale) {
 		int binX;
 		int binY;
 		int binAngle;
@@ -267,7 +238,7 @@ public class HoughSimilarityVoting {
 		return true;
 	}
 
-	static public class BinLocation{
+	private static class BinLocation{
 		public double x;
 		public double y;
 		public double angle;
@@ -280,9 +251,69 @@ public class HoughSimilarityVoting {
 			return r;
 		}
 	}
+	public boolean extractHoughMatches(FeaturePairStack i_matche_resule,int refWidth, int refHeight)	
+	{
+		int max_hough_index = -1;
+		max_hough_index = this.FindHoughSimilarity(i_matche_resule,refWidth,refHeight);
+		if (max_hough_index < 0) {
+			return false;
+		}
+		this.FindHoughMatches(i_matche_resule,max_hough_index, kHoughBinDelta);
+		return true;
+	}
 	
+	/**
+	 * Vote for a similarity transformation.
+	 */
+	private int FindHoughSimilarity(FeaturePairStack matches,int refWidth, int refHeight)
+	{
+		// Extract the data from the features
+		this.setObjectCenterInReference(refWidth >> 1, refHeight >> 1);
+		this.setRefImageDimensions(refWidth, refHeight);
+		// hough.vote((float*)&query[0], (float*)&ref[0], (int)matches.size());
+		this.vote(matches);
+
+		HoughSimilarityVoting.getMaximumNumberOfVotesResult max = new HoughSimilarityVoting.getMaximumNumberOfVotesResult();
+		this.getMaximumNumberOfVotes(max);
+
+		return (max.votes < 3) ? -1 : max.index;
+	}
+	/**
+	 * Get only the matches that are consistent based on the hough votes.
+	 */
+	private void FindHoughMatches(FeaturePairStack in_matches,int binIndex, double binDelta) {
+
+		HoughSimilarityVoting.Bins bin = this.getBinsFromIndex(binIndex);
+
 	
-	public void vote(FeaturePairStack i_point_pair) {
+
+		int n = (int) this.getSubBinLocationIndices().length;
+		// const float* vote_loc = hough.getSubBinLocations().data();
+		BinLocation[] vote_loc = this.getSubBinLocations();// .data();
+		// ASSERT(n <= in_matches.size(), "Should be the same");
+		HoughSimilarityVoting.mapCorrespondenceResult d = new HoughSimilarityVoting.mapCorrespondenceResult();
+		//
+		int pos=0;
+		for (int i = 0; i < n; i++){
+			this.getBinDistance(d, vote_loc[i].x,
+					vote_loc[i].y, vote_loc[i].angle,
+					vote_loc[i].scale, bin.binX + .5f, bin.binY + .5f,
+					bin.binAngle + .5f, bin.binScale + .5f);
+
+			if (d.x < binDelta && d.y < binDelta && d.angle < binDelta && d.scale < binDelta) {
+				//idxは昇順のはずだから詰める。
+				int idx = this.getSubBinLocationIndices()[i];
+				in_matches.swap(idx, pos);
+				pos++;
+				
+			}
+		}
+		in_matches.setLength(pos);
+		return;
+	}
+
+	
+	private void vote(FeaturePairStack i_point_pair) {
 		int num_features_that_cast_vote;
 
 		int size=i_point_pair.getLength();
@@ -299,10 +330,8 @@ public class HoughSimilarityVoting {
 
 		num_features_that_cast_vote = 0;
 		for (int i = 0; i < size; i++) {
-			// const float* ins_ptr = &ins[i<<2];
-			// const float* ref_ptr = &ref[i<<2];
-//			int ins_ptr = i << 2;
-//			int ref_ptr = i << 2;
+
+
 
 			// Map the correspondence to a vote
 			mapCorrespondenceResult r = new mapCorrespondenceResult();
@@ -333,7 +362,7 @@ public class HoughSimilarityVoting {
 		return;
 	}
 
-	public static class mapCorrespondenceResult {
+	private static class mapCorrespondenceResult {
 		public double x, y;
 		public double angle;
 		public double scale;
@@ -342,7 +371,7 @@ public class HoughSimilarityVoting {
 	/**
 	 * Safe division (x/y).
 	 */
-	double SafeDivision(double x, double y) {
+	private double SafeDivision(double x, double y) {
 		return x / (y == 0 ? 1 : y);
 	}
 
@@ -358,7 +387,7 @@ public class HoughSimilarityVoting {
 		S[3] = c;
 	}
 
-	void mapCorrespondence(mapCorrespondenceResult r, FeaturePairStack.Item i_item) {
+	private void mapCorrespondence(mapCorrespondenceResult r, FeaturePairStack.Item i_item) {
 		double[] S = new double[4];
 		double[] tp = new double[2];
 		double tx, ty;
@@ -421,7 +450,7 @@ public class HoughSimilarityVoting {
 		return mSubBinLocationIndices;
 	}
 
-	static public class getMaximumNumberOfVotesResult {
+	private static class getMaximumNumberOfVotesResult {
 		public double votes;
 		public int index;
 	}
@@ -429,16 +458,10 @@ public class HoughSimilarityVoting {
 	/**
 	 * Get the bin that has the maximum number of votes
 	 */
-	public void getMaximumNumberOfVotes(getMaximumNumberOfVotesResult v) {
+	private void getMaximumNumberOfVotes(getMaximumNumberOfVotesResult v) {
 		v.votes = 0;
 		v.index = -1;
-		// for(hash_t::const_iterator it = mVotes.begin(); it != mVotes.end();
-		// it++) {
-		// if(it->second > maxVotes) {
-		// v.index = it->first;
-		// v.votes = it->second;
-		// }
-		// }
+
 		for (Entry<Integer, Integer> it : mVotes.entrySet()) {
 			if (it.getValue() > v.votes) {
 				v.index = it.getKey();
@@ -455,7 +478,7 @@ public class HoughSimilarityVoting {
 	// scale, int index) const;
 	//
 
-	public void getBinDistance(mapCorrespondenceResult distbin, double insBinX,
+	private void getBinDistance(mapCorrespondenceResult distbin, double insBinX,
 			double insBinY, double insBinAngle, double insBinScale, double refBinX,
 			double refBinY, double refBinAngle, double refBinScale) {
 		//
@@ -504,46 +527,13 @@ public class HoughSimilarityVoting {
 	}
 
 
-	// Dimensions of reference image
-	private int mRefImageWidth;
-	private int mRefImageHeight;
 
-	// Center of object in reference image
-	private double mCenterX;
-	private double mCenterY;
-
-	// Set to true if the XY number of bins should be adjusted
-	private boolean mAutoAdjustXYNumBins;
-
-	// Min/Max (x,y,scale). The angle includes all angles (-pi,pi).
-	private double mMinX;
-	private double mMaxX;
-	private double mMinY;
-	private double mMaxY;
-	private double mMinScale;
-	private double mMaxScale;
-
-	private double mScaleK;
-	private double mScaleOneOverLogK;
-
-	private int mNumXBins;
-	private int mNumYBins;
-	private int mNumAngleBins;
-	private int mNumScaleBins;
-
-	private double mfBinX;
-	private double mfBinY;
-	private double mfBinAngle;
-	private double mfBinScale;
-
-	private int mA; // mNumXBins*mNumYBins
-	private int mB; // mNumXBins*mNumYBins*mNumAngleBins
 	//
 
-	class hash_t extends HashMap<Integer, Integer> {
+	private class hash_t extends HashMap<Integer, Integer> {
 	}
 
-	final hash_t mVotes = new hash_t();
+	private final hash_t mVotes = new hash_t();
 
 	private BinLocation[] mSubBinLocations;
 	int[] mSubBinLocationIndices;
@@ -552,13 +542,7 @@ public class HoughSimilarityVoting {
 	 * Cast a vote to an similarity index
 	 */
 	private void voteAtIndex(int index, int weight) {
-		// ASSERT(index >= 0, "index out of range");
-		// const hash_t::iterator it = mVotes.find(index);
-		// if(it == mVotes.end()) {
-		// mVotes.insert(std::pair<unsigned int, unsigned int>(index, weight));
-		// } else {
-		// it->second += weight;
-		// }
+
 		Integer it = mVotes.get(index);
 		if (it == null) {
 			mVotes.put(index, weight);
@@ -574,15 +558,8 @@ public class HoughSimilarityVoting {
 		int max_dim =mRefImageWidth>mRefImageHeight?mRefImageWidth:mRefImageHeight;//math_utils.max2(mRefImageWidth, mRefImageHeight);
 		double[] projected_dim = new double[i_point_pair.getLength()];
 
-		// ASSERT(size > 0, "size must be positive");
-		// ASSERT(mRefImageWidth > 0, "width must be positive");
-		// ASSERT(mRefImageHeight > 0, "height must be positive");
 
 		for (int i = 0; i < i_point_pair.getLength(); i++) {
-//			int ins_ptr = i << 2;
-//			int ref_ptr = i << 2;
-			// const float* ins_ptr = &ins[i<<2];
-			// const float* ref_ptr = &ref[i<<2];
 
 			// Scale is the 3rd component
 			FeaturePairStack.Item item=i_point_pair.getItem(i);

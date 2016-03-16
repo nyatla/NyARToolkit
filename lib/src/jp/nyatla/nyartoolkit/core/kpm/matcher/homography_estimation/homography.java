@@ -1,8 +1,7 @@
-package jp.nyatla.nyartoolkit.core.kpm.matcher;
+package jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation;
 
 
 
-import jp.nyatla.nyartoolkit.core.kpm.vision.math.geometry;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 

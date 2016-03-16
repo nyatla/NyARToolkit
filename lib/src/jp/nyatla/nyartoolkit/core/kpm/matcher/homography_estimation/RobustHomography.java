@@ -3,10 +3,7 @@ package jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation;
 
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.utils.rand;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.HomographyMat;
-import jp.nyatla.nyartoolkit.core.kpm.matcher.homography;
 import jp.nyatla.nyartoolkit.core.kpm.vision.match.indexing;
-import jp.nyatla.nyartoolkit.core.kpm.vision.math.geometry;
-import jp.nyatla.nyartoolkit.core.kpm.vision.utils.parcial_sort;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 
@@ -45,7 +42,7 @@ public class RobustHomography {
 	//
 	// Temporary memory for RANSAC
 	final private HomographyMat[] mHyp;
-	private CostPair[] mHypCosts;
+	final private CostPair[] mHypCosts;
 	private int[] mTmpi;
 
 	// std::vector< std::pair<T, int> > mHypCosts;
@@ -185,7 +182,6 @@ public class RobustHomography {
 		for (int i = 0; i < num_points && num_hypotheses_remaining > 2; i += cur_chunk_size) {
 
 			// Size of the current chunk
-//			cur_chunk_size = math_utils.min2(chunk_size, num_points - i);
 			cur_chunk_size = (chunk_size<num_points - i)?chunk_size:(num_points - i);
 
 			// End of the current chunk
@@ -203,7 +199,6 @@ public class RobustHomography {
 			}
 
 			// Cut out half of the hypotheses
-			// parcial_sort.FastMedian(&hyp_costs[0], num_hypotheses_remaining);
 			parcial_sort.FastMedian(hyp_costs, num_hypotheses_remaining);
 			num_hypotheses_remaining = num_hypotheses_remaining >> 1;
 		}

@@ -1,6 +1,5 @@
-package jp.nyatla.nyartoolkit.core.kpm.vision.utils;
+package jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation;
 
-import jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation.RobustHomography;
 
 public class parcial_sort {
     /**
@@ -14,9 +13,7 @@ public class parcial_sort {
 	double PartialSort(double a[], int n, int k) {
 		int i, j, l, m, k_minus_1;
 		double x;
-        
-//        ASSERT(n > 0, "n must be positive");
-//        ASSERT(k > 0, "k must be positive");
+
         
         k_minus_1 = k-1;
 		

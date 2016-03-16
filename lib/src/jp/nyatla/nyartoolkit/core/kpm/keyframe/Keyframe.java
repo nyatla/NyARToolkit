@@ -22,28 +22,27 @@ public class Keyframe {
 	/**
 	 * Get/Set image width.
 	 */
-	// public void setWidth(int width) { mWidth = width; }
 	public int width() {
 		return mWidth;
 	}
 	/**
 	 * Get/Set image height.
 	 */
-	// public void setHeight(int height) { mHeight = height; }
 	public int height() {
 		return mHeight;
 	}
 	/**
 	 * @return Feature store.
 	 */
-	public FreakMatchPointSetStack store() {
+	public FreakMatchPointSetStack getFeaturePointSet()
+	{
 		return mStore;
 	}
 
 	/**
 	 * @return Index over the features.
 	 */
-	public BinaryHierarchicalClustering index() {
+	public BinaryHierarchicalClustering getIndex() {
 		return mIndex;
 	}
 

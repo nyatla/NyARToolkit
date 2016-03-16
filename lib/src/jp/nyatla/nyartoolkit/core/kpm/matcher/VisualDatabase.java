@@ -4,12 +4,13 @@ import java.util.Map;
 
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.FreakMatchPointSetStack;
+import jp.nyatla.nyartoolkit.core.kpm.keyframe.FreakMatchPointSetStack.Item;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.Keyframe;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.KeyframeMap;
-import jp.nyatla.nyartoolkit.core.kpm.matcher.HoughSimilarityVoting.BinLocation;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation.RobustHomography;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation.geometry;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation.homography;
 
-import jp.nyatla.nyartoolkit.core.kpm.vision.math.geometry;
 
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
@@ -18,8 +19,20 @@ public class VisualDatabase
 {
 	private static int kHomographyInlierThreshold = 3;
 	private static int kMinNumInliers = 8;
-	private static double kHoughBinDelta = 1;
+
 	private static boolean kUseFeatureIndex = true;
+	private int mMinNumInliers;
+	private double mHomographyInlierThreshold;
+	//
+	// Set to true if the feature index is enabled
+	private boolean mUseFeatureIndex;
+
+
+	/** Feature matcher */
+	final BinaryFeatureMatcher mMatcher=new BinaryFeatureMatcher();
+
+	/** Similarity voter*/
+	final private HoughSimilarityVoting mHoughSimilarityVoting;
 	
 	
 	public VisualDatabase(int i_width,int i_height)
@@ -28,56 +41,42 @@ public class VisualDatabase
 		this.mMinNumInliers = kMinNumInliers;
 		this.mUseFeatureIndex = kUseFeatureIndex;
 		//
-		this.mHoughSimilarityVoting=new HoughSimilarityVoting();		
 		double dx = i_width + (i_width * 0.2f);
 		double dy = i_height + (i_height * 0.2f);
-		this.mHoughSimilarityVoting.init(-dx, dx, -dy, dy, 0, 0, 12, 10);		
+		this.mHoughSimilarityVoting=new HoughSimilarityVoting(-dx, dx, -dy, dy, 0, 0, 12, 10);		
+		this._tmp_pair_stack[0]=new FeaturePairStack(300);
+		this._tmp_pair_stack[1]=new FeaturePairStack(300);
 		return;
 	}
 
-	
-	
-
-
-
 	/**
-	 * Vote for a similarity transformation.
+	 * 2chの一時バッファ
 	 */
-	private int FindHoughSimilarity(HoughSimilarityVoting hough,FeaturePairStack matches,int refWidth, int refHeight)
+	private final FeaturePairStack[] _tmp_pair_stack=new FeaturePairStack[2];
+
+	public boolean query(FreakFeaturePointStack query_keyframe,KeyframeMap i_keymap,FeaturePairStack i_result)
 	{
-//		FreakFeaturePoint[] query = new FreakFeaturePoint[matches.getLength()];
-//		FreakFeaturePoint[] ref = new FreakFeaturePoint[matches.getLength()];
-		// Extract the data from the features
-
-		hough.setObjectCenterInReference(refWidth >> 1, refHeight >> 1);
-		hough.setRefImageDimensions(refWidth, refHeight);
-		// hough.vote((float*)&query[0], (float*)&ref[0], (int)matches.size());
-		hough.vote(matches);
-
-		HoughSimilarityVoting.getMaximumNumberOfVotesResult max = new HoughSimilarityVoting.getMaximumNumberOfVotesResult();
-		hough.getMaximumNumberOfVotes(max);
-
-		return (max.votes < 3) ? -1 : max.index;
-	}
-
-
-	public int query(FreakFeaturePointStack query_keyframe,KeyframeMap i_keymap) {
 		// mMatchedInliers.clear();
-		int mached_id = -1;
-		int last_inliers=0;
 		HomographyMat H = new HomographyMat();
-		// Loop over all the images in the database
-		// typename keyframe_map_t::const_iterator it = mKeyframeMap.begin();
-		// for(; it != mKeyframeMap.end(); it++) {
 		
-		for (Map.Entry<Integer, Keyframe> i : i_keymap.entrySet()) {
+		int num_of_query_frame=query_keyframe.getLength();
+		//ワークエリアの設定
+		if(num_of_query_frame>this._tmp_pair_stack[0].getArraySize()){
+			this._tmp_pair_stack[0]=new FeaturePairStack(num_of_query_frame+10);
+			this._tmp_pair_stack[1]=new FeaturePairStack(num_of_query_frame+10);
+		}
+		int tmp_ch=0;
+		int last_inliers=0;
+		
+		for (Map.Entry<Integer, Keyframe> i : i_keymap.entrySet())
+		{
 			Keyframe second = i.getValue();
-			FreakMatchPointSetStack ref_points = second.store();
-			int first = i.getKey();
-			//毎回作り直さんと行けない。
-			FeaturePairStack match_result=new FeaturePairStack(query_keyframe.getLength());
+			FreakMatchPointSetStack ref_points = second.getFeaturePointSet();
+			//新しいワークエリアを作る。
+			FeaturePairStack match_result=this._tmp_pair_stack[tmp_ch];
+			match_result.clear();
 			if (mUseFeatureIndex) {
-				if (mMatcher.match(query_keyframe,ref_points,second.index(),match_result) < this.mMinNumInliers) {
+				if (mMatcher.match(query_keyframe,ref_points,second.getIndex(),match_result) < this.mMinNumInliers) {
 					continue;
 				}
 			} else {
@@ -86,27 +85,21 @@ public class VisualDatabase
 				}
 			}
 
-			//
 			// Vote for a transformation based on the correspondences
-			//
-			int max_hough_index = -1;
-			max_hough_index = FindHoughSimilarity(mHoughSimilarityVoting,match_result,second.width(), second.height());
-			if (max_hough_index < 0) {
+			if(!this.mHoughSimilarityVoting.extractHoughMatches(match_result,second.width(), second.height())){
 				continue;
 			}
-			FindHoughMatches(this.mHoughSimilarityVoting,match_result,max_hough_index, kHoughBinDelta);
-			//
-			// Estimate the transformation between the two images
-			//
-			if (!EstimateHomography(H, query_keyframe, ref_points, match_result,second.width(), second.height())) {
-				continue;
-			}
+			
 
+			// Estimate the transformation between the two images
+			if (!EstimateHomography(H, match_result,second.width(), second.height())) {
+				continue;
+			}
 			//
 			// Find the inliers
 			//
 
-			FindInliers(H, query_keyframe, ref_points, match_result,mHomographyInlierThreshold);
+			FindInliers(H, match_result,mHomographyInlierThreshold);
 			if (match_result.getLength() < mMinNumInliers) {
 				continue;
 			}
@@ -125,18 +118,15 @@ public class VisualDatabase
 			//
 
 			// TIMED("Hough Voting (2)") {
-			max_hough_index = FindHoughSimilarity(mHoughSimilarityVoting,match_result,second.width(), second.height());
-			if (max_hough_index < 0) {
+			if(!this.mHoughSimilarityVoting.extractHoughMatches(match_result,second.width(), second.height())){
 				continue;
 			}
-
-			FindHoughMatches(mHoughSimilarityVoting, match_result,max_hough_index, kHoughBinDelta);
 
 			//
 			// Re-estimate the homography
 			//
 
-			if (!EstimateHomography(H, query_keyframe, ref_points, match_result,second.width(), second.height())) {
+			if (!EstimateHomography(H, match_result,second.width(), second.height())) {
 				continue;
 			}
 
@@ -144,28 +134,38 @@ public class VisualDatabase
 			// Check if this is the best match based on number of inliers
 			//
 
-			FindInliers(H, query_keyframe, ref_points, match_result,mHomographyInlierThreshold);
+			FindInliers(H, match_result,mHomographyInlierThreshold);
 
 			// std::cout<<"inliers-"<<inliers.size()<<std::endl;
 			if (match_result.getLength() >= mMinNumInliers && match_result.getLength() > last_inliers) {
-//				indexing.CopyVector(mMatchedGeometry, 0, H, 0, 9);
-				H.getValue(mMatchedGeometry);
-				// CopyVector9(mMatchedGeometry, H);
-				//現状は毎回生成してるからセットで。
-				mMatchedInliers = match_result;// mMatchedInliers.swap(inliers);
+				//出力チャンネルを切り替え
+				tmp_ch=(tmp_ch+1)%2;
 				last_inliers=match_result.getLength();
-				mached_id = first;
 			}
 		}
+		//出力は last_inlines>0の場合に[(tmp_ch+1)%2]にある。
+		if(last_inliers<=0){
+			return false;
+		}
+		FeaturePairStack match_result=this._tmp_pair_stack[(tmp_ch+1)%2];
+		FeaturePairStack.Item[] dest=match_result.getArray();
+		for(int i=0;i<match_result.getLength();i++){
+			FeaturePairStack.Item t=i_result.prePush();
+			if(t==null){
+				System.out.println("Push overflow!");
+				break;
+			}
+			t.query=dest[i].query;
+			t.ref=dest[i].ref;
+		}
 
-		return mached_id;
+		return true;
 	}
 
 	/**
 	 * Find the inliers given a homography and a set of correspondences.
 	 */
-	private void FindInliers(NyARDoubleMatrix33 H, FreakFeaturePointStack p1,
-			FreakMatchPointSetStack p2, FeaturePairStack matches, double threshold) {
+	private void FindInliers(NyARDoubleMatrix33 H, FeaturePairStack matches, double threshold) {
 		double threshold2 = (threshold*threshold);
 		NyARDoublePoint2d xp = new NyARDoublePoint2d();// float xp[2];
 		//前方詰め
@@ -187,40 +187,7 @@ public class VisualDatabase
 		return;
 	}
 
-	/**
-	 * Get only the matches that are consistent based on the hough votes.
-	 */
-	private void FindHoughMatches(HoughSimilarityVoting hough,FeaturePairStack in_matches,
-			int binIndex, double binDelta) {
 
-		HoughSimilarityVoting.Bins bin = hough.getBinsFromIndex(binIndex);
-
-	
-
-		int n = (int) hough.getSubBinLocationIndices().length;
-		// const float* vote_loc = hough.getSubBinLocations().data();
-		BinLocation[] vote_loc = hough.getSubBinLocations();// .data();
-		// ASSERT(n <= in_matches.size(), "Should be the same");
-		HoughSimilarityVoting.mapCorrespondenceResult d = new HoughSimilarityVoting.mapCorrespondenceResult();
-		//
-		int pos=0;
-		for (int i = 0; i < n; i++){
-			hough.getBinDistance(d, vote_loc[i].x,
-					vote_loc[i].y, vote_loc[i].angle,
-					vote_loc[i].scale, bin.binX + .5f, bin.binY + .5f,
-					bin.binAngle + .5f, bin.binScale + .5f);
-
-			if (d.x < binDelta && d.y < binDelta && d.angle < binDelta && d.scale < binDelta) {
-				//idxは昇順のはずだから詰める。
-				int idx = hough.getSubBinLocationIndices()[i];
-				in_matches.swap(idx, pos);
-				pos++;
-				
-			}
-		}
-		in_matches.setLength(pos);
-		return;
-	}
 	
 	
 	// Robust homography estimation
@@ -229,8 +196,7 @@ public class VisualDatabase
 	/**
 	 * Estimate the homography between a set of correspondences.
 	 */
-	private boolean EstimateHomography(HomographyMat H, FreakFeaturePointStack p1,
-			FreakMatchPointSetStack p2, FeaturePairStack matches, int refWidth, int refHeight) {
+	private boolean EstimateHomography(HomographyMat H,FeaturePairStack matches, int refWidth, int refHeight) {
 
 		NyARDoublePoint2d[] srcPoints = NyARDoublePoint2d.createArray(matches.getLength());
 		NyARDoublePoint2d[] dstPoints = NyARDoublePoint2d.createArray(matches.getLength());
@@ -310,46 +276,6 @@ public class VisualDatabase
 		if (!geometry.QuadrilateralConvex(p0p, p1p, p2p, p3p)) {
 			return false;
 		}
-
 		return true;
 	}
-	public FeaturePairStack inliers() {
-		return this.mMatchedInliers;
-	}
-
-
-	
-
-
-	private int mMinNumInliers;
-	private double mHomographyInlierThreshold;
-	//
-	// Set to true if the feature index is enabled
-	private boolean mUseFeatureIndex;
-
-	//
-	private FeaturePairStack mMatchedInliers;
-	// id_t mMatchedId;
-	private double[] mMatchedGeometry = new double[9];
-	//
-
-
-
-
-	//
-	// // Feature matcher
-	final BinaryFeatureMatcher mMatcher=new BinaryFeatureMatcher();
-
-	// Similarity voter
-	final private HoughSimilarityVoting mHoughSimilarityVoting;
-
-
-
-
-
-
-
-
-
-
 }
