@@ -1,6 +1,6 @@
 package jp.nyatla.nyartoolkit.core.kpm;
 
-import jp.nyatla.nyartoolkit.core.kpm.vision.math.Hamming;
+import jp.nyatla.nyartoolkit.core.kpm.utils.Hamming;
 
 /**
  * LongArrayのDescripter

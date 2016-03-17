@@ -185,14 +185,16 @@ public class VisualDatabase
 	/**
 	 * Find the inliers given a homography and a set of correspondences.
 	 */
-	private void FindInliers(NyARDoubleMatrix33 H, FeaturePairStack matches, double threshold) {
+	private void FindInliers(HomographyMat H, FeaturePairStack matches, double threshold) {
 		double threshold2 = (threshold*threshold);
 		NyARDoublePoint2d xp = new NyARDoublePoint2d();// float xp[2];
 		//前方詰め
 
 		int pos=0;
 		for (int i = 0; i < matches.getLength(); i++) {
-			homography.MultiplyPointHomographyInhomogenous(xp, H,matches.getItem(i).ref.x,matches.getItem(i).ref.y);
+
+
+			MultiplyPointHomographyInhomogenous(xp, H,matches.getItem(i).ref.x,matches.getItem(i).ref.y);
 			double t1=xp.x- matches.getItem(i).query.x;
 			double t2=xp.y- matches.getItem(i).query.y;
 
@@ -206,7 +208,15 @@ public class VisualDatabase
 		matches.setLength(pos);
 		return;
 	}
-
+    /**
+     * Multiply an in-homogenous point by a similarity.
+     * H[9] この関数は実装済みだからあとで消す。
+     */
+    private static void MultiplyPointHomographyInhomogenous(NyARDoublePoint2d v, NyARDoubleMatrix33 H, double x, double y) {
+    	double w = H.m20*x + H.m21*y + H.m22;
+        v.x = (H.m00*x + H.m01*y + H.m02)/w;//XP
+        v.y = (H.m10*x + H.m11*y + H.m12)/w;//YP
+    }
 
 	
 	
@@ -232,26 +242,12 @@ public class VisualDatabase
 		}
 
 		//
-		// Create test points for geometric verification
-		//
-
-		NyARDoublePoint2d[] test_points = NyARDoublePoint2d.createArray(8);
-		test_points[0].x = 0;
-		test_points[0].y = 0;
-		test_points[1].x = refWidth;
-		test_points[1].y = 0;
-		test_points[2].x = refWidth;
-		test_points[2].y = refHeight;
-		test_points[3].x = 0;
-		test_points[3].y = refHeight;
-
-		//
 		// Compute the homography
 		//
 		// if(!estimator.find(H, (float*)&srcPoints[0], (float*)&dstPoints[0],
 		// (int)matches.size(), test_points, 4)) {
-		if (!this.mRobustHomography.find(H, srcPoints, dstPoints, (int) matches.getLength(),
-				test_points, 4)) {
+		if (!this.mRobustHomography.PreemptiveRobustHomography(H, srcPoints, dstPoints, (int) matches.getLength(),refWidth,refHeight))
+		{
 			return false;
 		}
 

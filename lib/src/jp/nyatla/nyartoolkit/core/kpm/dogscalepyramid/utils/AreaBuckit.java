@@ -22,6 +22,7 @@ public class AreaBuckit
 	public AreaBuckit(int i_w,int i_h,int i_y_dim,int i_x_dim,int i_max_f_num)
 	{
 		int n=i_max_f_num/(i_x_dim*i_y_dim);
+		assert(n>=1);
 		this._buckit=new BucketPair[i_y_dim*i_x_dim*n];
 		for(int i=0;i<this._buckit.length;i++){
 			this._buckit[i]=new BucketPair();

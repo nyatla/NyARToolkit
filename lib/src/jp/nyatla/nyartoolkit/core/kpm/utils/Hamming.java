@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.core.kpm.vision.math;
+package jp.nyatla.nyartoolkit.core.kpm.utils;
 
 public class Hamming {
 	/**

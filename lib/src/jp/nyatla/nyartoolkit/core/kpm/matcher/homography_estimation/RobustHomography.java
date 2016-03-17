@@ -5,7 +5,7 @@ import jp.nyatla.nyartoolkit.core.kpm.keyframe.utils.rand;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.HomographyMat;
 import jp.nyatla.nyartoolkit.core.kpm.vision.match.indexing;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
-import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
+
 
 /**
  * Robust homography estimation.
@@ -43,7 +43,7 @@ public class RobustHomography {
 	// Temporary memory for RANSAC
 	final private HomographyMat[] mHyp;
 	final private CostPair[] mHypCosts;
-	private int[] mTmpi;
+
 
 	// std::vector< std::pair<T, int> > mHypCosts;
 	public static class CostPair {
@@ -66,39 +66,34 @@ public class RobustHomography {
 	}
 
 	// RANSAC params
-	double mCauchyScale;
-	int mMaxNumHypotheses;
-	int mMaxTrials;
-	int mChunkSize;
+	private double mCauchyScale;
+	private int mMaxNumHypotheses;
+	private int mMaxTrials;
+	private int mChunkSize;
 
-	/**
-	 * Find the homography from a set of 2D correspondences. p,q,test_pointshaは0位置固定
-	 */
-	public boolean find(HomographyMat H, NyARDoublePoint2d[] p, NyARDoublePoint2d[] q, int num_points,
-			NyARDoublePoint2d[] test_points, int num_test_points) {
-		mTmpi = new int[2 * num_points];
-		return PreemptiveRobustHomography(H, p, q, num_points, test_points, num_test_points,this.mHyp, mTmpi, mHypCosts,
-				mCauchyScale, mMaxNumHypotheses, mMaxTrials, mChunkSize);
-	}
+//	/**
+//	 * Find the homography from a set of 2D correspondences. p,q,test_pointshaは0位置固定
+//	 */
+//	public boolean find(HomographyMat H, NyARDoublePoint2d[] p, NyARDoublePoint2d[] q, int num_points,double i_width,double i_height)
+//	{
+//		return PreemptiveRobustHomography(H, p, q, num_points, i_width,i_height,this.mHyp);
+//	}
 
 	final private HomographySolver _homography_solver=new HomographySolver_O1();
+	final private HomographyPointsCheck _homography_check=new HomographyPointsCheck_O1();
 	/**
 	 * Robustly solve for the homography given a set of correspondences.
 	 */
-	// public boolean PreemptiveRobustHomography(float H[9],
-	// const T* p,const T* q,
-	// int num_points,const T* test_points,int num_test_points,
-	// std::vector<T> &hyp /* 9*max_num_hypotheses */,
-	// std::vector<int> &tmp_i /* 2*num_points */,
-	// std::vector< std::pair<T, int> > &hyp_costs /* max_num_hypotheses */,
-	// T scale = HOMOGRAPHY_DEFAULT_CAUCHY_SCALE,
-	// int max_num_hypotheses = HOMOGRAPHY_DEFAULT_NUM_HYPOTHESES,
-	// int max_trials = HOMOGRAPHY_DEFAULT_MAX_TRIALS,
-	// int chunk_size = HOMOGRAPHY_DEFAULT_CHUNK_SIZE) {
-	private boolean PreemptiveRobustHomography(HomographyMat H, NyARDoublePoint2d[] p, NyARDoublePoint2d[] q, int num_points,
-			NyARDoublePoint2d[] test_points, int num_test_points, HomographyMat[] hyp /* 9*max_num_hypotheses */,
-			int[] tmp_i /* 2*num_points */, CostPair[] hyp_costs /* max_num_hypotheses */, double scale,
-			int max_num_hypotheses, int max_trials, int chunk_size) {
+	public boolean PreemptiveRobustHomography(HomographyMat H, NyARDoublePoint2d[] p, NyARDoublePoint2d[] q, int num_points,double i_width,double i_height)
+	{
+		int[] tmp_i=new int[2 * num_points];
+		HomographyMat[] hyp=this.mHyp;/* 9*max_num_hypotheses */
+		CostPair[] hyp_costs=mHypCosts;
+		double scale=mCauchyScale;
+		int max_num_hypotheses=mMaxNumHypotheses;
+		int max_trials=mMaxTrials;
+		int chunk_size=mChunkSize;
+		
 		int hyp_perm;// ptr表現
 		int point_perm;// ptr表現
 		double one_over_scale2;
@@ -107,7 +102,7 @@ public class RobustHomography {
 		int cur_chunk_size, this_chunk_end;
 		int trial;
 		int sample_size = 4;
-
+		this._homography_check.setTestWindow(i_width, i_height);
 
 		// We need at least SAMPLE_SIZE points to sample from
 		if (num_points < sample_size) {
@@ -154,14 +149,9 @@ public class RobustHomography {
 				continue;
 			}
 			// Check the test points
-			if (num_test_points > 0) {
-				NyARDoubleMatrix33 hyps=hyp[num_hypotheses];
-//				double[] hyps = Utils.arraysubset(hyp, num_hypotheses * 9, 9);
-				if (!homography.HomographyPointsGeometricallyConsistent(hyps, test_points, 0, num_test_points)) {
-					continue;
-				}
+			if(!this._homography_check.geometricallyConsistent(hyp[num_hypotheses])){
+				continue;
 			}
-
 			num_hypotheses++;
 		}
 
@@ -199,7 +189,7 @@ public class RobustHomography {
 			}
 
 			// Cut out half of the hypotheses
-			parcial_sort.FastMedian(hyp_costs, num_hypotheses_remaining);
+			FastMedian(hyp_costs, num_hypotheses_remaining);
 			num_hypotheses_remaining = num_hypotheses_remaining >> 1;
 		}
 
@@ -219,4 +209,36 @@ public class RobustHomography {
 
 		return true;
 	}
+    private static RobustHomography.CostPair PartialSort(RobustHomography.CostPair a[], int n, int k) {
+		int i, j, l, m, k_minus_1;
+		RobustHomography.CostPair x;
+
+       
+        k_minus_1 = k-1;
+		
+		l=0 ; m=n-1;
+		while(l<m) {
+			x=a[k_minus_1];
+			i=l;
+			j=m;
+			do {
+				while(RobustHomography.CostPair.operator_lt(a[i],x)) i++;
+				while(RobustHomography.CostPair.operator_lt(x,a[j])) j--;
+				if(i<=j) {
+					//std::swap(a[i], a[j]); // FIXME: 
+					RobustHomography.CostPair t=a[i];
+					a[i]=a[j];
+					a[j]=t;
+					i++; j--;
+				}
+			} while (i<=j);
+			if(j<k_minus_1) l=i;
+			if(k_minus_1<i) m=j;
+		}
+		return a[k_minus_1];
+	}    
+    private static RobustHomography.CostPair FastMedian(RobustHomography.CostPair a[], int n)
+    {
+		return PartialSort(a, n, (((n&1)==1)?((n)/2):(((n)/2)-1)));
+	} 	
 }

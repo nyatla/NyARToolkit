@@ -18,16 +18,7 @@ public class geometry {
 //		return ((B[0]-A[0])*(C[1]-A[1])-(B[1]-A[1])*(C[0]-A[0]));
 		return ((B.x-A.x)*(C.y-A.y)-(B.y-A.y)*(C.x-A.x));
 	}
-    /**
-     * Check the geometric consistency between three correspondences.
-     */
-    public static boolean Homography3PointsGeometricallyConsistent(NyARDoublePoint2d x1, NyARDoublePoint2d x2, NyARDoublePoint2d x3,NyARDoublePoint2d x1p, NyARDoublePoint2d x2p, NyARDoublePoint2d x3p)
-    {
-        if(((LinePointSide(x1, x2, x3) > 0) ^ (LinePointSide(x1p, x2p, x3p) > 0)) == true) {
-            return false;
-        }
-        return true;
-    }    	
+   	
     /**
      * Check the geometric consistency between four correspondences.
      */

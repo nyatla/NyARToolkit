@@ -9,7 +9,7 @@ import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
  * Construct the homography constraint matrix from 4 point correspondences.
  * copy from Homography4PointsInhomogeneousConstraint.
  */
-public class HomographySolver_O1 extends HomographySolver
+final public class HomographySolver_O1 extends HomographySolver
 {
 	private double[][] _mat_A=new double[8][9];
 	private boolean solveHomography4PointsInhomogenous(NyARDoubleMatrix33 i_homography_mat)
