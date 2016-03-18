@@ -14,8 +14,10 @@ public class FreakFeaturePoint extends NyARDoublePoint2d
 
     public FreakFeaturePoint() {
 	}
-	public void set(FreakFeaturePoint i_src) {
-		// TODO Auto-generated method stub
+    
+
+	public void setValue(FreakFeaturePoint i_src)
+	{
 		this.x=i_src.x;
 		this.y=i_src.y;
 		this.angle=i_src.angle;
