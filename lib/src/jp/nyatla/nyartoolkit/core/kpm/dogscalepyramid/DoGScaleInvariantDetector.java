@@ -46,7 +46,7 @@ public class DoGScaleInvariantDetector {
 		this.mOrientations = new double[kMaxNumOrientations];
 		this.mLaplacianPyramid = new DoGPyramid(i_width,i_height,i_octerv,i_num_of_scale_of_octerv-1);
 		this.mOrientationAssignment = new OrientationAssignment(i_width,i_height,i_octerv, i_num_of_scale_of_octerv,kMaxNumOrientations, 3, 1.5f, 5, 0.8f);
-		this.mBuckets = new AreaBuckit(i_width,i_height,10,10,300);
+		this.mBuckets = new AreaBuckit(i_width,i_height,10,10,i_MaxNumFeaturePoints);
 		this._tmp_fps=new DogFeaturePointStack(kMaxNumFeaturePoints);
 	}
 
