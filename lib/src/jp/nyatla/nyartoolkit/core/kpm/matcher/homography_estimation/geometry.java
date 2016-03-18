@@ -19,21 +19,7 @@ public class geometry {
 		return ((B.x-A.x)*(C.y-A.y)-(B.y-A.y)*(C.x-A.x));
 	}
    	
-    /**
-     * Check the geometric consistency between four correspondences.
-     */
-//    boolean Homography4PointsGeometricallyConsistent(const T x1[2], const T x2[2], const T x3[2], const T x4[2],const T x1p[2], const T x2p[2], const T x3p[2], const T x4p[2]) {
-	public static boolean Homography4PointsGeometricallyConsistent(NyARDoublePoint2d x1, NyARDoublePoint2d x2, NyARDoublePoint2d x3, NyARDoublePoint2d x4,NyARDoublePoint2d x1p,NyARDoublePoint2d x2p,NyARDoublePoint2d x3p,NyARDoublePoint2d x4p) {
-        if(((LinePointSide(x1, x2, x3) > 0) ^ (LinePointSide(x1p, x2p, x3p) > 0)) == true)
-            return false;
-        if(((LinePointSide(x2, x3, x4) > 0) ^ (LinePointSide(x2p, x3p, x4p) > 0)) == true)
-            return false;
-        if(((LinePointSide(x3, x4, x1) > 0) ^ (LinePointSide(x3p, x4p, x1p) > 0)) == true)
-            return false;
-        if(((LinePointSide(x4, x1, x2) > 0) ^ (LinePointSide(x4p, x1p, x2p) > 0)) == true)
-            return false;
-        return true;
-    }
+
     /**
      * Subtract two vectors.
      */

@@ -1,5 +1,7 @@
 package jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation;
 
+import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.FeaturePairStack;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.HomographyMat;
 import jp.nyatla.nyartoolkit.core.math.NyARMath;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
@@ -42,7 +44,7 @@ public class HomographySolver
 	 */
 	private static boolean condition4Points2d(NyARDoublePoint2d xp1, NyARDoublePoint2d xp2, NyARDoublePoint2d xp3,
 			NyARDoublePoint2d xp4, double[] mus, // ms[2],sの3要素
-			NyARDoublePoint2d x1, NyARDoublePoint2d x2, NyARDoublePoint2d x3, NyARDoublePoint2d x4) {
+			FreakFeaturePoint x1, FreakFeaturePoint x2, FreakFeaturePoint x3, FreakFeaturePoint x4) {
 		double[] d1 = new double[2], d2 = new double[2], d3 = new double[2], d4 = new double[2];
 
 		mus[0] = (x1.x + x2.x + x3.x + x4.x) / 4;
@@ -90,9 +92,7 @@ public class HomographySolver
 	 * SolveHomography4Points
 	 * Solve for the homography given 4 point correspondences.
 	 */
-	public boolean solveHomography4Points(HomographyMat H, NyARDoublePoint2d x1, NyARDoublePoint2d x2,
-			NyARDoublePoint2d x3, NyARDoublePoint2d x4, NyARDoublePoint2d xp1, NyARDoublePoint2d xp2, NyARDoublePoint2d xp3,
-			NyARDoublePoint2d xp4) {
+	public boolean solveHomography4Points(FeaturePairStack.Item p1, FeaturePairStack.Item p2, FeaturePairStack.Item p3, FeaturePairStack.Item p4,HomographyMat H) {
 
 		// T s, sp;
 		// T t[2], tp[2];
@@ -105,10 +105,10 @@ public class HomographySolver
 		// Condition the points
 		//
 
-		if (!condition4Points2d(x1p, x2p, x3p, x4p, ts, x1, x2, x3, x4)) {
+		if (!condition4Points2d(x1p, x2p, x3p, x4p, ts, p1.ref, p2.ref, p3.ref, p4.ref)) {
 			return false;
 		}
-		if (!condition4Points2d(xp1p, xp2p, xp3p, xp4p, tps, xp1, xp2, xp3, xp4)) {
+		if (!condition4Points2d(xp1p, xp2p, xp3p, xp4p, tps, p1.query, p2.query, p3.query, p4.query)) {
 			return false;
 		}
 

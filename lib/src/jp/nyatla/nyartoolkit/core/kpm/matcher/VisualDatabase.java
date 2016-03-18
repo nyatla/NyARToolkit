@@ -246,7 +246,8 @@ public class VisualDatabase
 		//
 		// if(!estimator.find(H, (float*)&srcPoints[0], (float*)&dstPoints[0],
 		// (int)matches.size(), test_points, 4)) {
-		if (!this.mRobustHomography.PreemptiveRobustHomography(H, srcPoints, dstPoints, (int) matches.getLength(),refWidth,refHeight))
+//		if (!this.mRobustHomography.find(H, srcPoints, dstPoints, (int) matches.getLength(),refWidth,refHeight)) {		
+		if (!this.mRobustHomography.PreemptiveRobustHomography(H, matches,refWidth,refHeight))
 		{
 			return false;
 		}

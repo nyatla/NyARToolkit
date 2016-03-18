@@ -1,5 +1,6 @@
 package jp.nyatla.nyartoolkit.core.kpm.matcher;
 
+import jp.nyatla.nyartoolkit.core.kpm.matcher.FeaturePairStack;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 
@@ -64,13 +65,14 @@ public class HomographyMat extends NyARDoubleMatrix33
 		this.m22 = this.m22 - this.m20 * ts[0] - this.m21 * ts[1];
 		return;
 	}
-	public double cauchyProjectiveReprojectionCost(NyARDoublePoint2d i_p, NyARDoublePoint2d i_q, double i_one_over_scale2)
+	public double cauchyProjectiveReprojectionCost(FeaturePairStack.Item i_ptr, double i_one_over_scale2)
 	{
-    	double w = this.m20*i_p.x + this.m21*i_p.y + this.m22;
-        double vx = ((this.m00*i_p.x + this.m01*i_p.y + this.m02)/w)-i_q.x;//XP
-        double vy = ((this.m10*i_p.x + this.m11*i_p.y + this.m12)/w)-i_q.y;//YP
+		NyARDoublePoint2d ref=i_ptr.ref;
+    	double w = this.m20*ref.x + this.m21*ref.y + this.m22;
+        double vx = ((this.m00*ref.x + this.m01*ref.y + this.m02)/w)-i_ptr.query.x;//XP
+        double vy = ((this.m10*ref.x + this.m11*ref.y + this.m12)/w)-i_ptr.query.y;//YP
 		double T= Math.log(1 + (vx * vx + vy * vy) * i_one_over_scale2);
 		return T;
-	}	
+	}
 	
 }

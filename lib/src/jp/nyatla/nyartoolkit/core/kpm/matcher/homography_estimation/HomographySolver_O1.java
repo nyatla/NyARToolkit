@@ -1,7 +1,7 @@
 package jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation;
 
+import jp.nyatla.nyartoolkit.core.kpm.matcher.FeaturePairStack;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.HomographyMat;
-import jp.nyatla.nyartoolkit.core.math.NyARMath;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 
@@ -35,14 +35,13 @@ final public class HomographySolver_O1 extends HomographySolver
 	 * Solve for the homography given 4 point correspondences.
 	 */
 	@Override
-	public boolean solveHomography4Points(HomographyMat H, NyARDoublePoint2d x1, NyARDoublePoint2d x2,
-			NyARDoublePoint2d x3, NyARDoublePoint2d x4, NyARDoublePoint2d xp1, NyARDoublePoint2d xp2, NyARDoublePoint2d xp3,
-			NyARDoublePoint2d xp4) {
+	public boolean solveHomography4Points(FeaturePairStack.Item p1, FeaturePairStack.Item p2, FeaturePairStack.Item p3, FeaturePairStack.Item p4,HomographyMat H)
+	{
 
 		NyARDoublePoint2d[] a1=this._a1;
 		NyARDoublePoint2d[] a2=this._a2;
-		a1[0]=x1;a1[1]=x2;a1[2]=x3;a1[3]=x4;
-		a2[0]=xp1;a2[1]=xp2;a2[2]=xp3;a2[3]=xp4;
+		a1[0]=p1.ref;a1[1]=p2.ref;a1[2]=p3.ref;a1[3]=p4.ref;
+		a2[0]=p1.query;a2[1]=p2.query;a2[2]=p3.query;a2[3]=p4.query;
 		double mus1_0=0;
 		double mus1_1=0;
 		double mus2_0=0;
