@@ -152,7 +152,7 @@ public class RobustHomography {
 
 		// Shuffle the indices
 		random.ArrayShuffle(tmp_i, hyp_perm, num_points, num_points);
-		random.ArrayShuffle(tmp_i, point_perm, num_points, num_points);
+//		random.ArrayShuffle(tmp_i, point_perm, num_points, num_points);//この行を有効化するとテスト結果値は962になる。
 
 		// Compute a set of hypotheses
 		for (trial = 0, num_hypotheses = 0; trial < max_trials
