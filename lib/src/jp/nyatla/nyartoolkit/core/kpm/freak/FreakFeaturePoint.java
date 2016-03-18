@@ -1,11 +1,12 @@
 package jp.nyatla.nyartoolkit.core.kpm.freak;
 
 import jp.nyatla.nyartoolkit.core.kpm.LongDescripter768;
+import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 
 /**
  * Represents a feature point in the visual database.
  */
-public class FreakFeaturePoint
+public class FreakFeaturePoint extends NyARDoublePoint2d
 {
     final public LongDescripter768 descripter=new LongDescripter768();
 
@@ -22,10 +23,7 @@ public class FreakFeaturePoint
 		this.maxima=i_src.maxima;
     	this.descripter.setValue(i_src.descripter);
 	}
-	/** 
-     * The (x,y) location of the center of the feature.
-     */
-    public double x, y;
+
 
     /**
      * The orientation of the feature in the range [0,2*pi)
