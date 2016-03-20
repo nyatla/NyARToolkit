@@ -1,12 +1,11 @@
 package jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation;
 
+import jp.nyatla.nyartoolkit.core.kpm.matcher.HomographyMat;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 
 public class HomographyPointsCheck
 {
-
-
     /**
      * Check the geometric consistency between three correspondences.
      */
@@ -30,7 +29,7 @@ public class HomographyPointsCheck
 	 * @param i_height
 	 * @return
 	 */
-    public boolean geometricallyConsistent(NyARDoubleMatrix33 H)
+    public boolean geometricallyConsistent(HomographyMat H)
     {
     	NyARDoublePoint2d[] x= NyARDoublePoint2d.createArray(4);
 		x[0].x = 0;
@@ -58,8 +57,7 @@ public class HomographyPointsCheck
         
         //
         // Check the first 3 points
-        //
-        
+        //        
         MultiplyPointHomographyInhomogenous(xp1, H,x[x1_ptr]);
         MultiplyPointHomographyInhomogenous(xp2, H,x[x1_ptr+1]);
         MultiplyPointHomographyInhomogenous(xp3, H,x[x1_ptr+2]);

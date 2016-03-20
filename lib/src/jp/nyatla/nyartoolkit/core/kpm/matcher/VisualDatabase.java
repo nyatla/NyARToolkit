@@ -4,23 +4,20 @@ import java.util.Map;
 
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.FreakMatchPointSetStack;
-import jp.nyatla.nyartoolkit.core.kpm.keyframe.FreakMatchPointSetStack.Item;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.Keyframe;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.KeyframeMap;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation.RobustHomography;
-import jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation.geometry;
-import jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation.homography;
 
 
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
-import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
+
 
 public class VisualDatabase
 {
 	private static int kHomographyInlierThreshold = 3;
 	private static int kMinNumInliers = 8;
-
 	private static boolean kUseFeatureIndex = true;
+
 	private int mMinNumInliers;
 	private double mHomographyInlierThreshold;
 	//
@@ -30,14 +27,15 @@ public class VisualDatabase
 
 	/** Feature matcher */
 	final BinaryFeatureMatcher mMatcher=new BinaryFeatureMatcher();
+	// Robust homography estimation
+	final RobustHomography mRobustHomography=new RobustHomography();
 
 	/** Similarity voter*/
 	final private HoughSimilarityVoting mHoughSimilarityVoting;
-	
+	final private FindInliers _find_inliner;
 	
 	public VisualDatabase(int i_width,int i_height)
 	{		
-		this.mHomographyInlierThreshold = kHomographyInlierThreshold;
 		this.mMinNumInliers = kMinNumInliers;
 		this.mUseFeatureIndex = kUseFeatureIndex;
 		//
@@ -46,18 +44,22 @@ public class VisualDatabase
 		this.mHoughSimilarityVoting=new HoughSimilarityVoting(-dx, dx, -dy, dy, 0, 0, 12, 10);		
 		this._tmp_pair_stack[0]=new FeaturePairStack(300);
 		this._tmp_pair_stack[1]=new FeaturePairStack(300);
+		this._find_inliner=new FindInliers(kHomographyInlierThreshold);
 		return;
 	}
 
 	/**
 	 * 2chの一時バッファ
 	 */
-	private final FeaturePairStack[] _tmp_pair_stack=new FeaturePairStack[2];
+	final private FeaturePairStack[] _tmp_pair_stack=new FeaturePairStack[2];
+	final private HomographyMat _H = new HomographyMat();
+	final private InverseHomographyMat _hinv=new InverseHomographyMat();
 
 	public boolean query(FreakFeaturePointStack query_keyframe,KeyframeMap i_keymap,FeaturePairStack i_result)
 	{
 		// mMatchedInliers.clear();
-		HomographyMat H = new HomographyMat();
+		HomographyMat H = this._H;
+		InverseHomographyMat hinv=this._hinv;
 		
 		int num_of_query_frame=query_keyframe.getLength();
 		//ワークエリアの設定
@@ -86,18 +88,17 @@ public class VisualDatabase
 			}
 
 			// Vote for a transformation based on the correspondences
-			if(!this.mHoughSimilarityVoting.extractHoughMatches(match_result,second.width(), second.height())){
+			if(!this.mHoughSimilarityVoting.extractMatches(match_result,second.width(), second.height())){
 				continue;
 			}
 			
 
 			// Estimate the transformation between the two images
-			if (!EstimateHomography(H, match_result,second.width(), second.height())) {
+			if (!this.mRobustHomography.PreemptiveRobustHomography(H, match_result,second.width(), second.height())) {
 				continue;
 			}
 			
 			//ここでHInv計算
-			InverseHomographyMat hinv=new InverseHomographyMat();
 			if(!hinv.inverse(H)){
 				continue;
 			}
@@ -107,11 +108,8 @@ public class VisualDatabase
 				continue;
 			}
 			
-			//
 			// Find the inliers
-			//
-
-			FindInliers(H, match_result,mHomographyInlierThreshold);
+			this._find_inliner.extructMatches(H, match_result);
 			if (match_result.getLength() < mMinNumInliers) {
 				continue;
 			}
@@ -130,7 +128,7 @@ public class VisualDatabase
 			//
 
 			// TIMED("Hough Voting (2)") {
-			if(!this.mHoughSimilarityVoting.extractHoughMatches(match_result,second.width(), second.height())){
+			if(!this.mHoughSimilarityVoting.extractMatches(match_result,second.width(), second.height())){
 				continue;
 			}
 
@@ -138,7 +136,7 @@ public class VisualDatabase
 			// Re-estimate the homography
 			//
 
-			if (!EstimateHomography(H, match_result,second.width(), second.height())) {
+			if (!this.mRobustHomography.PreemptiveRobustHomography(H, match_result,second.width(), second.height())) {
 				continue;
 			}
 			// Apply some heuristics to the homography
@@ -150,9 +148,7 @@ public class VisualDatabase
 			}
 			//
 			// Check if this is the best match based on number of inliers
-			//
-
-			FindInliers(H, match_result,mHomographyInlierThreshold);
+			this._find_inliner.extructMatches(H, match_result);
 
 			//ポイント数が最小値より大きい&&最高成績ならテンポラリチャンネルを差し替える。
 			if (match_result.getLength() >= mMinNumInliers && match_result.getLength() > last_inliers) {
@@ -179,83 +175,5 @@ public class VisualDatabase
 
 		return true;
 	}
-	// Robust homography estimation
-	final RobustHomography mRobustHomography=new RobustHomography();
-
-	/**
-	 * Find the inliers given a homography and a set of correspondences.
-	 */
-	private void FindInliers(HomographyMat H, FeaturePairStack matches, double threshold) {
-		double threshold2 = (threshold*threshold);
-		NyARDoublePoint2d xp = new NyARDoublePoint2d();// float xp[2];
-		//前方詰め
-
-		int pos=0;
-		for (int i = 0; i < matches.getLength(); i++) {
-
-
-			MultiplyPointHomographyInhomogenous(xp, H,matches.getItem(i).ref.x,matches.getItem(i).ref.y);
-			double t1=xp.x- matches.getItem(i).query.x;
-			double t2=xp.y- matches.getItem(i).query.y;
-
-			double d2 = (t1*t1)+ (t2*t2);
-			if (d2 <= threshold2) {
-				matches.swap(i,pos);
-				pos++;
-			
-			}
-		}
-		matches.setLength(pos);
-		return;
-	}
-    /**
-     * Multiply an in-homogenous point by a similarity.
-     * H[9] この関数は実装済みだからあとで消す。
-     */
-    private static void MultiplyPointHomographyInhomogenous(NyARDoublePoint2d v, NyARDoubleMatrix33 H, double x, double y) {
-    	double w = H.m20*x + H.m21*y + H.m22;
-        v.x = (H.m00*x + H.m01*y + H.m02)/w;//XP
-        v.y = (H.m10*x + H.m11*y + H.m12)/w;//YP
-    }
-
-	
-	
-
-	/**
-	 * Estimate the homography between a set of correspondences.
-	 */
-	private boolean EstimateHomography(HomographyMat H,FeaturePairStack matches, int refWidth, int refHeight) {
-
-		NyARDoublePoint2d[] srcPoints = NyARDoublePoint2d.createArray(matches.getLength());
-		NyARDoublePoint2d[] dstPoints = NyARDoublePoint2d.createArray(matches.getLength());
-	
-		
-		//
-		// Copy correspondences
-		//
-
-		for (int i = 0; i < matches.getLength(); i++) {
-			dstPoints[i].x = matches.getItem(i).query.x;
-			dstPoints[i].y = matches.getItem(i).query.y;
-			srcPoints[i].x = matches.getItem(i).ref.x;
-			srcPoints[i].y = matches.getItem(i).ref.y;
-		}
-
-		//
-		// Compute the homography
-		//
-		// if(!estimator.find(H, (float*)&srcPoints[0], (float*)&dstPoints[0],
-		// (int)matches.size(), test_points, 4)) {
-//		if (!this.mRobustHomography.find(H, srcPoints, dstPoints, (int) matches.getLength(),refWidth,refHeight)) {		
-		if (!this.mRobustHomography.PreemptiveRobustHomography(H, matches,refWidth,refHeight))
-		{
-			return false;
-		}
-
-
-
-		return true;
-	}
-
 
 }

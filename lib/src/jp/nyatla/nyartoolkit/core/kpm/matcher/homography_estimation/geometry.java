@@ -1,11 +1,14 @@
 package jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation;
 
 
-import jp.nyatla.nyartoolkit.core.kpm.vision.match.indexing;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 
 
 public class geometry {
+
+
+
+
     /**
 	 * Find which side of a line a point is on (+,-).
 	 *
@@ -20,56 +23,4 @@ public class geometry {
 	}
    	
 
-    /**
-     * Subtract two vectors.
-     */
-    static void SubVector2(NyARDoublePoint2d c, NyARDoublePoint2d a, NyARDoublePoint2d b) {
-		c.x = a.x - b.x;
-		c.y = a.y - b.y;
-	}
-    /**
-     * Compute the area of a triangle.
-     */
-    static double AreaOfTriangle(NyARDoublePoint2d u,NyARDoublePoint2d v) {
-//		T a = u[0]*v[1] - u[1]*v[0];
-    	double a = u.x*v.y - u.y*v.x;
-		return (double) (Math.abs(a)*0.5);
-	}
-	/**
-	 * Find the smallest area for each triangle formed by 4 points.
-	 */
-	public static double SmallestTriangleArea(NyARDoublePoint2d x1, NyARDoublePoint2d x2, NyARDoublePoint2d x3,NyARDoublePoint2d x4)
-	{
-		NyARDoublePoint2d v12=new NyARDoublePoint2d();
-		NyARDoublePoint2d v13=new NyARDoublePoint2d();
-		NyARDoublePoint2d v14=new NyARDoublePoint2d();
-		NyARDoublePoint2d v32=new NyARDoublePoint2d();
-		NyARDoublePoint2d v34=new NyARDoublePoint2d();
-	    
-		SubVector2(v12, x2, x1);
-		SubVector2(v13, x3, x1);
-		SubVector2(v14, x4, x1);
-		SubVector2(v32, x2, x3);
-		SubVector2(v34, x4, x3);
-		
-		double a1 = AreaOfTriangle(v12, v13);
-		double a2 = AreaOfTriangle(v13, v14);
-		double a3 = AreaOfTriangle(v12, v14);
-	    double a4 = AreaOfTriangle(v32, v34);
-		
-		return indexing.min4(a1, a2, a3, a4);
-	}
-    /**
-     * Check if four points form a convex quadrilaternal.
-     */
-    public static boolean QuadrilateralConvex(NyARDoublePoint2d x1,NyARDoublePoint2d x2,NyARDoublePoint2d x3,NyARDoublePoint2d x4) {
-        int s;
-        
-        s  = LinePointSide(x1, x2, x3) > 0 ? 1 : -1;
-        s += LinePointSide(x2, x3, x4) > 0 ? 1 : -1;
-        s += LinePointSide(x3, x4, x1) > 0 ? 1 : -1;
-        s += LinePointSide(x4, x1, x2) > 0 ? 1 : -1;
-        
-        return (Math.abs(s) == 4);
-    }
 }

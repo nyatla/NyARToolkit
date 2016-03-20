@@ -251,7 +251,7 @@ public class HoughSimilarityVoting {
 			return r;
 		}
 	}
-	public boolean extractHoughMatches(FeaturePairStack i_matche_resule,int refWidth, int refHeight)	
+	public boolean extractMatches(FeaturePairStack i_matche_resule,int refWidth, int refHeight)	
 	{
 		int max_hough_index = -1;
 		max_hough_index = this.FindHoughSimilarity(i_matche_resule,refWidth,refHeight);

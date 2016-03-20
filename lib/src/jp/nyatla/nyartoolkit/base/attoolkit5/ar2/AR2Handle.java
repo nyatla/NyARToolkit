@@ -810,7 +810,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 		}
 		err = ar2GetTransMat(this._icp, this.trans1, this.pos2d, this.pos3d, num, trans);
 //CheckPoint(20160307)
-		System.out.println(err==2.1303838027020645);
+//		System.out.println(err==2.1303838027020645);
 	
 
 //
@@ -1557,7 +1557,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 			String fsetfile="../Data/testcase/pinball.fset";
 			String isetfile="../Data/testcase/pinball.iset5";
 			//カメラパラメータ
-			NyARParam param=NyARParam.loadFromARParamFile(new FileInputStream(cparam),640,480,NyARParam.DISTFACTOR_LT_ARTK5);
+			NyARParam param=NyARParam.loadFromARParamFile(new FileInputStream(cparam),640,480,NyARParam.DISTFACTOR_RAW);
 			NyARDoublePoint2d d=new NyARDoublePoint2d();
 			param.getDistortionFactor().ideal2Observ(100,100, d);
 			param.getDistortionFactor().observ2Ideal(100,100, d);
@@ -1582,10 +1582,14 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 			tracking.ar2SetTemplateSize1(6);
 			tracking.ar2SetTemplateSize2(6);
 			//validation test
-			{
-				tracking.setInitialTransmat(SRC_MAT);
-				ret.setValue(SRC_MAT);
-				tracking.ar2Tracking(gs, ret);
+			for(int j=0;j<10;j++){
+				long s=System.currentTimeMillis();
+				for(int i=0;i<3000;i++){
+					tracking.setInitialTransmat(SRC_MAT);
+					ret.setValue(SRC_MAT);
+					tracking.ar2Tracking(gs, ret);
+				}
+				System.out.println(System.currentTimeMillis()-s);
 				System.out.println(ret.equals(DEST_MAT));
 			}
 		} catch (Exception e) {

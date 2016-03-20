@@ -5,7 +5,6 @@ import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.BinaryHierarchicalClustering;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.FreakMatchPointSetStack;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
-import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 
 
 public class BinaryFeatureMatcher
@@ -23,8 +22,6 @@ public class BinaryFeatureMatcher
 	 */
 	public int match(FreakFeaturePointStack i_query, FreakMatchPointSetStack i_ref,FeaturePairStack i_maches)
 	{
-
-
 		if (i_query.getLength() == 0 || i_ref.getLength() == 0) {
 			return 0;
 		}
@@ -90,7 +87,6 @@ public class BinaryFeatureMatcher
 			return 0;
 		}
 
-		// mMatches.reserve(features1.size());
 		for (int i = 0; i < i_query.getLength(); i++) {
 			int first_best = Integer.MAX_VALUE;// std::numeric_limits<unsigned int>::max();
 			int second_best = Integer.MAX_VALUE;// std::numeric_limits<unsigned int>::max();
@@ -99,7 +95,6 @@ public class BinaryFeatureMatcher
 			// Perform an indexed nearest neighbor lookup
 			FreakFeaturePoint fptr1 = i_query.getItem(i);
 			index2.query(fptr1.descripter);
-
 
 			// Search for 1st and 2nd best match
 			int[] v = index2.reverseIndex();
@@ -162,12 +157,10 @@ public class BinaryFeatureMatcher
 
 
 		NyARDoublePoint2d tmp = new NyARDoublePoint2d();
-		// mMatches.reserve(features1.size());
 		for (int i = 0; i < i_query.getLength(); i++) {
 			int first_best = Integer.MAX_VALUE;// std::numeric_limits<unsigned int>::max();
 			int second_best = Integer.MAX_VALUE;// std::numeric_limits<unsigned int>::max();
 			int best_index = Integer.MAX_VALUE;// std::numeric_limits<int>::max();
-
 
 			FreakFeaturePoint fptr1 = i_query.getItem(i);
 
@@ -190,8 +183,6 @@ public class BinaryFeatureMatcher
 					continue;
 				}
 
-				// ASSERT(FEATURE_SIZE == 96, "Only 96 bytes supported now");
-				// int d = HammingDistance768((unsigned int*)f1,(unsigned int*)features2->feature(j));
 				int d = fptr1.descripter.hammingDistance(fptr2.descripter);
 				if (d < first_best) {
 					second_best = first_best;
@@ -204,7 +195,6 @@ public class BinaryFeatureMatcher
 
 			// Check if FIRST_BEST has been set
 			if (first_best != Integer.MAX_VALUE) {
-				// ASSERT(best_index != std::numeric_limits<size_t>::max(), "Something strange");
 
 				// If there isn't a SECOND_BEST, then always choose the FIRST_BEST.
 				// Otherwise, do a ratio test.
@@ -212,12 +202,10 @@ public class BinaryFeatureMatcher
 					FeaturePairStack.Item t = i_maches.prePush();
 					t.query=i_query.getItem(i);
 					t.ref=i_ref.getItem(best_index);
-					// mMatches.push_back(match_t((int)i, best_index));
 				} else {
 					// Ratio test
 					double r = (double) first_best / (double) second_best;
 					if (r < this.mThreshold) {
-						// mMatches.push_back(match_t((int)i, best_index));
 						FeaturePairStack.Item t = i_maches.prePush();
 						t.query=i_query.getItem(i);
 						t.ref=i_ref.getItem(best_index);
@@ -225,12 +213,6 @@ public class BinaryFeatureMatcher
 				}
 			}
 		}
-		// ASSERT(mMatches.size() <= features1->size(), "Number of matches should be lower");
 		return i_maches.getLength();
 	}
-
-
-
-
-
 }

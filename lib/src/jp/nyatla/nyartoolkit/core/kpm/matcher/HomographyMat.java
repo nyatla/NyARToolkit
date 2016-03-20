@@ -65,6 +65,19 @@ public class HomographyMat extends NyARDoubleMatrix33
 		this.m22 = this.m22 - this.m20 * ts[0] - this.m21 * ts[1];
 		return;
 	}
+	public double cauchyProjectiveReprojectionCostSum(FeaturePairStack.Item[] i_array,int i_s,int i_e,double i_one_over_scale2)
+	{
+		double ret=0;
+		for(int i=i_s;i<i_e;i++){
+			NyARDoublePoint2d ref=i_array[i].ref;
+			NyARDoublePoint2d query=i_array[i].query;
+	    	double w = this.m20*ref.x + this.m21*ref.y + this.m22;
+	        double vx = ((this.m00*ref.x + this.m01*ref.y + this.m02)/w)-query.x;//XP
+	        double vy = ((this.m10*ref.x + this.m11*ref.y + this.m12)/w)-query.y;//YP
+			ret+= Math.log(1 + (vx * vx + vy * vy) * i_one_over_scale2);
+		}
+		return ret;
+	}
 	public double cauchyProjectiveReprojectionCost(FeaturePairStack.Item i_ptr, double i_one_over_scale2)
 	{
 		NyARDoublePoint2d ref=i_ptr.ref;
@@ -72,7 +85,12 @@ public class HomographyMat extends NyARDoubleMatrix33
         double vx = ((this.m00*ref.x + this.m01*ref.y + this.m02)/w)-i_ptr.query.x;//XP
         double vy = ((this.m10*ref.x + this.m11*ref.y + this.m12)/w)-i_ptr.query.y;//YP
 		double T= Math.log(1 + (vx * vx + vy * vy) * i_one_over_scale2);
-		return T;
+		return T;		
 	}
-	
+	public void multiplyPointHomographyInhomogenous(double i_x, double i_y, NyARDoublePoint2d i_dest)
+	{
+		double w = this.m20 * i_x + this.m21 * i_y + this.m22;
+		i_dest.x = (this.m00 * i_x + this.m01 * i_y + this.m02) / w;// XP
+		i_dest.y = (this.m10 * i_x + this.m11 * i_y + this.m12) / w;// YP
+	}	
 }

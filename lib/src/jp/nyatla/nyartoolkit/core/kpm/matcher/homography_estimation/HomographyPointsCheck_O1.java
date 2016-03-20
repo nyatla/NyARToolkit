@@ -1,7 +1,7 @@
 package jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation;
 
+import jp.nyatla.nyartoolkit.core.kpm.matcher.HomographyMat;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
-import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 
 public class HomographyPointsCheck_O1 extends HomographyPointsCheck
 {
@@ -11,6 +11,7 @@ public class HomographyPointsCheck_O1 extends HomographyPointsCheck
      */
     private static boolean Homography3PointsGeometricallyConsistent(NyARDoublePoint2d x1, NyARDoublePoint2d x2, NyARDoublePoint2d x3,NyARDoublePoint2d x1p, NyARDoublePoint2d x2p, NyARDoublePoint2d x3p)
     {
+    	//TODO 1は常に+だからbが+であるかだけをチェックすればいい。
     	double a=((x2.x-x1.x)*(x3.y-x1.y)-(x2.y-x1.y)*(x3.x-x1.x));
     	double b=((x2p.x-x1p.x)*(x3p.y-x1p.y)-(x2p.y-x1p.y)*(x3p.x-x1p.x));
         if((a>0) ^ (b>0) == true) {
@@ -43,7 +44,7 @@ public class HomographyPointsCheck_O1 extends HomographyPointsCheck
 	 * @return
 	 */
     @Override
-    public boolean geometricallyConsistent(NyARDoubleMatrix33 H)
+    public boolean geometricallyConsistent(HomographyMat H)
     {
     	NyARDoublePoint2d[] x= this._x;
     	NyARDoublePoint2d[] xp=this._xp;  
