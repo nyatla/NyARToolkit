@@ -11,7 +11,8 @@ import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
 import jp.nyatla.nyartoolkit.core.math.NyARLCGsRandomizer;
 import jp.nyatla.nyartoolkit.j2se.ArrayUtils;
 
-public class BinaryHierarchicalClustering {
+public class BinaryHierarchicalClustering
+{
 	public class Queue extends PriorityQueue<PriorityQueueItem> {
 		private static final long serialVersionUID = 6120329703806461621L;
 
@@ -61,7 +62,7 @@ public class BinaryHierarchicalClustering {
 	// kmedoids_t mBinarykMedoids;
 	//
 	// Reverse index for query
-	int[] mQueryReverseIndex;
+	private int[] mQueryReverseIndex;
 	//
 	// Node queue
 	private Queue mQueue = new Queue();
@@ -117,7 +118,7 @@ public class BinaryHierarchicalClustering {
 		}
 	}
 
-	void build(FreakMatchPointSetStack features) {
+	public void build(FreakMatchPointSetStack features) {
 		int[] indices = new int[features.getLength()];
 		for (int i = 0; i < indices.length; i++) {
 			indices[i] = (int) i;

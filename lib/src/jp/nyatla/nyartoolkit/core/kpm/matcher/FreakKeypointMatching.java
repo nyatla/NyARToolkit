@@ -16,6 +16,8 @@ import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.FreakMatchPointSetStack;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.Keyframe;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.KeyframeMap;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.binaryfeature.BinaryHirerarchialClusteringMatcher;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.binaryfeature.BinaryFeatureMatcher;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation.RobustHomography;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.BinomialPyramid32f;
 
@@ -52,16 +54,15 @@ public class FreakKeypointMatching {
 
 	private static int kHomographyInlierThreshold = 3;
 	private static int kMinNumInliers = 8;
-	private static boolean kUseFeatureIndex = true;
+
 
 	private int mMinNumInliers;
-	//
-	// Set to true if the feature index is enabled
-	private boolean mUseFeatureIndex;
+
+
 
 
 	/** Feature matcher */
-	final BinaryFeatureMatcher mMatcher=new BinaryFeatureMatcher();
+	final private BinaryFeatureMatcher _matcher;
 	// Robust homography estimation
 	final RobustHomography mRobustHomography=new RobustHomography();
 	final private HomographyMat _H = new HomographyMat();
@@ -86,7 +87,7 @@ public class FreakKeypointMatching {
 		this._dog_detector = new DoGScaleInvariantDetector(size.w,size.h,octerves,3,kLaplacianThreshold,kEdgeThreshold,kMaxNumFeatures);
 		
 		this.mMinNumInliers = kMinNumInliers;
-		this.mUseFeatureIndex = kUseFeatureIndex;
+
 		//
 
 		this._tmp_pair_stack[0]=new FeaturePairStack(300);
@@ -95,6 +96,9 @@ public class FreakKeypointMatching {
 		double dx = size.w + (size.w * 0.2f);
 		double dy = size.h + (size.h * 0.2f);
 		this.mHoughSimilarityVoting=new HoughSimilarityVoting(-dx, dx, -dy, dy, 0, 0, 12, 10);		
+		this._matcher=new BinaryHirerarchialClusteringMatcher();
+//		this._matcher=new BinaryFeatureMatcher();
+
 	}
 	
 
@@ -151,15 +155,12 @@ public class FreakKeypointMatching {
 			FreakMatchPointSetStack ref_points = second.getFeaturePointSet();
 			//新しいワークエリアを作る。
 			FeaturePairStack match_result=this._tmp_pair_stack[tmp_ch];
+			//ワークエリア初期化
 			match_result.clear();
-			if (mUseFeatureIndex) {
-				if (mMatcher.match(query_keyframe,ref_points,second.getIndex(),match_result) < this.mMinNumInliers) {
-					continue;
-				}
-			} else {
-				if (mMatcher.match(query_keyframe,ref_points,match_result) < mMinNumInliers) {
-					continue;
-				}
+
+			//特徴量同士のマッチング
+			if (this._matcher.match(query_keyframe,second,match_result) < this.mMinNumInliers) {
+				continue;
 			}
 
 			// Vote for a transformation based on the correspondences
@@ -192,7 +193,7 @@ public class FreakKeypointMatching {
 			//
 			// Use the estimated homography to find more inliers
 			match_result.clear();
-			if (mMatcher.match(query_keyframe, ref_points, hinv, 10,match_result) < mMinNumInliers) {
+			if (_matcher.match(query_keyframe, ref_points, hinv, 10,match_result) < mMinNumInliers) {
 				continue;
 			}
 
