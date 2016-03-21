@@ -26,10 +26,10 @@ public class RobustHomography {
 		}
 		this.mHypCosts = CostPair.createArray(maxNumHypotheses);
 
-		mCauchyScale = cauchyScale;
-		mMaxNumHypotheses = maxNumHypotheses;
-		mMaxTrials = maxTrials;
-		mChunkSize = chunkSize;
+		this.mCauchyScale = cauchyScale;
+		this.mMaxNumHypotheses = maxNumHypotheses;
+		this.mMaxTrials = maxTrials;
+		this.mChunkSize = chunkSize;
 	}
 
 
@@ -82,10 +82,10 @@ public class RobustHomography {
 		RansacPointTable ps=this._ps;
 //		int[] tmp_i=new int[2 * num_points];
 		HomographyMat[] hyp=this.mHyp;/* 9*max_num_hypotheses */
-		CostPair[] hyp_costs=mHypCosts;
-		double scale=mCauchyScale;
-		int max_num_hypotheses=mMaxNumHypotheses;
-		int max_trials=mMaxTrials;
+		CostPair[] hyp_costs=this.mHypCosts;
+		double scale=this.mCauchyScale;
+		int max_num_hypotheses=this.mMaxNumHypotheses;
+		int max_trials=this.mMaxTrials;
 		
 		
 		double one_over_scale2 = 1 / (scale*scale);

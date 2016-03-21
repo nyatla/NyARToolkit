@@ -7,7 +7,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
  */
 public class FindInliers
 {
-	final private double _threshold2;
+	final protected double _threshold2;
 	public FindInliers(double i_threshold){
 		this._threshold2=i_threshold*i_threshold;
 	}

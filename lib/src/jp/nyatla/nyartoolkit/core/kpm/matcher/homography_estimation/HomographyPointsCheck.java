@@ -1,6 +1,7 @@
 package jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation;
 
 import jp.nyatla.nyartoolkit.core.kpm.matcher.HomographyMat;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.Geometry;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 
@@ -11,7 +12,7 @@ public class HomographyPointsCheck
      */
     private static boolean Homography3PointsGeometricallyConsistent(NyARDoublePoint2d x1, NyARDoublePoint2d x2, NyARDoublePoint2d x3,NyARDoublePoint2d x1p, NyARDoublePoint2d x2p, NyARDoublePoint2d x3p)
     {
-        if(((geometry.LinePointSide(x1, x2, x3) > 0) ^ (geometry.LinePointSide(x1p, x2p, x3p) > 0)) == true) {
+        if(((Geometry.LinePointSide(x1, x2, x3) > 0) ^ (Geometry.LinePointSide(x1p, x2p, x3p) > 0)) == true) {
             return false;
         }
         return true;

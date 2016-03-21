@@ -1,6 +1,5 @@
 package jp.nyatla.nyartoolkit.core.kpm.matcher;
 
-import jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation.geometry;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 
@@ -49,10 +48,10 @@ public class InverseHomographyMat extends NyARDoubleMatrix33 {
     public static boolean QuadrilateralConvex(NyARDoublePoint2d x1,NyARDoublePoint2d x2,NyARDoublePoint2d x3,NyARDoublePoint2d x4) {
         int s;
         
-        s  = geometry.LinePointSide(x1, x2, x3) > 0 ? 1 : -1;
-        s += geometry.LinePointSide(x2, x3, x4) > 0 ? 1 : -1;
-        s += geometry.LinePointSide(x3, x4, x1) > 0 ? 1 : -1;
-        s += geometry.LinePointSide(x4, x1, x2) > 0 ? 1 : -1;
+        s  = Geometry.LinePointSide(x1, x2, x3) > 0 ? 1 : -1;
+        s += Geometry.LinePointSide(x2, x3, x4) > 0 ? 1 : -1;
+        s += Geometry.LinePointSide(x3, x4, x1) > 0 ? 1 : -1;
+        s += Geometry.LinePointSide(x4, x1, x2) > 0 ? 1 : -1;
         
         return (Math.abs(s) == 4);
     }

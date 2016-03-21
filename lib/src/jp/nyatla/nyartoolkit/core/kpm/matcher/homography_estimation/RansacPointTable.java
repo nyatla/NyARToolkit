@@ -1,6 +1,7 @@
 package jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation;
 
 import jp.nyatla.nyartoolkit.core.kpm.matcher.FeaturePairStack;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.Geometry;
 
 /**
  * 4ポイントを選択するテーブル
@@ -62,13 +63,13 @@ public class RansacPointTable
 		FeaturePairStack.Item p2=this.indics[1];
 		FeaturePairStack.Item p3=this.indics[2];
 		FeaturePairStack.Item p4=this.indics[3];
-        if(((geometry.LinePointSide(p1.ref,p2.ref, p3.ref) > 0) ^ (geometry.LinePointSide(p1.query,p2.query,p3.query) > 0)) == true)
+        if(((Geometry.LinePointSide(p1.ref,p2.ref, p3.ref) > 0) ^ (Geometry.LinePointSide(p1.query,p2.query,p3.query) > 0)) == true)
             return false;
-        if(((geometry.LinePointSide(p2.ref, p3.ref, p4.ref) > 0) ^ (geometry.LinePointSide(p2.query, p3.query, p4.query) > 0)) == true)
+        if(((Geometry.LinePointSide(p2.ref, p3.ref, p4.ref) > 0) ^ (Geometry.LinePointSide(p2.query, p3.query, p4.query) > 0)) == true)
             return false;
-        if(((geometry.LinePointSide(p3.ref, p4.ref, p1.ref) > 0) ^ (geometry.LinePointSide(p3.query, p4.query, p1.query) > 0)) == true)
+        if(((Geometry.LinePointSide(p3.ref, p4.ref, p1.ref) > 0) ^ (Geometry.LinePointSide(p3.query, p4.query, p1.query) > 0)) == true)
             return false;
-        if(((geometry.LinePointSide(p4.ref, p1.ref, p2.ref) > 0) ^ (geometry.LinePointSide(p4.query, p1.query, p2.query) > 0)) == true)
+        if(((Geometry.LinePointSide(p4.ref, p1.ref, p2.ref) > 0) ^ (Geometry.LinePointSide(p4.query, p1.query, p2.query) > 0)) == true)
             return false;
         return true;
     }		
