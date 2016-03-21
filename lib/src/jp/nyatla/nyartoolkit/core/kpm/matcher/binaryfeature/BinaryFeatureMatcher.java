@@ -101,7 +101,6 @@ public class BinaryFeatureMatcher
 		int q_len=i_query.getLength();
 		int r_len=i_ref.getLength();
 
-		NyARDoublePoint2d tmp = new NyARDoublePoint2d();
 		for (int i = 0; i < q_len; i++) {
 			int first_best = Integer.MAX_VALUE;// std::numeric_limits<unsigned int>::max();
 			int second_best = Integer.MAX_VALUE;// std::numeric_limits<unsigned int>::max();
@@ -110,7 +109,13 @@ public class BinaryFeatureMatcher
 			FreakFeaturePoint fptr1 = query_buf[i];
 
 			// Map p1 to p2 space through H
-			i_hinv.multiplyPointHomographyInhomogenous(fptr1.x, fptr1.y, tmp);
+			//i_hinv.multiplyPointHomographyInhomogenous(fptr1.x, fptr1.y, tmp);
+			double qx,qy;
+			{
+				double w = i_hinv.m20 * fptr1.x + i_hinv.m21 * fptr1.y + i_hinv.m22;
+				qx = (i_hinv.m00 * fptr1.x + i_hinv.m01 * fptr1.y + i_hinv.m02) / w;// XP
+				qy = (i_hinv.m10 * fptr1.x + i_hinv.m11 * fptr1.y + i_hinv.m12) / w;// YP				
+			}
 			
 
 			// Search for 1st and 2nd best match
@@ -121,8 +126,8 @@ public class BinaryFeatureMatcher
 				if (fptr1.maxima != fptr2.maxima) {
 					continue;
 				}
-				double tx=(tmp.x - fptr2.x);
-				double ty=(tmp.y - fptr2.y);
+				double tx=(qx - fptr2.x);
+				double ty=(qy - fptr2.y);
 				// Check spatial constraint
 				if ((tx*tx)+(ty*ty) > tr_sqr) {
 					continue;

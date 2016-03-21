@@ -30,22 +30,7 @@ public class BinaryHierarchicalClustering
 		this.mBinarykMedoids = new BinarykMedoids(i_feature_num,new NyARLCGsRandomizer(1234), 8, i_NumHypotheses);
 	}
 
-	/**
-	 * Query the tree for a reverse index.
-	 */
-	public int query(LongDescripter768 feature) {
-		mNumNodesPopped = 0;
-		mQueryReverseIndex = new int[0];
 
-		// while(!mQueue.empty()) {
-		// mQueue.pop();
-		// }
-		this.mQueue.clear();
-
-		this.query(mQueue, mRoot, feature);
-
-		return (int) mQueryReverseIndex.length;
-	}
 
 	// /**
 	// * @return Reverse index after a QUERY.
@@ -104,7 +89,7 @@ public class BinaryHierarchicalClustering
 			NodePtrStack nodes = new NodePtrStack(1000);
 			node.nearest(nodes, queue, feature);
 			for (int i = 0; i < nodes.getLength(); i++) {
-				query(queue, nodes.getItem(i), feature);
+				this.query(queue, nodes.getItem(i), feature);
 			}
 
 			// Pop a node from the queue
@@ -113,11 +98,26 @@ public class BinaryHierarchicalClustering
 				Node q = queue.poll().node();// pop();
 				// queue.pop();
 				this.mNumNodesPopped++;
-				query(queue, q, feature);
+				this.query(queue, q, feature);
 			}
 		}
 	}
+	/**
+	 * Query the tree for a reverse index.
+	 */
+	public int query(LongDescripter768 feature) {
+		mNumNodesPopped = 0;
+		mQueryReverseIndex = new int[0];
 
+		// while(!mQueue.empty()) {
+		// mQueue.pop();
+		// }
+		this.mQueue.clear();
+
+		this.query(mQueue, mRoot, feature);
+
+		return (int) mQueryReverseIndex.length;
+	}
 	public void build(FreakMatchPointSetStack features) {
 		int[] indices = new int[features.getLength()];
 		for (int i = 0; i < indices.length; i++) {
