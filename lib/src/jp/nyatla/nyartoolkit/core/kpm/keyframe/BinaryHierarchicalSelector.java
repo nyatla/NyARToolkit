@@ -54,15 +54,15 @@ public class BinaryHierarchicalSelector
 	 */
 	private void query(Queue queue, BinaryHierarchicalNode node, LongDescripter768 feature) {
 
-		if (node.leaf()) {
+		if (node.is_leaf) {
 			// Insert all the leaf indices into the query index
 			// mQueryReverseIndex.insert(mQueryReverseIndex.end(),node.reverseIndex().begin(),node.reverseIndex().end());
 			// 追記
-			this.mQueryReverseIndex = appendArray(this.mQueryReverseIndex, node.reverseIndex());
+			this.mQueryReverseIndex = appendArray(this.mQueryReverseIndex, node.reserv_index);
 			return;
 		} else {
 			NodePtrStack nodes = new NodePtrStack(1000);
-			node.nearest(nodes, queue, feature);
+			nearest(node,nodes, queue, feature);
 			for (int i = 0; i < nodes.getLength(); i++) {
 				this.query(queue, nodes.getItem(i), feature);
 			}
@@ -93,6 +93,39 @@ public class BinaryHierarchicalSelector
 
 		return (int) mQueryReverseIndex.length;
 	}
-
+    /**
+     * Get a queue of all the children nodes sorted by distance from node center.
+     */
+    private static void nearest(BinaryHierarchicalNode i_node,NodePtrStack nodes,BinaryHierarchicalSelector.Queue queue,LongDescripter768 feature)
+    {
+        int mind = Integer.MAX_VALUE;
+        int mini = -1;
+        
+        // Compute the distance to each cluster center
+        PriorityQueueItem[] v =new PriorityQueueItem[i_node.children.length];
+        for(int i = 0; i < v.length; i++) {
+            int d = i_node.children[i].center.hammingDistance(feature);
+            v[i] = new PriorityQueueItem(i_node.children[i], d);
+            if(d < mind) {
+                mind = d;
+                mini = (int)i;
+            }
+        }
+        // Store the closest child
+        nodes.push(i_node.children[mini]);
+        
+        // Any nodes that are the SAME distance as the minimum node are added
+        // to the output vector, otherwise it's pushed onto the queue.
+        for(int i = 0; i < v.length; i++) {
+            if(i == mini) {
+                continue;
+            } else if(v[i].dist() == v[mini].dist()) {
+                nodes.push(i_node.children[i]);
+            } else {
+                queue.add(v[i]);
+            }
+        }
+        return;
+    }
 
 }

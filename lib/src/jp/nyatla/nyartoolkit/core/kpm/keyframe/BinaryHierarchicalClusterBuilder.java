@@ -43,31 +43,27 @@ public class BinaryHierarchicalClusterBuilder
 		for (int i = 0; i < indices.length; i++) {
 			indices[i] = (int) i;
 		}
-		return this.build(features.getArray(), indices, indices.length);
+		return this.build(features.getArray(), null,indices, indices.length);
 	}
 
-	private BinaryHierarchicalNode build(FreakFeaturePoint[] features, int[] indices, int num_indices) {
-		return this.build2(features,null,indices, num_indices);
-	}
-
-	private BinaryHierarchicalNode build2(FreakFeaturePoint[] features,FreakFeaturePoint i_center,int[] indices, int num_indices)
+	private BinaryHierarchicalNode build(FreakFeaturePoint[] features,FreakFeaturePoint i_center,int[] i_indices, int num_indices)
 	{
 		int t=mBinarykMedoids.k();
 		if(t<this.mMinFeaturePerNode){
 			t=this.mMinFeaturePerNode;
 		}
 		if (num_indices <= t) {
-			BinaryHierarchicalNode node=new BinaryHierarchicalNode(this.nextNodeId(),i_center,true,num_indices,0); 
+			int[] index=new int[num_indices];
 			for (int i = 0; i < num_indices; i++) {
-				node.reverseIndex()[i] = indices[i];
+				index[i] = i_indices[i];
 			}
-			return node;
+			return new BinaryHierarchicalNode(this.nextNodeId(),i_center,true,index,null); 
 		}
 		Map<Integer, List<Integer>> cluster_map = new TreeMap<Integer, List<Integer>>();
 
 		// Perform clustering
 		// Get a list of features for each cluster center
-		int[] assignment =this.mBinarykMedoids.assign(features, indices, num_indices);
+		int[] assignment =this.mBinarykMedoids.assign(features, i_indices, num_indices);
 
 		// ASSERT(assignment.size() == num_indices, "Assignment size wrong");
 		for (int i = 0; i < num_indices; i++) {
@@ -75,37 +71,33 @@ public class BinaryHierarchicalClusterBuilder
 			// ASSERT(assignment[i] < num_indices, "Assignment out of range");
 			// ASSERT(indices[assignment[i]] < num_features, "Assignment out of range");
 
-			List<Integer> li = cluster_map.get(indices[assignment[i]]);
+			List<Integer> li = cluster_map.get(i_indices[assignment[i]]);
 			if (li == null) {
 				li = new ArrayList<Integer>();
-				cluster_map.put(indices[assignment[i]], li);
+				cluster_map.put(i_indices[assignment[i]], li);
 			}
-			li.add(indices[i]);
+			li.add(i_indices[i]);
 		}
 
 		// If there is only 1 cluster then make this node a leaf
 		if (cluster_map.size() == 1) {
-			BinaryHierarchicalNode node=new BinaryHierarchicalNode(this.nextNodeId(),i_center,true,num_indices,0);
+			int[] index=new int[num_indices];
 			for (int i = 0; i < num_indices; i++) {
-				node.reverseIndex()[i] = indices[i];
+				index[i] = i_indices[i];
 			}
-			return node;
+			return new BinaryHierarchicalNode(this.nextNodeId(),i_center,true,index,null);
 		}
+		int n=0;
+		BinaryHierarchicalNode[] cl=new BinaryHierarchicalNode[cluster_map.size()];
 		// Create a new node for each cluster center
-		BinaryHierarchicalNode node=new BinaryHierarchicalNode(this.nextNodeId(),i_center,false,cluster_map.size(),cluster_map.size());
 		for (Map.Entry<Integer, List<Integer>> l : cluster_map.entrySet()) {
 			int first = l.getKey();
 
-
 			// Recursively build the tree
 			int[] v = ArrayUtils.toIntArray_impl(l.getValue(), 0, l.getValue().size());
-
-
-			BinaryHierarchicalNode new_node =this.build2(features,features[first], v, (int) v.length);
-			// Make the new node a child of the input node
-			node.children_push_back(new_node);
+			cl[n]=this.build(features,features[first], v,v.length);
+			n++;
 		}
-		return node;
-
+		return new BinaryHierarchicalNode(this.nextNodeId(),i_center,false,null,cl);
 	}
 }
