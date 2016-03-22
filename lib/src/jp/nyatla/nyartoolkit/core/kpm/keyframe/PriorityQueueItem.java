@@ -13,7 +13,7 @@ public class PriorityQueueItem implements Comparable {
 		this.mDistance = 0;
 	}
 
-	public PriorityQueueItem(Node i_node, int i_dist) {
+	public PriorityQueueItem(BinaryHierarchicalNode i_node, int i_dist) {
 		this.mNode = i_node;
 		this.mDistance = i_dist;
 	}
@@ -21,7 +21,7 @@ public class PriorityQueueItem implements Comparable {
 	/**
 	 * Get pointer to node.
 	 */
-	public Node node() {
+	public BinaryHierarchicalNode node() {
 		return this.mNode;
 	}
 
@@ -40,7 +40,7 @@ public class PriorityQueueItem implements Comparable {
 	// }
 
 	// Pointer to the node
-	private Node mNode;
+	private BinaryHierarchicalNode mNode;
 	// Distance from cluster center
 	private int mDistance;
 	@Override

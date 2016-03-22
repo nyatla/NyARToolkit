@@ -9,15 +9,15 @@ public class Keyframe {
 	// Feature store
 	private final FreakMatchPointSetStack mStore;
 	// Feature index
-	private final BinaryHierarchicalClustering mIndex;
+	private final BinaryHierarchicalNode mIndex;
 	
 	public Keyframe(int width, int height,FreakMatchPointSetStack i_binaryFeatureStore)
 	{
 		this.mWidth = width;
 		this.mHeight = height;
 		this.mStore = i_binaryFeatureStore;
-		this.mIndex = new BinaryHierarchicalClustering(i_binaryFeatureStore.getLength(),128,8,8,16);
-        this.mIndex.build(this.mStore);
+		BinaryHierarchicalClusterBuilder bhi= new BinaryHierarchicalClusterBuilder(i_binaryFeatureStore.getLength(),128,8,16);
+        this.mIndex=bhi.build(this.mStore);
 	}
 	/**
 	 * Get/Set image width.
@@ -42,7 +42,7 @@ public class Keyframe {
 	/**
 	 * @return Index over the features.
 	 */
-	public BinaryHierarchicalClustering getIndex() {
+	public BinaryHierarchicalNode getIndex() {
 		return mIndex;
 	}
 

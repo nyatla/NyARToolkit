@@ -2,7 +2,8 @@ package jp.nyatla.nyartoolkit.core.kpm.matcher.binaryfeature;
 
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePointStack;
-import jp.nyatla.nyartoolkit.core.kpm.keyframe.BinaryHierarchicalClustering;
+import jp.nyatla.nyartoolkit.core.kpm.keyframe.BinaryHierarchicalSelector;
+import jp.nyatla.nyartoolkit.core.kpm.keyframe.BinaryHierarchicalNode;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.FreakMatchPointSetStack;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.Keyframe;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.FeaturePairStack;
@@ -10,8 +11,10 @@ import jp.nyatla.nyartoolkit.core.kpm.matcher.FeaturePairStack;
 
 final public class BinaryHirerarchialClusteringMatcher extends BinaryFeatureMatcher
 {
+	public BinaryHierarchicalSelector _selector;
 	public BinaryHirerarchialClusteringMatcher() {
 		super();
+		this._selector=new BinaryHierarchicalSelector(8);
 	}
 
 	/**
@@ -23,7 +26,7 @@ final public class BinaryHirerarchialClusteringMatcher extends BinaryFeatureMatc
 	public int match(FreakFeaturePointStack i_query, Keyframe i_key_frame,FeaturePairStack i_maches)
 	{
 		//indexが無いときはベースクラスを使う。
-		BinaryHierarchicalClustering index2=i_key_frame.getIndex();
+		BinaryHierarchicalNode index2=i_key_frame.getIndex();
 		if(index2==null){
 			return super.match(i_query, i_key_frame, i_maches);
 		}
@@ -42,10 +45,11 @@ final public class BinaryHirerarchialClusteringMatcher extends BinaryFeatureMatc
 
 			// Perform an indexed nearest neighbor lookup
 			FreakFeaturePoint fptr1 = query_buf[i];
-			index2.query(fptr1.descripter);
+
+			this._selector.query(index2,fptr1.descripter);
 
 			// Search for 1st and 2nd best match
-			int[] v = index2.reverseIndex();
+			int[] v = this._selector.reverseIndex();
 			for (int j = 0; j < v.length; j++) {
 				FreakFeaturePoint fptr2=ref_buf[v[j]];
 				// Both points should be a MINIMA or MAXIMA

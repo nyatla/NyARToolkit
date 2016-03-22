@@ -4,7 +4,7 @@ import jp.nyatla.nyartoolkit.core.kpm.LongDescripter768;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
 
 
-public class Node
+public class BinaryHierarchicalNode
 {
 
 	// ID of the node
@@ -17,14 +17,14 @@ public class Node
 	final private boolean mLeaf;
 
 	// Child nodes
-	final private Node[] mChildren;
+	final private BinaryHierarchicalNode[] mChildren;
     private int _num_of_children;
 
 	// Index of the features at this node
 	final private int[] mReverseIndex;
 	
 	
-	public Node(int id,FreakFeaturePoint i_feature,boolean i_is_leaf,int i_index_size,int i_num_of_children)
+	public BinaryHierarchicalNode(int id,FreakFeaturePoint i_feature,boolean i_is_leaf,int i_index_size,int i_num_of_children)
 	{
 		this.mLeaf=i_is_leaf;
 		this.mId=id;
@@ -36,7 +36,7 @@ public class Node
 			this.mCenter=null;
 		}
     	if(i_num_of_children>0){
-    		this.mChildren=new Node[i_num_of_children];
+    		this.mChildren=new BinaryHierarchicalNode[i_num_of_children];
     		this._num_of_children=0;
     	}else{
     		this.mChildren=null;
@@ -58,26 +58,21 @@ public class Node
      * @return Get the reverse index
      */
 	public int[] reverseIndex() { return mReverseIndex; }
-//    inline const std::vector<int>& reverseIndex() const { return mReverseIndex; }
-//    
 
-	public void children_push_back(Node new_node)
+	public void children_push_back(BinaryHierarchicalNode new_node)
 	{
 		this.mChildren[_num_of_children]=new_node;
 		_num_of_children++;
-		// TODO Auto-generated method stub
-		
 	}	
     /**
      * Get a queue of all the children nodes sorted by distance from node center.
      */
-    public void nearest(NodePtrStack nodes,BinaryHierarchicalClustering.Queue queue,LongDescripter768 feature)
+    public void nearest(NodePtrStack nodes,BinaryHierarchicalSelector.Queue queue,LongDescripter768 feature)
     {
         int mind = Integer.MAX_VALUE;
         int mini = -1;
         
         // Compute the distance to each cluster center
-//        std::vector<queue_item_t> v(mChildren.size());
         PriorityQueueItem[] v =new PriorityQueueItem[this.mChildren.length];
         for(int i = 0; i < v.length; i++) {
             int d = this.mChildren[i].mCenter.hammingDistance(feature);
@@ -87,7 +82,6 @@ public class Node
                 mini = (int)i;
             }
         }
-//        ASSERT(mini != -1, "Minimum index not set");
         
         // Store the closest child
         nodes.push(this.mChildren[mini]);
@@ -100,7 +94,6 @@ public class Node
             } else if(v[i].dist() == v[mini].dist()) {
                 nodes.push(this.mChildren[i]);
             } else {
-//                queue.push(v[i]);
                 queue.add(v[i]);
             }
         }
