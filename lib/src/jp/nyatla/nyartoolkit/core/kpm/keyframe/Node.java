@@ -4,25 +4,43 @@ import jp.nyatla.nyartoolkit.core.kpm.LongDescripter768;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
 
 
-public class Node {
-	public Node(int id)
+public class Node
+{
+
+	// ID of the node
+	final private int mId;
+
+	// Feature center
+	final private LongDescripter768 mCenter;
+
+	// True if a leaf node
+	final private boolean mLeaf;
+
+	// Child nodes
+	final private Node[] mChildren;
+    private int _num_of_children;
+
+	// Index of the features at this node
+	final private int[] mReverseIndex;
+	
+	
+	public Node(int id,FreakFeaturePoint i_feature,boolean i_is_leaf,int i_index_size,int i_num_of_children)
 	{
+		this.mLeaf=i_is_leaf;
 		this.mId=id;
-		this.mLeaf=true;
-		this.mCenter=new LongDescripter768();
-	}
-	public Node(int id,FreakFeaturePoint i_feature)
-	{
-		this.mId=id;
-		this.mLeaf=true;
-		this.mCenter=new LongDescripter768();
-		this.mCenter.setValue(i_feature.descripter);
-	}
-    /**
-     * Set/Get leaf flag
-     */
-	public void leaf(boolean b){
-		this.mLeaf=b;
+    	this.mReverseIndex=new int[i_index_size];
+		if(i_feature!=null){
+			this.mCenter=new LongDescripter768();
+			this.mCenter.setValue(i_feature.descripter);
+		}else{
+			this.mCenter=null;
+		}
+    	if(i_num_of_children>0){
+    		this.mChildren=new Node[i_num_of_children];
+    		this._num_of_children=0;
+    	}else{
+    		this.mChildren=null;
+    	}
 	}
 	public boolean leaf(){
 		return this.mLeaf;
@@ -42,12 +60,7 @@ public class Node {
 	public int[] reverseIndex() { return mReverseIndex; }
 //    inline const std::vector<int>& reverseIndex() const { return mReverseIndex; }
 //    
-	public void reserveChildren(int i_size)
-	{
-		this.mChildren=new Node[i_size];
-		_num_of_children=0;
-	}
-    private int _num_of_children;
+
 	public void children_push_back(Node new_node)
 	{
 		this.mChildren[_num_of_children]=new_node;
@@ -58,9 +71,7 @@ public class Node {
     /**
      * Get a queue of all the children nodes sorted by distance from node center.
      */
-    public void nearest(NodePtrStack nodes,
-    		BinaryHierarchicalClustering.Queue queue,
-                        LongDescripter768 feature)
+    public void nearest(NodePtrStack nodes,BinaryHierarchicalClustering.Queue queue,LongDescripter768 feature)
     {
         int mind = Integer.MAX_VALUE;
         int mini = -1;
@@ -93,29 +104,8 @@ public class Node {
                 queue.add(v[i]);
             }
         }
+        return;
     }
 
-//    
-//private:
-//    
-//    // ID of the node
-    final private int mId;
-//    
-//    // Feature center
-    final private LongDescripter768 mCenter;
-//    
-//    // True if a leaf node
-    private boolean mLeaf;
-    
-    // Child nodes
-    private Node[] mChildren;
-    
-    // Index of the features at this node
-    private int[] mReverseIndex;
-    public void resizeReverseIndex(int i_size){
-    	this.mReverseIndex=new int[i_size];
-    }
-
-	
 	
 }

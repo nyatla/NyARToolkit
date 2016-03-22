@@ -127,71 +127,68 @@ public class BinaryHierarchicalClustering
 	}
 
 	private void build(FreakFeaturePoint[] features, int[] indices, int num_indices) {
-		this.mRoot = new Node(this.nextNodeId());
-		this.mRoot.leaf(false);
-		this.build(this.mRoot, features, indices, num_indices);
+		this.mRoot=this.build2(features,null,indices, num_indices);
 		return;
 	}
 
-	private void build(Node node, FreakFeaturePoint[] features, int[] indices, int num_indices) {
+	private Node build2(FreakFeaturePoint[] features,FreakFeaturePoint i_center,int[] indices, int num_indices) {
 		// Check if there are enough features to cluster.
 		// If not, then assign all features to the same cluster.
 //		int t=math_utils.max2(mBinarykMedoids.k(), this.mMinFeaturePerNode);
 		int t=mBinarykMedoids.k();
-		if(t<this.mMinFeaturePerNode){t=this.mMinFeaturePerNode;}
+		if(t<this.mMinFeaturePerNode){
+			t=this.mMinFeaturePerNode;
+		}
 		if (num_indices <= t) {
-			node.leaf(true);
-			node.resizeReverseIndex(num_indices);
+			Node node=new Node(this.nextNodeId(),i_center,true,num_indices,0); 
 			for (int i = 0; i < num_indices; i++) {
 				node.reverseIndex()[i] = indices[i];
 			}
-		} else {
-			Map<Integer, List<Integer>> cluster_map = new TreeMap<Integer, List<Integer>>();
-
-			// Perform clustering
-			// Get a list of features for each cluster center
-			int[] assignment =this.mBinarykMedoids.assign(features, indices, num_indices);
-
-			// ASSERT(assignment.size() == num_indices, "Assignment size wrong");
-			for (int i = 0; i < num_indices; i++) {
-				// ASSERT(assignment[i] != -1, "Assignment is invalid");
-				// ASSERT(assignment[i] < num_indices, "Assignment out of range");
-				// ASSERT(indices[assignment[i]] < num_features, "Assignment out of range");
-
-				// cluster_map[indices[assignment[i]]].push_back(indices[i]);
-				List<Integer> li = cluster_map.get(indices[assignment[i]]);
-				if (li == null) {
-					li = new ArrayList<Integer>();
-					cluster_map.put(indices[assignment[i]], li);
-				}
-				li.add(indices[i]);
-			}
-
-			// If there is only 1 cluster then make this node a leaf
-			if (cluster_map.size() == 1) {
-				node.leaf(true);
-				node.resizeReverseIndex(num_indices);
-				for (int i = 0; i < num_indices; i++) {
-					node.reverseIndex()[i] = indices[i];
-				}
-				return;
-			}
-			// Create a new node for each cluster center
-			node.reserveChildren(cluster_map.size());
-			for (Map.Entry<Integer, List<Integer>> l : cluster_map.entrySet()) {
-				int first = l.getKey();
-				Node new_node = new Node(nextNodeId(), features[first]);
-				new_node.leaf(false);
-
-				// Make the new node a child of the input node
-				node.children_push_back(new_node);
-
-				// Recursively build the tree
-				int[] v = ArrayUtils.toIntArray_impl(l.getValue(), 0, l.getValue().size());
-
-				this.build(new_node, features, v, (int) v.length);
-			}
-
+			return node;
 		}
+		Map<Integer, List<Integer>> cluster_map = new TreeMap<Integer, List<Integer>>();
+
+		// Perform clustering
+		// Get a list of features for each cluster center
+		int[] assignment =this.mBinarykMedoids.assign(features, indices, num_indices);
+
+		// ASSERT(assignment.size() == num_indices, "Assignment size wrong");
+		for (int i = 0; i < num_indices; i++) {
+			// ASSERT(assignment[i] != -1, "Assignment is invalid");
+			// ASSERT(assignment[i] < num_indices, "Assignment out of range");
+			// ASSERT(indices[assignment[i]] < num_features, "Assignment out of range");
+
+			List<Integer> li = cluster_map.get(indices[assignment[i]]);
+			if (li == null) {
+				li = new ArrayList<Integer>();
+				cluster_map.put(indices[assignment[i]], li);
+			}
+			li.add(indices[i]);
+		}
+
+		// If there is only 1 cluster then make this node a leaf
+		if (cluster_map.size() == 1) {
+			Node node=new Node(this.nextNodeId(),i_center,true,num_indices,0);
+			for (int i = 0; i < num_indices; i++) {
+				node.reverseIndex()[i] = indices[i];
+			}
+			return node;
+		}
+		// Create a new node for each cluster center
+		Node node=new Node(this.nextNodeId(),i_center,false,cluster_map.size(),cluster_map.size());
+		for (Map.Entry<Integer, List<Integer>> l : cluster_map.entrySet()) {
+			int first = l.getKey();
+
+
+			// Recursively build the tree
+			int[] v = ArrayUtils.toIntArray_impl(l.getValue(), 0, l.getValue().size());
+
+
+			Node new_node =this.build2(features,features[first], v, (int) v.length);
+			// Make the new node a child of the input node
+			node.children_push_back(new_node);
+		}
+		return node;
+
 	}
 }
