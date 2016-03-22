@@ -1,6 +1,6 @@
 package jp.nyatla.nyartoolkit.core.kpm.freak;
 
-import jp.nyatla.nyartoolkit.core.kpm.LongDescripter768;
+import jp.nyatla.nyartoolkit.core.kpm.utils.LongDescripter768;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 
 /**

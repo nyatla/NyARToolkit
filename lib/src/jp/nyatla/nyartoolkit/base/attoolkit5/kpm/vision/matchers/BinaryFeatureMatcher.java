@@ -3,7 +3,7 @@ package jp.nyatla.nyartoolkit.base.attoolkit5.kpm.vision.matchers;
 import jp.nyatla.nyartoolkit.base.attoolkit5.kpm.vision.BinaryHierarchicalClustering;
 import jp.nyatla.nyartoolkit.base.attoolkit5.kpm.vision.math.Hamming;
 import jp.nyatla.nyartoolkit.base.attoolkit5.kpm.vision.math.liner_algebr;
-import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
+
 
 public class BinaryFeatureMatcher {
 
@@ -11,26 +11,8 @@ public class BinaryFeatureMatcher {
 		this.mThreshold=0.7f;
 		
 	}
-//    public:
-//        
-//        typedef BinaryHierarchicalClustering<FEATURE_SIZE> index_t;
-//        
 
-//        
-//        /**
-//         * Set the ratio threshold between the 1st and 2nd best matches.
-//         */
-//        void setThreshold(float tr) {
-//            mThreshold = tr;
-//        }
-//        
-//        /**
-//         * @return Get the threshold
-//         */
-//        float threshold() const {
-//            return mThreshold;
-//        }
-//        
+      
         /**
          * Match two feature stores.
          * @return Number of matches
@@ -62,7 +44,7 @@ public class BinaryFeatureMatcher {
                 }
                 
 //                ASSERT(FEATURE_SIZE == 96, "Only 96 bytes supported now");
-                int d = Hamming.HammingDistance(features1.features(),f1,features2.features(),features2.feature(j));
+                int d = Hamming.HammingDistance(VisualDatabase.NUM_BYTES_PER_FEATURE,features1.features(),f1,features2.features(),features2.feature(j));
                 if(d < first_best) {
                     second_best = first_best;
                     first_best = d;

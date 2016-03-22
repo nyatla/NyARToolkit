@@ -1,4 +1,5 @@
-package jp.nyatla.nyartoolkit.core.kpm.keyframe;
+package jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering;
+
 
 
 /**

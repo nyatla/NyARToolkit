@@ -1,5 +1,8 @@
 package jp.nyatla.nyartoolkit.core.kpm.keyframe;
 
+import jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.BinaryHierarchicalClusterBuilder;
+import jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.BinaryHierarchicalNode;
+
 
 
 public class Keyframe {

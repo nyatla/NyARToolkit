@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.core.kpm.keyframe;
+package jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering;
 
 import jp.nyatla.nyartoolkit.core.types.stack.NyARPointerStack;
 

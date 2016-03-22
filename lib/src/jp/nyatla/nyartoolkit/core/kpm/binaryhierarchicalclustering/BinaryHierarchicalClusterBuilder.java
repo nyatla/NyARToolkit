@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.core.kpm.keyframe;
+package jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.TreeMap;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
+import jp.nyatla.nyartoolkit.core.kpm.keyframe.FreakMatchPointSetStack;
 import jp.nyatla.nyartoolkit.core.math.NyARLCGsRandomizer;
 import jp.nyatla.nyartoolkit.j2se.ArrayUtils;
 

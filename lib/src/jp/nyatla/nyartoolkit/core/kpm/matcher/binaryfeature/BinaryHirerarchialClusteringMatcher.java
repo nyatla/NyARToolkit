@@ -1,9 +1,9 @@
 package jp.nyatla.nyartoolkit.core.kpm.matcher.binaryfeature;
 
+import jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.BinaryHierarchicalNode;
+import jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.BinaryHierarchicalSelector;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePointStack;
-import jp.nyatla.nyartoolkit.core.kpm.keyframe.BinaryHierarchicalSelector;
-import jp.nyatla.nyartoolkit.core.kpm.keyframe.BinaryHierarchicalNode;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.FreakMatchPointSetStack;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.Keyframe;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.FeaturePairStack;

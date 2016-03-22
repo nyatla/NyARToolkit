@@ -1,8 +1,9 @@
-package jp.nyatla.nyartoolkit.core.kpm.keyframe;
+package jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering;
 
 
 import java.util.PriorityQueue;
-import jp.nyatla.nyartoolkit.core.kpm.LongDescripter768;
+
+import jp.nyatla.nyartoolkit.core.kpm.utils.LongDescripter768;
 
 
 public class BinaryHierarchicalSelector

@@ -1,10 +1,10 @@
 package jp.nyatla.nyartoolkit.core.kpm.freak;
 
 import jp.nyatla.nyartoolkit.core.kpm.KpmImage;
-import jp.nyatla.nyartoolkit.core.kpm.LongDescripter768;
 import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DogFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DogFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.GaussianScaleSpacePyramid;
+import jp.nyatla.nyartoolkit.core.kpm.utils.LongDescripter768;
 
 
 

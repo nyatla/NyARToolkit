@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.core.kpm;
+package jp.nyatla.nyartoolkit.core.kpm.utils;
 
 
 /**
