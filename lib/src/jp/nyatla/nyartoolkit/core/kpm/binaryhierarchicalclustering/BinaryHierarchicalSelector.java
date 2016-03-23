@@ -3,7 +3,11 @@ package jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering;
 
 import java.util.PriorityQueue;
 
+import com.sun.corba.se.impl.orbutil.graph.Node;
+
 import jp.nyatla.nyartoolkit.core.kpm.utils.LongDescripter768;
+import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
+import jp.nyatla.nyartoolkit.core.types.stack.NyARPointerStack;
 
 
 public class BinaryHierarchicalSelector
@@ -12,17 +16,22 @@ public class BinaryHierarchicalSelector
 		private static final long serialVersionUID = 6120329703806461621L;
 
 	}
-	public BinaryHierarchicalSelector(int i_MaxNodesToPop) {
+	final public int[] _result;
+	private int _num_of_result;
+	public BinaryHierarchicalSelector(int i_MaxNodesToPop,int i_max_result)
+	{
 		this.mMaxNodesToPop = i_MaxNodesToPop;
+		this._result=new int[i_max_result];
+		return;
 	}
 
 
-	/**
-	 * @return Reverse index after a QUERY.
-	 */
-	public int[] reverseIndex() {
-		return this.mQueryReverseIndex;
-	}
+//	/**
+//	 * @return Reverse index after a QUERY.
+//	 */
+//	public int[] reverseIndex() {
+//		return this.mQueryReverseIndex;
+//	}
 
 
 	//
@@ -30,7 +39,7 @@ public class BinaryHierarchicalSelector
 	// kmedoids_t mBinarykMedoids;
 	//
 	// Reverse index for query
-	private int[] mQueryReverseIndex;
+	//	private int[] mQueryReverseIndex;
 	//
 	// Node queue
 	private Queue mQueue = new Queue();
@@ -42,58 +51,81 @@ public class BinaryHierarchicalSelector
 	final private int mMaxNodesToPop;
 
 
-
-	private static int[] appendArray(int[] f, int[] s) {
-		int[] n = new int[f.length + s.length];
-		System.arraycopy(f, 0, n, 0, f.length);
-		System.arraycopy(s, 0, n, f.length, s.length);
-		return n;
+	public class NodeList extends NyARObjectStack<PriorityQueueItem>{
+		public NodeList(int i_length) {
+			super(i_length,PriorityQueueItem.class);
+		}
 	}
-
+	private void append(BinaryHierarchicalNode i_node)
+	{
+		assert i_node.is_leaf==true;
+		//末端なら結果配列へ値を追加
+		int p=this._num_of_result;
+		int l=i_node.reserv_index.length;
+		//
+		if(l+p>this._result.length){
+			l=this._result.length-this._num_of_result;
+		}
+		for(int i=0;i<l;i++){
+			this._result[p+i]=i_node.reserv_index[i];
+		}
+		this._num_of_result+=l;
+		return;
+	}
 	/**
 	 * Recursive function query function.
 	 */
-	private void query(Queue queue, BinaryHierarchicalNode node, LongDescripter768 feature) {
-
+	private void query(Queue queue,NodePtrStack i_nodes,BinaryHierarchicalNode node, LongDescripter768 feature)
+	{
 		if (node.is_leaf) {
-			// Insert all the leaf indices into the query index
-			// mQueryReverseIndex.insert(mQueryReverseIndex.end(),node.reverseIndex().begin(),node.reverseIndex().end());
-			// 追記
-			this.mQueryReverseIndex = appendArray(this.mQueryReverseIndex, node.reserv_index);
 			return;
-		} else {
-			NodePtrStack nodes = new NodePtrStack(1000);
-			nearest(node,nodes, queue, feature);
-			for (int i = 0; i < nodes.getLength(); i++) {
-				this.query(queue, nodes.getItem(i), feature);
+		}
+		
+		int sp=i_nodes.getLength();
+		nearest(node,i_nodes, queue, feature);
+		int ep=i_nodes.getLength();
+		for (int i = sp; i < ep; i++) {
+			BinaryHierarchicalNode n=i_nodes.getItem(i);
+			if(n.is_leaf){
+				this.append(n);
+			}else{
+				this.query(queue,i_nodes,n,feature);
 			}
+		}
+		i_nodes.pops(ep-sp);
 
-			// Pop a node from the queue
-			if (this.mNumNodesPopped < this.mMaxNodesToPop && !queue.isEmpty()) {
-				// Node q = queue.top().node();
-				BinaryHierarchicalNode q = queue.poll().node();// pop();
-				// queue.pop();
-				this.mNumNodesPopped++;
-				this.query(queue, q, feature);
+		// Pop a node from the queue
+		if (this.mNumNodesPopped < this.mMaxNodesToPop && !queue.isEmpty()) {
+			BinaryHierarchicalNode n = queue.poll().node();// pop();
+			this.mNumNodesPopped++;
+			if(n.is_leaf){
+				this.append(n);
+			}else{
+				this.query(queue,i_nodes,n,feature);
 			}
 		}
 	}
 	/**
 	 * Query the tree for a reverse index.
 	 */
-	public int query(BinaryHierarchicalNode i_node,LongDescripter768 feature) {
+	public int query(BinaryHierarchicalNode i_node,LongDescripter768 feature)
+	{
+		this._num_of_result=0;
 		this.mNumNodesPopped = 0;
-		this.mQueryReverseIndex = new int[0];
+//		this.mQueryReverseIndex = new int[0];
 
 		// while(!mQueue.empty()) {
 		// mQueue.pop();
 		// }
 		this.mQueue.clear();
+		NodePtrStack nodes = new NodePtrStack(1000);
+		this.query(mQueue,nodes, i_node, feature);
 
-		this.query(mQueue, i_node, feature);
-
-		return (int) mQueryReverseIndex.length;
+		return (int) this._num_of_result;
 	}
+    /**
+     * Get a queue of all the children nodes sorted by distance from node center.
+     */
     /**
      * Get a queue of all the children nodes sorted by distance from node center.
      */
@@ -128,5 +160,7 @@ public class BinaryHierarchicalSelector
         }
         return;
     }
+	
+
 
 }

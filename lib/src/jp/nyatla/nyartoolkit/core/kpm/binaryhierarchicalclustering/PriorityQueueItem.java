@@ -7,8 +7,13 @@ package jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering;
  * This class represents an entry in a priority queue to revisit certains nodes
  * in a back-trace.
  */
-public class PriorityQueueItem implements Comparable {
-
+public class PriorityQueueItem implements Comparable
+{
+	// Pointer to the node
+	public BinaryHierarchicalNode mNode;
+	// Distance from cluster center
+	public int mDistance;
+	
 	public PriorityQueueItem() {
 		this.mNode = null;
 		this.mDistance = 0;
@@ -33,17 +38,9 @@ public class PriorityQueueItem implements Comparable {
 		return this.mDistance;
 	}
 
-	// /**
-	// * Operator for sorting the queue. Smallest item is always the first.
-	// */
-	// boolean operator<(const PriorityQueueItem& item) const {
-	// return mDistance > item.mDistance;
-	// }
 
-	// Pointer to the node
-	private BinaryHierarchicalNode mNode;
-	// Distance from cluster center
-	private int mDistance;
+
+
 	@Override
 	public int compareTo(Object o) {
 		PriorityQueueItem p=(PriorityQueueItem)o;

@@ -14,7 +14,7 @@ final public class BinaryHirerarchialClusteringMatcher extends BinaryFeatureMatc
 	public BinaryHierarchicalSelector _selector;
 	public BinaryHirerarchialClusteringMatcher() {
 		super();
-		this._selector=new BinaryHierarchicalSelector(8);
+		this._selector=new BinaryHierarchicalSelector(8,100);
 	}
 
 	/**
@@ -46,11 +46,11 @@ final public class BinaryHirerarchialClusteringMatcher extends BinaryFeatureMatc
 			// Perform an indexed nearest neighbor lookup
 			FreakFeaturePoint fptr1 = query_buf[i];
 
-			this._selector.query(index2,fptr1.descripter);
+			int num_of_fp=this._selector.query(index2,fptr1.descripter);
 
 			// Search for 1st and 2nd best match
-			int[] v = this._selector.reverseIndex();
-			for (int j = 0; j < v.length; j++) {
+			int[] v = this._selector._result;
+			for (int j = 0; j < num_of_fp; j++) {
 				FreakFeaturePoint fptr2=ref_buf[v[j]];
 				// Both points should be a MINIMA or MAXIMA
 				if (fptr1.maxima != fptr2.maxima) {
