@@ -4,6 +4,7 @@ package jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.selector;
 import java.util.PriorityQueue;
 
 import jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.BinaryHierarchicalNode;
+import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.utils.LongDescripter768;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
@@ -14,12 +15,12 @@ public class BinaryHierarchicalSelector_O1
 		private static final long serialVersionUID = 6120329703806461621L;
 
 	}
-	final public int[] _result;
+	final public FreakFeaturePoint[] _result;
 	private int _num_of_result;
 	public BinaryHierarchicalSelector_O1(int i_MaxNodesToPop,int i_max_result)
 	{
 		this.mMaxNodesToPop = i_MaxNodesToPop;
-		this._result=new int[i_max_result];
+		this._result=new FreakFeaturePoint[i_max_result];
 		return;
 	}
 	/**
@@ -80,7 +81,6 @@ public class BinaryHierarchicalSelector_O1
 
 	private void append(BinaryHierarchicalNode i_node)
 	{
-		
 		assert i_node.is_leaf==true;
 		//末端なら結果配列へ値を追加
 		int p=this._num_of_result;
@@ -102,7 +102,6 @@ public class BinaryHierarchicalSelector_O1
 	{
 		assert (!node.is_leaf);
 
-		
 		//近傍ノードをスタックに追加
 		int sp=i_nodes.getLength();
 		int num_of_min=nearest(node,i_nodes, queue, feature);
@@ -139,7 +138,8 @@ public class BinaryHierarchicalSelector_O1
         int mind = Integer.MAX_VALUE;
 
         int sp=nodes.getLength();
-        int num_of_children=i_node.children.length;
+        BinaryHierarchicalNode[] children=i_node.children;
+        int num_of_children=children.length;
         
         //最小値の探索
         for(int i = 0; i < num_of_children; i++) {      	
@@ -148,8 +148,8 @@ public class BinaryHierarchicalSelector_O1
         		//ワークエリアを使い切った。
         		return 0;
         	}
-            int d = i_node.children[i].center.hammingDistance(feature);
-            item.node=i_node.children[i];
+            int d = children[i].center.descripter.hammingDistance(feature);
+            item.node=children[i];
             item.distance=d;
             if(d < mind) {
                 mind = d;

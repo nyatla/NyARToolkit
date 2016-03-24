@@ -12,10 +12,10 @@ import jp.nyatla.nyartoolkit.core.kpm.matcher.FeaturePairStack;
 
 final public class BinaryHirerarchialClusteringMatcher extends BinaryFeatureMatcher
 {
-	public BinaryHierarchicalSelector _selector;
+	public BinaryHierarchicalSelector_O1 _selector;
 	public BinaryHirerarchialClusteringMatcher() {
 		super();
-		this._selector=new BinaryHierarchicalSelector(8,100);
+		this._selector=new BinaryHierarchicalSelector_O1(8,100);
 	}
 
 	/**
@@ -42,31 +42,31 @@ final public class BinaryHirerarchialClusteringMatcher extends BinaryFeatureMatc
 		for (int i = 0; i < q_len; i++) {
 			int first_best = Integer.MAX_VALUE;// std::numeric_limits<unsigned int>::max();
 			int second_best = Integer.MAX_VALUE;// std::numeric_limits<unsigned int>::max();
-			int best_index = Integer.MAX_VALUE;// std::numeric_limits<int>::max();
+			FreakFeaturePoint best_index = null;// std::numeric_limits<int>::max();
 
 			// Perform an indexed nearest neighbor lookup
 			FreakFeaturePoint fptr1 = query_buf[i];
 /////
-			int n=0;
-			BinaryHierarchicalSelector_O1 s2=new BinaryHierarchicalSelector_O1(8,100);
-			long s=System.currentTimeMillis();
-			for(int l=0;l<100000;l++){
-				n=s2.query(index2,fptr1.descripter);
-			}
-			System.out.println("A:"+(System.currentTimeMillis()-s)+"ms "+n);
-			
-			BinaryHierarchicalSelector s1=new BinaryHierarchicalSelector(8,100);
-			s=System.currentTimeMillis();
-			for(int l=0;l<100000;l++){
-				n=s1.query(index2,fptr1.descripter);
-			}
-			System.out.println("B:"+(System.currentTimeMillis()-s)+"ms "+n);
+//			int n=0;
+//			BinaryHierarchicalSelector_O1 s2=new BinaryHierarchicalSelector_O1(8,100);
+//			long s=System.currentTimeMillis();
+//			for(int l=0;l<100000;l++){
+//				n=s2.query(index2,fptr1.descripter);
+//			}
+//			System.out.println("A:"+(System.currentTimeMillis()-s)+"ms "+n);
+//			
+//			BinaryHierarchicalSelector s1=new BinaryHierarchicalSelector(8,100);
+//			s=System.currentTimeMillis();
+//			for(int l=0;l<100000;l++){
+//				n=s1.query(index2,fptr1.descripter);
+//			}
+//			System.out.println("B:"+(System.currentTimeMillis()-s)+"ms "+n);
 /////			
 			int num_of_fp=this._selector.query(index2,fptr1.descripter);
 			// Search for 1st and 2nd best match
-			int[] v = this._selector._result;
+			FreakFeaturePoint[] v = this._selector._result;
 			for (int j = 0; j < num_of_fp; j++) {
-				FreakFeaturePoint fptr2=ref_buf[v[j]];
+				FreakFeaturePoint fptr2=v[j];
 				// Both points should be a MINIMA or MAXIMA
 				if (fptr1.maxima != fptr2.maxima) {
 					continue;
@@ -90,7 +90,7 @@ final public class BinaryHirerarchialClusteringMatcher extends BinaryFeatureMatc
 				if (second_best == Integer.MAX_VALUE) {
 					FeaturePairStack.Item t = i_maches.prePush();
 					t.query=fptr1;
-					t.ref=ref_buf[best_index];
+					t.ref=(FreakMatchPointSetStack.Item)best_index;
 				} else {
 					// Ratio test
 					double r = (double) first_best / (double) second_best;
@@ -98,7 +98,7 @@ final public class BinaryHirerarchialClusteringMatcher extends BinaryFeatureMatc
 						// mMatches.push_back(match_t((int)i, best_index));
 						FeaturePairStack.Item t = i_maches.prePush();
 						t.query=fptr1;
-						t.ref=ref_buf[best_index];
+						t.ref=(FreakMatchPointSetStack.Item)best_index;
 					}
 				}
 			}

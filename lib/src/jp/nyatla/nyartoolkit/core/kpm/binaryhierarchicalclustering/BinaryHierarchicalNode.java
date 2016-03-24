@@ -1,7 +1,7 @@
 package jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering;
 
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
-import jp.nyatla.nyartoolkit.core.kpm.utils.LongDescripter768;
+
 
 
 public class BinaryHierarchicalNode
@@ -11,7 +11,7 @@ public class BinaryHierarchicalNode
 	final public int id;
 
 	// Feature center
-	final public LongDescripter768 center;
+	final public FreakFeaturePoint center;
 
 	// True if a leaf node
 	final public boolean is_leaf;
@@ -20,17 +20,16 @@ public class BinaryHierarchicalNode
 	final public BinaryHierarchicalNode[] children;
 
 	// Index of the features at this node
-	final public int[] reserv_index;
+	final public FreakFeaturePoint[] reserv_index;
 	
 	
-	public BinaryHierarchicalNode(int id,FreakFeaturePoint i_feature,boolean i_is_leaf,int[] i_reserv_index,BinaryHierarchicalNode[] i_children)
+	public BinaryHierarchicalNode(int id,FreakFeaturePoint i_feature,boolean i_is_leaf,FreakFeaturePoint[] i_reserv_index,BinaryHierarchicalNode[] i_children)
 	{
 		this.is_leaf=i_is_leaf;
 		this.id=id;
     	this.reserv_index=i_reserv_index;
 		if(i_feature!=null){
-			this.center=new LongDescripter768();
-			this.center.setValue(i_feature.descripter);
+			this.center=i_feature;
 		}else{
 			this.center=null;
 		}

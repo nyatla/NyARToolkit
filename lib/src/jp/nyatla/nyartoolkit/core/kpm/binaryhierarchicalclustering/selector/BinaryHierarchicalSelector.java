@@ -6,6 +6,7 @@ import java.util.PriorityQueue;
 
 
 import jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.BinaryHierarchicalNode;
+import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.utils.LongDescripter768;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARPointerStack;
 
@@ -49,13 +50,13 @@ public class BinaryHierarchicalSelector
 		}
 	}	
 		
-	final public int[] _result;
+	final public FreakFeaturePoint[] _result;
 	private int _num_of_result;
 	
 	public BinaryHierarchicalSelector(int i_MaxNodesToPop,int i_max_result)
 	{
 		this.mMaxNodesToPop = i_MaxNodesToPop;
-		this._result=new int[i_max_result];
+		this._result=new FreakFeaturePoint[i_max_result];
 		return;
 	}
 
@@ -145,7 +146,7 @@ public class BinaryHierarchicalSelector
         PriorityQueueItem[] v =new PriorityQueueItem[i_node.children.length];
         for(int i = 0; i < v.length; i++) {
 
-            int d = i_node.children[i].center.hammingDistance(feature);
+            int d = i_node.children[i].center.descripter.hammingDistance(feature);
             v[i] = new PriorityQueueItem(i_node.children[i], d);
             if(d < mind) {
                 mind = d;
