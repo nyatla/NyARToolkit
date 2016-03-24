@@ -3,6 +3,7 @@ package jp.nyatla.nyartoolkit.core.kpm.matcher.binaryfeature;
 import jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.BinaryHierarchicalNode;
 import jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.selector.BinaryHierarchicalSelector;
 import jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.selector.BinaryHierarchicalSelector_O1;
+import jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.selector.BinaryHierarchicalSelector_O2;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.FreakMatchPointSetStack;
@@ -12,10 +13,10 @@ import jp.nyatla.nyartoolkit.core.kpm.matcher.FeaturePairStack;
 
 final public class BinaryHirerarchialClusteringMatcher extends BinaryFeatureMatcher
 {
-	public BinaryHierarchicalSelector_O1 _selector;
+	public BinaryHierarchicalSelector_O2 _selector;
 	public BinaryHirerarchialClusteringMatcher() {
 		super();
-		this._selector=new BinaryHierarchicalSelector_O1(8,100);
+		this._selector=new BinaryHierarchicalSelector_O2(8,100);
 	}
 
 	/**
@@ -36,7 +37,6 @@ final public class BinaryHirerarchialClusteringMatcher extends BinaryFeatureMatc
 			return 0;
 		}
 		FreakFeaturePoint[] query_buf=i_query.getArray();
-		FreakMatchPointSetStack.Item[] ref_buf=ref.getArray();
 		int q_len=i_query.getLength();
 		
 		for (int i = 0; i < q_len; i++) {
@@ -48,16 +48,16 @@ final public class BinaryHirerarchialClusteringMatcher extends BinaryFeatureMatc
 			FreakFeaturePoint fptr1 = query_buf[i];
 /////
 //			int n=0;
-//			BinaryHierarchicalSelector_O1 s2=new BinaryHierarchicalSelector_O1(8,100);
+//			BinaryHierarchicalSelector_O2 s2=new BinaryHierarchicalSelector_O2(8,100);
 //			long s=System.currentTimeMillis();
-//			for(int l=0;l<100000;l++){
+//			for(int l=0;l<1000000;l++){
 //				n=s2.query(index2,fptr1.descripter);
 //			}
 //			System.out.println("A:"+(System.currentTimeMillis()-s)+"ms "+n);
 //			
-//			BinaryHierarchicalSelector s1=new BinaryHierarchicalSelector(8,100);
+//			BinaryHierarchicalSelector_O1 s1=new BinaryHierarchicalSelector_O1(8,100);
 //			s=System.currentTimeMillis();
-//			for(int l=0;l<100000;l++){
+//			for(int l=0;l<1000000;l++){
 //				n=s1.query(index2,fptr1.descripter);
 //			}
 //			System.out.println("B:"+(System.currentTimeMillis()-s)+"ms "+n);
