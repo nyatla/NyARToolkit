@@ -1,7 +1,8 @@
 package jp.nyatla.nyartoolkit.core.kpm.matcher.binaryfeature;
 
 import jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.BinaryHierarchicalNode;
-import jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.BinaryHierarchicalSelector;
+import jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.selector.BinaryHierarchicalSelector;
+import jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.selector.BinaryHierarchicalSelector_O1;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.FreakMatchPointSetStack;
@@ -45,9 +46,23 @@ final public class BinaryHirerarchialClusteringMatcher extends BinaryFeatureMatc
 
 			// Perform an indexed nearest neighbor lookup
 			FreakFeaturePoint fptr1 = query_buf[i];
-
+/////
+			int n=0;
+			BinaryHierarchicalSelector_O1 s2=new BinaryHierarchicalSelector_O1(8,100);
+			long s=System.currentTimeMillis();
+			for(int l=0;l<100000;l++){
+				n=s2.query(index2,fptr1.descripter);
+			}
+			System.out.println("A:"+(System.currentTimeMillis()-s)+"ms "+n);
+			
+			BinaryHierarchicalSelector s1=new BinaryHierarchicalSelector(8,100);
+			s=System.currentTimeMillis();
+			for(int l=0;l<100000;l++){
+				n=s1.query(index2,fptr1.descripter);
+			}
+			System.out.println("B:"+(System.currentTimeMillis()-s)+"ms "+n);
+/////			
 			int num_of_fp=this._selector.query(index2,fptr1.descripter);
-
 			// Search for 1st and 2nd best match
 			int[] v = this._selector._result;
 			for (int j = 0; j < num_of_fp; j++) {

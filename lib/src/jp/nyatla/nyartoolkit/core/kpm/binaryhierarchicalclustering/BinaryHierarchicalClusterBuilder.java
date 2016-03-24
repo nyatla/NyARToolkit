@@ -3,7 +3,6 @@ package jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.TreeMap;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.FreakMatchPointSetStack;
@@ -12,10 +11,7 @@ import jp.nyatla.nyartoolkit.j2se.ArrayUtils;
 
 public class BinaryHierarchicalClusterBuilder
 {
-	public class Queue extends PriorityQueue<PriorityQueueItem> {
-		private static final long serialVersionUID = 6120329703806461621L;
 
-	}
 	final private BinarykMedoids mBinarykMedoids;
 	// Minimum number of feature at a node
 	final private int mMinFeaturePerNode;
