@@ -4,7 +4,7 @@ package jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.selector;
 
 
 import jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.BinaryHierarchicalNode;
-import jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.selector.utils.CandidateNodeList;
+import jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.selector.utils.LimitedPriorityNodeList;
 import jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.selector.utils.NodeStack;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.utils.LongDescripter768;
@@ -15,7 +15,7 @@ public class BinaryHierarchicalSelector_O2
 
 
 	final public FreakFeaturePoint[] _result;
-	final private CandidateNodeList mlist;
+	final private LimitedPriorityNodeList mlist;
 	//特徴量の一時バッファ
 	final private NodeStack _node_stack=new NodeStack(1000);
 	
@@ -23,7 +23,7 @@ public class BinaryHierarchicalSelector_O2
 	public BinaryHierarchicalSelector_O2(int i_MaxNodesToPop,int i_max_result)
 	{
 		this._result=new FreakFeaturePoint[i_max_result];
-		this.mlist=new CandidateNodeList(i_MaxNodesToPop);
+		this.mlist=new LimitedPriorityNodeList(i_MaxNodesToPop);
 		return;
 	}
 	/**
@@ -64,7 +64,7 @@ public class BinaryHierarchicalSelector_O2
 	/**
 	 * Recursive function query function.
 	 */
-	private void query(CandidateNodeList queue,NodeStack i_nodes,BinaryHierarchicalNode node, LongDescripter768 feature)
+	private void query(LimitedPriorityNodeList queue,NodeStack i_nodes,BinaryHierarchicalNode node, LongDescripter768 feature)
 	{
 		assert (!node.is_leaf);
 
@@ -82,7 +82,7 @@ public class BinaryHierarchicalSelector_O2
 			}
 		}
 		//好成績な近傍ノード1つを取り出して探索する。
-		CandidateNodeList.Item item=this.mlist.popSmallest();
+		NodeStack.Item item=this.mlist.popSmallest();
 		if (item!=null) {
 			BinaryHierarchicalNode n = item.node;
 			if(n.is_leaf){
@@ -97,7 +97,7 @@ public class BinaryHierarchicalSelector_O2
     /**
      * Get a queue of all the children nodes sorted by distance from node center.
      */
-    private static int nearest(BinaryHierarchicalNode i_node,NodeStack nodes,CandidateNodeList queue,LongDescripter768 feature)
+    private static int nearest(BinaryHierarchicalNode i_node,NodeStack nodes,LimitedPriorityNodeList queue,LongDescripter768 feature)
     {
         int mind = Integer.MAX_VALUE;
 
@@ -129,7 +129,7 @@ public class BinaryHierarchicalSelector_O2
         		num_of_min++;
         	}else{
         		//最小値以外はキューに追加
-        		queue.push(item.node,item.distance);
+        		queue.push(item);
         		
         	}
         }        

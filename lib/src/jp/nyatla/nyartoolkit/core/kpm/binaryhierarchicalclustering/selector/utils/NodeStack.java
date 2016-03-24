@@ -5,7 +5,7 @@ import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
 public class NodeStack extends NyARObjectStack<NodeStack.Item>
 {
-	public class Item{
+	static public class Item{
 		public int distance;
 		public BinaryHierarchicalNode node;			
 	}

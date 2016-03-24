@@ -6,7 +6,6 @@ import jp.nyatla.nyartoolkit.core.kpm.keyframe.FreakMatchPointSetStack;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.Keyframe;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.FeaturePairStack;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.InverseHomographyMat;
-import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 
 
 public class BinaryFeatureMatcher
