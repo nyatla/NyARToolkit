@@ -6,11 +6,13 @@ package jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.selector;
 import jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.BinaryHierarchicalNode;
 import jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.selector.utils.LimitedPriorityNodeList;
 import jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.selector.utils.NodeStack;
-import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.FreakMatchPointSetStack;
 import jp.nyatla.nyartoolkit.core.kpm.utils.LongDescripter768;
 
-
+/**
+ * 最適化した{@link BinaryHierarchicalSelector}
+ * 実行時newの削除と、PriorityQueueの代替実装クラスへの置き換え
+ */
 public class BinaryHierarchicalSelector_O2
 {
 

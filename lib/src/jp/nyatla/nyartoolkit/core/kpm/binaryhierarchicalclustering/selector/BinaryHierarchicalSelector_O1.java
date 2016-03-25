@@ -9,6 +9,10 @@ import jp.nyatla.nyartoolkit.core.kpm.utils.LongDescripter768;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
 
+/**
+ * 最適化した{@link BinaryHierarchicalSelector}
+ * 最適化内容は、実行時newの削除
+ */
 public class BinaryHierarchicalSelector_O1
 {
 	public class Queue extends PriorityQueue<NodeStack.Item> {

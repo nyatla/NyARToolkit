@@ -10,7 +10,9 @@ import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.utils.LongDescripter768;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARPointerStack;
 
-
+/**
+ * バイナリ特徴量をキーに、BinaryHierarchicalClusteringノードから近似するアイテムを取得するクラス。
+ */
 public class BinaryHierarchicalSelector
 {
 	/**

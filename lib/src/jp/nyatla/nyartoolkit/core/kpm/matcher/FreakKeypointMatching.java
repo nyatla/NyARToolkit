@@ -18,7 +18,10 @@ import jp.nyatla.nyartoolkit.core.kpm.keyframe.Keyframe;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.KeyframeMap;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.binaryfeature.BinaryHirerarchialClusteringMatcher;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.binaryfeature.BinaryFeatureMatcher;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.findinliners.FindInliers;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.findinliners.FindInliers_O1;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation.RobustHomography;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.houghsimilarityvoting.HoughSimilarityVoting;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.BinomialPyramid32f;
 
 
@@ -92,7 +95,7 @@ public class FreakKeypointMatching {
 
 		this._tmp_pair_stack[0]=new FeaturePairStack(300);
 		this._tmp_pair_stack[1]=new FeaturePairStack(300);
-		this._find_inliner=new FindInliers(kHomographyInlierThreshold);		
+		this._find_inliner=new FindInliers_O1(kHomographyInlierThreshold);		
 		double dx = size.w + (size.w * 0.2f);
 		double dy = size.h + (size.h * 0.2f);
 		this.mHoughSimilarityVoting=new HoughSimilarityVoting(-dx, dx, -dy, dy, 0, 0, 12, 10);		
@@ -139,6 +142,7 @@ public class FreakKeypointMatching {
 		// mMatchedInliers.clear();
 		HomographyMat H = this._H;
 		InverseHomographyMat hinv=this._hinv;
+		hinv=new InverseHomographyMat_O1();
 		
 		int num_of_query_frame=query_keyframe.getLength();
 		//ワークエリアの設定

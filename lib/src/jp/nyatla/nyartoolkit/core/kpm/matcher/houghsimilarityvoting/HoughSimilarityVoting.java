@@ -1,9 +1,11 @@
-package jp.nyatla.nyartoolkit.core.kpm.matcher;
+package jp.nyatla.nyartoolkit.core.kpm.matcher.houghsimilarityvoting;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
 
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.FeaturePairStack;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.FeaturePairStack.Item;
 import jp.nyatla.nyartoolkit.core.math.NyARMath;
 
 /**

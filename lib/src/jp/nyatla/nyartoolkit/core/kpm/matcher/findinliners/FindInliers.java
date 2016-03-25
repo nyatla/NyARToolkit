@@ -1,5 +1,7 @@
-package jp.nyatla.nyartoolkit.core.kpm.matcher;
+package jp.nyatla.nyartoolkit.core.kpm.matcher.findinliners;
 
+import jp.nyatla.nyartoolkit.core.kpm.matcher.FeaturePairStack;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.HomographyMat;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 
 /**
