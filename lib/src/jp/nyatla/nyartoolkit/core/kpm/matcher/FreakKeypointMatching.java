@@ -22,6 +22,7 @@ import jp.nyatla.nyartoolkit.core.kpm.matcher.findinliners.FindInliers;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.findinliners.FindInliers_O1;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation.RobustHomography;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.houghsimilarityvoting.HoughSimilarityVoting;
+import jp.nyatla.nyartoolkit.core.kpm.matcher.houghsimilarityvoting.HoughSimilarityVoting_O1;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.BinomialPyramid32f;
 
 
@@ -73,7 +74,7 @@ public class FreakKeypointMatching {
 	
 	
 	/** Similarity voter*/
-	final private HoughSimilarityVoting mHoughSimilarityVoting;
+	final private HoughSimilarityVoting_O1 mHoughSimilarityVoting;
 	final private FindInliers _find_inliner;
 		
 	
@@ -98,7 +99,7 @@ public class FreakKeypointMatching {
 		this._find_inliner=new FindInliers_O1(kHomographyInlierThreshold);		
 		double dx = size.w + (size.w * 0.2f);
 		double dy = size.h + (size.h * 0.2f);
-		this.mHoughSimilarityVoting=new HoughSimilarityVoting(-dx, dx, -dy, dy, 0, 0, 12, 10);		
+		this.mHoughSimilarityVoting=new HoughSimilarityVoting_O1(-dx, dx, -dy, dy, 0, 0, 12, 10);		
 		this._matcher=new BinaryHirerarchialClusteringMatcher();
 //		this._matcher=new BinaryFeatureMatcher();
 

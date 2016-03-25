@@ -5,14 +5,13 @@ import java.util.Map.Entry;
 
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.FeaturePairStack;
-import jp.nyatla.nyartoolkit.core.kpm.matcher.FeaturePairStack.Item;
 import jp.nyatla.nyartoolkit.core.math.NyARMath;
 
 /**
  * Hough voting for a similarity transformation based on a set of
  * correspondences.
  */
-public class HoughSimilarityVoting {
+public class HoughSimilarityVoting_O1 {
 	final static private double PI=NyARMath.PI;
 	private static double kHoughBinDelta = 1;	
 	// Dimensions of reference image
@@ -50,7 +49,7 @@ public class HoughSimilarityVoting {
 	private int mB; // mNumXBins*mNumYBins*mNumAngleBins	
 	
 	
-	public HoughSimilarityVoting(double minX, double maxX, double minY, double maxY, int numXBins,int numYBins, int numAngleBins, int numScaleBins)
+	public HoughSimilarityVoting_O1(double minX, double maxX, double minY, double maxY, int numXBins,int numYBins, int numAngleBins, int numScaleBins)
 	{
 		this.mRefImageWidth = (0);
 		this.mRefImageHeight = (0);
@@ -89,7 +88,7 @@ public class HoughSimilarityVoting {
 
 	//
 
-	private void mapVoteToBin(mapCorrespondenceResult fBin,double x, double y, double angle, double scale) {
+	private void mapVoteToBin(Location fBin,double x, double y, double angle, double scale) {
 		fBin.x = mNumXBins * SafeDivision(x - mMinX, mMaxX - mMinX);
 		fBin.y = mNumYBins * SafeDivision(y - mMinY, mMaxY - mMinY);
 		fBin.angle = (double) (mNumAngleBins * ((angle + PI) * (1 / (2 * PI))));
@@ -162,7 +161,7 @@ public class HoughSimilarityVoting {
 		// ASSERT(scale < mMaxScale, "scale out of range");
 
 		// Compute the bin location
-		mapCorrespondenceResult fBinRet = new mapCorrespondenceResult();
+		Location fBinRet = new Location();
 		mapVoteToBin(fBinRet, x, y, angle, scale);
 		this.mfBinX=fBinRet.x;
 		this.mfBinY=fBinRet.y;
@@ -219,20 +218,22 @@ public class HoughSimilarityVoting {
 
 		return true;
 	}
-
-	private static class BinLocation{
+	private static class Location
+	{
 		public double x;
 		public double y;
 		public double angle;
 		public double scale;
-		public static BinLocation[] createArray(int i_length){
-			BinLocation[] r=new BinLocation[i_length];
+		public static Location[] createArray(int i_length){
+			Location[] r=new Location[i_length];
 			for(int i=0;i<i_length;i++){
-				r[i]=new BinLocation();
+				r[i]=new Location();
 			}
 			return r;
 		}
 	}
+	
+	
 	public boolean extractMatches(FeaturePairStack i_matche_resule,int refWidth, int refHeight)	
 	{
 		int max_hough_index = -1;
@@ -261,7 +262,7 @@ public class HoughSimilarityVoting {
 		// hough.vote((float*)&query[0], (float*)&ref[0], (int)matches.size());
 		this.vote(matches);
 
-		HoughSimilarityVoting.getMaximumNumberOfVotesResult max = new HoughSimilarityVoting.getMaximumNumberOfVotesResult();
+		HoughSimilarityVoting_O1.getMaximumNumberOfVotesResult max = new HoughSimilarityVoting_O1.getMaximumNumberOfVotesResult();
 		this.getMaximumNumberOfVotes(max);
 
 		return (max.votes < 3) ? -1 : max.index;
@@ -271,22 +272,22 @@ public class HoughSimilarityVoting {
 	 */
 	private void FindHoughMatches(FeaturePairStack in_matches,int binIndex, double binDelta) {
 
-		HoughSimilarityVoting.Bins bin = this.getBinsFromIndex(binIndex);
+		HoughSimilarityVoting_O1.Location bin = this.getBinsFromIndex(binIndex);
 
 	
 
 		int n = (int) this.getSubBinLocationIndices().length;
 		// const float* vote_loc = hough.getSubBinLocations().data();
-		BinLocation[] vote_loc = this.getSubBinLocations();// .data();
+		Location[] vote_loc = this.getSubBinLocations();// .data();
 		// ASSERT(n <= in_matches.size(), "Should be the same");
-		HoughSimilarityVoting.mapCorrespondenceResult d = new HoughSimilarityVoting.mapCorrespondenceResult();
+		Location d = new Location();
 		//
 		int pos=0;
 		for (int i = 0; i < n; i++){
 			this.getBinDistance(d, vote_loc[i].x,
 					vote_loc[i].y, vote_loc[i].angle,
-					vote_loc[i].scale, bin.binX + .5f, bin.binY + .5f,
-					bin.binAngle + .5f, bin.binScale + .5f);
+					vote_loc[i].scale, bin.x + .5f, bin.y + .5f,
+					bin.angle + .5f, bin.scale + .5f);
 
 			if (d.x < binDelta && d.y < binDelta && d.angle < binDelta && d.scale < binDelta) {
 				//idxは昇順のはずだから詰める。
@@ -310,7 +311,7 @@ public class HoughSimilarityVoting {
 			return;
 		}
 
-		mSubBinLocations = BinLocation.createArray(size);
+		mSubBinLocations = Location.createArray(size);
 		mSubBinLocationIndices = new int[size];
 		if (mAutoAdjustXYNumBins) {
 			this.autoAdjustXYNumBins(i_point_pair);
@@ -322,13 +323,13 @@ public class HoughSimilarityVoting {
 
 
 			// Map the correspondence to a vote
-			mapCorrespondenceResult r = new mapCorrespondenceResult();
+			Location r = new Location();
 			mapCorrespondence(r,i_point_pair.getItem(i));
 
 			// Cast a vote
 			if (vote(r.x, r.y, r.angle, r.scale)) {
 //				int ptr_bin = num_features_that_cast_vote << 2;// float* ptr_bin
-				BinLocation ptr_bin=this.mSubBinLocations[num_features_that_cast_vote];
+				Location ptr_bin=this.mSubBinLocations[num_features_that_cast_vote];
 				ptr_bin.x= mfBinX;// ptr_bin[0] = mfBinX;
 				ptr_bin.y = mfBinY;// ptr_bin[1] = mfBinY;
 				ptr_bin.angle= mfBinAngle;// ptr_bin[2] =  mfBinAngle;
@@ -341,7 +342,7 @@ public class HoughSimilarityVoting {
 
 		// mSubBinLocations.resize(num_features_that_cast_vote*4);
 		// mSubBinLocationIndices.resize(num_features_that_cast_vote);
-		BinLocation[] n1 = new BinLocation[num_features_that_cast_vote];
+		Location[] n1 = new Location[num_features_that_cast_vote];
 		int[] n2 = new int[num_features_that_cast_vote];
 		System.arraycopy(mSubBinLocations, 0, n1, 0, n1.length);
 		System.arraycopy(mSubBinLocationIndices, 0, n2, 0, n2.length);
@@ -350,11 +351,7 @@ public class HoughSimilarityVoting {
 		return;
 	}
 
-	private static class mapCorrespondenceResult {
-		public double x, y;
-		public double angle;
-		public double scale;
-	}
+
 
 	/**
 	 * Safe division (x/y).
@@ -363,28 +360,15 @@ public class HoughSimilarityVoting {
 		return x / (y == 0 ? 1 : y);
 	}
 
-	/**
-	 * Create a similarity matrix.
-	 */
-	private static void Similarity2x2(double S[], double angle, double scale) {
-		double c = (scale * Math.cos(angle));
-		double s = (scale * Math.sin(angle));
-		S[0] = c;
-		S[1] = -s;
-		S[2] = s;
-		S[3] = c;
-	}
 
-	private void mapCorrespondence(mapCorrespondenceResult r, FeaturePairStack.Item i_item) {
-		double[] S = new double[4];
-		double[] tp = new double[2];
-		double tx, ty;
 
-		//
-		// Angle
-		//
+	private void mapCorrespondence(Location r, FeaturePairStack.Item i_item)
+	{
+
 		FreakFeaturePoint ins=i_item.query;
 		FreakFeaturePoint ref=i_item.ref;
+		
+		//angle
 		r.angle = ins.angle - ref.angle;
 		// Map angle to (-pi,pi]
 		if (r.angle <= -PI) {
@@ -392,30 +376,17 @@ public class HoughSimilarityVoting {
 		} else if (r.angle > PI) {
 			r.angle -= (2 * PI);
 		}
-		// ASSERT(r.angle > -KpmMath.PI, "angle out of range");
-		// ASSERT(r.angle <= KpmMath.PI, "angle out of range");
 
-		//
-		// Scale
-		//
+		double scale = SafeDivision(ins.scale, ref.scale);
+		double c = (scale * Math.cos(r.angle));
+		double s = (scale * Math.sin(r.angle));
 
-		r.scale = SafeDivision(ins.scale, ref.scale);
-		Similarity2x2(S, r.angle, r.scale);
-
-		r.scale = (double) (Math.log(r.scale) * mScaleOneOverLogK);
-
-		//
-		// Position
-		//
-
-		tp[0] = S[0] * ref.x + S[1] * ref.y;
-		tp[1] = S[2] * ref.x + S[3] * ref.y;
-
-		tx = ins.x - tp[0];
-		ty = ins.y - tp[1];
-
-		r.x = S[0] * mCenterX + S[1] * mCenterY + tx;
-		r.y = S[2] * mCenterX + S[3] * mCenterY + ty;
+		//scale
+		r.scale = (double) (Math.log(scale) * mScaleOneOverLogK);
+		//x,y
+		r.x = c * mCenterX - s * mCenterY + (ins.x - (c * ref.x - s * ref.y));
+		r.y = s * mCenterX + c * mCenterY + (ins.y - (s * ref.x + c * ref.y));
+		return;
 	}
 
 	//
@@ -427,7 +398,7 @@ public class HoughSimilarityVoting {
 	/**
 	 * @return Sub-bin locations for each correspondence
 	 */
-	public BinLocation[] getSubBinLocations() {
+	public Location[] getSubBinLocations() {
 		return mSubBinLocations;
 	}
 
@@ -466,7 +437,7 @@ public class HoughSimilarityVoting {
 	// scale, int index) const;
 	//
 
-	private void getBinDistance(mapCorrespondenceResult distbin, double insBinX,
+	private void getBinDistance(Location distbin, double insBinX,
 			double insBinY, double insBinAngle, double insBinScale, double refBinX,
 			double refBinY, double refBinAngle, double refBinScale) {
 		//
@@ -489,27 +460,22 @@ public class HoughSimilarityVoting {
 		return;
 	}
 
-	public class Bins {
-		public int binX;
-		public int binY;
-		public int binAngle;
-		public int binScale;
-	}
+
 
 	/**
 	 * Get the bins locations from an index.
 	 */
-	public Bins getBinsFromIndex(int index) {
+	public Location getBinsFromIndex(int index) {
 		int binX = ((index % mB) % mA) % mNumXBins;
 		int binY = (((index - binX) % mB) % mA) / mNumXBins;
 		int binAngle = ((index - binX - (binY * mNumXBins)) % mB) / mA;
 		int binScale = (index - binX - (binY * mNumXBins) - (binAngle * mA))
 				/ mB;
-		Bins r = new Bins();
-		r.binX = binX;
-		r.binY = binY;
-		r.binAngle = binAngle;
-		r.binScale = binScale;
+		Location r = new Location();
+		r.x = binX;
+		r.y = binY;
+		r.angle = binAngle;
+		r.scale = binScale;
 		return r;
 
 	}
@@ -523,7 +489,7 @@ public class HoughSimilarityVoting {
 
 	private final hash_t mVotes = new hash_t();
 
-	private BinLocation[] mSubBinLocations;
+	private Location[] mSubBinLocations;
 	int[] mSubBinLocationIndices;
 
 	/**

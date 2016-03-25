@@ -63,10 +63,10 @@ public class RobustHomography {
 	}
 
 	// RANSAC params
-	private double mCauchyScale;
-	private int mMaxNumHypotheses;
-	private int mMaxTrials;
-	private int mChunkSize;
+	final private double mCauchyScale;
+	final private int mMaxNumHypotheses;
+	final private int mMaxTrials;
+	final private int mChunkSize;
 
 
 	final private RansacPointTable _ps=new RansacPointTable(100);
