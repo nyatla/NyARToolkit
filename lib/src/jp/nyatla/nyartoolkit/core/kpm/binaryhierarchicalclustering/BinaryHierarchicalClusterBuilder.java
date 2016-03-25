@@ -43,14 +43,14 @@ public class BinaryHierarchicalClusterBuilder
 		return this.build(features.getArray(), null,indices, indices.length);
 	}
 
-	private BinaryHierarchicalNode build(FreakFeaturePoint[] features,FreakFeaturePoint i_center,int[] i_indices, int num_indices)
+	private BinaryHierarchicalNode build(FreakMatchPointSetStack.Item[] features,FreakFeaturePoint i_center,int[] i_indices, int num_indices)
 	{
 		int t=mBinarykMedoids.k();
 		if(t<this.mMinFeaturePerNode){
 			t=this.mMinFeaturePerNode;
 		}
 		if (num_indices <= t) {
-			FreakFeaturePoint[] index=intArray2FeaturePointArray(features,i_indices);
+			FreakMatchPointSetStack.Item[] index=intArray2FeaturePointArray(features,i_indices);
 			return new BinaryHierarchicalNode(this.nextNodeId(),i_center,true,index,null); 
 		}
 		Map<Integer, List<Integer>> cluster_map = new TreeMap<Integer, List<Integer>>();
@@ -75,7 +75,7 @@ public class BinaryHierarchicalClusterBuilder
 
 		// If there is only 1 cluster then make this node a leaf
 		if (cluster_map.size() == 1) {
-			FreakFeaturePoint[] index=intArray2FeaturePointArray(features,i_indices);
+			FreakMatchPointSetStack.Item[] index=intArray2FeaturePointArray(features,i_indices);
 			return new BinaryHierarchicalNode(this.nextNodeId(),i_center,true,index,null);
 		}
 		int n=0;
@@ -97,9 +97,9 @@ public class BinaryHierarchicalClusterBuilder
 	 * @param indics
 	 * @return
 	 */
-	private static FreakFeaturePoint[] intArray2FeaturePointArray(FreakFeaturePoint[] features,int[] indics)
+	private static FreakMatchPointSetStack.Item[] intArray2FeaturePointArray(FreakMatchPointSetStack.Item[] features,int[] indics)
 	{
-		FreakFeaturePoint[] r=new FreakFeaturePoint[indics.length];
+		FreakMatchPointSetStack.Item[] r=new FreakMatchPointSetStack.Item[indics.length];
 		for(int i=0;i<r.length;i++){
 			r[i]=features[indics[i]];
 		}

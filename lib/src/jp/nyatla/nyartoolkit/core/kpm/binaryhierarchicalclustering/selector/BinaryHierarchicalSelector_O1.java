@@ -43,7 +43,7 @@ public class BinaryHierarchicalSelector_O1
 
 	private class NodeStack extends NyARObjectStack<NodeStack.Item>
 	{
-		public class Item implements Comparable{
+		public class Item implements Comparable<Object>{
 			public int distance;
 			public BinaryHierarchicalNode node;
 			@Override

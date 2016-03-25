@@ -18,7 +18,7 @@ public class BinaryHierarchicalSelector
 	 * This class represents an entry in a priority queue to revisit certains nodes
 	 * in a back-trace.
 	 */
-	private static class PriorityQueueItem implements Comparable
+	private static class PriorityQueueItem implements Comparable<Object>
 	{
 		// Pointer to the node
 		public BinaryHierarchicalNode node;

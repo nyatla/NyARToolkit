@@ -7,6 +7,7 @@ import jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.BinaryHierarc
 import jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.selector.utils.LimitedPriorityNodeList;
 import jp.nyatla.nyartoolkit.core.kpm.binaryhierarchicalclustering.selector.utils.NodeStack;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
+import jp.nyatla.nyartoolkit.core.kpm.keyframe.FreakMatchPointSetStack;
 import jp.nyatla.nyartoolkit.core.kpm.utils.LongDescripter768;
 
 
@@ -14,7 +15,7 @@ public class BinaryHierarchicalSelector_O2
 {
 
 
-	final public FreakFeaturePoint[] _result;
+	final public FreakMatchPointSetStack.Item[] _result;
 	final private LimitedPriorityNodeList mlist;
 	//特徴量の一時バッファ
 	final private NodeStack _node_stack=new NodeStack(1000);
@@ -22,7 +23,7 @@ public class BinaryHierarchicalSelector_O2
 	private int _num_of_result;
 	public BinaryHierarchicalSelector_O2(int i_MaxNodesToPop,int i_max_result)
 	{
-		this._result=new FreakFeaturePoint[i_max_result];
+		this._result=new FreakMatchPointSetStack.Item[i_max_result];
 		this.mlist=new LimitedPriorityNodeList(i_MaxNodesToPop);
 		return;
 	}

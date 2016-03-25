@@ -40,14 +40,14 @@ final public class BinaryHirerarchialClusteringMatcher extends BinaryFeatureMatc
 		for (int i = 0; i < q_len; i++) {
 			int first_best = Integer.MAX_VALUE;// std::numeric_limits<unsigned int>::max();
 			int second_best = Integer.MAX_VALUE;// std::numeric_limits<unsigned int>::max();
-			FreakFeaturePoint best_index = null;// std::numeric_limits<int>::max();
+			FreakMatchPointSetStack.Item best_index = null;// std::numeric_limits<int>::max();
 
 			// Perform an indexed nearest neighbor lookup
 			FreakFeaturePoint fptr1 = query_buf[i];
 			
 			int num_of_fp=this._selector.query(index2,fptr1.descripter);
 			// Search for 1st and 2nd best match
-			FreakFeaturePoint[] v = this._selector._result;
+			FreakMatchPointSetStack.Item[] v = this._selector._result;
 			for (int j = 0; j < num_of_fp; j++) {
 				FreakFeaturePoint fptr2=v[j];
 				// Both points should be a MINIMA or MAXIMA
@@ -73,7 +73,7 @@ final public class BinaryHirerarchialClusteringMatcher extends BinaryFeatureMatc
 				if (second_best == Integer.MAX_VALUE) {
 					FeaturePairStack.Item t = i_maches.prePush();
 					t.query=fptr1;
-					t.ref=(FreakMatchPointSetStack.Item)best_index;
+					t.ref=best_index;
 				} else {
 					// Ratio test
 					double r = (double) first_best / (double) second_best;
@@ -81,7 +81,7 @@ final public class BinaryHirerarchialClusteringMatcher extends BinaryFeatureMatc
 						// mMatches.push_back(match_t((int)i, best_index));
 						FeaturePairStack.Item t = i_maches.prePush();
 						t.query=fptr1;
-						t.ref=(FreakMatchPointSetStack.Item)best_index;
+						t.ref=best_index;
 					}
 				}
 			}
