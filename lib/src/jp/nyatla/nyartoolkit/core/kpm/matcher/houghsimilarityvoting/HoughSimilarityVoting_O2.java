@@ -11,15 +11,13 @@ import jp.nyatla.nyartoolkit.core.math.NyARMath;
  * Hough voting for a similarity transformation based on a set of
  * correspondences.
  */
-final public class HoughSimilarityVoting_O1 {
+final public class HoughSimilarityVoting_O2 {
 	final static private double PI=NyARMath.PI;
 	private static double kHoughBinDelta = 1;	
 
 
 
 
-	// Set to true if the XY number of bins should be adjusted
-	private boolean mAutoAdjustXYNumBins;
 
 	// Min/Max (x,y,scale). The angle includes all angles (-pi,pi).
 	private double mMinX;
@@ -43,12 +41,7 @@ final public class HoughSimilarityVoting_O1 {
 	private int mB; // mNumXBins*mNumYBins*mNumAngleBins	
 	
 //	this.mHoughSimilarityVoting=new HoughSimilarityVoting_O1(-dx, dx, -dy, dy, 0, 0, 12, 10);	
-	public HoughSimilarityVoting_O1(double minX, double maxX, double minY, double maxY,int numAngleBins, int numScaleBins)
-	{
-		this(minX,maxX,minY,maxY,0,0,numAngleBins,numScaleBins);
-	}
-	
-	public HoughSimilarityVoting_O1(double minX, double maxX, double minY, double maxY, int numXBins,int numYBins, int numAngleBins, int numScaleBins)
+	public HoughSimilarityVoting_O2(double minX, double maxX, double minY, double maxY,int numAngleBins, int numScaleBins)
 	{
 		this.mMinX = minX;
 		this.mMaxX = maxX;
@@ -58,21 +51,17 @@ final public class HoughSimilarityVoting_O1 {
 		this.mMaxScale = 1;
 		this.mScaleK = 10;
 		this.mScaleOneOverLogK = (double) (1.0 / Math.log(mScaleK));
-		this.mNumXBins = numXBins;
-		this.mNumYBins = numYBins;
+		this.mNumXBins = 0;
+		this.mNumYBins = 0;
 		this.mNumAngleBins = numAngleBins;
 		this.mNumScaleBins = numScaleBins;
-		this.mA = numXBins * numYBins;
-		this.mB = numXBins * numYBins * numAngleBins;
+		this.mA = 0;
+		this.mB = 0 * numAngleBins;
 		// If the number of bins for (x,y) are not set, then we adjust the
 		// number of bins automatically.
-		if (numXBins == 0 && numYBins == 0){
-			this.mAutoAdjustXYNumBins = true;
-		}
-		else{
-			this.mAutoAdjustXYNumBins = false;
-		}
+
 	}
+	
 	
 	//workArea
 	private double[] _project_dim=new double[64];
@@ -123,34 +112,10 @@ final public class HoughSimilarityVoting_O1 {
 		fBin.angle = (double) (mNumAngleBins * ((angle + PI) * (1 / (2 * PI))));
 		fBin.scale = mNumScaleBins	* SafeDivision(scale - mMinScale, mMaxScale - mMinScale);
 	}
-	/**
-	 * Get the bins locations from an index.
-	 */
-	private BinLocation getBinsFromIndex(int index)
-	{
-		//ハッシュ値から元の値を復帰
-		
-		int binX = ((index % mB) % mA) % mNumXBins;
-		int binY = (((index - binX) % mB) % mA) / mNumXBins;
-		int binAngle = ((index - binX - (binY * mNumXBins)) % mB) / mA;
-		int binScale = (index - binX - (binY * mNumXBins) - (binAngle * mA))/ mB;
-		BinLocation r = new BinLocation();
-		r.x = binX;
-		r.y = binY;
-		r.angle = binAngle;
-		r.scale = binScale;
-		return r;
 
-	}
-	/**
-	 * Get an index from the discretized bin locations.
-	 */
-	private int getBinIndex(int binX, int binY, int binAngle, int binScale) {
-		int index = binX + (binY * mNumXBins) + (binAngle * mA) + (binScale * mB);
-		return index;
-	}
 
-	final private BinLocation _fBinRet = new BinLocation();
+
+//	final private BinLocation _fBinRet = new BinLocation();
 	/**
 	 * Vote for the similarity transformation that maps the reference center to
 	 * the inspection center.
@@ -165,29 +130,8 @@ final public class HoughSimilarityVoting_O1 {
 	 * @param[in] angle (-pi,pi]
 	 * @param[in] scale
 	 */
-	private boolean vote(BinLocation r,BinLocation i_out_sub_bin_location)
+	private boolean vote(int binX,int binY,int binScale,int binAngle)
 	{
-		// Compute the bin location
-		BinLocation fBinRet = this._fBinRet;
-		mapVoteToBin(fBinRet, r.x, r.y, r.angle, r.scale);
-		i_out_sub_bin_location.x=fBinRet.x;
-		i_out_sub_bin_location.y=fBinRet.y;
-		i_out_sub_bin_location.scale=fBinRet.scale;
-		i_out_sub_bin_location.angle=fBinRet.angle;
-		int binX = (int) Math.floor(i_out_sub_bin_location.x - 0.5f);
-		int binY = (int) Math.floor(i_out_sub_bin_location.y - 0.5f);
-		int binAngle = (int) Math.floor(i_out_sub_bin_location.angle - 0.5f);
-		int binScale = (int) Math.floor(i_out_sub_bin_location.scale - 0.5f);
-
-		binAngle = (binAngle + mNumAngleBins) % mNumAngleBins;
-
-		// Check that we can voting to all 16 bin locations
-		if (binX < 0 || (binX + 1) >= mNumXBins || binY < 0
-				|| (binY + 1) >= mNumYBins || binScale < 0
-				|| (binScale + 1) >= mNumScaleBins) {
-			return false;
-		}
-
 		int binXPlus1 = binX + 1;
 		int binYPlus1 = binY + 1;
 		int binScalePlus1 = binScale + 1;
@@ -198,30 +142,30 @@ final public class HoughSimilarityVoting_O1 {
 		//
 
 		// bin location
-		this.mVotes.voteAtIndex(getBinIndex(binX, binY, binAngle, binScale), 1);
+		this.mVotes.voteAtIndex(binX, binY, binAngle, binScale, 1);
 
 		// binX+1
-		this.mVotes.voteAtIndex(getBinIndex(binXPlus1, binY, binAngle, binScale), 1);
-		this.mVotes.voteAtIndex(getBinIndex(binXPlus1, binYPlus1, binAngle, binScale), 1);
-		this.mVotes.voteAtIndex(getBinIndex(binXPlus1, binYPlus1, binAnglePlus1, binScale),	1);
-		this.mVotes.voteAtIndex(getBinIndex(binXPlus1, binYPlus1, binAnglePlus1, binScalePlus1),1);
-		this.mVotes.voteAtIndex(getBinIndex(binXPlus1, binYPlus1, binAngle, binScalePlus1),	1);
-		this.mVotes.voteAtIndex(getBinIndex(binXPlus1, binY, binAnglePlus1, binScale), 1);
-		this.mVotes.voteAtIndex(getBinIndex(binXPlus1, binY, binAnglePlus1, binScalePlus1),	1);
-		this.mVotes.voteAtIndex(getBinIndex(binXPlus1, binY, binAngle, binScalePlus1), 1);
+		this.mVotes.voteAtIndex(binXPlus1, binY, binAngle, binScale, 1);
+		this.mVotes.voteAtIndex(binXPlus1, binYPlus1, binAngle, binScale, 1);
+		this.mVotes.voteAtIndex(binXPlus1, binYPlus1, binAnglePlus1, binScale,	1);
+		this.mVotes.voteAtIndex(binXPlus1, binYPlus1, binAnglePlus1, binScalePlus1,1);
+		this.mVotes.voteAtIndex(binXPlus1, binYPlus1, binAngle, binScalePlus1,	1);
+		this.mVotes.voteAtIndex(binXPlus1, binY, binAnglePlus1, binScale, 1);
+		this.mVotes.voteAtIndex(binXPlus1, binY, binAnglePlus1, binScalePlus1,	1);
+		this.mVotes.voteAtIndex(binXPlus1, binY, binAngle, binScalePlus1, 1);
 
 		// binY+1
-		this.mVotes.voteAtIndex(getBinIndex(binX, binYPlus1, binAngle, binScale), 1);
-		this.mVotes.voteAtIndex(getBinIndex(binX, binYPlus1, binAnglePlus1, binScale), 1);
-		this.mVotes.voteAtIndex(getBinIndex(binX, binYPlus1, binAnglePlus1, binScalePlus1),	1);
-		this.mVotes.voteAtIndex(getBinIndex(binX, binYPlus1, binAngle, binScalePlus1), 1);
+		this.mVotes.voteAtIndex(binX, binYPlus1, binAngle, binScale, 1);
+		this.mVotes.voteAtIndex(binX, binYPlus1, binAnglePlus1, binScale, 1);
+		this.mVotes.voteAtIndex(binX, binYPlus1, binAnglePlus1, binScalePlus1,	1);
+		this.mVotes.voteAtIndex(binX, binYPlus1, binAngle, binScalePlus1, 1);
 
 		// binAngle+1
-		this.mVotes.voteAtIndex(getBinIndex(binX, binY, binAnglePlus1, binScale), 1);
-		this.mVotes.voteAtIndex(getBinIndex(binX, binY, binAnglePlus1, binScalePlus1), 1);
+		this.mVotes.voteAtIndex(binX, binY, binAnglePlus1, binScale, 1);
+		this.mVotes.voteAtIndex(binX, binY, binAnglePlus1, binScalePlus1, 1);
 
 		// binScale+1
-		this.mVotes.voteAtIndex(getBinIndex(binX, binY, binAngle, binScalePlus1), 1);
+		this.mVotes.voteAtIndex(binX, binY, binAngle, binScalePlus1, 1);
 
 		return true;
 	}
@@ -254,10 +198,9 @@ final public class HoughSimilarityVoting_O1 {
 			return false;
 		}
 		//FindHoughSimilarity
-		if (mAutoAdjustXYNumBins) {
-			int max_dim =refWidth>refHeight?refWidth:refHeight;//math_utils.max2(mRefImageWidth, mRefImageHeight);
-			this.autoAdjustXYNumBins(max_dim,i_matche_resule);
-		}
+		int max_dim =refWidth>refHeight?refWidth:refHeight;//math_utils.max2(mRefImageWidth, mRefImageHeight);
+		this.autoAdjustXYNumBins(max_dim,i_matche_resule);
+
 		
 		this.mSubBinLocations = SubBinLocation.createArray(size);
 		mVotes.clear();
@@ -292,67 +235,129 @@ final public class HoughSimilarityVoting_O1 {
 
 
 	
-	final private BinLocation _d = new BinLocation();
 	
 	/**
 	 * Get only the matches that are consistent based on the hough votes.
 	 */
 	private void FindHoughMatches(FeaturePairStack in_matches,int binIndex, double binDelta,int i_num_of_sbin)
 	{
+		/**
+		 * Get the bins locations from an index.
+		 */
+		double ref_x,ref_y,ref_angle,ref_scale;
+		{
+			//ハッシュ値から元の値を復帰
+			
+			int binX = ((binIndex % mB) % mA) % mNumXBins;
+			int binY = (((binIndex - binX) % mB) % mA) / mNumXBins;
+			int binAngle = ((binIndex - binX - (binY * mNumXBins)) % mB) / mA;
+			int binScale = (binIndex - binX - (binY * mNumXBins) - (binAngle * mA))/ mB;
+			ref_x = binX+0.5;
+			ref_y = binY+0.5;
+			ref_angle = binAngle+0.5;
+			ref_scale = binScale+0.5;
 
-		HoughSimilarityVoting_O1.BinLocation bin = this.getBinsFromIndex(binIndex);
-		bin.x+=0.5;
-		bin.y+=0.5;
-		bin.angle+=0.5;
-		bin.scale+=0.5;
+		}		
 
 		int n = i_num_of_sbin;
 		// const float* vote_loc = hough.getSubBinLocations().data();
 		BinLocation[] vote_loc = this.mSubBinLocations;// .data();
-		// ASSERT(n <= in_matches.size(), "Should be the same");
-		BinLocation d = this._d;
+
+
 		//
 		int pos=0;
 		for (int i = 0; i < n; i++){
-			this.getBinDistance(d, vote_loc[i].x,
-					vote_loc[i].y, vote_loc[i].angle,
-					vote_loc[i].scale, bin.x, bin.y,
-					bin.angle, bin.scale);
-
-			if (d.x < binDelta && d.y < binDelta && d.angle < binDelta && d.scale < binDelta) {
-				//idxは昇順のはずだから詰める。
-				int idx = this.mSubBinLocations[i].index;
-				in_matches.swap(idx, pos);
-				pos++;
-				
+			BinLocation ins=vote_loc[i];
+			//getBinDistance
+			double d;
+			
+			//x
+			d=Math.abs(ins.x - ref_x);
+			if(d>=binDelta){
+				continue;
 			}
+			//y
+			d= Math.abs(ins.y - ref_y);
+			if(d>=binDelta){
+				continue;
+			}
+			//scale
+			d= Math.abs(ins.scale - ref_scale);
+			if(d>=binDelta){
+				continue;
+			}
+			// Angle
+			double d1 = Math.abs(ins.angle - ref_angle);
+			double d2 = (double) this.mNumAngleBins - d1;
+			d = d1<d2?d1:d2;			
+			if(d>=binDelta){
+				continue;
+			}
+
+			//idxは昇順のはずだから詰める。
+			int idx = this.mSubBinLocations[i].index;
+			in_matches.swap(idx, pos);
+			pos++;				
 		}
 		in_matches.setLength(pos);
 		return;
 	}
 
-	final private BinLocation _r = new BinLocation();
+
 	private int vote(FeaturePairStack i_point_pair,int i_center_x,int i_center_y) 
 	{
 		int size=i_point_pair.getLength();
 
 
-		BinLocation r = this._r;
 		int num_features_that_cast_vote = 0;
 		for (int i = 0; i < size; i++) {
-			// Cast a vote
-			// Map the correspondence to a vote
-			mapCorrespondence(r,i_point_pair.getItem(i),i_center_x,i_center_y);
+			//mapCorrespondence(r,i_point_pair.getItem(i),i_center_x,i_center_y);
+			double rx,ry,rangle,rscale;
+			{
+				FreakFeaturePoint ins=i_point_pair.getItem(i).query;
+				FreakFeaturePoint ref=i_point_pair.getItem(i).ref;
+				
+				//angle
+				rangle = ins.angle - ref.angle;
+				// Map angle to (-pi,pi]
+				if (rangle <= -PI) {
+					rangle += (2 * PI);
+				} else if (rangle > PI) {
+					rangle -= (2 * PI);
+				}
 
+				double scale = SafeDivision(ins.scale, ref.scale);
+				double c = (scale * Math.cos(rangle));
+				double s = (scale * Math.sin(rangle));
 
+				//scale
+				rscale = (double) (Math.log(scale) * this.mScaleOneOverLogK);
+				//x,y
+				rx = c * i_center_x - s * i_center_y + (ins.x - (c * ref.x - s * ref.y));
+				ry = s * i_center_x + c * i_center_y + (ins.y - (s * ref.x + c * ref.y));
+				// Check that the vote is within range
+				if (rx < mMinX || rx >= mMaxX || ry < mMinY || ry >= mMaxY
+						|| rangle <= -PI || rangle > PI
+						|| rscale < mMinScale || rscale >= mMaxScale) {
+					continue;
+				}				
+			}
+			// Compute the bin location
+			BinLocation sub_bin=this.mSubBinLocations[num_features_that_cast_vote];
+			mapVoteToBin(sub_bin, rx, ry, rangle, rscale);
+			int binX = (int) Math.floor(sub_bin.x - 0.5f);
+			int binY = (int) Math.floor(sub_bin.y - 0.5f);
+			int binScale = (int) Math.floor(sub_bin.scale - 0.5f);
+			int binAngle = (int) Math.floor(sub_bin.angle - 0.5f);
+			binAngle = (binAngle + mNumAngleBins) % mNumAngleBins;
 
-			// Check that the vote is within range
-			if (r.x < mMinX || r.x >= mMaxX || r.y < mMinY || r.y >= mMaxY
-					|| r.angle <= -PI || r.angle > PI
-					|| r.scale < mMinScale || r.scale >= mMaxScale) {
+			// Check that we can voting to all 16 bin locations
+			if (binX < 0 || (binX + 1) >= mNumXBins || binY < 0
+					|| (binY + 1) >= mNumYBins || binScale < 0
+					|| (binScale + 1) >= mNumScaleBins) {
 				continue;
 			}
-			if (this.vote(r,this.mSubBinLocations[num_features_that_cast_vote]))
+			if (this.vote(binX,binY,binScale,binAngle))
 			{
 				this.mSubBinLocations[num_features_that_cast_vote].index=i;
 				num_features_that_cast_vote++;
@@ -372,57 +377,6 @@ final public class HoughSimilarityVoting_O1 {
 
 
 
-	private void mapCorrespondence(BinLocation r, FeaturePairStack.Item i_item,int i_center_x,int i_center_y)
-	{
-
-		FreakFeaturePoint ins=i_item.query;
-		FreakFeaturePoint ref=i_item.ref;
-		
-		//angle
-		r.angle = ins.angle - ref.angle;
-		// Map angle to (-pi,pi]
-		if (r.angle <= -PI) {
-			r.angle += (2 * PI);
-		} else if (r.angle > PI) {
-			r.angle -= (2 * PI);
-		}
-
-		double scale = SafeDivision(ins.scale, ref.scale);
-		double c = (scale * Math.cos(r.angle));
-		double s = (scale * Math.sin(r.angle));
-
-		//scale
-		r.scale = (double) (Math.log(scale) * mScaleOneOverLogK);
-		//x,y
-		r.x = c * i_center_x - s * i_center_y + (ins.x - (c * ref.x - s * ref.y));
-		r.y = s * i_center_x + c * i_center_y + (ins.y - (s * ref.x + c * ref.y));
-		return;
-	}
-
-
-
-
-
-
-
-
-	private void getBinDistance(BinLocation distbin, double insBinX,
-			double insBinY, double insBinAngle, double insBinScale, double refBinX,
-			double refBinY, double refBinAngle, double refBinScale) {
-
-		// (x,y,scale)
-		distbin.x = Math.abs(insBinX - refBinX);
-		distbin.y = Math.abs(insBinY - refBinY);
-		distbin.scale = Math.abs(insBinScale - refBinScale);
-
-
-		// Angle
-		double d1 = Math.abs(insBinAngle - refBinAngle);
-		double d2 = (double) mNumAngleBins - d1;
-		distbin.angle = d1<d2?d1:d2;
-
-		return;
-	}
 
 
 
@@ -437,8 +391,10 @@ final public class HoughSimilarityVoting_O1 {
 		/**
 		 * Cast a vote to an similarity index
 		 */
-		public void voteAtIndex(int index, int weight) {
-
+		public void voteAtIndex(int binX, int binY, int binAngle, int binScale, int weight)
+		{
+			int index = binX + (binY * mNumXBins) + (binAngle * mA) + (binScale * mB);
+			
 			Integer it = this.get(index);
 			if (it == null) {
 				this.put(index, weight);

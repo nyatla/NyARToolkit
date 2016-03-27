@@ -5,7 +5,6 @@ import java.util.Map.Entry;
 
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.FeaturePairStack;
-import jp.nyatla.nyartoolkit.core.kpm.matcher.FeaturePairStack.Item;
 import jp.nyatla.nyartoolkit.core.math.NyARMath;
 
 /**
@@ -49,7 +48,10 @@ public class HoughSimilarityVoting {
 	private int mA; // mNumXBins*mNumYBins
 	private int mB; // mNumXBins*mNumYBins*mNumAngleBins	
 	
-	
+	public HoughSimilarityVoting(double minX, double maxX, double minY, double maxY,int numAngleBins, int numScaleBins)
+	{
+		this(minX,maxX,minY,maxY,0,0,numAngleBins,numScaleBins);
+	}	
 	public HoughSimilarityVoting(double minX, double maxX, double minY, double maxY, int numXBins,int numYBins, int numAngleBins, int numScaleBins)
 	{
 		this.mRefImageWidth = (0);
@@ -103,14 +105,7 @@ public class HoughSimilarityVoting {
 	private int getBinIndex(int binX, int binY, int binAngle, int binScale) {
 		int index;
 
-		// ASSERT(binX >= 0, "binX out of range");
-		// ASSERT(binX < mNumXBins, "binX out of range");
-		// ASSERT(binY >= 0, "binY out of range");
-		// ASSERT(binY < mNumYBins, "binY out of range");
-		// ASSERT(binAngle >= 0, "binAngle out of range");
-		// ASSERT(binAngle < mNumAngleBins, "binAngle out of range");
-		// ASSERT(binScale >= 0, "binScale out of range");
-		// ASSERT(binScale < mNumScaleBins, "binScale out of range");
+
 
 		index = binX + (binY * mNumXBins) + (binAngle * mA) + (binScale * mB);
 
@@ -427,14 +422,14 @@ public class HoughSimilarityVoting {
 	/**
 	 * @return Sub-bin locations for each correspondence
 	 */
-	public BinLocation[] getSubBinLocations() {
+	private BinLocation[] getSubBinLocations() {
 		return mSubBinLocations;
 	}
 
 	/**
 	 * @return Sub-bin indices for each correspondence
 	 */
-	public int[] getSubBinLocationIndices() {
+	private int[] getSubBinLocationIndices() {
 		return mSubBinLocationIndices;
 	}
 
@@ -489,7 +484,7 @@ public class HoughSimilarityVoting {
 		return;
 	}
 
-	public class Bins {
+	private class Bins {
 		public int binX;
 		public int binY;
 		public int binAngle;
@@ -499,7 +494,7 @@ public class HoughSimilarityVoting {
 	/**
 	 * Get the bins locations from an index.
 	 */
-	public Bins getBinsFromIndex(int index) {
+	private Bins getBinsFromIndex(int index) {
 		int binX = ((index % mB) % mA) % mNumXBins;
 		int binY = (((index - binX) % mB) % mA) / mNumXBins;
 		int binAngle = ((index - binX - (binY * mNumXBins)) % mB) / mA;
