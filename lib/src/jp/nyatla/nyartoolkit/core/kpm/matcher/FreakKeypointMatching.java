@@ -174,7 +174,6 @@ public class FreakKeypointMatching {
 			if(!this.mHoughSimilarityVoting.extractMatches(match_result,second.width(), second.height())){
 				continue;
 			}
-			
 
 			// Estimate the transformation between the two images
 			if (!this.mRobustHomography.PreemptiveRobustHomography(H, match_result,second.width(), second.height())) {

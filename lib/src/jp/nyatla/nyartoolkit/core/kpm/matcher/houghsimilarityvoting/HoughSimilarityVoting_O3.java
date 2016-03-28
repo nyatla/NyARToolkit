@@ -105,46 +105,6 @@ final public class HoughSimilarityVoting_O3 {
 		fBin.angle = (double) (mNumAngleBins * ((angle + PI) * (1 / (2 * PI))));
 		fBin.scale = mNumScaleBins	* SafeDivision(scale - mMinScale, mMaxScale - mMinScale);
 	}
-
-	
-	private void vote2(int binX,int binY,int binScale,int binAngle)
-	{
-		int binXPlus1 = binX + 1;
-		int binYPlus1 = binY + 1;
-		int binScalePlus1 = binScale + 1;
-		int binAnglePlus1 = (binAngle + 1) % mNumAngleBins;
-		//
-		// Cast the 16 votes
-		//
-
-		// bin location
-		this.votemap.add(binX, binY, binAngle, binScale,1);
-
-		// binX+1
-		this.votemap.add(binXPlus1, binY, binAngle, binScale, 1);
-		this.votemap.add(binXPlus1, binYPlus1, binAngle, binScale, 1);
-		this.votemap.add(binXPlus1, binYPlus1, binAnglePlus1, binScale,	1);
-		this.votemap.add(binXPlus1, binYPlus1, binAnglePlus1, binScalePlus1,1);
-		this.votemap.add(binXPlus1, binYPlus1, binAngle, binScalePlus1,	1);
-		this.votemap.add(binXPlus1, binY, binAnglePlus1, binScale, 1);
-		this.votemap.add(binXPlus1, binY, binAnglePlus1, binScalePlus1,	1);
-		this.votemap.add(binXPlus1, binY, binAngle, binScalePlus1, 1);
-
-		// binY+1
-		this.votemap.add(binX, binYPlus1, binAngle, binScale, 1);
-		this.votemap.add(binX, binYPlus1, binAnglePlus1, binScale, 1);
-		this.votemap.add(binX, binYPlus1, binAnglePlus1, binScalePlus1,	1);
-		this.votemap.add(binX, binYPlus1, binAngle, binScalePlus1, 1);
-
-		// binAngle+1
-		this.votemap.add(binX, binY, binAnglePlus1, binScale, 1);
-		this.votemap.add(binX, binY, binAnglePlus1, binScalePlus1, 1);
-
-		// binScale+1
-		this.votemap.add(binX, binY, binAngle, binScalePlus1, 1);
-
-		return;
-	}	
 	
 	private static class BinLocation
 	{
@@ -165,6 +125,8 @@ final public class HoughSimilarityVoting_O3 {
 			return r;
 		}		
 	}
+	/** このサイズは、サンプル数*16*4くらいあればＯＫ*/
+	private TreeVoteMap votemap=new TreeVoteMap(1000);
 	private SubBinLocation[] _mSubBinLocations=SubBinLocation.createArray(50);
 	public boolean extractMatches(FeaturePairStack i_matche_resule,int refWidth, int refHeight)	
 	{
@@ -183,7 +145,6 @@ final public class HoughSimilarityVoting_O3 {
 		int max_dim =refWidth>refHeight?refWidth:refHeight;//math_utils.max2(mRefImageWidth, mRefImageHeight);
 		this.autoAdjustXYNumBins(max_dim,i_matche_resule);
 
-		
 		this.votemap.reset();
 		int num_of_subbin=this.vote(i_matche_resule,refWidth/2,refHeight/2,this._mSubBinLocations);		
 		int max_hough_index=this.votemap.findMax();
@@ -310,13 +271,11 @@ final public class HoughSimilarityVoting_O3 {
 				continue;
 			}
 			sub_bin.index=i;
-			num_features_that_cast_vote++;			
-			this.vote2(binX,binY,binScale,binAngle);
-
+			num_features_that_cast_vote++;
+			this.votemap.vote16(binX, binY, binAngle, binScale,1);
 		}
 		return num_features_that_cast_vote;
 	}
-
 	/**
 	 * Safe division (x/y).
 	 */
@@ -325,24 +284,23 @@ final public class HoughSimilarityVoting_O3 {
 	}
 
 
-	private TreeMap votemap=new TreeMap(1000);
-	static class TreeMap
+	static class TreeVoteMap
 	{
-		public int nol=0;
+		//public int nol=0;//debug
 		final static int NUM_OF_ARRAY=16;
 
 		public NodePool pool;
-		public TreeNode root;
-		public TreeMap(int i_size){
+		public VoteNode root;
+		public TreeVoteMap(int i_size){
 			this.pool=new NodePool(i_size);
-			this.root=new TreeNode(NUM_OF_ARRAY);
+			this.root=new VoteNode(NUM_OF_ARRAY);
 		}
 		/**
 		 * 使用状態をリセットする。
 		 */
 		public void reset(){
 			//使用中のオブジェクトの残数を全部リセット
-			TreeNode[] a=this.pool.getArray();
+			VoteNode[] a=this.pool.getArray();
 			for(int i=this.pool.getLength()-1;i>=0;i--){
 				a[i].remining=NUM_OF_ARRAY;
 				a[i].count=0;
@@ -351,11 +309,11 @@ final public class HoughSimilarityVoting_O3 {
 			//ルートノードもリセット
 			this.root.remining=NUM_OF_ARRAY;
 			this.root.count=0;
-			nol=0;
+			//nol=0;//debug
 			return;
 		}
-		public boolean add(int x,int y,int angle,int scale,int weight){
-			TreeNode r;
+		public boolean vote(int x,int y,int angle,int scale,int weight){
+			VoteNode r;
 			r=this.root.put(x,this.pool);
 			if(r==null){
 				return false;
@@ -372,23 +330,58 @@ final public class HoughSimilarityVoting_O3 {
 			if(r==null){
 				return false;
 			}
-			if(r.count==1){
-				nol++;
-			}
+			//if(r.count==1){//debug
+			//	nol++;
+			//}
 			return true;
 		}
+		
+		public boolean vote16(int x,int y,int angle,int scale,int weight)
+		{
+			for(int ix=0;ix<=1;ix++){
+				VoteNode r1=this.root.put(x+ix,this.pool);
+				if(r1==null){
+					return false;
+				}
+				for(int iy=0;iy<=1;iy++){
+					VoteNode r2=r1.put(y+iy,this.pool);
+					if(r2==null){
+						return false;
+					}
+					for(int ia=0;ia<=1;ia++){
+						//X,Y,A
+						VoteNode r3=r2.put(angle+ia,this.pool);
+						if(r3==null){
+							return false;
+						}
+						for(int is=0;is<=1;is++){
+							VoteNode r4=r3.put(scale+is,this.pool);
+							if(r4==null){
+								return false;
+							}
+							//if(r4.count==1){//debug
+							//	nol++;
+							//}							
+						}
+					}
+				}
+			}
+			return true;
+		}		
+
+		
 		public int findMax(){
 			int max=0;
 			int index=0;
 			int array_size=NUM_OF_ARRAY;
 			for(int x=this.root.remining;x<array_size;x++){
-				TreeNode nx=this.root.nodes[x];
+				VoteNode nx=this.root.nodes[x];
 				for(int y=nx.remining;y<array_size;y++){
-					TreeNode ny=nx.nodes[y];
+					VoteNode ny=nx.nodes[y];
 					for(int an=ny.remining;an<array_size;an++){
-						TreeNode na=ny.nodes[an];
+						VoteNode na=ny.nodes[an];
 						for(int sc=na.remining;sc<array_size;sc++){
-							TreeNode ns=na.nodes[sc];
+							VoteNode ns=na.nodes[sc];
 							if(ns.count>=max){
 								index = nx.index | ((ny.index|((na.index  | (ns.index<<7))<<7))<<7);								
 								max=ns.count;
@@ -401,36 +394,36 @@ final public class HoughSimilarityVoting_O3 {
 		}
 		
 		
-		static private class NodePool extends NyARObjectStack<TreeNode>
+		static private class NodePool extends NyARObjectStack<VoteNode>
 		{
 			public NodePool(int i_length){
-				super(i_length,TreeNode.class);
+				super(i_length,VoteNode.class);
 			}
 			@Override
-			public TreeNode createElement(){
-				return new TreeNode(NUM_OF_ARRAY);
+			public VoteNode createElement(){
+				return new VoteNode(NUM_OF_ARRAY);
 			}
 		}
-		static class TreeNode{
+		static class VoteNode{
 			/** インデクス番号 */
 			int index;
 			/** 参照数*/
 			int count;
 			/** 配列サイズ*/
 			int remining;
-			TreeNode[] nodes;
-			TreeNode(int len)
+			VoteNode[] nodes;
+			VoteNode(int len)
 			{
 				this.remining=len;
-				this.nodes=new TreeNode[len];
+				this.nodes=new VoteNode[len];
 			}
-			TreeNode put(int i_index,NodePool i_pool)
+			VoteNode put(int i_index,NodePool i_pool)
 			{
-				TreeNode[] n=this.nodes;
+				VoteNode[] n=this.nodes;
 				int ridx=this.remining-1;
 				for(int i=n.length-1;i>=0;i--){
 					if(i==ridx){
-						TreeNode t=i_pool.prePush();
+						VoteNode t=i_pool.prePush();
 						if(t==null){
 							return null;
 						}
