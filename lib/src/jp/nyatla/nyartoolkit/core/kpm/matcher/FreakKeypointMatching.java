@@ -8,7 +8,6 @@ import java.util.Map;
 
 import jp.nyatla.nyartoolkit.core.icp.NyARIcpPlane;
 import jp.nyatla.nyartoolkit.core.icp.NyARIcpPoint;
-import jp.nyatla.nyartoolkit.core.kpm.KpmResult;
 import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DoGScaleInvariantDetector;
 import jp.nyatla.nyartoolkit.core.kpm.dogscalepyramid.DogFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FREAKExtractor;
@@ -28,6 +27,7 @@ import jp.nyatla.nyartoolkit.core.kpm.pyramid.BinomialPyramid32f;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 
+import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResultParam;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
@@ -39,7 +39,7 @@ import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 public class FreakKeypointMatching {
 
 	final private NyARParam _ref_cparam;
-	public KpmResult result;
+
 
 
 	final private static double kLaplacianThreshold = 3;
@@ -79,7 +79,7 @@ public class FreakKeypointMatching {
 
 		this._ref_cparam = i_ref_cparam;
 
-		this.result =new KpmResult();
+
 		this.mFeatureExtractor=new FREAKExtractor();
 		int octerves=BinomialPyramid32f.octavesFromMinimumCoarsestSize(size.w,size.h,kMinCoarseSize);
 		this._pyramid=new BinomialPyramid32f(size.w,size.h,octerves,3);
@@ -124,19 +124,20 @@ public class FreakKeypointMatching {
 		this.mFeatureExtractor.extract(this._pyramid,this._dog_feature_points,query_keypoint);			
 	}
 	
+	final private NyARTransMatResultParam _result_param=new NyARTransMatResultParam();
 	/**
 	 * 現在の特徴点セットから、
 	 * @param i_keymap
 	 * @param i_result
 	 * @return
 	 */
-	public boolean kpmMatching(KeyframeMap i_keymap,KpmResult i_result)
+	public boolean kpmMatching(KeyframeMap i_keymap,NyARDoubleMatrix44 i_transmat)
 	{
 		FeaturePairStack result=new FeaturePairStack(100);	
 		if(!this.query(this.mQueryKeyframe,i_keymap,result)){
 			return false;
 		}
-		return kpmUtilGetPose_binary(this._ref_cparam, result,i_result);
+		return kpmUtilGetPose_binary(this._ref_cparam, result,i_transmat,this._result_param);
 	}
 	
 
@@ -258,12 +259,8 @@ public class FreakKeypointMatching {
 		return true;
 	}
 
-	private static boolean kpmUtilGetPose_binary(NyARParam i_cparam, FeaturePairStack matchData,KpmResult kpmResult)
+	private static boolean kpmUtilGetPose_binary(NyARParam i_cparam, FeaturePairStack matchData,NyARDoubleMatrix44 i_transmat,NyARTransMatResultParam i_resultparam)
 	{
-		// ICPHandleT *icpHandle;
-		// ICPDataT icpData;
-		// ICP2DCoordT *sCoord;
-		// ICP3DCoordT *wCoord;
 		NyARDoubleMatrix44 initMatXw2Xc = new NyARDoubleMatrix44();
 		// ARdouble err;
 		int i;
@@ -292,13 +289,10 @@ public class FreakKeypointMatching {
 		 * initMatXw2Xc[j][i]); printf("\n"); }
 		 */
 		NyARIcpPoint icp_point = new NyARIcpPoint(i_cparam.getPerspectiveProjectionMatrix());
-		icp_point.icpPoint(sCoord, wCoord, matchData.getLength(), initMatXw2Xc, kpmResult.camPose,
-				kpmResult.resultparams);
-
-		if (kpmResult.resultparams.last_error > 10.0f) {
+		icp_point.icpPoint(sCoord, wCoord, matchData.getLength(), initMatXw2Xc, i_transmat,i_resultparam);
+		if (i_resultparam.last_error > 10.0f) {
 			return false;
 		}
-
 		return true;
 	}	
 

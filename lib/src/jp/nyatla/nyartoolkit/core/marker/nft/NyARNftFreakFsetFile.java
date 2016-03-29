@@ -5,20 +5,21 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.j2se.BinaryReader;
 
 /**
  * FREAK用のfsetファイル形式(fset3)データを格納します。 KpmRefDataSetの一部と同じです。
  */
-public class NyARNftFreakFsetFile {	
-	public static class ImageInfo
-	{
+public class NyARNftFreakFsetFile {
+	public static class ImageInfo {
 		public ImageInfo(int i_w, int i_h, int i_image_no) {
 			this.w = i_w;
 			this.h = i_h;
 			this.image_no = i_image_no;
 		}
+
 		public int w;
 		public int h;
 		public int image_no;
@@ -33,6 +34,7 @@ public class NyARNftFreakFsetFile {
 		final public int page_no;
 		final public ImageInfo[] image_info;
 	}
+
 	public static class FreakFeature {
 		final public static int FREAK_SUB_DIMENSION = 96;
 		final public byte[] v = new byte[FREAK_SUB_DIMENSION];
@@ -40,25 +42,34 @@ public class NyARNftFreakFsetFile {
 		public double scale;
 		public int maxima;
 	}
-	public static class RefDataSet
-	{
-	    final public NyARDoublePoint2d        coord2D=new NyARDoublePoint2d();
-	    final public NyARDoublePoint2d        coord3D=new NyARDoublePoint2d();      // millimetres.
-	    final public FreakFeature      featureVec=new FreakFeature();
-	    public int               pageNo;
-	    public int               refImageNo;
+
+	public static class RefDataSet {
+		final public NyARDoublePoint2d coord2D = new NyARDoublePoint2d();
+		final public NyARDoublePoint2d coord3D = new NyARDoublePoint2d(); // millimetres.
+		final public FreakFeature featureVec = new FreakFeature();
+		public int pageNo;
+		public int refImageNo;
 	}
+
 	final public RefDataSet[] ref_point;
 	final public PageInfo[] page_info;
 
-	protected NyARNftFreakFsetFile(RefDataSet[] i_refdata,PageInfo[] i_page_info)
-	{
+	protected NyARNftFreakFsetFile(RefDataSet[] i_refdata, PageInfo[] i_page_info) {
 		this.ref_point = i_refdata;
 		this.page_info = i_page_info;
 		return;
 	}
+
 	public static NyARNftFreakFsetFile loadFromfset3File(InputStream i_stream) {
 		return loadFromfset3File(BinaryReader.toArray(i_stream));
+	}
+
+	public static NyARNftFreakFsetFile loadFromfset3File(File i_file) {
+		try {
+			return loadFromfset3File(new FileInputStream(i_file));
+		} catch (FileNotFoundException e) {
+			throw new NyARRuntimeException(e);
+		}
 	}
 
 	public static NyARNftFreakFsetFile loadFromfset3File(byte[] i_source) {
@@ -69,17 +80,17 @@ public class NyARNftFreakFsetFile {
 
 		for (int i = 0; i < num; i++) {
 			RefDataSet rd = new RefDataSet();
-			rd.coord2D.x=br.getFloat();
-			rd.coord2D.y=br.getFloat();
-			rd.coord3D.x=br.getFloat();
-			rd.coord3D.y=br.getFloat();
+			rd.coord2D.x = br.getFloat();
+			rd.coord2D.y = br.getFloat();
+			rd.coord3D.x = br.getFloat();
+			rd.coord3D.y = br.getFloat();
 			br.getByteArray(rd.featureVec.v);
-			rd.featureVec.angle=br.getFloat();
-			rd.featureVec.scale=br.getFloat();
-			rd.featureVec.maxima=br.getInt();
+			rd.featureVec.angle = br.getFloat();
+			rd.featureVec.scale = br.getFloat();
+			rd.featureVec.maxima = br.getInt();
 			rd.pageNo = br.getInt();
 			rd.refImageNo = br.getInt();
-			rds[i]=rd;
+			rds[i] = rd;
 		}
 
 		int page_num = br.getInt();
@@ -99,13 +110,14 @@ public class NyARNftFreakFsetFile {
 
 	public static void main(String[] args) {
 		try {
-			NyARNftFreakFsetFile f = NyARNftFreakFsetFile
-					.loadFromfset3File(new FileInputStream(new File(
-							"../Data/pinball.fset3")));
+			NyARNftFreakFsetFile f = NyARNftFreakFsetFile.loadFromfset3File(new FileInputStream(new File(
+					"../Data/pinball.fset3")));
+			System.out.println(f);
 			return;
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+
 }

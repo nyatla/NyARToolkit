@@ -71,6 +71,7 @@ public class NyARNftFsetFile
 	}
 	public static void main(String[] args){
 		NyARNftFsetFile f=NyARNftFsetFile.loadFromFsetFile(new File("../Data/pinball.fset"));
+		System.out.println(f);
 		return;
 	}
 	

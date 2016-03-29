@@ -166,6 +166,7 @@ public class NyARSurfaceTracker
 		if(this._last_raster!=i_raster){
 			tmd=this._last_driver=new NyARTemplateMatchingDriver_INT1D(i_raster);
 			tmd.setSearchArea(12,12);//外から設定できるべきでは
+			this._last_raster=i_raster;
 		}else{
 			tmd=this._last_driver;
 		}
@@ -248,9 +249,9 @@ public class NyARSurfaceTracker
 	{
 		NyARDoubleMatrix44 DEST_MAT=new NyARDoubleMatrix44(
 				new double[]{
-				0.9832165798027188,0.0047896703389198,-0.18237939545273588,-190.59060778155964,
-				0.012860128650288684,-0.9989882776886859,0.0430940528622663,64.04490608649942,
-				-0.1819884694945465,-0.044716208348275166,-0.9822833723761482,616.6427501051554,
+						0.9832165682361184,0.004789697223621061,-0.18237945710280384,-190.59060790299358,
+						0.012860184615056927,-0.9989882709616935,0.04309419210331572,64.04490277502563,
+						-0.18198852802987958,-0.044716355753573425,-0.9822833548209547,616.6427596804766,
 				0,0,0,1});
 		NyARDoubleMatrix44 SRC_MAT=new NyARDoubleMatrix44(new double[]{
 			0.984363556,	0.00667689135,	-0.176022261,	-191.179672,
@@ -264,8 +265,8 @@ public class NyARSurfaceTracker
 			String fsetfile="../Data/testcase/pinball.fset";
 			String isetfile="../Data/testcase/pinball.iset5";
 			//カメラパラメータ
-			NyARParam param=NyARParam.loadFromARParamFile(new FileInputStream(cparam),640,480);
-			NyARParam param2=NyARParam.loadFromARParamFile(new FileInputStream(cparam),640,480,NyARParam.DISTFACTOR_LT_ARTK2);
+			NyARParam param=NyARParam.loadFromARParamFile(new FileInputStream(cparam),640,480,NyARParam.DISTFACTOR_LT_ARTK5);
+			NyARParam param2=NyARParam.loadFromARParamFile(new FileInputStream(cparam),640,480,NyARParam.DISTFACTOR_LT_ARTK5);
 
 			
 			INyARGrayscaleRaster gs=NyARGrayscaleRaster.createInstance(640,480);
@@ -282,19 +283,24 @@ public class NyARSurfaceTracker
 			NyARSurfaceTracker st=new NyARSurfaceTracker(param,16);
 			NyARSurfaceDataSet sd=new NyARSurfaceDataSet(iset,fset);
 			NyARDoubleMatrix44 sret=new NyARDoubleMatrix44();
-			sret.setValue(SRC_MAT);
 			NyARDoublePoint2d[] o_pos2d=NyARDoublePoint2d.createArray(16);
 			NyARDoublePoint3d[] o_pos3d=NyARDoublePoint3d.createArray(16);
-			int nop=st.tracking(gs, sd,sret, o_pos2d, o_pos3d,16);
-			System.out.println(o_pos2d[6].x==172.32667541503906 && o_pos2d[6].y==148.09829711914062);
 			NyARNftTransMatUtils tmat=new NyARNftTransMatUtils(param2,0,5.0);
 			NyARDoubleMatrix44 tret=new NyARDoubleMatrix44();
-			//Transmatの試験
-			NyARDoublePoint3d off=NyARNftTransMatUtils.centerOffset(o_pos3d,nop,new NyARDoublePoint3d());
-			NyARNftTransMatUtils.modifyInputOffset(sret, o_pos3d,nop,off);
-			tmat.surfaceTrackingTransmat(sret, o_pos2d, o_pos3d, nop,tret,new NyARTransMatResultParam());
-			NyARNftTransMatUtils.restoreOutputOffset(tret,off);
-			System.out.println(tret.equals(DEST_MAT));
+			for(int j=0;j<10;j++){
+				long s=System.currentTimeMillis();
+				for(int i=0;i<3000;i++){
+				sret.setValue(SRC_MAT);
+				int nop=st.tracking(gs, sd,sret, o_pos2d, o_pos3d,16);
+				//Transmatの試験
+				NyARDoublePoint3d off=NyARNftTransMatUtils.centerOffset(o_pos3d,nop,new NyARDoublePoint3d());
+				NyARNftTransMatUtils.modifyInputOffset(sret, o_pos3d,nop,off);
+				tmat.surfaceTrackingTransmat(sret, o_pos2d, o_pos3d, nop,tret,new NyARTransMatResultParam());
+				NyARNftTransMatUtils.restoreOutputOffset(tret,off);
+//				System.out.println(tret.equals(DEST_MAT));
+			}
+			System.out.println(System.currentTimeMillis()-s);
+			}
 			return;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

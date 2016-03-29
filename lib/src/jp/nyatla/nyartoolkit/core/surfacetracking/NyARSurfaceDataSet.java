@@ -12,7 +12,7 @@ public class NyARSurfaceDataSet
 {
 	final public NyARNftIsetFile iset;
 	final public NyARNftFsetFile fset;
-	protected NyARSurfaceDataSet(NyARNftIsetFile i_iset,NyARNftFsetFile i_fset)
+	public NyARSurfaceDataSet(NyARNftIsetFile i_iset,NyARNftFsetFile i_fset)
 	{
 		this.iset=i_iset;
 		this.fset=i_fset;
