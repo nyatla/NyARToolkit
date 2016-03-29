@@ -169,15 +169,21 @@ public class NyARCode
 	 * パターンの幅pixel数。データの内容と一致している必要があります。
 	 * @throws NyARRuntimeException
 	 */	
-	public static NyARCode createFromARPattFile(InputStream i_stream,int i_width,int i_height)
+	public static NyARCode loadFromARPattFile(InputStream i_stream,int i_width,int i_height)
 	{
 		//ラスタにパターンをロードする。
 		NyARCode ret=new NyARCode(i_width,i_height);
 		NyARCodeFileReader.loadFromARToolKitFormFile(i_stream,ret);
 		return ret;
-		
 	}
-
+	/**
+	 * {@link #loadFromARPattFile}を使用してください。
+	 * @deprecated
+	 */
+	public static NyARCode createFromARPattFile(InputStream i_stream,int i_width,int i_height)
+	{
+		return loadFromARPattFile(i_stream,i_width,i_height);
+	}
 	/**
 	 * 指定したdirection(方位)の{@link NyARMatchPattDeviationColorData}オブジェクトの参照値を返します。
 	 * @param i_index

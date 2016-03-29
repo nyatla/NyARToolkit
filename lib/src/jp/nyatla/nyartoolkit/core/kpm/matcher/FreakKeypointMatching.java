@@ -21,9 +21,6 @@ import jp.nyatla.nyartoolkit.core.kpm.matcher.binaryfeature.BinaryFeatureMatcher
 import jp.nyatla.nyartoolkit.core.kpm.matcher.findinliners.FindInliers;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.findinliners.FindInliers_O1;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.homography_estimation.RobustHomography;
-import jp.nyatla.nyartoolkit.core.kpm.matcher.houghsimilarityvoting.HoughSimilarityVoting;
-import jp.nyatla.nyartoolkit.core.kpm.matcher.houghsimilarityvoting.HoughSimilarityVoting_O1;
-import jp.nyatla.nyartoolkit.core.kpm.matcher.houghsimilarityvoting.HoughSimilarityVoting_O2;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.houghsimilarityvoting.HoughSimilarityVoting_O3;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.BinomialPyramid32f;
 
@@ -61,11 +58,7 @@ public class FreakKeypointMatching {
 	private static int kHomographyInlierThreshold = 3;
 	private static int kMinNumInliers = 8;
 
-
 	private int mMinNumInliers;
-
-
-
 
 	/** Feature matcher */
 	final private BinaryFeatureMatcher _matcher;
@@ -103,26 +96,40 @@ public class FreakKeypointMatching {
 		double dy = size.h + (size.h * 0.2f);
 		this.mHoughSimilarityVoting=new HoughSimilarityVoting_O3(-dx, dx, -dy, dy, 12, 10);		
 		this._matcher=new BinaryHirerarchialClusteringMatcher();
-//		this._matcher=new BinaryFeatureMatcher();
-
 	}
 	
 
-	public void update(INyARGrayscaleRaster in_image)
-	{
-		FreakFeaturePointStack query_keypoint = this.mQueryKeyframe;
-		//Freak Extract
 
+	/**
+	 * 現在の画像で入力画像にセットします。
+	 */
+	public void updateInputImage(INyARGrayscaleRaster in_image){
 		// Build the pyramid		
-		this._pyramid.build(in_image);
+		this._pyramid.build(in_image);		
+	}
+	/**
+	 * 現在の入力画像から特徴点セットを検出します。
+	 * この関数は終了まで数十msの時間がかかります。
+	 * {@link #updateInputImage(INyARGrayscaleRaster)}をコールした後に実行してください。
+	 */
+	public void updateFeatureSet()
+	{
 		// Detect feature points
 		this._dog_feature_points.clear();	
 		this._dog_detector.detect(this._pyramid,this._dog_feature_points);
 
 		// Extract features
+		FreakFeaturePointStack query_keypoint = this.mQueryKeyframe;
 		query_keypoint.clear();
-		this.mFeatureExtractor.extract(this._pyramid,this._dog_feature_points,query_keypoint);		
+		this.mFeatureExtractor.extract(this._pyramid,this._dog_feature_points,query_keypoint);			
 	}
+	
+	/**
+	 * 現在の特徴点セットから、
+	 * @param i_keymap
+	 * @param i_result
+	 * @return
+	 */
 	public boolean kpmMatching(KeyframeMap i_keymap,KpmResult i_result)
 	{
 		FeaturePairStack result=new FeaturePairStack(100);	
@@ -140,7 +147,7 @@ public class FreakKeypointMatching {
 	final private FeaturePairStack[] _tmp_pair_stack=new FeaturePairStack[2];
 
 
-	public boolean query(FreakFeaturePointStack query_keyframe,KeyframeMap i_keymap,FeaturePairStack i_result)
+	private boolean query(FreakFeaturePointStack query_keyframe,KeyframeMap i_keymap,FeaturePairStack i_result)
 	{
 		// mMatchedInliers.clear();
 		HomographyMat H = this._H;
