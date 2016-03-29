@@ -129,8 +129,8 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 		this._capture.setOnCapture(this);
 		this._cap_image = new JmfNyARRGBRaster(this._capture.getCaptureFormat());	
 
-		this._code_table[0]=NyARCode.createFromARPattFile(new FileInputStream(CARCODE_FILE1),16,16);
-		this._code_table[1]=NyARCode.createFromARPattFile(new FileInputStream(CARCODE_FILE2),16,16);
+		this._code_table[0]=NyARCode.loadFromARPattFile(new FileInputStream(CARCODE_FILE1),16,16);
+		this._code_table[1]=NyARCode.loadFromARPattFile(new FileInputStream(CARCODE_FILE2),16,16);
 		
 		//OpenGLフレームの準備（OpenGLリソースの初期化、カメラの撮影開始は、initコールバック関数内で実行）
 		Frame frame = new Frame("NyARToolkit["+this.getClass().getName()+"]");

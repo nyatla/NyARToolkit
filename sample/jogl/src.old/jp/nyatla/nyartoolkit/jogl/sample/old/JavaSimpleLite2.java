@@ -115,8 +115,8 @@ public class JavaSimpleLite2 implements GLEventListener, JmfCaptureListener
 			//ARコードを2個ロード
 			double[] width = new double[] { 80.0, 80.0 };
 			NyARCode[] ar_codes = new NyARCode[2];
-			ar_codes[0] = NyARCode.createFromARPattFile(new FileInputStream(CARCODE_FILE1),16, 16);
-			ar_codes[1] = NyARCode.createFromARPattFile(new FileInputStream(CARCODE_FILE2),16, 16);
+			ar_codes[0] = NyARCode.loadFromARPattFile(new FileInputStream(CARCODE_FILE1),16, 16);
+			ar_codes[1] = NyARCode.loadFromARPattFile(new FileInputStream(CARCODE_FILE2),16, 16);
 			//JMFラスタオブジェクト
 			this._cap_image = new JmfNyARRGBRaster(this._capture.getCaptureFormat());
 

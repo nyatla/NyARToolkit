@@ -66,8 +66,8 @@ public class SimpleLiteQt extends GlSketch
 				this.render.drawBackground(gl, this.camera.getSourceImage());
 				this.render.loadARProjectionMatrix(gl);
 				this.nyar.update(this.camera);
-				if(this.nyar.isExistMarker(this.id)){
-					this.render.loadMarkerMatrix(gl,this.id);
+				if(this.nyar.isExistMarker(this.vid)){
+					this.render.loadMarkerMatrix(gl,this.vid);
 					this.render.colorCube(gl,40,0,0,20);
 				}
 				Thread.sleep(1);

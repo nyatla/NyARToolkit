@@ -180,7 +180,7 @@ public class JavaSimpleLite_ImageSource implements GLEventListener
 	{
 		try {
 			NyARParam param = NyARParam.createFromARParamFile(new FileInputStream(PARAM_FILE));
-			NyARCode code = NyARCode.createFromARPattFile(new FileInputStream(CARCODE_FILE),16, 16);
+			NyARCode code = NyARCode.loadFromARPattFile(new FileInputStream(CARCODE_FILE),16, 16);
 			BufferedImage src_image = ImageIO.read(new File(SAMPLE_FILES));
 
 			new JavaSimpleLite_ImageSource(param, code,src_image);

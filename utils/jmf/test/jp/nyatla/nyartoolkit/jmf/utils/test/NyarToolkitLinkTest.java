@@ -87,7 +87,7 @@ public class NyarToolkitLinkTest extends Frame implements JmfCaptureListener
 		});
 		//NyARToolkitの準備
 		NyARParam ar_param = NyARParam.createFromARParamFile(new FileInputStream(PARAM_FILE));
-		NyARCode ar_code = NyARCode.createFromARPattFile(new FileInputStream(CARCODE_FILE),16, 16);
+		NyARCode ar_code = NyARCode.loadFromARPattFile(new FileInputStream(CARCODE_FILE),16, 16);
 		ar_param.changeScreenSize(320, 240);
 		this._raster = new JmfNyARRGBRaster(this._capture.getCaptureFormat());
 		this._nya = NyARSingleDetectMarker.createInstance(ar_param, ar_code, 80.0);

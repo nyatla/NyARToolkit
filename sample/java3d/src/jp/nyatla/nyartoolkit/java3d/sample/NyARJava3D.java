@@ -110,7 +110,7 @@ public class NyARJava3D extends JFrame implements NyARSingleMarkerBehaviorListen
 			}
 		});
 		//NyARToolkitの準備
-		NyARCode ar_code = NyARCode.createFromARPattFile(new FileInputStream(CARCODE_FILE),16, 16);
+		NyARCode ar_code = NyARCode.loadFromARPattFile(new FileInputStream(CARCODE_FILE),16, 16);
 		ar_param = J3dNyARParam.loadARParamFile(new FileInputStream(PARAM_FILE));
 		ar_param.changeScreenSize(320, 240);
 
@@ -181,7 +181,7 @@ public class NyARJava3D extends JFrame implements NyARSingleMarkerBehaviorListen
 	 * このノードは40mmの色つき立方体を表示するシーン。ｚ軸を基準に20mm上に浮かせてる。
 	 * @return
 	 */
-	private Node createSceneGraph()
+	private BinaryHierarchicalNode createSceneGraph()
 	{
 		TransformGroup tg = new TransformGroup();
 		Transform3D mt = new Transform3D();

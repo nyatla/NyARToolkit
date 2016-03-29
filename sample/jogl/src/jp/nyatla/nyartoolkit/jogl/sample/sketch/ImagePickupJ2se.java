@@ -88,7 +88,7 @@ public class ImagePickupJ2se extends GlSketch
 					if(!this.nyar.isExistMarker(ids[i])){
 						continue;
 					}
-					this.render.polygon(gl,this.nyar.getMarkerVertex2D(ids[i]));					
+					this.render.polygon(gl,this.nyar.getVertex2D(ids[i]));					
 					this.nyar.getMarkerPlaneImage(ids[i],this.camera,-40,-40,80,80,this._pat);
 					this.render.loadMarkerMatrix(gl,ids[i]);
 					this.render.drawImage2d(gl,i*64,0,this._pat);

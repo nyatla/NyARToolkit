@@ -39,11 +39,11 @@ public class NyARGlMarkerSystemRender extends NyARGlRender
 		int old_mode=this.getGlMatrixMode(i_gl);
 		if(old_mode!=GL.GL_MODELVIEW){
 			i_gl.glMatrixMode(GL.GL_MODELVIEW);
-			NyARGLUtil.toCameraViewRH(this._ms.getMarkerMatrix(i_id),1,this._mv_mat);			
+			NyARGLUtil.toCameraViewRH(this._ms.getTransformMatrix(i_id),1,this._mv_mat);			
 			i_gl.glLoadMatrixd(this._mv_mat, 0);
 			i_gl.glMatrixMode(old_mode);
 		}else{
-			NyARGLUtil.toCameraViewRH(this._ms.getMarkerMatrix(i_id),1,this._mv_mat);
+			NyARGLUtil.toCameraViewRH(this._ms.getTransformMatrix(i_id),1,this._mv_mat);
 			i_gl.glLoadMatrixd(this._mv_mat, 0);
 		}
 	}	

@@ -149,7 +149,7 @@ public class SingleARMarkerTest
 
         MarkerProcessor pr = new MarkerProcessor(ap, ra.getBufferType());
         NyARCode[] codes=new NyARCode[1];
-        codes[0]=NyARCode.createFromARPattFile(new FileInputStream(CARCODE_FILE),16,16);
+        codes[0]=NyARCode.loadFromARPattFile(new FileInputStream(CARCODE_FILE),16,16);
         pr.setARCodeTable(codes,16,80.0);
         pr.detectMarker(ra);
         return;

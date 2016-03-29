@@ -212,7 +212,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 			NyARParam param = NyARParam.createFromARParamFile(new FileInputStream(PARAM_FILE));
 			param.changeScreenSize(SCREEN_X, SCREEN_Y);
 
-			NyARCode code = NyARCode.createFromARPattFile(new FileInputStream(CARCODE_FILE),16, 16);
+			NyARCode code = NyARCode.loadFromARPattFile(new FileInputStream(CARCODE_FILE),16, 16);
 
 			new JavaSimpleLite(param, code);
 		} catch (Exception e) {

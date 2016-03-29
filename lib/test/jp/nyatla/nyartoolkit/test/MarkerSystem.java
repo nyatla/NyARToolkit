@@ -72,7 +72,7 @@ public class MarkerSystem
 			System.out.println(d.getTime() - d2.getTime());
 
 			if(s.isExistMarker(aid)){
-				NyARDoubleMatrix44 mat=s.getMarkerMatrix(aid);
+				NyARDoubleMatrix44 mat=s.getTransformMatrix(aid);
 				System.out.println(s.getConfidence(aid));
 			}
 		}catch(Exception e){
