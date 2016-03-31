@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
-import jp.nyatla.nyartoolkit.core.param.NyARFrustum;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.perspectivecopy.INyARPerspectiveCopy;
@@ -24,30 +23,16 @@ public class NyARGlMarkerSystem extends NyARMarkerSystem
 
 
 	/**
-	 * OpenGLスタイルのProjectionMatrixを返します。
-	 * @param i_gl
-	 * @return
-	 * [readonly]
-	 * @deprecated {@link #_projection_mat}と共に削除します。使用するべきではありません。
-	 */
-	public double[] getGlProjectionMatrix()
-	{
-		double[] d=new double[16];
-		NyARFrustum.FrustumParam f=this.getFrustum().getFrustumParam(new NyARFrustum.FrustumParam());		
-		NyARGLUtil.toCameraFrustumRH(this._ref_param,1,f.near,f.far,d);
-		return d;
-	}
-
-	/**
 	 * この関数は、o_bufに指定idのOpenGL形式の姿勢変換行列を設定して返します。
 	 * @param i_id
 	 * @param o_buf
 	 * @return
 	 * @throws NyARRuntimeException 
 	 */
-	public void getMarkerMatrix(int i_id,double[] o_buf) throws NyARRuntimeException
+	public double[] getGlTransformMatrix(int i_id,double[] o_buf)
 	{
 		NyARGLUtil.toCameraViewRH(this.getTransformMatrix(i_id),1,o_buf);
+		return o_buf;
 	}
 	/**
 	 * この関数はOpenGL形式の姿勢変換行列を新規に割り当てて返します。
@@ -55,15 +40,12 @@ public class NyARGlMarkerSystem extends NyARMarkerSystem
 	 * @return
 	 * @throws NyARRuntimeException 
 	 */
-	public double[] getGlMarkerMatrix(int i_id) throws NyARRuntimeException
+	public double[] getGlTransformMatrix(int i_id)
 	{
-		double[] b=new double[16];
-		this.getMarkerMatrix(i_id,b);
-		return b;
+		return this.getGlTransformMatrix(i_id,new double[16]);
 	}	
-	//
-	// This reogion may be moved to NyARJ2seMarkerSystem.
-	//
+
+
 	
 	/**
 	 * {@link #addARMarker(INyARRgbRaster, int, int, double)}のラッパーです。BufferedImageからマーカパターンを作ります。
@@ -75,7 +57,7 @@ public class NyARGlMarkerSystem extends NyARMarkerSystem
 	 * @return
 	 * @throws NyARRuntimeException
 	 */
-	public int addARMarker(BufferedImage i_img,int i_patt_resolution,int i_patt_edge_percentage,double i_marker_size) throws NyARRuntimeException
+	public int addARMarker(BufferedImage i_img,int i_patt_resolution,int i_patt_edge_percentage,double i_marker_size)
 	{
 		int w=i_img.getWidth();
 		int h=i_img.getHeight();
@@ -104,21 +86,23 @@ public class NyARGlMarkerSystem extends NyARMarkerSystem
 	 * @param i_y4
 	 * @param i_img
 	 * @return
-	 * @throws NyARRuntimeException
 	 */
-	public void getMarkerPlaneImage(
-		int i_id,
-		NyARSensor i_sensor,
-	    int i_x1,int i_y1,
-	    int i_x2,int i_y2,
-	    int i_x3,int i_y3,
-	    int i_x4,int i_y4,
-	    BufferedImage i_img) throws NyARRuntimeException
-		{
-			NyARBufferedImageRaster bmr=new NyARBufferedImageRaster(i_img);
-			super.getPlaneImage(i_id, i_sensor, i_x1, i_y1, i_x2, i_y2, i_x3, i_y3, i_x4, i_y4,bmr);
-			return;
-		}
+	public void getPlaneImage(int i_id, NyARSensor i_sensor, int i_x1, int i_y1, int i_x2, int i_y2, int i_x3,int i_y3, int i_x4, int i_y4, BufferedImage i_img)
+	{
+		NyARBufferedImageRaster bmr = new NyARBufferedImageRaster(i_img);
+		super.getPlaneImage(i_id, i_sensor, i_x1, i_y1, i_x2, i_y2, i_x3, i_y3, i_x4, i_y4, bmr);
+		return;
+	}
+	/**
+	 * {@link #getPlaneImage}を使ってください。
+	 * @deprecated
+	 */
+	public void getMarkerPlaneImage(int i_id, NyARSensor i_sensor, int i_x1, int i_y1, int i_x2, int i_y2, int i_x3,int i_y3, int i_x4, int i_y4, BufferedImage i_img)
+	{
+		this.getPlaneImage(i_id, i_sensor, i_x1, i_y1, i_x2, i_y2, i_x3, i_y3, i_x4, i_y4, i_img);
+	}
+	
+	
 	/**
 	 * この関数は、{@link #getPlaneImage(int, NyARSensor, int, int, int, int, INyARRgbRaster)}
 	 * のラッパーです。取得画像を{@link #BufferedImage}形式で返します。
@@ -132,19 +116,32 @@ public class NyARGlMarkerSystem extends NyARMarkerSystem
 	 * @param i_h
 	 * @param i_raster
 	 * 出力先のオブジェクト
-	 * @throws NyARRuntimeException
 	 */
-	public void getMarkerPlaneImage(
+	public void getPlaneImage(
 		int i_id,
 		NyARSensor i_sensor,
 	    int i_l,int i_t,
 	    int i_w,int i_h,
-	    BufferedImage i_img) throws NyARRuntimeException
+	    BufferedImage i_img)
     {
 		NyARBufferedImageRaster bmr=new NyARBufferedImageRaster(i_img);
 		super.getPlaneImage(i_id, i_sensor, i_l, i_t, i_w, i_h, bmr);
 		this.getPlaneImage(i_id,i_sensor,i_l+i_w-1,i_t+i_h-1,i_l,i_t+i_h-1,i_l,i_t,i_l+i_w-1,i_t,bmr);
 		return;
     }
+	/**
+	 * {@link #getPlaneImage}を使用して下さい。
+	 * @deprecated
+	 */
+	public void getMarkerPlaneImage(
+			int i_id,
+			NyARSensor i_sensor,
+		    int i_l,int i_t,
+		    int i_w,int i_h,
+		    BufferedImage i_img)
+	{
+		this.getPlaneImage(i_id, i_sensor, i_l, i_t, i_w, i_h, i_img);
+	}
+	
 	
 }

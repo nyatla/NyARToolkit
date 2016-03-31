@@ -3,6 +3,8 @@
 	<name>NyARToolkit.sandbox</name>
 	<comment></comment>
 	<projects>
+		<project>NyARToolKit</project>
+		<project>NyARToolkit.utils.j2se</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

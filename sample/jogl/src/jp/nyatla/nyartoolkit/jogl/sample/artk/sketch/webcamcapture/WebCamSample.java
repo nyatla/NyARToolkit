@@ -24,7 +24,7 @@
  * THE SOFTWARE.
  * 
  */
-package jp.nyatla.nyartoolkit.jogl.sample.sketch.webcamcapture;
+package jp.nyatla.nyartoolkit.jogl.sample.artk.sketch.webcamcapture;
 
 
 import java.awt.Dimension;
