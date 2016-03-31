@@ -1,7 +1,6 @@
 package jp.nyatla.nyartoolkit.core.surfacetracking.featuremap;
 
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
-import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
 
 

@@ -331,16 +331,15 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 		int sum1=0;
 		int sum3=0;
 		int t_ptr = 0;
-		int[] src_buf = i_buf;
 		int s_ptr = ((sy -(mtemp.yts * NyARTemplatePatchImage.AR2_TEMP_SCALE)) * i_stride + sx - (mtemp.xts * NyARTemplatePatchImage.AR2_TEMP_SCALE));
 		int padding =NyARTemplatePatchImage.AR2_TEMP_SCALE*(i_stride-mtemp.xsize);
 		for (int j = mtemp.ysize-1; j>=0; j--) {
 			int i=mtemp.xsize-1;
 			for (; i>=4; i-=4) {
-				int sn1 = src_buf[s_ptr];// w = *(p2+0);// + *(p2+1) + *(p2+2);
-				int sn2 = src_buf[s_ptr+NyARTemplatePatchImage.AR2_TEMP_SCALE];// w = *(p2+0);// + *(p2+1) + *(p2+2);
-				int sn3 = src_buf[s_ptr+NyARTemplatePatchImage.AR2_TEMP_SCALE*2];// w = *(p2+0);// + *(p2+1) + *(p2+2);
-				int sn4 = src_buf[s_ptr+NyARTemplatePatchImage.AR2_TEMP_SCALE*3];// w = *(p2+0);// + *(p2+1) + *(p2+2);
+				int sn1 = i_buf[s_ptr];// w = *(p2+0);// + *(p2+1) + *(p2+2);
+				int sn2 = i_buf[s_ptr+NyARTemplatePatchImage.AR2_TEMP_SCALE];// w = *(p2+0);// + *(p2+1) + *(p2+2);
+				int sn3 = i_buf[s_ptr+NyARTemplatePatchImage.AR2_TEMP_SCALE*2];// w = *(p2+0);// + *(p2+1) + *(p2+2);
+				int sn4 = i_buf[s_ptr+NyARTemplatePatchImage.AR2_TEMP_SCALE*3];// w = *(p2+0);// + *(p2+1) + *(p2+2);
 				sum2+=sn1*sn1+sn2*sn2+sn3*sn3+sn4*sn4;
 				sum1+=sn1+sn2+sn3+sn4;
 				sum3+=tmp_buf[t_ptr]*sn1+tmp_buf[t_ptr+1]*sn2+tmp_buf[t_ptr+2]*sn3+tmp_buf[t_ptr+3]*sn4;			
@@ -348,13 +347,10 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 				t_ptr+=4;
 			}
 			for (; i>=0; i--) {
-				int tn=tmp_buf[t_ptr];
-				if (tn != NyARTemplatePatchImage.AR2_TEMPLATE_NULL_PIXEL) {
-					int sn = src_buf[s_ptr];// w = *(p2+0);// + *(p2+1) + *(p2+2);
-					sum2+=sn*sn;
-					sum1+=sn;
-					sum3+=tn*sn;
-				}
+				int sn = i_buf[s_ptr];// w = *(p2+0);// + *(p2+1) + *(p2+2);
+				sum2+=sn*sn;
+				sum1+=sn;
+				sum3+=tmp_buf[t_ptr]*sn;
 				s_ptr += NyARTemplatePatchImage.AR2_TEMP_SCALE;
 				t_ptr++;
 			}

@@ -1,6 +1,5 @@
 package jp.nyatla.nyartoolkit.core.surfacetracking.transmat;
 
-import jp.nyatla.nyartoolkit.core.icp.NyARIcpPlane;
 import jp.nyatla.nyartoolkit.core.icp.NyARIcpPoint;
 import jp.nyatla.nyartoolkit.core.icp.NyARIcpPointRobust;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
@@ -10,32 +9,24 @@ import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 
 
-public class NyARNftTransMatUtils
+public class NyARSurfaceTrackingTransmatUtils
 {
-	private final static double AR2_DEFAULT_TRACKING_THRESH = 2.0;
+
 	private NyARIcpPoint _icp;
 	private NyARIcpPointRobust _icp_r;
-	private NyARIcpPlane _icp_plane;
-	
+
 	private double _surface_threshold;	
-	private NyARDoublePoint2d[] _kpm_pos2d_ref;
-	private NyARDoublePoint3d[] _kpm_pos3d_ref;
+
 	
 	
 	
 
-	public NyARNftTransMatUtils(NyARParam i_ref_param,int i_max_kpm_pointset,double i_tracking_threshold)
+	public NyARSurfaceTrackingTransmatUtils(NyARParam i_ref_param,double i_tracking_threshold)
 	{
 		this._surface_threshold=i_tracking_threshold;
 		this._icp = new NyARIcpPoint(i_ref_param.getPerspectiveProjectionMatrix());
 		this._icp_r = new NyARIcpPointRobust(i_ref_param.getPerspectiveProjectionMatrix());
 		this._last_inliner_probability=0;
-		this._icp_plane=new NyARIcpPlane(i_ref_param.getPerspectiveProjectionMatrix());
-		//KPM points
-		this._kpm_pos2d_ref=new NyARDoublePoint2d[i_max_kpm_pointset];
-		this._kpm_pos3d_ref=new NyARDoublePoint3d[i_max_kpm_pointset];
-		
-
 	}
 	private double _last_inliner_probability;
 	public static NyARDoublePoint3d centerOffset(NyARDoublePoint3d[] i_pos3d,int i_num,NyARDoublePoint3d i_result)

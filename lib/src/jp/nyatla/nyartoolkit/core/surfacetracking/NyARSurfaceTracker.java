@@ -19,7 +19,7 @@ import jp.nyatla.nyartoolkit.core.surfacetracking.feature.NyARSurfaceFeaturesPtr
 import jp.nyatla.nyartoolkit.core.surfacetracking.feature.NyARVisibleFeatureExtractor;
 import jp.nyatla.nyartoolkit.core.surfacetracking.rasterdriver.INyARTemplateMatchingDriver;
 import jp.nyatla.nyartoolkit.core.surfacetracking.rasterdriver.NyARTemplateMatchingDriver_INT1D;
-import jp.nyatla.nyartoolkit.core.surfacetracking.transmat.NyARNftTransMatUtils;
+import jp.nyatla.nyartoolkit.core.surfacetracking.transmat.NyARSurfaceTrackingTransmatUtils;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResultParam;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
@@ -266,7 +266,6 @@ public class NyARSurfaceTracker
 			String isetfile="../Data/testcase/pinball.iset5";
 			//カメラパラメータ
 			NyARParam param=NyARParam.loadFromARParamFile(new FileInputStream(cparam),640,480,NyARParam.DISTFACTOR_LT_ARTK5);
-			NyARParam param2=NyARParam.loadFromARParamFile(new FileInputStream(cparam),640,480,NyARParam.DISTFACTOR_LT_ARTK5);
 
 			
 			INyARGrayscaleRaster gs=NyARGrayscaleRaster.createInstance(640,480);
@@ -285,7 +284,7 @@ public class NyARSurfaceTracker
 			NyARDoubleMatrix44 sret=new NyARDoubleMatrix44();
 			NyARDoublePoint2d[] o_pos2d=NyARDoublePoint2d.createArray(16);
 			NyARDoublePoint3d[] o_pos3d=NyARDoublePoint3d.createArray(16);
-			NyARNftTransMatUtils tmat=new NyARNftTransMatUtils(param2,0,5.0);
+			NyARSurfaceTrackingTransmatUtils tmat=new NyARSurfaceTrackingTransmatUtils(param,5.0);
 			NyARDoubleMatrix44 tret=new NyARDoubleMatrix44();
 			for(int j=0;j<10;j++){
 				long s=System.currentTimeMillis();
@@ -293,11 +292,11 @@ public class NyARSurfaceTracker
 				sret.setValue(SRC_MAT);
 				int nop=st.tracking(gs, sd,sret, o_pos2d, o_pos3d,16);
 				//Transmatの試験
-				NyARDoublePoint3d off=NyARNftTransMatUtils.centerOffset(o_pos3d,nop,new NyARDoublePoint3d());
-				NyARNftTransMatUtils.modifyInputOffset(sret, o_pos3d,nop,off);
+				NyARDoublePoint3d off=NyARSurfaceTrackingTransmatUtils.centerOffset(o_pos3d,nop,new NyARDoublePoint3d());
+				NyARSurfaceTrackingTransmatUtils.modifyInputOffset(sret, o_pos3d,nop,off);
 				tmat.surfaceTrackingTransmat(sret, o_pos2d, o_pos3d, nop,tret,new NyARTransMatResultParam());
-				NyARNftTransMatUtils.restoreOutputOffset(tret,off);
-//				System.out.println(tret.equals(DEST_MAT));
+				NyARSurfaceTrackingTransmatUtils.restoreOutputOffset(tret,off);
+				System.out.println(tret.equals(DEST_MAT));
 			}
 			System.out.println(System.currentTimeMillis()-s);
 			}
