@@ -130,6 +130,7 @@ public abstract class NyARSingleDetectMarker
 		return;
 	}
 	/**
+	 * {@link #getTransmat}を使用して下さい。
 	 * @deprecated
 	 * {@link #getTransmat}
 	 */
