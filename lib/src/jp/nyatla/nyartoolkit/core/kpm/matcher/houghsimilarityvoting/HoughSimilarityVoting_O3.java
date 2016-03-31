@@ -62,7 +62,7 @@ final public class HoughSimilarityVoting_O3 {
 	/**
 	 * Set the number of bins for translation based on the correspondences.
 	 */
-	private void autoAdjustXYNumBins(int max_dim,FeaturePairStack i_point_pair)
+	private boolean autoAdjustXYNumBins(int max_dim,FeaturePairStack i_point_pair)
 	{
 		int l=i_point_pair.getLength();
 		//prepare work area
@@ -93,9 +93,9 @@ final public class HoughSimilarityVoting_O3 {
 		t=(int) Math.ceil((mMaxY - mMinY) / bin_size);
 		this.mNumYBins =(5>t?5:t);
 		if(mNumXBins>=128 || mNumYBins>=128){
-			throw new NyARRuntimeException();
+			return false;
 		}		
-		return;
+		return true;
 	}
 
 	private void mapVoteToBin(BinLocation fBin,double x, double y, double angle, double scale)
@@ -143,7 +143,9 @@ final public class HoughSimilarityVoting_O3 {
 
 		//FindHoughSimilarity
 		int max_dim =refWidth>refHeight?refWidth:refHeight;//math_utils.max2(mRefImageWidth, mRefImageHeight);
-		this.autoAdjustXYNumBins(max_dim,i_matche_resule);
+		if(!this.autoAdjustXYNumBins(max_dim,i_matche_resule)){
+			return false;
+		}
 
 		this.votemap.reset();
 		int num_of_subbin=this.vote(i_matche_resule,refWidth/2,refHeight/2,this._mSubBinLocations);		
