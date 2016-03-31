@@ -28,7 +28,6 @@ package jp.nyatla.nyartoolkit.jogl.sample.artk.sketch;
 
 
 import javax.media.opengl.*;
-import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.sketch.GlSketch;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
@@ -41,7 +40,7 @@ public class SimpleLite extends GlSketch
 {
 	private NyARJmfCamera camera;
 	private NyARGlMarkerSystem nyar;
-	private NyARGlMarkerSystemRender render;	
+	private NyARGlRender render;	
 	public void setup(GL gl)throws Exception
 	{
 		this.size(640,480);
@@ -51,7 +50,7 @@ public class SimpleLite extends GlSketch
 		d.setCaptureFormat(config.getScreenSize(),30.0f);
 		this.camera=new NyARJmfCamera(d);//create sensor system
 		this.nyar=new NyARGlMarkerSystem(config);   //create MarkerSystem
-		this.render=new NyARGlMarkerSystemRender(this.nyar);
+		this.render=new NyARGlRender(this.nyar);
 		
 		this.id=this.nyar.addARMarker(ARCODE_FILE,16,25,80);
 //		this.id=this.nyar.addPsARPlayCard(1,80);
@@ -70,7 +69,7 @@ public class SimpleLite extends GlSketch
 				this.render.loadARProjectionMatrix(gl);
 				this.nyar.update(this.camera);
 				if(this.nyar.isExistMarker(this.id)){
-					this.render.loadMarkerMatrix(gl,this.id);
+					this.nyar.loadTransformMatrix(gl,this.id);
 					this.render.colorCube(gl,40,0,0,20);
 				}
 				Thread.sleep(1);

@@ -24,60 +24,61 @@
  * THE SOFTWARE.
  * 
  */
-package jp.nyatla.nyartoolkit.jogl.sample.artk.sketch;
+package jp.nyatla.nyartoolkit.jogl.sample.nft.sketch;
+
+
+import java.awt.Dimension;
+import java.io.FileInputStream;
 
 import javax.media.opengl.*;
+
+import com.github.sarxos.webcam.Webcam;
+
+import jp.nyatla.nyartoolkit.j2se.NyARBufferedImageRaster;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.sketch.GlSketch;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
 import jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystemConfig;
-
-
-
+import jp.nyatla.nyartoolkit.markersystem.NyARSensor;
+import jp.nyatla.nyartoolkit.nftsystem.NyARNftSystemConfig;
 /**
- * JMFからの映像入力からマーカ2種を検出し、そこに立方体を重ねます。
- * ARマーカには、patt.hiro/patt.kanjiを使用して下さい。
+ * JMFからの映像入力からマーカ1種を検出し、そこに立方体を重ねます。
+ * ARマーカには、patt.hiroを使用して下さい。
  */
-public class SimpleLiteM extends GlSketch
+public class SimpleLite extends GlSketch
 {
-	private NyARJmfCamera camera;
-	private NyARGlMarkerSystem nyar;
+	String nftdataset="../../Data/testcase/pinball";
+	String cparam="../../Data/testcase/camera_para5.dat";
+	private Webcam camera;
+	private NyARGlNftSystem nyar;
 	private NyARGlRender render;
-
+	private NyARSensor sensor;
 	public void setup(GL gl)throws Exception
 	{
 		this.size(640,480);
-		NyARMarkerSystemConfig config = new NyARMarkerSystemConfig(640,480);
-		JmfCaptureDeviceList devlist = new JmfCaptureDeviceList();
-		JmfCaptureDevice d = devlist.getDevice(0);
-		d.setCaptureFormat(config.getScreenSize(),30.0f);
-		this.camera=new NyARJmfCamera(d);//create sensor system
-		this.nyar=new NyARGlMarkerSystem(config);   //create MarkerSystem
+		NyARNftSystemConfig config = new NyARNftSystemConfig(new FileInputStream(cparam),640,480);
+		this.camera=Webcam.getDefault();
+		this.camera.setViewSize(new Dimension(640,480));
+		this.nyar=new NyARGlNftSystem(config);   //create MarkerSystem
 		this.render=new NyARGlRender(this.nyar);
-		
-		this.ids[0]=this.nyar.addARMarker(ARCODE_FILE2,16,25,80);
-		this.ids[1]=this.nyar.addARMarker(ARCODE_FILE,16,25,80);
+		this.sensor=new NyARSensor(config.getScreenSize());
+		this.id=this.nyar.addNftTarget(nftdataset);
 		gl.glEnable(GL.GL_DEPTH_TEST);
-		this.camera.start();
+		this.camera.open();
 	}
-	private final static String ARCODE_FILE = "../../Data/patt.hiro";
-	private final static String ARCODE_FILE2 = "../../Data/patt.kanji";
-	private int[] ids=new int[2];
+	private int id;
 	
 	public void draw(GL gl)throws Exception
 	{
 		synchronized(this.camera){
 			try {
-				this.render.drawBackground(gl, this.camera.getSourceImage());
+				this.sensor.update(new NyARBufferedImageRaster(this.camera.getImage()));				
+				this.render.drawBackground(gl,this.sensor.getSourceImage());
 				this.render.loadARProjectionMatrix(gl);
-				this.nyar.update(this.camera);
-				if(this.nyar.isExistMarker(this.ids[0])){
-					this.nyar.loadTransformMatrix(gl,this.ids[0]);
-					this.render.colorCube(gl,40,0,0,20);
-				}
-				if(this.nyar.isExistMarker(this.ids[1])){
-					this.nyar.loadTransformMatrix(gl,this.ids[1]);
-					this.render.colorCube(gl,40,0,0,20);
+				this.nyar.update(this.sensor);
+				if(this.nyar.isExistTarget(this.id)){
+					this.nyar.loadTransformMatrix(gl,this.id);
+					this.render.colorCube(gl,100,100,60,50);
 				}
 				Thread.sleep(1);
 			} catch (Exception e) {
@@ -87,9 +88,7 @@ public class SimpleLiteM extends GlSketch
 	}	
 	public static void main(String[] args)
 	{
-		new SimpleLiteM().run();
+		new SimpleLite().run();
 		return;
 	}
-
-
 }

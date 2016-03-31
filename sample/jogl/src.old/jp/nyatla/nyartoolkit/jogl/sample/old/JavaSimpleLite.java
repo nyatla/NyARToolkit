@@ -37,7 +37,6 @@ import com.sun.opengl.util.*;
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
 import jp.nyatla.nyartoolkit.core.param.*;
-import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.detector.*;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
@@ -167,7 +166,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 					// Viewing transformation.
 					this._gl.glLoadIdentity();
 					// 変換行列を取得
-					this._nya.getTransmationMatrix(transmat_result);
+					this._nya.getTransmat(transmat_result);
 					// 変換行列をOpenGL形式に変換
 					NyARGLUtil.toCameraViewRH(transmat_result,1, this.__display_wk);
 					this._gl.glLoadMatrixd(this.__display_wk, 0);		
@@ -209,8 +208,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 	public static void main(String[] args)
 	{
 		try {
-			NyARParam param = NyARParam.createFromARParamFile(new FileInputStream(PARAM_FILE));
-			param.changeScreenSize(SCREEN_X, SCREEN_Y);
+			NyARParam param = NyARParam.loadFromARParamFile(new FileInputStream(PARAM_FILE),SCREEN_X, SCREEN_Y);
 
 			NyARCode code = NyARCode.loadFromARPattFile(new FileInputStream(CARCODE_FILE),16, 16);
 

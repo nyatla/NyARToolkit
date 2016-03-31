@@ -31,11 +31,13 @@ import java.awt.Dimension;
 import javax.media.opengl.*;
 
 import com.github.sarxos.webcam.Webcam;
+
+import jp.nyatla.nyartoolkit.j2se.NyARBufferedImageRaster;
 import jp.nyatla.nyartoolkit.jogl.sketch.GlSketch;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
 import jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystemConfig;
 import jp.nyatla.nyartoolkit.markersystem.NyARSensor;
-import jp.nyatla.nyartoolkit.utils.j2se.NyARBufferedImageRaster;
+
 /**
  * WebcamCaptureの映像を使うサンプルです。
  * ARマーカには、patt.hiroを使用して下さい。
@@ -44,7 +46,7 @@ public class WebCamSample extends GlSketch
 {
 	private Webcam camera;
 	private NyARGlMarkerSystem nyar;
-	private NyARGlMarkerSystemRender render;
+	private NyARGlRender render;
 	private NyARSensor sensor;
 	public void setup(GL gl)throws Exception
 	{
@@ -53,7 +55,7 @@ public class WebCamSample extends GlSketch
 		this.camera=Webcam.getDefault();
 		this.camera.setViewSize(new Dimension(640,480));
 		this.nyar=new NyARGlMarkerSystem(config);   //create MarkerSystem
-		this.render=new NyARGlMarkerSystemRender(this.nyar);
+		this.render=new NyARGlRender(this.nyar);
 		this.sensor=new NyARSensor(config.getScreenSize());
 		this.id=this.nyar.addARMarker(ARCODE_FILE,16,25,80);
 //		this.id=this.nyar.addPsARPlayCard(1,80);
@@ -73,8 +75,8 @@ public class WebCamSample extends GlSketch
 				this.render.loadARProjectionMatrix(gl);
 				
 				this.nyar.update(this.sensor);
-				if(this.nyar.isExistMarker(this.vid)){
-					this.render.loadMarkerMatrix(gl,this.vid);
+				if(this.nyar.isExistMarker(this.id)){
+					this.nyar.loadTransformMatrix(gl,this.id);
 					this.render.colorCube(gl,40,0,0,20);
 				}
 				Thread.sleep(1);

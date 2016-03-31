@@ -30,6 +30,7 @@ import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.jogl.sketch.GlSketch;
 import jp.nyatla.nyartoolkit.jogl.utils.NyARGlMarkerSystem;
 import jp.nyatla.nyartoolkit.jogl.utils.NyARGlMarkerSystemRender;
+import jp.nyatla.nyartoolkit.jogl.utils.NyARGlRender;
 import jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystemConfig;
 import jp.nyatla.nyartoolkit.qt.utils.NyARQtCamera;
 import jp.nyatla.nyartoolkit.qt.utils.QtCameraCapture;
@@ -42,14 +43,14 @@ public class SimpleLiteQt extends GlSketch
 {
 	private NyARQtCamera camera;
 	private NyARGlMarkerSystem nyar;
-	private NyARGlMarkerSystemRender render;	
+	private NyARGlRender render;	
 	public void setup(GL gl)throws Exception
 	{
 		this.size(640,480);
 		NyARMarkerSystemConfig config = new NyARMarkerSystemConfig(640,480);
 		this.camera=new NyARQtCamera(new QtCameraCapture(config.getScreenSize(),30.0f));//create sensor system		
 		this.nyar=new NyARGlMarkerSystem(config);   //create MarkerSystem
-		this.render=new NyARGlMarkerSystemRender(this.nyar);
+		this.render=new NyARGlRender(this.nyar);
 		
 		this.id=this.nyar.addARMarker(ARCODE_FILE,16,25,80);
 		gl.glEnable(GL.GL_DEPTH_TEST);
@@ -67,7 +68,7 @@ public class SimpleLiteQt extends GlSketch
 				this.render.loadARProjectionMatrix(gl);
 				this.nyar.update(this.camera);
 				if(this.nyar.isExistMarker(this.vid)){
-					this.render.loadMarkerMatrix(gl,this.vid);
+					this.nyar.loadTransformMatrix(gl,this.vid);
 					this.render.colorCube(gl,40,0,0,20);
 				}
 				Thread.sleep(1);

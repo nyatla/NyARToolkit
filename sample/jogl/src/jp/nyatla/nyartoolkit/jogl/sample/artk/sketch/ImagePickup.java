@@ -27,7 +27,7 @@
 package jp.nyatla.nyartoolkit.jogl.sample.artk.sketch;
 
 import javax.media.opengl.*;
-import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
+import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.sketch.GlSketch;
@@ -43,7 +43,7 @@ public class ImagePickup extends GlSketch
 {
 	private NyARJmfCamera camera;
 	private NyARGlMarkerSystem nyar;
-	private NyARGlMarkerSystemRender render;
+	private NyARGlRender render;
 	private final static String ARCODE_FILE = "../../Data/patt.hiro";
 	private final static String ARCODE_FILE2 = "../../Data/patt.kanji";
 	public void setup(GL gl)throws Exception
@@ -55,11 +55,11 @@ public class ImagePickup extends GlSketch
 		d.setCaptureFormat(config.getScreenSize(),30.0f);
 		this.camera=new NyARJmfCamera(d);//create sensor system
 		this.nyar=new NyARGlMarkerSystem(config);   //create MarkerSystem
-		this.render=new NyARGlMarkerSystemRender(this.nyar);
+		this.render=new NyARGlRender(this.nyar);
 		//regist 2 markers
 		this.ids[0]=this.nyar.addARMarker(ARCODE_FILE,16,25,80);
 		this.ids[1]=this.nyar.addARMarker(ARCODE_FILE2,16,25,80);
-		this._raster=new NyARRgbRaster(64,64);
+		this._raster=NyARRgbRaster.createInstance(64,64);
 		gl.glEnable(GL.GL_DEPTH_TEST);
 		//start camera
 		this.camera.start();
@@ -67,7 +67,7 @@ public class ImagePickup extends GlSketch
 
 	private int[] ids=new int[2];
 	//temporary
-	private NyARRgbRaster _raster;
+	private INyARRgbRaster _raster;
 	public void draw(GL gl)throws Exception
 	{
 		//lock async update.

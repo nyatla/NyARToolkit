@@ -44,8 +44,6 @@ import javax.imageio.*;
 import java.awt.image.*;
 import java.io.*;
 
-import jp.nyatla.nyartoolkit.utils.j2se.*;
-
 /**
  * カメラ入力の代わりに、静止画を入力元に用いるSimpleLiteです。
  */
@@ -71,7 +69,6 @@ public class JavaSimpleLite_ImageSource implements GLEventListener
 
 		Frame frame = new Frame("NyARToolkit["+this.getClass().getName()+"]");
 		// NyARToolkitの準備
-		this._ar_param.changeScreenSize(i_image.getWidth(),i_image.getHeight());
 		this._nya = NyARSingleDetectMarker.createInstance(this._ar_param, i_ar_code, 80.0,NyARSingleDetectMarker.PF_NYARTOOLKIT);
 		this._nya.setContinueMode(false);// ここをtrueにすると、transMatContinueモード（History計算）になります。
 		//load bitmap image
@@ -179,9 +176,9 @@ public class JavaSimpleLite_ImageSource implements GLEventListener
 	public static void main(String[] args)
 	{
 		try {
-			NyARParam param = NyARParam.createFromARParamFile(new FileInputStream(PARAM_FILE));
-			NyARCode code = NyARCode.loadFromARPattFile(new FileInputStream(CARCODE_FILE),16, 16);
 			BufferedImage src_image = ImageIO.read(new File(SAMPLE_FILES));
+			NyARParam param = NyARParam.loadFromARParamFile(new FileInputStream(PARAM_FILE),src_image.getWidth(),src_image.getHeight());
+			NyARCode code = NyARCode.loadFromARPattFile(new FileInputStream(CARCODE_FILE),16, 16);
 
 			new JavaSimpleLite_ImageSource(param, code,src_image);
 		} catch (Exception e) {

@@ -264,8 +264,7 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 	public static void main(String[] args)
 	{
 		try{
-			NyARParam cparam= NyARParam.createFromARParamFile(new FileInputStream(PARAM_FILE));
-			cparam.changeScreenSize(SCREEN_X, SCREEN_Y);		
+			NyARParam cparam= NyARParam.loadFromARParamFile(new FileInputStream(PARAM_FILE),SCREEN_X, SCREEN_Y);		
 			new SingleARMarker(cparam);
 		}catch(Exception e){
 			e.printStackTrace();

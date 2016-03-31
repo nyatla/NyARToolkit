@@ -34,6 +34,7 @@ import javax.media.opengl.*;
 
 import com.sun.opengl.util.*;
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
+import jp.nyatla.nyartoolkit.core.param.NyARFrustum;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
@@ -91,7 +92,10 @@ public class SimpleLiteMStandard implements GLEventListener
 	{
 		GL gl=drawable.getGL();
 		gl.glMatrixMode(GL.GL_PROJECTION);
-		gl.glLoadMatrixd(this._nyar.getGlProjectionMatrix(),0);
+		double[] pmat=new double[16];
+		NyARFrustum.FrustumParam f=this._nyar.getFrustum().getFrustumParam(new NyARFrustum.FrustumParam());	
+		NyARGLUtil.toCameraFrustumRH(this._nyar.getARParam(),1,f.near,f.far,pmat);
+		gl.glLoadMatrixd(pmat,0);
 		gl.glEnable(GL.GL_DEPTH_TEST);
 		gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		Animator animator = new Animator(drawable);

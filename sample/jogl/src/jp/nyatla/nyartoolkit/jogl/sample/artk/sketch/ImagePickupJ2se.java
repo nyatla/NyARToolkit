@@ -45,7 +45,7 @@ public class ImagePickupJ2se extends GlSketch
 {
 	private NyARJmfCamera camera;
 	private NyARGlMarkerSystem nyar;
-	private NyARGlMarkerSystemRender render;
+	private NyARGlRender render;
 	private final static String PNGPATT = "../../Data/hiro.png";
 	public void setup(GL gl)throws Exception
 	{
@@ -57,7 +57,7 @@ public class ImagePickupJ2se extends GlSketch
 			d.setCaptureFormat(config.getScreenSize(),30.0f);
 			this.camera=new NyARJmfCamera(d);//create sensor system
 			this.nyar=new NyARGlMarkerSystem(config);   //create MarkerSystem
-			this.render=new NyARGlMarkerSystemRender(this.nyar);
+			this.render=new NyARGlRender(this.nyar);
 			//regist a marker from PNG
 			this.ids[0]=this.nyar.addARMarker(ImageIO.read(new File(PNGPATT)),16,25,80);
 			this._pat=new BufferedImage(64,64,BufferedImage.TYPE_INT_RGB);
@@ -90,7 +90,7 @@ public class ImagePickupJ2se extends GlSketch
 					}
 					this.render.polygon(gl,this.nyar.getVertex2D(ids[i]));					
 					this.nyar.getPlaneImage(ids[i],this.camera,-40,-40,80,80,this._pat);
-					this.render.loadMarkerMatrix(gl,ids[i]);
+					this.nyar.loadTransformMatrix(gl,ids[i]);
 					this.render.drawImage2d(gl,i*64,0,this._pat);
 				}
 				gl.glPopMatrix();
