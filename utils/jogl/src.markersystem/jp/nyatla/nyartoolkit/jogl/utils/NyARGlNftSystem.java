@@ -52,5 +52,29 @@ public class NyARGlNftSystem  extends NyARNftSystem{
 			i_gl.glLoadMatrixd(this._mv_mat, 0);
 		}
 	}	
+	/**
+	 * OpenGLスタイルカメラパラメータのワーク変数
+	 */
+	final private double[] _mv_mat=new double[16];
 	
+	
+	/**
+	 * i_glに、i_idで示されるマーカ平面の姿勢行列をセットします。
+	 * @param i_gl
+	 * @param i_id
+	 * @throws NyARRuntimeException 
+	 */
+	public void loadTransformMatrix(GL i_gl,int i_id)
+	{
+		int old_mode=NyARGLUtil.getGlMatrixMode(i_gl);
+		if(old_mode!=GL.GL_MODELVIEW){
+			i_gl.glMatrixMode(GL.GL_MODELVIEW);
+			NyARGLUtil.toCameraViewRH(this.getTransformMatrix(i_id),1,this._mv_mat);			
+			i_gl.glLoadMatrixd(this._mv_mat, 0);
+			i_gl.glMatrixMode(old_mode);
+		}else{
+			NyARGLUtil.toCameraViewRH(this.getTransformMatrix(i_id),1,this._mv_mat);
+			i_gl.glLoadMatrixd(this._mv_mat, 0);
+		}
+	}	
 }

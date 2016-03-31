@@ -147,7 +147,7 @@ public class NyARGlMarkerSystem extends NyARMarkerSystem
 	/**
 	 * OpenGLスタイルカメラパラメータのワーク変数
 	 */
-	private double[] _mv_mat=new double[16];
+	final private double[] _mv_mat=new double[16];
 	
 	
 	/**
@@ -156,7 +156,7 @@ public class NyARGlMarkerSystem extends NyARMarkerSystem
 	 * @param i_id
 	 * @throws NyARRuntimeException 
 	 */
-	public void loadMarkerMatrix(GL i_gl,int i_id)
+	public void loadTransformMatrix(GL i_gl,int i_id)
 	{
 		int old_mode=NyARGLUtil.getGlMatrixMode(i_gl);
 		if(old_mode!=GL.GL_MODELVIEW){
