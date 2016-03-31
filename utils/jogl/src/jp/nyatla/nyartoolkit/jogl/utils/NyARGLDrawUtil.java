@@ -132,7 +132,7 @@ public class NyARGLDrawUtil
 	 * @param i_zoom
 	 * @throws NyARRuntimeException
 	 */
-	public static void drawBackGround(javax.media.opengl.GL i_gl,INyARRaster i_raster, double i_zoom) throws NyARRuntimeException
+	public static void drawBackGround(GL i_gl,INyARRaster i_raster, double i_zoom) throws NyARRuntimeException
 	{
 		IntBuffer texEnvModeSave = IntBuffer.allocate(1);
 		boolean lightingSave;

@@ -30,6 +30,8 @@
  */
 package jp.nyatla.nyartoolkit.jogl.utils;
 
+import javax.media.opengl.GL;
+
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -54,7 +56,12 @@ public class NyARGLUtil
 	private NyARGLUtil()
     {//生成の禁止
     }	
-
+	private static int[] __wk=new int[1];
+	public synchronized static final int getGlMatrixMode(GL i_gl)
+	{
+		i_gl.glGetIntegerv(GL.GL_MATRIX_MODE,__wk,0);
+		return __wk[0];
+	}	
 	
 	/**
 	 * この関数は、ARToolKitスタイルのカメラパラメータから、 CameraFrustamを計算します。

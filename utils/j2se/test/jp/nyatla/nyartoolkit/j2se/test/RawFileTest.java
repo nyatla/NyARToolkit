@@ -36,13 +36,11 @@ import java.util.*;
 
 import javax.imageio.ImageIO;
 
-import jp.nyatla.nyartoolkit.core.*;
+
 import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterdriver.perspectivecopy.INyARPerspectiveCopy;
-import jp.nyatla.nyartoolkit.core.rasterdriver.perspectivecopy.NyARPerspectiveCopyFactory;
-import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.detector.*;
 import jp.nyatla.nyartoolkit.j2se.NyARBufferedImageRaster;
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -63,10 +61,8 @@ import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
  */
 public class RawFileTest
 {
-	private final String code_file = "../../Data/patt.hiro";
 
 	private final String data_file = "../../Data/320x240ABGR.png";
-	private final String raw_file = "../../Data/320x240ABGR.raw";
 	
 	private final String camera_file = "../../Data/camera_para.dat";
 
@@ -95,8 +91,7 @@ public class RawFileTest
 		INyARRgbRaster ra = new NyARRgbRaster(320, 240,NyARBufferType.BYTE1D_B8G8R8X8_32,false);
 		ra.wrapBuffer(buf);
 */		// AR用カメラパラメタファイルをロード
-		NyARParam ap = NyARParam.createFromARParamFile(new FileInputStream(camera_file));
-		ap.changeScreenSize(ra.getSize());
+		NyARParam ap = NyARParam.loadFromARParamFile(new FileInputStream(camera_file),ra.getWidth(),ra.getHeight());
 
 		//マーカパターンをBitmapから作る。
 		NyARCode code = new NyARCode(16, 16);

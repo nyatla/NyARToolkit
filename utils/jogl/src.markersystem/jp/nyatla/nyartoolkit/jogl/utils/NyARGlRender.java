@@ -22,13 +22,6 @@ import jp.nyatla.nyartoolkit.markersystem.NyARSingleCameraSystem;
  */
 public class NyARGlRender implements INyARSingleCameraSystemObserver
 {
-//	private NyARMarkerSystem _ms;
-	private int[] __wk=new int[1];
-	protected final int getGlMatrixMode(GL i_gl)
-	{
-		i_gl.glGetIntegerv(GL.GL_MATRIX_MODE,this.__wk,0);
-		return this.__wk[0];
-	}
 	/**
 	 * コンストラクタです。マーカシステムに対応したレンダラを構築します。
 	 * @param i_ms
@@ -49,7 +42,7 @@ public class NyARGlRender implements INyARSingleCameraSystemObserver
 	/**
 	 * OpenGLスタイルカメラパラメータのワーク変数。
 	 */
-	protected double[] _projection_mat;
+	final protected double[] _projection_mat;
 	
 	
 	/**
@@ -58,7 +51,7 @@ public class NyARGlRender implements INyARSingleCameraSystemObserver
 	 */
 	public final void loadARProjectionMatrix(GL i_gl)
 	{
-		int old_mode=this.getGlMatrixMode(i_gl);
+		int old_mode=NyARGLUtil.getGlMatrixMode(i_gl);
 		i_gl.glMatrixMode(GL.GL_PROJECTION);
 		i_gl.glLoadMatrixd(this._projection_mat, 0);
 		i_gl.glMatrixMode(GL.GL_MODELVIEW);
@@ -67,7 +60,7 @@ public class NyARGlRender implements INyARSingleCameraSystemObserver
 	}
 	public final void loadScreenProjectionMatrix(GL i_gl,int i_width,int i_height)
 	{
-		int old_mode=this.getGlMatrixMode(i_gl);
+		int old_mode=NyARGLUtil.getGlMatrixMode(i_gl);
 		i_gl.glMatrixMode(GL.GL_PROJECTION);
 		i_gl.glLoadIdentity();
 		i_gl.glOrtho(0.0,i_width,i_height,0,-1,1);
@@ -102,7 +95,7 @@ public class NyARGlRender implements INyARSingleCameraSystemObserver
 	 */
 	public final void colorCube(GL i_gl,float i_size_per_mm,double i_x,double i_y,double i_z)
 	{
-		int old_mode=this.getGlMatrixMode(i_gl);
+		int old_mode=NyARGLUtil.getGlMatrixMode(i_gl);
 		i_gl.glMatrixMode(GL.GL_MODELVIEW);
 		i_gl.glPushMatrix();
 		i_gl.glTranslated(i_x,i_y,i_z);
@@ -129,7 +122,7 @@ public class NyARGlRender implements INyARSingleCameraSystemObserver
 	 */
 	public final void line(GL i_gl,float i_x,double i_y,double i_x2,double i_y2)
 	{
-		int old_mode=this.getGlMatrixMode(i_gl);
+		int old_mode=NyARGLUtil.getGlMatrixMode(i_gl);
 		i_gl.glMatrixMode(GL.GL_MODELVIEW);
 		i_gl.glBegin(GL.GL_LINE);
 		
@@ -139,7 +132,7 @@ public class NyARGlRender implements INyARSingleCameraSystemObserver
 	}
 	public final void polygon(GL i_gl,NyARDoublePoint2d[] i_vertex)
 	{
-		int old_mode=this.getGlMatrixMode(i_gl);
+		int old_mode=NyARGLUtil.getGlMatrixMode(i_gl);
 		i_gl.glMatrixMode(GL.GL_MODELVIEW);
 		i_gl.glBegin(GL.GL_LINE_LOOP);
 		for(int i=0;i<i_vertex.length;i++)
@@ -151,7 +144,7 @@ public class NyARGlRender implements INyARSingleCameraSystemObserver
 	}
 	public final void polygon(GL i_gl,NyARIntPoint2d[] i_vertex)
 	{
-		int old_mode=this.getGlMatrixMode(i_gl);
+		int old_mode=NyARGLUtil.getGlMatrixMode(i_gl);
 		i_gl.glMatrixMode(GL.GL_MODELVIEW);
 		i_gl.glBegin(GL.GL_LINE_LOOP);
 		for(int i=0;i<i_vertex.length;i++)
@@ -169,7 +162,7 @@ public class NyARGlRender implements INyARSingleCameraSystemObserver
 	 * @param i_raster
 	 * @throws NyARRuntimeException
 	 */
-	public final void drawImage2d(GL i_gl,double i_x, double i_y, NyARRgbRaster i_raster) throws NyARRuntimeException
+	public final void drawImage2d(GL i_gl,double i_x, double i_y, INyARRgbRaster i_raster) throws NyARRuntimeException
 	{
 		i_gl.glPushMatrix();
 		try{
