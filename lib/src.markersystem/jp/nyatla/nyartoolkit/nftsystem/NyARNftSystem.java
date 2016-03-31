@@ -137,6 +137,10 @@ System.out.println("ST_AR2_TRACKING");
 			}
 		}
 	}
+	public int addNftTarget(String i_fileset_prefix)
+	{
+		return this.addNftTarget(NyARNftDataSet.loadFromNftFiles(i_fileset_prefix));
+	}
 
 	/**
 	 * NFTの特徴点データセットを追加します。
