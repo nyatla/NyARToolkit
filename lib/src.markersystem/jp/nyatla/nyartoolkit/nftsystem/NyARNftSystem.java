@@ -103,7 +103,7 @@ public class NyARNftSystem extends NyARSingleCameraSystem{
 		//SurfaceTrackingによるfrontデータの更新
 		for(NftTarget target:this._nftdatalist){
 			if(target.stage<NftTarget.ST_KPM_FOUND){
-System.out.println("NOTHING");
+//System.out.println("NOTHING");
 				//KPM検出前なら何もしない。
 				continue;
 			}
@@ -116,7 +116,7 @@ System.out.println("NOTHING");
 				if(nop==0){
 					//失敗
 					target.stage=NftTarget.ST_KPM_SEARCH;
-System.out.println("ST_KPM_SEARCH");
+//System.out.println("ST_KPM_SEARCH");
 					continue;
 				}
 				//Transmatの試験
@@ -125,14 +125,14 @@ System.out.println("ST_KPM_SEARCH");
 				if(!this._sftrackingutils.surfaceTrackingTransmat(target.front_transmat, pos2d, pos3d, nop,target.front_transmat,this.result_param)){
 					//失敗
 					target.stage=NftTarget.ST_KPM_SEARCH;
-System.out.println("ST_KPM_SEARCH");
+//System.out.println("ST_KPM_SEARCH");
 					continue;
 				}
 				NyARSurfaceTrackingTransmatUtils.restoreOutputOffset(target.front_transmat,off);//ARTK5の補正
 				break;
 			case NftTarget.ST_KPM_FOUND:
 				target.stage=NftTarget.ST_AR2_TRACKING;
-System.out.println("ST_AR2_TRACKING");
+//System.out.println("ST_AR2_TRACKING");
 				break;
 			}
 		}
@@ -210,7 +210,7 @@ System.out.println("ST_AR2_TRACKING");
 					//検出フラグの更新
 					if(target.back_has_result && target.stage==NftTarget.ST_KPM_SEARCH){
 						//見つかった時だけ更新
-System.out.println("ST_KPM_FOUND");
+//System.out.println("ST_KPM_FOUND");
 						
 						target.stage=NftTarget.ST_KPM_FOUND;
 						target.front_transmat.setValue(target.back_transmat);
@@ -241,12 +241,12 @@ System.out.println("ST_KPM_FOUND");
 					for(NftTarget nt : this._ref_nftdatalist){
 						//検出ステージチェック(別スレッドからの更新と衝突した場合は1フレーム無駄になる。)
 						if(nt.stage>NftTarget.ST_KPM_SEARCH){
-System.out.println("TR:ST_KPM_SEARCH");
+//System.out.println("TR:ST_KPM_SEARCH");
 							continue;
 						}
 						//N番目のNFTターゲットのバックグラウンドに書き込み
 						nt.back_has_result=this._attached_matcher.kpmMatching(nt.dataset.freak_fset,nt.back_transmat);
-System.out.println("TR:ST_KPM_SEARCH2");
+//System.out.println("TR:ST_KPM_SEARCH2");
 					}
 				}
 			} catch (InterruptedException e) {

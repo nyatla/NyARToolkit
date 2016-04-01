@@ -271,7 +271,7 @@ public class NyARParam
 			NyARCameraDistortionFactorV4 df=(NyARCameraDistortionFactorV4)param.getDistortionFactor();
 			double[] t=new double[16];
 			df.getValue(t);
-			NyARCameraDistortionFactorV4 df2=new NyARCameraDistortionFactorV4(param._screen_size.w,param._screen_size.h,new double[]{t[4],0,t[6], 0,t[5],t[7]},new double[]{t[0],t[1],t[2],t[3]},1,1);
+//			NyARCameraDistortionFactorV4 df2=new NyARCameraDistortionFactorV4(param._screen_size.w,param._screen_size.h,new double[]{t[4],0,t[6], 0,t[5],t[7]},new double[]{t[0],t[1],t[2],t[3]},1,1);
 			return;
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block

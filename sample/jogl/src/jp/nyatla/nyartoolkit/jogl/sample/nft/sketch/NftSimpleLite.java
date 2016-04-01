@@ -35,17 +35,15 @@ import javax.media.opengl.*;
 import com.github.sarxos.webcam.Webcam;
 
 import jp.nyatla.nyartoolkit.j2se.NyARBufferedImageRaster;
-import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.sketch.GlSketch;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
-import jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystemConfig;
 import jp.nyatla.nyartoolkit.markersystem.NyARSensor;
 import jp.nyatla.nyartoolkit.nftsystem.NyARNftSystemConfig;
 /**
  * JMFからの映像入力からマーカ1種を検出し、そこに立方体を重ねます。
  * ARマーカには、patt.hiroを使用して下さい。
  */
-public class SimpleLite extends GlSketch
+public class NftSimpleLite extends GlSketch
 {
 	String nftdataset="../../Data/testcase/pinball";
 	String cparam="../../Data/testcase/camera_para5.dat";
@@ -88,7 +86,7 @@ public class SimpleLite extends GlSketch
 	}	
 	public static void main(String[] args)
 	{
-		new SimpleLite().run();
+		new NftSimpleLite().run();
 		return;
 	}
 }

@@ -40,6 +40,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
  */
 public class NyARCameraDistortionFactorLT extends NyARCameraDistortionFactorImpl
 {	
+	final private INyARCameraDistortionFactor _base_factor;	
 	final public static int AR_PARAM_LT_DEFAULT_OFFSET =15;
 	   	
     final private double[] _i2o;
@@ -57,6 +58,7 @@ public class NyARCameraDistortionFactorLT extends NyARCameraDistortionFactorImpl
 	    this._yOff = i_offset;
 	    this._i2o=new double[this._xsize*this._ysize*2];
 	    this._o2i=new double[this._xsize*this._ysize*2];
+	    this._base_factor=i_base_factor;
 	    NyARDoublePoint2d tmp=new NyARDoublePoint2d();//
 	    for(int j = 0; j < this._ysize; j++ ) {
 	        for(int i = 0; i < this._xsize; i++ ) {
@@ -82,21 +84,24 @@ public class NyARCameraDistortionFactorLT extends NyARCameraDistortionFactorImpl
 	 * @param o_out
 	 * 変換後の座標を受け取るオブジェクト
 	 */
+	@Override
 	public void ideal2Observ(double i_x,double i_y, NyARDoublePoint2d o_out)
 	{
 	    int px = (int)(i_x+0.5) + this._xOff;
 	    int py = (int)(i_y+0.5) + this._yOff;
 	    if( px < 0 || px >= this._xsize || py < 0 || py >= this._ysize ){
-			throw new NyARRuntimeException();
+	    	this._base_factor.ideal2Observ(i_x,i_y, o_out);
+	    	return;
 	    }
-	    
 	    int lt =  (py*this._xsize + px)*2;
 	    o_out.x = this._i2o[lt+0];
 	    o_out.y = this._i2o[lt+1];
+	    return;
 	}
 	
 	/**
 	 * この関数は、座標点を理想座標系から観察座標系へ変換します。
+	 * 範囲外の場合、境界の値を返します。
 	 * @param i_x
 	 * 変換元の座標
 	 * @param i_y
@@ -104,17 +109,19 @@ public class NyARCameraDistortionFactorLT extends NyARCameraDistortionFactorImpl
 	 * @param o_out
 	 * 変換後の座標を受け取るオブジェクト
 	 */
+	@Override
 	public void ideal2Observ(double i_x,double i_y, NyARIntPoint2d o_out)
 	{
 	    int px = (int)(i_x+0.5) + this._xOff;
 	    int py = (int)(i_y+0.5) + this._yOff;
 	    if( px < 0 || px >= this._xsize || py < 0 || py >= this._ysize ){
-			throw new NyARRuntimeException();
+	    	this._base_factor.ideal2Observ(i_x,i_y, o_out);
+	    	return;
 	    }
-	    
 	    int lt =  (py*this._xsize + px)*2;
 	    o_out.x = (int)this._i2o[lt+0];
 	    o_out.y = (int)this._i2o[lt+1];
+	    return;
 	}
 	
 	/**

@@ -286,6 +286,7 @@ public class NyARCameraDistortionFactorV4 extends NyARCameraDistortionFactorImpl
 	    double l = x*x + y*y;
 	    o_out.x = (x*(1.0+k1*l+k2*l*l)+2.0*p1*x*y+p2*(l+2.0*x*x))*fx+x0;
 	    o_out.y = (y*(1.0+k1*l+k2*l*l)+p1*(l+2.0*y*y)+2.0*p2*x*y)*fy+y0;
+	    return;
 	}
 	
 
@@ -307,6 +308,7 @@ public class NyARCameraDistortionFactorV4 extends NyARCameraDistortionFactorImpl
 	    double l = x*x + y*y;
 	    o_out.x =(int)((x*(1.0+k1*l+k2*l*l)+2.0*p1*x*y+p2*(l+2.0*x*x))*fx+x0);
 	    o_out.y =(int)((y*(1.0+k1*l+k2*l*l)+p1*(l+2.0*y*y)+2.0*p2*x*y)*fy+y0);
+	    return;
 	}
 	
 

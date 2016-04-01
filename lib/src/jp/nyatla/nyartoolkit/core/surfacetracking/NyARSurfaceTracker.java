@@ -66,6 +66,7 @@ public class NyARSurfaceTracker
 			p[0].y=(int)y;
 			int num_of_log=i_log.num_of_item;
 			if(num_of_log>=3){
+				//過去の理想点を観察点に戻す
 				i_log.items[1].calculate2dPos(i_cai.ref_feature.mx,i_cai.ref_feature.my, tmp);
 				this._ref_df.ideal2Observ(tmp, tmp);
 				p[1].x = (int) (2 * x - tmp.x);
