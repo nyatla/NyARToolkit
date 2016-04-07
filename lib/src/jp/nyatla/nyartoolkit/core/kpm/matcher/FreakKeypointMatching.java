@@ -47,8 +47,8 @@ public class FreakKeypointMatching {
 	final private static int kMaxNumFeatures = 300;
 	final private static int kMinCoarseSize = 8;
 
-	final private DogFeaturePointStack _dog_feature_points = new DogFeaturePointStack(2000);// この2000は適当
-	final FreakFeaturePointStack mQueryKeyframe=new FreakFeaturePointStack(2000);// この2000も適当
+	final private DogFeaturePointStack _dog_feature_points = new DogFeaturePointStack(kMaxNumFeatures);
+	final FreakFeaturePointStack mQueryKeyframe=new FreakFeaturePointStack(kMaxNumFeatures);
 	/** Pyramid builder */
 	final private BinomialPyramid32f _pyramid;
 	/** Interest point detector (DoG, etc) */

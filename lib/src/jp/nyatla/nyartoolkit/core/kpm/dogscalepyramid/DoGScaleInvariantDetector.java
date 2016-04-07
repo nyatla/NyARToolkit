@@ -22,8 +22,6 @@ public class DoGScaleInvariantDetector {
 	final private double[] mOrientations;
 
 
-	// Maximum number of feature points
-	final private int mMaxNumFeaturePoints;
 
 	// Maximum update allowed for sub-pixel refinement
 	final private double mMaxSubpixelDistanceSqr;
@@ -41,7 +39,6 @@ public class DoGScaleInvariantDetector {
 
 		this.mLaplacianThreshold = i_LaplacianThreshold;
 		this.mEdgeThreshold = i_EdgeThreshold;
-		this.mMaxNumFeaturePoints = i_MaxNumFeaturePoints;
 		this.mMaxSubpixelDistanceSqr = (3 * 3);
 		this.mOrientations = new double[kMaxNumOrientations];
 		this.mLaplacianPyramid = new DoGPyramid(i_width,i_height,i_octerv,i_num_of_scale_of_octerv-1);
@@ -61,7 +58,7 @@ public class DoGScaleInvariantDetector {
 	{
 		//clean up 1st feature stack
 		DogFeaturePointStack tmp_fp=this._tmp_fps;
-		this._tmp_fps.clear();
+		tmp_fp.clear();
 
 		// Compute Laplacian images (DoG)
 		this.mLaplacianPyramid.compute(i_pyramid);
@@ -72,12 +69,40 @@ public class DoGScaleInvariantDetector {
 		// Sub-pixel refinement
 		this.findSubpixelLocations(i_pyramid,tmp_fp);
 
-		// Prune features
-		this.pruneFeatures(tmp_fp,this.mBuckets);
+		// Compute the gradient pyramid		
+		this.mOrientationAssignment.computeGradients(i_pyramid);		
+		
+		AreaBuckit abuckit=this.mBuckets;
 
-		// Compute dominant angles
-		this.findFeatureOrientations(i_pyramid,tmp_fp,this.mBuckets,i_dog_feature_points);
+		
+		if (tmp_fp.getLength() <= abuckit._buckit.length) {
+			//特徴点の数が要求数以下なら全てのポイントを使う。
+			for (int i = 0; i < tmp_fp.getLength(); i++)
+			{
+				this.addFeatureOrientations(i_pyramid,tmp_fp.getItem(i),i_dog_feature_points);				
+			}
+		}else{
+			//特徴点を選別(Prune features)
+		
+			// Clear the previous state
+			abuckit.clear();
+			
+			// Insert each features into a bucket
+			for (int i = 0; i < tmp_fp.getLength(); i++) {
+				DogFeaturePoint p = tmp_fp.getItem(i);
+				abuckit.put(p.x,p.y,i,Math.abs(p.score));
+			}
+			// Compute an orientation for each feature point
+			for (int i = 0; i < abuckit._buckit.length; i++)
+			{
+				if(abuckit._buckit[i].first==0){
+					continue;
+				}
+				this.addFeatureOrientations(i_pyramid,tmp_fp.getItem(abuckit._buckit[i].second),i_dog_feature_points);				
+			}
+		}
 
+		return;
 	}
 
 
@@ -463,80 +488,61 @@ public class DoGScaleInvariantDetector {
 		i_dog_fp.setLength(num_points);
 	}
 
-	/**
-	 * Prune the number of features.
-	 * @param i_buckets 
-	 */
-	private void pruneFeatures(DogFeaturePointStack i_in_dfps, AreaBuckit i_buckets) {
-		if (i_in_dfps.getLength() <= mMaxNumFeaturePoints) {
-			return;
-		}
-		// Clear the previous state
-		i_buckets.clear();
-		// Insert each features into a bucket
-		for (int i = 0; i < i_in_dfps.getLength(); i++) {
-			DogFeaturePoint p = i_in_dfps.getItem(i);
-			i_buckets.put(p.x,p.y,i,Math.abs(p.score));
-		}
-	}
-	/**
-	 * Find feature orientations.
-	 */
-	private void findFeatureOrientations(GaussianScaleSpacePyramid i_pyramid, DogFeaturePointStack in_fps,
-			AreaBuckit i_buckit, DogFeaturePointStack i_ot_fps) 
+
+
+	final private double[] _addFeatureOrientations_tmp=new double[3];
+	
+	private void addFeatureOrientations(GaussianScaleSpacePyramid i_pyramid,DogFeaturePoint dfp,DogFeaturePointStack i_ot_fps)
 	{
-		double[] tmp = new double[3];
+		double[] tmp = this._addFeatureOrientations_tmp;
 
-		// Compute the gradient pyramid		
-		mOrientationAssignment.computeGradients(i_pyramid);
+		
+		double x, y, s;
 
-		// Compute an orientation for each feature point
-		for (int i = 0; i < i_buckit._buckit.length; i++)
-		{
-			if(i_buckit._buckit[i].first==0){
-				continue;
+		// Down sample the point to the detected octave
+		bilinear_downsample_point(tmp, dfp.x, dfp.y,dfp.sigma,dfp.octave);
+		x = tmp[0];
+		y = tmp[1];
+		s = tmp[2];
+
+		// Downsampling the point can cause (x,y) to leave the image bounds
+		// by
+		// a tiny amount. Here we just clip it to be within the image
+		// bounds.
+		x = ClipScalar(x, 0, i_pyramid.get(dfp.octave, 0).getWidth() - 1);
+		y = ClipScalar(y, 0, i_pyramid.get(dfp.octave, 0).getHeight() - 1);
+
+		// Compute dominant orientations
+		int num_angles=mOrientationAssignment.compute(dfp.octave, dfp.scale, x, y,s,this.mOrientations);
+		// Create a feature point for each angle
+		for (int j = 0; j < num_angles; j++) {
+			// Copy the feature point
+			DogFeaturePoint fp = i_ot_fps.prePush();
+			if(fp==null){
+				prepush_warning();
+				break;
 			}
-			DogFeaturePoint dfp=in_fps.getItem(i_buckit._buckit[i].second);
-			
-			double x, y, s;
-
-			// Down sample the point to the detected octave
-			bilinear_downsample_point(tmp, dfp.x, dfp.y,dfp.sigma,dfp.octave);
-			x = tmp[0];
-			y = tmp[1];
-			s = tmp[2];
-
-			// Downsampling the point can cause (x,y) to leave the image bounds
-			// by
-			// a tiny amount. Here we just clip it to be within the image
-			// bounds.
-			x = ClipScalar(x, 0, i_pyramid.get(dfp.octave, 0).getWidth() - 1);
-			y = ClipScalar(y, 0, i_pyramid.get(dfp.octave, 0).getHeight() - 1);
-
-			// Compute dominant orientations
-			int num_angles=mOrientationAssignment.compute(dfp.octave, dfp.scale, x, y,s,this.mOrientations);
-			// Create a feature point for each angle
-			for (int j = 0; j < num_angles; j++) {
-				// Copy the feature point
-				DogFeaturePoint fp = i_ot_fps.prePush();
-				if(fp==null){
-					prepush_warning();
-					break;
-				}
-				fp.x = dfp.x;
-				fp.y = dfp.y;
-				fp.octave = dfp.octave;
-				fp.scale = dfp.scale;
-				fp.sp_scale = dfp.sp_scale;
-				fp.score = dfp.score;
-				fp.sigma = dfp.sigma;
-				fp.edge_score = dfp.edge_score;				
-				fp.angle=mOrientations[j];
-			}
+			fp.x = dfp.x;
+			fp.y = dfp.y;
+			fp.octave = dfp.octave;
+			fp.scale = dfp.scale;
+			fp.sp_scale = dfp.sp_scale;
+			fp.score = dfp.score;
+			fp.sigma = dfp.sigma;
+			fp.edge_score = dfp.edge_score;				
+			fp.angle=mOrientations[j];
 		}
 		return;
 
-	}
+	}	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	// private boolean ComputeSubpixelHessian(
 	// float H[9],float b[3],
