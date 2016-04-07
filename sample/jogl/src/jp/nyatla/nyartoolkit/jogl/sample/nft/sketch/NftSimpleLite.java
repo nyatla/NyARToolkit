@@ -40,8 +40,7 @@ import jp.nyatla.nyartoolkit.jogl.utils.*;
 import jp.nyatla.nyartoolkit.markersystem.NyARSensor;
 import jp.nyatla.nyartoolkit.nftsystem.NyARNftSystemConfig;
 /**
- * JMFからの映像入力からマーカ1種を検出し、そこに立方体を重ねます。
- * ARマーカには、patt.hiroを使用して下さい。
+ * NFTマーカを使うSimpleLiteです。
  */
 public class NftSimpleLite extends GlSketch
 {

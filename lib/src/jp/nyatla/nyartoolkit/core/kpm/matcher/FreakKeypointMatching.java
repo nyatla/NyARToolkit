@@ -44,7 +44,7 @@ public class FreakKeypointMatching {
 
 	final private static double kLaplacianThreshold = 3;
 	final private static double kEdgeThreshold = 4;
-	final private static int kMaxNumFeatures = 300;
+	final private static int kMaxNumFeatures = 300;//オリジナルでは500だけど・・・
 	final private static int kMinCoarseSize = 8;
 
 	final private DogFeaturePointStack _dog_feature_points = new DogFeaturePointStack(kMaxNumFeatures);
@@ -89,8 +89,8 @@ public class FreakKeypointMatching {
 
 		//
 
-		this._tmp_pair_stack[0]=new FeaturePairStack(300);
-		this._tmp_pair_stack[1]=new FeaturePairStack(300);
+		this._tmp_pair_stack[0]=new FeaturePairStack(kMaxNumFeatures);
+		this._tmp_pair_stack[1]=new FeaturePairStack(kMaxNumFeatures);
 		this._find_inliner=new FindInliers_O1(kHomographyInlierThreshold);		
 		double dx = size.w + (size.w * 0.2f);
 		double dy = size.h + (size.h * 0.2f);
@@ -133,7 +133,7 @@ public class FreakKeypointMatching {
 	 */
 	public boolean kpmMatching(KeyframeMap i_keymap,NyARDoubleMatrix44 i_transmat)
 	{
-		FeaturePairStack result=new FeaturePairStack(100);	
+		FeaturePairStack result=new FeaturePairStack(kMaxNumFeatures);	
 		if(!this.query(this.mQueryKeyframe,i_keymap,result)){
 			return false;
 		}

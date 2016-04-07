@@ -52,7 +52,7 @@ public class FreakKeyPointTest extends AwtSketch{
 		INyARGrayscaleRaster gs=NyARGrayscaleRaster.createInstance(W,H);
 		//試験画像の準備
 		
-		NyARBufferedImageRaster rgb=NyARBufferedImageRaster.createFromFile("d:\\sample.jpg");
+		NyARBufferedImageRaster rgb=NyARBufferedImageRaster.loadFromFile("d:\\sample.jpg");
 		INyARRgb2GsFilterRgbAve filter=(INyARRgb2GsFilterRgbAve) rgb.createInterface(INyARRgb2GsFilterRgbAve.class);
 		filter.convert(gs);				
 		
