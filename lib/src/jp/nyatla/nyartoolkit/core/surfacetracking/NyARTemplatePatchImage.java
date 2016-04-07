@@ -109,7 +109,7 @@ public class NyARTemplatePatchImage
 				    if( ix < 0 || ix >= i_source.width || iy < 0 || iy >= i_source.height ){
 				    	img[img1_ptr] = AR2_TEMPLATE_NULL_PIXEL;
 				    }else{
-					    int ret = img[img1_ptr] =0xff & i_source.img[iy*i_source.width+ix];
+					    int ret = img[img1_ptr] =i_source.img[iy*i_source.width+ix];
 						sum2+=ret*ret;
 						sum+=ret;
 						k++;

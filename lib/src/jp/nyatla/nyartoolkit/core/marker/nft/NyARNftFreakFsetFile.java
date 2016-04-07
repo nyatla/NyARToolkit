@@ -45,7 +45,8 @@ public class NyARNftFreakFsetFile {
 
 	public static class RefDataSet {
 		final public NyARDoublePoint2d coord2D = new NyARDoublePoint2d();
-		final public NyARDoublePoint2d coord3D = new NyARDoublePoint2d(); // millimetres.
+		/** in millimeters*/
+		final public NyARDoublePoint2d coord3D = new NyARDoublePoint2d();
 		final public FreakFeature featureVec = new FreakFeature();
 		public int pageNo;
 		public int refImageNo;

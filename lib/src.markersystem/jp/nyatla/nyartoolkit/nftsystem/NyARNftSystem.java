@@ -28,7 +28,7 @@ public class NyARNftSystem extends NyARSingleCameraSystem{
 	protected NyARNftSystem(INyARNftSystemConfig i_config) {
 		super(i_config.getNyARParam());
 		this._kpm_thread=new KpmThread(i_config.getNyARParam(),this._nftdatalist);
-		this._surface_tracker=new NyARSurfaceTracker(i_config.getNyARParam(),16);
+		this._surface_tracker=new NyARSurfaceTracker(i_config.getNyARParam(),16,0.5);
 		this._sftrackingutils=new NyARSurfaceTrackingTransmatUtils(i_config.getNyARParam(),5.0);
 		this._kpm_thread.start();
 	}

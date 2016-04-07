@@ -92,6 +92,10 @@ public class NyARBufferType
     /**　byte[]のYUV420形式
      */
     public static final int BYTE1D_YUV420SP = T_BYTE1D|0x0301;
+
+    /** byte[]のGrayscale8bit*/
+	public static final int BYTE1D_GRAY_8 = T_BYTE1D|0x0401;
+
     
 	/**　RGB形式。short[1]で、RGB565の16ビット(little endian)の画素形式。
 	 */	

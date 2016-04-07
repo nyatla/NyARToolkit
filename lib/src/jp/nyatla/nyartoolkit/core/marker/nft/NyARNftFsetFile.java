@@ -5,6 +5,11 @@ package jp.nyatla.nyartoolkit.core.marker.nft;
 
 import java.io.File;
 import java.io.InputStream;
+
+import jp.nyatla.nyartoolkit.core.marker.nft.fset.FsetFileDataParserV4;
+import jp.nyatla.nyartoolkit.core.marker.nft.fset.NyARSurfaceFeatureMap;
+import jp.nyatla.nyartoolkit.core.surfacetracking.NyARSurfaceTracker;
+import jp.nyatla.nyartoolkit.core.surfacetracking.NyARTemplatePatchImage;
 import jp.nyatla.nyartoolkit.j2se.BinaryReader;
 
 
@@ -39,7 +44,10 @@ public class NyARNftFsetFile
 	};
 	public static class NyAR2FeaturePoints
 	{
-		
+		public static final int AR2_DEFAULT_GEN_FEATURE_MAP_SEARCH_SIZE1=10;
+		public static final int AR2_DEFAULT_GEN_FEATURE_MAP_SEARCH_SIZE2=2;	
+		public static final double AR2_DEFAULT_MAX_SIM_THRESH2=0.95;
+		public static final double AR2_DEFAULT_SD_THRESH2=0.5;
 		public NyAR2FeatureCoord[] coord;
 		public int               scale;
 		public double            maxdpi;
@@ -51,7 +59,26 @@ public class NyARNftFsetFile
 			this.mindpi=i_mindpi;
 			this.coord=NyAR2FeatureCoord.createArray(i_num_of_coord);
 		}
+		public NyAR2FeaturePoints(NyARNftIsetFile.ReferenceImage i_refimg,int i_occ_size,double i_max_sim_thresh,double i_min_sim_thresh,double i_sd_th,double i_max_dpi,double i_min_dpi,int i_scale)
+		{
+			long s=System.currentTimeMillis();
+			NyARSurfaceFeatureMap fmap=new NyARSurfaceFeatureMap(
+				i_refimg,
+				NyARSurfaceTracker.AR2_DEFAULT_TS1*NyARTemplatePatchImage.AR2_TEMP_SCALE,
+				NyARSurfaceTracker.AR2_DEFAULT_TS2*NyARTemplatePatchImage.AR2_TEMP_SCALE,
+				AR2_DEFAULT_GEN_FEATURE_MAP_SEARCH_SIZE1,AR2_DEFAULT_GEN_FEATURE_MAP_SEARCH_SIZE2,
+				AR2_DEFAULT_MAX_SIM_THRESH2,AR2_DEFAULT_SD_THRESH2);
+			System.out.println(System.currentTimeMillis()-s+"ms");
+			this.coord=fmap.ar2SelectFeature(i_refimg.dpi, AR2_DEFAULT_GEN_FEATURE_MAP_SEARCH_SIZE2, i_occ_size, i_max_sim_thresh, i_min_sim_thresh, i_sd_th);
+
+			this.maxdpi=i_max_dpi;
+			this.mindpi=i_min_dpi;
+			this.scale=i_scale;
+			return;
+		}
 	};
+	final public NyAR2FeaturePoints[] list;
+	
 	public static NyARNftFsetFile loadFromFsetFile(File i_src){
 		return loadFromFsetFile(BinaryReader.toArray(i_src));
 	}
@@ -63,7 +90,6 @@ public class NyARNftFsetFile
 		FsetFileDataParserV4 fsr=new FsetFileDataParserV4(i_src);
 		return new NyARNftFsetFile(fsr.points);
 	}	
-	public NyAR2FeaturePoints[] list;
 	public NyARNftFsetFile(NyAR2FeaturePoints[] i_list)
 	{
 		this.list=i_list;
@@ -77,37 +103,7 @@ public class NyARNftFsetFile
 	
 }
 
-/**
- * ARToolKitV4フォーマットのFSETデータ１セットをパースするクラス
- */
-class FsetFileDataParserV4
-{
-	final public NyARNftFsetFile.NyAR2FeaturePoints[] points;
-	
-	public FsetFileDataParserV4(byte[] i_src)
-	{
-		BinaryReader br=new BinaryReader(i_src,BinaryReader.ENDIAN_LITTLE);
-		int num_of_data=br.getInt();
-		NyARNftFsetFile.NyAR2FeaturePoints[] l=new NyARNftFsetFile.NyAR2FeaturePoints[num_of_data];
 
-		for(int i=0;i<l.length;i++){
-			int scale=br.getInt();
-			double maxdpi=br.getFloat();
-			double mindpi=br.getFloat();
-			int num_of_coord=br.getInt();
-			NyARNftFsetFile.NyAR2FeaturePoints p=new NyARNftFsetFile.NyAR2FeaturePoints(num_of_coord,scale,maxdpi,mindpi);
-			for(int i2=0;i2<num_of_coord;i2++){
-				p.coord[i2].x=br.getInt();
-				p.coord[i2].y=br.getInt();
-				p.coord[i2].mx=br.getFloat();
-				p.coord[i2].my=br.getFloat();
-				p.coord[i2].maxSim=br.getFloat();
-			}
-			l[i]=p;
-		}
-		this.points=l;
-	}
-}
 
 
 

@@ -14,14 +14,6 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 public interface INyARTemplateMatchingDriver
 {
 	/**
-	 * 検索ウインドウの範囲を指定する。
-	 * 検索ウインドウは(i_px*2+1)*(i_py*2+1)サイズの矩形。
-	 * @param i_px
-	 * @param i_py
-	 */
-	public void setSearchArea(int i_x,int i_y);
-
-	/**
 	 * N個の基準点から、最もテンプレートに一致した座標を返却する。
 	 * 検索範囲は、{@link #setSearchArea}で与えたpx,pyを元に定義した矩形。
 	 * i_pointsそれぞれについて検索する。

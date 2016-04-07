@@ -2,6 +2,7 @@ package jp.nyatla.nyartoolkit.core.surfacetracking.rasterdriver;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.surfacetracking.NyARSurfaceTracker;
 import jp.nyatla.nyartoolkit.core.surfacetracking.NyARTemplatePatchImage;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
@@ -16,16 +17,23 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
  */
 public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDriver
 {
-	final private static int AR2_DEFAULT_SEARCH_SIZE = 25;
+	
 	final private INyARGrayscaleRaster _i_ref_raster;
 	final private byte[] _mbuf;
-	public NyARTemplateMatchingDriver_INT1D(INyARGrayscaleRaster i_ref_raster)
+	/**
+	 * 検索ウインドウは(i_px*2+1)*(i_py*2+1)サイズの矩形。
+	 * @param i_ref_raster
+	 * @param i_search_x
+	 * 検索ウインドウの範囲を指定する。
+	 * @param i_search_y
+	 */
+	public NyARTemplateMatchingDriver_INT1D(INyARGrayscaleRaster i_ref_raster,int i_search_x,int i_search_y)
 	{
 		assert(i_ref_raster.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
 		this._i_ref_raster = i_ref_raster;
 		this._mbuf=new byte[i_ref_raster.getWidth()*i_ref_raster.getHeight()];
-		this._search_area.x=AR2_DEFAULT_SEARCH_SIZE;
-		this._search_area.y=AR2_DEFAULT_SEARCH_SIZE;		
+		this._search_area.x=i_search_x;
+		this._search_area.y=i_search_y;		
 	}
 	public final static int SKIP_INTERVAL = 3;
 	public final static int KEEP_NUM = 3;
@@ -52,16 +60,8 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 		}		
 	}
 	final private NyARIntPoint2d _search_area=new NyARIntPoint2d();
-	/**
-	 * 検索ウインドウの範囲を指定する。
-	 * @param i_px
-	 * @param i_py
-	 */
-	public void setSearchArea(int i_x,int i_y)
-	{
-		this._search_area.x=i_x;
-		this._search_area.y=i_y;
-	}
+
+
 	/**
 	 * n個の候補点ログを取るクラス。
 	 * ARToolkitのupdateCandidate関数由来。

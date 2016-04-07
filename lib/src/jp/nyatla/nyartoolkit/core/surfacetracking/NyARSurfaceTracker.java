@@ -89,11 +89,11 @@ public class NyARSurfaceTracker
 			return 1;
 		}
 	}
-	
+	public final static int AR2_DEFAULT_SEARCH_SIZE = 25;	
 	public final static int AR2_DEFAULT_SEARCH_FEATURE_NUM = 10;
-	private final static int AR2_DEFAULT_TS1 = 6;
-	private final static int AR2_DEFAULT_TS2 = 6;
-	private final static double AR2_DEFAULT_SIM_THRESH = 0.5;
+	public final static int AR2_DEFAULT_TS1 = 11;
+	public final static int AR2_DEFAULT_TS2 = 11;
+	public final static double AR2_DEFAULT_SIM_THRESH = 0.6;
 
 	private NyARParam _ref_cparam;
 	private double simThresh;
@@ -101,7 +101,7 @@ public class NyARSurfaceTracker
 	private NyARSurfaceFeatures _candidate2;
 	private INyARVisibleFeatureExtractor _feature_selector;
 	private int searchFeatureNum;
-	public NyARSurfaceTracker(NyARParam i_param_ref,int i_max_search_feature_num)
+	public NyARSurfaceTracker(NyARParam i_param_ref,int i_max_search_feature_num,double i_sim_thresh)
 	{
 		this._candidate = new NyARSurfaceFeatures(NyARSurfaceFeatures.AR2_TRACKING_CANDIDATE_MAX + 1);
 		this._candidate2 = new NyARSurfaceFeatures(NyARSurfaceFeatures.AR2_TRACKING_CANDIDATE_MAX + 1);
@@ -110,7 +110,7 @@ public class NyARSurfaceTracker
 
 		this._ref_cparam = i_param_ref;
 		this.searchFeatureNum = i_max_search_feature_num;
-		this.simThresh = AR2_DEFAULT_SIM_THRESH;
+		this.simThresh = i_sim_thresh;
 
 		this._ctrans_log =new NyARSurfaceTransMatrixSetFifo(3);
 		this._prev_selected_features=new NyARFeatureCoordPtrList(this.searchFeatureNum);
@@ -131,7 +131,7 @@ public class NyARSurfaceTracker
 	}
 
 	private final static double AR2_DEFALUT_TRACKING_SD_THRESH = 5.0;
-	private NyARTemplatePatchImage __template_patch=new NyARTemplatePatchImage(AR2_DEFAULT_TS1,AR2_DEFAULT_TS2); 
+	private NyARTemplatePatchImage __template_patch=new NyARTemplatePatchImage(6,6); 
 	private NyARSurfaceFeatureIndexSelector __index_selecter=new NyARSurfaceFeatureIndexSelector();
 	private NyARSurfaceFeaturesPtr __selected_features;
 	private NyARSurfaceTransMatrixSetFifo _ctrans_log;
@@ -165,8 +165,7 @@ public class NyARSurfaceTracker
 		//テンプレートドライバの更新
 		INyARTemplateMatchingDriver tmd;
 		if(this._last_raster!=i_raster){
-			tmd=this._last_driver=new NyARTemplateMatchingDriver_INT1D(i_raster);
-			tmd.setSearchArea(12,12);//外から設定できるべきでは
+			tmd=this._last_driver=new NyARTemplateMatchingDriver_INT1D(i_raster,12,12);
 			this._last_raster=i_raster;
 		}else{
 			tmd=this._last_driver;
@@ -280,7 +279,7 @@ public class NyARSurfaceTracker
 			}
 			NyARNftFsetFile fset=NyARNftFsetFile.loadFromFsetFile(new FileInputStream(fsetfile));
 			NyARNftIsetFile iset=NyARNftIsetFile.loadFromIsetFile(new FileInputStream(isetfile));
-			NyARSurfaceTracker st=new NyARSurfaceTracker(param,16);
+			NyARSurfaceTracker st=new NyARSurfaceTracker(param,16,0.5);
 			NyARSurfaceDataSet sd=new NyARSurfaceDataSet(iset,fset);
 			NyARDoubleMatrix44 sret=new NyARDoubleMatrix44();
 			NyARDoublePoint2d[] o_pos2d=NyARDoublePoint2d.createArray(16);
