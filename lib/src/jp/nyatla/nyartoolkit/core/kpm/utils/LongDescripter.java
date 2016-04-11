@@ -27,6 +27,20 @@ public class LongDescripter
 		}
 		return;
 	}
+	public byte[] getValueLe(byte[] i_bytes){
+		for(int i=0;i<this._desc.length;i++){
+			long l=this._desc[i];
+			i_bytes[i*8+0]=(byte)((0xffL&(l>> 0)));
+			i_bytes[i*8+1]=(byte)((0xffL&(l>> 8)));
+			i_bytes[i*8+2]=(byte)((0xffL&(l>>16)));
+			i_bytes[i*8+3]=(byte)((0xffL&(l>>24)));
+			i_bytes[i*8+4]=(byte)((0xffL&(l>>32)));
+			i_bytes[i*8+5]=(byte)((0xffL&(l>>40)));
+			i_bytes[i*8+6]=(byte)((0xffL&(l>>48)));
+			i_bytes[i*8+7]=(byte)((0xffL&(l>>56)));
+		}
+		return i_bytes;
+	}	
 	public void setValue(LongDescripter i_src) {
 		assert i_src.bits==this.bits;
 		System.arraycopy(i_src._desc,0,this._desc,0,this._desc.length);

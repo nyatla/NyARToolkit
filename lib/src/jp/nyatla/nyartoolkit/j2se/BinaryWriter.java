@@ -80,9 +80,13 @@ public class BinaryWriter
 	 * 内容をbyte配列にして返します。
 	 * @return
 	 */
-	public byte[] getBynary()
+	public byte[] getBinary()
 	{
-		byte[] r=this._bb.array();
+		int p=this._bb.position();
+		this._bb.position(0);
+		byte[] r=new byte[p];
+		this._bb.get(r);
+		this._bb.position(p);
 		return r;
 	}
 

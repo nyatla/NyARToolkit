@@ -3,7 +3,9 @@ package jp.nyatla.nyartoolkit.core.marker.nft.iset;
 import java.io.IOException;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
+import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftIsetFile;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+import jp.nyatla.nyartoolkit.j2se.ArrayUtils;
 import jp.nyatla.nyartoolkit.j2se.BinaryReader;
 import jp.nyatla.nyartoolkit.j2se.BinaryWriter;
 import jp.nyatla.nyartoolkit.j2se.JpegIO;
@@ -28,7 +30,17 @@ public class IsetFileDataParserV5
 	/** サブ画像のdpiセット*/
 	final public float[] sub_dpis;
 
-	
+	public IsetFileDataParserV5(NyARNftIsetFile.ReferenceImage i_src_img,float[] i_sub_dpis)
+	{
+		this.image=ArrayUtils.toByteArray_impl(i_src_img.img);
+		this.image_dpi_x=(float) i_src_img.dpi;
+		this.image_dpi_y=(float)i_src_img.dpi;
+		this.image_size=new NyARIntSize(i_src_img.width,i_src_img.height);
+		this.image_unit=1;
+		this.sub_dpis=i_sub_dpis;
+		this.num_of_iset=i_sub_dpis.length+1;
+		return;
+	}
 	/**
 	 * @param i_src
 	 * isetファイルイメージを格納したbyte配列
@@ -64,18 +76,18 @@ public class IsetFileDataParserV5
 	 * @param i_sub_dpis
 	 * @return
 	 */
-	public byte[] makeFileImage(float[] i_sub_dpis)
+	public byte[] makeBinary()
 	{
 		try {
 			//初期メモリは2MB
 			BinaryWriter bw=new BinaryWriter(BinaryReader.ENDIAN_LITTLE,2*1024*1024);
 			//dpiセット+1
-			bw.putInt(i_sub_dpis.length+1);
+			bw.putInt(this.sub_dpis.length+1);
 			//jpgイメージ
 			bw.putByteArray(JpegIO.encode(this.image_size.w,this.image_size.h,(int)this.image_dpi_x,(int)this.image_dpi_y,this.image_unit,this.image,0.8f));
 			//サブdpi
-			bw.putFloatArray(i_sub_dpis);
-			return bw.getBynary();
+			bw.putFloatArray(this.sub_dpis);
+			return bw.getBinary();
 		} catch (IOException e) {
 			throw new NyARRuntimeException(e);
 		}

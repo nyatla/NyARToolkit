@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.InputStream;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
-import jp.nyatla.nyartoolkit.core.marker.nft.fset.TemplateSourceRaster;
 import jp.nyatla.nyartoolkit.core.marker.nft.iset.IsetFileDataParserV4;
 import jp.nyatla.nyartoolkit.core.marker.nft.iset.IsetFileDataParserV5;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
@@ -71,12 +70,86 @@ public class NyARNftIsetFile
 		default:
 			throw new NyARRuntimeException();
 		}
+	}
+	/**
+	 * Grayscale画像からisetファイルイメージを生成します。
+	 * @param i_raster
+	 * @param srcdpi
+	 * @param dpis
+	 * @return
+	 */
+	public static NyARNftIsetFile genImageSet(INyARGrayscaleRaster i_raster,double srcdpi,double[] dpis)
+	{		
+		NyARNftIsetFile.ReferenceImage[] rlist=new NyARNftIsetFile.ReferenceImage[dpis.length];
+		rlist[0]=new NyARNftIsetFile.ReferenceImage(i_raster,srcdpi,srcdpi);
+		for(int i=1;i<dpis.length;i++){
+			rlist[i]=new NyARNftIsetFile.ReferenceImage(i_raster,srcdpi,dpis[i]);
+		}
+		return new NyARNftIsetFile(rlist);
 	}	
+	public static NyARNftIsetFile genImageSet(INyARGrayscaleRaster i_raster,double srcdpi)
+	{	
+		double[] dpis=makeDpiList(i_raster.getWidth(),i_raster.getHeight(),srcdpi);
+		return genImageSet(i_raster, srcdpi, dpis);
+	}
+	// Reads dpiMinAllowable, xsize, ysize, dpi, background, dpiMin, dpiMax.
+	// Sets dpiMin, dpiMax, dpi_num, dpi_list.
+	private static double[] makeDpiList(double dpiMin, double dpiMax)
+	{
+		int dpi_num = 1;
+		// Decide how many levels we need.
+		if (dpiMin == dpiMax) {
+			// nothing to do
+		} else {
+			double dpiWork = dpiMin;
+			int i;
+			for (i=1;;i++) {
+				dpiWork *= Math.pow(2.0f, 1.0f / 3.0f); // *= 1.25992104989487
+				if (dpiWork >= dpiMax * 0.95f) {
+					break;
+				}
+			}
+			dpi_num=i+1;
+		}
+		double[] dpi_list = new double[dpi_num];
+		// Determine the DPI values of each level.
+		double dpiWork = dpiMin;
+		for (int i = 0; i < dpi_num; i++) {
+			dpi_list[dpi_num - i - 1] = dpiWork; // Lowest value goes at tail of array, highest at head.
+			dpiWork *= Math.pow(2.0f, 1.0f / 3.0f);
+			if (dpiWork >= dpiMax * 0.95f)
+				dpiWork = dpiMax;
+		}
+		return dpi_list;
+	}
+	private static double[] makeDpiList(int xsize, int ysize, double dpi)
+	{
+		// Determine minimum allowable DPI, truncated to 3 decimal places.
+		double dpiMinAllowable = Math.floor(((double) KPM_MINIMUM_IMAGE_SIZE / Math.min(xsize, ysize)) * dpi * 1000.0) / 1000.0f;
+		return makeDpiList(dpiMinAllowable, dpi);
+	}
+	
 	public NyARNftIsetFile(ReferenceImage[] i_items)
 	{
 		this.items=i_items;
 	}
-	public ReferenceImage[] items;
+	
+	final public ReferenceImage[] items;	
+	final public static int KPM_MINIMUM_IMAGE_SIZE = 28;
+
+	/**
+	 * 現在のファイルイメージをbyte[]で返却します。
+	 * @return
+	 */
+	public byte[] makeIsetBinary()
+	{
+		float[] dpis=new float[this.items.length-1];
+		for(int i=0;i<dpis.length;i++){
+			dpis[i]=(float) this.items[i+1].dpi;
+		}
+		IsetFileDataParserV5 ifp=new IsetFileDataParserV5(this.items[0],dpis);
+		return ifp.makeBinary();
+	}
 	
 	/**
 	 * ワーク関数
@@ -173,8 +246,9 @@ public class NyARNftIsetFile
 //			}
 //			System.out.println(f.items[i].dpi+","+f.items[i].width+","+f.items[i].height+","+Long.toString(sum));
 //		}
-		
-		IsetFileDataParserV5 iset= new IsetFileDataParserV5(BinaryReader.toArray(new File("../Data/pinball.iset5")));
+//		NyARNftIsetFile f1=loadFromIsetFile(new File("../Data/pinball.iset5"));
+//		NyARNftIsetFile f2=loadFromIsetFile(f1.makeFileImage(),FILE_FORMAT_ARTK_V5);
+
 //		byte[] d=iset.makeFileImage(new float[]{20,40});
 //		IsetFileDataParserV5 iset2= new IsetFileDataParserV5(d);
 		

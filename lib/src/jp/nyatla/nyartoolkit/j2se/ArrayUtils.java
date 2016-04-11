@@ -20,5 +20,14 @@ public class ArrayUtils {
 		}
 		return a;
 	}
+	public static byte[] toByteArray_impl(int[] i_int)
+	{
+		byte[] a=new byte[i_int.length];
+		for(int i=0;i<a.length;i++){
+			a[i]=(byte)(i_int[i] &0xff);
+		}
+		return a;
+	}
+	
 	
 }
