@@ -48,11 +48,11 @@ public class FreakKeyPointTest extends AwtSketch{
 
 	@Override
 	public void setup(Frame i_frame, Canvas i_canvas) throws Exception {
-		int H=480,W=640;
+		int H=726,W=1024;
 		INyARGrayscaleRaster gs=NyARGrayscaleRaster.createInstance(W,H);
 		//試験画像の準備
 		
-		NyARBufferedImageRaster rgb=NyARBufferedImageRaster.loadFromFile("d:\\sample.jpg");
+		NyARBufferedImageRaster rgb=NyARBufferedImageRaster.loadFromFile("d:\\IMG_0232.jpg");
 		INyARRgb2GsFilterRgbAve filter=(INyARRgb2GsFilterRgbAve) rgb.createInterface(INyARRgb2GsFilterRgbAve.class);
 		filter.convert(gs);				
 		
