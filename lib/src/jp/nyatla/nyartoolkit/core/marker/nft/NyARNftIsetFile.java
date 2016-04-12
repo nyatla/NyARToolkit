@@ -237,18 +237,18 @@ public class NyARNftIsetFile
 	
 
 	public static void main(String[] args){
-//		NyARNftIsetFile f=NyARNftIsetFile.loadFromIsetFile(new File("../Data/pinball.iset5"));
-//		for(int i=0;i<f.items.length;i++){
-//			int s=f.items[i].width*f.items[i].height;
-//			long sum=0;
-//			for(int i2=0;i2<s;i2++){
-//				sum+=(f.items[i].img[i2] & 0xff);
-//			}
-//			System.out.println(f.items[i].dpi+","+f.items[i].width+","+f.items[i].height+","+Long.toString(sum));
-//		}
-//		NyARNftIsetFile f1=loadFromIsetFile(new File("../Data/pinball.iset5"));
+		NyARNftIsetFile f=NyARNftIsetFile.loadFromIsetFile(new File("../Data/pinball.iset5"));
+		for(int i=0;i<f.items.length;i++){
+			int s=f.items[i].width*f.items[i].height;
+			long sum=0;
+			for(int i2=0;i2<s;i2++){
+				sum+=(f.items[i].img[i2] & 0xff);
+			}
+			System.out.println(f.items[i].dpi+","+f.items[i].width+","+f.items[i].height+","+Long.toString(sum));
+		}
+		NyARNftIsetFile f1=loadFromIsetFile(new File("../Data/pinball.iset5"));
 //		NyARNftIsetFile f2=loadFromIsetFile(f1.makeFileImage(),FILE_FORMAT_ARTK_V5);
-
+//
 //		byte[] d=iset.makeFileImage(new float[]{20,40});
 //		IsetFileDataParserV5 iset2= new IsetFileDataParserV5(d);
 		

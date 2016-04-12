@@ -14,7 +14,6 @@ import jp.nyatla.nyartoolkit.core.kpm.freak.FREAKExtractor;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePoint;
 import jp.nyatla.nyartoolkit.core.kpm.freak.FreakFeaturePointStack;
 import jp.nyatla.nyartoolkit.core.kpm.pyramid.BinomialPyramid32f;
-import jp.nyatla.nyartoolkit.core.marker.nft.fset.FsetFileDataParserV4;
 import jp.nyatla.nyartoolkit.core.raster.gs.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;

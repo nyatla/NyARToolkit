@@ -1,12 +1,10 @@
 package jp.nyatla.nyartoolkit.core.marker.nft.fset;
 
-import java.io.IOException;
 
-import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftFsetFile;
 import jp.nyatla.nyartoolkit.j2se.BinaryReader;
 import jp.nyatla.nyartoolkit.j2se.BinaryWriter;
-import jp.nyatla.nyartoolkit.j2se.JpegIO;
+
 
 /**
  * ARToolKitV4フォーマットのFSETデータ１セットをパースするクラス

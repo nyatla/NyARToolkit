@@ -17,8 +17,9 @@ public class NyARSurfaceFeatureMap {
 	 * @param max_sim_thresh
 	 * @param sd_thresh
 	 * @return
+	 * @throws InterruptedException 
 	 */
-	public NyARSurfaceFeatureMap(NyARNftIsetFile.ReferenceImage i_refimage,int ts1, int ts2,int search_size1,int search_size2,double  max_sim_thresh, double  sd_thresh )
+	public NyARSurfaceFeatureMap(NyARNftIsetFile.ReferenceImage i_refimage,int ts1, int ts2,int search_size1,int search_size2,double  max_sim_thresh, double  sd_thresh ) throws InterruptedException
 	{
 		int w=i_refimage.width;
 		int h=i_refimage.height;
@@ -94,6 +95,10 @@ public class NyARSurfaceFeatureMap {
 		}
 		TemplateImage_O1 ti=this._tmpimg;
 		for(int j = 1; j < h-1; j++ ) {
+			//長時間かかるループなので割り込み監視はブレーク可能。
+			if(Thread.interrupted()){
+				throw new InterruptedException();
+			}
 			fimg[fp++] = 1.0f;
 			fp2++;
 			for(int i = 1; i < w-1; i++ ) {
@@ -155,9 +160,10 @@ public class NyARSurfaceFeatureMap {
 	 * @param min_sim_thresh
 	 * @param sd_thresh
 	 * @return
+	 * @throws InterruptedException 
 	 * @throws NyARException
 	 */
-	public NyARNftFsetFile.NyAR2FeatureCoord[] ar2SelectFeature(double i_dpi, int search_size2, int i_occ_size,double max_sim_thresh, double  min_sim_thresh, double sd_thresh)
+	public NyARNftFsetFile.NyAR2FeatureCoord[] ar2SelectFeature(double i_dpi, int search_size2, int i_occ_size,double max_sim_thresh, double  min_sim_thresh, double sd_thresh) throws InterruptedException
 	{
 
 		i_occ_size*=2;
@@ -176,7 +182,11 @@ public class NyARSurfaceFeatureMap {
 		NyARNftFsetFile.NyAR2FeatureCoord[] ret=NyARNftFsetFile.NyAR2FeatureCoord.createArray((xsize/i_occ_size)*(ysize/i_occ_size) + xdiv*ydiv);
 		int num_of_ret=0;
 
-		for(;;){		
+		for(;;){
+			//長時間かかるループなので割り込み監視はブレーク可能。
+			if(Thread.interrupted()){
+				throw new InterruptedException();
+			}			
 			double min_sim = max_sim_thresh;
 			int fp2 = 0;
 			int cx=-1;

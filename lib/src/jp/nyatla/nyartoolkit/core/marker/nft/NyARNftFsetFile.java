@@ -13,7 +13,6 @@ import java.io.InputStream;
 
 import jp.nyatla.nyartoolkit.core.marker.nft.fset.FsetFileDataParserV4;
 import jp.nyatla.nyartoolkit.core.marker.nft.fset.NyARSurfaceFeatureMap;
-import jp.nyatla.nyartoolkit.core.marker.nft.iset.IsetFileDataParserV5;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.gs.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
@@ -23,7 +22,6 @@ import jp.nyatla.nyartoolkit.core.surfacetracking.NyARSurfaceTracker;
 import jp.nyatla.nyartoolkit.core.surfacetracking.NyARTemplatePatchImage;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.j2se.BinaryReader;
-import jp.nyatla.nyartoolkit.j2se.BinaryWriter;
 
 
 
@@ -72,16 +70,15 @@ public class NyARNftFsetFile
 			this.mindpi=i_mindpi;
 			this.coord=NyAR2FeatureCoord.createArray(i_num_of_coord);
 		}
-		public NyAR2FeaturePoints(NyARNftIsetFile.ReferenceImage i_refimg,int i_occ_size,double i_max_sim_thresh,double i_min_sim_thresh,double i_sd_th,double i_max_dpi,double i_min_dpi,int i_scale)
+		public NyAR2FeaturePoints(NyARNftIsetFile.ReferenceImage i_refimg,int i_occ_size,double i_max_sim_thresh,double i_min_sim_thresh,double i_sd_th,double i_max_dpi,double i_min_dpi,int i_scale) throws InterruptedException
 		{
-			long s=System.currentTimeMillis();
+
 			NyARSurfaceFeatureMap fmap=new NyARSurfaceFeatureMap(
 				i_refimg,
 				NyARSurfaceTracker.AR2_DEFAULT_TS1*NyARTemplatePatchImage.AR2_TEMP_SCALE,
 				NyARSurfaceTracker.AR2_DEFAULT_TS2*NyARTemplatePatchImage.AR2_TEMP_SCALE,
 				AR2_DEFAULT_GEN_FEATURE_MAP_SEARCH_SIZE1,AR2_DEFAULT_GEN_FEATURE_MAP_SEARCH_SIZE2,
 				AR2_DEFAULT_MAX_SIM_THRESH2,AR2_DEFAULT_SD_THRESH2);
-			System.out.println(System.currentTimeMillis()-s+"ms");
 			this.coord=fmap.ar2SelectFeature(i_refimg.dpi, AR2_DEFAULT_GEN_FEATURE_MAP_SEARCH_SIZE2, i_occ_size, i_max_sim_thresh, i_min_sim_thresh, i_sd_th);
 
 			this.maxdpi=i_max_dpi;
@@ -117,7 +114,7 @@ public class NyARNftFsetFile
 	final public static double AR2_DEFAULT_SD_THRESH_L2=8.0;
 	final public static double AR2_DEFAULT_SD_THRESH_L3=6.0;
 	final private static int AR2_DEFAULT_OCCUPANCY_SIZE=24;	
-	public static NyARNftFsetFile genFeatureSet(NyARNftIsetFile i_iset_file,int i_occupancy_size,double i_max_sim_th,double i_min_sim_th,double i_sd_th)
+	public static NyARNftFsetFile genFeatureSet(NyARNftIsetFile i_iset_file,int i_occupancy_size,double i_max_sim_th,double i_min_sim_th,double i_sd_th) throws InterruptedException
 	{
 		NyARNftIsetFile.ReferenceImage[] items=i_iset_file.items;
 		NyARNftFsetFile.NyAR2FeaturePoints[] points=new NyARNftFsetFile.NyAR2FeaturePoints[items.length];
@@ -144,7 +141,7 @@ public class NyARNftFsetFile
 		}
 		return new NyARNftFsetFile(points);
 	}
-	public static NyARNftFsetFile genFeatureSet(NyARNftIsetFile i_iset_file,int i_level)
+	public static NyARNftFsetFile genFeatureSet(NyARNftIsetFile i_iset_file,int i_level) throws InterruptedException
 	{
 		final int[] occs={
 			AR2_DEFAULT_OCCUPANCY_SIZE,
@@ -161,7 +158,7 @@ public class NyARNftFsetFile
 		};
 		return genFeatureSet(i_iset_file,occs[i_level],data[i_level][2],data[i_level][1],data[i_level][0]);
 	}
-	public static NyARNftFsetFile genFeatureSet(NyARNftIsetFile i_iset_file)
+	public static NyARNftFsetFile genFeatureSet(NyARNftIsetFile i_iset_file) throws InterruptedException
 	{
 		return genFeatureSet(i_iset_file, 2);
 	}	
@@ -208,7 +205,12 @@ public class NyARNftFsetFile
 
 
 		NyARNftIsetFile iset=NyARNftIsetFile.genImageSet(gs,96);		
-		NyARNftFsetFile f3=NyARNftFsetFile.genFeatureSet(iset);
+		try {
+			NyARNftFsetFile f3=NyARNftFsetFile.genFeatureSet(iset);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		
 		NyARNftFsetFile f=NyARNftFsetFile.loadFromFsetFile(new File("../Data/pinball.fset"));
