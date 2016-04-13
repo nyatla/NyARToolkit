@@ -168,7 +168,7 @@ public class NyARNftFreakFsetFile {
 	 * 現在のファイルイメージをbyte[]で返却します。
 	 * @return
 	 */
-	public byte[] makeFsetBinary()
+	public byte[] makeFset3Binary()
 	{
 		BinaryWriter bw=new BinaryWriter(BinaryWriter.ENDIAN_LITTLE,2*1024*1024);
 		bw.putInt(this.ref_point.length);
@@ -202,7 +202,7 @@ public class NyARNftFreakFsetFile {
 	public static void main(String[] args) {
 		try {
 			NyARNftFreakFsetFile f = NyARNftFreakFsetFile.loadFromfset3File(new FileInputStream(new File("../Data/pinball.fset3")));
-			NyARNftFreakFsetFile f2 = NyARNftFreakFsetFile.loadFromfset3File(f.makeFsetBinary());
+			NyARNftFreakFsetFile f2 = NyARNftFreakFsetFile.loadFromfset3File(f.makeFset3Binary());
 			System.out.println(f);
 			return;
 		} catch (FileNotFoundException e) {
