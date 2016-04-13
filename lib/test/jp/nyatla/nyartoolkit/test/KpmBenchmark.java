@@ -1,4 +1,4 @@
-package jp.nyatla.nyartoolkit.core.ar2;
+package jp.nyatla.nyartoolkit.test;
 
 import java.io.File;
 import java.io.FileInputStream;

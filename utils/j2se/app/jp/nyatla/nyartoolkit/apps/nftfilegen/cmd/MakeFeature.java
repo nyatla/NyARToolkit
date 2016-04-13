@@ -19,9 +19,22 @@ import jp.nyatla.nyartoolkit.core.rasterdriver.rgb2gs.INyARRgb2GsFilterRgbAve;
 import jp.nyatla.nyartoolkit.j2se.NyARBufferedImageRaster;
 
 public class MakeFeature {
+	static public class Result
+	{
+		public Result(NyARNftIsetFile i_iset, NyARNftFsetFile i_fset, NyARNftFreakFsetFile i_fset3)
+		{
+			this.iset=i_iset;
+			this.fset3=i_fset3;
+			this.fset=i_fset;
+			// TODO Auto-generated constructor stub
+		}
+		final public NyARNftIsetFile iset;
+		final public NyARNftFsetFile fset;
+		final public NyARNftFreakFsetFile fset3;
+	}
 	public interface LogOvserver{
 		public void onLog(String i_string);
-		public void onFinished();
+		public void onFinished(Result result);
 	}
 	public MakeFeature()
 	{
@@ -57,7 +70,7 @@ public class MakeFeature {
 				((INyARRgb2GsFilterRgbAve)rgb.createInterface(INyARRgb2GsFilterRgbAve.class)).convert(gs);
 	
 				final NyARNftIsetFile iset;
-				if(this.lv==-1){
+				if(this.dpis!=null){
 					iset=NyARNftIsetFile.genImageSet(gs,this.dpi,dpis);
 				}else{
 					iset=NyARNftIsetFile.genImageSet(gs,this.dpi);
@@ -66,8 +79,9 @@ public class MakeFeature {
 	                public void run() {
 	        			_observer.onLog(isetReport(iset));
 	                }});			
-				
-				final NyARNftFsetFile fset=NyARNftFsetFile.genFeatureSet(iset,this.lv);
+				final NyARNftFsetFile fset;
+				fset=NyARNftFsetFile.genFeatureSet(iset,this.lv);
+
 				SwingUtilities.invokeLater(new Runnable() {
 	                public void run() {
 	                	_observer.onLog(fsetReport(fset));
@@ -76,7 +90,7 @@ public class MakeFeature {
 				SwingUtilities.invokeLater(new Runnable() {
 	                public void run() {
 	                	_observer.onLog(fset3Report(fset3));
-	                	_observer.onFinished();
+	                	_observer.onFinished(new MakeFeature.Result(iset,fset,fset3));
 	                }});
 			}catch(InterruptedException e){
 				_observer.onLog("Canceled!");				

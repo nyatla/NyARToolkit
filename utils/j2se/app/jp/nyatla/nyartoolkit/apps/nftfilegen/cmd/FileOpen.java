@@ -20,7 +20,6 @@ public class FileOpen extends Cmd{
 	public File openFile()
 	{
 	    JFileChooser filechooser = new JFileChooser();
-
 	    int selected = filechooser.showOpenDialog(this._parent);
 	    if (selected == JFileChooser.APPROVE_OPTION){
 	    	return filechooser.getSelectedFile();

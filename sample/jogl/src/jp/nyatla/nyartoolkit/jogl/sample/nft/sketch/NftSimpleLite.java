@@ -44,7 +44,7 @@ import jp.nyatla.nyartoolkit.nftsystem.NyARNftSystemConfig;
  */
 public class NftSimpleLite extends GlSketch
 {
-	String nftdataset="../../Data/testcase/pinball";
+	String nftdataset="d:\\yellowcat";
 	String cparam="../../Data/testcase/camera_para5.dat";
 	private Webcam camera;
 	private NyARGlNftSystem nyar;
@@ -75,7 +75,7 @@ public class NftSimpleLite extends GlSketch
 				this.nyar.update(this.sensor);
 				if(this.nyar.isExistTarget(this.id)){
 					this.nyar.loadTransformMatrix(gl,this.id);
-					this.render.colorCube(gl,100,100,60,50);
+					this.render.colorCube(gl,60,50,60,25);
 				}
 				Thread.sleep(1);
 			} catch (Exception e) {

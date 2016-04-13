@@ -41,7 +41,7 @@ public class ProgressDialog extends JDialog {
 		}
 		{
 			JLabel label = new JLabel("");
-			label.setIcon(new ImageIcon(ProgressDialog.class.getResource("/jp/nyatla/nyaetoolkit/apps/nftfilegen/hourglass.gif")));
+			label.setIcon(new ImageIcon(ProgressDialog.class.getResource("/jp/nyatla/nyartoolkit/apps/nftfilegen/hourglass.gif")));
 			contentPanel.add(label, BorderLayout.EAST);
 		}
 
