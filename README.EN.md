@@ -2,7 +2,7 @@
 
 # NyARToolkit for Java
 
-Copyright (C)2008-2012 Ryo Iizuka
+Copyright (C)2008-2016 Ryo Iizuka
 
 http://nyatla.jp/nyartoolkit/  
 airmail(at)ebony.plala.or.jp  
@@ -12,8 +12,8 @@ wm(at)nyatla.jp
 
 ## NyARToolkit for Java
 
-* NyARToolkit is a class library for Augmented Reality (AR) application based on the ARToolkit 2.72.1.
-* Compatible with J2SE5.0 and above.
+* NyARToolkit is a class library for Augmented Reality (AR) application based on the ARToolkit5.2.3.
+* Compatible with J2SE7.0 and above.
 * Composed of basic features of ARToolkit, NyARToolkit's orginal features and framework.
 * Consisting of three modules: an independent "lib" module, an environment-dependent "utils" module, and a "sample" module that can package sample applications.
 * The lib module only work under J2ME API environment.
@@ -27,8 +27,8 @@ http://www.hitl.washington.edu/artoolkit/
 * Support multiple image inputs (BufferedImage, JMF output, binary input, and so on)
 * Enhanced reusability compared to ARToolkit
 * High-speed capabilities are available for following calculation: labeling, posture optimization, image processing, matrix operation, equation resolution
-* Support NyID-style ID marker
-* A MarkerSystem class that makes easy multiple uses of AR/NyID markers.
+* Support AR-Marker/NyID-style ID marker/NFT marker.
+* A MarkerSystem class that makes easy multiple uses of AR/NyID/NFT markers.
 * A simple sketching system for OpenGL
 * API for changing image format to and from BufferedImage.
 * Possible to use PNG image as markers, and to cut out parts of captured image.

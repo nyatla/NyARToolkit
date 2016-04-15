@@ -15,8 +15,8 @@ Translated by Bao-Wen Chen
 ----------------------------------------------------------------------
 
  * NyARToolkit is a class library for Augmented Reality (AR) application 
-   based on the ARToolkit 2.72.1.
- * Compatible with J2SE5.0 and above.
+   based on the ARToolkit 5.2.3.
+ * Compatible with J2SE7.0 and above.
  * Composed of basic features of ARToolkit, NyARToolkit's orginal features 
    and framework.
  * Consisting of three modules: an independent "lib" module, 

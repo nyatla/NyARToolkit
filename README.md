@@ -2,7 +2,7 @@
 
 # NyARToolkit for Java
 
-Copyright (C)2008-2012 Ryo Iizuka
+Copyright (C)2008-2016 Ryo Iizuka
 
 http://nyatla.jp/nyartoolkit/  
 airmail(at)ebony.plala.or.jp  
@@ -12,10 +12,11 @@ wm(at)nyatla.jp
 
 ## NyARToolkit for Java
 
-* NyARToolkitは、ARToolKit 2.72.1を基盤としたARアプリケーション向けのクラスライブラリです。  
+* NyARToolkitは、ARToolKit 5.3.2を基盤としたARアプリケーション向けのクラスライブラリです。  
 ARToolKitについては、下記のURLをご覧ください。   
 http://www.hitl.washington.edu/artoolkit/
-* ネイティブコードを含まない純粋なJava言語のみで実装されています。J2SE5.0以上に対応しています。
+* ネイティブコードを含まない純粋なJava言語のみで実装されています。J2SE7.0以上に対応しています。
+* ARToolKitマーカ、NyIdマーカ、NFTマーカ(ARToolkit5互換)の3種類のターゲットを扱えます。
 * ARToolKitの基本機能と、NyARToolKitオリジナルの拡張機能、フレームワークで構成しています。
 * ライブラリは3部構成です。
  ** lib - コアライブラリを含む基幹部品です。J2MEのAPIのみで動作します。環境依存性がありません。
@@ -33,7 +34,7 @@ URL: http://www.webcam-capture.sarxos.pl/
 2. QuickTime 7.5  
 utils.qtの実行に必要です。
 URL: http://www.apple.com/quicktime/qtjava/
-3. JMF JavaTM Media Framework 2.1.1e　
+3. JMF JavaTM Media Framework 2.1.1e
 utils.jmf,sample.joglの実行に必要です。  
 URL: http://www.oracle.com/technetwork/java/javase/download-142937.html
 4. Jogl(NyARToolKit/4.2.1以降ではリポジトリに含まれています。)  
