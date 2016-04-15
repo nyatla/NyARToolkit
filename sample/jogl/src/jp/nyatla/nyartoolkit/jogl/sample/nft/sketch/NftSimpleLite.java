@@ -44,7 +44,7 @@ import jp.nyatla.nyartoolkit.nftsystem.NyARNftSystemConfig;
  */
 public class NftSimpleLite extends GlSketch
 {
-	String nftdataset="d:\\yellowcat";
+	String nftdataset="d:\\infinitycat";
 	String cparam="../../Data/testcase/camera_para5.dat";
 	private Webcam camera;
 	private NyARGlNftSystem nyar;
@@ -59,12 +59,12 @@ public class NftSimpleLite extends GlSketch
 		this.nyar=new NyARGlNftSystem(config);   //create MarkerSystem
 		this.render=new NyARGlRender(this.nyar);
 		this.sensor=new NyARSensor(config.getScreenSize());
-		this.id=this.nyar.addNftTarget(nftdataset);
+		//
+		this.id=this.nyar.addNftTarget(nftdataset,160);
 		gl.glEnable(GL.GL_DEPTH_TEST);
 		this.camera.open();
 	}
 	private int id;
-	
 	public void draw(GL gl)throws Exception
 	{
 		synchronized(this.camera){
@@ -75,7 +75,7 @@ public class NftSimpleLite extends GlSketch
 				this.nyar.update(this.sensor);
 				if(this.nyar.isExistTarget(this.id)){
 					this.nyar.loadTransformMatrix(gl,this.id);
-					this.render.colorCube(gl,60,50,60,25);
+					this.render.colorCube(gl,40,80,60,20);
 				}
 				Thread.sleep(1);
 			} catch (Exception e) {

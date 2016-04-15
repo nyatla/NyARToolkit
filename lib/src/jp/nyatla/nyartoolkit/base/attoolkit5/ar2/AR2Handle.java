@@ -67,6 +67,7 @@ import jp.nyatla.nyartoolkit.core.raster.gs.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.rasterdriver.rgb2gs.INyARRgb2GsFilterRgbAve;
+import jp.nyatla.nyartoolkit.core.surfacetracking.NyARSurfaceDataSet;
 
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResultParam;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
@@ -239,10 +240,10 @@ public class AR2Handle
     AR2TemplateCandidate usedFeature;
 	//<struct AR2Handle_T>    
     private INyARGrayscaleRaster mfImage;
-    private NyARNftDataSet _surfaceset;
+    private NyARSurfaceDataSet _surfaceset;
     public AR2Handle(NyARParam i_param_ref,NyARNftIsetFile i_iset,NyARNftFsetFile i_fset)
 	{
-    	this._surfaceset=new NyARNftDataSet(i_iset,i_fset);
+    	this._surfaceset=new NyARSurfaceDataSet(i_iset,i_fset);
         candidate=new AR2TemplateCandidate(AR2TemplateCandidate.AR2_TRACKING_CANDIDATE_MAX+1);
         candidate2=new AR2TemplateCandidate(AR2TemplateCandidate.AR2_TRACKING_CANDIDATE_MAX+1);
         usedFeature=new AR2TemplateCandidate(AR2TemplateCandidate.AR2_TRACKING_CANDIDATE_MAX+1);
@@ -335,7 +336,7 @@ public class AR2Handle
 	}    
     
     
-	static int extractVisibleFeatures(ARParamLT cparam,NyARDoubleMatrix44 trans1, NyARNftDataSet surfaceSet,
+	static int extractVisibleFeatures(ARParamLT cparam,NyARDoubleMatrix44 trans1, NyARSurfaceDataSet surfaceSet,
 			  AR2TemplateCandidate candidate,
 			  AR2TemplateCandidate candidate2)
 	{
@@ -758,7 +759,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 		call++;
 		int                     num;
 		int                     i, j, k;
-		NyARNftDataSet surfaceSet=this._surfaceset;
+		NyARSurfaceDataSet surfaceSet=this._surfaceset;
 		double err=0;
 //		*err = 0.0f;
 
@@ -1461,7 +1462,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 
 
 	static int k=0;
-	int ar2Tracking2d (NyARNftDataSet surfaceSet, AR2TemplateCandidate.Item candidate,INyARGrayscaleRaster dataPtr, AR2Tracking2DResultT result )
+	int ar2Tracking2d (NyARSurfaceDataSet surfaceSet, AR2TemplateCandidate.Item candidate,INyARGrayscaleRaster dataPtr, AR2Tracking2DResultT result )
 	{
 		AR2TemplateT         template_;
 		

@@ -198,9 +198,9 @@ public class NyARNftIsetFile
 	}	
 	public static class ReferenceImage
 	{
-		public final double dpi;
-		public final int width;
-		public final int height;
+		public double dpi;
+		public int width;
+		public int height;
 		public final int[] img;
 		public ReferenceImage(int i_w,int i_h,double i_dpi,int[] i_ref_buf)
 		{

@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
-import jp.nyatla.nyartoolkit.core.kpm.keyframe.KeyframeMap;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.FreakKeypointMatching;
 import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftDataSet;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
@@ -23,8 +22,17 @@ import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.markersystem.NyARSensor;
 import jp.nyatla.nyartoolkit.markersystem.NyARSingleCameraSystem;
 
+/**
+ * NFTの自然特徴点マーカの管理クラスです。
+ * ARToolKit version5互換のNFTマーカをトラッキングできます。
+ */
 public class NyARNftSystem extends NyARSingleCameraSystem{
 
+	/**
+	 * コンストラクタです。
+	 * @param i_config
+	 * NFTのコンフィギュレーションオブジェクトを指定します。
+	 */
 	protected NyARNftSystem(INyARNftSystemConfig i_config) {
 		super(i_config.getNyARParam());
 		this._kpm_thread=new KpmThread(i_config.getNyARParam(),this._nftdatalist);
@@ -49,8 +57,7 @@ public class NyARNftSystem extends NyARSingleCameraSystem{
 
 		/** メインスレッド用の出力結果*/
 		public NyARDoubleMatrix44 front_transmat=new NyARDoubleMatrix44();
-
-
+		/** コンストラクタ*/
 		public NftTarget(NyARNftDataSet i_dataset)
 		{
 			this.dataset=i_dataset;
@@ -74,11 +81,10 @@ public class NyARNftSystem extends NyARSingleCameraSystem{
 	final private NyARTransMatResultParam result_param=new NyARTransMatResultParam();
 	
 	/**
-	 * この関数は、入力したセンサ入力値から、インスタンスの状態を更新します。
-	 * 関数は、センサオブジェクトから画像を取得して、マーカ検出、一致判定、トラッキング処理を実行します。
+	 * この関数は、入力した画像でインスタンスの状態を更新します。
+	 * 関数は、入力画像を処理して検出、一致判定、トラッキング処理を実行します。
 	 * @param i_sensor
-	 * {@link MarkerSystem}に入力する画像を含むセンサオブジェクト。
-	 * @throws NyARRuntimeException 
+	 * 画像を含むセンサオブジェクト
 	 */
 	public void update(NyARSensor i_sensor)
 	{
@@ -137,14 +143,35 @@ public class NyARNftSystem extends NyARSingleCameraSystem{
 			}
 		}
 	}
+	/**
+	 * NFTファイルセットのプレフィックスを指定して、NFTターゲットをインスタンスに登録します。
+	 * 登録される画像のサイズはNFTターゲットファイルの値です。
+	 * @param i_fileset_prefix
+	 * NFTターゲットのファイルパスのプレフィクス。ファイル名+.iset,.fset,.fset3をセットにして登録します。
+	 * @return
+	 * 特徴点セットのID値
+	 */
 	public int addNftTarget(String i_fileset_prefix)
 	{
 		return this.addNftTarget(NyARNftDataSet.loadFromNftFiles(i_fileset_prefix));
 	}
-
 	/**
-	 * NFTの特徴点データセットを追加します。
+	 * 画像のサイズを指定できる{@link #addNftTarget}です。
+	 * @param i_fileset_prefix
+	 * {@link #addNftTarget(String)}を参照してください。
+	 * @param i_width_in_msec
+	 * 画像サイズの横幅をmm単位で指定します。立幅は横幅に応じてスケーリングされます。
+	 * @return
+	 * 特徴点セットのID値
+	 */
+	public int addNftTarget(String i_fileset_prefix,double i_width_in_msec)
+	{
+		return this.addNftTarget(NyARNftDataSet.loadFromNftFiles(i_fileset_prefix,i_width_in_msec));
+	}
+	/**
+	 * 生成済みのNFTの特徴点データセットをインスタンスに登録します。
 	 * @param i_dataset
+	 * 登録する特徴点データセット
 	 * @return
 	 * 特徴点セットのID値
 	 */
@@ -163,9 +190,9 @@ public class NyARNftSystem extends NyARSingleCameraSystem{
 	}
 	
 	/**
-	 * この関数は指定NFTターゲットの変換行列を返します。
+	 * NFTターゲットの変換行列を返します。
 	 * @para i_id
-	 * キーマップID（ハンドル）値。
+	 * 特徴点セットのID値。
 	 * @return
 	 * [readonly]
 	 * 姿勢行列を格納したオブジェクト。座標系は、ARToolKit座標系です。
@@ -175,17 +202,22 @@ public class NyARNftSystem extends NyARSingleCameraSystem{
 		NftTarget target=this._nftdatalist.get(i_id);
 		return target.front_transmat;
 	}
+	/**
+	 * 特徴点セットのID値に対応したターゲットを検出しているかを返します。
+	 * @param i_id
+	 * 特徴点セットのID値
+	 * @return
+	 * 
+	 */
 	public boolean isExistTarget(int i_id)
 	{
 		return this._nftdatalist.get(i_id).stage>NftTarget.ST_KPM_FOUND;
 	}	
 	/**
-	 * キーポイントマッチングスレッド
-	 *
+	 * Key point Matching Thread
 	 */
-	class KpmThread extends Thread
+	private class KpmThread extends Thread
 	{
-		public boolean running_flag=false;
 		final private FreakKeypointMatching _attached_matcher;
 		final private NyARNftTargetList _ref_nftdatalist;
 		public KpmThread(NyARParam i_ref_cparam,NyARNftTargetList i_attached_nftdatalist)
@@ -223,10 +255,6 @@ public class NyARNftSystem extends NyARSingleCameraSystem{
 			}
 			return true;
 		}
-		public void addKeyMap(KeyframeMap i_key){
-			synchronized(this._ref_nftdatalist){
-			}
-		}
 		@Override
 		public void run()
 		{
@@ -241,12 +269,10 @@ public class NyARNftSystem extends NyARSingleCameraSystem{
 					for(NftTarget nt : this._ref_nftdatalist){
 						//検出ステージチェック(別スレッドからの更新と衝突した場合は1フレーム無駄になる。)
 						if(nt.stage>NftTarget.ST_KPM_SEARCH){
-//System.out.println("TR:ST_KPM_SEARCH");
 							continue;
 						}
 						//N番目のNFTターゲットのバックグラウンドに書き込み
 						nt.back_has_result=this._attached_matcher.kpmMatching(nt.dataset.freak_fset,nt.back_transmat);
-//System.out.println("TR:ST_KPM_SEARCH2");
 					}
 				}
 			} catch (InterruptedException e) {
@@ -255,6 +281,10 @@ public class NyARNftSystem extends NyARSingleCameraSystem{
 			}
 		}
 	}
+	/**
+	 * ワーカースレッドを終了します。
+	 * メインスレッド終了時に必ず実行してください。
+	 */
 	public void shutdown()
 	{
 		try {

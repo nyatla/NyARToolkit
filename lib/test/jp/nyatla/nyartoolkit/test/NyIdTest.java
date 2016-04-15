@@ -149,8 +149,7 @@ public class NyIdTest
     public void Test() throws Exception
     {
         //AR用カメラパラメタファイルをロード
-        NyARParam ap = NyARParam.createFromARParamFile(new FileInputStream(camera_file));
-        ap.changeScreenSize(320, 240);
+        NyARParam ap = NyARParam.loadFromARParamFile(new FileInputStream(camera_file),320,240);
 
 		// 試験イメージの読み出し(320x240 BGRAのRAWデータ)
 		File f = new File(data_file);

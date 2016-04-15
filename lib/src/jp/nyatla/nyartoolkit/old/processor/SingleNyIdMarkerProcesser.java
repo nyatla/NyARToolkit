@@ -32,7 +32,6 @@ import jp.nyatla.nyartoolkit.core.histogram.algo.NyARHistogramAnalyzer_SlidePTil
 import jp.nyatla.nyartoolkit.core.marker.nyidmarker.*;
 import jp.nyatla.nyartoolkit.core.marker.nyidmarker.data.*;
 import jp.nyatla.nyartoolkit.core.param.*;
-import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.gs.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
@@ -185,7 +184,7 @@ public abstract class SingleNyIdMarkerProcesser
 	private boolean _is_active;
 	private int _current_threshold=110;
 	// [AR]検出結果の保存用
-	private NyARGrayscaleRaster _gs_raster;
+	private INyARGrayscaleRaster _gs_raster;
 	private INyIdMarkerData _data_current;
 	private NyARHistogramAnalyzer_SlidePTile _threshold_detect;
 	private NyARHistogram _hist=new NyARHistogram(256);

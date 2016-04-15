@@ -29,7 +29,7 @@ import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
- * このインタフェイスは、NyARMarkerSystemのコンフィギュレーションオブジェクトに使用します。
+ * このインタフェイスは、NyARNftSystemのコンフィギュレーションオブジェクトに使用します。
  * {@link NyARMarkerSystem}は、このインタフェイスを継承したクラスから、動作に必要なオブジェクトや定数を取得します。
  */
 public interface INyARNftSystemConfig

@@ -38,9 +38,13 @@
 package jp.nyatla.nyartoolkit.core.marker.nft;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.KeyframeMap;
+import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftFsetFile.NyAR2FeatureCoord;
 import jp.nyatla.nyartoolkit.core.surfacetracking.NyARSurfaceDataSet;
 
 
@@ -53,9 +57,34 @@ public class NyARNftDataSet
 {
 	final public NyARSurfaceDataSet surface_dataset;
 	final public KeyframeMap freak_fset;
-	
+	private static void scaling(NyARNftIsetFile i_iset,NyARNftFsetFile i_fset,NyARNftFreakFsetFile i_freak_fset,int i_freak_fset_page_id,double i_width_in_msec)
+	{
+		//比率計算
+		double new_dpi=(i_iset.items[0].width/i_width_in_msec)*25.4;
+		double dpi_rate=(new_dpi/i_iset.items[0].dpi);
+		//isetの更新(dpiを)
+		for(int i=0;i<i_iset.items.length;i++){
+			i_iset.items[i].dpi*=dpi_rate;
+		}
+		//fsetの更新
+		for(int i=0;i<i_fset.list.length;i++){
+			i_fset.list[i].maxdpi*=dpi_rate;
+			i_fset.list[i].mindpi*=dpi_rate;
+			//ピクセル値に戻す係数		
+			for(NyAR2FeatureCoord j:i_fset.list[i].coord){
+				j.mx=j.mx/dpi_rate;
+				j.my=j.my/dpi_rate;
+			}
+		}
+		//fset3の更新
+		for(int i=0;i<i_freak_fset.ref_point.length;i++){
+			i_freak_fset.ref_point[i].coord3D.x/=dpi_rate;
+			i_freak_fset.ref_point[i].coord3D.y/=dpi_rate;
+		}
+	}	
 	/**
-	 * 
+	 * コンストラクタです。
+	 * ファイルイメージからデータセットを生成します。
 	 * @param i_iset
 	 * @param i_fset
 	 * @param i_freak_fset
@@ -66,21 +95,28 @@ public class NyARNftDataSet
 		this.surface_dataset=new NyARSurfaceDataSet(i_iset,i_fset);
 		this.freak_fset = new KeyframeMap(i_freak_fset,i_freak_fset_page_id);
 	}
+
+	
 	/**
 	 * 3種類のファイルに対応した入力ストリームから、特徴データを読み出します。
 	 * @param i_iset_stream
 	 * @param i_fset_stream
 	 * @param i_fset3_stream
+	 * @param i_freak_fset_page_id
+	 * @param i_width_in_msec
 	 * @return
 	 */
-	public static NyARNftDataSet loadFromNftFiles(InputStream i_iset_stream,InputStream i_fset_stream,InputStream i_fset3_stream,int i_freak_fset_page_id)
+	public static NyARNftDataSet loadFromNftFiles(InputStream i_iset_stream,InputStream i_fset_stream,InputStream i_fset3_stream,int i_freak_fset_page_id,double i_width_in_msec)
 	{
 		NyARNftIsetFile iset=NyARNftIsetFile.loadFromIsetFile(i_iset_stream);
 		NyARNftFsetFile fset=NyARNftFsetFile.loadFromFsetFile(i_fset_stream);
 		NyARNftFreakFsetFile fset3 = NyARNftFreakFsetFile.loadFromfset3File(i_fset3_stream);
-		
+		if(!Double.isNaN(i_width_in_msec)){
+			scaling(iset,fset,fset3,i_freak_fset_page_id,i_width_in_msec);
+		}		
 		return new NyARNftDataSet(iset,fset,fset3,i_freak_fset_page_id);
 	}
+	
 	/**
 	 * 拡張子の異なる3つの特徴量ファイル(iset,fset,fset3)から特徴量データを読みだして、インスタンスを作成します。
 	 * @param i_fname_prefix
@@ -88,13 +124,17 @@ public class NyARNftDataSet
 	 * fset3のページIDです。
 	 * @return
 	 */
-	public static NyARNftDataSet loadFromNftFiles(String i_fname_prefix,int i_freak_fset_page_id)
+	public static NyARNftDataSet loadFromNftFiles(String i_fname_prefix,int i_freak_fset_page_id,double i_width_in_msec)
 	{
-		NyARNftIsetFile iset=NyARNftIsetFile.loadFromIsetFile(new File(i_fname_prefix+".iset"));
-		NyARNftFsetFile fset=NyARNftFsetFile.loadFromFsetFile(new File(i_fname_prefix+".fset"));
-		NyARNftFreakFsetFile fset3 = NyARNftFreakFsetFile.loadFromfset3File(new File(i_fname_prefix+".fset3"));
-		return new NyARNftDataSet(iset,fset,fset3,i_freak_fset_page_id);
-	}
+		try {
+			return loadFromNftFiles(
+				new FileInputStream(new File(i_fname_prefix+".iset")),
+				new FileInputStream(new File(i_fname_prefix+".fset")),
+				new FileInputStream(new File(i_fname_prefix+".fset3")),i_freak_fset_page_id,i_width_in_msec);
+		} catch (FileNotFoundException e) {
+			throw new NyARRuntimeException(e);
+		}
+	}	
 	/**
 	 * {@link #loadFromNftFiles(String,int)}の第二パラメータが0のものと同じです。
 	 * @param i_fname_prefix
@@ -102,7 +142,13 @@ public class NyARNftDataSet
 	 */
 	public static NyARNftDataSet loadFromNftFiles(String i_fname_prefix)
 	{
-		return loadFromNftFiles(i_fname_prefix,0);
+		return loadFromNftFiles(i_fname_prefix,Double.NaN);
+	}
+	public static NyARNftDataSet loadFromNftFiles(String i_fname_prefix,double i_width_in_msec)
+	{
+		return loadFromNftFiles(i_fname_prefix,0,i_width_in_msec);
+	}
+	public static void main(String[] args){
 	}
 	
 }

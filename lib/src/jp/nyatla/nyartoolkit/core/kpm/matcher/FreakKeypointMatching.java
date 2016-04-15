@@ -79,7 +79,7 @@ public class FreakKeypointMatching {
 
 	final private static double kLaplacianThreshold = 3;
 	final private static double kEdgeThreshold = 4;
-	final private static int kMaxNumFeatures = 300;//オリジナルでは500だけど・・・
+	final private static int kMaxNumFeatures = 500;//オリジナルでは500だけど・・・Debugするときは300で。
 	final private static int kMinCoarseSize = 8;
 
 	final private DogFeaturePointStack _dog_feature_points = new DogFeaturePointStack(kMaxNumFeatures);

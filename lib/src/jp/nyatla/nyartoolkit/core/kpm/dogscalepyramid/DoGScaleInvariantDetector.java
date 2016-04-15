@@ -554,7 +554,8 @@ public class DoGScaleInvariantDetector {
 			// Copy the feature point
 			DogFeaturePoint fp = i_ot_fps.prePush();
 			if(fp==null){
-				prepush_warning();
+				//中断
+//				prepush_warning();
 				break;
 			}
 			fp.x = dfp.x;

@@ -367,38 +367,34 @@ public class NyARTemplateMatchingDriver_ANY implements INyARTemplateMatchingDriv
 	 */
 	private static int ar2GetBestMatchingSubFine(INyARGrayscaleRaster i_raster,NyARTemplatePatchImage mtemp, int sx, int sy)
 	{
+		System.err.println("This function is not tested! Check accury of result  before using.");
 		int[] tmp_buf = mtemp.img;
-		int r1=0;
-		int r2=0;
-		int r3=0;
-		int t_ptr = mtemp.ysize*mtemp.xsize-1;
+		int sum2=0;
+		int sum1=0;
+		int sum3=0;
+		int t_ptr = 0;
 		for (int j = mtemp.ysize-1; j>=0; j--) {
-			for (int i =mtemp.xsize-1;i>=0; i--) {
+			int i=mtemp.xsize-1;
+			for (; i>=0; i--) {
 				int tn=tmp_buf[t_ptr];
 				if (tn != NyARTemplatePatchImage.AR2_TEMPLATE_NULL_PIXEL) {
 					int sn=i_raster.getPixel(
 							(sx+(i-mtemp.xts) * NyARTemplatePatchImage.AR2_TEMP_SCALE),
 							(sy+(j-mtemp.yts) * NyARTemplatePatchImage.AR2_TEMP_SCALE));
-					r1+=sn*sn;
-					r2+=sn;
-					r3+=tn*sn;
+					sum2+=sn*sn;
+					sum1+=sn;
+					sum3+=tn*sn;
 				}
-				t_ptr--;
+				t_ptr++;
 			}
 		}
-		int k = mtemp.valid_pixels;
-		if (k == 0) {
-			return 0;
-		}
-		int ave = r2/k;
-		//vlen=∑(Sn-AVE)^2
-		int vlen=r1-(2*ave*r2)+(k*ave*ave);
-		//wval=∑(Tn-AVET)*(Sn-AVES))
-		int wval=r3-mtemp.sum_of_img*ave-r2*mtemp.ave+ave*mtemp.ave*k;
+		sum3 -= sum1 * mtemp.sum_of_img / mtemp.valid_pixels;
+		int vlen=sum2-sum1*sum1/mtemp.valid_pixels;
 		if (vlen == 0){
 			return 0;
 		} else {
-			return wval * 100 / mtemp.vlen * 100 / (int) Math.sqrt(vlen);
+			return sum3 * 100 / mtemp.vlen * 100 / (int) Math.sqrt(vlen);
 		}
-	}
+		
+	}		
 }
