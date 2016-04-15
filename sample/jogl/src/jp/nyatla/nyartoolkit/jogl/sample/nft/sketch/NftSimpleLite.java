@@ -44,7 +44,7 @@ import jp.nyatla.nyartoolkit.nftsystem.NyARNftSystemConfig;
  */
 public class NftSimpleLite extends GlSketch
 {
-	String nftdataset="d:\\infinitycat";
+	String nftdataset="../../Data/nft/infinitycat";
 	String cparam="../../Data/testcase/camera_para5.dat";
 	private Webcam camera;
 	private NyARGlNftSystem nyar;
