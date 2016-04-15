@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.transmat.optimize.artoolkit;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
@@ -53,8 +53,8 @@ public interface INyARRotMatrixOptimize
 	 * 理想座標系の頂点座標
 	 * @return
 	 * エラーレート
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public double modifyMatrix(NyARRotMatrix_ARToolKit io_rot, NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d) throws NyARException;
+	public double modifyMatrix(NyARRotMatrix_ARToolKit io_rot, NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d);
 	
 }

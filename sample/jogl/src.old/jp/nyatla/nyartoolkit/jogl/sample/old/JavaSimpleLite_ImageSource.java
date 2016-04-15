@@ -33,9 +33,11 @@ import javax.media.opengl.*;
 
 import com.sun.opengl.util.*;
 import jp.nyatla.nyartoolkit.core.*;
+import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.detector.*;
+import jp.nyatla.nyartoolkit.j2se.NyARBufferedImageRaster;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
 
 import javax.imageio.*;
@@ -63,7 +65,7 @@ public class JavaSimpleLite_ImageSource implements GLEventListener
 	private double[] _camera_projection = new double[16];
 
 
-	public JavaSimpleLite_ImageSource(NyARParam i_param, NyARCode i_ar_code,BufferedImage i_image) throws NyARException,IOException
+	public JavaSimpleLite_ImageSource(NyARParam i_param, NyARCode i_ar_code,BufferedImage i_image) throws NyARRuntimeException,IOException
 	{
 		this._ar_param = i_param;
 

@@ -1,7 +1,8 @@
 package jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.raster.gs.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
@@ -20,7 +21,7 @@ public class NyARRasterFilter_Rgb2Gs_CbCrCut implements INyARRasterFilter_Rgb2Gs
 	 * 1024倍した値
 	 */
 	private int _window[]=new int[256];
-	public NyARRasterFilter_Rgb2Gs_CbCrCut(int i_raster_type,double i_sigma) throws NyARException
+	public NyARRasterFilter_Rgb2Gs_CbCrCut(int i_raster_type,double i_sigma) throws NyARRuntimeException
 	{
 		switch (i_raster_type) {
 		case NyARBufferType.BYTE1D_B8G8R8_24:
@@ -28,7 +29,7 @@ public class NyARRasterFilter_Rgb2Gs_CbCrCut implements INyARRasterFilter_Rgb2Gs
 			break;
 		case NyARBufferType.BYTE1D_R8G8B8_24:
 		default:
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		this._dofilterimpl._window_ref=this._window;
 		//windowの作成
@@ -37,7 +38,7 @@ public class NyARRasterFilter_Rgb2Gs_CbCrCut implements INyARRasterFilter_Rgb2Gs
 			this._window[i]=(int)(1024*Math.exp(-p*p/(i_sigma*i_sigma)));
 		}
 	}
-	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output) throws NyARException
+	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output) throws NyARRuntimeException
 	{
 		assert (i_input.getSize().isEqualSize(i_output.getSize()) == true);
 		this._dofilterimpl.doFilter(i_input,i_output,i_input.getSize());
@@ -46,12 +47,12 @@ public class NyARRasterFilter_Rgb2Gs_CbCrCut implements INyARRasterFilter_Rgb2Gs
 	abstract class IdoFilterImpl
 	{
 		int[] _window_ref;
-		public abstract void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException;
+		public abstract void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARRuntimeException;
 		
 	}
 	class IdoFilterImpl_BYTE1D_B8G8R8_24 extends IdoFilterImpl
 	{
-		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARException
+		public void doFilter(INyARRaster i_input, INyARRaster i_output,NyARIntSize i_size) throws NyARRuntimeException
 		{
 			assert(	i_input.isEqualBufferType(NyARBufferType.BYTE1D_B8G8R8_24));
 			assert(	i_output.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));

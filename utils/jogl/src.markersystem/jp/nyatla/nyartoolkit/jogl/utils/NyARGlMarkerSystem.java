@@ -2,26 +2,26 @@ package jp.nyatla.nyartoolkit.jogl.utils;
 
 import java.awt.image.BufferedImage;
 
-import jp.nyatla.nyartoolkit.core.NyARCode;
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
+import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
 import jp.nyatla.nyartoolkit.core.param.NyARFrustum;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
-import jp.nyatla.nyartoolkit.core.rasterdriver.INyARPerspectiveCopy;
+import jp.nyatla.nyartoolkit.core.rasterdriver.perspectivecopy.INyARPerspectiveCopy;
+import jp.nyatla.nyartoolkit.j2se.NyARBufferedImageRaster;
 import jp.nyatla.nyartoolkit.jogl.utils.NyARGLUtil;
 import jp.nyatla.nyartoolkit.markersystem.INyARMarkerSystemConfig;
 import jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystem;
 import jp.nyatla.nyartoolkit.markersystem.NyARSensor;
-import jp.nyatla.nyartoolkit.utils.j2se.NyARBufferedImageRaster;
 
 public class NyARGlMarkerSystem extends NyARMarkerSystem
 {
 	
-	public NyARGlMarkerSystem(INyARMarkerSystemConfig i_config) throws NyARException
+	public NyARGlMarkerSystem(INyARMarkerSystemConfig i_config) throws NyARRuntimeException
 	{
 		super(i_config);
 	}
-	protected void initInstance(INyARMarkerSystemConfig i_config) throws NyARException
+	protected void initInstance(INyARMarkerSystemConfig i_config) throws NyARRuntimeException
 	{
 		super.initInstance(i_config);
 	}
@@ -47,9 +47,9 @@ public class NyARGlMarkerSystem extends NyARMarkerSystem
 	 * @param i_id
 	 * @param o_buf
 	 * @return
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public void getMarkerMatrix(int i_id,double[] o_buf) throws NyARException
+	public void getMarkerMatrix(int i_id,double[] o_buf) throws NyARRuntimeException
 	{
 		NyARGLUtil.toCameraViewRH(this.getMarkerMatrix(i_id),1,o_buf);
 	}
@@ -57,9 +57,9 @@ public class NyARGlMarkerSystem extends NyARMarkerSystem
 	 * この関数はOpenGL形式の姿勢変換行列を新規に割り当てて返します。
 	 * @param i_buf
 	 * @return
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public double[] getGlMarkerMatrix(int i_id) throws NyARException
+	public double[] getGlMarkerMatrix(int i_id) throws NyARRuntimeException
 	{
 		double[] b=new double[16];
 		this.getMarkerMatrix(i_id,b);
@@ -77,9 +77,9 @@ public class NyARGlMarkerSystem extends NyARMarkerSystem
 	 * @param i_patt_edge_percentage
 	 * @param i_marker_size
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public int addARMarker(BufferedImage i_img,int i_patt_resolution,int i_patt_edge_percentage,double i_marker_size) throws NyARException
+	public int addARMarker(BufferedImage i_img,int i_patt_resolution,int i_patt_edge_percentage,double i_marker_size) throws NyARRuntimeException
 	{
 		int w=i_img.getWidth();
 		int h=i_img.getHeight();
@@ -108,7 +108,7 @@ public class NyARGlMarkerSystem extends NyARMarkerSystem
 	 * @param i_y4
 	 * @param i_img
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public void getMarkerPlaneImage(
 		int i_id,
@@ -117,7 +117,7 @@ public class NyARGlMarkerSystem extends NyARMarkerSystem
 	    int i_x2,int i_y2,
 	    int i_x3,int i_y3,
 	    int i_x4,int i_y4,
-	    BufferedImage i_img) throws NyARException
+	    BufferedImage i_img) throws NyARRuntimeException
 		{
 			NyARBufferedImageRaster bmr=new NyARBufferedImageRaster(i_img);
 			super.getMarkerPlaneImage(i_id, i_sensor, i_x1, i_y1, i_x2, i_y2, i_x3, i_y3, i_x4, i_y4,bmr);
@@ -136,14 +136,14 @@ public class NyARGlMarkerSystem extends NyARMarkerSystem
 	 * @param i_h
 	 * @param i_raster
 	 * 出力先のオブジェクト
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public void getMarkerPlaneImage(
 		int i_id,
 		NyARSensor i_sensor,
 	    int i_l,int i_t,
 	    int i_w,int i_h,
-	    BufferedImage i_img) throws NyARException
+	    BufferedImage i_img) throws NyARRuntimeException
     {
 		NyARBufferedImageRaster bmr=new NyARBufferedImageRaster(i_img);
 		super.getMarkerPlaneImage(i_id, i_sensor, i_l, i_t, i_w, i_h, bmr);

@@ -30,7 +30,8 @@
  */
 package jp.nyatla.nyartoolkit.core.param;
 
-import jp.nyatla.nyartoolkit.core.*;
+
+import jp.nyatla.nyartoolkit.core.math.NyARMat;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 

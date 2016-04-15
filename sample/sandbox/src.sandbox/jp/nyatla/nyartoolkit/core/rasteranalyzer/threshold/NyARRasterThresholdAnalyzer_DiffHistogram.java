@@ -24,7 +24,7 @@
  */
 package jp.nyatla.nyartoolkit.core.rasteranalyzer.threshold;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.analyzer.raster.threshold.INyARRasterThresholdAnalyzer;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -41,7 +41,7 @@ public class NyARRasterThresholdAnalyzer_DiffHistogram implements INyARRasterThr
 	{
 	}
 
-	private int createHistogram(int[] in_buf,NyARIntSize i_size, int[] o_histogram) throws NyARException
+	private int createHistogram(int[] in_buf,NyARIntSize i_size, int[] o_histogram) throws NyARRuntimeException
 	{
 		int[][] fil1={
 				{-1,-2,-1},
@@ -80,7 +80,7 @@ public class NyARRasterThresholdAnalyzer_DiffHistogram implements INyARRasterThr
 		return th;
 	}
 
-	public int analyzeRaster(INyARRaster i_input) throws NyARException
+	public int analyzeRaster(INyARRaster i_input) throws NyARRuntimeException
 	{
 		assert (i_input.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
 		int[] histogram = new int[256];
@@ -93,7 +93,7 @@ public class NyARRasterThresholdAnalyzer_DiffHistogram implements INyARRasterThr
 	 * @param i_output
 	 * 書き出し先のラスタオブジェクト 256ピクセル以上の幅があること。
 	 */
-	public void debugDrawHistogramMap(INyARRaster i_input, INyARRaster i_output) throws NyARException
+	public void debugDrawHistogramMap(INyARRaster i_input, INyARRaster i_output) throws NyARRuntimeException
 	{
 		assert (i_input.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
 		assert (i_output.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));

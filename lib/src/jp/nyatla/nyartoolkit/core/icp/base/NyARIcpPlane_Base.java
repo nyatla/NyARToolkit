@@ -14,6 +14,7 @@ package jp.nyatla.nyartoolkit.core.icp.base;
 
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.icp.NyARIcpPoint;
+import jp.nyatla.nyartoolkit.core.math.NyARMat;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.*;
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -22,13 +23,13 @@ import jp.nyatla.nyartoolkit.core.types.matrix.*;
 public class NyARIcpPlane_Base {
 	protected NyARIcpPoint _icp_point;
 
-	public NyARIcpPlane_Base(NyARParam i_param) throws NyARException {
+	public NyARIcpPlane_Base(NyARParam i_param) {
 		this.initInstance(new NyARIcpPoint(i_param));
 		// n=4で作る。
 	}
 
 	public NyARIcpPlane_Base(NyARParam i_param, NyARIcpPoint i_icp_point)
-			throws NyARException {
+			throws NyARRuntimeException {
 		this.initInstance(i_icp_point);
 	}
 
@@ -39,10 +40,10 @@ public class NyARIcpPlane_Base {
 
 	public boolean icpGetInitXw2Xc_from_PlanarData(
 			NyARDoublePoint2d screenCoord[], NyARDoublePoint3d worldCoord[],
-			int i_num, NyARDoubleMatrix44 initMatXw2Xc) throws NyARException {
+			int i_num, NyARDoubleMatrix44 initMatXw2Xc) {
 
 		if (i_num < 4) {
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		// nを元に配列の準備
 		NyARMat matA = new NyARMat(i_num * 2, 8);
@@ -179,7 +180,7 @@ public class NyARIcpPlane_Base {
 
 	private void icpGetInitXw2XcSub(NyARDoubleMatrix44 rot,
 			NyARDoublePoint2d[] pos2d, NyARDoublePoint3d[] ppos3d, int num,
-			NyARDoubleMatrix44 conv) throws NyARException {
+			NyARDoubleMatrix44 conv) {
 		double[] off = new double[3];
 
 		NyARMat mat_d = new NyARMat(3, 3);

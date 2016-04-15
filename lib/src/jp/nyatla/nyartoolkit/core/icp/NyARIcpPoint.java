@@ -12,7 +12,7 @@
  */
 package jp.nyatla.nyartoolkit.core.icp;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResultParam;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
@@ -35,7 +35,7 @@ public class NyARIcpPoint extends NyARIcp
 	public boolean icpPoint(NyARDoublePoint2d[] screenCoord,
 			NyARDoublePoint3d[] worldCoord, int num,
 			NyARDoubleMatrix44 initMatXw2Xc, NyARDoubleMatrix44 o_matxw2xc,NyARTransMatResultParam o_result_param)
-			throws NyARException
+			throws NyARRuntimeException
 	{
 		double err0 = 0, err1;
 		assert num >= 4;

@@ -26,10 +26,11 @@
 package jp.nyatla.nyartoolkit.dev;
 
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
+import jp.nyatla.nyartoolkit.core.rasterdriver.pickup.INyARColorPatt;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.rasterreader.*;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
 import jp.nyatla.nyartoolkit.core.pickup.*;
@@ -246,7 +247,7 @@ public class NyARColorPatt_DiagonalRatio implements INyARColorPatt
 		return;
 	}	
 	public NyARDoublePoint2d[][] _vertex_map;
-	public boolean pickFromRaster(INyARRgbRaster image, NyARSquare i_square)throws NyARException
+	public boolean pickFromRaster(INyARRgbRaster image, NyARSquare i_square)throws NyARRuntimeException
 	{
 		NyARDoublePoint2d center=new NyARDoublePoint2d();
 		//中心を取得

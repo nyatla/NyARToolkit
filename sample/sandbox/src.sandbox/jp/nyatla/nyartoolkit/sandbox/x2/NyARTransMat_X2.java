@@ -31,9 +31,9 @@
  */
 package jp.nyatla.nyartoolkit.sandbox.x2;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.*;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 
@@ -51,7 +51,7 @@ public class NyARTransMat_X2 implements INyARTransMat
 	private NyARFixedFloatFitVecCalculator _calculator;
 	private NyARFixedFloatRotTransOptimize_O2 _mat_optimize;
 
-	public NyARTransMat_X2(NyARParam i_param) throws NyARException
+	public NyARTransMat_X2(NyARParam i_param) throws NyARRuntimeException
 	{
 		final NyARPerspectiveProjectionMatrix pmat=i_param.getPerspectiveProjectionMatrix();
 		this._calculator=new NyARFixedFloatFitVecCalculator(pmat,i_param.getDistortionFactor());
@@ -102,9 +102,9 @@ public class NyARTransMat_X2 implements INyARTransMat
 	 * @param i_direction
 	 * @param i_width
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void transMat(final NyARSquare i_square, int i_direction, double i_width, NyARTransMatResult o_result_conv) throws NyARException
+	public void transMat(final NyARSquare i_square, int i_direction, double i_width, NyARTransMatResult o_result_conv) throws NyARRuntimeException
 	{
 		final NyARFixedFloat16Point2d[] sqvertex_ref = __transMat_sqvertex_ref;
 		final NyARLinear[] linear_ref=__transMat_linear_ref;
@@ -145,9 +145,9 @@ public class NyARTransMat_X2 implements INyARTransMat
 	 * @param io_result_conv
 	 * 計算履歴を持つNyARTransMatResultオブジェクトを指定する。 履歴を持たない場合は、transMatと同じ処理を行う。
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void transMatContinue(NyARSquare i_square, int i_direction, double i_width, NyARTransMatResult io_result_conv) throws NyARException
+	public void transMatContinue(NyARSquare i_square, int i_direction, double i_width, NyARTransMatResult io_result_conv) throws NyARRuntimeException
 	{
 		/*	今度実装
 		final NyARDoublePoint2d[] sqvertex_ref = __transMat_sqvertex_ref;
@@ -196,7 +196,7 @@ public class NyARTransMat_X2 implements INyARTransMat
 			}
 		}		
 		return;*/
-		NyARException.notImplement();
+		NyARRuntimeException.notImplement();
 	}
 	public void updateMatrixValue(NyARFixedFloatRotMatrix i_rot, NyARFixedFloat16Point3d i_off, NyARFixedFloat16Point3d i_trans,NyARTransMatResult o_result)
 	{

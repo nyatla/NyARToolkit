@@ -1,6 +1,6 @@
 package jp.nyatla.nyartoolkit.sandbox.x2;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactorV2;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARI64Linear;
@@ -9,6 +9,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARI64Matrix22;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.squaredetect.*;
 
 public class SquareContourDetector_X2
@@ -37,7 +38,7 @@ public class SquareContourDetector_X2
 		return;
 	}
 
-	public boolean coordToSquare(int[] i_xcoord,int[] i_ycoord,int i_st_index,int i_coord_num,int i_label_area,NyARSquare o_square) throws NyARException
+	public boolean coordToSquare(int[] i_xcoord,int[] i_ycoord,int i_st_index,int i_coord_num,int i_label_area,NyARSquare o_square) throws NyARRuntimeException
 	{
 
 		final int[] mkvertex = this.__detectMarker_mkvertex;
@@ -55,7 +56,7 @@ public class SquareContourDetector_X2
 		return true;
 	}
 	
-	private boolean getSquareLine(int[] i_mkvertex, int[] i_xcoord, int[] i_ycoord, NyARSquare o_square) throws NyARException
+	private boolean getSquareLine(int[] i_mkvertex, int[] i_xcoord, int[] i_ycoord, NyARSquare o_square) throws NyARRuntimeException
 	{
 		final NyARLinear[] l_line = o_square.line;
 		final NyARI64Matrix22 evec=this.__getSquareLine_evec;

@@ -27,10 +27,10 @@ package jp.nyatla.nyartoolkit.markersystem.utils;
 
 import java.util.ArrayList;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
+import jp.nyatla.nyartoolkit.core.marker.psarplaycard.PsARPlayCardPickup;
+import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
-import jp.nyatla.nyartoolkit.psarplaycard.PsARPlayCardPickup;
 
 /**
  * このクラスは、ARプレイカードの検出結果をマッピングします。
@@ -51,7 +51,7 @@ public class ARPlayCardList extends ArrayList<ARPlayCardList.Item>
 		 * @param i_range_s
 		 * @param i_range_e
 		 * @param i_patt_size
-		 * @throws NyARException
+		 * @throws NyARRuntimeException
 		 */
 		public Item(int i_id_range_s,int i_id_range_e,double i_patt_size)
 		{
@@ -66,7 +66,7 @@ public class ARPlayCardList extends ArrayList<ARPlayCardList.Item>
 	/**輪郭推定器*/
 	private PsARPlayCardPickup _pickup;
 	private final PsARPlayCardPickup.PsArIdParam _id_param=new PsARPlayCardPickup.PsArIdParam();
-	public ARPlayCardList() throws NyARException
+	public ARPlayCardList()
 	{
 		this._pickup = new PsARPlayCardPickup();
 	}
@@ -76,9 +76,9 @@ public class ARPlayCardList extends ArrayList<ARPlayCardList.Item>
 		//sqはtrackingでnull初期化済み
 		
 	}
-	public boolean update(INyARGrayscaleRaster i_raster,SquareStack.Item i_sq) throws NyARException
+	public boolean update(INyARGrayscaleRaster i_raster,SquareStack.Item i_sq)
 	{
-		if(!this._pickup.getARPlayCardId(i_raster.getGsPixelDriver(),i_sq.ob_vertex,this._id_param))
+		if(!this._pickup.getARPlayCardId(i_raster,i_sq.ob_vertex,this._id_param))
 		{
 			return false;
 		}

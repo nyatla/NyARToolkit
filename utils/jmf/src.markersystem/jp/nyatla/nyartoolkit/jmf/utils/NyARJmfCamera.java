@@ -4,7 +4,7 @@ import java.awt.Dimension;
 
 import javax.media.Buffer;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.markersystem.NyARSensor;
 
@@ -28,15 +28,15 @@ public class NyARJmfCamera extends NyARSensor implements JmfCaptureListener
 	 * 直接操作しないでください。
 	 * @param i_config
 	 * @param i_capdev
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public NyARJmfCamera(JmfCaptureDevice i_capdev) throws NyARException
+	public NyARJmfCamera(JmfCaptureDevice i_capdev) throws NyARRuntimeException
 	{
 		super(dimension2NyARSize(i_capdev.getCaptureFormat().getSize()));
 		//RGBラスタの生成
 		this._raster = new JmfNyARRGBRaster(i_capdev.getCaptureFormat());
 		//ラスタのセット
-		this.update(this._raster);
+		this.update(this._raster.getBaseRaster());
 		i_capdev.setOnCapture(this);
 		this._cdev=i_capdev;
 	}
@@ -50,7 +50,7 @@ public class NyARJmfCamera extends NyARSensor implements JmfCaptureListener
 	/**
 	 * この関数は、JMFの非同期更新を開始します。
 	 */
-	public void start() throws NyARException
+	public void start() throws NyARRuntimeException
 	{
 		this._cdev.start();
 		//1枚目の画像が取得され、RGBラスタにデータがセットされるまで待つ。
@@ -58,7 +58,7 @@ public class NyARJmfCamera extends NyARSensor implements JmfCaptureListener
 			try {
 				Thread.sleep(200);
 			} catch (InterruptedException e) {
-				throw new NyARException(e);
+				throw new NyARRuntimeException(e);
 			}
 		}
 	}
@@ -68,7 +68,7 @@ public class NyARJmfCamera extends NyARSensor implements JmfCaptureListener
 		synchronized(this){
 			try{
 				this._raster.setBuffer(i_buffer);
-				this.update(this._raster);
+				this.update(this._raster.getBaseRaster());
 			}catch(Exception e){
 				e.printStackTrace();
 			}

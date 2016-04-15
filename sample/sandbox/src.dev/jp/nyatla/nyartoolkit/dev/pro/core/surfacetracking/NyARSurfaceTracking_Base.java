@@ -1,9 +1,10 @@
 package jp.nyatla.nyartoolkit.dev.pro.core.surfacetracking;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
+import jp.nyatla.nyartoolkit.core.math.NyARLCGsRandomizer;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
-import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
-import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.raster.gs.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResultParam;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
@@ -16,7 +17,6 @@ import jp.nyatla.nyartoolkit.pro.core.icp.NyARIcpPointRobust;
 import jp.nyatla.nyartoolkit.pro.core.surfacetracking.feature.NyARSurfaceFeatureSet.NyAR2FeatureCoord;
 import jp.nyatla.nyartoolkit.pro.core.surfacetracking.feature.NyARSurfaceFeatureSet.NyAR2FeaturePoints;
 import jp.nyatla.nyartoolkit.pro.core.surfacetracking.imageset.NyARSurfaceImageSet;
-import jp.nyatla.nyartoolkit.core.utils.NyARLCGsRandomizer;
 
 
 
@@ -41,12 +41,12 @@ public class NyARSurfaceTracking_Base
 				this.sy=item.sy;
 			}
 		};
-		public AR2TemplateCandidate(int i_length) throws NyARException
+		public AR2TemplateCandidate(int i_length) throws NyARRuntimeException
 		{
 			super.initInstance(i_length,AR2TemplateCandidate.Item.class);
 		}
 		/**
-		 * こ�?�関数は�?配�?�要�?を作�?�します�??
+		 * こ�?�関数は�?配�?�要�?を作�?�します�??
 		 */	
 		protected AR2TemplateCandidate.Item createElement()
 		{
@@ -181,7 +181,7 @@ public class NyARSurfaceTracking_Base
     AR2TemplateCandidate usedFeature;
     private INyARGrayscaleRaster mfImage;
     private NyARSurfaceDataSet _surfaceset;
-    public NyARSurfaceTracking_Base(NyARParam i_param_ref,NyARSurfaceDataSet i_surfaceset) throws NyARException
+    public NyARSurfaceTracking_Base(NyARParam i_param_ref,NyARSurfaceDataSet i_surfaceset) throws NyARRuntimeException
 	{
     	this._surfaceset=i_surfaceset;
         candidate=new AR2TemplateCandidate(AR2TemplateCandidate.AR2_TRACKING_CANDIDATE_MAX+1);
@@ -666,7 +666,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 //				s = 0;
 //			}
 	
-			//candidateの0な数を数えて�?
+			//candidateの0な数を数えて�?
 			for(int i = j = 0; i<candidate.getLength(); i++ ) {
 				AR2TemplateCandidate.Item item=candidate.getItem(i);
 				if( item.flag == 0 ){
@@ -677,7 +677,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 				return -1;
 			}
 	
-			//0なcandidateの�?ち、k番目のも�?�を探して1にしてる�?
+			//0なcandidateの�?ち、k番目のも�?�を探して1にしてる�?
 			int k = (int)((double )j * this._rand.rand() / (RepeatedRandomizer.RAND_MAX + 1.0f));
 			for(int i = j = 0; i<candidate.getLength(); i++ ) {
 				AR2TemplateCandidate.Item item=candidate.getItem(i);
@@ -694,7 +694,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 		}
 	}
 	static int call=0;
-	public boolean ar2Tracking(INyARGrayscaleRaster i_raster,NyARDoubleMatrix44 trans) throws NyARException
+	public boolean ar2Tracking(INyARGrayscaleRaster i_raster,NyARDoubleMatrix44 trans) throws NyARRuntimeException
 	{
 		call++;
 		int                     num;
@@ -738,7 +738,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 			if( k < 0 ) {
 				if( candidatePtr == this.candidate ) {
 					candidatePtr = this.candidate2;
-					//ポインタでなんか�?っとるわ�?
+					//ポインタでなんか�?っとるわ�?
 					k = ar2SelectTemplate( candidatePtr, this.prevFeature, num, this.pos,s.w,s.h);
 					if(k<0){
 						break;
@@ -842,7 +842,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 	}
 	static int c=0;
 	static double  ar2GetTransMat(NyARIcp _icp, NyARDoubleMatrix44 initConv, NyARDoublePoint2d[]  pos2d, double[][]  pos3d, int num,
-			  NyARDoubleMatrix44  conv) throws NyARException
+			  NyARDoubleMatrix44  conv) throws NyARRuntimeException
 	{   
 
 //	#ifndef ARDOUBLE_IS_FLOAT
@@ -899,7 +899,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 	
 	
 	AR2TemplateT ar2GenTemplate(NyARParam cparam, NyARDoubleMatrix44 trans, NyARSurfaceImageSet imageSet,
-			NyAR2FeaturePoints featurePoints, int num,int ts1, int ts2 ) throws NyARException
+			NyAR2FeaturePoints featurePoints, int num,int ts1, int ts2 ) throws NyARRuntimeException
 	{
 		int           xsize, ysize;
 		AR2TemplateT _template=new AR2TemplateT(ts1,ts2);
@@ -1002,7 +1002,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 
 	    return 0;
 	}	
-	static int ar2GetImageValue(NyARParam cparam,NyARDoubleMatrix44 trans, NyARSurfaceImageSet.ReferenceImage image,double sx, double sy) throws NyARException
+	static int ar2GetImageValue(NyARParam cparam,NyARDoubleMatrix44 trans, NyARSurfaceImageSet.ReferenceImage image,double sx, double sy) throws NyARRuntimeException
 	{
 //	    double   mx, my;
 //	    double   iix, iiy;
@@ -1015,7 +1015,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 	    ix = (int)(ii.x + 0.5);
 	    iy = (int)(ii.y + 0.5);
 
-	    //座標計算と値取得�?��?けよ�?�?
+	    //座標計算と値取得�?��?けよ�?�?
 	    if( ix < 0 || ix >= image.width || iy < 0 || iy >= image.height ){
 	    	return -1;
 	    }
@@ -1097,11 +1097,11 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 	 * @param ry
 	 * @param search[3][2]
 	 * @return
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
 	int ar2GetBestMatching(INyARGrayscaleRaster i_rtaster, INyARGrayscaleRaster mfImage,
             AR2TemplateT mtemp, int rx, int ry,
-             int[][] search,ar2GetBestMatchingResult o_result) throws NyARException
+             int[][] search,ar2GetBestMatchingResult o_result) throws NyARRuntimeException
 	{
 		int              search_flag[] = {USE_SEARCH1, USE_SEARCH2, USE_SEARCH3};
 		int              yts1, yts2;
@@ -1260,7 +1260,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 	 * @param val
 	 * int[1]
 	 * @return
-	 * 整合�?�チェ�?クOK
+	 * 整合�?�チェ�?クOK
 	 */
 	static int ar2GetBestMatchingSubFine( INyARGrayscaleRaster img,
 	                                      AR2TemplateT mtemp, int sx, int sy, int[] val)
@@ -1331,7 +1331,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 	    return 0;
 	}
 	static int ar2GenTemplateSub(NyARParam cparam, NyARDoubleMatrix44 trans, NyARSurfaceImageSet imageSet,
-			  NyAR2FeaturePoints featurePoints, int num,AR2TemplateT template_ ) throws NyARException
+			  NyAR2FeaturePoints featurePoints, int num,AR2TemplateT template_ ) throws NyARRuntimeException
 	{
 		double    mx, my;
 		
@@ -1393,7 +1393,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 
 
 	static int k=0;
-	int ar2Tracking2d (NyARSurfaceDataSet surfaceSet, AR2TemplateCandidate.Item candidate,INyARGrayscaleRaster dataPtr, AR2Tracking2DResultT result ) throws NyARException
+	int ar2Tracking2d (NyARSurfaceDataSet surfaceSet, AR2TemplateCandidate.Item candidate,INyARGrayscaleRaster dataPtr, AR2Tracking2DResultT result ) throws NyARRuntimeException
 	{
 		AR2TemplateT         template_;
 		

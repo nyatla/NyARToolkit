@@ -12,9 +12,9 @@
  */
 package jp.nyatla.nyartoolkit.dev.pro.core.kpm;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.*;
-import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.pro.core.integralimage.NyARIntegralImage;
 import jp.nyatla.nyartoolkit.pro.core.kpm.ann.NyARLinearFeatureSearch;
@@ -43,7 +43,7 @@ public class NyARSingleKpm
 
 	private NyARParam _cparam;
 
-	public NyARSingleKpm(NyARParam i_ref_cparam, NyARKpmDataSet i_ref_dataset) throws NyARException
+	public NyARSingleKpm(NyARParam i_ref_cparam, NyARKpmDataSet i_ref_dataset) throws NyARRuntimeException
 	{
 		this._hest = new NyARHomographyEst(MAX_SURF_RESULT);
 		this._cparam = i_ref_cparam;
@@ -67,19 +67,19 @@ public class NyARSingleKpm
 	private boolean _updated;
 	
 	/**
-	 * マッチしたキーポイントセ�?ト�?��?ち、�?�モグラフィ行�?�を構�?�する�?�に適したポイントセ�?トを返します�??
+	 * マッチしたキーポイントセ�?ト�?��?ち、�?�モグラフィ行�?�を構�?�する�?�に適したポイントセ�?トを返します�??
 	 * @param i_region_id
-	 * 抽出したキーセ�?�?
+	 * 抽出したキーセ�?�?
 	 * @param o_result
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public boolean getRansacMatchPoints(int i_region_id,NyARSurfAnnMatch.ResultPtr o_result) throws NyARException
+	public boolean getRansacMatchPoints(int i_region_id,NyARSurfAnnMatch.ResultPtr o_result) throws NyARRuntimeException
 	{
-		NyARSurfAnnMatch.Result match_result = this.__match_result;// �?大Result数も適�?
+		NyARSurfAnnMatch.Result match_result = this.__match_result;// �?大Result数も適�?
 		PartialMatchResult partial_result = this.__partial_result;
 
-		// 1ペ�?�ジしか�?らな�?ので、pageFeatureNum=i_resultの数
+		// 1ペ�?�ジしか�?らな�?ので、pageFeatureNum=i_resultの数
 		int feature_num = match_result.getLength();
 
 		if(i_region_id==AREA_ALL){
@@ -111,7 +111,7 @@ public class NyARSingleKpm
 				rp=partial_result.ce_quarter;
 				break;
 			default:
-				throw new NyARException();
+				throw new NyARRuntimeException();
 			}
 			if (rp.getLength() < 6) {
 				return false;
@@ -121,15 +121,15 @@ public class NyARSingleKpm
 		return true;
 	}
 	/**
-	 * i_rasterとi_ref_datasetの間でキーポイント�?�ッチングを実行して、�?致�?報を更新します�??
+	 * i_rasterとi_ref_datasetの間でキーポイント�?�ッチングを実行して、�?致�?報を更新します�??
 	 * @param i_raster
 	 * @param i_pose
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void updateMatching(INyARGrayscaleRaster i_raster) throws NyARException
+	public void updateMatching(INyARGrayscaleRaster i_raster) throws NyARRuntimeException
 	{
-		//�?要に応じてラスタドライバ�?�再構�?
+		//�?要に応じてラスタドライバ�?�再構�?
 		if(this._last_input!=i_raster){
 			this._surf.surfThresh(this._ref_dataset.surfThresh);
 			this._last_input=i_raster;
@@ -137,13 +137,13 @@ public class NyARSingleKpm
 		this._int_image.genIntegralImage(i_raster);
 		
 		NyARSurfDescriptor surf_desc = this.__surf_desc;
-		// SURF特徴点の取�?(歪み保障付で)
+		// SURF特徴点の取�?(歪み保障付で)
 		this._surf.makeDescripter(this._int_image,this._cparam.getDistortionFactor(), surf_desc);
 
 		
-		// マッチする特徴点のクエリ・�?ンプレートセ�?トを取�?
+		// マッチする特徴点のクエリ・�?ンプレートセ�?トを取�?
 		this.__match_result.clear();
-		//�?致�?報を記録
+		//�?致�?報を記録
 		this._ann.match(surf_desc, this.__match_result);
 		this._updated=true;
 		return;
@@ -151,7 +151,7 @@ public class NyARSingleKpm
 }
 
 /**
- * 1/4リージョンごとに区�?った部�?�?合�??
+ * 1/4リージョンごとに区�?った部�?�?合�??
  */
 class PartialMatchResult {
 	public NyARSurfAnnMatch.ResultPtr lt_quarter;
@@ -160,7 +160,7 @@ class PartialMatchResult {
 	public NyARSurfAnnMatch.ResultPtr rb_quarter;
 	public NyARSurfAnnMatch.ResultPtr ce_quarter;
 
-	public PartialMatchResult(int i_max_feature) throws NyARException {
+	public PartialMatchResult(int i_max_feature) throws NyARRuntimeException {
 		this.lt_quarter = new NyARSurfAnnMatch.ResultPtr(i_max_feature);
 		this.rt_quarter = new NyARSurfAnnMatch.ResultPtr(i_max_feature);
 		this.lb_quarter = new NyARSurfAnnMatch.ResultPtr(i_max_feature);
@@ -187,18 +187,18 @@ class PartialMatchResult {
 			int y1 = (int) (match_item.key.y + 0.5);
 			if (x1 < cx) {
 				if (y1 < cy) {
-					// 左�?
+					// 左�?
 					this.lt_quarter.push(match_item);
 				} else {
-					// 左�?
+					// 左�?
 					this.lb_quarter.push(match_item);
 				}
 			} else {
 				if (y1 < cy) {
-					// 右�?
+					// 右�?
 					this.rt_quarter.push(match_item);
 				} else {
-					// 右�?
+					// 右�?
 					this.rb_quarter.push(match_item);
 				}
 			}

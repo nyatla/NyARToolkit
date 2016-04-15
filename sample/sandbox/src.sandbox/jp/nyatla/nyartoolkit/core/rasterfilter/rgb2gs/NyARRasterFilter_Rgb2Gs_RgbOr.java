@@ -30,16 +30,17 @@
  */
 package jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.raster.gs.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRasterFilter_Rgb2Gs;
+import jp.nyatla.nyartoolkit.core.rasterdriver.rgb2gs.INyARRasterFilter_Rgb2Gs;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 public class NyARRasterFilter_Rgb2Gs_RgbOr implements INyARRasterFilter_Rgb2Gs
 {
-	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output) throws NyARException
+	public void doFilter(INyARRgbRaster i_input, NyARGrayscaleRaster i_output) throws NyARRuntimeException
 	{
 		
 		assert(	i_output.isEqualBufferType(NyARBufferType.INT1D_GRAY_8));
@@ -55,7 +56,7 @@ public class NyARRasterFilter_Rgb2Gs_RgbOr implements INyARRasterFilter_Rgb2Gs
 			convert24BitRgb(in_buf, out_buf, size);
 			break;
 		default:
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		return;
 	}

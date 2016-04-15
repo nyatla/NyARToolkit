@@ -1,5 +1,5 @@
 /* 
- * PROJECT: NyARToolkit(Extension)
+n * PROJECT: NyARToolkit(Extension)
  * --------------------------------------------------------------------------------
  *
  * The NyARToolkit is Java edition ARToolKit class library.

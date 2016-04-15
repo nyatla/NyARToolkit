@@ -30,17 +30,22 @@
  */
 package jp.nyatla.nyartoolkit.dev;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.labeling.NyARLabelOverlapChecker;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.*;
 import jp.nyatla.nyartoolkit.core.param.NyARCameraDistortionFactorV2;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARCoord2SquareVertexIndexes;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.NyARLinear;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.raster.gs.NyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.NyARLabelOverlapChecker;
+import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.rle.NyARLabeling_Rle;
+import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.rle.NyARRleLabelFragmentInfoPtrStack;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARContourPickup;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARCoord2SquareVertexIndexes;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquare;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquareStack;
 import jp.nyatla.nyartoolkit.core.squaredetect.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 
@@ -72,7 +77,7 @@ public class NyARSquareDetector_Vector
 	 * 
 	 * @param i_param
 	 */
-	public NyARSquareDetector_Vector(NyARCameraDistortionFactorV2 i_dist_factor_ref,NyARIntSize i_size) throws NyARException
+	public NyARSquareDetector_Vector(NyARCameraDistortionFactorV2 i_dist_factor_ref,NyARIntSize i_size) throws NyARRuntimeException
 	{
 		this._width = i_size.w;
 		this._height = i_size.h;
@@ -101,9 +106,9 @@ public class NyARSquareDetector_Vector
 	 * 解析する２値ラスタイメージを指定します。
 	 * @param o_square_stack
 	 * 抽出した正方形候補を格納するリスト
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public final void detectMarker(NyARGrayscaleRaster i_gs,int i_th,NyARSquareStack o_square_stack) throws NyARException
+	public final void detectMarker(NyARGrayscaleRaster i_gs,int i_th,NyARSquareStack o_square_stack) throws NyARRuntimeException
 	{
 		final NyARRleLabelFragmentInfoPtrStack flagment=this._stack;
 		final NyARLabelOverlapChecker<NyARRleLabelFragmentInfoPtrStack.RleLabelFragmentInfo> overlap = this._overlap_checker;
@@ -190,7 +195,7 @@ public class NyARSquareDetector_Vector
 			return;
 		}
 
-		public boolean coordToSquare(NyARGrayscaleRaster i_raster,int[] i_xcoord,int[] i_ycoord,int i_coord_num,int i_label_area,NyARSquare o_square) throws NyARException
+		public boolean coordToSquare(NyARGrayscaleRaster i_raster,int[] i_xcoord,int[] i_ycoord,int i_coord_num,int i_label_area,NyARSquare o_square) throws NyARRuntimeException
 		{
 
 			final int[] mkvertex = this.__detectMarker_mkvertex;
@@ -242,7 +247,7 @@ public class NyARSquareDetector_Vector
 		
 		private NyARDoublePoint2d __work_pos=new NyARDoublePoint2d();
 		
-		private boolean getSquareLine(NyARGrayscaleRaster i_raster,int[] i_mkvertex, int[] i_xcoord, int[] i_ycoord,int i_cood_num, NyARSquare o_square) throws NyARException
+		private boolean getSquareLine(NyARGrayscaleRaster i_raster,int[] i_mkvertex, int[] i_xcoord, int[] i_ycoord,int i_cood_num, NyARSquare o_square) throws NyARRuntimeException
 		{
 			final NyARLinear[] l_line = o_square.line;
 			final NyARDoublePoint2d[] l_sqvertex = o_square.sqvertex;

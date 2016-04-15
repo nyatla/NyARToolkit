@@ -27,9 +27,9 @@ package jp.nyatla.nyartoolkit.markersystem;
 
 import java.io.InputStream;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.analyzer.histogram.INyARHistogramAnalyzer_Threshold;
-import jp.nyatla.nyartoolkit.core.analyzer.histogram.NyARHistogramAnalyzer_SlidePTile;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
+import jp.nyatla.nyartoolkit.core.histogram.algo.INyARHistogramAnalyzer_Threshold;
+import jp.nyatla.nyartoolkit.core.histogram.algo.NyARHistogramAnalyzer_SlidePTile;
 import jp.nyatla.nyartoolkit.core.icp.NyARIcpTransMat;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
@@ -82,9 +82,9 @@ public class NyARMarkerSystemConfig implements INyARMarkerSystemConfig
 	 * スクリーンサイズ
 	 * @param i_height
 	 * スクリーンサイズ
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public NyARMarkerSystemConfig(InputStream i_ar_param_stream,int i_width,int i_height) throws NyARException
+	public NyARMarkerSystemConfig(InputStream i_ar_param_stream,int i_width,int i_height)
 	{
 		this(NyARParam.createFromARParamFile(i_ar_param_stream));
 		this._param.changeScreenSize(i_width,i_height);
@@ -96,9 +96,9 @@ public class NyARMarkerSystemConfig implements INyARMarkerSystemConfig
 	 * スクリーンサイズ
 	 * @param i_height
 	 * スクリーンサイズ
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public NyARMarkerSystemConfig(int i_width,int i_height) throws NyARException
+	public NyARMarkerSystemConfig(int i_width,int i_height)
 	{
 		this(NyARParam.createDefaultParameter());
 		this._param.changeScreenSize(i_width,i_height);		

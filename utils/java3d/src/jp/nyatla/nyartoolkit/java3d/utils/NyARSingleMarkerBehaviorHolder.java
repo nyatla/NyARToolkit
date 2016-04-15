@@ -34,6 +34,7 @@ import javax.vecmath.*;
 
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.core.*;
+import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.detector.*;
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -57,7 +58,7 @@ public class NyARSingleMarkerBehaviorHolder implements JmfCaptureListener
 	//Behaviorホルダ
 	private NyARBehavior _nya_behavior;
 
-	public NyARSingleMarkerBehaviorHolder(NyARParam i_cparam, float i_rate, NyARCode i_ar_code, double i_marker_width) throws NyARException
+	public NyARSingleMarkerBehaviorHolder(NyARParam i_cparam, float i_rate, NyARCode i_ar_code, double i_marker_width) throws NyARRuntimeException
 	{
 		this._nya_behavior = null;
 		final NyARIntSize scr_size = i_cparam.getScreenSize();
@@ -123,7 +124,7 @@ public class NyARSingleMarkerBehaviorHolder implements JmfCaptureListener
 		}
 	}
 
-	public void start() throws NyARException
+	public void start() throws NyARRuntimeException
 	{
 		//開始
 		this._capture.start();

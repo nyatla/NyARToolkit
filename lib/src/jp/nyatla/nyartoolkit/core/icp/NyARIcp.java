@@ -12,7 +12,7 @@
  */
 package jp.nyatla.nyartoolkit.core.icp;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResultParam;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
@@ -114,10 +114,10 @@ public abstract class NyARIcp
 	 * @param o_result_param
 	 * 結果パラメータを受け取るオブジェクト。不要な場合はnullを指定可能。
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public abstract boolean icpPoint(NyARDoublePoint2d[] screenCoord,
 			NyARDoublePoint3d[] worldCoord, int num,
 			NyARDoubleMatrix44 initMatXw2Xc, NyARDoubleMatrix44 o_matxw2xc,NyARTransMatResultParam o_result_param)
-			throws NyARException;	
+			throws NyARRuntimeException;	
 }

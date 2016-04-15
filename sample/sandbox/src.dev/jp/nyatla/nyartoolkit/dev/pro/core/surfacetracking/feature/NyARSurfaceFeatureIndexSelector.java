@@ -1,12 +1,12 @@
 package jp.nyatla.nyartoolkit.dev.pro.core.surfacetracking.feature;
 
+import jp.nyatla.nyartoolkit.core.math.NyARLCGsRandomizer;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.pro.core.surfacetracking.NyARFeatureCoordPtrList;
 import jp.nyatla.nyartoolkit.pro.core.surfacetracking.feature.NyARSurfaceFeatureSet.NyAR2FeatureCoord;
-import jp.nyatla.nyartoolkit.core.utils.NyARLCGsRandomizer;
 
-//�?ンプレートを検�?�する�?
+//�?ンプレートを検�?�する�?
 public class NyARSurfaceFeatureIndexSelector implements INyARSurfaceFeatureIndex
 {
 	private static class RepeatedRandomizer extends NyARLCGsRandomizer
@@ -71,11 +71,11 @@ public class NyARSurfaceFeatureIndexSelector implements INyARSurfaceFeatureIndex
 		double dmax = 0.0f;
 		for (int i = candidate.getLength()-1; i>=0 ; i--) {
 			NyARSurfaceFeatureItem item = candidate.getItem(i);
-			// スクリーンの場�?でフィルター
+			// スクリーンの場�?でフィルター
 			if (item.x < xsize / 8 || item.x > xsize * 7 / 8 || item.y < ysize / 8 || item.y > ysize * 7 / 8) {
 				continue;
 			}
-			// 中�?から�?番距離のありそうなのを選�?
+			// 中�?から�?番距離のありそうなのを選�?
 			double d = (item.x - xsize / 2) * (item.x - xsize / 2) + (item.y - ysize / 2) * (item.y - ysize / 2);
 			if (d > dmax) {
 				dmax = d;
@@ -90,11 +90,11 @@ public class NyARSurfaceFeatureIndexSelector implements INyARSurfaceFeatureIndex
 		int j = -1;
 		for (int i = candidate.getLength()-1; i >=0 ; i--) {
 			NyARSurfaceFeatureItem item = candidate.getItem(i);
-			// スクリーンの場�?でフィルタ
+			// スクリーンの場�?でフィルタ
 			if (item.x < xsize / 8 || item.x > xsize * 7 / 8 || item.y < ysize / 8 || item.y > ysize * 7 / 8) {
 				continue;
 			}
-			// pos[0]との距離が市�?�の�?�?のを選�?
+			// pos[0]との距離が市�?�の�?�?のを選�?
 			double d = (item.x - i_pos0.x) * (item.x - i_pos0.x) + (item.y - i_pos0.y) * (item.y - i_pos0.y);
 			if (d > dmax) {
 				dmax = d;
@@ -112,7 +112,7 @@ public class NyARSurfaceFeatureIndexSelector implements INyARSurfaceFeatureIndex
 			if (item.x < xsize / 8 || item.x > xsize * 7 / 8 || item.y < ysize / 8 || item.y > ysize * 7 / 8) {
 				continue;
 			}
-			// なんだこれ。距離は間違�?な�?が�?�・・。pos[0]とpos[1]の両方から�?番離れた奴?�?
+			// なんだこれ。距離は間違�?な�?が�?�・・。pos[0]とpos[1]の両方から�?番離れた奴?�?
 			double d = ((item.x - i_pos0.x) * (i_pos1.y - i_pos0.y) - (item.y - i_pos0.y) * (i_pos1.x - i_pos0.x));
 			d = d * d;
 			if (d > dmax) {
@@ -135,11 +135,11 @@ public class NyARSurfaceFeatureIndexSelector implements INyARSurfaceFeatureIndex
 		smax = 0.0f;
 		for (int i = candidate.getLength()-1; i >=0 ; i--) {
 			NyARSurfaceFeatureItem item = candidate.getItem(i);
-			// スクリーンの?���?
+			// スクリーンの?���?
 			if (item.x < xsize / 8 || item.x > xsize * 7 / 8 || item.y < ysize / 8 || item.y > ysize * 7 / 8) {
 				continue;
 			}
-			// 謎�?�選択ルール・・・�?
+			// 謎�?�選択ルール・・・�?
 //			pos[3].x = item.x;
 //			pos[3].y = item.y;
 			p4sincos.ar2GetVectorAngle(i_pos0, item);
@@ -176,11 +176,11 @@ public class NyARSurfaceFeatureIndexSelector implements INyARSurfaceFeatureIndex
 		return j;
 	}
 	/**
-	 * インスタンスの状態をリセ�?トする�??
+	 * インスタンスの状態をリセ�?トする�??
 	 */
 
 	/**
-	 * o_posの状況に対応して、candidateから候補IDを選択します�??
+	 * o_posの状況に対応して、candidateから候補IDを選択します�??
 	 * @param candidate
 	 * @param prelog
 	 * @param o_pos
@@ -211,13 +211,13 @@ public class NyARSurfaceFeatureIndexSelector implements INyARSurfaceFeatureIndex
 			NyARSurfaceFeatureSet.NyAR2FeatureCoord prev_item = i_prev_log.getItem(i);
 			for (j = 0; j < candidate.getLength(); j++) {
 				NyARSurfaceFeatureItem item = candidate.getItem(j);
-				// 過去ログでも検�?�した形跡があったものを選択する�??
+				// 過去ログでも検�?�した形跡があったものを選択する�??
 				if (prev_item == item.ref_feature) {
 					return j;
 				}
 			}
 		}
-		//残ってな�?
+		//残ってな�?
 		if( candidate.getLength()==0){
 			return -1;
 		}

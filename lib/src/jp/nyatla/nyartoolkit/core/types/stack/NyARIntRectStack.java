@@ -26,7 +26,7 @@
 package jp.nyatla.nyartoolkit.core.types.stack;
 
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.NyARIntRect;
 /**
  * このクラスは、{@link NyARIntRect}型の可変長配列です。
@@ -38,7 +38,7 @@ public class NyARIntRectStack extends NyARObjectStack<NyARIntRect>
 	 * 配列の最大長さを指定して、インスタンスを生成します。
 	 * @param i_length
 	 * 配列の最大長さ
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */	
 	public NyARIntRectStack(int i_length)
 	{

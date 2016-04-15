@@ -32,7 +32,7 @@
 package jp.nyatla.nyartoolkit.sandbox.x2;
 
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.types.NyARFixedFloat16Point2d;
 import jp.nyatla.nyartoolkit.core.types.NyARFixedFloat16Point3d;
@@ -52,7 +52,7 @@ public class NyARFixedFloatRotTransOptimize_O2
 		return;
 	}
 	
-	final public double optimize(NyARFixedFloatRotMatrix io_rotmat,NyARFixedFloat16Point3d io_transvec,NyARFixedFloatFitVecCalculator i_calculator) throws NyARException
+	final public double optimize(NyARFixedFloatRotMatrix io_rotmat,NyARFixedFloat16Point3d io_transvec,NyARFixedFloatFitVecCalculator i_calculator) throws NyARRuntimeException
 	{
 		final NyARFixedFloat16Point2d[] fit_vertex=i_calculator.getFitSquare();
 		final NyARFixedFloat16Point3d[] offset_square=i_calculator.getOffsetVertex().vertex;
@@ -88,9 +88,9 @@ public class NyARFixedFloatRotTransOptimize_O2
 	 * @param i_vertex2d
 	 * [n][2]
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	private double modifyMatrix(NyARFixedFloatRotMatrix io_rot,NyARFixedFloat16Point3d trans, NyARFixedFloat16Point3d[] i_vertex3d, NyARFixedFloat16Point2d[] i_vertex2d) throws NyARException
+	private double modifyMatrix(NyARFixedFloatRotMatrix io_rot,NyARFixedFloat16Point3d trans, NyARFixedFloat16Point3d[] i_vertex3d, NyARFixedFloat16Point2d[] i_vertex2d) throws NyARRuntimeException
 	{
 		long a2, b2, c2;
 		long h, x, y;

@@ -12,9 +12,9 @@
  */
 package jp.nyatla.nyartoolkit.core.icp.base;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.NyARMat;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.icp.NyARIcpStereo;
+import jp.nyatla.nyartoolkit.core.math.NyARMat;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
@@ -24,9 +24,9 @@ public class NyARIcpStereoPoint_Base extends NyARIcpStereo {
 
 	public NyARIcpStereoPoint_Base(NyARParam i_param_l, NyARParam i_param_r,
 			NyARDoubleMatrix44 i_matC2_l, NyARDoubleMatrix44 i_matC2_r)
-			throws NyARException {
+			throws NyARRuntimeException {
 		super(i_param_l, i_param_r, i_matC2_l, i_matC2_r);
-		throw new NyARException("This function is not checked.");
+		throw new NyARRuntimeException("This function is not checked.");
 	}
 
 	public boolean icpStereoPoint(NyARDoublePoint2d[] screenCoord_l,
@@ -34,7 +34,7 @@ public class NyARIcpStereoPoint_Base extends NyARIcpStereo {
 			NyARDoublePoint2d[] screenCoord_r,
 			NyARDoublePoint3d[] worldCoord_r, int num_r,
 			NyARDoubleMatrix44 initMatXw2Xc, NyARDoubleMatrix44 matXw2Xc)
-			throws NyARException {
+			throws NyARRuntimeException {
 		assert num_l + num_r >= 3;
 		double err0 = 0, err1;
 		// 6*2*num?

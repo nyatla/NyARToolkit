@@ -31,8 +31,9 @@
  */
 package jp.nyatla.nyartoolkit.sandbox.quadx2;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.raster.bin.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.*;
@@ -54,7 +55,7 @@ public class NyARRasterFilter_ARTTh_Quad implements INyARRasterFilter_Rgb2Bin
 		this._threshold = i_threshold;
 	}
 
-	public void doFilter(INyARRgbRaster i_input, NyARBinRaster i_output) throws NyARException
+	public void doFilter(INyARRgbRaster i_input, NyARBinRaster i_output) throws NyARRuntimeException
 	{
 		int in_buf_type=i_input.getBufferType();
 
@@ -75,7 +76,7 @@ public class NyARRasterFilter_ARTTh_Quad implements INyARRasterFilter_Rgb2Bin
 //			convert32BitRgbx(in_buf, out_buf, size);
 //			break;
 		default:
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		return;
 	}
@@ -176,7 +177,7 @@ public class NyARRasterFilter_ARTTh_Quad implements INyARRasterFilter_Rgb2Bin
 		return;
 	}
 	
-	private boolean checkInputType(int i_input_type) throws NyARException
+	private boolean checkInputType(int i_input_type) throws NyARRuntimeException
 	{
 		switch(i_input_type){
 		case NyARBufferType.BYTE1D_B8G8R8_24:

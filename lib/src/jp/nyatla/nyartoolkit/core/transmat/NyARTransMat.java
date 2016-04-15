@@ -30,9 +30,9 @@
  */
 package jp.nyatla.nyartoolkit.core.transmat;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.*;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.transmat.solver.*;
 import jp.nyatla.nyartoolkit.core.transmat.optimize.*;
 import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.*;
@@ -69,7 +69,7 @@ public class NyARTransMat implements INyARTransMat
 	 * 樽型歪み矯正オブジェクトの参照値です。歪み矯正が不要な時は、nullを指定します。
 	 * @param i_ref_projmat
 	 * 射影変換オブジェクトの参照値です。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public NyARTransMat(INyARCameraDistortionFactor i_ref_distfactor,NyARPerspectiveProjectionMatrix i_ref_projmat)
 	{
@@ -88,7 +88,7 @@ public class NyARTransMat implements INyARTransMat
 	 * @param i_param
 	 * ARToolKit形式のカメラパラメータです。
 	 * インスタンスは、この中から樽型歪み矯正オブジェクト、射影変換オブジェクトを参照します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public NyARTransMat(NyARParam i_param)
 	{
@@ -121,7 +121,7 @@ public class NyARTransMat implements INyARTransMat
 	 * ARToolKitのarGetTransMatに該当します。
 	 * @see INyARTransMat#transMatContinue
 	 */
-	public boolean transMat(NyARSquare i_square,NyARRectOffset i_offset, NyARDoubleMatrix44 o_result,NyARTransMatResultParam o_param) throws NyARException
+	public boolean transMat(NyARSquare i_square,NyARRectOffset i_offset, NyARDoubleMatrix44 o_result,NyARTransMatResultParam o_param)
 	{
 		final NyARDoublePoint3d trans=this.__transMat_trans;
 		double err_threshold=makeErrThreshold(i_square.sqvertex);
@@ -162,7 +162,7 @@ public class NyARTransMat implements INyARTransMat
 	 * 計算に過去の履歴を使う点が、{@link #transMat}と異なります。
 	 * @see INyARTransMat#transMatContinue
 	 */
-	public boolean transMatContinue(NyARSquare i_square,NyARRectOffset i_offset, NyARDoubleMatrix44 i_prev_result,double i_prev_err,NyARDoubleMatrix44 o_result,NyARTransMatResultParam o_param) throws NyARException
+	public boolean transMatContinue(NyARSquare i_square,NyARRectOffset i_offset, NyARDoubleMatrix44 i_prev_result,double i_prev_err,NyARDoubleMatrix44 o_result,NyARTransMatResultParam o_param)
 	{
 		final NyARDoublePoint3d trans=this.__transMat_trans;
 		//最適化計算の閾値を決定
@@ -228,9 +228,9 @@ public class NyARTransMat implements INyARTransMat
 	 * @param o_result
 	 * @return
 	 * エラーレート
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	private double optimize(NyARRotMatrix iw_rotmat,NyARDoublePoint3d iw_transvec,INyARTransportVectorSolver i_solver,NyARDoublePoint3d[] i_offset_3d,NyARDoublePoint2d[] i_2d_vertex,double i_err_threshold,NyARDoubleMatrix44 o_result) throws NyARException
+	private double optimize(NyARRotMatrix iw_rotmat,NyARDoublePoint3d iw_transvec,INyARTransportVectorSolver i_solver,NyARDoublePoint3d[] i_offset_3d,NyARDoublePoint2d[] i_2d_vertex,double i_err_threshold,NyARDoubleMatrix44 o_result)
 	{
 		//System.out.println("START");
 		NyARDoublePoint3d[] vertex_3d=this.__transMat_vertex_3d;
@@ -272,9 +272,9 @@ public class NyARTransMat implements INyARTransMat
 	 * 計算過程で得られた、各頂点の三次元座標
 	 * @return
 	 * エラーレート(Σ(理想座標と計算座標の距離[n]^2))
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public final double errRate(NyARDoubleMatrix33 i_rot,NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d,int i_number_of_vertex,NyARDoublePoint3d[] o_rot_vertex) throws NyARException
+	public final double errRate(NyARDoubleMatrix33 i_rot,NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d,int i_number_of_vertex,NyARDoublePoint3d[] o_rot_vertex)
 	{
 		NyARPerspectiveProjectionMatrix cp = this._ref_projection_mat;
 		final double cp00=cp.m00;

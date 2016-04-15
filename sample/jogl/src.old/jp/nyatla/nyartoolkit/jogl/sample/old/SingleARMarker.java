@@ -37,12 +37,13 @@ import javax.media.opengl.*;
 
 import com.sun.opengl.util.*;
 import jp.nyatla.nyartoolkit.core.*;
+import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
 import jp.nyatla.nyartoolkit.core.param.*;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.jogl.utils.*;
-import jp.nyatla.nyartoolkit.processor.*;
+import jp.nyatla.nyartoolkit.old.processor.*;
 
 
 /**
@@ -65,7 +66,7 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 		
 		public int current_code=-1;
 
-		public MarkerProcessor(NyARParam i_cparam,int i_raster_format,NyARGLUtil i_glutil) throws NyARException
+		public MarkerProcessor(NyARParam i_cparam,int i_raster_format,NyARGLUtil i_glutil) throws NyARRuntimeException
 		{
 			//アプリケーションフレームワークの初期化
 			super();
@@ -123,7 +124,7 @@ public class SingleARMarker implements GLEventListener, JmfCaptureListener
 		//キャプチャリソースの準備
 		this._capture=devlist.getDevice(0);
 		if(!this._capture.setCaptureFormat(SCREEN_X, SCREEN_Y,30.0f)){
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		this._capture.setOnCapture(this);
 		this._cap_image = new JmfNyARRGBRaster(this._capture.getCaptureFormat());	

@@ -27,16 +27,16 @@ package jp.nyatla.nyartoolkit.markersystem;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
-import jp.nyatla.nyartoolkit.core.NyARCode;
-import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.analyzer.histogram.*;
-import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
+import jp.nyatla.nyartoolkit.core.coord2liner.NyARCoord2Linear;
+import jp.nyatla.nyartoolkit.core.histogram.algo.INyARHistogramAnalyzer_Threshold;
+import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
+import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
-import jp.nyatla.nyartoolkit.core.rasterdriver.INyARPerspectiveCopy;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARCoord2Linear;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector_Rle;
+import jp.nyatla.nyartoolkit.core.rasterdriver.perspectivecopy.INyARPerspectiveCopy;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquareContourDetector;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquareContourDetector_Rle;
 import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
@@ -89,9 +89,9 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * コンストラクタです。{@link INyARMarkerSystemConfig}を元に、インスタンスを生成します。
 	 * @param i_config
 	 * 初期化済の{@link MarkerSystem}を指定します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public NyARMarkerSystem(INyARMarkerSystemConfig i_config) throws NyARException
+	public NyARMarkerSystem(INyARMarkerSystemConfig i_config)
 	{
 		super(i_config.getNyARParam());
 		this.initInstance(i_config);
@@ -104,7 +104,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 		//同時に判定待ちにできる矩形の数
 		this._on_sq_handler=new OnSquareDetect(i_config,this._armk_list,this._idmk_list,this._psmk_list,this._tracking_list,INITIAL_MARKER_STACK_SIZE);
 	}
-	protected void initInstance(INyARMarkerSystemConfig i_ref_config) throws NyARException
+	protected void initInstance(INyARMarkerSystemConfig i_ref_config)
 	{
 		this._sqdetect=new SquareDetect(i_ref_config);
 		this._hist_th=i_ref_config.createAutoThresholdArgorism();
@@ -120,9 +120,9 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * マーカの四方サイズ[mm]
 	 * @return
 	 * マーカID（ハンドル）値。この値はIDの値ではなく、マーカのハンドル値です。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public int addNyIdMarker(long i_id,double i_marker_size) throws NyARException
+	public int addNyIdMarker(long i_id,double i_marker_size)
 	{
 		return this.addNyIdMarker(i_id,i_id, i_marker_size);
 	}
@@ -139,13 +139,13 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * マーカの四方サイズ[mm]
 	 * @return
 	 * マーカID（ハンドル）値。この値はNyIDの値ではなく、マーカのハンドル値です。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public int addNyIdMarker(long i_id_s,long i_id_e,double i_marker_size) throws NyARException
+	public int addNyIdMarker(long i_id_s,long i_id_e,double i_marker_size)
 	{
 		NyIdList.Item target=new NyIdList.Item(i_id_s,i_id_e,i_marker_size);
 		if(!this._idmk_list.add(target)){
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		this._tracking_list.add(target);
 		this._on_sq_handler.setMaxDetectMarkerCapacity(this._tracking_list.size());
@@ -164,15 +164,15 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * マーカの四方サイズ[mm]
 	 * @return
 	 * マーカID（ハンドル）値。この値はIDの値ではなく、マーカのハンドル値です。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public int addPsARPlayCard(int i_id_s,int i_id_e,double i_marker_size) throws NyARException
+	public int addPsARPlayCard(int i_id_s,int i_id_e,double i_marker_size)
 	{
 		assert(i_id_s>0 && i_id_s<=6);
 		assert(i_id_e>0 && i_id_e<=6);
 		ARPlayCardList.Item target=new ARPlayCardList.Item(i_id_s,i_id_e,i_marker_size);
 		if(!this._psmk_list.add(target)){
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		this._tracking_list.add(target);
 		this._on_sq_handler.setMaxDetectMarkerCapacity(this._tracking_list.size());
@@ -187,9 +187,9 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * マーカの四方サイズ[mm]
 	 * @return
 	 * マーカID（ハンドル）値。この値はIDの値ではなく、マーカのハンドル値です。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public int addPsARPlayCard(int i_id,double i_marker_size) throws NyARException
+	public int addPsARPlayCard(int i_id,double i_marker_size)
 	{
 		return this.addPsARPlayCard(i_id,i_id,i_marker_size);
 	}	
@@ -203,13 +203,13 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * マーカの平方サイズ[mm]
 	 * @return
 	 * マーカID（ハンドル）値。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public int addARMarker(NyARCode i_code,int i_patt_edge_percentage,double i_marker_size) throws NyARException
+	public int addARMarker(NyARCode i_code,int i_patt_edge_percentage,double i_marker_size)
 	{
 		ARMarkerList.Item target=new ARMarkerList.Item(i_code,i_patt_edge_percentage,i_marker_size);
 		if(!this._armk_list.add(target)){
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		this._tracking_list.add(target);
 		this._on_sq_handler.setMaxDetectMarkerCapacity(this._tracking_list.size());
@@ -225,9 +225,9 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * マーカの平方サイズ[mm]
 	 * @return
 	 * マーカID（ハンドル）値。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public int addARMarker(InputStream i_stream,int i_patt_resolution,int i_patt_edge_percentage,double i_marker_size) throws NyARException
+	public int addARMarker(InputStream i_stream,int i_patt_resolution,int i_patt_edge_percentage,double i_marker_size)
 	{
 		NyARCode c=NyARCode.createFromARPattFile(i_stream,i_patt_resolution,i_patt_resolution);
 		return this.addARMarker(c, i_patt_edge_percentage, i_marker_size);
@@ -242,15 +242,15 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * マーカの平方サイズ[mm]
 	 * @return
 	 * マーカID（ハンドル）値。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public int addARMarker(String i_file_name,int i_patt_resolution,int i_patt_edge_percentage,double i_marker_size) throws NyARException
+	public int addARMarker(String i_file_name,int i_patt_resolution,int i_patt_edge_percentage,double i_marker_size)
 	{
 		try{
 			NyARCode c=NyARCode.createFromARPattFile(new FileInputStream(i_file_name),i_patt_resolution,i_patt_resolution);
 			return this.addARMarker(c,i_patt_edge_percentage, i_marker_size);
 		}catch(Exception e){
-			throw new NyARException(e);
+			throw new NyARRuntimeException(e);
 		}
 	}
 	/**
@@ -268,15 +268,15 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * マーカの平方サイズ[mm]
 	 * @return
 	 * マーカID（ハンドル）値。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public int addARMarker(INyARRgbRaster i_raster,int i_patt_resolution,int i_patt_edge_percentage,double i_marker_size) throws NyARException
+	public int addARMarker(INyARRgbRaster i_raster,int i_patt_resolution,int i_patt_edge_percentage,double i_marker_size)
 	{
 		NyARCode c=new NyARCode(i_patt_resolution,i_patt_resolution);
 		NyARIntSize s=i_raster.getSize();
 		//ラスタからマーカパターンを切り出す。
 		INyARPerspectiveCopy pc=(INyARPerspectiveCopy)i_raster.createInterface(INyARPerspectiveCopy.class);
-		NyARRgbRaster tr=new NyARRgbRaster(i_patt_resolution,i_patt_resolution);
+		INyARRgbRaster tr=NyARRgbRaster.createInstance(i_patt_resolution,i_patt_resolution);
 		pc.copyPatt(0,0,s.w,0,s.w,s.h,0,s.h,i_patt_edge_percentage, i_patt_edge_percentage,4, tr);
 		//切り出したパターンをセット
 		c.setRaster(tr);
@@ -290,9 +290,9 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * マーカID（ハンドル）値。
 	 * @return
 	 * マーカを検出していればtrueを返します。
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public boolean isExistMarker(int i_id) throws NyARException
+	public boolean isExistMarker(int i_id)
 	{
 		return this.getLife(i_id)>0;
 	}
@@ -305,14 +305,14 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * @return
 	 * 0&lt;n&lt;1の一致度。
 	 */
-	public double getConfidence(int i_id) throws NyARException
+	public double getConfidence(int i_id)
 	{
 		if((i_id & MASK_IDTYPE)==IDTYPE_ARTK){
 			//ARマーカ
 			return this._armk_list.get(i_id &MASK_IDNUM).cf;
 		}
 		//Idマーカ？
-		throw new NyARException();
+		throw new NyARRuntimeException();
 	}
 	/**
 	 * この関数は、NyIdマーカのID値を返します。
@@ -321,16 +321,16 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * マーカID（ハンドル）値。
 	 * @return
 	 * 現在のNyIdの値
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public long getNyId(int i_id) throws NyARException
+	public long getNyId(int i_id)
 	{
 		if((i_id & MASK_IDTYPE)==IDTYPE_NYID){
 			//Idマーカ
 			return this._idmk_list.get(i_id &MASK_IDNUM).nyid;
 		}
 		//ARマーカ？
-		throw new NyARException();
+		throw new NyARRuntimeException();
 	}
 	/**
 	 * この関数は、現在の２値化敷居値を返します。
@@ -350,7 +350,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * @return
 	 * ライフ値
 	 */
-	public long getLife(int i_id) throws NyARException
+	public long getLife(int i_id)
 	{
 		switch(i_id & MASK_IDTYPE)
 		{
@@ -361,7 +361,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 		case IDTYPE_PSID:
 			return this._psmk_list.get(i_id & MASK_IDNUM).life;
 		default:
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 	}
 	/**
@@ -371,9 +371,9 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * マーカID（ハンドル）値。
 	 * @return
 	 * 消失カウンタの値
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public long getLostCount(int i_id) throws NyARException
+	public long getLostCount(int i_id)
 	{
 		switch(i_id & MASK_IDTYPE)
 		{
@@ -384,7 +384,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 		case IDTYPE_PSID:
 			return this._psmk_list.get(i_id & MASK_IDNUM).lost_count;
 		default:
-			throw new NyARException();
+			throw new NyARRuntimeException();
 
 		}
 	}
@@ -402,7 +402,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * @return
 	 * 結果を格納したi_outに設定したオブジェクト
 	 */
-	public NyARDoublePoint3d getMarkerPlanePos(int i_id,int i_x,int i_y,NyARDoublePoint3d i_out) throws NyARException
+	public NyARDoublePoint3d getMarkerPlanePos(int i_id,int i_x,int i_y,NyARDoublePoint3d i_out)
 	{
 		this._frustum.unProjectOnMatrix(i_x, i_y,this.getMarkerMatrix(i_id),i_out);
 		return i_out;
@@ -424,7 +424,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * @return
 	 * 結果を格納したi_outに設定したオブジェクト
 	 */
-	public NyARDoublePoint2d getScreenPos(int i_id,double i_x,double i_y,double i_z,NyARDoublePoint2d i_out) throws NyARException
+	public NyARDoublePoint2d getScreenPos(int i_id,double i_x,double i_y,double i_z,NyARDoublePoint2d i_out)
 	{
 		NyARDoublePoint3d _wk_3dpos=this._wk_3dpos;
 		this.getMarkerMatrix(i_id).transform3d(i_x, i_y, i_z,_wk_3dpos);
@@ -462,7 +462,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * 取得した画像を格納するオブジェクト
 	 * @return
 	 * 結果を格納したi_rasterオブジェクト
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public INyARRgbRaster getMarkerPlaneImage(
 		int i_id,
@@ -471,7 +471,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 		double i_x2,double i_y2,
 		double i_x3,double i_y3,
 		double i_x4,double i_y4,
-	    INyARRgbRaster i_raster) throws NyARException
+	    INyARRgbRaster i_raster)
 	{
 		NyARDoublePoint3d[] pos  = this.__pos3d;
 		NyARDoublePoint2d[] pos2 = this.__pos2d;
@@ -504,14 +504,14 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * 出力先のオブジェクト
 	 * @return
 	 * 結果を格納したi_rasterオブジェクト
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public INyARRgbRaster getMarkerPlaneImage(
 		int i_id,
 		NyARSensor i_sensor,
 	    double i_l,double i_t,
 	    double i_w,double i_h,
-	    INyARRgbRaster i_raster) throws NyARException
+	    INyARRgbRaster i_raster)
     {
 		return this.getMarkerPlaneImage(i_id,i_sensor,i_l+i_w-1,i_t+i_h-1,i_l,i_t+i_h-1,i_l,i_t,i_l+i_w-1,i_t,i_raster);
     }
@@ -522,7 +522,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * [readonly]
 	 * 姿勢行列を格納したオブジェクト。座標系は、ARToolKit座標系です。
 	 */
-	public NyARDoubleMatrix44 getMarkerMatrix(int i_id) throws NyARException
+	public NyARDoubleMatrix44 getMarkerMatrix(int i_id)
 	{
 		switch(i_id & MASK_IDTYPE)
 		{
@@ -533,7 +533,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 		case IDTYPE_PSID:
 			return this._psmk_list.get(i_id &MASK_IDNUM).tmat;
 		default:
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}		
 	}
 	/**
@@ -543,7 +543,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * @return
 	 * [readonly]
 	 */
-	public NyARIntPoint2d[] getMarkerVertex2D(int i_id) throws NyARException
+	public NyARIntPoint2d[] getMarkerVertex2D(int i_id)
 	{
 		switch(i_id & MASK_IDTYPE)
 		{
@@ -554,7 +554,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 		case IDTYPE_PSID:
 			return this._psmk_list.get(i_id &MASK_IDNUM).tl_vertex;
 		default:
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}		
 	}
 	/**
@@ -595,9 +595,9 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * 関数は、センサオブジェクトから画像を取得して、マーカ検出、一致判定、トラッキング処理を実行します。
 	 * @param i_sensor
 	 * {@link MarkerSystem}に入力する画像を含むセンサオブジェクト。
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public void update(NyARSensor i_sensor) throws NyARException
+	public void update(NyARSensor i_sensor)
 	{
 		long time_stamp=i_sensor.getTimeStamp();
 		//センサのタイムスタンプが変化していなければ何もしない。
@@ -699,7 +699,7 @@ class OnSquareDetect implements NyARSquareContourDetector.CbHandler
 	public OnSquareDetect(
 		INyARMarkerSystemConfig i_config,
 		ARMarkerList i_armk_list,NyIdList i_idmk_list,ARPlayCardList i_psmk_list,
-		TrackingList i_tracking_list,int i_initial_stack_size) throws NyARException
+		TrackingList i_tracking_list,int i_initial_stack_size)
 	{
 		this._coordline=new NyARCoord2Linear(i_config.getNyARParam().getScreenSize(),i_config.getNyARParam().getDistortionFactor());
 		this._ref_armk_list=i_armk_list;
@@ -712,9 +712,9 @@ class OnSquareDetect implements NyARSquareContourDetector.CbHandler
 	/**
 	 * 同時に検出するマーカの最大数を設定します。
 	 * 関数は、少なくともi_max_number_of_marker以上のマーカを同時に検出できるようにインスタンスを設定します。
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public void setMaxDetectMarkerCapacity(int i_max_number_of_marker) throws NyARException
+	public void setMaxDetectMarkerCapacity(int i_max_number_of_marker)
 	{
 		//prepare enough stack size.
 		if(this._sq_stack.getArraySize()<i_max_number_of_marker){
@@ -728,7 +728,7 @@ class OnSquareDetect implements NyARSquareContourDetector.CbHandler
 	 * @param i_pcopy
 	 * @param i_gs
 	 * @param th
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public void prepare(INyARPerspectiveCopy i_pcopy, INyARGrayscaleRaster i_gs, int th)
 	{
@@ -738,7 +738,7 @@ class OnSquareDetect implements NyARSquareContourDetector.CbHandler
 		// initialize square stack
 		this._sq_stack.clear();		
 	}
-	public void detectMarkerCallback(NyARIntCoordinates i_coord,int[] i_vertex_index) throws NyARException
+	public void detectMarkerCallback(NyARIntCoordinates i_coord,int[] i_vertex_index)
 	{
 		//とりあえずSquareスタックを予約
 		SquareStack.Item sq_tmp=this._sq_stack.prePush();
@@ -800,7 +800,7 @@ class OnSquareDetect implements NyARSquareContourDetector.CbHandler
 			for (int i2 = 0; i2 < 4; i2++) {
 				//直線同士の交点計算
 				if(!sq_tmp.line[i2].crossPos(sq_tmp.line[(i2 + 3) % 4],sq_tmp.sqvertex[i2])){
-					throw new NyARException();//まずない。ありえない。
+					throw new NyARRuntimeException();//まずない。ありえない。
 				}
 			}
 		}else{
@@ -816,11 +816,11 @@ class OnSquareDetect implements NyARSquareContourDetector.CbHandler
 class SquareDetect implements INyARMarkerSystemSquareDetect
 {
 	private NyARSquareContourDetector_Rle _sd;
-	public SquareDetect(INyARMarkerSystemConfig i_config) throws NyARException
+	public SquareDetect(INyARMarkerSystemConfig i_config)
 	{
 		this._sd=new NyARSquareContourDetector_Rle(i_config.getScreenSize());
 	}
-	public void detectMarkerCb(NyARSensor i_sensor,int i_th,NyARSquareContourDetector.CbHandler i_handler) throws NyARException
+	public void detectMarkerCb(NyARSensor i_sensor,int i_th,NyARSquareContourDetector.CbHandler i_handler)
 	{
 		this._sd.detectMarker(i_sensor.getGsImage(), i_th,i_handler);
 	}

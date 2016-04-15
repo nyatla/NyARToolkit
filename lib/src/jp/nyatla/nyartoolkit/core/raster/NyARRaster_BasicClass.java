@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.raster;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
@@ -34,7 +34,7 @@ import jp.nyatla.nyartoolkit.core.types.*;
 public abstract class NyARRaster_BasicClass implements INyARRaster
 {
 	protected final NyARIntSize _size;
-	protected int _buffer_type;
+	protected final int _buffer_type;
 	/**
 	 * コンストラクタです。
 	 * メンバ変数を初期化して、インスタンスを生成します。
@@ -53,6 +53,7 @@ public abstract class NyARRaster_BasicClass implements INyARRaster
 	/**
 	 * この関数は、ラスタの幅を返します。
 	 */
+	@Override
 	public final int getWidth()
 	{
 		return this._size.w;
@@ -60,6 +61,7 @@ public abstract class NyARRaster_BasicClass implements INyARRaster
 	/**
 	 * この関数は、ラスタの高さを返します。
 	 */
+	@Override
 	final public int getHeight()
 	{
 		return this._size.h;
@@ -67,6 +69,7 @@ public abstract class NyARRaster_BasicClass implements INyARRaster
 	/**
 	 * この関数は、ラスタのサイズを格納したオブジェクトを返します。
 	 */
+	@Override
 	final public NyARIntSize getSize()
 	{
 		return this._size;
@@ -75,6 +78,7 @@ public abstract class NyARRaster_BasicClass implements INyARRaster
 	 * この関数は、ラスタのバッファへの参照値を返します。
 	 * バッファの形式は、コンストラクタに指定した形式と同じです。
 	 */	
+	@Override
 	final public int getBufferType()
 	{
 		return _buffer_type;
@@ -82,12 +86,13 @@ public abstract class NyARRaster_BasicClass implements INyARRaster
 	/**
 	 * この関数は、ラスタの幅を返します。
 	 */
+	@Override
 	final public boolean isEqualBufferType(int i_type_value)
 	{
 		return this._buffer_type==i_type_value;
 	}
     public abstract Object getBuffer();
     public abstract boolean hasBuffer();
-    public abstract void wrapBuffer(Object i_ref_buf)throws NyARException;
-    public abstract Object createInterface(Class<?> i_iid)throws NyARException;
+    public abstract void wrapBuffer(Object i_ref_buf)throws NyARRuntimeException;
+    public abstract Object createInterface(Class<?> i_iid)throws NyARRuntimeException;
 }

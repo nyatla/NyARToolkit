@@ -1,7 +1,7 @@
 package jp.nyatla.nyartoolkit.dev.pro.core.surfacetracking.feature;
-import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
-import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
+import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.raster.gs.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.pro.core.rasterfilter.INyARDefocusFilter;
 import jp.nyatla.nyartoolkit.pro.core.rasterfilter.NyARDefocusFilterFactory;
 import jp.nyatla.nyartoolkit.pro.core.surfacetracking.featuremap.NyARSurfaceFeatureMap;
@@ -19,7 +19,7 @@ public class NyARSurfaceFeatureSetUtils
 	public final static double AR2_DEFAULT_MAX_SIM_THRESH2=0.95;
 	public final static double AR2_DEFAULT_MIN_SIM_THRESH2=0.40;
 	public final static double AR2_DEFAULT_SD_THRESH2=5.0;
-	public static NyARSurfaceFeatureSet makeSurfaceFeature(INyARGrayscaleRaster[] i_rasters,double[] i_dpis) throws NyARException
+	public static NyARSurfaceFeatureSet makeSurfaceFeature(INyARGrayscaleRaster[] i_rasters,double[] i_dpis) throws NyARRuntimeException
     {
 		return NyARSurfaceFeatureSetUtils.makeSurfaceFeature(i_rasters,i_dpis,		
 				NyARSurfaceFeatureSetUtils.AR2_DEFAULT_TS1,NyARSurfaceFeatureSetUtils.AR2_DEFAULT_TS2,
@@ -30,7 +30,7 @@ public class NyARSurfaceFeatureSetUtils
     }
 	public static NyARSurfaceFeatureSet makeSurfaceFeature(INyARGrayscaleRaster[] i_raster,double[] i_dpi,
 		int i_ts1,int i_ts2,int i_map_search_size,int i_select_map_size,int i_occ_size,
-	    double  max_sim_thresh, double  min_sim_thresh, double  sd_thresh) throws NyARException
+	    double  max_sim_thresh, double  min_sim_thresh, double  sd_thresh) throws NyARRuntimeException
 	{
 		assert(i_raster.length==i_dpi.length);
 		NyARSurfaceFeatureSet.NyAR2FeaturePoints[] list=new NyARSurfaceFeatureSet.NyAR2FeaturePoints[i_raster.length];
@@ -40,11 +40,11 @@ public class NyARSurfaceFeatureSetUtils
 			INyARGrayscaleRaster imgBW1=new NyARGrayscaleRaster(src.getWidth(),src.getHeight());
 			INyARDefocusFilter filter=NyARDefocusFilterFactory.createDriver(src);
 			filter.doFilter(imgBW1,1);			
-			//MAPの生�??
+			//MAPの生�??
 			NyARSurfaceFeatureMap map=NyARSurfaceFeatureMapUtils.ar2GenFeatureMap(imgBW1, i_dpi[i2], i_ts1, i_ts2, i_map_search_size, max_sim_thresh, sd_thresh);
-			//キーの選�?
+			//キーの選�?
 			NyARSurfaceFeatureMapUtils.SelectFeatureResult selected=NyARSurfaceFeatureMapUtils.ar2SelectFeature(imgBW1, i_dpi[i2],map,i_ts1, i_ts2,i_select_map_size,i_occ_size,max_sim_thresh,min_sim_thresh,sd_thresh);
-			//max_dpiとmin_dpiの決�?
+			//max_dpiとmin_dpiの決�?
 	        double scale1 = 0.0;
 	        for(int j = 0; j < i_dpi.length; j++ ) {
 	            if(i_dpi[j] < i_dpi[i2] ) {
@@ -74,7 +74,7 @@ public class NyARSurfaceFeatureSetUtils
 	            double scale2 = i_dpi[i2];
 	           maxdpi = scale2*0.8 + scale1*0.2;
 	        }			
-			//�?ータ生�??
+			//�?ータ生�??
 	        list[i2]=new NyARSurfaceFeatureSet.NyAR2FeaturePoints(selected.getLength(),i2,maxdpi,mindpi);
 			NyARSurfaceFeatureSet.NyAR2FeaturePoints list_item=list[i2];
 			int ysize=imgBW1.getHeight();

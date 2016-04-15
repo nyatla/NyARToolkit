@@ -39,7 +39,7 @@ import javax.media.Buffer;
 import javax.media.opengl.*;
 
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
@@ -81,7 +81,7 @@ public class Test_NyARRealityGl_ARMarker implements GLEventListener, JmfCaptureL
 	NyARRealitySource_Jmf _src;
 	ARTKMarkerTable _mklib;
 
-	public Test_NyARRealityGl_ARMarker(NyARParam i_param) throws NyARException, FileNotFoundException
+	public Test_NyARRealityGl_ARMarker(NyARParam i_param) throws NyARRuntimeException, FileNotFoundException
 	{
 		Frame frame = new Frame("NyARToolkit+RPF["+this.getClass().getName()+"]");
 		
@@ -89,7 +89,7 @@ public class Test_NyARRealityGl_ARMarker implements GLEventListener, JmfCaptureL
 		JmfCaptureDeviceList devlist = new JmfCaptureDeviceList();
 		this._capture = devlist.getDevice(0);
 		if (!this._capture.setCaptureFormat(SCREEN_X, SCREEN_Y, 30.0f)) {
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		this._capture.setOnCapture(this);
 		//Realityの構築

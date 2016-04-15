@@ -25,12 +25,13 @@
  */
 package jp.nyatla.nyartoolkit.core.transmat.optimize;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
+import jp.nyatla.nyartoolkit.core.math.NyAREquationSolver;
 import jp.nyatla.nyartoolkit.core.param.*;
 
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
-import jp.nyatla.nyartoolkit.core.utils.*;
+
 
 
 
@@ -76,7 +77,7 @@ public class NyARPartialDifferentiationOptimize
 	 * J=2*Σ(d[n]*f[n]+a[n]*c[n])/L K=2*Σ(-e[n]*f[n]+b[n]*c[n])/L M=Σ(-e[n]^2+d[n]^2-b[n]^2+a[n]^2)/L 偏微分式 +J*cos(x) +K*sin(x) -sin(x)^2 +cos(x)^2
 	 * +2*M*cos(x)*sin(x)
 	 */
-	private double optimizeParamX(double sinb,double cosb,double sinc,double cosc,NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d, int i_number_of_vertex, double i_hint_angle) throws NyARException
+	private double optimizeParamX(double sinb,double cosb,double sinc,double cosc,NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d, int i_number_of_vertex, double i_hint_angle)
 	{
 		NyARPerspectiveProjectionMatrix cp = this._projection_mat_ref;
 		double L, J, K, M, N, O;
@@ -131,7 +132,7 @@ public class NyARPartialDifferentiationOptimize
 
 	}
 
-	private double optimizeParamY(double sina,double cosa,double sinc,double cosc, NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d, int i_number_of_vertex, double i_hint_angle) throws NyARException
+	private double optimizeParamY(double sina,double cosa,double sinc,double cosc, NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d, int i_number_of_vertex, double i_hint_angle)
 	{
 		NyARPerspectiveProjectionMatrix cp = this._projection_mat_ref;
 		double L, J, K, M, N, O;
@@ -184,7 +185,7 @@ public class NyARPartialDifferentiationOptimize
 
 	}
 
-	private double optimizeParamZ(double sina,double cosa,double sinb,double cosb, NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d, int i_number_of_vertex, double i_hint_angle) throws NyARException
+	private double optimizeParamZ(double sina,double cosa,double sinb,double cosb, NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d, int i_number_of_vertex, double i_hint_angle)
 	{
 		NyARPerspectiveProjectionMatrix cp = this._projection_mat_ref;
 		double L, J, K, M, N, O;
@@ -251,9 +252,9 @@ public class NyARPartialDifferentiationOptimize
 	 * 理想座標系の頂点座標
 	 * @param i_number_of_vertex
 	 * 頂点数
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void modifyMatrix(NyARDoubleMatrix33 io_rot, NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d, int i_number_of_vertex) throws NyARException
+	public void modifyMatrix(NyARDoubleMatrix33 io_rot, NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d, int i_number_of_vertex)
 	{
 		NyARDoublePoint3d ang = this.__ang;		
 		// ZXY系のsin/cos値を抽出
@@ -278,9 +279,9 @@ public class NyARPartialDifferentiationOptimize
 	 * 頂点数
 	 * @param o_angle
 	 * 調整した回転角を受け取る配列
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */	
-	public void modifyMatrix(NyARDoublePoint3d i_angle,NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d, int i_number_of_vertex,NyARDoublePoint3d o_angle) throws NyARException
+	public void modifyMatrix(NyARDoublePoint3d i_angle,NyARDoublePoint3d i_trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d, int i_number_of_vertex,NyARDoublePoint3d o_angle)
 	{
 
 		// ZXY系のsin/cos値を抽出
@@ -300,7 +301,7 @@ public class NyARPartialDifferentiationOptimize
 	/**
 	 * エラーレートが最小になる点を得る。
 	 */
-	private double getMinimumErrorAngleFromParam(double iL,double iJ, double iK, double iM, double iN, double iO, double i_hint_angle) throws NyARException
+	private double getMinimumErrorAngleFromParam(double iL,double iJ, double iK, double iM, double iN, double iO, double i_hint_angle)
 	{
 		//iLが0の時は誤差修正しない。
 		if (iL == 0) {

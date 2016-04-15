@@ -39,6 +39,7 @@ import javax.swing.JFrame;
 import javax.vecmath.*;
 
 import jp.nyatla.nyartoolkit.core.*;
+import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
 import jp.nyatla.nyartoolkit.java3d.utils.*;
 
 import com.sun.j3d.utils.geometry.ColorCube;

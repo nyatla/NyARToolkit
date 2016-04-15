@@ -12,8 +12,8 @@
  */
 package jp.nyatla.nyartoolkit.core.icp;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.NyARMat;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
+import jp.nyatla.nyartoolkit.core.math.NyARMat;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
@@ -286,9 +286,9 @@ public class NyARIcpUtils
 		 * @param J_U_S
 		 * @param n
 		 * @return
-		 * @throws NyARException
+		 * @throws NyARRuntimeException
 		 */
-		public boolean setJusArray(NyARIcpUtils.JusStack i_jus) throws NyARException
+		public boolean setJusArray(NyARIcpUtils.JusStack i_jus)
 		{
 		    i_jus.makeJtJ(this.__matJtJ);
 		    double[] JtU=i_jus.makeJtU(this.__JtU);

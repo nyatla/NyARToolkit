@@ -31,12 +31,12 @@
 package jp.nyatla.nyartoolkit.core.param;
 
 import java.io.*;
-import java.nio.*;
-import jp.nyatla.nyartoolkit.core.utils.*;
-import jp.nyatla.nyartoolkit.core.NyARException;
+
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
+import jp.nyatla.nyartoolkit.j2se.ByteBufferedInputStream;
 
 /**
  * このクラスは、NyARToolkitの環境パラメータを格納します。
@@ -58,9 +58,9 @@ public class NyARParam
 	 * テストパラメータを格納したインスタンスを生成します。
 	 * テストパラメータは、ARToolKit2形式のcamera_para.datです。
 	 * @return
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public static NyARParam createDefaultParameter() throws NyARException
+	public static NyARParam createDefaultParameter()
 	{
 		ParamLoader pm=new ParamLoader();
 		return new NyARParam(pm.size,pm.pmat,pm.dist_factor);
@@ -69,9 +69,9 @@ public class NyARParam
 	 * i_streamからARToolkitのカメラパラメータを読み出して、格納したインスタンスを生成します。
 	 * @param i_stream
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public static NyARParam createFromARParamFile(InputStream i_stream) throws NyARException
+	public static NyARParam createFromARParamFile(InputStream i_stream)
 	{
 		ParamLoader pm=new ParamLoader(i_stream);
 		return new NyARParam(pm.size,pm.pmat,pm.dist_factor);
@@ -219,7 +219,7 @@ public class NyARParam
 		}
 		/**
 		 * 標準パラメータでインスタンスを初期化します。
-		 * @throws NyARException
+		 * @throws NyARRuntimeException
 		 */
 		public ParamLoader()
 		{
@@ -237,9 +237,9 @@ public class NyARParam
 		/**
 		 * ストリームから読み出したデータでインスタンスを初期化します。
 		 * @param i_stream
-		 * @throws NyARException
+		 * @throws NyARRuntimeException
 		 */
-		public ParamLoader(InputStream i_stream)throws NyARException
+		public ParamLoader(InputStream i_stream)throws NyARRuntimeException
 		{
 			//読み出し
 			ByteBufferedInputStream bis=new ByteBufferedInputStream(i_stream,512);
@@ -256,7 +256,7 @@ public class NyARParam
 			}
 			//一致しなければ無し
 			if(version==-1){
-				throw new NyARException();
+				throw new NyARRuntimeException();
 			}
 			//size
 			this.size=new NyARIntSize();
@@ -285,7 +285,7 @@ public class NyARParam
 				this.dist_factor=new NyARCameraDistortionFactorV4();
 				break;
 			default:
-				throw new NyARException();
+				throw new NyARRuntimeException();
 			}
 			//値の更新
 			for(int i=0;i<df.length;i++){
@@ -302,6 +302,6 @@ public class NyARParam
 	 */
 	public void saveARParam(OutputStream i_stream)throws Exception
 	{
-		NyARException.trap("未チェックの関数");
+		NyARRuntimeException.trap("未チェックの関数");
 	}
 }

@@ -4,17 +4,17 @@ import java.awt.image.BufferedImage;
 
 import javax.media.opengl.GL;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
-import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
+import jp.nyatla.nyartoolkit.j2se.NyARBufferedImageRaster;
 import jp.nyatla.nyartoolkit.jogl.utils.NyARGLDrawUtil;
 import jp.nyatla.nyartoolkit.markersystem.INyARSingleCameraSystemObserver;
 import jp.nyatla.nyartoolkit.markersystem.NyARSingleCameraSystem;
-import jp.nyatla.nyartoolkit.utils.j2se.NyARBufferedImageRaster;
 
 /**
  * このクラスは、{@link NyARGlmarkerSystem}クラスの出力する値を、OpenGL関数へショートカットする関数を定義します。
@@ -81,12 +81,12 @@ public class NyARGlRender implements INyARSingleCameraSystemObserver
 	//
 	// Graphics toolkit
 	//
-	public final void drawBackground(GL i_gl,INyARRgbRaster i_bg_image) throws NyARException
+	public final void drawBackground(GL i_gl,INyARRgbRaster i_bg_image) throws NyARRuntimeException
 	{
 		i_gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
 		NyARGLDrawUtil.drawBackGround(i_gl,i_bg_image, 1.0);
 	}
-	public final void drawBackground(GL i_gl,INyARGrayscaleRaster i_bg_image) throws NyARException
+	public final void drawBackground(GL i_gl,INyARGrayscaleRaster i_bg_image) throws NyARRuntimeException
 	{
 		i_gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
 		NyARGLDrawUtil.drawBackGround(i_gl,i_bg_image, 1.0);
@@ -167,9 +167,9 @@ public class NyARGlRender implements INyARSingleCameraSystemObserver
 	 * @param i_x
 	 * @param i_y
 	 * @param i_raster
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public final void drawImage2d(GL i_gl,double i_x, double i_y, NyARRgbRaster i_raster) throws NyARException
+	public final void drawImage2d(GL i_gl,double i_x, double i_y, NyARRgbRaster i_raster) throws NyARRuntimeException
 	{
 		i_gl.glPushMatrix();
 		try{
@@ -188,10 +188,10 @@ public class NyARGlRender implements INyARSingleCameraSystemObserver
 	 * @param i_x
 	 * @param i_y
 	 * @param i_bitmap
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	
-	public final void drawImage2d(GL i_gl,double i_x, double i_y, BufferedImage i_bitmap) throws NyARException
+	public final void drawImage2d(GL i_gl,double i_x, double i_y, BufferedImage i_bitmap) throws NyARRuntimeException
 	{
 		this.drawImage2d(i_gl, i_x, i_y,new NyARBufferedImageRaster(i_bitmap));
 	}

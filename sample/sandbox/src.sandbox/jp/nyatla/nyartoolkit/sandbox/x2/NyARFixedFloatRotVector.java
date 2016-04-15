@@ -31,10 +31,10 @@
  */
 package jp.nyatla.nyartoolkit.sandbox.x2;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.NyARMat;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
+import jp.nyatla.nyartoolkit.core.math.NyARMat;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARFixedFloat16Matrix33;
 import jp.nyatla.nyartoolkit.core.types.NyARFixedFloat16Point2d;
@@ -55,7 +55,7 @@ public class NyARFixedFloatRotVector
 
     private double[][] _inv_cpara_array_ref;
 
-    public NyARFixedFloatRotVector(NyARPerspectiveProjectionMatrix i_cmat) throws NyARException
+    public NyARFixedFloatRotVector(NyARPerspectiveProjectionMatrix i_cmat) throws NyARRuntimeException
     {
     	final NyARMat mat_a = new NyARMat(3, 3);
         final double[][] a_array = mat_a.getArray();
@@ -116,7 +116,7 @@ public class NyARFixedFloatRotVector
      * @param i_end_vertex
      * @param cpara
      */
-    public void checkVectorByVertex(NyARFixedFloat16Point2d i_start_vertex, NyARFixedFloat16Point2d i_end_vertex) throws NyARException
+    public void checkVectorByVertex(NyARFixedFloat16Point2d i_start_vertex, NyARFixedFloat16Point2d i_end_vertex) throws NyARRuntimeException
     {
         long h;
         final double[][] inv_cpara = this._inv_cpara_array_ref;
@@ -137,7 +137,7 @@ public class NyARFixedFloatRotVector
         h = (this._cmat.m20 * world0 + this._cmat.m21 * world1 + this._cmat.m22 * world2) >> 16;
         if (h == 0)
         {
-            throw new NyARException();
+            throw new NyARRuntimeException();
         }
         //final double camera0 = (cpara[0 * 4 + 0] * world0 + cpara[0 * 4 + 1] * world1 + cpara[0 * 4 + 2] * world2) / h;
         //final double camera1 = (cpara[1 * 4 + 0] * world0 + cpara[1 * 4 + 1] * world1 + cpara[1 * 4 + 2] * world2) / h;
@@ -148,7 +148,7 @@ public class NyARFixedFloatRotVector
         h = (this._cmat.m20 * world3 + this._cmat.m21 * world4 + this._cmat.m22 * world5) >> 16;
         if (h == 0)
         {
-            throw new NyARException();
+            throw new NyARRuntimeException();
         }
         //final double camera2 = (cpara[0 * 4 + 0] * world3 + cpara[0 * 4 + 1] * world4 + cpara[0 * 4 + 2] * world5) / h;
         //final double camera3 = (cpara[1 * 4 + 0] * world3 + cpara[1 * 4 + 1] * world4 + cpara[1 * 4 + 2] * world5) / h;
@@ -172,9 +172,9 @@ public class NyARFixedFloatRotVector
      * int check_rotation( double rot[2][3] )
      * 2つのベクトル引数の調整をする？
      * @param i_r
-     * @throws NyARException
+     * @throws NyARRuntimeException
      */
-	public final static void checkRotation(NyARFixedFloatRotVector io_vec1, NyARFixedFloatRotVector io_vec2) throws NyARException
+	public final static void checkRotation(NyARFixedFloatRotVector io_vec1, NyARFixedFloatRotVector io_vec2) throws NyARRuntimeException
 	{
 		long w;
 		int f;
@@ -218,7 +218,7 @@ public class NyARFixedFloatRotVector
 			}
 		}
 		if (vec31 * vec10 - vec11 * vec30 == 0) {
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		
 		long k1,k2,k3,k4;
@@ -277,7 +277,7 @@ public class NyARFixedFloatRotVector
 			}
 		}
 		if (vec31 * vec20 - vec21 * vec30 == 0) {
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		k1 = (vec21 * vec32 - vec31 * vec22) / (DIV0_CANCEL+((vec31 * vec20 - vec21 * vec30)>>16));
 		k2 = (vec31 * ca) / (DIV0_CANCEL+((vec31 * vec20 - vec21 * vec30)>>16));

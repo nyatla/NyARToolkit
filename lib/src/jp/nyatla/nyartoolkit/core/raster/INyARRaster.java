@@ -26,7 +26,7 @@
 package jp.nyatla.nyartoolkit.core.raster;
 
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
@@ -90,15 +90,17 @@ public interface INyARRaster
 	/**
 	 * この関数は、外部参照バッファをラップして、ラスタのバッファにします。
 	 * 実装クラスでは、できる限り整合性チェックをしたうえで、バッファを切り替える処理を実装してください。
-	 * この関数は、実装しなくともかまいません。その場合は、{@link NyARException}例外を発生させてください。
+	 * この関数は、実装しなくともかまいません。その場合は、{@link NyARRuntimeException}例外を発生させてください。
 	 * @param i_ref_buf
 	 * 切り替える外部参照バッファオブジェクト。
 	 */
-	public void wrapBuffer(Object i_ref_buf) throws NyARException;
+	public void wrapBuffer(Object i_ref_buf);
 	/**
-	 * ARTKに必要なラスタドライバインタフェイスを返す。
+	 * ARTKに必要なラスタオペレーションインタフェイスを返す。
+	 * ラスタオペレーションインタフェイスは、ラスタに対するバッチ処理を実装します。
+	 * 生成には時間がかかるのでキャッシュしてください。
 	 * @return
 	 */
-	public Object createInterface(Class<?> i_iid)throws NyARException;
+	public Object createInterface(Class<?> i_iid)throws NyARRuntimeException;
 
 }

@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.raster;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
@@ -70,13 +70,13 @@ public final class NyARHsvRaster extends NyARRaster_BasicClass
 	 * この関数は、ラスタに外部参照バッファをセットします。
 	 * 外部参照バッファを持つインスタンスでのみ使用できます。内部参照バッファを持つインスタンスでは使用できません。
 	 */	
-	public void wrapBuffer(Object i_ref_buf) throws NyARException
+	public void wrapBuffer(Object i_ref_buf)
 	{
-		NyARException.notImplement();
+		NyARRuntimeException.notImplement();
 	}
 	@Override
-	public Object createInterface(Class<?> iIid) throws NyARException
+	public Object createInterface(Class<?> iIid)
 	{
-		throw new NyARException();
+		throw new NyARRuntimeException();
 	}	
 }

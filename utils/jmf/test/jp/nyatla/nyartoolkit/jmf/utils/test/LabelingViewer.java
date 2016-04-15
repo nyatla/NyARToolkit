@@ -38,14 +38,14 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.FileInputStream;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfo;
-import jp.nyatla.nyartoolkit.core.labeling.rlelabeling.NyARRleLabelFragmentInfoPtrStack;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
-import jp.nyatla.nyartoolkit.core.raster.*;
-import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2gs.INyARRgb2GsFilter;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector_Rle;
+import jp.nyatla.nyartoolkit.core.raster.gs.NyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.rle.NyARRleLabelFragmentInfo;
+import jp.nyatla.nyartoolkit.core.rasterdriver.labeling.rle.NyARRleLabelFragmentInfoPtrStack;
+import jp.nyatla.nyartoolkit.core.rasterdriver.rgb2gs.INyARRgb2GsFilter;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquareContourDetector;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquareContourDetector_Rle;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
@@ -56,11 +56,11 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 {
 	class SquareDetector extends NyARSquareContourDetector_Rle implements NyARSquareContourDetector.CbHandler
 	{
-		public SquareDetector(NyARIntSize i_size) throws NyARException
+		public SquareDetector(NyARIntSize i_size) throws NyARRuntimeException
 		{
 			super(i_size);
 		}
-		public void detectMarkerCallback(NyARIntCoordinates i_coord,int[] i_vertex_index)  throws NyARException
+		public void detectMarkerCallback(NyARIntCoordinates i_coord,int[] i_vertex_index)  throws NyARRuntimeException
 		{
 			
 		}
@@ -77,7 +77,7 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 
 	private JmfNyARRGBRaster _raster;
 
-	public LabelingViewer() throws NyARException,Exception
+	public LabelingViewer() throws NyARRuntimeException,Exception
 	{
 		setTitle("JmfCaptureTest");
 		setBounds(0, 0, 320 + 64, 240 + 64);
@@ -87,7 +87,7 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 		//JmfNyARRaster_RGBはYUVよりもRGBで高速に動作します。
 		if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB,320, 240,15f)){
 			if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_YUV,320, 240,15f)){
-				throw new NyARException("キャプチャフォーマットが見つかりません");
+				throw new NyARRuntimeException("キャプチャフォーマットが見つかりません");
 			}		
 		}
 		this._capture.setOnCapture(this);
@@ -107,7 +107,7 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 		return;
 	}
 	private SquareDetector _detect;
-	private NyARGrayscaleRaster _bi=new NyARGrayscaleRaster(320,240);
+	private NyARGrayscaleRaster _bi=NyARGrayscaleRaster.createInstance(320,240);
 	private INyARRgb2GsFilter _filter;
 
 
@@ -129,7 +129,7 @@ public class LabelingViewer extends Frame implements JmfCaptureListener
 			NyARParam param=NyARParam.createFromARParamFile(new FileInputStream(PARAM_FILE));
 			param.changeScreenSize(320,240);
 			try{
-				NyARIntRect rect=new NyARIntRect();
+//				NyARIntRect rect=new NyARIntRect();
 //				rect.x=0;rect.y=0;rect.w=220;rect.h=140;
 				this._detect.detectMarker(gs,110,this._detect);
 			}catch(Exception e){

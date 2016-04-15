@@ -12,8 +12,8 @@ import java.awt.image.DirectColorModel;
 import java.awt.image.Raster;
 import java.awt.image.SinglePixelPackedSampleModel;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
+import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
@@ -25,9 +25,9 @@ public class NyARBufferedImageIo
 	 * 
 	 * @param i_raster
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public static BufferedImage createWrappedBufferedImage(INyARGrayscaleRaster i_raster) throws NyARException {
+	public static BufferedImage createWrappedBufferedImage(INyARGrayscaleRaster i_raster) throws NyARRuntimeException {
 		BufferedImage bfi;
 		NyARIntSize s = i_raster.getSize();
 		switch (i_raster.getBufferType()) {
@@ -41,7 +41,7 @@ public class NyARBufferedImageIo
 		}
 			break;
 		default:
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		return bfi;
 	}	
@@ -50,9 +50,9 @@ public class NyARBufferedImageIo
 	 * 
 	 * @param i_raster
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public static BufferedImage createWrappedBufferedImage(INyARRgbRaster i_raster) throws NyARException {
+	public static BufferedImage createWrappedBufferedImage(INyARRgbRaster i_raster) throws NyARRuntimeException {
 		BufferedImage bfi;
 		NyARIntSize s = i_raster.getSize();
 		switch (i_raster.getBufferType()) {
@@ -83,7 +83,7 @@ public class NyARBufferedImageIo
 		}
 			break;
 		default:
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		return bfi;
 	}

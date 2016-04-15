@@ -31,10 +31,11 @@
  */
 package jp.nyatla.nyartoolkit.sandbox.x2;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.artk.pca2d.*;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
+import jp.nyatla.nyartoolkit.core.coord2liner.pca2d.INyARPca2d;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
-import jp.nyatla.nyartoolkit.core.pca2d.*;
 /**
  * 64bit(小数部16bit)の固定小数点を利用したPCA関数
  *
@@ -49,9 +50,9 @@ public class NyARFixedFloatPca2d implements INyARPca2d
 	 * 
 	 * @param a
 	 * @param dv
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	private static void PCA_QRM(NyARI64Matrix22 o_matrix, NyARI64Point2d dv) throws NyARException
+	private static void PCA_QRM(NyARI64Matrix22 o_matrix, NyARI64Point2d dv) throws NyARRuntimeException
 	{
 		long abs_x;
 		long w, t, s, x, y, c;
@@ -156,9 +157,9 @@ public class NyARFixedFloatPca2d implements INyARPca2d
 	 * 
 	 * @param output
 	 * @param o_ev
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	private void PCA_PCA(int[] i_x,int[] i_y,int i_number_of_data,NyARI64Matrix22 o_matrix, NyARI64Point2d o_ev,NyARI64Point2d o_mean) throws NyARException
+	private void PCA_PCA(int[] i_x,int[] i_y,int i_number_of_data,NyARI64Matrix22 o_matrix, NyARI64Point2d o_ev,NyARI64Point2d o_mean) throws NyARRuntimeException
 	{
 		// double[] mean_array=mean.getArray();
 		// mean.zeroClear();
@@ -212,7 +213,7 @@ public class NyARFixedFloatPca2d implements INyARPca2d
 	private NyARI64Matrix22 __pca_evec=null;
 	private NyARI64Point2d __pca_ev=null;
 	private NyARI64Point2d __pca_mean=null;
-	public void pca(double[] i_x,double[] i_y,int i_number_of_point,NyARDoubleMatrix22 o_evec, NyARDoublePoint2d o_ev,NyARDoublePoint2d o_mean) throws NyARException
+	public void pca(double[] i_x,double[] i_y,int i_number_of_point,NyARDoubleMatrix22 o_evec, NyARDoublePoint2d o_ev,NyARDoublePoint2d o_mean) throws NyARRuntimeException
 	{
 		//変換用のワーク変数作成
 		if(__pca_tmpx==null)
@@ -256,9 +257,9 @@ public class NyARFixedFloatPca2d implements INyARPca2d
 	 * @param o_evec
 	 * @param o_ev
 	 * @param o_mean
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void pcaF16(int[] i_x,int[] i_y,int i_number_of_point,NyARI64Matrix22 o_evec, NyARI64Point2d o_ev,NyARI64Point2d o_mean) throws NyARException
+	public void pcaF16(int[] i_x,int[] i_y,int i_number_of_point,NyARI64Matrix22 o_evec, NyARI64Point2d o_ev,NyARI64Point2d o_mean) throws NyARRuntimeException
 	{
 		//計算
 		PCA_PCA(i_x,i_y,i_number_of_point,o_evec,o_ev,o_mean);

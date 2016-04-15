@@ -30,7 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.transmat.rotmatrix;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 
@@ -44,7 +44,7 @@ public class NyARRotMatrix_ARToolKit extends NyARRotMatrix
 	 * 参照する射影変換オブジェクトを指定して、インスタンスを生成します。
 	 * @param i_matrix
 	 * 参照する射影変換オブジェクト
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public NyARRotMatrix_ARToolKit(NyARPerspectiveProjectionMatrix i_matrix)
 	{

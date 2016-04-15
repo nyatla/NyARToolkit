@@ -29,7 +29,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Date;
 
-import jp.nyatla.nyartoolkit.core.NyARCode;
+import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
@@ -87,7 +87,7 @@ public class RawFileTest
 		FileInputStream fs = new FileInputStream(data_file);
 		byte[] buf = new byte[(int) f.length()];
 		fs.read(buf);
-		INyARRgbRaster ra = new NyARRgbRaster(320, 240,NyARBufferType.BYTE1D_B8G8R8X8_32,false);
+		INyARRgbRaster ra = NyARRgbRaster.createInstance(320, 240,NyARBufferType.BYTE1D_B8G8R8X8_32,false);
 		ra.wrapBuffer(buf);
 		// Blank_Raster ra=new Blank_Raster(320, 240);
 
@@ -101,7 +101,7 @@ public class RawFileTest
 
 		// マーカーを検出
 		Date d2 = new Date();
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < 10000; i++) {
 			// 変換行列を取得
 			ar.detectMarkerLite(ra, 100);
 //			ar.getTransmat(result_mat);

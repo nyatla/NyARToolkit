@@ -1,7 +1,7 @@
 package jp.nyatla.nyartoolkit.dev.pro.core.rasterdriver;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
+import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
@@ -9,7 +9,7 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.pro.core.surfacetracking.NyARTemplatePatchImage;
 
 /**
- * INyARGrayscaleRasterの�?ンプレート検索ドライ�?
+ * INyARGrayscaleRasterの�?ンプレート検索ドライ�?
  * @author nyatla
  *
  */
@@ -30,7 +30,7 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 	public final static int KEEP_NUM = 3;
 
 	/**
-	 * ワークエリアの初期�?
+	 * ワークエリアの初期�?
 	 */
 	private void initWorkArea(int i_l,int i_t,int i_r,int i_b)
 	{
@@ -52,7 +52,7 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 	}
 	NyARIntPoint2d _search_area=new NyARIntPoint2d();
 	/**
-	 * 検索ウインドウの�?囲を指定する�??
+	 * 検索ウインドウの�?囲を指定する�??
 	 * @param i_px
 	 * @param i_py
 	 */
@@ -62,8 +62,8 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 		this._search_area.y=i_y;
 	}
 	/**
-	 * n個�?�候補点ログを取るクラス�?
-	 * ARToolkitのupdateCandidate関数由来�?
+	 * n個�?�候補点ログを取るクラス�?
+	 * ARToolkitのupdateCandidate関数由来�?
 	 */
 	private class MatchingCandidateList
 	{
@@ -73,7 +73,7 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 			public int val;
 		}
 		/**
-		 * valの高い�?にnum_of_item個�?�値を保管する。wvalの大きさは[0]>[n]
+		 * valの高い�?にnum_of_item個�?�値を保管する。wvalの大きさは[0]>[n]
 		 */
 		public Item[] items;
 		/**
@@ -88,18 +88,18 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 			}
 		}
 		/**
-		 * ロガーを�?�期化する�??
+		 * ロガーを�?�期化する�??
 		 */
 		public void init()
 		{
 			this.num_of_item=0;
 		}
 		/**
-		 * wval�?�?で候補点の追�?を試�?
+		 * wval�?�?で候補点の追�?を試�?
 		 * i_valが大きい方がえらい
-		 * @throws NyARException 
+		 * @throws NyARRuntimeException 
 		 */
-		public boolean tryToAdd(int i_x, int i_y,int i_val) throws NyARException
+		public boolean tryToAdd(int i_x, int i_y,int i_val) throws NyARRuntimeException
 		{
 			Item[] items=this.items;
 			int num=this.num_of_item;
@@ -111,7 +111,7 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 				this.num_of_item=1;
 				return true;
 			}
-			//�?小�?�が�?�補よりも小さければ単純な追�?
+			//�?小�?�が�?�補よりも小さければ単純な追�?
 			if(items[num-1].val>=i_val){
 				if(this.items.length>num){
 					items[num].x=i_x;
@@ -121,7 +121,7 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 				}
 				return false;
 			}
-			//�?大値が�?�補よりも小さければ0番に挿入
+			//�?大値が�?�補よりも小さければ0番に挿入
 			if(items[0].val<i_val){
 				//シフト
 				Item tmp=items[this.items.length-1];
@@ -138,10 +138,10 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 				return true;
 			}
 			
-			//前方から挿入処�?
+			//前方から挿入処�?
 			for(int i=0;i<num;i++){
 				if(items[i].val<i_val){
-					//挿入処�?
+					//挿入処�?
 					Item tmp=items[this.items.length-1];
 					for(int i2=this.items.length-1;i2>=i+1;i2--){
 						items[i2]=items[i2-1];
@@ -156,7 +156,7 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 					return true;
 				}
 			}
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 	}
 	/**
@@ -164,28 +164,28 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 	 */
 	private MatchingCandidateList __ml=new MatchingCandidateList(3);
 	/**
-	 * N個�?�基準点から、最もテンプレートに�?致した座標を返却する�?
-	 * 検索�?囲は、{@link #setSearchArea}で与えたpx,pyにつ�?て、xn+i_px>=xn>=xn-i_px,yn+i_py>=yn>=yn-i_pyの矩形�?囲�?
-	 * i_pointsそれぞれにつ�?て検索する�?
+	 * N個�?�基準点から、最もテンプレートに�?致した座標を返却する�?
+	 * 検索�?囲は、{@link #setSearchArea}で与えたpx,pyにつ�?て、xn+i_px>=xn>=xn-i_px,yn+i_py>=yn>=yn-i_pyの矩形�?囲�?
+	 * i_pointsそれぞれにつ�?て検索する�?
 	 * @param i_template
-	 * 探索�?囲。単三区店を中�?に�?
+	 * 探索�?囲。単三区店を中�?に�?
 	 * @param ry
 	 * @param i_points
-	 * 検索する座標セ�?ト�??(近い場�?の場合に、同�?条件の探索をキャンセルできる?�?)
+	 * 検索する座標セ�?ト�??(近い場�?の場合に、同�?条件の探索をキャンセルできる?�?)
 	 * @param o_obs_point
-	 * 観察座標系での�?致点。return�?0の場合�?�無効�?
+	 * 観察座標系での�?致点。return�?0の場合�?�無効�?
 	 * @return
-	 * �?致�?(値�?囲調査中)
-	 * 0の場合�?��?致せず�?
-	 * @throws NyARException
+	 * �?致�?(値�?囲調査中)
+	 * 0の場合�?��?致せず�?
+	 * @throws NyARRuntimeException
 	 */
 	public double ar2GetBestMatching(NyARTemplatePatchImage i_template, NyARIntPoint2d[] i_points,int i_number_of_point,
-			NyARDoublePoint2d o_obs_point) throws NyARException
+			NyARDoublePoint2d o_obs_point) throws NyARRuntimeException
 	{
-		//�?大�?ンプレートサイズの制�?
+		//�?大�?ンプレートサイズの制�?
 		assert(i_template.xsize*i_template.ysize<100*100);
 
-		//NULLピクセルを持つ�?ンプレートか判定する�??
+		//NULLピクセルを持つ�?ンプレートか判定する�??
 		boolean is_full_template=i_template.xsize*i_template.ysize==i_template.num_of_pixels;
 
 		NyARIntSize s = this._i_ref_raster.getSize();
@@ -195,19 +195,19 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 		
 		
 
-		//パッチ�?�探索
+		//パッチ�?�探索
 		int ret = 1;
 		int sw=this._search_area.x;
 		int sh=this._search_area.y;
-		//パッチエリアの初期�?
+		//パッチエリアの初期�?
 		for (int ii = i_number_of_point-1; ii>=0; ii--) {
 			if (i_points[ii].y < 0) {
 				break;
 			}
-			// 検索するパッチ中�?を決�?
+			// 検索するパッチ中�?を決�?
 			int px = (i_points[ii].x / (SKIP_INTERVAL + 1)) * (SKIP_INTERVAL + 1) + (SKIP_INTERVAL + 1) / 2;
 			int py = (i_points[ii].y / (SKIP_INTERVAL + 1)) * (SKIP_INTERVAL + 1) + (SKIP_INTERVAL + 1) / 2;
-			//検索�?囲を画面�?に制�?
+			//検索�?囲を画面�?に制�?
 			int search_left = px - sw;
 			if (search_left < 0)
 				search_left = 0;
@@ -224,7 +224,7 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 			if (search_bottom >= s.h) {
 				search_bottom = s.h - 1;
 			}
-			//利用するパッチエリアの初期�?
+			//利用するパッチエリアの初期�?
 			initWorkArea(search_left,search_top,search_right,search_bottom);
 
 		}
@@ -259,17 +259,17 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 					if (i + xts * NyARTemplatePatchImage.AR2_TEMP_SCALE >= s.w) {
 						break;
 					}
-					// 既に検�?�済�?�エリア?�?
+					// 既に検�?�済�?�エリア?�?
 					if (this._mbuf[i+j*s.w] != 0) {
 						// mfImage[j*xsize+i] ){
 						continue;
 					}
-					this._mbuf[i+j*s.w]=1;//ii番目のパッチで検索済みを�?��?�ク
+					this._mbuf[i+j*s.w]=1;//ii番目のパッチで検索済みを�?��?�ク
 					int wval = is_full_template?ar2GetBestMatchingSubFineFull(sbuf,s.w,i_template, i, j):ar2GetBestMatchingSubFine(sbuf,s.w,i_template, i, j);
 					if (wval <= 0) {
 						continue;
 					}
-					//ログへ追�?
+					//ログへ追�?
 					ml.tryToAdd(i, j,wval);
 					ret = 0;
 				}
@@ -277,7 +277,7 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 		}
 
 		double ret_sim=0;
-		//�?番スコアの良�?パッチを得る
+		//�?番スコアの良�?パッチを得る
 		int wval2 = 0;
 		ret = -1;
 		for (int l = ml.num_of_item-1; l>=0; l--) {
@@ -314,16 +314,16 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 		return ret_sim;
 	}
 	/**
-	 * 画�?の�?致度を返す�?NULLピクセルが無�?ことを前提に比�?
+	 * 画�?の�?致度を返す�?NULLピクセルが無�?ことを前提に比�?
 	 * @param i_buf
 	 * @param i_stride
 	 * @param mtemp
 	 * @param sx
 	 * @param sy
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	private static int ar2GetBestMatchingSubFineFull(int[] i_buf,int i_stride,NyARTemplatePatchImage mtemp, int sx, int sy) throws NyARException
+	private static int ar2GetBestMatchingSubFineFull(int[] i_buf,int i_stride,NyARTemplatePatchImage mtemp, int sx, int sy) throws NyARRuntimeException
 	{
 		int[] tmp_buf = mtemp.img;
 		int r1=0;
@@ -362,9 +362,9 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 		}
 		int k = mtemp.num_of_pixels;
 		int ave = r2/k;
-		//vlen=�?(Sn-AVE)^2
+		//vlen=�?(Sn-AVE)^2
 		int vlen=r1-(2*ave*r2)+(k*ave*ave);
-		//wval=�?(Tn-AVET)*(Sn-AVES))
+		//wval=�?(Tn-AVET)*(Sn-AVES))
 		int wval=r3-mtemp.sum_of_img*ave-r2*mtemp.ave+ave*mtemp.ave*k;
 		if (vlen == 0){
 			return 0;
@@ -373,16 +373,16 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 		}
 	}
 	/**
-	 * 画�?の�?致度を返す�?
+	 * 画�?の�?致度を返す�?
 	 * @param i_buf
 	 * @param i_stride
 	 * @param mtemp
 	 * @param sx
 	 * @param sy
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	private static int ar2GetBestMatchingSubFine(int[] i_buf,int i_stride,NyARTemplatePatchImage mtemp, int sx, int sy) throws NyARException
+	private static int ar2GetBestMatchingSubFine(int[] i_buf,int i_stride,NyARTemplatePatchImage mtemp, int sx, int sy) throws NyARRuntimeException
 	{
 		int[] tmp_buf = mtemp.img;
 		int r1=0;
@@ -446,9 +446,9 @@ public class NyARTemplateMatchingDriver_INT1D implements INyARTemplateMatchingDr
 			return 0;
 		}
 		int ave = r2/k;
-		//vlen=�?(Sn-AVE)^2
+		//vlen=�?(Sn-AVE)^2
 		int vlen=r1-(2*ave*r2)+(k*ave*ave);
-		//wval=�?(Tn-AVET)*(Sn-AVES))
+		//wval=�?(Tn-AVET)*(Sn-AVES))
 		int wval=r3-mtemp.sum_of_img*ave-r2*mtemp.ave+ave*mtemp.ave*k;
 		if (vlen == 0){
 			return 0;

@@ -12,7 +12,7 @@
  */
 package jp.nyatla.nyartoolkit.dev.pro.core.kpm.hest.utils;
 
-import jp.nyatla.nyartoolkit.core.NyARMat;
+import jp.nyatla.nyartoolkit.core.math.NyARMat;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix33;
 
@@ -27,7 +27,7 @@ public class HomographySvd extends SvdMat
 		this.resetConstantValues();
 	}
 	/**
-	 * 固定�?�部�?をリセ�?トします�??
+	 * 固定�?�部�?をリセ�?トします�??
 	 */
 	public void resetConstantValues()
 	{
@@ -48,7 +48,7 @@ public class HomographySvd extends SvdMat
 		}			
 	}
 	/**
-	 * 座標系をセ�?トします�??
+	 * 座標系をセ�?トします�??
 	 * @param pt1
 	 * @param pt2
 	 */
@@ -87,21 +87,21 @@ public class HomographySvd extends SvdMat
 	private NyARMat __vn=new NyARMat(9,9); 
 	private NyARMat __dn=new NyARMat(1,9); 	
 	/**
-	 * i_,matにU成�?をセ�?トして返します�?�細かいことは判らん�?
+	 * i_,matにU成�?をセ�?トして返します�?�細かいことは判らん�?
 	 */
 	public void svd_u(NyARDoubleMatrix33 i_mat)
 	{
 		int r = this.row;
 		int c = this.clm;
 		assert(r<=c);
-		//m>nである�?
+		//m>nである�?
 
-		//UとVnひっくりかえした�?
+		//UとVnひっくりかえした�?
 		double[][] warr=this.__dn.getArray();/* n*1 */
 		double[][] vt=__U.getArray();/* m*n */
 		double[][] u=this.__vn.getArray();/* n*n*/
 	    
-		//vtのm*m行�?�を利用して計算する�??(コピ�?�するのは�?終行以�?)
+		//vtのm*m行�?�を利用して計算する�??(コピ�?�するのは�?終行以�?)
 		for(int i=r-1;i>=0;i--){
 			double[] ptr1=vt[i];
 			double[] ptr2=this._m[i];
@@ -116,7 +116,7 @@ public class HomographySvd extends SvdMat
 				ptr1[i2]=ptr2[i2];
 			}
 		}
-		//A,W,Vの計�?
+		//A,W,Vの計�?
 		jacobiSvd_1(vt,warr[0],u,c, r);
 		i_mat.m00=u[0][9-1];
 		i_mat.m01=u[1][9-1];

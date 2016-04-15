@@ -18,16 +18,21 @@ import java.util.Date;
 
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.detector.*;
-import jp.nyatla.nyartoolkit.nyidmarker.NyIdMarkerPickup;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.*;
+import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
+import jp.nyatla.nyartoolkit.core.marker.nyidmarker.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.pickup.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.types.*;
+import jp.nyatla.nyartoolkit.core.raster.bin.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
+import jp.nyatla.nyartoolkit.core.rasterdriver.pickup.INyARColorPatt;
+import jp.nyatla.nyartoolkit.core.rasterdriver.pickup.NyARColorPatt_O3;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquare;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquareStack;
 import jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin.*;
-import jp.nyatla.nyartoolkit.nyidmarker.*;
 import jp.nyatla.nyartoolkit.utils.j2se.*;
 import jp.nyatla.nyartoolkit.core.squaredetect.*;
 
@@ -57,7 +62,7 @@ public class PattPickupTest extends Frame implements JmfCaptureListener
 
 	private NyARSingleDetectMarker detect;
 
-	public PattPickupTest() throws NyARException
+	public PattPickupTest() throws NyARRuntimeException
 	{
 		setTitle("JmfCaptureTest");
 		Insets ins = this.getInsets();
@@ -66,7 +71,7 @@ public class PattPickupTest extends Frame implements JmfCaptureListener
 		this._capture = dl.getDevice(0);
 		if (!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB, W, H, 30.0f)) {
 			if (!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_YUV, W, H, 30.0f)) {
-				throw new NyARException("キャプチャフォーマットが見つかりません。");
+				throw new NyARRuntimeException("キャプチャフォーマットが見つかりません。");
 			}
 		}
 		NyARParam ar_param = new NyARParam();

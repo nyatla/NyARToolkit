@@ -31,7 +31,6 @@
 package jp.nyatla.nyartoolkit.core.transmat.optimize.artoolkit;
 
 
-import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.*;
 import jp.nyatla.nyartoolkit.core.types.*;
@@ -60,7 +59,7 @@ public class NyARRotMatrixOptimize implements INyARRotMatrixOptimize
 	 * この関数は、回転行列を最適化します。
 	 * ARToolKitのarGetRotに相当します。
 	 */
-	public double modifyMatrix(NyARRotMatrix_ARToolKit io_rot,NyARDoublePoint3d trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d) throws NyARException
+	public double modifyMatrix(NyARRotMatrix_ARToolKit io_rot,NyARDoublePoint3d trans, NyARDoublePoint3d[] i_vertex3d, NyARDoublePoint2d[] i_vertex2d)
 	{
 		double factor;
 		double a2, b2, c2;

@@ -7,7 +7,7 @@ import java.nio.IntBuffer;
 
 import javax.media.opengl.GL;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.raster.INyARRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
@@ -130,9 +130,9 @@ public class NyARGLDrawUtil
 	 * <li>{@link NyARBufferType#BYTE1D_B8G8R8X8_32}
 	 * </ol>
 	 * @param i_zoom
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public static void drawBackGround(javax.media.opengl.GL i_gl,INyARRaster i_raster, double i_zoom) throws NyARException
+	public static void drawBackGround(javax.media.opengl.GL i_gl,INyARRaster i_raster, double i_zoom) throws NyARRuntimeException
 	{
 		IntBuffer texEnvModeSave = IntBuffer.allocate(1);
 		boolean lightingSave;
@@ -182,9 +182,9 @@ public class NyARGLDrawUtil
 	 * @param i_x
 	 * @param i_y
 	 * @param i_raster
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public static void drawRaster(GL i_gl,INyARRgbRaster i_raster) throws NyARException
+	public static void drawRaster(GL i_gl,INyARRgbRaster i_raster) throws NyARRuntimeException
 	{
 		NyARIntSize s=i_raster.getSize();
 		int[] n=new int[1];
@@ -212,7 +212,7 @@ public class NyARGLDrawUtil
 			i_gl.glTexImage2D(GL.GL_TEXTURE_2D,0, GL.GL_RGB,s.w,s.h,0,GL.GL_BGRA,GL.GL_UNSIGNED_BYTE, IntBuffer.wrap((int[])i_raster.getBuffer()));
 			break;
 		default:
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		i_gl.glBegin(GL.GL_QUADS);
 		i_gl.glBindTexture(GL.GL_TEXTURE_2D,n[0]);
@@ -232,7 +232,7 @@ public class NyARGLDrawUtil
 	 * @param image
 	 * @param zoom
 	 */
-	private static void arglDispImageStateful(GL gl,NyARIntSize i_size,Object i_buffer,int i_buffer_type, double zoom) throws NyARException
+	private static void arglDispImageStateful(GL gl,NyARIntSize i_size,Object i_buffer,int i_buffer_type, double zoom) throws NyARRuntimeException
 	{
 		float zoomf;
 		IntBuffer params = IntBuffer.allocate(4);
@@ -262,7 +262,7 @@ public class NyARGLDrawUtil
 			gl.glDrawPixels(i_size.w,i_size.h,GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, IntBuffer.wrap((int[])i_buffer));
 			break;
 		default:
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 	}
 	/**

@@ -9,9 +9,9 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
-import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.raster.gs.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
@@ -26,6 +26,7 @@ import jp.nyatla.nyartoolkit.rpf.realitysource.nyartk.NyARRealitySource_JavaImag
 import jp.nyatla.nyartoolkit.rpf.realitysource.nyartk.NyARRealitySource_Jmf;
 import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status.NyARRectTargetStatus;
 import jp.nyatla.nyartoolkit.rpf.tracker.nyartk.status.NyARTargetStatus;
+import jp.nyatla.nyartoolkit.j2se.NyARBufferedImageRaster;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
 import jp.nyatla.nyartoolkit.utils.j2se.*;
 
@@ -54,7 +55,7 @@ public class Test_RealityTarget extends Frame implements MouseListener
 
 	class ImageSource extends InputSource
 	{
-		public ImageSource(String i_filename) throws NyARException, IOException
+		public ImageSource(String i_filename) throws NyARRuntimeException, IOException
 		{
 			BufferedImage _src_image;
 			_src_image = ImageIO.read(new File(i_filename));
@@ -67,7 +68,7 @@ public class Test_RealityTarget extends Frame implements MouseListener
 	class LiveSource extends InputSource implements JmfCaptureListener
 	{
 		private JmfCaptureDevice _capture;
-		public LiveSource() throws NyARException
+		public LiveSource() throws NyARRuntimeException
 		{
 			//キャプチャの準備
 			JmfCaptureDeviceList devlist=new JmfCaptureDeviceList();
@@ -75,7 +76,7 @@ public class Test_RealityTarget extends Frame implements MouseListener
 			//JmfNyARRaster_RGBはYUVよりもRGBで高速に動作します。
 			if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB,320, 240,15f)){
 				if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_YUV,320, 240,15f)){
-					throw new NyARException("キャプチャフォーマットが見つかりません");
+					throw new NyARRuntimeException("キャプチャフォーマットが見つかりません");
 				}		
 			}
 			this._capture.setOnCapture(this);
@@ -179,7 +180,7 @@ public class Test_RealityTarget extends Frame implements MouseListener
 						try {
 							this._reality.changeTargetToDead(rt);
 							break;
-						} catch (NyARException e1) {
+						} catch (NyARRuntimeException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
@@ -187,7 +188,7 @@ public class Test_RealityTarget extends Frame implements MouseListener
 				}
 			}
 		}
-		} catch (NyARException e1) {
+		} catch (NyARRuntimeException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
@@ -214,7 +215,7 @@ public class Test_RealityTarget extends Frame implements MouseListener
 	private int W = 640;
 	private int H = 480;
 	InputSource _input_source;
-	public Test_RealityTarget() throws NyARException, Exception
+	public Test_RealityTarget() throws NyARRuntimeException, Exception
 	{
 		setTitle("NyARReality test");
 		Insets ins = this.getInsets();
@@ -249,7 +250,7 @@ public class Test_RealityTarget extends Frame implements MouseListener
 		}
     }
     BufferedImage _tmp_bf=new BufferedImage(320,240,BufferedImage.TYPE_INT_RGB);
-    private void draw(Graphics ig) throws NyARException
+    private void draw(Graphics ig) throws NyARRuntimeException
     {
     	//ウインドウの情報
 		Insets ins = this.getInsets();
@@ -291,7 +292,7 @@ public class Test_RealityTarget extends Frame implements MouseListener
     }
 
     
-    private void drawImage(Graphics g,int x,int y,NyARGrayscaleRaster r) throws NyARException
+    private void drawImage(Graphics g,int x,int y,NyARGrayscaleRaster r) throws NyARRuntimeException
     {
         BufferedImage _tmp_bf=new BufferedImage(r.getWidth(),r.getHeight(),BufferedImage.TYPE_INT_RGB);
     	NyARRasterImageIO.copy(r, _tmp_bf);

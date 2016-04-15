@@ -13,15 +13,15 @@
 
 package jp.nyatla.nyartoolkit.dev.pro.core.kpm.hest.utils;
 
-import jp.nyatla.nyartoolkit.core.NyARMat;
-import jp.nyatla.nyartoolkit.core.utils.NyARMath;
+import jp.nyatla.nyartoolkit.core.math.NyARMat;
+import jp.nyatla.nyartoolkit.core.math.NyARMath;
 
 
 
 public class SvdMat extends NyARMat
 {
 	/**
-	 * i_row=<i_clmであること�?
+	 * i_row=<i_clmであること�?
 	 * @param i_row
 	 * @param i_clm
 	 */
@@ -34,13 +34,13 @@ public class SvdMat extends NyARMat
 		int r = this.row;
 		int c = this.clm;
 		assert(r<=c);
-		//m>nである�?
+		//m>nである�?
 		assert(i_warr.getRow()==1 && i_warr.getClm()==r);
 		double[][] warr=i_warr.getArray();/* n*1 */
 		double[][] vt=i_vt.getArray();/* m*n */
 		double[][] u=i_u.getArray();/* n*n*/
 	    
-		//vtのm*m行�?�を利用して計算する�??(コピ�?�するのは�?終行以�?)
+		//vtのm*m行�?�を利用して計算する�??(コピ�?�するのは�?終行以�?)
 		for(int i=r-1;i>=0;i--){
 			double[] ptr1=vt[i];
 			double[] ptr2=this._m[i];
@@ -55,9 +55,9 @@ public class SvdMat extends NyARMat
 				ptr1[i2]=ptr2[i2];
 			}
 		}
-		//A,W,Vの計�?
+		//A,W,Vの計�?
 		jacobiSvd_1(vt,warr[0],u,c, r);
-		//Aの計算�?�つづ�?
+		//Aの計算�?�つづ�?
 		jacobiSvd_2(vt,warr,c, r,Double.MIN_VALUE);
 	}
 	
@@ -213,7 +213,7 @@ public class SvdMat extends NyARMat
 	protected static void jacobiSvd_2(double[][] At,double[][] W,int m, int n, double minval)
 	{
 		int i, j, k, iter;
-		//ここからVtの計�?
+		//ここからVtの計�?
 		long rnd=0x12345678;
 
 		for( i = 0; i < m; i++ )

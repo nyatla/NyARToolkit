@@ -35,6 +35,7 @@ import javax.media.opengl.*;
 
 import com.sun.opengl.util.*;
 import jp.nyatla.nyartoolkit.core.*;
+import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
@@ -69,7 +70,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 	private Object _sync_object=new Object();
 	private double[] _camera_projection = new double[16];
 
-	public JavaSimpleLite(NyARParam i_param, NyARCode i_ar_code) throws NyARException
+	public JavaSimpleLite(NyARParam i_param, NyARCode i_ar_code) throws NyARRuntimeException
 	{
 		this._ar_param = i_param;
 
@@ -80,7 +81,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 		JmfCaptureDeviceList devlist = new JmfCaptureDeviceList();
 		this._capture = devlist.getDevice(0);
 		if (!this._capture.setCaptureFormat(SCREEN_X, SCREEN_Y, 30.0f)) {
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		this._capture.setOnCapture(this);
 		//JMFラスタオブジェクト

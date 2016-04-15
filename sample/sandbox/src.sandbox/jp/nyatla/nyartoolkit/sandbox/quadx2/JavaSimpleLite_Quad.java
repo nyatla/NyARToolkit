@@ -39,7 +39,7 @@ import javax.media.opengl.GLCanvas;
 
 import com.sun.opengl.util.Animator;
 
-import jp.nyatla.nyartoolkit.core.NyARCode;
+import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResult;
 import jp.nyatla.nyartoolkit.jmf.utils.*;

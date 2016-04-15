@@ -12,8 +12,8 @@
  */
 package jp.nyatla.nyartoolkit.core.icp.base;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.NyARMat;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
+import jp.nyatla.nyartoolkit.core.math.NyARMat;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint3d;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
@@ -39,9 +39,9 @@ public class NyARIcpUtils_Base
 	 * @param J_U_S
 	 * double[][6]
 	 * @return
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public static boolean icpGetDeltaS(NyARMat matS, double[] dU, double[][] J_U_S, int n ) throws NyARException
+	public static boolean icpGetDeltaS(NyARMat matS, double[] dU, double[][] J_U_S, int n )
 	{
 //	    ARMat   matS, matU, matJ;
 //	    ARMat  *matJt, *matJtJ, *matJtU;

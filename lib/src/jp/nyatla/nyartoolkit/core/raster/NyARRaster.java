@@ -25,7 +25,7 @@
  */
 package jp.nyatla.nyartoolkit.core.raster;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**
@@ -55,18 +55,11 @@ public class NyARRaster extends NyARRaster_BasicClass
 	 * ラスタの画素形式。
 	 * {@link NyARBufferType}に定義された定数値を指定してください。
 	 * 指定できる値は、クラスの説明を見てください。
-	 * @param i_is_alloc
-	 * バッファを外部参照にするかのフラグ値。
-	 * trueなら内部バッファ、falseなら外部バッファを使用します。
-	 * falseの場合、初期のバッファはnullになります。インスタンスを生成したのちに、{@link #wrapBuffer}を使って割り当ててください。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public NyARRaster(int i_width, int i_height,int i_buffer_type,boolean i_is_alloc) throws NyARException
+	public NyARRaster(int i_width, int i_height,int i_buffer_type)
 	{
-		super(i_width,i_height,i_buffer_type);
-		if(!initInstance(this._size,i_buffer_type,i_is_alloc)){
-			throw new NyARException();
-		}
+		this(i_width,i_height,i_buffer_type,true);
 		return;
 	}	
 	/**
@@ -80,16 +73,20 @@ public class NyARRaster extends NyARRaster_BasicClass
 	 * ラスタの画素形式。
 	 * {@link NyARBufferType}に定義された定数値を指定してください。
 	 * 指定できる値は、クラスの説明を見てください。
-	 * @throws NyARException
+	 * @param i_is_alloc
+	 * バッファを外部参照にするかのフラグ値。
+	 * trueなら内部バッファ、falseなら外部バッファを使用します。
+	 * falseの場合、初期のバッファはnullになります。インスタンスを生成したのちに、{@link #wrapBuffer}を使って割り当ててください。
+	 * @throws NyARRuntimeException
 	 */
-	public NyARRaster(int i_width, int i_height,int i_buffer_type) throws NyARException
+	public NyARRaster(int i_width, int i_height,int i_buffer_type,boolean i_is_alloc)
 	{
 		super(i_width,i_height,i_buffer_type);
-		if(!initInstance(this._size,i_buffer_type,true)){
-			throw new NyARException();
+		if(!initInstance(this._size,i_buffer_type,i_is_alloc)){
+			throw new NyARRuntimeException();
 		}
 		return;
-	}
+	}	
 	/**
 	 * このクラスの初期化シーケンスです。コンストラクタから呼び出します。
 	 * @param i_size
@@ -137,12 +134,12 @@ public class NyARRaster extends NyARRaster_BasicClass
 	 * この関数は、ラスタに外部参照バッファをセットします。
 	 * 外部参照バッファを持つインスタンスでのみ使用できます。内部参照バッファを持つインスタンスでは使用できません。
 	 */	
-	public void wrapBuffer(Object i_ref_buf) throws NyARException
+	public void wrapBuffer(Object i_ref_buf)
 	{
 		assert(!this._is_attached_buffer);//バッファがアタッチされていたら機能しない。
 		this._buf=i_ref_buf;
 	}
-	public Object createInterface(Class<?> iIid) throws NyARException {
+	public Object createInterface(Class<?> iIid) {
 		// TODO Auto-generated method stub
 		return null;
 	}

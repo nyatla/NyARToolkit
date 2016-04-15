@@ -12,9 +12,9 @@
  */
 package jp.nyatla.nyartoolkit.core.icp.base;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.NyARMat;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.icp.NyARIcp;
+import jp.nyatla.nyartoolkit.core.math.NyARMat;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.transmat.NyARTransMatResultParam;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
@@ -23,7 +23,7 @@ import jp.nyatla.nyartoolkit.core.types.matrix.*;
 
 public class NyARIcpPoint_Base extends NyARIcp {
 
-	public NyARIcpPoint_Base(NyARParam i_param) throws NyARException
+	public NyARIcpPoint_Base(NyARParam i_param)
 	{
 		super(i_param);
 		// n=4で作る。
@@ -32,7 +32,7 @@ public class NyARIcpPoint_Base extends NyARIcp {
 	public boolean icpPoint(NyARDoublePoint2d[] screenCoord,
 			NyARDoublePoint3d[] worldCoord, int num,
 			NyARDoubleMatrix44 initMatXw2Xc, NyARDoubleMatrix44 o_matxw2xc,NyARTransMatResultParam o_result_param)
-			throws NyARException
+			throws NyARRuntimeException
 	{
 		NyARDoublePoint2d U = new NyARDoublePoint2d();
 		double err0 = 0, err1;

@@ -28,7 +28,7 @@ package jp.nyatla.nyartoolkit.java3d.utils;
 
 import java.io.InputStream;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.INyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.param.NyARPerspectiveProjectionMatrix;
@@ -47,9 +47,9 @@ public class J3dNyARParam extends NyARParam
 	/**
 	 * テストパラメータを格納したインスタンスを生成する。
 	 * @return
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public static J3dNyARParam loadDefaultParameter() throws NyARException
+	public static J3dNyARParam loadDefaultParameter() throws NyARRuntimeException
 	{
 		ParamLoader pm=new ParamLoader();
 		return new J3dNyARParam(pm.size,pm.pmat,pm.dist_factor);
@@ -58,9 +58,9 @@ public class J3dNyARParam extends NyARParam
 	 * i_streamからARToolkitのカメラパラメータを読み出して、インスタンスに格納して返します。
 	 * @param i_stream
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public static J3dNyARParam loadARParamFile(InputStream i_stream) throws NyARException
+	public static J3dNyARParam loadARParamFile(InputStream i_stream) throws NyARRuntimeException
 	{
 		ParamLoader pm=new ParamLoader(i_stream);
 		return new J3dNyARParam(pm.size,pm.pmat,pm.dist_factor);

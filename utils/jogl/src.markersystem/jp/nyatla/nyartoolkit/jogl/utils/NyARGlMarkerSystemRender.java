@@ -3,7 +3,7 @@ package jp.nyatla.nyartoolkit.jogl.utils;
 
 import javax.media.opengl.GL;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystem;
 
 /**
@@ -32,9 +32,9 @@ public class NyARGlMarkerSystemRender extends NyARGlRender
 	 * i_glに、i_idで示されるマーカ平面の姿勢行列をセットします。
 	 * @param i_gl
 	 * @param i_id
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public void loadMarkerMatrix(GL i_gl,int i_id) throws NyARException
+	public void loadMarkerMatrix(GL i_gl,int i_id) throws NyARRuntimeException
 	{
 		int old_mode=this.getGlMatrixMode(i_gl);
 		if(old_mode!=GL.GL_MODELVIEW){

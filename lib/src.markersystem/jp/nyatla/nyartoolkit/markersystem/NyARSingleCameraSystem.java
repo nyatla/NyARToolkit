@@ -25,7 +25,6 @@
  */
 package jp.nyatla.nyartoolkit.markersystem;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
 import jp.nyatla.nyartoolkit.core.param.NyARFrustum;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
@@ -39,7 +38,7 @@ public class NyARSingleCameraSystem
 	
 	protected NyARParam _ref_param;
 	protected NyARFrustum _frustum;	
-	protected NyARSingleCameraSystem(NyARParam i_ref_cparam) throws NyARException
+	protected NyARSingleCameraSystem(NyARParam i_ref_cparam)
 	{
 		this._observer=new ObserverList(3);
 		this._ref_param=i_ref_cparam;

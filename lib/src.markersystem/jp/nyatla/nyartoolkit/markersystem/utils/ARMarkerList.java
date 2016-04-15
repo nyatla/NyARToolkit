@@ -27,12 +27,12 @@ package jp.nyatla.nyartoolkit.markersystem.utils;
 
 import java.util.ArrayList;
 
-import jp.nyatla.nyartoolkit.core.NyARCode;
-import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.match.NyARMatchPattDeviationColorData;
-import jp.nyatla.nyartoolkit.core.match.NyARMatchPattResult;
-import jp.nyatla.nyartoolkit.core.match.NyARMatchPatt_Color_WITHOUT_PCA;
-import jp.nyatla.nyartoolkit.core.rasterdriver.INyARPerspectiveCopy;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
+import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
+import jp.nyatla.nyartoolkit.core.marker.artk.algo.NyARMatchPatt_Color_WITHOUT_PCA;
+import jp.nyatla.nyartoolkit.core.marker.artk.match.NyARMatchPattDeviationColorData;
+import jp.nyatla.nyartoolkit.core.marker.artk.match.NyARMatchPattResult;
+import jp.nyatla.nyartoolkit.core.rasterdriver.perspectivecopy.INyARPerspectiveCopy;
 import jp.nyatla.nyartoolkit.core.types.NyARIntPoint2d;
 
 /**
@@ -54,7 +54,7 @@ public class ARMarkerList extends ArrayList<ARMarkerList.Item>
 		/** MK_ARの情報。パターンのエッジ割合。*/
 		public final int patt_edge_percentage;
 		/** */
-		public Item(NyARCode i_patt,int i_patt_edge_percentage,double i_patt_size) throws NyARException
+		public Item(NyARCode i_patt,int i_patt_edge_percentage,double i_patt_size)
 		{
 			super();
 			this.matchpatt=new NyARMatchPatt_Color_WITHOUT_PCA(i_patt);
@@ -73,7 +73,7 @@ public class ARMarkerList extends ArrayList<ARMarkerList.Item>
 	private final NyARMatchPattResult _patt_result=new NyARMatchPattResult();;
 	private final MultiResolutionPattProvider _mpickup=new MultiResolutionPattProvider();
 	private ARMarkerSortList _mkmap;
-	public ARMarkerList() throws NyARException
+	public ARMarkerList()
 	{
 		this._mkmap=new ARMarkerSortList();//初期値1マーカ
 		//sqはtrackingでnull初期化済み
@@ -104,9 +104,9 @@ public class ARMarkerList extends ArrayList<ARMarkerList.Item>
 	 * @param i_vertex
 	 * @param o_targets
 	 * @return
-	 * @throws NyARException 
+	 * @throws NyARRuntimeException 
 	 */
-	public boolean update(INyARPerspectiveCopy i_pix_drv,SquareStack.Item i_sq) throws NyARException
+	public boolean update(INyARPerspectiveCopy i_pix_drv,SquareStack.Item i_sq)
 	{
 		//sq_tmpに値を生成したかのフラグ
 		boolean is_ganalated_sq=false;

@@ -31,7 +31,7 @@
  */
 package jp.nyatla.nyartoolkit.sandbox.x2;
 
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 
 
 
@@ -51,11 +51,11 @@ public class NyARFixedFloat16Mat
 	/**
 	 * デフォルトコンストラクタは機能しません。
 	 * 
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	protected NyARFixedFloat16Mat() throws NyARException
+	protected NyARFixedFloat16Mat() throws NyARRuntimeException
 	{
-		throw new NyARException();
+		throw new NyARRuntimeException();
 	}
 
 	public NyARFixedFloat16Mat(int i_row, int i_clm)
@@ -99,12 +99,12 @@ public class NyARFixedFloat16Mat
 	 * 
 	 * @param a
 	 * @param b
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void matrixMul(NyARFixedFloat16Mat a, NyARFixedFloat16Mat b) throws NyARException
+	public void matrixMul(NyARFixedFloat16Mat a, NyARFixedFloat16Mat b) throws NyARRuntimeException
 	{
 		if (a.clm != b.row || this.row != a.row || this.clm != b.clm) {
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		long w;
 		int r, c, i;

@@ -1,39 +1,39 @@
 package jp.nyatla.nyartoolkit.dev.pro.core.surfacetracking.imageset;
-import jp.nyatla.nyartoolkit.core.NyARException;
-import jp.nyatla.nyartoolkit.core.pixeldriver.INyARGsPixelDriver;
-import jp.nyatla.nyartoolkit.core.raster.INyARGrayscaleRaster;
-import jp.nyatla.nyartoolkit.core.raster.NyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
+import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.raster.gs.NyARGrayscaleRaster;
+import jp.nyatla.nyartoolkit.core.rasterdriver.pixel.INyARGsPixelDriver;
 import jp.nyatla.nyartoolkit.pro.core.rasterfilter.INyARDefocusFilter;
 import jp.nyatla.nyartoolkit.pro.core.rasterfilter.NyARDefocusFilterFactory;
 
 /**
- * ARToolkitNFTのNFTイメージセ�?トを生�?�します�??
+ * ARToolkitNFTのNFTイメージセ�?トを生�?�します�??
  *
  */
 public class NyARSurfaceImageSetUtils
 {
 	/**
-	 * 標準的なdpiリス�?
+	 * 標準的なdpiリス�?
 	 */
 	public static double[] DEFAULT_DPI_LIST={60,40,20};
 	/**
-	 * グレースケール画像からNFTイメージセ�?トを生�?�します�??
+	 * グレースケール画像からNFTイメージセ�?トを生�?�します�??
 	 * @param i_src
 	 * @param i_dpi
 	 * @param i_dpi_list
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public static NyARSurfaceImageSet makeImageSet(INyARGrayscaleRaster i_src,double i_dpi,double[] i_dpi_list) throws NyARException
+	public static NyARSurfaceImageSet makeImageSet(INyARGrayscaleRaster i_src,double i_dpi,double[] i_dpi_list) throws NyARRuntimeException
 	{
-		//dpiにあわせた画像セ�?トを作る�?
+		//dpiにあわせた画像セ�?トを作る�?
 		INyARGrayscaleRaster[] imgs=makeRasterSet(i_src,i_dpi,i_dpi_list);
-		//�?フォーカスとNyARImageSet.ReferenceImageへの変換
+		//�?フォーカスとNyARImageSet.ReferenceImageへの変換
 		NyARSurfaceImageSet.ReferenceImage[] rimgs=new NyARSurfaceImageSet.ReferenceImage[imgs.length];
 		for(int i=0;i<imgs.length;i++){
 			int w=imgs[i].getWidth();
 			int h=imgs[i].getHeight();
-			//�?フォーカス
+			//�?フォーカス
 			INyARGrayscaleRaster tmp=new NyARGrayscaleRaster(w,h);
 			INyARDefocusFilter filter=NyARDefocusFilterFactory.createDriver(imgs[i]);
 			filter.doFilter(tmp,3);
@@ -46,25 +46,25 @@ public class NyARSurfaceImageSetUtils
 				}
 			}
 		}
-		//オブジェクト�?�構�?
+		//オブジェクト�?�構�?
 		return new NyARSurfaceImageSet(rimgs);
 	}
 	/**
-	 * グレースケール画像セ�?トから�?�NFTイメージセ�?トを生�?�します�??
+	 * グレースケール画像セ�?トから�?�NFTイメージセ�?トを生�?�します�??
 	 * @param i_src
-	 * 通常は{@link #makeRasterSet(INyARGrayscaleRaster, double, double[])}で生�?�した画像セ�?トを渡します�??
+	 * 通常は{@link #makeRasterSet(INyARGrayscaleRaster, double, double[])}で生�?�した画像セ�?トを渡します�??
 	 * @param i_dpi_list
 	 * @return
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public static NyARSurfaceImageSet makeImageSet(INyARGrayscaleRaster[] i_src,double[] i_dpi_list) throws NyARException
+	public static NyARSurfaceImageSet makeImageSet(INyARGrayscaleRaster[] i_src,double[] i_dpi_list) throws NyARRuntimeException
 	{
-		//�?フォーカスとNyARImageSet.ReferenceImageへの変換
+		//�?フォーカスとNyARImageSet.ReferenceImageへの変換
 		NyARSurfaceImageSet.ReferenceImage[] rimgs=new NyARSurfaceImageSet.ReferenceImage[i_src.length];
 		for(int i=0;i<i_src.length;i++){
 			int w=i_src[i].getWidth();
 			int h=i_src[i].getHeight();
-			//�?フォーカス
+			//�?フォーカス
 			INyARGrayscaleRaster tmp=new NyARGrayscaleRaster(w,h);
 			INyARDefocusFilter filter=NyARDefocusFilterFactory.createDriver(i_src[i]);
 			filter.doFilter(tmp,3);
@@ -77,24 +77,24 @@ public class NyARSurfaceImageSetUtils
 				}
 			}
 		}
-		//オブジェクト�?�構�?
+		//オブジェクト�?�構�?
 		return new NyARSurfaceImageSet(rimgs);
 	}
 	/**
-	 * �?定したdpiセ�?トに対応する画像セ�?トを返します�??
-	 * @throws NyARException 
+	 * �?定したdpiセ�?トに対応する画像セ�?トを返します�??
+	 * @throws NyARRuntimeException 
 	 */
-	public static INyARGrayscaleRaster[] makeRasterSet(INyARGrayscaleRaster i_src,double i_dpi,double[] i_dpi_list) throws NyARException
+	public static INyARGrayscaleRaster[] makeRasterSet(INyARGrayscaleRaster i_src,double i_dpi,double[] i_dpi_list) throws NyARRuntimeException
 	{
 		
 		int dpi_num=i_dpi_list.length;
-		//dpiの�?囲確�?
+		//dpiの�?囲確�?
 		if(dpi_num==0){
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 		for(int i=0;i<i_dpi_list.length;i++){
 			if(i_dpi_list[i]>i_dpi){
-				throw new NyARException();
+				throw new NyARRuntimeException();
 			}						
 		}
 		INyARGsPixelDriver src_pixdrv=i_src.getGsPixelDriver();

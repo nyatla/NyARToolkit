@@ -32,18 +32,25 @@
 package jp.nyatla.nyartoolkit.sandbox.x2;
 
 import jp.nyatla.nyartoolkit.core.*;
-import jp.nyatla.nyartoolkit.core.match.*;
+import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
+import jp.nyatla.nyartoolkit.core.marker.artk.algo.NyARMatchPatt_Color_WITHOUT_PCA;
+import jp.nyatla.nyartoolkit.core.marker.artk.match.NyARMatchPattDeviationColorData;
+import jp.nyatla.nyartoolkit.core.marker.artk.match.NyARMatchPattResult;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
+import jp.nyatla.nyartoolkit.core.pattmatch.*;
 import jp.nyatla.nyartoolkit.core.pickup.*;
+import jp.nyatla.nyartoolkit.core.raster.bin.NyARBinRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+import jp.nyatla.nyartoolkit.core.rasterdriver.pickup.INyARColorPatt;
+import jp.nyatla.nyartoolkit.core.rasterdriver.pickup.NyARColorPatt_O3;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquare;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquareContourDetector;
+import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquareStack;
 import jp.nyatla.nyartoolkit.core.rasterfilter.gs2bin.*;
 import jp.nyatla.nyartoolkit.core.rasterfilter.rgb2bin.NyARRasterFilter_ARToolkitThreshold;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareContourDetector;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquare;
-import jp.nyatla.nyartoolkit.core.squaredetect.NyARSquareStack;
 
 
 /**
@@ -82,9 +89,9 @@ public class NyARSingleDetectMarker_X2
 	 * 検出するARCodeを指定します。
 	 * @param i_marker_width
 	 * ARコードの物理サイズを、ミリメートルで指定します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public NyARSingleDetectMarker_X2(NyARParam i_param, NyARCode i_code, double i_marker_width,int i_raster_type) throws NyARException
+	public NyARSingleDetectMarker_X2(NyARParam i_param, NyARCode i_code, double i_marker_width,int i_raster_type) throws NyARRuntimeException
 	{
 		final NyARIntSize scr_size=i_param.getScreenSize();	
 		// 解析オブジェクトを作る
@@ -118,13 +125,13 @@ public class NyARSingleDetectMarker_X2
 	 * マーカーを検出するイメージを指定します。イメージサイズは、カメラパラメータ
 	 * と一致していなければなりません。
 	 * @return マーカーが検出できたかを真偽値で返します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public boolean detectMarkerLite(INyARRgbRaster i_raster,int i_threshold) throws NyARException
+	public boolean detectMarkerLite(INyARRgbRaster i_raster,int i_threshold) throws NyARRuntimeException
 	{
 		//サイズチェック
 		if(!this._bin_raster.getSize().isEqualSize(i_raster.getSize())){
-			throw new NyARException();
+			throw new NyARRuntimeException();
 		}
 
 		//ラスタを(1/4の画像の)２値イメージに変換する.
@@ -181,9 +188,9 @@ public class NyARSingleDetectMarker_X2
 	 * 
 	 * @param o_result
 	 * 変換行列を受け取るオブジェクトを指定します。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
-	public void getTransmationMatrix(NyARTransMatResult o_result) throws NyARException
+	public void getTransmationMatrix(NyARTransMatResult o_result) throws NyARRuntimeException
 	{
 		// 一番一致したマーカーの位置とかその辺を計算
 		if (this._is_continue) {
@@ -198,7 +205,7 @@ public class NyARSingleDetectMarker_X2
 	 * 検出したマーカーの一致度を返します。
 	 * 
 	 * @return マーカーの一致度を返します。0～1までの値をとります。 一致度が低い場合には、誤認識の可能性が高くなります。
-	 * @throws NyARException
+	 * @throws NyARRuntimeException
 	 */
 	public double getConfidence()
 	{

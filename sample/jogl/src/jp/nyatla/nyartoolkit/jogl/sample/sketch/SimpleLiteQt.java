@@ -26,7 +26,7 @@
  */
 package jp.nyatla.nyartoolkit.jogl.sample.sketch;
 import javax.media.opengl.*;
-import jp.nyatla.nyartoolkit.core.NyARException;
+import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.jogl.sketch.GlSketch;
 import jp.nyatla.nyartoolkit.jogl.utils.NyARGlMarkerSystem;
 import jp.nyatla.nyartoolkit.jogl.utils.NyARGlMarkerSystemRender;

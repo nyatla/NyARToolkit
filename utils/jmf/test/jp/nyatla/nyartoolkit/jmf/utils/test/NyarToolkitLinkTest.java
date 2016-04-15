@@ -39,6 +39,7 @@ import java.awt.event.WindowEvent;
 import java.io.FileInputStream;
 
 import jp.nyatla.nyartoolkit.core.*;
+import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.transmat.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
@@ -74,7 +75,7 @@ public class NyarToolkitLinkTest extends Frame implements JmfCaptureListener
 		//JmfNyARRaster_RGBはYUVよりもRGBで高速に動作します。
 		if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_RGB,320, 240,15f)){
 			if(!this._capture.setCaptureFormat(JmfCaptureDevice.PIXEL_FORMAT_YUV,320, 240,15f)){
-				throw new NyARException("キャプチャフォーマットが見つかりません");
+				throw new NyARRuntimeException("キャプチャフォーマットが見つかりません");
 			}		
 		}
 		this._capture.setOnCapture(this);
