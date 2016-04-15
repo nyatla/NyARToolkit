@@ -30,6 +30,7 @@
  */
 package jp.nyatla.nyartoolkit.core.param;
 
+import jp.nyatla.nyartoolkit.core.param.distfactor.INyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.types.*;
 
 /**

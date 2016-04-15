@@ -34,8 +34,8 @@ import jp.nyatla.nyartoolkit.core.marker.artk.algo.NyARMatchPatt_Color_WITHOUT_P
 import jp.nyatla.nyartoolkit.core.marker.artk.match.NyARMatchPattDeviationColorData;
 import jp.nyatla.nyartoolkit.core.marker.artk.match.NyARMatchPattResult;
 import jp.nyatla.nyartoolkit.core.param.*;
-import jp.nyatla.nyartoolkit.core.pattmatch.*;
 import jp.nyatla.nyartoolkit.core.raster.*;
+import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.gs.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.*;
 import jp.nyatla.nyartoolkit.core.rasterdriver.histogram.INyARHistogramFromRaster;
@@ -223,7 +223,7 @@ public abstract class SingleARMarkerProcesser
 
 	private NyARRectOffset _offset; 
 	// [AR]検出結果の保存用
-	private NyARGrayscaleRaster _gs_raster;
+	private INyARGrayscaleRaster _gs_raster;
 
 
 	protected int _current_arcode_index = -1;
@@ -257,7 +257,7 @@ public abstract class SingleARMarkerProcesser
 		this._thdetect=new NyARHistogramAnalyzer_SlidePTile(15);
 
 		// ２値画像バッファを作る
-		this._gs_raster = new NyARGrayscaleRaster(scr_size.w, scr_size.h);
+		this._gs_raster = NyARGrayscaleRaster.createInstance(scr_size.w, scr_size.h);
 		this._initialized=true;
 		//コールバックハンドラ
 		this._detectmarker=new DetectSquare(i_param);

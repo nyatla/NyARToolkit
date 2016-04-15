@@ -47,6 +47,7 @@ import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquareContourDet
 import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquareStack;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.param.*;
+import jp.nyatla.nyartoolkit.core.param.distfactor.NyARCameraDistortionFactorV2;
 
 import jp.nyatla.nyartoolkit.sandbox.x2.*;
 

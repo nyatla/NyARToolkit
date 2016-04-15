@@ -90,4 +90,16 @@ public class NyARGsRaster_INT1D_GRAY_8 extends NyARGrayscaleRaster
 			r[(i_x[i] + i_y[i] * w)]=i_intgs[i];
 		}
 	}
+	/**
+	 * 全ピクセルの値の合計を得る
+	 * @return
+	 */
+	final public long allPixels()
+	{
+		long r=0;
+		for(int i=0;i<640*480;i++){
+			r+=this._buf[i];
+		}
+		return r;
+	}
 }

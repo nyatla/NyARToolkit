@@ -135,8 +135,7 @@ public class SingleARMarkerTest
     public void Test() throws Exception
     {
         //AR用カメラパラメタファイルをロード
-        NyARParam ap = NyARParam.createFromARParamFile(new FileInputStream(PARAM_FILE));
-        ap.changeScreenSize(320, 240);
+        NyARParam ap = NyARParam.loadFromARParamFile(new FileInputStream(PARAM_FILE),320,240);
 
 		// 試験イメージの読み出し(320x240 BGRAのRAWデータ)
 		File f = new File(data_file);
@@ -149,7 +148,7 @@ public class SingleARMarkerTest
 
         MarkerProcessor pr = new MarkerProcessor(ap, ra.getBufferType());
         NyARCode[] codes=new NyARCode[1];
-        codes[0]=NyARCode.createFromARPattFile(new FileInputStream(CARCODE_FILE),16,16);
+        codes[0]=NyARCode.loadFromARPattFile(new FileInputStream(CARCODE_FILE),16,16);
         pr.setARCodeTable(codes,16,80.0);
         pr.detectMarker(ra);
         return;

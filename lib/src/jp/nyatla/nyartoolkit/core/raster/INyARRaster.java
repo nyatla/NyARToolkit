@@ -101,6 +101,6 @@ public interface INyARRaster
 	 * 生成には時間がかかるのでキャッシュしてください。
 	 * @return
 	 */
-	public Object createInterface(Class<?> i_iid)throws NyARRuntimeException;
+	public Object createInterface(Class<?> i_iid);
 
 }

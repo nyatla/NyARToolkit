@@ -70,16 +70,17 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	private static final int IDTYPE_NYID=0x00001000;
 	private static final int IDTYPE_PSID=0x00002000;
 
-	protected INyARMarkerSystemSquareDetect _sqdetect;
+	final protected INyARMarkerSystemSquareDetect _sqdetect;
+	final protected INyARHistogramAnalyzer_Threshold _hist_th;
 	private int _last_gs_th;
 	private int _bin_threshold=THLESHOLD_AUTO;
-	private TrackingList _tracking_list;
-	private ARMarkerList _armk_list;
-	private NyIdList _idmk_list;
-	private ARPlayCardList _psmk_list;
+	final private TrackingList _tracking_list;
+	final private ARMarkerList _armk_list;
+	final private NyIdList _idmk_list;
+	final private ARPlayCardList _psmk_list;
 	private int lost_th=5;
-	private INyARTransMat _transmat;
-	private final static int INITIAL_MARKER_STACK_SIZE=10;
+	final private INyARTransMat _transmat;
+	final private static int INITIAL_MARKER_STACK_SIZE=10;
 	
 
 
@@ -94,20 +95,14 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	public NyARMarkerSystem(INyARMarkerSystemConfig i_config)
 	{
 		super(i_config.getNyARParam());
-		this.initInstance(i_config);
-		
+		this._sqdetect=new SquareDetect(i_config);
+		this._hist_th=i_config.createAutoThresholdArgorism();
 		this._armk_list=new ARMarkerList();
 		this._idmk_list=new NyIdList();
 		this._psmk_list=new ARPlayCardList();
 		this._tracking_list=new TrackingList();
 		this._transmat=i_config.createTransmatAlgorism();
-		//同時に判定待ちにできる矩形の数
 		this._on_sq_handler=new OnSquareDetect(i_config,this._armk_list,this._idmk_list,this._psmk_list,this._tracking_list,INITIAL_MARKER_STACK_SIZE);
-	}
-	protected void initInstance(INyARMarkerSystemConfig i_ref_config)
-	{
-		this._sqdetect=new SquareDetect(i_ref_config);
-		this._hist_th=i_ref_config.createAutoThresholdArgorism();
 	}
 	
 
@@ -229,7 +224,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 */
 	public int addARMarker(InputStream i_stream,int i_patt_resolution,int i_patt_edge_percentage,double i_marker_size)
 	{
-		NyARCode c=NyARCode.createFromARPattFile(i_stream,i_patt_resolution,i_patt_resolution);
+		NyARCode c=NyARCode.loadFromARPattFile(i_stream,i_patt_resolution,i_patt_resolution);
 		return this.addARMarker(c, i_patt_edge_percentage, i_marker_size);
 	}
 	/**
@@ -247,7 +242,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	public int addARMarker(String i_file_name,int i_patt_resolution,int i_patt_edge_percentage,double i_marker_size)
 	{
 		try{
-			NyARCode c=NyARCode.createFromARPattFile(new FileInputStream(i_file_name),i_patt_resolution,i_patt_resolution);
+			NyARCode c=NyARCode.loadFromARPattFile(new FileInputStream(i_file_name),i_patt_resolution,i_patt_resolution);
 			return this.addARMarker(c,i_patt_edge_percentage, i_marker_size);
 		}catch(Exception e){
 			throw new NyARRuntimeException(e);
@@ -404,10 +399,10 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 */
 	public NyARDoublePoint3d getMarkerPlanePos(int i_id,int i_x,int i_y,NyARDoublePoint3d i_out)
 	{
-		this._frustum.unProjectOnMatrix(i_x, i_y,this.getMarkerMatrix(i_id),i_out);
+		this._frustum.unProjectOnMatrix(i_x, i_y,this.getTransformMatrix(i_id),i_out);
 		return i_out;
 	}
-	private NyARDoublePoint3d _wk_3dpos=new NyARDoublePoint3d();
+	final private NyARDoublePoint3d _wk_3dpos=new NyARDoublePoint3d();
 	/**
 	 * この関数は、マーカ座標系の点をスクリーン座標へ変換します。
 	 * {@link #isExistMarker(int)}がtrueの時にだけ使用できます。
@@ -427,7 +422,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	public NyARDoublePoint2d getScreenPos(int i_id,double i_x,double i_y,double i_z,NyARDoublePoint2d i_out)
 	{
 		NyARDoublePoint3d _wk_3dpos=this._wk_3dpos;
-		this.getMarkerMatrix(i_id).transform3d(i_x, i_y, i_z,_wk_3dpos);
+		this.getTransformMatrix(i_id).transform3d(i_x, i_y, i_z,_wk_3dpos);
 		this._frustum.project(_wk_3dpos,i_out);
 		return i_out;
 	}	
@@ -464,7 +459,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * 結果を格納したi_rasterオブジェクト
 	 * @throws NyARRuntimeException
 	 */
-	public INyARRgbRaster getMarkerPlaneImage(
+	public INyARRgbRaster getPlaneImage(
 		int i_id,
 		NyARSensor i_sensor,
 		double i_x1,double i_y1,
@@ -475,7 +470,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	{
 		NyARDoublePoint3d[] pos  = this.__pos3d;
 		NyARDoublePoint2d[] pos2 = this.__pos2d;
-		NyARDoubleMatrix44 tmat=this.getMarkerMatrix(i_id);
+		NyARDoubleMatrix44 tmat=this.getTransformMatrix(i_id);
 		tmat.transform3d(i_x1, i_y1,0,	pos[1]);
 		tmat.transform3d(i_x2, i_y2,0,	pos[0]);
 		tmat.transform3d(i_x3, i_y3,0,	pos[3]);
@@ -506,14 +501,9 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * 結果を格納したi_rasterオブジェクト
 	 * @throws NyARRuntimeException
 	 */
-	public INyARRgbRaster getMarkerPlaneImage(
-		int i_id,
-		NyARSensor i_sensor,
-	    double i_l,double i_t,
-	    double i_w,double i_h,
-	    INyARRgbRaster i_raster)
+	public INyARRgbRaster getPlaneImage(int i_id,NyARSensor i_sensor,double i_l,double i_t,double i_w,double i_h,INyARRgbRaster i_raster)
     {
-		return this.getMarkerPlaneImage(i_id,i_sensor,i_l+i_w-1,i_t+i_h-1,i_l,i_t+i_h-1,i_l,i_t,i_l+i_w-1,i_t,i_raster);
+		return this.getPlaneImage(i_id,i_sensor,i_l+i_w-1,i_t+i_h-1,i_l,i_t+i_h-1,i_l,i_t,i_l+i_w-1,i_t,i_raster);
     }
 	/**
 	 * この関数は、マーカの姿勢変換行列を返します。
@@ -522,7 +512,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * [readonly]
 	 * 姿勢行列を格納したオブジェクト。座標系は、ARToolKit座標系です。
 	 */
-	public NyARDoubleMatrix44 getMarkerMatrix(int i_id)
+	public NyARDoubleMatrix44 getTransformMatrix(int i_id)
 	{
 		switch(i_id & MASK_IDTYPE)
 		{
@@ -543,7 +533,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * @return
 	 * [readonly]
 	 */
-	public NyARIntPoint2d[] getMarkerVertex2D(int i_id)
+	public NyARIntPoint2d[] getVertex2D(int i_id)
 	{
 		switch(i_id & MASK_IDTYPE)
 		{
@@ -557,6 +547,41 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 			throw new NyARRuntimeException();
 		}		
 	}
+	/**
+	 * {@link #getPlaneImage}をしようとして下さい。
+	 * @deprecated
+	 */
+	public INyARRgbRaster getMarkerPlaneImage(int i_id,NyARSensor i_sensor,double i_x1,double i_y1,double i_x2,double i_y2,double i_x3,double i_y3,double i_x4,double i_y4,INyARRgbRaster i_raster)
+	{
+		return this.getPlaneImage(i_id, i_sensor, i_x1, i_y1, i_x2, i_y2, i_x3, i_y3, i_x4, i_y4, i_raster);
+	}
+	/**
+	 * {@link #getPlameImage}を使用してください。
+	 * @deprecated
+	 */
+	final public INyARRgbRaster getMarkerPlaneImage(int i_id,NyARSensor i_sensor,double i_l,double i_t,double i_w,double i_h,INyARRgbRaster i_raster)
+	{
+		return this.getPlaneImage(i_id, i_sensor, i_l, i_t, i_w, i_h, i_raster);
+	}
+	
+	
+	/**
+	 * {@link #getTransformMatrix}を使用してください。
+	 * @deprecated
+	 */
+	final public NyARDoubleMatrix44 getMarkerMatrix(int i_id)
+	{
+		return this.getTransformMatrix(i_id);
+	}
+	/**
+	 * {@link #getVertex2D}を使用してください。
+	 * @deprecated
+	 */
+	final public NyARIntPoint2d[] getMarkerVertex2D(int i_id)
+	{
+		return this.getVertex2D(i_id);
+	}
+	
 	/**
 	 * この関数は、2値化敷居値を設定します。
 	 * @param i_th
@@ -588,7 +613,6 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 		this.lost_th=i_delay;
 	}
 	private long _time_stamp=-1;
-	protected INyARHistogramAnalyzer_Threshold _hist_th;
 	private OnSquareDetect _on_sq_handler;
 	/**
 	 * この関数は、入力したセンサ入力値から、インスタンスの状態を更新します。

@@ -1,13 +1,13 @@
 package jp.nyatla.nyartoolkit.dev.pro.core.surfacetracking.feature;
 
-import jp.nyatla.nyartoolkit.core.param.INyARCameraDistortionFactor;
+import jp.nyatla.nyartoolkit.core.param.distfactor.INyARCameraDistortionFactor;
 import jp.nyatla.nyartoolkit.core.types.NyARDoublePoint2d;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.pro.core.surfacetracking.NyARSurfaceTransMatrixSet;
 
 
 /**
- * スクリーン上で可視な特徴を選択するクラスです�??
+ * スクリーン上で可視な特徴を選択するクラスです�??
  *
  */
 public class NyARVisibleFeatureExtractor implements INyARVisibleFeatureExtractor
@@ -47,11 +47,11 @@ public class NyARVisibleFeatureExtractor implements INyARVisibleFeatureExtractor
 			{
 				NyARSurfaceFeatureSet.NyAR2FeatureCoord coord_ptr=fpoint_ptr.coord[k];
 				
-				//�?想画面点を計�?
+				//�?想画面点を計�?
 				i_ctrans.calculate2dPos(coord_ptr.mx,coord_ptr.my,ide2d);
 				df.ideal2Observ(ide2d.x,ide2d.y, obs2d);
 
-				//観察座標に変換後�?�画面�?にあるか確�?
+				//観察座標に変換後�?�画面�?にあるか確�?
 				if( obs2d.x < 0 || obs2d.x >= xsize ){
 					continue;
 				}
@@ -59,15 +59,15 @@ public class NyARVisibleFeatureExtractor implements INyARVisibleFeatureExtractor
 				{
 					continue;
 				}
-				//�?変換可能か確�?
+				//�?変換可能か確�?
 				df.observ2Ideal(obs2d, rideal2d);
 				if(ide2d.sqDist(rideal2d)>1.0){
 					continue;
 				}
 
 				
-				//原点からのベクトルを計�?
-				//Z軸�?+�?とつかえな�?ので判定�?
+				//原点からのベクトルを計�?
+				//Z軸�?+�?とつかえな�?ので判定�?
 				if(i_ctrans.calculateVd(coord_ptr.mx, coord_ptr.my)>-0.1){
 					continue;
 				}
@@ -79,10 +79,10 @@ public class NyARVisibleFeatureExtractor implements INyARVisibleFeatureExtractor
 //				}
 				
 				
-				//撮影�?�?のdpiを計�?(x,y方向で計算して、大・小�?��?番で格納�?)
+				//撮影�?�?のdpiを計�?(x,y方向で計算して、大・小�?��?番で格納�?)
 				double dpi=i_ctrans.ar2GetMinResolution(coord_ptr);
 
-				//dpiによってコレクトする�?�補を�?離
+				//dpiによってコレクトする�?�補を�?離
 				if( dpi <= fpoint_ptr.maxdpi && dpi >= fpoint_ptr.mindpi )
 				{
 					NyARSurfaceFeatureItem item=candidate.prePush();

@@ -25,7 +25,6 @@
  */
 package jp.nyatla.nyartoolkit.markersystem;
 
-import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquareContourDetector;
 
 public interface INyARMarkerSystemSquareDetect {

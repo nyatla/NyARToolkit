@@ -29,6 +29,7 @@ import java.lang.reflect.Array;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 
+
 /**
  * このクラスは、オブジェクトの参照値を格納する可変長配列です。
  * このクラスの実体化は禁止しています。継承して使ってください。
@@ -151,6 +152,22 @@ public class NyARPointerStack<T>
 		return this._length;
 	}
 	/**
+	 * この関数は、データ長が0であるかを返します。
+	 * @return
+	 */
+	public final boolean isEmpty() {
+		return this._length==0;
+	}
+	public final void swap(int i_idx1,int i_idx_2)
+	{
+		if(i_idx1!=i_idx_2){
+			T[] list=this._items;
+			T tmp=list[i_idx1];
+			list[i_idx1]=list[i_idx_2];
+			list[i_idx_2]=tmp;
+		}
+	}
+	/**
 	 * この関数は、配列の最大サイズを返します。
 	 * @return
 	 */
@@ -167,12 +184,11 @@ public class NyARPointerStack<T>
 	public void remove(int i_index)
 	{
 		assert(this._length>i_index && i_index>=0);
-		
 		if(i_index!=this._length-1){
-			int i;
+			//最後尾以外の場合は前方詰めをする。
 			final int len=this._length-1;
 			T[] items=this._items;
-			for(i=i_index;i<len;i++)
+			for(int i=i_index;i<len;i++)
 			{
 				items[i]=items[i+1];
 			}

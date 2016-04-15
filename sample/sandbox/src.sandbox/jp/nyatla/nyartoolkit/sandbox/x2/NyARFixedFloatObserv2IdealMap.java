@@ -33,6 +33,7 @@ package jp.nyatla.nyartoolkit.sandbox.x2;
 
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.param.*;
+import jp.nyatla.nyartoolkit.core.param.distfactor.NyARCameraDistortionFactorV2;
 /**
  * 歪み成分マップを使用するINyARCameraDistortionFactor
  * 内部マップをint(1:15:16)フォーマットの固定小数点で保持する。

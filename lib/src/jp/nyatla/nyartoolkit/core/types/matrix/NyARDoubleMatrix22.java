@@ -40,6 +40,7 @@ public class NyARDoubleMatrix22 implements INyARDoubleMatrix
 	/**
 	 * この関数は、要素数4の配列を、行列にセットします。
 	 */
+	@Override
 	public void setValue(double[] i_value)
 	{
 		this.m00=i_value[0];
@@ -51,6 +52,7 @@ public class NyARDoubleMatrix22 implements INyARDoubleMatrix
 	/**
 	 * この関数は、要素数4の配列に、行列の内容をコピーします。
 	 */
+	@Override
 	public void getValue(double[] o_value)
 	{
 		o_value[0]=this.m00;

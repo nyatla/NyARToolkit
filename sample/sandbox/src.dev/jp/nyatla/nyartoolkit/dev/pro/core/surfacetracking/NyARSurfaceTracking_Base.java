@@ -898,7 +898,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 	
 	
 	
-	AR2TemplateT ar2GenTemplate(NyARParam cparam, NyARDoubleMatrix44 trans, NyARSurfaceImageSet imageSet,
+	AR2TemplateT ar2GenTemplate(NyARParam cparam, NyARDoubleMatrix44 trans, NyARNftIsetFile imageSet,
 			NyAR2FeaturePoints featurePoints, int num,int ts1, int ts2 ) throws NyARRuntimeException
 	{
 		int           xsize, ysize;
@@ -913,7 +913,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 		//	arMalloc( _template->wimg1, int,  xsize*ysize );
 		//	arMalloc( _template->wimg2, int,  xsize*ysize );
 	
-		if( ar2GenTemplateSub(cparam, trans, imageSet, featurePoints, num, _template) < 0 ) {
+		if( ar2SetTemplateSub(cparam, trans, imageSet, featurePoints, num, _template) < 0 ) {
 //			ar2FreeTemplate( _template );
 			return null;
 		}
@@ -1002,7 +1002,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 
 	    return 0;
 	}	
-	static int ar2GetImageValue(NyARParam cparam,NyARDoubleMatrix44 trans, NyARSurfaceImageSet.ReferenceImage image,double sx, double sy) throws NyARRuntimeException
+	static int ar2GetImageValue(NyARParam cparam,NyARDoubleMatrix44 trans, NyARNftIsetFile.ReferenceImage image,double sx, double sy) throws NyARRuntimeException
 	{
 //	    double   mx, my;
 //	    double   iix, iiy;
@@ -1330,7 +1330,7 @@ vlen = sqrtf( vdir[0]*vdir[0] + vdir[1]*vdir[1] + vdir[2]*vdir[2] );
 	
 	    return 0;
 	}
-	static int ar2GenTemplateSub(NyARParam cparam, NyARDoubleMatrix44 trans, NyARSurfaceImageSet imageSet,
+	static int ar2GenTemplateSub(NyARParam cparam, NyARDoubleMatrix44 trans, NyARNftIsetFile imageSet,
 			  NyAR2FeaturePoints featurePoints, int num,AR2TemplateT template_ ) throws NyARRuntimeException
 	{
 		double    mx, my;

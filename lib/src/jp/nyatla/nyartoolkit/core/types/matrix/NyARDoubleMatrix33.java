@@ -66,6 +66,30 @@ public class NyARDoubleMatrix33 implements INyARDoubleMatrix
 		return ret;
 	}
 	/**
+	 * インスタンスの値とi_matの値が同一かを返します。
+	 */	
+	@Override
+	public boolean equals(Object i_mat)
+	{
+		if(i_mat instanceof NyARDoubleMatrix33){
+			NyARDoubleMatrix33 m=(NyARDoubleMatrix33)i_mat;
+			if(	m.m00==this.m00 && m.m01==this.m01 && m.m02==this.m02 &&
+				m.m10==this.m10 && m.m11==this.m11 && m.m12==this.m12 &&
+				m.m20==this.m20 && m.m21==this.m21 && m.m22==this.m22)
+			{
+				return true;
+			}
+		}
+		return false;
+	}	
+	public NyARDoubleMatrix33()
+	{
+	}
+	public NyARDoubleMatrix33(double[] i_value)
+	{
+		this.setValue(i_value);
+	}	
+	/**
 	 * この関数は、要素数9の配列を、行列にセットします。
 	 */	
 	public void setValue(double[] i_value)
@@ -161,6 +185,14 @@ public class NyARDoubleMatrix33 implements INyARDoubleMatrix
 		this.m22=b33*det_1;
 		
 		return true;
+	}
+	public final double determinant()
+	{
+		final double a12,a13,a22,a23,a32,a33;
+		a12=this.m01;a13=this.m02;
+		a22=this.m11;a23=this.m12;
+		a32=this.m21;a33=this.m22;		
+		return this.m00*(a22*a33-a23*a32)+this.m10*(a32*a13-a33*a12)+this.m20*(a12*a23-a13*a22);
 	}
 	/**
 	 * この関数は、行列を回転行列として、ZXY系の角度値を計算します。

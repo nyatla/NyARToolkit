@@ -52,16 +52,11 @@ public class NyARIntSize
 		this.h=0;
 		return;		
 	}
-	/**
-	 * コンストラクタです。
-	 * @param i_ref_object
-	 * 引数値で初期化したインスタンスを生成します。
-	 */
-	public NyARIntSize(NyARIntSize i_ref_object)
+	public NyARIntSize(NyARIntSize i_src)
 	{
-		this.w=i_ref_object.w;
-		this.h=i_ref_object.h;
-		return;		
+		this.w=i_src.w;
+		this.h=i_src.h;
+		return;
 	}
 	/**
 	 * コンストラクタです。
@@ -242,6 +237,9 @@ public class NyARIntSize
 		}
 		this.h=ymax-ymin+1;
 		this.w=xmax-xmin+1;
+	}
+	public static void main(String[] args){
+		return;
 	}
 
 }

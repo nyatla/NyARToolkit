@@ -14,7 +14,6 @@ package jp.nyatla.nyartoolkit.core.icp;
 
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.math.NyARMat;
-import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.transmat.rotmatrix.*;
 import jp.nyatla.nyartoolkit.core.types.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.*;
@@ -23,9 +22,9 @@ public class NyARIcpPlane
 {
 	protected NyARDoubleMatrix44 _cparam;
 
-	public NyARIcpPlane(NyARParam i_param)
+	public NyARIcpPlane(NyARDoubleMatrix44 i_projection_mat)
 	{
-		this._cparam = i_param.getPerspectiveProjectionMatrix();
+		this._cparam = i_projection_mat;
 	}
 	private NyARRotVector __vec0 = new NyARRotVector();
 	private NyARRotVector __vec1 = new NyARRotVector();
@@ -203,8 +202,8 @@ public class NyARIcpPlane
 		initMatXw2Xc.m23 = t2;
 		initMatXw2Xc.m30=initMatXw2Xc.m31=initMatXw2Xc.m32=0;
 		initMatXw2Xc.m33=1;
-
-		icpGetInitXw2XcSub(initMatXw2Xc, screenCoord, worldCoord, i_num,initMatXw2Xc);
+//icpGetInitXw2XcSub is disabled in ARToolkit5 
+//		icpGetInitXw2XcSub(initMatXw2Xc, screenCoord, worldCoord, i_num,initMatXw2Xc);
 		return true;
 	}
 	//There is work variables.

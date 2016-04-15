@@ -86,8 +86,7 @@ public class NyARMarkerSystemConfig implements INyARMarkerSystemConfig
 	 */
 	public NyARMarkerSystemConfig(InputStream i_ar_param_stream,int i_width,int i_height)
 	{
-		this(NyARParam.createFromARParamFile(i_ar_param_stream));
-		this._param.changeScreenSize(i_width,i_height);
+		this(NyARParam.loadFromARParamFile(i_ar_param_stream, i_width, i_height));
 	}
 	/**
 	 * コンストラクタです。カメラパラメータにサンプル値(../Data/camera_para.dat)の値をロードして、
@@ -100,8 +99,7 @@ public class NyARMarkerSystemConfig implements INyARMarkerSystemConfig
 	 */
 	public NyARMarkerSystemConfig(int i_width,int i_height)
 	{
-		this(NyARParam.createDefaultParameter());
-		this._param.changeScreenSize(i_width,i_height);		
+		this(NyARParam.loadDefaultParams(i_width, i_height));
 	}
 	/**
 	 * この値は、カメラパラメータのスクリーンサイズです。

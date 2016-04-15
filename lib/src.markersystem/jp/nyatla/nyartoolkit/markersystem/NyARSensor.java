@@ -54,40 +54,25 @@ public class NyARSensor
 	protected long _src_ts;
 	protected long _gs_id_ts;
 	protected long _gs_hist_ts;
+	public NyARSensor(NyARIntSize i_size)
+	{
+		this(i_size.w,i_size.h);
+	}
+
 	/**
 	 * 画像サイズ（スクリーンサイズ）を指定して、インスタンスを生成します。
 	 * @param i_size
 	 * 画像のサイズ。
 	 * @throws NyARRuntimeException
 	 */
-	public NyARSensor(NyARIntSize i_size)
+	public NyARSensor(int i_w,int i_h)
 	{
-		this.initInstance(i_size);
-		this._hist_drv=(INyARHistogramFromRaster) this._gs_raster.createInterface(INyARHistogramFromRaster.class);
-	}
-	/**
-	 * この関数は、画像ドライバに依存するインスタンスを生成する。
-	 * 継承クラスで上書きする。
-	 * @param s
-	 * @throws NyARRuntimeException
-	 */
-	protected void initResource(NyARIntSize s)
-	{
-		this._gs_raster=NyARGrayscaleRaster.createInstance(s.w,s.h,NyARBufferType.INT1D_GRAY_8,true);
-	}
-	/**
-	 * 
-	 * @param i_size
-	 * @throws NyARRuntimeException
-	 */
-	private void initInstance(NyARIntSize i_size)
-	{
-		//リソースの生成
-		this.initResource(i_size);
+		this._gs_raster=NyARGrayscaleRaster.createInstance(i_w,i_h,NyARBufferType.INT1D_GRAY_8,true);
 		this._gs_hist=new NyARHistogram(256);
 		this._src_ts=0;
 		this._gs_id_ts=0;
 		this._gs_hist_ts=0;
+		this._hist_drv=(INyARHistogramFromRaster) this._gs_raster.createInterface(INyARHistogramFromRaster.class);
 	}
 	/**
 	 * この関数は、現在のカラー画像の射影変換ドライバを返します。

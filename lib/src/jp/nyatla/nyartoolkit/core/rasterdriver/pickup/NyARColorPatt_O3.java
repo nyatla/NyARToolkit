@@ -254,7 +254,7 @@ public class NyARColorPatt_O3 extends NyARColorPatt_Base
 					}
 				}
 				//1ピクセル分の配列を取得
-				this.getPixelSet(xc,yc,number_of_pix, rgb_set);
+				image.getPixelSet(xc,yc,number_of_pix, rgb_set);
 				r=g=b=0;
 				for(i=number_of_pix*3-1;i>=0;i-=3){
 					r += rgb_set[i-2];// R

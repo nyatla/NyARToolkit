@@ -80,10 +80,36 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 		}
 		return ret;
 	}
+	public NyARDoubleMatrix44()
+	{
+	}
+	public NyARDoubleMatrix44(double[] i_value)
+	{
+		this.setValue(i_value);
+	}
+	/**
+	 * インスタンスの値とi_matの値が同一かを返します。
+	 */	
+	@Override
+	public boolean equals(Object i_mat)
+	{
+		if(i_mat instanceof NyARDoubleMatrix44){
+			NyARDoubleMatrix44 m=(NyARDoubleMatrix44)i_mat;
+			if(	m.m00==this.m00 && m.m01==this.m01 && m.m02==this.m02 && m.m03==this.m03 &&
+				m.m10==this.m10 && m.m11==this.m11 && m.m12==this.m12 && m.m13==this.m13 &&
+				m.m20==this.m20 && m.m21==this.m21 && m.m22==this.m22 && m.m23==this.m23 &&
+				m.m30==this.m30 && m.m31==this.m31 && m.m32==this.m32 && m.m33==this.m33)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 	/**
 	 * この関数は、要素数16の配列を、行列にセットします。
 	 * 00,01,02,03,10...の順です。
 	 */
+	@Override
 	public void setValue(double[] i_value)
 	{
 		this.m00=i_value[ 0];
@@ -133,6 +159,7 @@ public class NyARDoubleMatrix44 implements INyARDoubleMatrix
 	 * この関数は、要素数16の配列に、行列の内容をコピーします。
 	 * 順番は、00,01,02,03,10...の順です。
 	 */	
+	@Override
 	public void getValue(double[] o_value)
 	{
 		o_value[ 0]=this.m00;

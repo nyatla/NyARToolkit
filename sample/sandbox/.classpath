@@ -9,7 +9,5 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolkit.utils.jogl"/>
 	<classpathentry kind="lib" path="C:/Program Files (x86)/JMF2.1.1e/lib/jmf.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolkit.utils.j2se"/>
-	<classpathentry kind="lib" path="C:/Program Files/JDK6/jdk/lib/gluegen-rt.jar"/>
-	<classpathentry kind="lib" path="C:/Program Files/JDK6/jdk/lib/jogl.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

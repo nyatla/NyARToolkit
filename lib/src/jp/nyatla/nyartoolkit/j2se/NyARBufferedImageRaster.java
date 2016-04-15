@@ -34,13 +34,21 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 	 * @throws IOException
 	 * @throws NyARRuntimeException 
 	 */
-	public static NyARBufferedImageRaster createFromFile(String i_file) throws IOException
+	public static NyARBufferedImageRaster loadFromFile(String i_file) throws IOException
 	{
 		BufferedImage img;
 		img = ImageIO.read(new File(i_file));
 		//画像フォーマットの解析
 		NyARBufferedImageRaster ra=new NyARBufferedImageRaster(img);
 		return ra;		
+	}
+	/**
+	 * {@link #loadFromFile}を使ってください。
+	 * @deprecated
+	 */
+	public static NyARBufferedImageRaster createFromFile(String i_file) throws IOException
+	{
+		return loadFromFile(i_file);	
 	}	
 	/**
 	 * i_imgをラップするインスタンスを生成します。
@@ -52,8 +60,9 @@ public class NyARBufferedImageRaster extends NyARRgbRaster
 		this(
 			i_img.getWidth(),i_img.getHeight(),
 			getCompatibleRasterType(i_img),false);
-		//ラスタにBitmapをラップさせる
+//		//ラスタにBitmapをラップさせる
 		callWrapBuffer(this._raster,i_img);
+		this._buffered_image=i_img;
 	}
 	public NyARBufferedImageRaster(int i_width,int i_height,int i_raster_type,boolean i_is_alloc)
 	{

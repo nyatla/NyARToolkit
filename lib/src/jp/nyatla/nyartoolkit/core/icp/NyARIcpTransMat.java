@@ -40,13 +40,14 @@ public class NyARIcpTransMat implements INyARTransMat
 	 */
 	public NyARIcpTransMat(NyARParam i_param,int i_al_mode)
 	{
-		this._icpc=new NyARIcpPlane(i_param);
+		NyARDoubleMatrix44 projection_mat=i_param.getPerspectiveProjectionMatrix();
+		this._icpc=new NyARIcpPlane(projection_mat);
 		switch(i_al_mode){
 		case AL_POINT:
-			this._icpp=new NyARIcpPoint(i_param);
+			this._icpp=new NyARIcpPoint(projection_mat);
 			break;
 		case AL_POINT_ROBUST:
-			this._icpp=new NyARIcpPointRobust(i_param);
+			this._icpp=new NyARIcpPointRobust(projection_mat);
 			break;
 		default:
 			throw new IllegalArgumentException();
