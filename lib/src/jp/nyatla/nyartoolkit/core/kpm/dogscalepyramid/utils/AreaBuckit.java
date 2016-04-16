@@ -59,8 +59,8 @@ public class AreaBuckit
 			this._buckit[i]=new BucketPair();
 		}
 		this._y_dim=i_y_dim;
-		this.dx = (int) Math.ceil(i_w / i_x_dim);
-		this.dy = (int) Math.ceil(i_h / i_y_dim);
+		this.dx = (int) Math.ceil((double)i_w / i_x_dim);
+		this.dy = (int) Math.ceil((double)i_h / i_y_dim);
 		this._block_size=n;
 		return;			
 	}
