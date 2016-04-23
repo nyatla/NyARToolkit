@@ -104,6 +104,7 @@ public class NyARNftDataSet
 	 * @param i_fset3_stream
 	 * @param i_freak_fset_page_id
 	 * @param i_width_in_msec
+	 * NFTターゲット画像の横幅をmmで指定します。スケーリングが不要な場合はNaNを指定します。
 	 * @return
 	 */
 	public static NyARNftDataSet loadFromNftFiles(InputStream i_iset_stream,InputStream i_fset_stream,InputStream i_fset3_stream,int i_freak_fset_page_id,double i_width_in_msec)

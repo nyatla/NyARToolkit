@@ -29,7 +29,7 @@ public class NyARGlRender implements INyARSingleCameraSystemObserver
 	public NyARGlRender(NyARSingleCameraSystem i_eventp)
 	{
 		this._projection_mat=new double[16];//先に初期化しておいて。observerが初期イベントをコールするから。
-		i_eventp.addObserver(this);
+		i_eventp.getSingleView().addObserver(this);
 	}
 	/**
 	 * Observerのイベントハンドラ

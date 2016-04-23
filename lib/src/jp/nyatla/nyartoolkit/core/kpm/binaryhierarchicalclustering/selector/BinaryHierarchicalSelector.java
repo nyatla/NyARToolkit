@@ -108,7 +108,7 @@ public class BinaryHierarchicalSelector
 
 	private void append(BinaryHierarchicalNode i_node)
 	{		
-		assert i_node.is_leaf==true;
+		//assert i_node.is_leaf==true;
 		//末端なら結果配列へ値を追加
 		int p=this._num_of_result;
 		int l=i_node.reserv_index.length;

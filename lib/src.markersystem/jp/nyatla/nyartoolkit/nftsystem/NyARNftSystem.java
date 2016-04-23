@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.FreakKeypointMatching;
 import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftDataSet;
@@ -26,18 +27,20 @@ import jp.nyatla.nyartoolkit.markersystem.NyARSingleCameraSystem;
  * NFTの自然特徴点マーカの管理クラスです。
  * ARToolKit version5互換のNFTマーカをトラッキングできます。
  */
-public class NyARNftSystem extends NyARSingleCameraSystem{
+public class NyARNftSystem extends NyARSingleCameraSystem
+{
 
 	/**
 	 * コンストラクタです。
 	 * @param i_config
 	 * NFTのコンフィギュレーションオブジェクトを指定します。
 	 */
-	protected NyARNftSystem(INyARNftSystemConfig i_config) {
-		super(i_config.getNyARParam());
-		this._kpm_thread=new KpmThread(i_config.getNyARParam(),this._nftdatalist);
-		this._surface_tracker=new NyARSurfaceTracker(i_config.getNyARParam(),16,0.5);
-		this._sftrackingutils=new NyARSurfaceTrackingTransmatUtils(i_config.getNyARParam(),5.0);
+	public NyARNftSystem(INyARNftSystemConfig i_config) {
+		super(i_config.getNyARSingleCameraView());
+		NyARParam cparam=this._view.getARParam();
+		this._kpm_thread=new KpmThread(cparam,this._nftdatalist);
+		this._surface_tracker=new NyARSurfaceTracker(cparam,16,0.5);
+		this._sftrackingutils=new NyARSurfaceTrackingTransmatUtils(cparam,5.0);
 		this._kpm_thread.start();
 	}
 	private long _last_time_stamp=-1;
@@ -281,6 +284,11 @@ public class NyARNftSystem extends NyARSingleCameraSystem{
 			}
 		}
 	}
+	public void getScreenPos(int msid, double i_x, double i_y, double i_z,
+			NyARDoublePoint2d pos) {
+		// TODO Auto-generated method stub
+		
+	}	
 	/**
 	 * ワーカースレッドを終了します。
 	 * メインスレッド終了時に必ず実行してください。
@@ -330,4 +338,103 @@ public class NyARNftSystem extends NyARSingleCameraSystem{
 		
 		
 	}
+	private NyARDoublePoint3d[] __pos3d=NyARDoublePoint3d.createArray(4);
+	private NyARDoublePoint2d[] __pos2d=NyARDoublePoint2d.createArray(4);
+
+	
+	/**
+	 * この関数は、マーカ平面上の任意の４点で囲まれる領域から、画像を射影変換して返します。
+	 * {@link #isExistMarker(int)}がtrueの時にだけ使用できます。
+	 * @param i_id
+	 * マーカID（ハンドル）値。
+	 * @param i_sensor
+	 * 画像を取得するセンサオブジェクト。通常は{@link #update(NyARSensor)}関数に入力したものと同じものを指定します。
+	 * @param i_x1
+	 * 頂点1[mm]
+	 * @param i_y1
+	 * 頂点1[mm]
+	 * @param i_x2
+	 * 頂点2[mm]
+	 * @param i_y2
+	 * 頂点2[mm]
+	 * @param i_x3
+	 * 頂点3[mm]
+	 * @param i_y3
+	 * 頂点3[mm]
+	 * @param i_x4
+	 * 頂点4[mm]
+	 * @param i_y4
+	 * 頂点4[mm]
+	 * @param i_raster
+	 * 取得した画像を格納するオブジェクト
+	 * @return
+	 * 結果を格納したi_rasterオブジェクト
+	 * @throws NyARRuntimeException
+	 */
+	public INyARRgbRaster getPlaneImage(
+		int i_id,
+		NyARSensor i_sensor,
+		double i_x1,double i_y1,
+		double i_x2,double i_y2,
+		double i_x3,double i_y3,
+		double i_x4,double i_y4,
+	    INyARRgbRaster i_raster)
+	{
+		NyARDoublePoint3d[] pos  = this.__pos3d;
+		NyARDoublePoint2d[] pos2 = this.__pos2d;
+		NyARDoubleMatrix44 tmat=this.getTransformMatrix(i_id);
+		tmat.transform3d(i_x1, i_y1,0,	pos[1]);
+		tmat.transform3d(i_x2, i_y2,0,	pos[0]);
+		tmat.transform3d(i_x3, i_y3,0,	pos[3]);
+		tmat.transform3d(i_x4, i_y4,0,	pos[2]);
+		for(int i=3;i>=0;i--){
+			this.getFrustum().project(pos[i],pos2[i]);
+		}
+		return i_sensor.getPerspectiveImage(pos2[0].x, pos2[0].y,pos2[1].x, pos2[1].y,pos2[2].x, pos2[2].y,pos2[3].x, pos2[3].y,i_raster);
+	}
+	/**
+	 * この関数は、マーカ平面上の任意の矩形で囲まれる領域から、画像を射影変換して返します。
+	 * {@link #isExistMarker(int)}がtrueの時にだけ使用できます。
+	 * @param i_id
+	 * マーカID（ハンドル）値。
+	 * @param i_sensor
+	 * 画像を取得するセンサオブジェクト。通常は{@link #update(NyARSensor)}関数に入力したものと同じものを指定します。
+	 * @param i_l
+	 * 矩形の左上点です。
+	 * @param i_t
+	 * 矩形の左上点です。
+	 * @param i_w
+	 * 矩形の幅です。
+	 * @param i_h
+	 * 矩形の幅です。
+	 * @param i_raster
+	 * 出力先のオブジェクト
+	 * @return
+	 * 結果を格納したi_rasterオブジェクト
+	 * @throws NyARRuntimeException
+	 */
+	public INyARRgbRaster getPlaneImage(int i_id,NyARSensor i_sensor,double i_l,double i_t,double i_w,double i_h,INyARRgbRaster i_raster)
+    {
+		return this.getPlaneImage(i_id,i_sensor,i_l+i_w-1,i_t+i_h-1,i_l,i_t+i_h-1,i_l,i_t,i_l+i_w-1,i_t,i_raster);
+    }
+	/**
+	 * この関数は、スクリーン座標点をマーカ平面の点に変換します。
+	 * {@link #isExistMarker(int)}がtrueの時にだけ使用できます。
+	 * @param i_id
+	 * マーカID（ハンドル）値。
+	 * @param i_x
+	 * 変換元のスクリーン座標
+	 * @param i_y
+	 * 変換元のスクリーン座標
+	 * @param i_out
+	 * 結果を格納するオブジェクト
+	 * @return
+	 * 結果を格納したi_outに設定したオブジェクト
+	 */
+	public NyARDoublePoint3d getMarkerPlanePos(int i_id,int i_x,int i_y,NyARDoublePoint3d i_out)
+	{
+		this.getFrustum().unProjectOnMatrix(i_x, i_y,this.getTransformMatrix(i_id),i_out);
+		return i_out;
+	}
+
 }

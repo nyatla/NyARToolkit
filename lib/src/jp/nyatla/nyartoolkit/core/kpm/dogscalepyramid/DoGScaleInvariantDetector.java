@@ -496,7 +496,7 @@ public class DoGScaleInvariantDetector {
 
 		for (int i = 0; i < i_dog_fp.getLength(); i++) {
 			DogFeaturePoint kp = i_dog_fp.getItem(i);
-			assert kp.scale < mLaplacianPyramid.numScalePerOctave();
+			//assert kp.scale < mLaplacianPyramid.numScalePerOctave();
 			// ASSERT(kp.scale < mLaplacianPyramid.numScalePerOctave(),
 			// "Feature point scale is out of bounds");
 			int lap_index = kp.octave * mLaplacianPyramid.numScalePerOctave() + kp.scale;
@@ -602,15 +602,15 @@ public class DoGScaleInvariantDetector {
 		double[] H=new double[9];
 		if (lap0.getWidth() == lap1.getWidth() && lap1.getWidth() == lap2.getWidth()) {
 			//すべての画像サイズが同じ
-			assert lap0.getHeight() == lap1.getHeight() && lap1.getHeight() == lap2.getHeight();// "Width/height are not consistent");
+			//assert lap0.getHeight() == lap1.getHeight() && lap1.getHeight() == lap2.getHeight();// "Width/height are not consistent");
 			ComputeSubpixelHessianSameOctave(H, b, lap0, lap1, lap2, x, y);
 		} else if ((lap0.getWidth() == lap1.getWidth()) && ((lap1.getWidth() >> 1) == lap2.getWidth())) {
 			//0,1が同じで2がその半分
-			assert (lap0.getHeight() == lap1.getHeight()) && ((lap1.getHeight() >> 1) == lap2.getHeight());// Width/height are not consistent");
+			//assert (lap0.getHeight() == lap1.getHeight()) && ((lap1.getHeight() >> 1) == lap2.getHeight());// Width/height are not consistent");
 			ComputeSubpixelHessianFineOctavePair(H, b, lap0, lap1, lap2, x, y);
 		} else if (((lap0.getWidth() >> 1) == lap1.getWidth()) && (lap1.getWidth() == lap2.getWidth())) {
 			//0の半分が1,2
-			assert ((lap0.getWidth() >> 1) == lap1.getWidth()) && (lap1.getWidth() == lap2.getWidth());// Width/height are not consistent");
+			//assert ((lap0.getWidth() >> 1) == lap1.getWidth()) && (lap1.getWidth() == lap2.getWidth());// Width/height are not consistent");
 			ComputeSubpixelHessianCoarseOctavePair(H, b, lap0, lap1, lap2, x, y);
 		} else {
 			// ASSERT(0, "Image sizes are inconsistent");
@@ -679,12 +679,12 @@ public class DoGScaleInvariantDetector {
 		double Dxx, Dyy, Dxy;
 		double Dss, Dxs, Dys;
 
-		assert (x - 1) >= 0 && (x + 1) < lap1.getWidth();
-		assert (y - 1) >= 0 && (y + 1) < lap1.getHeight();
-		assert (lap0.getWidth() >> 1) == lap1.getWidth();
-		assert (lap0.getWidth() >> 1) == lap2.getWidth();
-		assert (lap0.getHeight() >> 1) == lap1.getHeight();
-		assert (lap0.getHeight() >> 1) == lap2.getHeight();
+		//assert (x - 1) >= 0 && (x + 1) < lap1.getWidth();
+		//assert (y - 1) >= 0 && (y + 1) < lap1.getHeight();
+		//assert (lap0.getWidth() >> 1) == lap1.getWidth();
+		//assert (lap0.getWidth() >> 1) == lap2.getWidth();
+		//assert (lap0.getHeight() >> 1) == lap1.getHeight();
+		//assert (lap0.getHeight() >> 1) == lap2.getHeight();
 
 
 		int lap1_p = lap1.get(y) + x;
@@ -746,12 +746,12 @@ public class DoGScaleInvariantDetector {
 		double Dxx, Dyy, Dxy;
 		double Dss, Dxs, Dys;
 
-		assert (x - 1) >= 0 && (x + 1) < lap1.getWidth();
-		assert (y - 1) >= 0 && (y + 1) < lap1.getHeight();
-		assert lap0.getWidth() == lap1.getWidth();
-		assert (lap0.getWidth() >> 1) == lap2.getWidth();
-		assert lap0.getHeight() == lap1.getHeight();
-		assert (lap0.getHeight() >> 1) == lap2.getHeight();
+		//assert (x - 1) >= 0 && (x + 1) < lap1.getWidth();
+		//assert (y - 1) >= 0 && (y + 1) < lap1.getHeight();
+		//assert lap0.getWidth() == lap1.getWidth();
+		//assert (lap0.getWidth() >> 1) == lap2.getWidth();
+		//assert lap0.getHeight() == lap1.getHeight();
+		//assert (lap0.getHeight() >> 1) == lap2.getHeight();
 
 		int lap0_pm1 = lap0.get(y - 1) + x;
 		int lap0_p = lap0.get(y) + x;
@@ -761,10 +761,10 @@ public class DoGScaleInvariantDetector {
 		bilinear_downsample_point(tmp, x, y, 1);
 		x_div_2 = tmp[0];
 		y_div_2 = tmp[1];
-		assert x_div_2 - 0.5f >= 0;
-		assert y_div_2 - 0.5f >= 0;
-		assert x_div_2 + 0.5f < lap2.getWidth();
-		assert y_div_2 + 0.5f < lap2.getHeight();
+		//assert x_div_2 - 0.5f >= 0;
+		//assert y_div_2 - 0.5f >= 0;
+		//assert x_div_2 + 0.5f < lap2.getWidth();
+		//assert y_div_2 + 0.5f < lap2.getHeight();
 
 		// Compute spatial derivatives
 		// ComputeSubpixelDerivatives(Dx, Dy, Dxx, Dyy, Dxy, lap1, x, y);
@@ -821,12 +821,12 @@ public class DoGScaleInvariantDetector {
 		double Dxx, Dyy, Dxy;
 		double Dss, Dxs, Dys;
 
-		assert (x - 1) >= 0 && (x + 1) < lap1.getWidth();
-		assert (y - 1) >= 0 && (y + 1) < lap1.getHeight();
-		assert lap0.getWidth() == lap1.getWidth();
-		assert lap0.getWidth() == lap2.getWidth();
-		assert lap0.getHeight() == lap1.getHeight();
-		assert lap0.getHeight() == lap2.getHeight();
+		//assert (x - 1) >= 0 && (x + 1) < lap1.getWidth();
+		//assert (y - 1) >= 0 && (y + 1) < lap1.getHeight();
+		//assert lap0.getWidth() == lap1.getWidth();
+		//assert lap0.getWidth() == lap2.getWidth();
+		//assert lap0.getHeight() == lap1.getHeight();
+		//assert lap0.getHeight() == lap2.getHeight();
 
 		int lap0_pm1 = lap0.get(y - 1) + x;
 		int lap0_p = lap0.get(y) + x;

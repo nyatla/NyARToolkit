@@ -265,7 +265,7 @@ public class NyarNftGenApp extends JFrame {
 				}
 				BufferedImage srcimg=_preview_panel._img;
 	
-				double dpi=(int)_dpi_spinner.getValue();
+				double dpi=(Integer)_dpi_spinner.getValue();
 				double[] sub_dpis=null;
 				int iset=_isetdpi_cmb.getSelectedIndex();
 				if(iset==_isetdpi_cmb.getItemCount()-1){

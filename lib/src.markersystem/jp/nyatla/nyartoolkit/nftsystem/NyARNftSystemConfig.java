@@ -32,6 +32,7 @@ import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+import jp.nyatla.nyartoolkit.markersystem.NyARSingleCameraView;
 
 /**
  * このクラスは、NyARToolkitの姿勢推定アルゴリズムに調整したコンフィギュレーションクラスです。
@@ -39,8 +40,12 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
  */
 public class NyARNftSystemConfig implements INyARNftSystemConfig
 {
-	protected final NyARParam _param;
+	protected final NyARSingleCameraView _cview;
 
+	public NyARNftSystemConfig(NyARSingleCameraView i_ref_view)
+	{
+		this._cview=i_ref_view;
+	}
 	/**
 	 * 
 	 * @param i_param
@@ -48,8 +53,9 @@ public class NyARNftSystemConfig implements INyARNftSystemConfig
 	 */
 	public NyARNftSystemConfig(NyARParam i_param)
 	{
-		this._param=i_param;
+		this(new NyARSingleCameraView(i_param));
 	}
+
 	/**
 	 * コンストラクタです。
 	 * i_ar_parama_streamからカメラパラメータファイルを読み出して、スクリーンサイズをi_width,i_heightに変形してから、
@@ -84,14 +90,13 @@ public class NyARNftSystemConfig implements INyARNftSystemConfig
 	 */
 	public final NyARIntSize getScreenSize()
 	{
-		return this._param.getScreenSize();
+		return this._cview.getARParam().getScreenSize();
 	}
-	/**
-	 * @Override
-	 */
+
+
 	@Override
-	public NyARParam getNyARParam()
-	{
-		return 	this._param;
+	public NyARSingleCameraView getNyARSingleCameraView() {
+		// TODO Auto-generated method stub
+		return this._cview;
 	}
 }

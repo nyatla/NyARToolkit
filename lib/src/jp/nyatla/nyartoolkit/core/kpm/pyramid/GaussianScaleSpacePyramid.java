@@ -123,12 +123,10 @@ public class GaussianScaleSpacePyramid {
 			result.octave=octave;
 			result.scale=scale;
 		}
-		assert (octave >= 0);// , "Octave must be positive");
-		assert (octave < this.mNumOctaves);// ,
-											// "Octave must be less than number of octaves");
-		assert (scale >= 0);// , "Scale must be positive");
-		assert (scale < this.mNumScalesPerOctave);// ,
-													// "Scale must be less than number of scale per octave");
+		assert (result.octave >= 0);// , "Octave must be positive");
+		assert (result.octave < this.mNumOctaves);//  "Octave must be less than number of octaves");
+		assert (result.scale >= 0);// , "Scale must be positive");
+		assert (result.scale < this.mNumScalesPerOctave);// "Scale must be less than number of scale per octave");
 	}
 
 	protected KpmImage[] mPyramid;

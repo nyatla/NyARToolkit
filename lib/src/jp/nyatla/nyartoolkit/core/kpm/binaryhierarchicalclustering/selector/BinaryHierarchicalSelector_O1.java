@@ -120,7 +120,6 @@ public class BinaryHierarchicalSelector_O1
 
 	private void append(BinaryHierarchicalNode i_node)
 	{
-		assert i_node.is_leaf==true;
 		//末端なら結果配列へ値を追加
 		int p=this._num_of_result;
 		int l=i_node.reserv_index.length;
@@ -139,8 +138,6 @@ public class BinaryHierarchicalSelector_O1
 	 */
 	private void query(Queue queue,NodeStack i_nodes,BinaryHierarchicalNode node, LongDescripter768 feature)
 	{
-		assert (!node.is_leaf);
-
 		//近傍ノードをスタックに追加
 		int sp=i_nodes.getLength();
 		int num_of_min=nearest(node,i_nodes, queue, feature);

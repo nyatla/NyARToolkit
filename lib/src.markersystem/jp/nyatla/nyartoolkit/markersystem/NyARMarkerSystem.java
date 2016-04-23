@@ -31,6 +31,7 @@ import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.coord2liner.NyARCoord2Linear;
 import jp.nyatla.nyartoolkit.core.histogram.algo.INyARHistogramAnalyzer_Threshold;
 import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
+import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
@@ -81,11 +82,8 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	private int lost_th=5;
 	final private INyARTransMat _transmat;
 	final private static int INITIAL_MARKER_STACK_SIZE=10;
-	
 
 
-	
-	
 	/**
 	 * コンストラクタです。{@link INyARMarkerSystemConfig}を元に、インスタンスを生成します。
 	 * @param i_config
@@ -94,16 +92,19 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 */
 	public NyARMarkerSystem(INyARMarkerSystemConfig i_config)
 	{
-		super(i_config.getNyARParam());
-		this._sqdetect=new SquareDetect(i_config);
+		super(i_config.getNyARSingleCameraView());
+		NyARIntSize s=i_config.getScreenSize();
+		this._sqdetect=new SquareDetect(s.w,s.h);
 		this._hist_th=i_config.createAutoThresholdArgorism();
 		this._armk_list=new ARMarkerList();
 		this._idmk_list=new NyIdList();
 		this._psmk_list=new ARPlayCardList();
 		this._tracking_list=new TrackingList();
 		this._transmat=i_config.createTransmatAlgorism();
-		this._on_sq_handler=new OnSquareDetect(i_config,this._armk_list,this._idmk_list,this._psmk_list,this._tracking_list,INITIAL_MARKER_STACK_SIZE);
+		this._on_sq_handler=new OnSquareDetect(this._view.getARParam(),this._armk_list,this._idmk_list,this._psmk_list,this._tracking_list,INITIAL_MARKER_STACK_SIZE);
+		
 	}
+
 	
 
 	/**
@@ -399,7 +400,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 */
 	public NyARDoublePoint3d getMarkerPlanePos(int i_id,int i_x,int i_y,NyARDoublePoint3d i_out)
 	{
-		this._frustum.unProjectOnMatrix(i_x, i_y,this.getTransformMatrix(i_id),i_out);
+		this.getFrustum().unProjectOnMatrix(i_x, i_y,this.getTransformMatrix(i_id),i_out);
 		return i_out;
 	}
 	final private NyARDoublePoint3d _wk_3dpos=new NyARDoublePoint3d();
@@ -423,7 +424,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	{
 		NyARDoublePoint3d _wk_3dpos=this._wk_3dpos;
 		this.getTransformMatrix(i_id).transform3d(i_x, i_y, i_z,_wk_3dpos);
-		this._frustum.project(_wk_3dpos,i_out);
+		this.getFrustum().project(_wk_3dpos,i_out);
 		return i_out;
 	}	
 	private NyARDoublePoint3d[] __pos3d=NyARDoublePoint3d.createArray(4);
@@ -476,7 +477,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 		tmat.transform3d(i_x3, i_y3,0,	pos[3]);
 		tmat.transform3d(i_x4, i_y4,0,	pos[2]);
 		for(int i=3;i>=0;i--){
-			this._frustum.project(pos[i],pos2[i]);
+			this.getFrustum().project(pos[i],pos2[i]);
 		}
 		return i_sensor.getPerspectiveImage(pos2[0].x, pos2[0].y,pos2[1].x, pos2[1].y,pos2[2].x, pos2[2].y,pos2[3].x, pos2[3].y,i_raster);
 	}
@@ -721,11 +722,11 @@ class OnSquareDetect implements NyARSquareContourDetector.CbHandler
 	
 	private NyARCoord2Linear _coordline;		
 	public OnSquareDetect(
-		INyARMarkerSystemConfig i_config,
+		NyARParam i_params,
 		ARMarkerList i_armk_list,NyIdList i_idmk_list,ARPlayCardList i_psmk_list,
 		TrackingList i_tracking_list,int i_initial_stack_size)
 	{
-		this._coordline=new NyARCoord2Linear(i_config.getNyARParam().getScreenSize(),i_config.getNyARParam().getDistortionFactor());
+		this._coordline=new NyARCoord2Linear(i_params.getScreenSize(),i_params.getDistortionFactor());
 		this._ref_armk_list=i_armk_list;
 		this._ref_idmk_list=i_idmk_list;
 		this._ref_psmk_list=i_psmk_list;
@@ -840,9 +841,9 @@ class OnSquareDetect implements NyARSquareContourDetector.CbHandler
 class SquareDetect implements INyARMarkerSystemSquareDetect
 {
 	private NyARSquareContourDetector_Rle _sd;
-	public SquareDetect(INyARMarkerSystemConfig i_config)
+	public SquareDetect(int i_width,int i_height)
 	{
-		this._sd=new NyARSquareContourDetector_Rle(i_config.getScreenSize());
+		this._sd=new NyARSquareContourDetector_Rle(new NyARIntSize(i_width,i_height));
 	}
 	public void detectMarkerCb(NyARSensor i_sensor,int i_th,NyARSquareContourDetector.CbHandler i_handler)
 	{

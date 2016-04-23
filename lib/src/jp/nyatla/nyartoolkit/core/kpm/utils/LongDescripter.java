@@ -77,7 +77,7 @@ public class LongDescripter
 		return i_bytes;
 	}	
 	public void setValue(LongDescripter i_src) {
-		assert i_src.bits==this.bits;
+		//assert i_src.bits==this.bits;
 		System.arraycopy(i_src._desc,0,this._desc,0,this._desc.length);
 		// TODO Auto-generated method stub	
 	}

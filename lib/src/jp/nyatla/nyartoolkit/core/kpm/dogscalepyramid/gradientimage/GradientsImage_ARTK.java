@@ -125,7 +125,7 @@ public class GradientsImage_ARTK
 		double[] m_gradient=this._mag;
 		int width=this._size.w;
 		int height=this._size.h;
-		assert this._size.isEqualSize(null);
+		assert this._size.isEqualSize(i_img.getSize());
 		double[] im=(double[])i_img.getBuffer();
 
 

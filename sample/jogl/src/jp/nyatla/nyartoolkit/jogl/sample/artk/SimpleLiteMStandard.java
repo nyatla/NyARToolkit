@@ -77,7 +77,7 @@ public class SimpleLiteMStandard implements GLEventListener
 		GLCanvas canvas = new GLCanvas();
 		frame.add(canvas);
 		canvas.addGLEventListener(this);
-		NyARIntSize s=i_config.getNyARParam().getScreenSize();
+		NyARIntSize s=i_config.getNyARSingleCameraView().getARParam().getScreenSize();
 
 		frame.setVisible(true);
 		Insets ins = frame.getInsets();

@@ -37,7 +37,9 @@ public class NyARIcpPoint extends NyARIcp
 			throws NyARRuntimeException
 	{
 		double err0 = 0, err1;
-		assert num >= 4;
+		if(num<4){
+			return false;
+		}
 
 		NyARIcpUtils.DeltaS dS = this.__dS;
 		NyARIcpUtils.U u = this.__u;

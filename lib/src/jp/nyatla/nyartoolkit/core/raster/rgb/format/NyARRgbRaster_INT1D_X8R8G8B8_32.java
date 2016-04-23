@@ -13,6 +13,12 @@ public class NyARRgbRaster_INT1D_X8R8G8B8_32 extends NyARRgbRaster
 		this._buf=i_is_alloc?new int[i_width*i_height]:null;
 
 	}
+	public NyARRgbRaster_INT1D_X8R8G8B8_32(int i_width, int i_height,int[] i_buffer)
+	{
+		super(i_width, i_height,true);
+		this._buf=i_buffer;
+	}
+	
 	@Override
 	final public Object getBuffer()
 	{

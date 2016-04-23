@@ -133,7 +133,11 @@ public class NyARSurfaceTrackingTransmatUtils
 	{
 		
 		this._icp.setInlierProbability(this._last_inliner_probability);
-		this._icp.icpPoint(i_pos2d,i_pos3d, i_num,initConv, conv, o_ret_param);
+		if(!this._icp.icpPoint(i_pos2d,i_pos3d, i_num,initConv, conv, o_ret_param)){
+			if(i_num<4){
+				return false;
+			}
+		}
 		if (o_ret_param.last_error > this._surface_threshold) {
 			this._icp_r.setInlierProbability(0.8);
 			this._icp_r.icpPoint(i_pos2d,i_pos3d, i_num, conv, conv, o_ret_param);

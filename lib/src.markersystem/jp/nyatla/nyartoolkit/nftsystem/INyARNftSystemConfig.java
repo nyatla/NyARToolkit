@@ -25,8 +25,8 @@
  */
 package jp.nyatla.nyartoolkit.nftsystem;
 
-import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
+import jp.nyatla.nyartoolkit.markersystem.NyARSingleCameraView;
 
 /**
  * このインタフェイスは、NyARNftSystemのコンフィギュレーションオブジェクトに使用します。
@@ -35,17 +35,15 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 public interface INyARNftSystemConfig
 {
 	/**
-	 * ARToolKitのカメラパラメータのオブジェクトを返します。
-	 * @return
-	 * [readonly]
-	 * 参照値です。
-	 */
-	public NyARParam getNyARParam();
-	/**
 	 * このコンフィギュレーションのスクリーンサイズを返します。
 	 * @return
 	 * [readonly]
 	 * 参照値です。
 	 */
 	public NyARIntSize getScreenSize();
+	/**
+	 * このコンフィギュレーションのビューを返します。
+	 * @return
+	 */	
+	public NyARSingleCameraView getNyARSingleCameraView();
 }

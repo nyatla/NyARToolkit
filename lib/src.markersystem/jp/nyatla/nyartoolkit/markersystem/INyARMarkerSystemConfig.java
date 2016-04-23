@@ -27,7 +27,6 @@ package jp.nyatla.nyartoolkit.markersystem;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.histogram.algo.INyARHistogramAnalyzer_Threshold;
-import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
@@ -50,13 +49,8 @@ public interface INyARMarkerSystemConfig
 	 * 新しいオブジェクト
 	 */
 	public INyARHistogramAnalyzer_Threshold createAutoThresholdArgorism();
-	/**
-	 * ARToolKitのカメラパラメータのオブジェクトを返します。
-	 * @return
-	 * [readonly]
-	 * 参照値です。
-	 */
-	public NyARParam getNyARParam();
+
+
 	/**
 	 * このコンフィギュレーションのスクリーンサイズを返します。
 	 * @return
@@ -64,4 +58,9 @@ public interface INyARMarkerSystemConfig
 	 * 参照値です。
 	 */
 	public NyARIntSize getScreenSize();
+	/**
+	 * このコンフィギュレーションのビューを返します。
+	 * @return
+	 */	
+	public NyARSingleCameraView getNyARSingleCameraView();
 }

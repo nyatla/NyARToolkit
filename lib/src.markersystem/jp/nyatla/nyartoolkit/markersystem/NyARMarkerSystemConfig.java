@@ -49,8 +49,21 @@ public class NyARMarkerSystemConfig implements INyARMarkerSystemConfig
 	public final static int TM_NYARTK=2;
 	/** ARToolkit v4に搭載されているICPを使った変換行列計算アルゴリズムを選択します。*/
 	public final static int TM_ARTKICP=3;
-	protected final NyARParam _param;
+	protected final NyARSingleCameraView _cview;
 	private final int _transmat_algo_type;
+	
+	/**
+	 * 
+	 * @param i_view
+	 * @param i_transmat_algo_type
+	 */
+	public NyARMarkerSystemConfig(NyARSingleCameraView i_view,int i_transmat_algo_type)
+	{
+		assert(1<=i_transmat_algo_type && i_transmat_algo_type<=3);
+		this._cview=i_view;
+		this._transmat_algo_type=i_transmat_algo_type;
+	}	
+	
 	/**
 	 * 
 	 * @param i_param
@@ -58,9 +71,7 @@ public class NyARMarkerSystemConfig implements INyARMarkerSystemConfig
 	 */
 	public NyARMarkerSystemConfig(NyARParam i_param,int i_transmat_algo_type)
 	{
-		assert(1<=i_transmat_algo_type && i_transmat_algo_type<=3);
-		this._param=i_param;
-		this._transmat_algo_type=i_transmat_algo_type;
+		this(new NyARSingleCameraView(i_param),i_transmat_algo_type);
 	}
 	/**
 	 * コンストラクタです。
@@ -72,6 +83,7 @@ public class NyARMarkerSystemConfig implements INyARMarkerSystemConfig
 	{
 		this(i_param,TM_ARTKICP);
 	}
+
 	/**
 	 * コンストラクタです。
 	 * i_ar_parama_streamからカメラパラメータファイルを読み出して、スクリーンサイズをi_width,i_heightに変形してから、
@@ -101,40 +113,39 @@ public class NyARMarkerSystemConfig implements INyARMarkerSystemConfig
 	{
 		this(NyARParam.loadDefaultParams(i_width, i_height));
 	}
+	
 	/**
 	 * この値は、カメラパラメータのスクリーンサイズです。
 	 */
+	@Override
 	public final NyARIntSize getScreenSize()
 	{
-		return this._param.getScreenSize();
+		return this._cview.getARParam().getScreenSize();
 	}
-	/**
-	 * @Override
-	 */
+	
+	@Override
+	public NyARSingleCameraView getNyARSingleCameraView() {
+		return this._cview;
+	}	
+	@Override
 	public INyARTransMat createTransmatAlgorism()
 	{
+		NyARParam params=this._cview.getARParam();
 		switch(this._transmat_algo_type){
 		case TM_ARTKV2:
-			return new NyARTransMat_ARToolKit(this._param);
+			return new NyARTransMat_ARToolKit(params);
 		case TM_NYARTK:
-			return new NyARTransMat(this._param);
+			return new NyARTransMat(params);
 		case TM_ARTKICP:
-			return new NyARIcpTransMat(this._param,NyARIcpTransMat.AL_POINT_ROBUST);
+			return new NyARIcpTransMat(params,NyARIcpTransMat.AL_POINT_ROBUST);
 		}
 		throw new InternalError();
 	}
-	/**
-	 * @Override
-	 */
+	@Override
 	public INyARHistogramAnalyzer_Threshold createAutoThresholdArgorism()
 	{
 		return new NyARHistogramAnalyzer_SlidePTile(15);
 	}
-	/**
-	 * @Override
-	 */
-	public NyARParam getNyARParam()
-	{
-		return 	this._param;
-	}
+
+
 }

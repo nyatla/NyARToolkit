@@ -109,7 +109,6 @@ public final class GradientsImage_O1 extends GradientsImage_ARTK{
 		double dx, dy;
 		int width=this._size.w;
 		int height=this._size.h;
-		assert this._size.isEqualSize(null);
 		double[] im=(double[])i_img.getBuffer();
 
 

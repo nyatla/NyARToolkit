@@ -50,7 +50,7 @@ public class LongDescripter768 extends LongDescripter
 	@Override
 	final public int hammingDistance(LongDescripter i_value)
 	{
-		assert i_value.bits==this.bits;
+		//assert i_value.bits==this.bits;
 		long b;
 		int c=0;
 		for(int i=this._desc.length-1;i>=0;i--){
