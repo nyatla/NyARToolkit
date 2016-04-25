@@ -33,16 +33,20 @@ import java.io.FileInputStream;
 import java.util.Date;
 
 import javax.media.Buffer;
-import javax.media.opengl.*;
 
-import com.sun.opengl.util.*;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.awt.GLCanvas;
+import com.jogamp.opengl.util.Animator;
+
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.marker.nyidmarker.data.*;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.rasterdriver.squaredetect.NyARSquare;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
-import jp.nyatla.nyartoolkit.jogl.utils.*;
+import jp.nyatla.nyartoolkit.jogl2.utils.*;
 import jp.nyatla.nyartoolkit.old.processor.*;
 
 
@@ -102,7 +106,7 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 	private JmfNyARRGBRaster _cap_image;
 	private JmfCaptureDevice _capture;
 
-	private GL _gl;
+	private GL2 _gl;
 	//NyARToolkit関係
 	private NyARParam _ar_param;
 
@@ -143,10 +147,12 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 		canvas.setBounds(ins.left, ins.top, SCREEN_X, SCREEN_Y);
 		return;
 	}
+	
+	@Override
 	public void init(GLAutoDrawable drawable)
 	{
-		this._gl = drawable.getGL();
-		this._gl.glEnable(GL.GL_DEPTH_TEST);
+		this._gl = drawable.getGL().getGL2();
+		this._gl.glEnable(GL2.GL_DEPTH_TEST);
 		NyARGLDrawUtil.setFontStyle("SansSerif",Font.BOLD,36);
 
 		this._gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -167,28 +173,29 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 		return;
 	}
 
+	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height)
 	{
-		
-		_gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+		_gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 		_gl.glViewport(0, 0, width, height);
 
 		//視体積の設定
-		_gl.glMatrixMode(GL.GL_PROJECTION);
+		_gl.glMatrixMode(GL2.GL_PROJECTION);
 		_gl.glLoadIdentity();
 		//見る位置
-		_gl.glMatrixMode(GL.GL_MODELVIEW);
+		_gl.glMatrixMode(GL2.GL_MODELVIEW);
 		_gl.glLoadIdentity();
 	}
 	
 	
+	@Override
 	public void display(GLAutoDrawable drawable)
 	{
 		if (!_cap_image.hasBuffer()) {
 			return;
 		}
 		// 背景を書く
-		this._gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
+		this._gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
 		try{
 			NyARGLDrawUtil.drawBackGround(this._gl,this._cap_image, 1.0);			
 			synchronized(this._sync_object)
@@ -197,16 +204,16 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 					
 				}else{
 					// Projection transformation.
-					this._gl.glMatrixMode(GL.GL_PROJECTION);
+					this._gl.glMatrixMode(GL2.GL_PROJECTION);
 					this._gl.glLoadMatrixd(_camera_projection, 0);
-					this._gl.glMatrixMode(GL.GL_MODELVIEW);
+					this._gl.glMatrixMode(GL2.GL_MODELVIEW);
 					// Viewing transformation.
 					this._gl.glLoadIdentity();
 					// 変換行列をOpenGL形式に変換
 					this._gl.glLoadMatrixd(this._processor.gltransmat, 0);
 					// All other lighting and geometry goes here.
 					this._gl.glPushMatrix();
-					this._gl.glDisable(GL.GL_LIGHTING);
+					this._gl.glDisable(GL2.GL_LIGHTING);
 	
 					
 					//マーカのXZ平面をマーカの左上、表示開始位置を10cm上空へ。
@@ -243,10 +250,9 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 		}
 	}
 
-	public void displayChanged(GLAutoDrawable drawable, boolean modeChanged, boolean deviceChanged)
-	{
+	@Override
+	public void dispose(GLAutoDrawable arg0) {
 	}
-
 
 	private final static int SCREEN_X = 640;
 	private final static int SCREEN_Y = 480;
@@ -262,5 +268,6 @@ public class SingleNyIdMarker implements GLEventListener, JmfCaptureListener
 		}
 		return;
 	}
+
 }
 

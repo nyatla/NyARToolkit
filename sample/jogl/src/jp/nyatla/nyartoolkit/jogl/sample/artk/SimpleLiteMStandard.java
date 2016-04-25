@@ -30,14 +30,19 @@ import java.awt.event.*;
 import java.awt.*;
 import java.io.FileInputStream;
 
-import javax.media.opengl.*;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.awt.GLCanvas;
+import com.jogamp.opengl.util.Animator;
 
-import com.sun.opengl.util.*;
+
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.param.NyARFrustum;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
-import jp.nyatla.nyartoolkit.jogl.utils.*;
+import jp.nyatla.nyartoolkit.jogl2.utils.*;
 import jp.nyatla.nyartoolkit.markersystem.INyARMarkerSystemConfig;
 import jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystemConfig;
 
@@ -88,10 +93,11 @@ public class SimpleLiteMStandard implements GLEventListener
 		this._camera.start();
 	}
 
+	@Override
 	public void init(GLAutoDrawable drawable)
 	{
-		GL gl=drawable.getGL();
-		gl.glMatrixMode(GL.GL_PROJECTION);
+		GL2 gl=drawable.getGL().getGL2();
+		gl.glMatrixMode(GL2.GL_PROJECTION);
 		double[] pmat=new double[16];
 		NyARFrustum.FrustumParam f=this._nyar.getFrustum().getFrustumParam(new NyARFrustum.FrustumParam());	
 		NyARGLUtil.toCameraFrustumRH(this._nyar.getARParam(),1,f.near,f.far,pmat);
@@ -102,6 +108,7 @@ public class SimpleLiteMStandard implements GLEventListener
 		animator.start();
 		return;
 	}
+	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height)
 	{
 		GL gl=drawable.getGL();
@@ -109,9 +116,10 @@ public class SimpleLiteMStandard implements GLEventListener
 		gl.glViewport(0, 0, width, height);
 		return;
 	}
+	@Override
 	public void display(GLAutoDrawable drawable)
 	{
-		GL gl=drawable.getGL();
+		GL2 gl=drawable.getGL().getGL2();
 		synchronized(this._camera)
 		{
 			try {
@@ -119,14 +127,14 @@ public class SimpleLiteMStandard implements GLEventListener
 				NyARGLDrawUtil.drawBackGround(gl,this._camera.getSourceImage(), 1.0);				
 				this._nyar.update(this._camera);
 				if(this._nyar.isExistMarker(this.ids[0])){
-					gl.glMatrixMode(GL.GL_MODELVIEW);
+					gl.glMatrixMode(GL2.GL_MODELVIEW);
 					gl.glPushMatrix();
 					gl.glLoadMatrixd(this._nyar.getGlTransformMatrix(this.ids[0]),0);
 					NyARGLDrawUtil.drawColorCube(gl,40);
 					gl.glPopMatrix();
 				}
 				if(this._nyar.isExistMarker(this.ids[1])){
-					gl.glMatrixMode(GL.GL_MODELVIEW);
+					gl.glMatrixMode(GL2.GL_MODELVIEW);
 					gl.glPushMatrix();
 					gl.glLoadMatrixd(this._nyar.getGlTransformMatrix(this.ids[1]),0);
 					NyARGLDrawUtil.drawColorCube(gl,40);
@@ -138,10 +146,11 @@ public class SimpleLiteMStandard implements GLEventListener
 			}
 		}
 	}
-	public void displayChanged(GLAutoDrawable arg0, boolean arg1, boolean arg2)
-	{
+
+
+	@Override
+	public void dispose(GLAutoDrawable arg0) {
 	}
-	
 	private final static String PARAM_FILE = "../../Data/camera_para.dat";
 	private final static int SCREEN_X = 640;
 	private final static int SCREEN_Y = 480;
@@ -156,5 +165,7 @@ public class SimpleLiteMStandard implements GLEventListener
 		}
 		return;
 	}
+
+
 
 }

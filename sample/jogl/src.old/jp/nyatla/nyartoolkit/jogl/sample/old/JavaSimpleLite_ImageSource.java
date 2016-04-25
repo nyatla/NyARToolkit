@@ -29,18 +29,25 @@ package jp.nyatla.nyartoolkit.jogl.sample.old;
 import java.awt.event.*;
 import java.awt.*;
 
-import javax.media.opengl.*;
 
-import com.sun.opengl.util.*;
+
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.detector.*;
 import jp.nyatla.nyartoolkit.j2se.NyARBufferedImageRaster;
-import jp.nyatla.nyartoolkit.jogl.utils.*;
+import jp.nyatla.nyartoolkit.jogl2.utils.*;
 
 import javax.imageio.*;
+
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.awt.GLCanvas;
+import com.jogamp.opengl.util.Animator;
+
 import java.awt.image.*;
 import java.io.*;
 
@@ -53,7 +60,7 @@ public class JavaSimpleLite_ImageSource implements GLEventListener
 
 	private NyARBufferedImageRaster _src_image;
 
-	private GL _gl;
+	private GL2 _gl;
 
 	private NyARSingleDetectMarker _nya;
 
@@ -93,7 +100,7 @@ public class JavaSimpleLite_ImageSource implements GLEventListener
 
 	public void init(GLAutoDrawable drawable)
 	{
-		this._gl = drawable.getGL();
+		this._gl = drawable.getGL().getGL2();
 		this._gl.glEnable(GL.GL_DEPTH_TEST);
 		this._gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		// NyARToolkitの準備
@@ -115,10 +122,10 @@ public class JavaSimpleLite_ImageSource implements GLEventListener
 		_gl.glViewport(0, 0, width, height);
 
 		// 視体積の設定
-		_gl.glMatrixMode(GL.GL_PROJECTION);
+		_gl.glMatrixMode(GL2.GL_PROJECTION);
 		_gl.glLoadIdentity();
 		// 見る位置
-		_gl.glMatrixMode(GL.GL_MODELVIEW);
+		_gl.glMatrixMode(GL2.GL_MODELVIEW);
 		_gl.glLoadIdentity();
 	}
 
@@ -127,6 +134,7 @@ public class JavaSimpleLite_ImageSource implements GLEventListener
 
 	private double[] __display_wk = new double[16];
 
+	@Override
 	public void display(GLAutoDrawable drawable)
 	{
 		NyARDoubleMatrix44 transmat_result = __display_transmat_result;
@@ -141,9 +149,9 @@ public class JavaSimpleLite_ImageSource implements GLEventListener
 					System.out.println(this._nya.getConfidence());
 					// マーカーの一致度を調査するならば、ここでnya.getConfidence()で一致度を調べて下さい。
 					// Projection transformation.
-					this._gl.glMatrixMode(GL.GL_PROJECTION);
+					this._gl.glMatrixMode(GL2.GL_PROJECTION);
 					this._gl.glLoadMatrixd(_camera_projection, 0);
-					this._gl.glMatrixMode(GL.GL_MODELVIEW);
+					this._gl.glMatrixMode(GL2.GL_MODELVIEW);
 					// Viewing transformation.
 					this._gl.glLoadIdentity();
 					// 変換行列を取得
@@ -154,7 +162,7 @@ public class JavaSimpleLite_ImageSource implements GLEventListener
 					//立方体を描画
 					this._gl.glPushMatrix(); // Save world coordinate system.
 					this._gl.glTranslatef(0.0f, 0.1f,20); // Place base of cube on marker surface.
-					this._gl.glDisable(GL.GL_LIGHTING); // Just use colours.
+					this._gl.glDisable(GL2.GL_LIGHTING); // Just use colours.
 					NyARGLDrawUtil.drawColorCube(this._gl,40);
 					this._gl.glPopMatrix(); // Restore world coordinate system.
 				}
@@ -164,7 +172,9 @@ public class JavaSimpleLite_ImageSource implements GLEventListener
 			e.printStackTrace();
 		}
 	}
-	public void displayChanged(GLAutoDrawable drawable, boolean modeChanged, boolean deviceChanged)
+
+	@Override
+	public void dispose(GLAutoDrawable arg0)
 	{
 	}
 
@@ -186,4 +196,5 @@ public class JavaSimpleLite_ImageSource implements GLEventListener
 		}
 		return;
 	}
+
 }

@@ -27,10 +27,12 @@
 package jp.nyatla.nyartoolkit.jogl.sample.artk.sketch;
 
 
-import javax.media.opengl.*;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+
 import jp.nyatla.nyartoolkit.jmf.utils.*;
-import jp.nyatla.nyartoolkit.jogl.sketch.GlSketch;
-import jp.nyatla.nyartoolkit.jogl.utils.*;
+import jp.nyatla.nyartoolkit.jogl2.sketch.GlSketch;
+import jp.nyatla.nyartoolkit.jogl2.utils.*;
 import jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystemConfig;
 /**
  * JMFからの映像入力からマーカ1種を検出し、そこに立方体を重ねます。
@@ -40,10 +42,12 @@ public class SimpleLite extends GlSketch
 {
 	private NyARJmfCamera camera;
 	private NyARGlMarkerSystem nyar;
-	private NyARGlRender render;	
-	public void setup(GL gl)throws Exception
+	private NyARGlRender render;
+	
+	public void setup(GL i_gl)throws Exception
 	{
 		this.size(640,480);
+		GL2 gl=i_gl.getGL2();
 		NyARMarkerSystemConfig config = new NyARMarkerSystemConfig(640,480);
 		JmfCaptureDeviceList devlist = new JmfCaptureDeviceList();
 		JmfCaptureDevice d = devlist.getDevice(0);

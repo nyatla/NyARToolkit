@@ -26,12 +26,14 @@
  */
 package jp.nyatla.nyartoolkit.jogl.sample.artk.sketch;
 
-import javax.media.opengl.*;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.NyARRgbRaster;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
-import jp.nyatla.nyartoolkit.jogl.sketch.GlSketch;
-import jp.nyatla.nyartoolkit.jogl.utils.*;
+import jp.nyatla.nyartoolkit.jogl2.sketch.GlSketch;
+import jp.nyatla.nyartoolkit.jogl2.utils.*;
 import jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystemConfig;
 
 /**
@@ -68,11 +70,12 @@ public class ImagePickup extends GlSketch
 	private int[] ids=new int[2];
 	//temporary
 	private INyARRgbRaster _raster;
-	public void draw(GL gl)throws Exception
+	public void draw(GL i_gl)throws Exception
 	{
 		//lock async update.
 		synchronized(this.camera)
 		{
+			GL2 gl=i_gl.getGL2();
 			try{
 				this.nyar.update(this.camera);
 				this.render.drawBackground(gl,this.camera.getSourceImage());

@@ -31,16 +31,20 @@ import java.awt.*;
 import java.io.FileInputStream;
 
 import javax.media.Buffer;
-import javax.media.opengl.*;
 
-import com.sun.opengl.util.*;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.awt.GLCanvas;
+import com.jogamp.opengl.util.Animator;
+
 import jp.nyatla.nyartoolkit.core.*;
 import jp.nyatla.nyartoolkit.core.marker.artk.NyARCode;
 import jp.nyatla.nyartoolkit.core.param.*;
 import jp.nyatla.nyartoolkit.core.types.matrix.NyARDoubleMatrix44;
 import jp.nyatla.nyartoolkit.detector.*;
 import jp.nyatla.nyartoolkit.jmf.utils.*;
-import jp.nyatla.nyartoolkit.jogl.utils.*;
+import jp.nyatla.nyartoolkit.jogl2.utils.*;
 
 /**
  * simpleLiteと同じようなテストプログラム 出来る限りARToolKitのサンプルと似せて作ってあります。 
@@ -59,7 +63,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 
 	private JmfCaptureDevice _capture;
 
-	private GL _gl;
+	private GL2 _gl;
 
 	// NyARToolkit関係
 	private NyARSingleDetectMarker _nya;
@@ -108,10 +112,11 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 		canvas.setBounds(ins.left, ins.top, SCREEN_X, SCREEN_Y);
 	}
 
+	@Override
 	public void init(GLAutoDrawable drawable)
 	{
-		this._gl = drawable.getGL();
-		this._gl.glEnable(GL.GL_DEPTH_TEST);
+		this._gl = drawable.getGL().getGL2();
+		this._gl.glEnable(GL2.GL_DEPTH_TEST);
 		this._gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		// NyARToolkitの準備
 		try {
@@ -127,16 +132,17 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 		return;
 	}
 
+	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height)
 	{
-		_gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+		_gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 		_gl.glViewport(0, 0, width, height);
 
 		// 視体積の設定
-		_gl.glMatrixMode(GL.GL_PROJECTION);
+		_gl.glMatrixMode(GL2.GL_PROJECTION);
 		_gl.glLoadIdentity();
 		// 見る位置
-		_gl.glMatrixMode(GL.GL_MODELVIEW);
+		_gl.glMatrixMode(GL2.GL_MODELVIEW);
 		_gl.glLoadIdentity();
 	}
 
@@ -145,6 +151,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 
 	private double[] __display_wk = new double[16];
 
+	@Override
 	public void display(GLAutoDrawable drawable)
 	{
 		NyARDoubleMatrix44 transmat_result = __display_transmat_result;
@@ -152,7 +159,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 			return;
 		}
 		// 背景を書く
-		this._gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
+		this._gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
 		try{
 			synchronized(this._sync_object){
 				NyARGLDrawUtil.drawBackGround(this._gl,this._cap_image, 1.0);			
@@ -160,9 +167,9 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 				if (this._is_marker_exist){
 					// マーカーの一致度を調査するならば、ここでnya.getConfidence()で一致度を調べて下さい。
 					// Projection transformation.
-					this._gl.glMatrixMode(GL.GL_PROJECTION);
+					this._gl.glMatrixMode(GL2.GL_PROJECTION);
 					this._gl.glLoadMatrixd(_camera_projection, 0);
-					this._gl.glMatrixMode(GL.GL_MODELVIEW);
+					this._gl.glMatrixMode(GL2.GL_MODELVIEW);
 					// Viewing transformation.
 					this._gl.glLoadIdentity();
 					// 変換行列を取得
@@ -173,7 +180,7 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 					//立方体を描画
 					this._gl.glPushMatrix(); // Save world coordinate system.
 					this._gl.glTranslatef(0.0f, 0.1f,20); // Place base of cube on marker surface.
-					this._gl.glDisable(GL.GL_LIGHTING); // Just use colours.
+					this._gl.glDisable(GL2.GL_LIGHTING); // Just use colours.
 					NyARGLDrawUtil.drawColorCube(this._gl,40);
 					this._gl.glPopMatrix(); // Restore world coordinate system.
 				}
@@ -183,6 +190,9 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 			e.printStackTrace();
 		}
 
+	}
+	@Override
+	public void dispose(GLAutoDrawable arg0) {
 	}
 
 	public void onUpdateBuffer(Buffer i_buffer)
@@ -218,4 +228,5 @@ public class JavaSimpleLite implements GLEventListener, JmfCaptureListener
 		}
 		return;
 	}
+
 }

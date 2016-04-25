@@ -30,13 +30,12 @@ package jp.nyatla.nyartoolkit.jogl.sample.nft.sketch;
 import java.awt.Dimension;
 import java.io.FileInputStream;
 
-import javax.media.opengl.*;
-
 import com.github.sarxos.webcam.Webcam;
+import com.jogamp.opengl.GL;
 
 import jp.nyatla.nyartoolkit.j2se.NyARBufferedImageRaster;
-import jp.nyatla.nyartoolkit.jogl.sketch.GlSketch;
-import jp.nyatla.nyartoolkit.jogl.utils.*;
+import jp.nyatla.nyartoolkit.jogl2.sketch.GlSketch;
+import jp.nyatla.nyartoolkit.jogl2.utils.*;
 import jp.nyatla.nyartoolkit.markersystem.NyARSensor;
 import jp.nyatla.nyartoolkit.nftsystem.NyARNftSystemConfig;
 /**
@@ -88,4 +87,5 @@ public class NftSimpleLite extends GlSketch
 		new NftSimpleLite().run();
 		return;
 	}
+
 }

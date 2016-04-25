@@ -28,13 +28,14 @@ package jp.nyatla.nyartoolkit.jogl.sample.artk.sketch.webcamcapture;
 
 
 import java.awt.Dimension;
-import javax.media.opengl.*;
+
 
 import com.github.sarxos.webcam.Webcam;
+import com.jogamp.opengl.GL;
 
 import jp.nyatla.nyartoolkit.j2se.NyARBufferedImageRaster;
-import jp.nyatla.nyartoolkit.jogl.sketch.GlSketch;
-import jp.nyatla.nyartoolkit.jogl.utils.*;
+import jp.nyatla.nyartoolkit.jogl2.sketch.GlSketch;
+import jp.nyatla.nyartoolkit.jogl2.utils.*;
 import jp.nyatla.nyartoolkit.markersystem.NyARMarkerSystemConfig;
 import jp.nyatla.nyartoolkit.markersystem.NyARSensor;
 
