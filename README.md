@@ -31,23 +31,35 @@ NyARToolkitの使用する外部ライブラリは以下の通りです。新し
 1. Webcam Capture in Java (NyARToolKit/4.2.1以降ではリポジトリに含まれています。)  
 utils.jmf,sample.joglの実行に必要です。  
 URL: http://www.webcam-capture.sarxos.pl/  
+
+2. Jogl2(NyARToolKit/5.0.4以降ではリポジトリに含まれています。)  
+utils.jogl,sample.joglの実行に必要です。  
+URL:http://jogamp.org/deployment/jogamp-current/archive/  
+file:jogamp-all-platforms.7z  
+
+
+以下の物は必要に応じてそろえてください。
+
+1. JMF JavaTM Media Framework 2.1.1e
+utils.jmf,sample.joglの実行に必要です。  
+URL: http://www.oracle.com/technetwork/java/javase/download-142937.html
+
 2. QuickTime 7.5  
 utils.qtの実行に必要です。
 URL: http://www.apple.com/quicktime/qtjava/
-3. JMF JavaTM Media Framework 2.1.1e
-utils.jmf,sample.joglの実行に必要です。  
-URL: http://www.oracle.com/technetwork/java/javase/download-142937.html
-4. Jogl(NyARToolKit/4.2.1以降ではリポジトリに含まれています。)  
-utils.jogl,sample.joglの実行に必要です。  
-URL: https://jogamp.org/  
-file   : gluegen-old-1.0b6,jogl-old-1.1.1  
-5. java3d  
+
+3. java3d  
 utils.java3d,sample.java3dの実行に必要です。  
 URL: https://java3d.dev.java.net/binary-builds.html  
 file:    java3d-1_5_1-xxxx-i586.exe
 
-NyARToolKit/4.2.1以降では、joglとWebcam Captureがソースツリーに含まれています。
-他のライブラリは、必要なものだけを探してインストールしてください。
+4. Jogl(NyARToolKit/4.2.1以降ではリポジトリに含まれています。)  
+utils.jogl,sample.joglの実行に必要です。  
+URL: https://jogamp.org/  
+file   : gluegen-old-1.0b6,jogl-old-1.1.1
+
+
+
 
 
 

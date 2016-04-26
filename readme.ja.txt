@@ -1,6 +1,6 @@
 ======================================================================
 NyARToolkit
- version 5.0.0
+ version 5.0.4
 ======================================================================
 
 Copyright (C)2008-2016 Ryo Iizuka
@@ -59,31 +59,42 @@ LGPLv3を承諾された場合には、商用、非商用にかかわらず、�
 NyARToolkitの使用する外部ライブラリは、以下の通りです。
 新しいバージョンのものがあれば、そちらを使用してください。
 
+実行するプロジェクトによっては、全ての外部ライブラリを揃える必要は
+ありません。必要なものだけをインストールしてください。
+
+
+ 1. Webcam Capture
+ 	汎用のWebcam captureライブラリです。同梱されています。
+	http://webcam-capture.sarxos.pl/
+
+ 2. Jogl2
+    utils.jogl,sample.joglの実行に必要です。
+    一部の同梱されています。不足する場合はダウンロードしてください。
+    URL:http://jogamp.org/deployment/jogamp-current/archive/
+    file:jogamp-all-platforms.7z
+
+
+以下の物は必要に応じてそろえてください。
 
  1. JMF JavaTM Media Framework 2.1.1e
-    utils.jmf,sample.joglの実行に必要です。同梱されています。
+    utils.jmf,sample.jmfの実行に必要です。
     URL: http://www.oracle.com/technetwork/java/javase/download-142937.html
 
  2. QuickTime 7.5
     utils.qtの実行に必要です。
     URL: http://www.apple.com/quicktime/qtjava/
 
- 3. Jogl
-    utils.jogl,sample.joglの実行に必要です。
-    URL: http://download.java.net/media/jogl/builds/archive/
-    file   : jogl-1.1.1-rc8-xxxx-xxx.zip 
-
- 4. java3d
+ 3. java3d
     utils.java3d,sample.java3dの実行に必要です。
     URL: https://java3d.dev.java.net/binary-builds.html
     file:    java3d-1_5_1-xxxx-i586.exe
- 
- 5. Webcam Capture
- 	汎用のWebcam captureライブラリです。同梱されています。
-	http://webcam-capture.sarxos.pl/
 
-実行するプロジェクトによっては、全ての外部ライブラリを揃える必要は
-ありません。必要なものだけをインストールしてください。
+ 4.Jogl1
+    一部同梱されています。古いバージョン(utils.jogl.utils.jogl)を使う場合に必要です。
+    URL: http://download.java.net/media/jogl/builds/archive/
+    file   : jogl-1.1.1-rc8-xxxx-xxx.zip 
+
+
 
 
 ----------------------------------------------------------------------
@@ -175,6 +186,7 @@ NyARToolkitは、ARToolKitの処理系のいくつかを差し替え、高速化
 ----------------------------------------------------------------------
  *Q1.Windows7でJMFの設定が保存できません。
    >JMFRegistryを、管理者権限で実行することで、保存ができるようになります。
+   >現在はwebcamcaptureの利用を推奨します。
 
  *Q2.2.5.3以前のNyARToolkitとそのまま差し替えできません。
    >いくつかの関数で、引数が変更になりました。サンプルファイルを参考に、

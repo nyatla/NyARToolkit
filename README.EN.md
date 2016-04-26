@@ -39,26 +39,35 @@ http://www.hitl.washington.edu/artoolkit/
 
 NyARToolkit uses the following external libraries. If newer version becomes available, please install the newer version.
 
-1. Webcam Capture in Java (This is included in the NyARToolkit/4.2.1 later.)  
-Easiest stable capture driver.  
-URL: http://www.webcam-capture.sarxos.pl/  
-2. JMF JavaTM Media Framework 2.1.1e  
+1. Webcam Capture  
+General Webcam capture library. This is included.  
+http://webcam-capture.sarxos.pl/
+
+2. Jogl2  
+Required for running utils.jogl, sample.jogl. This is partially included.  
+URL:http://jogamp.org/deployment/jogamp-current/archive/  
+file:jogamp-all-platforms.7z
+
+Following libraries are optional.
+
+1. JMF JavaTM Media Framework 2.1.1e  
 Required for running utils.jmf, sample.jogl  
 URL: http://www.oracle.com/technetwork/java/javase/download-142937.html
-3. QuickTime 7.5  
+
+2. QuickTime 7.5  
 Required for running utils.qt  
 URL: http://www.apple.com/quicktime/qtjava/
-4. Jogl (This is included in the NyARToolkit/4.2.1 later.)  
-Required for running utils.jogl, sample.jogl  
-URL: http://download.java.net/media/jogl/builds/archive/  
-file   : gluegen-old-1.0b6,jogl-old-1.1.1  
-5. java3d  
+
+3. java3d  
 Required for running utils.java3d, sample.java3d  
 URL: https://java3d.dev.java.net/binary-builds.html  
-file:    java3d-1_5_1-xxxx-i586.exe
+file:java3d-1_5_1-xxxx-i586.exe
 
-NyARToolKit/4.2.1 includes jogl and Webcam Capture library.
-It's not necessary to install all the libraries above. Install only those needed.
+4. Jogl1  
+Required for running utils.jogl, sample.jogl  
+URL: http://download.java.net/media/jogl/builds/archive/  
+file: jogl-1.1.1-rc8-xxxx-xxx.zip 
+
 
  Getting Started
 ----------------------------------------------------------------------

@@ -1,6 +1,6 @@
 ======================================================================
 NyARToolkit
- version 4.2.0
+ version 5.0.4
 ======================================================================
 Copyright (C)2008-2012 Ryo Iizuka
 
@@ -76,23 +76,35 @@ commercial license.
 NyARToolkit uses the following external libraries. If newer version 
 becomes available, please install the newer version.
 
+ 1. Webcam Capture
+	General Webcam capture library. This is included.
+	http://webcam-capture.sarxos.pl/
+
+ 2. Jogl2
+	Required for running utils.jogl, sample.jogl. This is partially included.
+	URL:http://jogamp.org/deployment/jogamp-current/archive/
+	file:jogamp-all-platforms.7z
+
+Following libraries are optional.
+
  1. JMF JavaTM Media Framework 2.1.1e
 	Required for running utils.jmf, sample.jogl
-    URL: http://www.oracle.com/technetwork/java/javase/download-142937.html
+	URL: http://www.oracle.com/technetwork/java/javase/download-142937.html
 
  2. QuickTime 7.5
 	Required for running utils.qt
 	URL: http://www.apple.com/quicktime/qtjava/
 
- 3. Jogl
-	Required for running utils.jogl, sample.jogl
-    URL: http://download.java.net/media/jogl/builds/archive/
-    file   : jogl-1.1.1-rc8-xxxx-xxx.zip 
-	
- 4. java3d
+ 3. java3d
 	Required for running utils.java3d, sample.java3d
-    URL: https://java3d.dev.java.net/binary-builds.html
-    file:    java3d-1_5_1-xxxx-i586.exe
+	URL: https://java3d.dev.java.net/binary-builds.html
+	file:	java3d-1_5_1-xxxx-i586.exe
+
+ 4. Jogl1
+	Required for running utils.jogl, sample.jogl
+	URL: http://download.java.net/media/jogl/builds/archive/
+	file   : jogl-1.1.1-rc8-xxxx-xxx.zip 
+	
 	
 Depending on application and purpose, it's not necessary to install all 
 the libraries above. Install only those needed.
@@ -108,14 +120,14 @@ tools under Eclipse environment.
  1. Create a new workspace/project in Eclipse.
  2. Import lib, utils, and sample modules (directories) into the workspace/project
  3. Correct the errors found at the imported project. Common errors include 
-    inconsistent character codes, or reference misses to external JAR files .
+	inconsistent character codes, or reference misses to external JAR files .
 	The error of inconsistent character codes can be resolved by changing
 	the project's encoding to UTF-8. For resolving reference misses to 
 	external JAR libraries, please refer to the chapter of external library 
 	(Where is the chapter?). 
  4. Connect webcam to PC.
  5. Run SimpleLiteMStandard.java within NyARToolkit.sample.jogl, and point 
-    the webcam to the marker. If a cube appears, the installation of NyARToolkit
+	the webcam to the marker. If a cube appears, the installation of NyARToolkit
 	is done!
 	
  For detailed intruction of step 1 ~ step 4, please refer to 
@@ -195,44 +207,22 @@ to use MarkerSystem module.
 
  *Q1. I cannot save configuration changes in JMF under Windows 7.
 	  =>Run JMFRegistry as an administrator, and you will be able to save
-	    changes to JMF.
+		changes to JMF.
 		
  *Q2. I cannot simply replace NyARToolkit versions older than 2.5.3 with
 	  the latest version?
 	  =>Some method parameters are changed. Refer to sample programs and
-	    make necessary change to function calls.
-
- *Q3. What is RealityPlatform(RPF)? I don't know how to use it.
-      =>RPF is a framework for marker-based AR application development.
-	    Using RPF, you can detect unknown markers, and easily access to
-		markers' environment properties. Besides, you can also create 
-		jutting-out and/or partial-damage effects on markers.
-	  
-	  *Current version, 4.0.0, does not continue to maintain RPF. I recommend
-	   you to use the MarkerSystem of latest version. 
+		make necessary change to function calls.
 	   
- *Q4. What is MarkerSystem?
-      =>MarkerSystem is a framework designed to make the use of 
-	    multiple markers as easy as possible. Coordinates transformation, 
+ *Q3. What is MarkerSystem?
+	  =>MarkerSystem is a framework designed to make the use of 
+		multiple markers as easy as possible. Coordinates transformation, 
 		image acquisition,..etc can also be done without a pain in the neck
 		via MarkerSystem. Moreover, the sketching system is improved with 
 		reference to Processing's sketching system. So now coding a 
 		NyARToolKit application is much more fun than before!
 		
 		
-----------------------------------------------------------------------
- Known Bugs
-----------------------------------------------------------------------
- Those known bugs are all related to RealityPlatform (RPF): 
- 1. Posture feedback is not implemented.
- 2. Because the noise processing function of contour extraction system 
-    is based on least-squares method, it has greater delay.
- 3. Due to the deficiencies of algorithms of the contour extraction system,
-	drifting phenomenon of contour lines might occur.
- 4. The performance of movement detection in two-dimensional system is low
- 5. Edge extraction performs poorly When dealing with blurred edge.
- 6. The performance of initial detection is low compared to older version 
-    of NyARToolkit.
 
 
 ----------------------------------------------------------------------
@@ -253,4 +243,7 @@ to use MarkerSystem module.
 
  arc@dmz
  http://digitalmuseum.jp/
- 
+
+DAQRI LCC
+ http://daqri.com/
+ DAQRI LCC is a sponsor of NyARToolKit Project.
