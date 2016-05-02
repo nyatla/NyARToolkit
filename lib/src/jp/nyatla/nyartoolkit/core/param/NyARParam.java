@@ -227,7 +227,7 @@ public class NyARParam
 	 * 未定義
 	 * @throws Exception
 	 */
-	public void saveARParam(OutputStream i_stream)throws Exception
+	public void saveARParam(OutputStream i_stream)
 	{
 		NyARRuntimeException.trap("未チェックの関数");
 	}
