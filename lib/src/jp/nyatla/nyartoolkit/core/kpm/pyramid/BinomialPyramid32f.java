@@ -150,7 +150,7 @@ public class BinomialPyramid32f extends GaussianScaleSpacePyramid
 		pp2     = pp1+width;//pp1+width		
 		int dst_ptr = 0;
 		for(int col = 0; col < width; col++, dst_ptr++, pm2++, pm1++, p++, pp1++, pp2++) {
-			dst[dst_ptr] = (((tmp[p]<<1)+(tmp[p]<<2)) + ((tmp[pm1]+tmp[pp1])<<2) + (tmp[pm2]+tmp[pp2]))*(1.f/256.f);
+			dst[dst_ptr] = (((tmp[p]<<1)+(tmp[p]<<2)) + ((tmp[pm1]+tmp[pp1])<<2) + (tmp[pm2]+tmp[pp2]))*(1.0f/256.0f);
 		}
 		
 		pm2     = 0;//tmp;
@@ -161,7 +161,7 @@ public class BinomialPyramid32f extends GaussianScaleSpacePyramid
 		dst_ptr = width;
 		
 		for(int col = 0; col < width; col++, dst_ptr++, pm2++, pm1++, p++, pp1++, pp2++) {
-			dst[dst_ptr] = (((tmp[p]<<1)+(tmp[p]<<2)) + ((tmp[pm1]+tmp[pp1])<<2) + (tmp[pm2]+tmp[pp2]))*(1.f/256.f);
+			dst[dst_ptr] = (((tmp[p]<<1)+(tmp[p]<<2)) + ((tmp[pm1]+tmp[pp1])<<2) + (tmp[pm2]+tmp[pp2]))*(1.0f/256.0f);
 		}
 		
 		// Apply vertical filter for non-border pixels.
@@ -181,7 +181,7 @@ public class BinomialPyramid32f extends GaussianScaleSpacePyramid
 			dst_ptr = row*width;//&dst[row*width];
 			
 			for(int col = 0; col < width; col++, dst_ptr++, pm2++, pm1++, p++, pp1++, pp2++) {
-				dst[dst_ptr] = (((tmp[p]<<1)+(tmp[p]<<2)) + ((tmp[pm1]+tmp[pp1])<<2) + (tmp[pm2]+tmp[pp2]))*(1.f/256.f);
+				dst[dst_ptr] = (((tmp[p]<<1)+(tmp[p]<<2)) + ((tmp[pm1]+tmp[pp1])<<2) + (tmp[pm2]+tmp[pp2]))*(1.0f/256.0f);
 			}
 		}
 
@@ -194,7 +194,7 @@ public class BinomialPyramid32f extends GaussianScaleSpacePyramid
 		dst_ptr = (height-2)*width;//dst+(height-2)*width;
 
 		for(int col = 0; col < width; col++, dst_ptr++, pm2++, pm1++, p++, pp1++, pp2++) {
-			dst[dst_ptr] = (((tmp[p]<<1)+(tmp[p]<<2)) + ((tmp[pm1]+tmp[pp1])<<2) + (tmp[pm2]+tmp[pp2]))*(1.f/256.f);
+			dst[dst_ptr] = (((tmp[p]<<1)+(tmp[p]<<2)) + ((tmp[pm1]+tmp[pp1])<<2) + (tmp[pm2]+tmp[pp2]))*(1.0f/256.0f);
 		}
 		
 		pm2     = (height-3)*width;//tmp+(height-3)*width;
@@ -205,7 +205,7 @@ public class BinomialPyramid32f extends GaussianScaleSpacePyramid
 		dst_ptr = (height-1)*width;//dst+(height-1)*width;
 		
 		for(int col = 0; col < width; col++, dst_ptr++, pm2++, pm1++, p++, pp1++, pp2++) {
-			dst[dst_ptr] = (((tmp[p]<<1)+(tmp[p]<<2)) + ((tmp[pm1]+tmp[pp1])<<2) + (tmp[pm2]+tmp[pp2]))*(1.f/256.f);
+			dst[dst_ptr] = (((tmp[p]<<1)+(tmp[p]<<2)) + ((tmp[pm1]+tmp[pp1])<<2) + (tmp[pm2]+tmp[pp2]))*(1.0f/256.0f);
 		}
     }
     private void binomial_4th_order(double[] dst,double[] tmp,double[] src,int width,int height)
@@ -231,17 +231,17 @@ public class BinomialPyramid32f extends GaussianScaleSpacePyramid
 			
 			// Left border is computed by extending the border pixel beyond the image
 
-			tmp[tmp_ptr++] = 6.f*src[src_ptr+0] + 4.f*(src[src_ptr+0]+src[src_ptr+1]) + src[src_ptr+0] + src[src_ptr+2];
-			tmp[tmp_ptr++] = 6.f*src[src_ptr+1] + 4.f*(src[src_ptr+0]+src[src_ptr+2]) + src[src_ptr+0] + src[src_ptr+3];
+			tmp[tmp_ptr++] = 6.0f*src[src_ptr+0] + 4.0f*(src[src_ptr+0]+src[src_ptr+1]) + src[src_ptr+0] + src[src_ptr+2];
+			tmp[tmp_ptr++] = 6.0f*src[src_ptr+1] + 4.0f*(src[src_ptr+0]+src[src_ptr+2]) + src[src_ptr+0] + src[src_ptr+3];
 			
 			// Compute non-border pixels
 			for(int col = 2; col < width_minus_2; col++, tmp_ptr++) {
-				tmp[tmp_ptr] = (6.f*src[src_ptr+col] + 4.f*(src[src_ptr+col-1]+src[src_ptr+col+1]) + src[src_ptr+col-2] + src[src_ptr+col+2]);
+				tmp[tmp_ptr] = (6.0f*src[src_ptr+col] + 4.0f*(src[src_ptr+col-1]+src[src_ptr+col+1]) + src[src_ptr+col-2] + src[src_ptr+col+2]);
 			}
 		
 			// Right border. Computed similarily as the left border.
-			tmp[tmp_ptr++] = 6.f*src[src_ptr+width_minus_2] + 4.f*(src[src_ptr+width_minus_2-1]+src[src_ptr+width_minus_2+1]) + src[src_ptr+width_minus_2-2] + src[src_ptr+width_minus_2+1];
-			tmp[tmp_ptr++] = 6.f*src[src_ptr+width_minus_1] + 4.f*(src[src_ptr+width_minus_1-1]+src[src_ptr+width_minus_1])   + src[src_ptr+width_minus_1-2] + src[src_ptr+width_minus_1];
+			tmp[tmp_ptr++] = 6.0f*src[src_ptr+width_minus_2] + 4.0f*(src[src_ptr+width_minus_2-1]+src[src_ptr+width_minus_2+1]) + src[src_ptr+width_minus_2-2] + src[src_ptr+width_minus_2+1];
+			tmp[tmp_ptr++] = 6.0f*src[src_ptr+width_minus_1] + 4.0f*(src[src_ptr+width_minus_1-1]+src[src_ptr+width_minus_1])   + src[src_ptr+width_minus_1-2] + src[src_ptr+width_minus_1];
 
 		}
 		
@@ -260,7 +260,7 @@ public class BinomialPyramid32f extends GaussianScaleSpacePyramid
 		pp2     = pp1+width;//pp1+width		
 		int dst_ptr = 0;
 		for(int col = 0; col < width; col++, dst_ptr++, pm2++, pm1++, p++, pp1++, pp2++) {
-			dst[dst_ptr] = (6.f*tmp[p] + 4.f*(tmp[pm1]+tmp[pp1]) + (tmp[pm2]) + (tmp[pp2]))*(1.f/256.f);;
+			dst[dst_ptr] = (6.0f*tmp[p] + 4.0f*(tmp[pm1]+tmp[pp1]) + (tmp[pm2]) + (tmp[pp2]))*(1.0f/256.0f);;
 		}
 
 		
@@ -272,7 +272,7 @@ public class BinomialPyramid32f extends GaussianScaleSpacePyramid
 		dst_ptr = width;
 		
 		for(int col = 0; col < width; col++, dst_ptr++, pm2++, pm1++, p++, pp1++, pp2++) {
-			dst[dst_ptr] = (6.f*(tmp[p]) + 4.f*(tmp[pm1]+tmp[pp1]) + (tmp[pm2]) + (tmp[pp2]))*(1.f/256.f);;
+			dst[dst_ptr] = (6.0f*(tmp[p]) + 4.0f*(tmp[pm1]+tmp[pp1]) + (tmp[pm2]) + (tmp[pp2]))*(1.0f/256.0f);;
 		}
 		
 		// Apply vertical filter for non-border pixels.
@@ -292,7 +292,7 @@ public class BinomialPyramid32f extends GaussianScaleSpacePyramid
 			dst_ptr = row*width;//&dst[row*width];
 			
 			for(int col = 0; col < width; col++, dst_ptr++, pm2++, pm1++, p++, pp1++, pp2++) {
-				dst[dst_ptr] = (6.f*(tmp[p]) + 4.f*(tmp[pm1]+tmp[pp1]) + (tmp[pm2]) + (tmp[pp2]))*(1.f/256.f);;
+				dst[dst_ptr] = (6.0f*(tmp[p]) + 4.0f*(tmp[pm1]+tmp[pp1]) + (tmp[pm2]) + (tmp[pp2]))*(1.0f/256.0f);;
 			}
 		}
 
@@ -305,7 +305,7 @@ public class BinomialPyramid32f extends GaussianScaleSpacePyramid
 		dst_ptr = (height-2)*width;//dst+(height-2)*width;
 
 		for(int col = 0; col < width; col++, dst_ptr++, pm2++, pm1++, p++, pp1++, pp2++) {
-			dst[dst_ptr] = (6.f*(tmp[p]) + 4.f*(tmp[pm1]+tmp[pp1]) + (tmp[pm2]) + (tmp[pp2]))*(1.f/256.f);;
+			dst[dst_ptr] = (6.0f*(tmp[p]) + 4.0f*(tmp[pm1]+tmp[pp1]) + (tmp[pm2]) + (tmp[pp2]))*(1.0f/256.0f);;
 		}
 		
 		pm2     = (height-3)*width;//tmp+(height-3)*width;
@@ -316,7 +316,7 @@ public class BinomialPyramid32f extends GaussianScaleSpacePyramid
 		dst_ptr = (height-1)*width;//dst+(height-1)*width;
 		
 		for(int col = 0; col < width; col++, dst_ptr++, pm2++, pm1++, p++, pp1++, pp2++) {
-			dst[dst_ptr] = (6.f*(tmp[p]) + 4.f*(tmp[pm1]+tmp[pp1]) + (tmp[pm2]) + (tmp[pp2]))*(1.f/256.f);;
+			dst[dst_ptr] = (6.0f*(tmp[p]) + 4.0f*(tmp[pm1]+tmp[pp1]) + (tmp[pm2]) + (tmp[pp2]))*(1.0f/256.0f);;
 		}
     }   
         

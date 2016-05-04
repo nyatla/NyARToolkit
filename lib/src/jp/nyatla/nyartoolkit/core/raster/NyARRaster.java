@@ -98,7 +98,7 @@ public class NyARRaster extends NyARRaster_BasicClass
 	 * @return
 	 * 初期化に成功するとtrueを返します。
 	 */
-	protected boolean initInstance(NyARIntSize i_size,int i_buf_type,boolean i_is_alloc)
+	private boolean initInstance(NyARIntSize i_size,int i_buf_type,boolean i_is_alloc)
 	{
 		switch(i_buf_type)
 		{

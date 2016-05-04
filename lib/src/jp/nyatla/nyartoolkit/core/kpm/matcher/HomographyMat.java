@@ -47,7 +47,7 @@ public class HomographyMat extends NyARDoubleMatrix33
 	 */
 	public void normalizeHomography()
 	{
-		double one_over = (1. / this.m22);
+		double one_over = (1.0 / this.m22);
 		this.m00 *= one_over;
 		this.m01 *= one_over;
 		this.m02 *= one_over;

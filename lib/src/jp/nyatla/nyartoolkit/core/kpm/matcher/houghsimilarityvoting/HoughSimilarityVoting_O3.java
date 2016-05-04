@@ -47,7 +47,7 @@ import jp.nyatla.nyartoolkit.core.types.stack.NyARObjectStack;
  */
 final public class HoughSimilarityVoting_O3 {
 	final static private double PI=NyARMath.PI;
-	private static double kHoughBinDelta = 1;	
+	final static private double kHoughBinDelta = 1;	
 
 	// Min/Max (x,y,scale). The angle includes all angles (-pi,pi).
 	final private double mMinX;
@@ -443,18 +443,18 @@ final public class HoughSimilarityVoting_O3 {
 		}
 		static class VoteNode{
 			/** インデクス番号 */
-			int index;
+			public int index;
 			/** 参照数*/
-			int count;
+			public int count;
 			/** 配列サイズ*/
-			int remining;
-			VoteNode[] nodes;
-			VoteNode(int len)
+			public int remining;
+			public VoteNode[] nodes;
+			public VoteNode(int len)
 			{
 				this.remining=len;
 				this.nodes=new VoteNode[len];
 			}
-			VoteNode put(int i_index,NodePool i_pool)
+			public VoteNode put(int i_index,NodePool i_pool)
 			{
 				VoteNode[] n=this.nodes;
 				int ridx=this.remining-1;
@@ -492,7 +492,7 @@ final public class HoughSimilarityVoting_O3 {
 	/**
 	 * Find the median of an array.
 	 */
-	private double FastMedian(double a[], int n) {
+	private double FastMedian(double[] a, int n) {
 		// return PartialSort(a, n, (((n)&1)?((n)/2):(((n)/2)-1)));
 		return PartialSort(a, n, ((((n) & 1) == 1) ? ((n) / 2)
 				: (((n) / 2) - 1)));

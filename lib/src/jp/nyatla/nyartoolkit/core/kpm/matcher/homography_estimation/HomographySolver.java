@@ -170,7 +170,7 @@ public class HomographySolver
 	/**
 	 * Add a point to the homography constraint matrix.
 	 */
-	private static void AddHomographyPointContraint(double A[][], int A_ptr, NyARDoublePoint2d x, NyARDoublePoint2d xp) {
+	private static void AddHomographyPointContraint(double[][] A, int A_ptr, NyARDoublePoint2d x, NyARDoublePoint2d xp) {
 
 		A[A_ptr][0] = -x.x;//[0];
 		A[A_ptr][1] = -x.y;//[1];

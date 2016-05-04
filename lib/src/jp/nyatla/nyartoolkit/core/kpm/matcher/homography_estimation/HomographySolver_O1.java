@@ -221,7 +221,7 @@ final public class HomographySolver_O1 extends HomographySolver
 		{	//ScaleVector9(Q[0], A[0], (double) (1.f / Math.sqrt(ss)));
 			double[] d=Q[0];
 			double[] src=A[0];
-			double s=(double) (1.f / Math.sqrt(ss));
+			double s=(double) (1.0f / Math.sqrt(ss));
 			d[0] = src[0] * s;
 			d[1] = src[1] * s;
 			d[2] = src[2] * s;
@@ -233,8 +233,8 @@ final public class HomographySolver_O1 extends HomographySolver
 			d[8] = src[8] * s;
 		}		
 		for(int i=1;i<8;i++){
-    		double d[]=Q[i];
-    		double s[]=A[i];
+    		double[] d=Q[i];
+    		double[] s=A[i];
     		d[0]=s[0];
     		d[1]=s[1];
     		d[2]=s[2];
@@ -251,16 +251,16 @@ final public class HomographySolver_O1 extends HomographySolver
 	
 	
 	
-	public static boolean OrthogonalizePivot8x9Basis(double dest[][],int line, double[][] a)
+	public static boolean OrthogonalizePivot8x9Basis(double[][] dest,int line, double[][] a)
 	{
 		int p=7-line;
 		int index = 0;
 		double ss = 0;
 		for (int i = line; i >= 0; i--) {
 			//AccumulateProjection9
-			double ee[]=dest[6-line];
-			double aa[]= a[i + p];
-			double xx[]=dest[i + p];
+			double[] ee=dest[6-line];
+			double[] aa= a[i + p];
+			double[] xx=dest[i + p];
 			double d=ee[0] * aa[0] + ee[1] * aa[1] + ee[2] * aa[2] + ee[3] * aa[3] + ee[4] * aa[4] + ee[5] * aa[5] + ee[6] * aa[6] + ee[7]* aa[7] + ee[8] * aa[8];
 			xx[0] -= d * ee[0];
 			xx[1] -= d * ee[1];
@@ -295,7 +295,7 @@ final public class HomographySolver_O1 extends HomographySolver
 		}
 		{	//ScaleVector9(dest[p], dest[p], (double) (1.f / Math.sqrt(ss)));
 			double[] dst=dest[p];
-			double s=(double) (1.f / Math.sqrt(ss));
+			double s=(double) (1.0f / Math.sqrt(ss));
 			dst[0]*=s;
 			dst[1]*=s;
 			dst[2]*=s;

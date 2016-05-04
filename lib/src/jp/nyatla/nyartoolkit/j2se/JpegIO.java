@@ -40,7 +40,7 @@ public class JpegIO {
 		final public byte[] img;
 		final public int width;
 		final public int height;
-		protected DecodeResult(int i_xd,int i_yd,byte[] i_img,int w,int h,int i_unit)
+		public DecodeResult(int i_xd,int i_yd,byte[] i_img,int w,int h,int i_unit)
 		{
 			this.height=h;
 			this.width=w;
