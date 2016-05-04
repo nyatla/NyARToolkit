@@ -62,6 +62,7 @@ public class KpmBenchmark
 				kpm.updateFeatureSet();
 				kpm.kpmMatching(keymap,tmat);
 			}
+			//FreakKeypointMatching#kMaxNumFeaturesを300にしてテストして。
 			System.out.println("Total="+(System.currentTimeMillis()-st));
 			NyARDoubleMatrix44 TEST_PATT=new NyARDoubleMatrix44(new double[]{	0.9843635410774265,0.006676891783837065,-0.17602226595996517,-191.17967199668533,
 					0.011597578022657571,-0.9995697471256431,0.02694098764508235,63.00280574839347,

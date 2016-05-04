@@ -170,8 +170,8 @@ public class LaplacianImage implements INyARRaster {
 		// Dxy = 0.25f*((pm1[-1] + pp1[1]) - (pm1[1] + pp1[-1]));
 		dn[0] = 0.5f * (im_buf[p + 1] - im_buf[p - 1]);
 		dn[1] = 0.5f * (im_buf[pp1 + 0] - im_buf[pm1 + 0]);
-		dn[2] = im_buf[p - 1] + (-2.f * im_buf[p + 0]) + im_buf[p + 1];
-		dn[3] = im_buf[pm1 + 0] + (-2.f * im_buf[p + 0]) + im_buf[pp1 + 0];
+		dn[2] = im_buf[p - 1] + (-2.0f * im_buf[p + 0]) + im_buf[p + 1];
+		dn[3] = im_buf[pm1 + 0] + (-2.0f * im_buf[p + 0]) + im_buf[pp1 + 0];
 		dn[4] = 0.25f * ((im_buf[pm1 - 1] + im_buf[pp1 + 1]) - (im_buf[pm1 + 1] + im_buf[pp1 - 1]));
 		return;
 	}	

@@ -59,7 +59,7 @@ public class BilinearHistogram
 	{
 		int n=this.mHistogram.length;
 		double[] h=this.mHistogram;
-		double kernel[] = { 0.274068619061197f, 0.451862761877606f, 0.274068619061197f };
+		double[] kernel = { 0.274068619061197f, 0.451862761877606f, 0.274068619061197f };
 		for (int iter = 0; iter < i_num_smoothing; iter++) {
 			// sigma=1
 			double first = h[0];
@@ -92,7 +92,7 @@ public class BilinearHistogram
 		
 		int bin = (int) Math.floor(fbin - 0.5f);
 		double w2 = fbin - (double) bin - 0.5f;
-		double w1 = (1.f - w2);
+		double w1 = (1.0f - w2);
 		int b1 = (bin + n) % n;
 		int b2 = (bin + 1) % n;
 		// Vote to 2 weighted bins
@@ -123,9 +123,9 @@ public class BilinearHistogram
 		int num_of_peak=0;
 		// Find all the peaks.
 		for (int i = 0; i < mNumBins; i++) {
-			double p0[] = { i, mHistogram[i] };
-			double pm1[] = { (i - 1), mHistogram[(i - 1 + mNumBins) % mNumBins] };
-			double pp1[] = { (i + 1), mHistogram[(i + 1 + mNumBins) % mNumBins] };
+			double[] p0 = { i, mHistogram[i] };
+			double[] pm1 = { (i - 1), mHistogram[(i - 1 + mNumBins) % mNumBins] };
+			double[] pp1 = { (i + 1), mHistogram[(i + 1 + mNumBins) % mNumBins] };
 
 			// Ensure that "p0" is a relative peak w.r.t. the two neighbors
 			if ((mHistogram[i] > mPeakThreshold * max_height) && (p0[1] > pm1[1]) && (p0[1] > pp1[1])) {
@@ -143,7 +143,7 @@ public class BilinearHistogram
 
 				// The sub-pixel angle needs to be in the range [0,2*pi)
 				// angles[num_angles] = std::fmod((2.f*PI)*((fbin+0.5f+(float)mNumBins)/(float)mNumBins), 2.f*PI);
-				i_list[num_of_peak] = ((2.f * PI) * ((fbin + 0.5 + (double) mNumBins) / (double) mNumBins)) % (double) (2.f * PI);
+				i_list[num_of_peak] = ((2.0f * PI) * ((fbin + 0.5 + (double) mNumBins) / (double) mNumBins)) % (double) (2.0f * PI);
 
 				// Increment the number of angles
 				num_of_peak++;
@@ -168,7 +168,7 @@ public class BilinearHistogram
      * @param[in] p3 2D point 3
      * @return True if the quatratic could be fit, otherwise false.
      */
-	final private static boolean Quadratic3Points(double r[],
+	private static boolean Quadratic3Points(double[] r,
 			double[] p1,
 			double[] p2,
 			double[] p3) {
@@ -207,7 +207,7 @@ public class BilinearHistogram
      * @param[in] C
 	 * @return True on success.
 	 */
-	final private static boolean QuadraticCriticalPoint(double[] x, double A, double B, double C) {
+	private static boolean QuadraticCriticalPoint(double[] x, double A, double B, double C) {
 		if(A == 0) {
 			return false;
 		}

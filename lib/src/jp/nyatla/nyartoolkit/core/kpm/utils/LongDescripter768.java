@@ -52,7 +52,7 @@ public class LongDescripter768 extends LongDescripter
 	{
 		//assert i_value.bits==this.bits;
 		long b;
-		int c=0;
+		long c=0;
 		for(int i=this._desc.length-1;i>=0;i--){
 			b=this._desc[i]^i_value._desc[i];
 	        b = (b & 0x5555555555555555L) + (b >> 1 & 0x5555555555555555L);

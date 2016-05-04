@@ -173,7 +173,7 @@ public class GaussianScaleSpacePyramid {
                                           double y,
                                           int octave) {
     	double a, b;
-        a = 1.f/(1<<octave);
+        a = 1.0f/(1<<octave);
         b = 0.5f*a-0.5f;
         ret.x = x*a+b;
         ret.y = y*a+b;

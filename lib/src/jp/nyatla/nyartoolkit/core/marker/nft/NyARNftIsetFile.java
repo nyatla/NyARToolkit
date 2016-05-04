@@ -150,12 +150,14 @@ public class NyARNftIsetFile
 		}
 		double[] dpi_list = new double[dpi_num];
 		// Determine the DPI values of each level.
-		double dpiWork = dpiMin;
-		for (int i = 0; i < dpi_num; i++) {
-			dpi_list[dpi_num - i - 1] = dpiWork; // Lowest value goes at tail of array, highest at head.
-			dpiWork *= Math.pow(2.0f, 1.0f / 3.0f);
-			if (dpiWork >= dpiMax * 0.95f)
-				dpiWork = dpiMax;
+		{
+			double dpiWork = dpiMin;
+			for (int i = 0; i < dpi_num; i++) {
+				dpi_list[dpi_num - i - 1] = dpiWork; // Lowest value goes at tail of array, highest at head.
+				dpiWork *= Math.pow(2.0f, 1.0f / 3.0f);
+				if (dpiWork >= dpiMax * 0.95f)
+					dpiWork = dpiMax;
+			}
 		}
 		return dpi_list;
 	}

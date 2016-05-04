@@ -156,7 +156,7 @@ public class DoGScaleInvariantDetector {
 	 */
 	private static void bilinear_upsample_point(double[] xyp, double x, double y, int octave) {
 		double a, b;
-		a = (double) Math.pow(2.f, octave - 1) - 0.5f;
+		a = (double) Math.pow(2.0f, octave - 1) - 0.5f;
 		b = (1 << octave);
 		xyp[0] = (x * b) + a;
 		xyp[1] = (y * b) + a;
@@ -173,7 +173,7 @@ public class DoGScaleInvariantDetector {
 	 */
 	private void bilinear_downsample_point(double[] xyp, double x, double y, int octave) {
 		double a, b;
-		a = 1.f / (1 << octave);
+		a = 1.0f / (1 << octave);
 		b = 0.5f * a - 0.5f;
 		xyp[0] = x * a + b;
 		xyp[1] = y * a + b;
@@ -181,7 +181,7 @@ public class DoGScaleInvariantDetector {
 
 	private void bilinear_downsample_point(double[] xysp, double x, double y, double s, int octave) {
 		double a, b;
-		a = 1.f / (1 << octave);
+		a = 1.0f / (1 << octave);
 		b = 0.5f * a - 0.5f;
 		xysp[0] = x * a + b;
 		xysp[1] = y * a + b;
@@ -293,8 +293,8 @@ public class DoGScaleInvariantDetector {
 				}
 			} else if (im0.getWidth() == im1.getWidth() && (im1.getWidth() >> 1) == im2.getWidth()) {
 
-				int end_x = (int) Math.floor(((im2.getWidth() - 1) - 0.5f) * 2.f + 0.5f);
-				int end_y = (int) Math.floor(((im2.getHeight() - 1) - 0.5f) * 2.f + 0.5f);
+				int end_x = (int) Math.floor(((im2.getWidth() - 1) - 0.5f) * 2.0f + 0.5f);
+				int end_y = (int) Math.floor(((im2.getHeight() - 1) - 0.5f) * 2.0f + 0.5f);
 
 				for (int row = 2; row < end_y; row++) {
 					int im0_ym1 = im0.get(row - 1);
@@ -422,15 +422,15 @@ public class DoGScaleInvariantDetector {
 								&& value > im2b[im2_yp1 + col - 1] && value > im2b[im2_yp1 + col]
 								&& value > im2b[im2_yp1 + col + 1] &&
 								/* im2 - 9 evaluations */
-								value > im0.bilinearInterpolation(us_x - 2.f, us_y - 2.f)
-								&& value > im0.bilinearInterpolation(us_x, us_y - 2.f)
-								&& value > im0.bilinearInterpolation(us_x + 2.f, us_y - 2.f)
-								&& value > im0.bilinearInterpolation(us_x - 2.f, us_y)
+								value > im0.bilinearInterpolation(us_x - 2.0f, us_y - 2.0f)
+								&& value > im0.bilinearInterpolation(us_x, us_y - 2.0f)
+								&& value > im0.bilinearInterpolation(us_x + 2.0f, us_y - 2.0f)
+								&& value > im0.bilinearInterpolation(us_x - 2.0f, us_y)
 								&& value > im0.bilinearInterpolation(us_x, us_y)
-								&& value > im0.bilinearInterpolation(us_x + 2.f, us_y)
-								&& value > im0.bilinearInterpolation(us_x - 2.f, us_y + 2.f)
-								&& value > im0.bilinearInterpolation(us_x, us_y + 2.f)
-								&& value > im0.bilinearInterpolation(us_x + 2.f, us_y + 2.f))
+								&& value > im0.bilinearInterpolation(us_x + 2.0f, us_y)
+								&& value > im0.bilinearInterpolation(us_x - 2.0f, us_y + 2.0f)
+								&& value > im0.bilinearInterpolation(us_x, us_y + 2.0f)
+								&& value > im0.bilinearInterpolation(us_x + 2.0f, us_y + 2.0f))
 						{ 
 							extrema = true;
 						} else if (value < im1b[im1_ym1 + col - 1] && value < im1b[im1_ym1 + col]
@@ -444,15 +444,15 @@ public class DoGScaleInvariantDetector {
 								&& value < im2b[im2_yp1 + col - 1] && value < im2b[im2_yp1 + col]
 								&& value < im2b[im2_yp1 + col + 1] &&
 								/* im2 - 9 evaluations */
-								value < im0.bilinearInterpolation(us_x - 2.f, us_y - 2.f)
-								&& value < im0.bilinearInterpolation(us_x, us_y - 2.f)
-								&& value < im0.bilinearInterpolation(us_x + 2.f, us_y - 2.f)
-								&& value < im0.bilinearInterpolation(us_x - 2.f, us_y)
+								value < im0.bilinearInterpolation(us_x - 2.0f, us_y - 2.0f)
+								&& value < im0.bilinearInterpolation(us_x, us_y - 2.0f)
+								&& value < im0.bilinearInterpolation(us_x + 2.0f, us_y - 2.0f)
+								&& value < im0.bilinearInterpolation(us_x - 2.0f, us_y)
 								&& value < im0.bilinearInterpolation(us_x, us_y)
-								&& value < im0.bilinearInterpolation(us_x + 2.f, us_y)
-								&& value < im0.bilinearInterpolation(us_x - 2.f, us_y + 2.f)
-								&& value < im0.bilinearInterpolation(us_x, us_y + 2.f)
-								&& value < im0.bilinearInterpolation(us_x + 2.f, us_y + 2.f))
+								&& value < im0.bilinearInterpolation(us_x + 2.0f, us_y)
+								&& value < im0.bilinearInterpolation(us_x - 2.0f, us_y + 2.0f)
+								&& value < im0.bilinearInterpolation(us_x, us_y + 2.0f)
+								&& value < im0.bilinearInterpolation(us_x + 2.0f, us_y + 2.0f))
 						{ 
 							extrema = true;
 						}
@@ -711,7 +711,7 @@ public class DoGScaleInvariantDetector {
 		double[] lap1buf = (double[]) lap1.getBuffer();
 
 		Ds = 0.5f * (lap2buf[lap2_p + 0] - val);
-		Dss = val + (-2.f * lap1buf[lap1_p + 0]) + lap2buf[lap2_p + 0];
+		Dss = val + (-2.0f * lap1buf[lap1_p + 0]) + lap2buf[lap2_p + 0];
 		Dxs = 0.25f * ((lap0.bilinearInterpolation(x_mul_2 - 2, y_mul_2) + lap2buf[lap2_p + 1]) - (lap0.bilinearInterpolation(
 				x_mul_2 + 2, y_mul_2) + lap2buf[lap2_p - 1]));
 		Dys = 0.25f * ((lap0.bilinearInterpolation(x_mul_2, y_mul_2 - 2) + lap2buf[lap2_pp1 + 0]) - (lap0.bilinearInterpolation(
@@ -782,7 +782,7 @@ public class DoGScaleInvariantDetector {
 		double[] lap1_buf = (double[]) lap1.getBuffer();
 
 		Ds = 0.5f * (val - lap0_buf[lap0_p + 0]);
-		Dss = lap0_buf[lap0_p + 0] + (-2.f * lap1_buf[lap1_p + 0]) + val;
+		Dss = lap0_buf[lap0_p + 0] + (-2.0f * lap1_buf[lap1_p + 0]) + val;
 		Dxs = 0.25f * (
 			(lap0_buf[lap0_p - 1]+lap2.bilinearInterpolation(x_div_2 + .5f, y_div_2)) 
 			-(lap0_buf[lap0_p + 1] + lap2.bilinearInterpolation(x_div_2 - .5f, y_div_2))
@@ -851,7 +851,7 @@ public class DoGScaleInvariantDetector {
 		double[] lap2buf = (double[]) lap2.getBuffer();
 		// Compute scale derivates
 		Ds = 0.5f * (lap2buf[lap2_p + 0] - lap0buf[lap0_p + 0]);
-		Dss = lap0buf[lap0_p + 0] + (-2.f * lap1buf[lap1_p + 0]) + lap2buf[lap2_p + 0];
+		Dss = lap0buf[lap0_p + 0] + (-2.0f * lap1buf[lap1_p + 0]) + lap2buf[lap2_p + 0];
 		Dxs = 0.25f * ((lap0buf[lap0_p - 1] - lap0buf[lap0_p + 1]) + (-lap2buf[lap2_p - 1] + lap2buf[lap2_p + 1]));
 		Dys = 0.25f * ((lap0buf[lap0_pm1 + 0] - lap0buf[lap0_pp1 + 0]) + (-lap2buf[lap2_pm1 + 0] + lap2buf[lap2_pp1 + 0]));
 

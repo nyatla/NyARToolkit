@@ -294,7 +294,7 @@ public class HomographySolver
 			return false;
 		}
 		Swap9(A[0], A[index]);
-		ScaleVector9(Q[0], A[0], (double) (1.f / Math.sqrt(ss)));
+		ScaleVector9(Q[0], A[0], (double) (1.0f / Math.sqrt(ss)));
 		CopyVector(Q[1], 0, A[1], 0, 9);
 		CopyVector(Q[2], 0, A[2], 0, 9);
 		CopyVector(Q[3], 0, A[3], 0, 9);
@@ -323,7 +323,7 @@ public class HomographySolver
 		}
 		Swap9(Q[1], Q[1 + index]);
 		Swap9(A[1], A[1 + index]);
-		ScaleVector9(Q[1], Q[1], (double) (1.f / Math.sqrt(ss)));
+		ScaleVector9(Q[1], Q[1], (double) (1.0f / Math.sqrt(ss)));
 
 		return true;
 	}
@@ -346,7 +346,7 @@ public class HomographySolver
 
 		Swap9(Q[2], Q[2 + index]);
 		Swap9(A[2], A[2 + index]);
-		ScaleVector9(Q[2], Q[2], (double) (1.f / Math.sqrt(ss)));
+		ScaleVector9(Q[2], Q[2], (double) (1.0f / Math.sqrt(ss)));
 
 		return true;
 	}
@@ -368,7 +368,7 @@ public class HomographySolver
 
 		Swap9(Q[3], Q[3 + index]);
 		Swap9(A[3], A[3 + index]);
-		ScaleVector9(Q[3], Q[3], (double) (1.f / Math.sqrt(ss)));
+		ScaleVector9(Q[3], Q[3], (double) (1.0f / Math.sqrt(ss)));
 
 		return true;
 	}
@@ -390,7 +390,7 @@ public class HomographySolver
 
 		Swap9(Q[4], Q[4 + index]);
 		Swap9(A[4], A[4 + index]);
-		ScaleVector9(Q[4], Q[4], (double) (1.f / Math.sqrt(ss)));
+		ScaleVector9(Q[4], Q[4], (double) (1.0f / Math.sqrt(ss)));
 
 		return true;
 	}
@@ -412,7 +412,7 @@ public class HomographySolver
 
 		Swap9(Q[5], Q[5 + index]);
 		Swap9(A[5], A[5 + index]);
-		ScaleVector9(Q[5], Q[5], (double) (1.f / Math.sqrt(ss)));
+		ScaleVector9(Q[5], Q[5], (double) (1.0f / Math.sqrt(ss)));
 
 		return true;
 	}
@@ -431,7 +431,7 @@ public class HomographySolver
 
 		Swap9(Q[6], Q[6 + index]);
 		Swap9(A[6], A[6 + index]);
-		ScaleVector9(Q[6], Q[6], (double) (1.f / Math.sqrt(ss)));
+		ScaleVector9(Q[6], Q[6], (double) (1.0f / Math.sqrt(ss)));
 
 		return true;
 	}
@@ -442,7 +442,7 @@ public class HomographySolver
 		if (ss == 0) {
 			return false;
 		}
-		ScaleVector9(Q[7], Q[7], (double) (1.f / Math.sqrt(ss)));
+		ScaleVector9(Q[7], Q[7], (double) (1.0f / Math.sqrt(ss)));
 		return true;
 	}
 
@@ -465,7 +465,7 @@ public class HomographySolver
 		}
 
 		double w = (double) Math.sqrt(ss);
-		ScaleVector9(x, x, 1.f / w);
+		ScaleVector9(x, x, 1.0f / w);
 
 		return w;
 	}

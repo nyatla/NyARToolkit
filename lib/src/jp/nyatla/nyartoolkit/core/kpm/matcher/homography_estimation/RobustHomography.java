@@ -43,10 +43,10 @@ import jp.nyatla.nyartoolkit.core.kpm.matcher.HomographyMat;
  * Robust homography estimation.
  */
 public class RobustHomography {
-	final static double HOMOGRAPHY_DEFAULT_CAUCHY_SCALE = 0.01f;
-	final static int HOMOGRAPHY_DEFAULT_NUM_HYPOTHESES = 1024;
-	final static int HOMOGRAPHY_DEFAULT_MAX_TRIALS = 1064;
-	final static int HOMOGRAPHY_DEFAULT_CHUNK_SIZE = 50;
+	private static final double HOMOGRAPHY_DEFAULT_CAUCHY_SCALE = 0.01f;
+	private static final int HOMOGRAPHY_DEFAULT_NUM_HYPOTHESES = 1024;
+	private static final int HOMOGRAPHY_DEFAULT_MAX_TRIALS = 1064;
+	private static final int HOMOGRAPHY_DEFAULT_CHUNK_SIZE = 50;
 
 	public RobustHomography()
 	{
@@ -228,7 +228,7 @@ public class RobustHomography {
 	
 
 	
-    private static RobustHomography.CostPair PartialSort(RobustHomography.CostPair a[], int n, int k) {
+    private static RobustHomography.CostPair PartialSort(RobustHomography.CostPair[] a, int n, int k) {
 		int i, j, l, m, k_minus_1;
 		RobustHomography.CostPair x;
 
@@ -256,7 +256,7 @@ public class RobustHomography {
 		}
 		return a[k_minus_1];
 	}    
-    private static RobustHomography.CostPair FastMedian(RobustHomography.CostPair a[], int n)
+    private static RobustHomography.CostPair FastMedian(RobustHomography.CostPair[] a, int n)
     {
 		return PartialSort(a, n, (((n&1)==1)?((n)/2):(((n)/2)-1)));
 	} 	

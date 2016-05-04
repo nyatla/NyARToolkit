@@ -113,7 +113,7 @@ public class OrientationAssignment {
 
 		// Radius of the support region
 		double radius = this.mSupportRegionExpansionFactor * gw_sigma;
-		double gw_scale = -1.f / (2 * (gw_sigma*gw_sigma));
+		double gw_scale = -1.0f / (2 * (gw_sigma*gw_sigma));
 
 		// Zero out the orientation histogram
 		this.mHistogram.reset();
