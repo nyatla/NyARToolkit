@@ -18,7 +18,7 @@ public class BinaryWriter
 	private void realloc()
 	{
 		ByteBuffer old=this._bb;
-		this._bb=ByteBuffer.allocate(old.capacity());
+		this._bb=ByteBuffer.allocate(old.capacity()*2);
 		this._bb.put(old.array(),0,old.position());
 	}
 	
