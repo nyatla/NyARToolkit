@@ -279,18 +279,19 @@ public class FreakKeypointMatching {
 		if(last_inliers<=0){
 			return false;
 		}
-		FeaturePairStack match_result=this._tmp_pair_stack[(tmp_ch+1)%2];
-		FeaturePairStack.Item[] dest=match_result.getArray();
-		for(int i=0;i<match_result.getLength();i++){
-			FeaturePairStack.Item t=i_result.prePush();
-			if(t==null){
-				System.out.println("Push overflow!");
-				break;
+		{
+			FeaturePairStack match_result=this._tmp_pair_stack[(tmp_ch+1)%2];
+			FeaturePairStack.Item[] dest=match_result.getArray();
+			for(int i=0;i<match_result.getLength();i++){
+				FeaturePairStack.Item t=i_result.prePush();
+				if(t==null){
+					System.out.println("Push overflow!");
+					break;
+				}
+				t.query=dest[i].query;
+				t.ref=dest[i].ref;
 			}
-			t.query=dest[i].query;
-			t.ref=dest[i].ref;
 		}
-
 		return true;
 	}
 

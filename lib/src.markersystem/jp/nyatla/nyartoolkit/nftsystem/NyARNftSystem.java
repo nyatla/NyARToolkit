@@ -49,12 +49,12 @@ public class NyARNftSystem extends NyARSingleCameraSystem
 		final private static int ST_KPM_SEARCH	=1;
 		final private static int ST_KPM_FOUND 	=2;
 		/** AR2SURFACEトラッキングによる検出状態維持*/
-		final static int ST_AR2_TRACKING=3;
+		final private static int ST_AR2_TRACKING=3;
 		public int stage;
 		/** 参照定義セット*/
-		NyARNftDataSet dataset;
+		public NyARNftDataSet dataset;
 		/** KPMスレッドの出力結果*/
-		NyARDoubleMatrix44 back_transmat=new NyARDoubleMatrix44();
+		public NyARDoubleMatrix44 back_transmat=new NyARDoubleMatrix44();
 		/** transmat_backが更新されたかのフラグ*/
 		public boolean back_has_result;
 

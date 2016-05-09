@@ -44,7 +44,6 @@ import java.io.InputStream;
 
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.kpm.keyframe.KeyframeMap;
-import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftFsetFile.NyAR2FeatureCoord;
 import jp.nyatla.nyartoolkit.core.surfacetracking.NyARSurfaceDataSet;
 
 
@@ -71,7 +70,7 @@ public class NyARNftDataSet
 			i_fset.list[i].maxdpi*=dpi_rate;
 			i_fset.list[i].mindpi*=dpi_rate;
 			//ピクセル値に戻す係数		
-			for(NyAR2FeatureCoord j:i_fset.list[i].coord){
+			for(NyARNftFsetFile.NyAR2FeatureCoord j:i_fset.list[i].coord){
 				j.mx=j.mx/dpi_rate;
 				j.my=j.my/dpi_rate;
 			}
