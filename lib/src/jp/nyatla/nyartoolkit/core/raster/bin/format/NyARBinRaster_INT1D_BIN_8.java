@@ -45,7 +45,7 @@ public class NyARBinRaster_INT1D_BIN_8 extends NyARBinRaster
 	@Override
 	final public int getBufferType()
 	{
-		return NyARBufferType.INT1D_GRAY_8;
+		return NyARBufferType.INT1D_BIN_8;
 	}	
 	/**
 	 * この関数は、ラスタに外部参照バッファをセットします。
