@@ -1,8 +1,8 @@
 ======================================================================
 NyARToolkit
- version 5.0.4
+ version 5.0.5
 ======================================================================
-Copyright (C)2008-2012 Ryo Iizuka
+Copyright (C)2008-2016 Ryo Iizuka
 
 http://nyatla.jp/nyartoolkit/
 airmail(at)ebony.plala.or.jp
