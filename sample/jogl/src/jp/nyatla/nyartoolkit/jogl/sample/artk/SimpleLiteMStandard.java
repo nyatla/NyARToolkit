@@ -126,14 +126,14 @@ public class SimpleLiteMStandard implements GLEventListener
 				gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT); // Clear the buffers for new frame.
 				NyARGLDrawUtil.drawBackGround(gl,this._camera.getSourceImage(), 1.0);				
 				this._nyar.update(this._camera);
-				if(this._nyar.isExistMarker(this.ids[0])){
+				if(this._nyar.isExist(this.ids[0])){
 					gl.glMatrixMode(GL2.GL_MODELVIEW);
 					gl.glPushMatrix();
 					gl.glLoadMatrixd(this._nyar.getGlTransformMatrix(this.ids[0]),0);
 					NyARGLDrawUtil.drawColorCube(gl,40);
 					gl.glPopMatrix();
 				}
-				if(this._nyar.isExistMarker(this.ids[1])){
+				if(this._nyar.isExist(this.ids[1])){
 					gl.glMatrixMode(GL2.GL_MODELVIEW);
 					gl.glPushMatrix();
 					gl.glLoadMatrixd(this._nyar.getGlTransformMatrix(this.ids[1]),0);

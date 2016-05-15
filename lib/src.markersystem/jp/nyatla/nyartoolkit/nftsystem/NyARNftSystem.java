@@ -112,7 +112,6 @@ public class NyARNftSystem extends NyARSingleCameraSystem
 		//SurfaceTrackingによるfrontデータの更新
 		for(NftTarget target:this._nftdatalist){
 			if(target.stage<NftTarget.ST_KPM_FOUND){
-//System.out.println("NOTHING");
 				//KPM検出前なら何もしない。
 				continue;
 			}
@@ -125,7 +124,6 @@ public class NyARNftSystem extends NyARSingleCameraSystem
 				if(nop==0){
 					//失敗
 					target.stage=NftTarget.ST_KPM_SEARCH;
-//System.out.println("ST_KPM_SEARCH");
 					continue;
 				}
 				//Transmatの試験
@@ -134,14 +132,12 @@ public class NyARNftSystem extends NyARSingleCameraSystem
 				if(!this._sftrackingutils.surfaceTrackingTransmat(target.front_transmat, pos2d, pos3d, nop,target.front_transmat,this.result_param)){
 					//失敗
 					target.stage=NftTarget.ST_KPM_SEARCH;
-//System.out.println("ST_KPM_SEARCH");
 					continue;
 				}
 				NyARSurfaceTrackingTransmatUtils.restoreOutputOffset(target.front_transmat,off);//ARTK5の補正
 				break;
 			case NftTarget.ST_KPM_FOUND:
 				target.stage=NftTarget.ST_AR2_TRACKING;
-//System.out.println("ST_AR2_TRACKING");
 				break;
 			}
 		}
@@ -212,10 +208,12 @@ public class NyARNftSystem extends NyARSingleCameraSystem
 	 * @return
 	 * 
 	 */
-	public boolean isExistTarget(int i_id)
+	public boolean isExist(int i_id)
 	{
 		return this._nftdatalist.get(i_id).stage>NftTarget.ST_KPM_FOUND;
-	}	
+	}
+	
+
 	/**
 	 * Key point Matching Thread
 	 */
@@ -244,9 +242,7 @@ public class NyARNftSystem extends NyARSingleCameraSystem
 				for(NftTarget target : this._ref_nftdatalist){
 					//検出フラグの更新
 					if(target.back_has_result && target.stage==NftTarget.ST_KPM_SEARCH){
-						//見つかった時だけ更新
-//System.out.println("ST_KPM_FOUND");
-						
+						//見つかった時だけ更新						
 						target.stage=NftTarget.ST_KPM_FOUND;
 						target.front_transmat.setValue(target.back_transmat);
 						target.back_has_result=false;
@@ -344,7 +340,7 @@ public class NyARNftSystem extends NyARSingleCameraSystem
 	
 	/**
 	 * この関数は、マーカ平面上の任意の４点で囲まれる領域から、画像を射影変換して返します。
-	 * {@link #isExistMarker(int)}がtrueの時にだけ使用できます。
+	 * {@link #isExist(int)}がtrueの時にだけ使用できます。
 	 * @param i_id
 	 * マーカID（ハンドル）値。
 	 * @param i_sensor
@@ -394,7 +390,7 @@ public class NyARNftSystem extends NyARSingleCameraSystem
 	}
 	/**
 	 * この関数は、マーカ平面上の任意の矩形で囲まれる領域から、画像を射影変換して返します。
-	 * {@link #isExistMarker(int)}がtrueの時にだけ使用できます。
+	 * {@link #isExist(int)}がtrueの時にだけ使用できます。
 	 * @param i_id
 	 * マーカID（ハンドル）値。
 	 * @param i_sensor
@@ -419,7 +415,7 @@ public class NyARNftSystem extends NyARSingleCameraSystem
     }
 	/**
 	 * この関数は、スクリーン座標点をマーカ平面の点に変換します。
-	 * {@link #isExistMarker(int)}がtrueの時にだけ使用できます。
+	 * {@link #isExist(int)}がtrueの時にだけ使用できます。
 	 * @param i_id
 	 * マーカID（ハンドル）値。
 	 * @param i_x
@@ -431,10 +427,26 @@ public class NyARNftSystem extends NyARSingleCameraSystem
 	 * @return
 	 * 結果を格納したi_outに設定したオブジェクト
 	 */
-	public NyARDoublePoint3d getMarkerPlanePos(int i_id,int i_x,int i_y,NyARDoublePoint3d i_out)
+	public NyARDoublePoint3d getPlanePos(int i_id,int i_x,int i_y,NyARDoublePoint3d i_out)
 	{
 		this.getFrustum().unProjectOnMatrix(i_x, i_y,this.getTransformMatrix(i_id),i_out);
 		return i_out;
 	}
-
+	/**
+	 * {@link #getPlanePos}を使用してください。
+	 * @deprecated
+	 */	
+	public NyARDoublePoint3d getMarkerPlanePos(int i_id,int i_x,int i_y,NyARDoublePoint3d i_out)
+	{
+		return this.getPlanePos(i_id, i_x, i_y, i_out);
+	}
+	
+	/**
+	 * {@link #isExist}を使用してください。
+	 * @deprecated
+	 */
+	public boolean isExistTarget(int i_id)
+	{
+		return this.isExist(i_id);
+	}
 }

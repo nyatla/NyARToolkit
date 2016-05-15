@@ -89,7 +89,7 @@ public class ImagePickupJ2se extends GlSketch
 				this.render.setStrokeWeight(gl,1.0f);
 				this.render.setColor(gl,255,255,0);
 				for(int i=0;i<ids.length;i++){
-					if(!this.nyar.isExistMarker(ids[i])){
+					if(!this.nyar.isExist(ids[i])){
 						continue;
 					}
 					this.render.polygon(gl,this.nyar.getVertex2D(ids[i]));					

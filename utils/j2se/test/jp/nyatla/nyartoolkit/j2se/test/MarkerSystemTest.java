@@ -78,7 +78,7 @@ public class MarkerSystemTest
 			}
 			Date d = new Date();
 			System.out.println("Time:"+(d.getTime()-d2.getTime()));
-			if(nyar.isExistMarker(id)){
+			if(nyar.isExist(id)){
 				System.out.println(nyar.getConfidence(id));
 			}
 		} catch (Exception e) {

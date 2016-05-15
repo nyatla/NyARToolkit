@@ -78,7 +78,7 @@ public class MarkerPlane extends GlSketch
 				this.nyar.update(this.camera);
 				this.render.drawBackground(gl,this.camera.getSourceImage());
 				this.render.loadARProjectionMatrix(gl);
-				if(this.nyar.isExistMarker(this.ids[0])){
+				if(this.nyar.isExist(this.ids[0])){
 					NyARDoublePoint3d p=new NyARDoublePoint3d();
 					this.nyar.getMarkerPlanePos(this.ids[0],this.mp.x,this.mp.y,p);
 					this.nyar.loadTransformMatrix(gl,ids[0]);

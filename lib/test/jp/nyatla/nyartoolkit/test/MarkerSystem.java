@@ -71,7 +71,7 @@ public class MarkerSystem
 			Date d = new Date();
 			System.out.println(d.getTime() - d2.getTime());
 
-			if(s.isExistMarker(aid)){
+			if(s.isExist(aid)){
 				NyARDoubleMatrix44 mat=s.getTransformMatrix(aid);
 				System.out.println(s.getConfidence(aid));
 			}

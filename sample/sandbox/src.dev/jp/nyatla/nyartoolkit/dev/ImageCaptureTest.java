@@ -79,7 +79,7 @@ public class ImageCaptureTest extends GlSketch
 				this.nyar.update(this.camera);
 				//check 4 markers
 				for(int i=0;i<4;i++){
-					if(!this.nyar.isExistMarker(this.id[i])){
+					if(!this.nyar.isExist(this.id[i])){
 						return;
 					}
 				}

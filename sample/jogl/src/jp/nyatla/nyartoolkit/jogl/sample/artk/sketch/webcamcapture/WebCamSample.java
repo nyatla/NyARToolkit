@@ -76,7 +76,7 @@ public class WebCamSample extends GlSketch
 				this.render.loadARProjectionMatrix(gl);
 				
 				this.nyar.update(this.sensor);
-				if(this.nyar.isExistMarker(this.id)){
+				if(this.nyar.isExist(this.id)){
 					this.nyar.loadTransformMatrix(gl,this.id);
 					this.render.colorCube(gl,40,0,0,20);
 				}

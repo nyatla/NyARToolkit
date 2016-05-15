@@ -72,7 +72,7 @@ public class SimpleLite extends GlSketch
 				this.render.drawBackground(gl, this.camera.getSourceImage());
 				this.render.loadARProjectionMatrix(gl);
 				this.nyar.update(this.camera);
-				if(this.nyar.isExistMarker(this.id)){
+				if(this.nyar.isExist(this.id)){
 					this.nyar.loadTransformMatrix(gl,this.id);
 					this.render.colorCube(gl,40,0,0,20);
 				}

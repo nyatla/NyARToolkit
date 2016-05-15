@@ -159,7 +159,7 @@ public class NyARSingleNFTSystem extends NyARSingleCameraSystem
 	private NyARDoublePoint3d _wk_3dpos=new NyARDoublePoint3d();
 	/**
 	 * こ�?�関数は、�?��?�カ座標系の点をスクリーン座標へ変換します�??
-	 * {@link #isExistMarker(int)}がtrueの時に�?け使用できます�??
+	 * {@link #isExist(int)}がtrueの時に�?け使用できます�??
 	 * @param i_x
 	 * マ�?�カ座標系のX座�?
 	 * @param i_y
@@ -229,7 +229,7 @@ public class NyARSingleNFTSystem extends NyARSingleCameraSystem
 	}
 	/**
 	 * こ�?�関数は、�?��?�カ平面上�?�任意�?�矩形で囲まれる領域から、画像を�?影変換して返します�??
-	 * {@link #isExistMarker(int)}がtrueの時に�?け使用できます�??
+	 * {@link #isExist(int)}がtrueの時に�?け使用できます�??
 	 * @param i_sensor
 	 * 画像を取得するセンサオブジェクト�?��?�常は{@link #update(NyARSensor)}関数に入力したものと同じも�?�を指定します�??
 	 * @param i_l

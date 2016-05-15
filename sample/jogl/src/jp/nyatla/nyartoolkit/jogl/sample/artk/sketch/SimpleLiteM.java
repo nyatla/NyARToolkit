@@ -75,11 +75,11 @@ public class SimpleLiteM extends GlSketch
 				this.render.drawBackground(gl, this.camera.getSourceImage());
 				this.render.loadARProjectionMatrix(gl);
 				this.nyar.update(this.camera);
-				if(this.nyar.isExistMarker(this.ids[0])){
+				if(this.nyar.isExist(this.ids[0])){
 					this.nyar.loadTransformMatrix(gl,this.ids[0]);
 					this.render.colorCube(gl,40,0,0,20);
 				}
-				if(this.nyar.isExistMarker(this.ids[1])){
+				if(this.nyar.isExist(this.ids[1])){
 					this.nyar.loadTransformMatrix(gl,this.ids[1]);
 					this.render.colorCube(gl,40,0,0,20);
 				}

@@ -288,13 +288,13 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * マーカを検出していればtrueを返します。
 	 * @throws NyARRuntimeException 
 	 */
-	public boolean isExistMarker(int i_id)
+	public boolean isExist(int i_id)
 	{
 		return this.getLife(i_id)>0;
 	}
 	/**
 	 * この関数は、ARマーカの最近の一致度を返します。
-	 * {@link #isExistMarker(int)}がtrueの時にだけ使用できます。
+	 * {@link #isExist(int)}がtrueの時にだけ使用できます。
 	 * 値は初期の一致度であり、トラッキング中は変動しません。
 	 * @param i_id
 	 * マーカID（ハンドル）値。
@@ -386,7 +386,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	}
 	/**
 	 * この関数は、スクリーン座標点をマーカ平面の点に変換します。
-	 * {@link #isExistMarker(int)}がtrueの時にだけ使用できます。
+	 * {@link #isExist(int)}がtrueの時にだけ使用できます。
 	 * @param i_id
 	 * マーカID（ハンドル）値。
 	 * @param i_x
@@ -398,7 +398,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * @return
 	 * 結果を格納したi_outに設定したオブジェクト
 	 */
-	public NyARDoublePoint3d getMarkerPlanePos(int i_id,int i_x,int i_y,NyARDoublePoint3d i_out)
+	public NyARDoublePoint3d getPlanePos(int i_id,int i_x,int i_y,NyARDoublePoint3d i_out)
 	{
 		this.getFrustum().unProjectOnMatrix(i_x, i_y,this.getTransformMatrix(i_id),i_out);
 		return i_out;
@@ -406,7 +406,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	final private NyARDoublePoint3d _wk_3dpos=new NyARDoublePoint3d();
 	/**
 	 * この関数は、マーカ座標系の点をスクリーン座標へ変換します。
-	 * {@link #isExistMarker(int)}がtrueの時にだけ使用できます。
+	 * {@link #isExist(int)}がtrueの時にだけ使用できます。
 	 * @param i_id
 	 * マーカID（ハンドル）値。
 	 * @param i_x
@@ -433,7 +433,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	
 	/**
 	 * この関数は、マーカ平面上の任意の４点で囲まれる領域から、画像を射影変換して返します。
-	 * {@link #isExistMarker(int)}がtrueの時にだけ使用できます。
+	 * {@link #isExist(int)}がtrueの時にだけ使用できます。
 	 * @param i_id
 	 * マーカID（ハンドル）値。
 	 * @param i_sensor
@@ -483,7 +483,7 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	}
 	/**
 	 * この関数は、マーカ平面上の任意の矩形で囲まれる領域から、画像を射影変換して返します。
-	 * {@link #isExistMarker(int)}がtrueの時にだけ使用できます。
+	 * {@link #isExist(int)}がtrueの時にだけ使用できます。
 	 * @param i_id
 	 * マーカID（ハンドル）値。
 	 * @param i_sensor
@@ -582,7 +582,22 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	{
 		return this.getVertex2D(i_id);
 	}
-	
+	/**
+	 * {@link #getPlanePos}を使用してください。
+	 * @deprecated
+	 */	
+	public NyARDoublePoint3d getMarkerPlanePos(int i_id,int i_x,int i_y,NyARDoublePoint3d i_out)
+	{
+		return this.getPlanePos(i_id, i_x, i_y, i_out);
+	}
+	/**
+	 * {@link #isExist}を使用してください。
+	 * @deprecated
+	 */
+	public boolean isExistMarker(int i_id)
+	{
+		return this.isExist(i_id);
+	}
 	/**
 	 * この関数は、2値化敷居値を設定します。
 	 * @param i_th
