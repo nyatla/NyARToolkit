@@ -14,10 +14,14 @@ import java.awt.Font;
 import javax.swing.SwingConstants;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.JProgressBar;
+
 
 public class ProgressDialog extends JDialog {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 286204141525247015L;
 	private final JPanel contentPanel = new JPanel();
 
 

@@ -17,6 +17,16 @@ public class FileOpen extends Cmd{
 	{
 		super(c);
 	}
+	public File saveFile()
+	{
+	    JFileChooser filechooser = new JFileChooser();
+	    int selected = filechooser.showSaveDialog(this._parent);
+	    if (selected == JFileChooser.APPROVE_OPTION){
+	    	return filechooser.getSelectedFile();
+	    }else{
+			return null;
+	    }
+	}
 	public File openFile()
 	{
 	    JFileChooser filechooser = new JFileChooser();

@@ -36,12 +36,12 @@ import java.awt.event.ActionEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 import jp.nyatla.nyartoolkit.apps.nftfilegen.cmd.FileOpen;
 import jp.nyatla.nyartoolkit.apps.nftfilegen.cmd.MakeFeature;
+import jp.nyatla.nyartoolkit.core.NyARVersion;
 import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftFreakFsetFile;
 
 import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftFsetFile.NyAR2FeatureCoord;
@@ -55,6 +55,7 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JMenuBar;
+
 
 public class NyarNftGenApp extends JFrame {
 
@@ -194,7 +195,7 @@ public class NyarNftGenApp extends JFrame {
 					JOptionPane.showMessageDialog(null, "Make feature set before to export.");
 					return;
 				}
-				File fp=_cmd_fp.openFile();
+				File fp=_cmd_fp.saveFile();
 				try {
 					saveToFile(fp.getAbsoluteFile()+".iset",_last_result.iset.makeIsetBinary());
 					saveToFile(fp.getAbsoluteFile()+".fset",_last_result.fset.makeFsetBinary());
@@ -205,6 +206,22 @@ public class NyarNftGenApp extends JFrame {
 			}
 		});
 		mnExport.add(mntmNewMenuItem_1);
+		
+		JMenuItem mntmNewMenuItem_2 = new JMenuItem("Save PackedNftFile");
+		mntmNewMenuItem_2.setEnabled(false);
+		mnExport.add(mntmNewMenuItem_2);
+		
+		JMenu mnNewMenu = new JMenu("Help");
+		menuBar.add(mnNewMenu);
+		
+		JMenuItem mntmNewMenuItem_3 = new JMenuItem("About");
+		mntmNewMenuItem_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(null,String.format("NyarNftgenApp \n%s",NyARVersion.VERSION_STRING));				
+			}
+		});
+		mnNewMenu.add(mntmNewMenuItem_3);
+
 		
 		JPanel sub_panel = new JPanel();
 		sub_panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
@@ -346,13 +363,13 @@ public class NyarNftGenApp extends JFrame {
 		JLabel lblNewLabel = new JLabel("Iset DPIs");
 		sub_panel.add(lblNewLabel, "1, 9");
 		
-		JComboBox isetdpi_cmb = new JComboBox();
+		JComboBox<String> isetdpi_cmb = new JComboBox<String>();
 		isetdpi_cmb.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				_subdpi_text.setEnabled(_fsetlv_cmb.getSelectedIndex()==1);
 			}
 		});
-		isetdpi_cmb.setModel(new DefaultComboBoxModel(new String[] {"Auto", "Custom"}));
+		isetdpi_cmb.setModel(new DefaultComboBoxModel<String>(new String[] {"Auto", "Custom"}));
 		sub_panel.add(isetdpi_cmb, "1, 11, fill, default");
 		this._isetdpi_cmb=isetdpi_cmb;
 		
@@ -366,12 +383,12 @@ public class NyarNftGenApp extends JFrame {
 		JLabel lblFsetParametor = new JLabel("FSET parametor");
 		sub_panel.add(lblFsetParametor, "1, 15");
 		
-		JComboBox fsetlv_cmb = new JComboBox();
+		JComboBox<String> fsetlv_cmb = new JComboBox<String>();
 		fsetlv_cmb.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		fsetlv_cmb.setModel(new DefaultComboBoxModel(new String[] {"Subset LV1", "Subset LV2", "Subset LV3", "Subset LV4"}));
+		fsetlv_cmb.setModel(new DefaultComboBoxModel<String>(new String[] {"Subset LV1", "Subset LV2", "Subset LV3", "Subset LV4"}));
 		fsetlv_cmb.setSelectedIndex(1);
 		sub_panel.add(fsetlv_cmb, "1, 17, fill, default");
 		this._fsetlv_cmb=fsetlv_cmb;
@@ -393,8 +410,8 @@ public class NyarNftGenApp extends JFrame {
 	final PreviewPanel _preview_panel;
 
 	final JTextField _subdpi_text;
-	final JComboBox _fsetlv_cmb;
-	final JComboBox _isetdpi_cmb;
+	final JComboBox<String> _fsetlv_cmb;
+	final JComboBox<String> _isetdpi_cmb;
 	final JSpinner _dpi_spinner;
 	final JTextArea _result_text;
 	
