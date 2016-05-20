@@ -134,7 +134,7 @@ public class NyARNftDataSet
 		} catch (FileNotFoundException e) {
 			throw new NyARRuntimeException(e);
 		}
-	}	
+	}
 	/**
 	 * {@link #loadFromNftFiles(String,int)}の第二パラメータが0のものと同じです。
 	 * @param i_fname_prefix
@@ -148,6 +148,31 @@ public class NyARNftDataSet
 	{
 		return loadFromNftFiles(i_fname_prefix,0,i_width_in_msec);
 	}
+	
+	
+	
+	public static NyARNftDataSet loadFromNftDataSet(String i_fname,int i_freak_fset_page_id,double i_width_in_msec)
+	{		
+		NyARNftDataSetFile nfp;
+		try {
+			nfp = NyARNftDataSetFile.loadFromNftFilePack(new FileInputStream(new File(i_fname)));
+		} catch (FileNotFoundException e) {
+			throw new NyARRuntimeException(e);
+		}
+		scaling(nfp.iset,nfp.fset,nfp.fset3, i_freak_fset_page_id, i_width_in_msec);
+		return new NyARNftDataSet(nfp.iset,nfp.fset,nfp.fset3,i_freak_fset_page_id);
+		
+	}
+	public static NyARNftDataSet loadFromNftDataSet(String i_fname,double i_width_in_msec)
+	{	
+		return loadFromNftDataSet(i_fname,0,i_width_in_msec);
+	}
+	public static NyARNftDataSet loadFromNftDataSet(String i_fname)
+	{	
+		return loadFromNftDataSet(i_fname,Double.NaN);
+	}
+	
+	
 	public static void main(String[] args){
 	}
 	

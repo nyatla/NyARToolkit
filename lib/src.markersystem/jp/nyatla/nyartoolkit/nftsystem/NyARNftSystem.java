@@ -145,14 +145,16 @@ public class NyARNftSystem extends NyARSingleCameraSystem
 	/**
 	 * NFTファイルセットのプレフィックスを指定して、NFTターゲットをインスタンスに登録します。
 	 * 登録される画像のサイズはNFTターゲットファイルの値です。
-	 * @param i_fileset_prefix
-	 * NFTターゲットのファイルパスのプレフィクス。ファイル名+.iset,.fset,.fset3をセットにして登録します。
+	 * @param i_filepath
+	 * NFTターゲットを指定します。
+	 * 拡張子が.nftdatasetの場合は、nftdataset形式のファイルを登録します。
+	 * それ以外の場合は、ファイルパスに.iset,.fset,.fset3を加えたファイルをセットにして登録します。
 	 * @return
 	 * 特徴点セットのID値
 	 */
-	public int addNftTarget(String i_fileset_prefix)
+	public int addNftTarget(String i_filepath)
 	{
-		return this.addNftTarget(NyARNftDataSet.loadFromNftFiles(i_fileset_prefix));
+		return this.addNftTarget(i_filepath,Double.NaN);
 	}
 	/**
 	 * 画像のサイズを指定できる{@link #addNftTarget}です。
@@ -163,9 +165,13 @@ public class NyARNftSystem extends NyARSingleCameraSystem
 	 * @return
 	 * 特徴点セットのID値
 	 */
-	public int addNftTarget(String i_fileset_prefix,double i_width_in_msec)
+	public int addNftTarget(String i_filepath,double i_width_in_msec)
 	{
-		return this.addNftTarget(NyARNftDataSet.loadFromNftFiles(i_fileset_prefix,i_width_in_msec));
+		if(i_filepath.matches(".*\\.nftdataset$")){
+			return this.addNftTarget(NyARNftDataSet.loadFromNftDataSet(i_filepath,i_width_in_msec));
+		}else{
+			return this.addNftTarget(NyARNftDataSet.loadFromNftFiles(i_filepath,i_width_in_msec));
+		}
 	}
 	/**
 	 * 生成済みのNFTの特徴点データセットをインスタンスに登録します。
@@ -179,7 +185,7 @@ public class NyARNftSystem extends NyARSingleCameraSystem
 		//KPMスレッドが待機中になるまで待つ
 		while(this._kpm_thread.getState()!=Thread.State.WAITING){
 			Thread.yield();
-		}
+		}		
 		//追加
 		if(!this._nftdatalist.add(new NftTarget(i_dataset)))
 		{
@@ -301,7 +307,8 @@ public class NyARNftSystem extends NyARSingleCameraSystem
 	{
 		String img_file="../Data/testcase/test.raw";
 		String cparam=	"../Data/testcase/camera_para5.dat";
-		String nftdataset="../Data/testcase/pinball";
+//		String nftdataset="../Data/testcase/pinball";
+		String nftdataset="d:/infinitycat.nftdatast";
 		//カメラパラメータ
 		try {
 			INyARRgbRaster rgb=NyARRgbRaster.createInstance(640,480,NyARBufferType.BYTE1D_B8G8R8X8_32);
@@ -311,7 +318,7 @@ public class NyARNftSystem extends NyARSingleCameraSystem
 			NyARParam param = NyARParam.loadFromARParamFile(new FileInputStream(cparam),640,480,NyARParam.DISTFACTOR_LT_ARTK5);
 			NyARSensor sensor=new NyARSensor(640,480);
 			NyARNftSystem ms=new NyARNftSystem(new NyARNftSystemConfig(param));
-			int id=ms.addNftTarget(NyARNftDataSet.loadFromNftFiles(nftdataset));
+			int id=ms.addNftTarget(nftdataset);
 			System.out.println(id);
 			sensor.update(rgb);
 			for(int i=0;i<10;i++){

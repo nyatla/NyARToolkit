@@ -7,6 +7,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import jp.nyatla.nyartoolkit.j2se.NyARBufferedImageRaster;
 
@@ -17,9 +19,15 @@ public class FileOpen extends Cmd{
 	{
 		super(c);
 	}
-	public File saveFile()
+
+	public File saveFile(FileFilter[] ff)
 	{
 	    JFileChooser filechooser = new JFileChooser();
+	    if(ff!=null){
+	    	for(FileFilter  i:ff){
+	    		filechooser.addChoosableFileFilter(i);
+	    	}
+	    }
 	    int selected = filechooser.showSaveDialog(this._parent);
 	    if (selected == JFileChooser.APPROVE_OPTION){
 	    	return filechooser.getSelectedFile();
@@ -27,9 +35,14 @@ public class FileOpen extends Cmd{
 			return null;
 	    }
 	}
-	public File openFile()
+	public File openFile(FileFilter[] ff)
 	{
 	    JFileChooser filechooser = new JFileChooser();
+	    if(ff!=null){
+	    	for(FileFilter  i:ff){
+	    		filechooser.addChoosableFileFilter(i);
+	    	}
+	    }	    
 	    int selected = filechooser.showOpenDialog(this._parent);
 	    if (selected == JFileChooser.APPROVE_OPTION){
 	    	return filechooser.getSelectedFile();
@@ -39,7 +52,12 @@ public class FileOpen extends Cmd{
 	}
 	public BufferedImage openImage() throws IOException
 	{
-		File f=this.openFile();
+		FileFilter filter[] = {
+			new FileNameExtensionFilter("Jpeg File", "jpeg", "jpg"),
+			new FileNameExtensionFilter("Png File", "png")
+		};
+		
+		File f=this.openFile(filter);
 		if(f==null){
 			return null;
 		}
