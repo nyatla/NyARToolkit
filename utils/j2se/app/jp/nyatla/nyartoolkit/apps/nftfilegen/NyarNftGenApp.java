@@ -42,6 +42,7 @@ import java.io.IOException;
 import jp.nyatla.nyartoolkit.apps.nftfilegen.cmd.FileOpen;
 import jp.nyatla.nyartoolkit.apps.nftfilegen.cmd.MakeFeature;
 import jp.nyatla.nyartoolkit.core.NyARVersion;
+import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftDataSetFile;
 import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftFreakFsetFile;
 
 import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftFsetFile.NyAR2FeatureCoord;
@@ -51,6 +52,7 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
 import javax.swing.border.EtchedBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -188,14 +190,14 @@ public class NyarNftGenApp extends JFrame {
 		menuBar.add(mnExport);
 		
 		//Save to File
-		JMenuItem mntmNewMenuItem_1 = new JMenuItem("Save FeatureSet");
+		JMenuItem mntmNewMenuItem_1 = new JMenuItem("Save FeatureSet files");
 		mntmNewMenuItem_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(_last_result==null){
 					JOptionPane.showMessageDialog(null, "Make feature set before to export.");
 					return;
 				}
-				File fp=_cmd_fp.saveFile();
+				File fp=_cmd_fp.saveFile(null);
 				try {
 					saveToFile(fp.getAbsoluteFile()+".iset",_last_result.iset.makeIsetBinary());
 					saveToFile(fp.getAbsoluteFile()+".fset",_last_result.fset.makeFsetBinary());
@@ -207,8 +209,23 @@ public class NyarNftGenApp extends JFrame {
 		});
 		mnExport.add(mntmNewMenuItem_1);
 		
-		JMenuItem mntmNewMenuItem_2 = new JMenuItem("Save PackedNftFile");
-		mntmNewMenuItem_2.setEnabled(false);
+		JMenuItem mntmNewMenuItem_2 = new JMenuItem("Save NyARTK NFT dataset file");
+		mntmNewMenuItem_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(_last_result==null){
+					JOptionPane.showMessageDialog(null, "Make feature set before to export.");
+					return;
+				}
+				FileNameExtensionFilter[] lf=new FileNameExtensionFilter[]{new FileNameExtensionFilter("NyARTK NFT dataset", "nftdataset")};
+				File fp=_cmd_fp.saveFile(lf);
+				NyARNftDataSetFile fpack=new NyARNftDataSetFile(_last_result.iset,_last_result.fset,_last_result.fset3);
+				try {
+					saveToFile(fp.getAbsoluteFile()+".nftdataset",fpack.makeBinary());
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(null, "I/O error");
+				}			
+			}
+		});
 		mnExport.add(mntmNewMenuItem_2);
 		
 		JMenu mnNewMenu = new JMenu("Help");

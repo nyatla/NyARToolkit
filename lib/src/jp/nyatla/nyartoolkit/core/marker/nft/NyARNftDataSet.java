@@ -89,8 +89,11 @@ public class NyARNftDataSet
 	 * @param i_freak_fset
 	 * @param i_freak_fset_page_id
 	 */
-	public NyARNftDataSet(NyARNftIsetFile i_iset,NyARNftFsetFile i_fset,NyARNftFreakFsetFile i_freak_fset,int i_freak_fset_page_id)
+	public NyARNftDataSet(NyARNftIsetFile i_iset,NyARNftFsetFile i_fset,NyARNftFreakFsetFile i_freak_fset,int i_freak_fset_page_id,double i_width_in_msec)
 	{
+		if(!Double.isNaN(i_width_in_msec)){
+			scaling(i_iset,i_fset,i_freak_fset,i_freak_fset_page_id,i_width_in_msec);
+		}		
 		this.surface_dataset=new NyARSurfaceDataSet(i_iset,i_fset);
 		this.freak_fset = new KeyframeMap(i_freak_fset,i_freak_fset_page_id);
 	}
@@ -108,15 +111,13 @@ public class NyARNftDataSet
 	 */
 	public static NyARNftDataSet loadFromNftFiles(InputStream i_iset_stream,InputStream i_fset_stream,InputStream i_fset3_stream,int i_freak_fset_page_id,double i_width_in_msec)
 	{
-		NyARNftIsetFile iset=NyARNftIsetFile.loadFromIsetFile(i_iset_stream);
-		NyARNftFsetFile fset=NyARNftFsetFile.loadFromFsetFile(i_fset_stream);
-		NyARNftFreakFsetFile fset3 = NyARNftFreakFsetFile.loadFromfset3File(i_fset3_stream);
-		if(!Double.isNaN(i_width_in_msec)){
-			scaling(iset,fset,fset3,i_freak_fset_page_id,i_width_in_msec);
-		}		
-		return new NyARNftDataSet(iset,fset,fset3,i_freak_fset_page_id);
+		return new NyARNftDataSet(
+			NyARNftIsetFile.loadFromIsetFile(i_iset_stream),
+			NyARNftFsetFile.loadFromFsetFile(i_fset_stream),
+			NyARNftFreakFsetFile.loadFromfset3File(i_fset3_stream),
+			i_freak_fset_page_id,i_width_in_msec);
 	}
-	
+
 	/**
 	 * 拡張子の異なる3つの特徴量ファイル(iset,fset,fset3)から特徴量データを読みだして、インスタンスを作成します。
 	 * @param i_fname_prefix
@@ -134,7 +135,7 @@ public class NyARNftDataSet
 		} catch (FileNotFoundException e) {
 			throw new NyARRuntimeException(e);
 		}
-	}	
+	}
 	/**
 	 * {@link #loadFromNftFiles(String,int)}の第二パラメータが0のものと同じです。
 	 * @param i_fname_prefix
@@ -148,6 +149,27 @@ public class NyARNftDataSet
 	{
 		return loadFromNftFiles(i_fname_prefix,0,i_width_in_msec);
 	}
+	
+	public static NyARNftDataSet loadFromNftDataSet(InputStream i_stream,double i_width_in_msec)
+	{		
+		NyARNftDataSetFile nfp;
+		nfp = NyARNftDataSetFile.loadFromNftFilePack(i_stream);
+		return new NyARNftDataSet(nfp.iset,nfp.fset,nfp.fset3,0,i_width_in_msec);		
+	}
+	public static NyARNftDataSet loadFromNftDataSet(String i_fname,double i_width_in_msec)
+	{		
+		try {
+			return loadFromNftDataSet(new FileInputStream(new File(i_fname)),i_width_in_msec);
+		} catch (FileNotFoundException e) {
+			throw new NyARRuntimeException(e);
+		}		
+	}
+	public static NyARNftDataSet loadFromNftDataSet(String i_fname)
+	{	
+		return loadFromNftDataSet(i_fname,Double.NaN);
+	}
+	
+	
 	public static void main(String[] args){
 	}
 	

@@ -150,8 +150,8 @@
 	<classpathentry kind="lib" path="extlib/jogamp-all-platforms/jar/jogl-all-noawt.jar"/>
 	<classpathentry kind="lib" path="extlib/jogamp-all-platforms/jar/jogl-all.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolKit"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolkit.utils.webcamcapture"/>
 	<classpathentry kind="lib" path="/NyARToolkit.utils.webcamcapture/extlib/webcam-capture-0.3.10-dist/webcam-capture-0.3.10.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/NyARToolKit"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

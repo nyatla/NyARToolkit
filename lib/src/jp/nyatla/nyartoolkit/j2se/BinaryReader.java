@@ -81,6 +81,16 @@ public class BinaryReader
 	{
 		return this._bb.getInt();
 	}
+	public int[] getIntArray(int[] it)
+	{
+		for(int i=0;i<it.length;i++){
+			it[i]=this.getInt();
+		}
+		return it;
+	}
+	public int[] getIntArray(int i_size){
+		return this.getIntArray(new int[i_size]);
+	}
 	public byte getByte()
 	{
 		return this._bb.get();

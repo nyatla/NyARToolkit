@@ -44,6 +44,7 @@ import java.io.InputStream;
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.marker.nft.iset.IsetFileDataParserV4;
 import jp.nyatla.nyartoolkit.core.marker.nft.iset.IsetFileDataParserV5;
+import jp.nyatla.nyartoolkit.core.marker.nft.iset.IsetFileDataParserV5Raw;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.gs.NyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.types.NyARBufferType;
@@ -60,6 +61,7 @@ public class NyARNftIsetFile
 {
 	final public static int FILE_FORMAT_ARTK_V5=1;
 	final public static int FILE_FORMAT_ARTK_V4=2;
+	final public static int FILE_FORMAT_ARTK_V5RAW=3;
 	public static NyARNftIsetFile loadFromIsetFile(InputStream i_stream,int i_file_format)
 	{
 		return loadFromIsetFile(BinaryReader.toArray(i_stream),i_file_format);
@@ -103,6 +105,19 @@ public class NyARNftIsetFile
 				items[i]=new ReferenceImage(tmp.width,tmp.height,tmp.dpi,ArrayUtils.toIntArray_impl(tmp.img));
 			}
 			return new NyARNftIsetFile(items);
+		}
+		case FILE_FORMAT_ARTK_V5RAW:
+		{
+			IsetFileDataParserV5Raw iset= new IsetFileDataParserV5Raw(i_src);
+			ReferenceImage[] items=new ReferenceImage[iset.dpis.length];
+			//1stIset
+			int[] images=ArrayUtils.toIntArray_impl(iset.image);
+			items[0]=new ReferenceImage(iset.image_width,iset.image_height,iset.dpis[0],images);
+			//2nd to end
+			for(int i=1;i<iset.dpis.length;i++){
+				items[i]=new ReferenceImage(iset.image_width,iset.image_height,images,iset.dpis[0],iset.dpis[i]);
+			}
+			return new NyARNftIsetFile(items);		
 		}
 		default:
 			throw new NyARRuntimeException();
@@ -182,13 +197,29 @@ public class NyARNftIsetFile
 	 */
 	public byte[] makeIsetBinary()
 	{
+		return this.makeIsetBinary(FILE_FORMAT_ARTK_V5);
+	}
+	public byte[] makeIsetBinary(int i_type)
+	{
 		float[] dpis=new float[this.items.length-1];
 		for(int i=0;i<dpis.length;i++){
 			dpis[i]=(float) this.items[i+1].dpi;
 		}
-		IsetFileDataParserV5 ifp=new IsetFileDataParserV5(this.items[0],dpis);
-		return ifp.makeBinary();
-	}
+		switch(i_type){
+		case FILE_FORMAT_ARTK_V5:
+		{
+			IsetFileDataParserV5 ifp=new IsetFileDataParserV5(this.items[0],dpis);
+			return ifp.makeBinary();
+		}
+		case FILE_FORMAT_ARTK_V5RAW:
+		{
+			IsetFileDataParserV5Raw ifp=new IsetFileDataParserV5Raw(this.items[0],dpis);
+			return ifp.makeBinary();
+		}
+		default:
+			throw new NyARRuntimeException();
+		}
+	}	
 	
 	/**
 	 * ワーク関数
