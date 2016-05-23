@@ -149,7 +149,6 @@ public class NyARNftDataSet
 	{
 		return loadFromNftFiles(i_fname_prefix,0,i_width_in_msec);
 	}
-	
 	public static NyARNftDataSet loadFromNftDataSet(InputStream i_stream,double i_width_in_msec)
 	{		
 		NyARNftDataSetFile nfp;
@@ -168,8 +167,6 @@ public class NyARNftDataSet
 	{	
 		return loadFromNftDataSet(i_fname,Double.NaN);
 	}
-	
-	
 	public static void main(String[] args){
 	}
 	
