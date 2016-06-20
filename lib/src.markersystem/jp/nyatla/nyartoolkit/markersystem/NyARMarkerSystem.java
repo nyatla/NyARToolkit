@@ -49,13 +49,9 @@ import jp.nyatla.nyartoolkit.markersystem.utils.*;
 
 
 
-
-
 /**
- * このクラスは、マーカベースARの制御クラスです。
- * 複数のARマーカとNyIDの検出情報の管理機能、撮影画像の取得機能を提供します。
- * このクラスは、ARToolKit固有の座標系を出力します。他の座標系を出力するときには、継承クラスで変換してください。
- * レンダリングシステム毎にクラスを派生させて使います。Javaの場合には、OpenGL用の{@link NyARGlMarkerSystem}クラスがあります。
+ * このクラスは、ARマーカ(ARマーカ、NyIdマーカ)の検出・トラッキングクラスです。
+ * ARToolKit version5互換の異種マーカを複数同時にトラッキングできます。
  */
 public class NyARMarkerSystem extends NyARSingleCameraSystem
 {
@@ -88,7 +84,6 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * コンストラクタです。{@link INyARMarkerSystemConfig}を元に、インスタンスを生成します。
 	 * @param i_config
 	 * 初期化済の{@link MarkerSystem}を指定します。
-	 * @throws NyARRuntimeException
 	 */
 	public NyARMarkerSystem(INyARMarkerSystemConfig i_config)
 	{
@@ -116,7 +111,6 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * マーカの四方サイズ[mm]
 	 * @return
 	 * マーカID（ハンドル）値。この値はIDの値ではなく、マーカのハンドル値です。
-	 * @throws NyARRuntimeException
 	 */
 	public int addNyIdMarker(long i_id,double i_marker_size)
 	{
@@ -135,7 +129,6 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * マーカの四方サイズ[mm]
 	 * @return
 	 * マーカID（ハンドル）値。この値はNyIDの値ではなく、マーカのハンドル値です。
-	 * @throws NyARRuntimeException
 	 */
 	public int addNyIdMarker(long i_id_s,long i_id_e,double i_marker_size)
 	{
@@ -160,7 +153,6 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * マーカの四方サイズ[mm]
 	 * @return
 	 * マーカID（ハンドル）値。この値はIDの値ではなく、マーカのハンドル値です。
-	 * @throws NyARRuntimeException
 	 */
 	public int addPsARPlayCard(int i_id_s,int i_id_e,double i_marker_size)
 	{
@@ -183,14 +175,13 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * マーカの四方サイズ[mm]
 	 * @return
 	 * マーカID（ハンドル）値。この値はIDの値ではなく、マーカのハンドル値です。
-	 * @throws NyARRuntimeException
 	 */
 	public int addPsARPlayCard(int i_id,double i_marker_size)
 	{
 		return this.addPsARPlayCard(i_id,i_id,i_marker_size);
 	}	
 	/**
-	 * この関数は、ARToolKitスタイルのマーカーを登録します。
+	 * この関数はARToolKitスタイルのマーカーを登録します。
 	 * @param i_code
 	 * 登録するマーカパターンオブジェクト
 	 * @param i_patt_edge_percentage
@@ -199,7 +190,6 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * マーカの平方サイズ[mm]
 	 * @return
 	 * マーカID（ハンドル）値。
-	 * @throws NyARRuntimeException
 	 */
 	public int addARMarker(NyARCode i_code,int i_patt_edge_percentage,double i_marker_size)
 	{
@@ -221,7 +211,6 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * マーカの平方サイズ[mm]
 	 * @return
 	 * マーカID（ハンドル）値。
-	 * @throws NyARRuntimeException
 	 */
 	public int addARMarker(InputStream i_stream,int i_patt_resolution,int i_patt_edge_percentage,double i_marker_size)
 	{
@@ -238,7 +227,6 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * マーカの平方サイズ[mm]
 	 * @return
 	 * マーカID（ハンドル）値。
-	 * @throws NyARRuntimeException
 	 */
 	public int addARMarker(String i_file_name,int i_patt_resolution,int i_patt_edge_percentage,double i_marker_size)
 	{
@@ -264,7 +252,6 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * マーカの平方サイズ[mm]
 	 * @return
 	 * マーカID（ハンドル）値。
-	 * @throws NyARRuntimeException
 	 */
 	public int addARMarker(INyARRgbRaster i_raster,int i_patt_resolution,int i_patt_edge_percentage,double i_marker_size)
 	{
@@ -286,7 +273,6 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * マーカID（ハンドル）値。
 	 * @return
 	 * マーカを検出していればtrueを返します。
-	 * @throws NyARRuntimeException 
 	 */
 	public boolean isExist(int i_id)
 	{
@@ -317,7 +303,6 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * マーカID（ハンドル）値。
 	 * @return
 	 * 現在のNyIdの値
-	 * @throws NyARRuntimeException
 	 */
 	public long getNyId(int i_id)
 	{
@@ -367,7 +352,6 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * マーカID（ハンドル）値。
 	 * @return
 	 * 消失カウンタの値
-	 * @throws NyARRuntimeException 
 	 */
 	public long getLostCount(int i_id)
 	{
@@ -458,7 +442,6 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * 取得した画像を格納するオブジェクト
 	 * @return
 	 * 結果を格納したi_rasterオブジェクト
-	 * @throws NyARRuntimeException
 	 */
 	public INyARRgbRaster getPlaneImage(
 		int i_id,
@@ -500,7 +483,6 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	 * 出力先のオブジェクト
 	 * @return
 	 * 結果を格納したi_rasterオブジェクト
-	 * @throws NyARRuntimeException
 	 */
 	public INyARRgbRaster getPlaneImage(int i_id,NyARSensor i_sensor,double i_l,double i_t,double i_w,double i_h,INyARRgbRaster i_raster)
     {
@@ -631,11 +613,9 @@ public class NyARMarkerSystem extends NyARSingleCameraSystem
 	private long _time_stamp=-1;
 	private OnSquareDetect _on_sq_handler;
 	/**
-	 * この関数は、入力したセンサ入力値から、インスタンスの状態を更新します。
-	 * 関数は、センサオブジェクトから画像を取得して、マーカ検出、一致判定、トラッキング処理を実行します。
+	 * この関数は入力画像でインスタンスの状態を更新します。
 	 * @param i_sensor
-	 * {@link MarkerSystem}に入力する画像を含むセンサオブジェクト。
-	 * @throws NyARRuntimeException 
+	 * 新しい入力画像を格納したオブジェクト
 	 */
 	public void update(NyARSensor i_sensor)
 	{
@@ -752,7 +732,6 @@ class OnSquareDetect implements NyARSquareContourDetector.CbHandler
 	/**
 	 * 同時に検出するマーカの最大数を設定します。
 	 * 関数は、少なくともi_max_number_of_marker以上のマーカを同時に検出できるようにインスタンスを設定します。
-	 * @throws NyARRuntimeException 
 	 */
 	public void setMaxDetectMarkerCapacity(int i_max_number_of_marker)
 	{
@@ -768,7 +747,6 @@ class OnSquareDetect implements NyARSquareContourDetector.CbHandler
 	 * @param i_pcopy
 	 * @param i_gs
 	 * @param th
-	 * @throws NyARRuntimeException
 	 */
 	public void prepare(INyARPerspectiveCopy i_pcopy, INyARGrayscaleRaster i_gs, int th)
 	{

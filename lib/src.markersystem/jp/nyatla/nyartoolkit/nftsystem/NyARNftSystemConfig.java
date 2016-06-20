@@ -27,29 +27,33 @@ package jp.nyatla.nyartoolkit.nftsystem;
 
 import java.io.InputStream;
 
-import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
-
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.markersystem.NyARSingleCameraView;
 
 /**
- * このクラスは、NyARToolkitの姿勢推定アルゴリズムに調整したコンフィギュレーションクラスです。
+ * このクラスは、{@link #NyARNftSystem}クラスのコンフィギュレーション情報を格納するクラスです。
  *
  */
 public class NyARNftSystemConfig implements INyARNftSystemConfig
 {
 	protected final NyARSingleCameraView _cview;
 
+	/**
+	 * コンストラクタです。既存のビューを参照してインスタンスを生成します。
+	 * 他の{@link NyARMarkerSystem}とビューを共有させる場合に使います。
+	 * @param i_ref_view
+	 * 参照するビューオブジェクト
+	 */
 	public NyARNftSystemConfig(NyARSingleCameraView i_ref_view)
 	{
 		this._cview=i_ref_view;
 	}
 	/**
-	 * 
+	 * コンストラクタです。カメラパラメータからインスタンスを生成します。
 	 * @param i_param
-	 * @param i_transmat_algo_type
+	 * カメラパラメータオブジェクト。
 	 */
 	public NyARNftSystemConfig(NyARParam i_param)
 	{
@@ -58,35 +62,32 @@ public class NyARNftSystemConfig implements INyARNftSystemConfig
 
 	/**
 	 * コンストラクタです。
-	 * i_ar_parama_streamからカメラパラメータファイルを読み出して、スクリーンサイズをi_width,i_heightに変形してから、
-	 * コンフィギュレーションを生成します。
+	 * i_ar_parama_streamからカメラパラメータファイルを読み出して、スクリーンサイズをi_width,i_heightに指定してインスタンスを生成します。
 	 * @param i_ar_param_stream
 	 * カメラパラメータファイルを読み出すストリーム
 	 * @param i_width
 	 * スクリーンサイズ
 	 * @param i_height
 	 * スクリーンサイズ
-	 * @throws NyARRuntimeException
 	 */
 	public NyARNftSystemConfig(InputStream i_ar_param_stream,int i_width,int i_height)
 	{
 		this(NyARParam.loadFromARParamFile(i_ar_param_stream, i_width, i_height));
 	}
 	/**
-	 * コンストラクタです。カメラパラメータにサンプル値(../Data/camera_para.dat)の値をロードして、
-	 * コンフィギュレーションを生成します。
+	 * コンストラクタです。カメラパラメータにサンプル値(../Data/camera_para.dat)の値をロードして、スクリーンサイズをi_width,i_heightに指定してインスタンスを生成します。
 	 * @param i_width
 	 * スクリーンサイズ
 	 * @param i_height
 	 * スクリーンサイズ
-	 * @throws NyARRuntimeException
 	 */
 	public NyARNftSystemConfig(int i_width,int i_height)
 	{
 		this(NyARParam.loadDefaultParams(i_width, i_height));
 	}
 	/**
-	 * この値は、カメラパラメータのスクリーンサイズです。
+	 * この値は、カメラパラメータのスクリーンサイズを返します。
+	 * @return
 	 */
 	public final NyARIntSize getScreenSize()
 	{

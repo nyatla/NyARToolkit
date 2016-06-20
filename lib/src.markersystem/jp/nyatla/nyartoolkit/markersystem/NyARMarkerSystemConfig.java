@@ -27,7 +27,6 @@ package jp.nyatla.nyartoolkit.markersystem;
 
 import java.io.InputStream;
 
-import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.histogram.algo.INyARHistogramAnalyzer_Threshold;
 import jp.nyatla.nyartoolkit.core.histogram.algo.NyARHistogramAnalyzer_SlidePTile;
 import jp.nyatla.nyartoolkit.core.icp.NyARIcpTransMat;
@@ -38,8 +37,8 @@ import jp.nyatla.nyartoolkit.core.transmat.NyARTransMat_ARToolKit;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
- * このクラスは、NyARToolkitの姿勢推定アルゴリズムに調整したコンフィギュレーションクラスです。
- *
+ * このインタフェイスは、ARマーカ検出器のコンフィギュレーションクラスのベースクラスです。
+ * 検出クラスの動作に必要なオブジェクトや定数を提供します。
  */
 public class NyARMarkerSystemConfig implements INyARMarkerSystemConfig
 {
@@ -53,9 +52,11 @@ public class NyARMarkerSystemConfig implements INyARMarkerSystemConfig
 	private final int _transmat_algo_type;
 	
 	/**
-	 * 
+	 * コンストラクタです。既存のビューを参照してインスタンスを生成します。
 	 * @param i_view
+	 * 参照するビューオブジェクト
 	 * @param i_transmat_algo_type
+	 * 姿勢変換行列の計算アルゴリズムタイプを指定します。{@link #TM_ARTKICP},{@link #TM_NYARTK},{@link #TM_ARTKICP}の何れかを指定します。
 	 */
 	public NyARMarkerSystemConfig(NyARSingleCameraView i_view,int i_transmat_algo_type)
 	{
@@ -65,9 +66,11 @@ public class NyARMarkerSystemConfig implements INyARMarkerSystemConfig
 	}	
 	
 	/**
-	 * 
+	 * コンストラクタです。カメラパラメータからインスタンスを生成します。
 	 * @param i_param
+	 * カメラパラメータオブジェクト。
 	 * @param i_transmat_algo_type
+	 * 姿勢変換行列の計算アルゴリズムタイプを指定します。{@link #TM_ARTKICP},{@link #TM_NYARTK},{@link #TM_ARTKICP}の何れかを指定します。
 	 */
 	public NyARMarkerSystemConfig(NyARParam i_param,int i_transmat_algo_type)
 	{
@@ -77,7 +80,7 @@ public class NyARMarkerSystemConfig implements INyARMarkerSystemConfig
 	 * コンストラクタです。
 	 * 初期化済カメラパラメータからコンフィギュレーションを生成します。
 	 * @param i_param
-	 * 初期化に使うカメラパラメータオブジェクト。インスタンスの所有権は、インスタンスに移ります。
+	 * 初期化に使うカメラパラメータオブジェクト。
 	 */
 	public NyARMarkerSystemConfig(NyARParam i_param)
 	{
@@ -86,15 +89,13 @@ public class NyARMarkerSystemConfig implements INyARMarkerSystemConfig
 
 	/**
 	 * コンストラクタです。
-	 * i_ar_parama_streamからカメラパラメータファイルを読み出して、スクリーンサイズをi_width,i_heightに変形してから、
-	 * コンフィギュレーションを生成します。
+	 * i_ar_parama_streamからカメラパラメータファイルを読み出して、スクリーンサイズをi_width,i_heightに変形してからコンフィギュレーションを生成します。
 	 * @param i_ar_param_stream
 	 * カメラパラメータファイルを読み出すストリーム
 	 * @param i_width
 	 * スクリーンサイズ
 	 * @param i_height
 	 * スクリーンサイズ
-	 * @throws NyARRuntimeException
 	 */
 	public NyARMarkerSystemConfig(InputStream i_ar_param_stream,int i_width,int i_height)
 	{
@@ -107,7 +108,6 @@ public class NyARMarkerSystemConfig implements INyARMarkerSystemConfig
 	 * スクリーンサイズ
 	 * @param i_height
 	 * スクリーンサイズ
-	 * @throws NyARRuntimeException
 	 */
 	public NyARMarkerSystemConfig(int i_width,int i_height)
 	{
@@ -115,7 +115,7 @@ public class NyARMarkerSystemConfig implements INyARMarkerSystemConfig
 	}
 	
 	/**
-	 * この値は、カメラパラメータのスクリーンサイズです。
+	 * カメラパラメータのスクリーンサイズと同じです。
 	 */
 	@Override
 	public final NyARIntSize getScreenSize()

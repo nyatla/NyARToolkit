@@ -29,8 +29,8 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.markersystem.NyARSingleCameraView;
 
 /**
- * このインタフェイスは、NyARNftSystemのコンフィギュレーションオブジェクトに使用します。
- * {@link NyARMarkerSystem}は、このインタフェイスを継承したクラスから、動作に必要なオブジェクトや定数を取得します。
+ * このインタフェイスは、Nft検出器のコンフィギュレーションクラスのベースクラスです。
+ * 検出クラスの動作に必要なオブジェクトや定数を提供します。
  */
 public interface INyARNftSystemConfig
 {

@@ -6,7 +6,8 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 import jp.nyatla.nyartoolkit.core.types.stack.NyARPointerStack;
 
 /**
- * 1視点を管理するシングルカメラのビューです。
+ * 1つの視点（カメラ）情報を定義するクラスです。
+ * マーカー検出クラスへ視点情報を提供します。
  */
 public class NyARSingleCameraView
 {
@@ -45,7 +46,7 @@ public class NyARSingleCameraView
     }
 	/**
 	 * 視錐台パラメータを設定します。
-	 * この関数は、値を更新後、登録済の{@link IObserver}オブジェクトへ、{@link #EV_UPDATE}通知を送信します。
+	 * この関数は、登録済の{@link INyARSingleCameraSystemObserver}オブジェクトへ、{@link INyARSingleCameraSystemObserver#onUpdateCameraParametor}通知を送信します。
 	 * @param i_near
 	 * 新しいNEARパラメータ
 	 * @param i_far

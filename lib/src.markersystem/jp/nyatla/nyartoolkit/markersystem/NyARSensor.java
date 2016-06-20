@@ -27,7 +27,6 @@ package jp.nyatla.nyartoolkit.markersystem;
 
 
 
-import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.histogram.NyARHistogram;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.gs.NyARGrayscaleRaster;
@@ -41,10 +40,9 @@ import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 
 /**
- * このクラスは、{@link NyARMarkerSystem}へ入力するセンサ情報（画像）を管理します。
- * センサ情報のスナップショットに対するアクセサ、形式変換機能を提供します。
+ * このクラスは、検出システムに入力するセンサ情報（入力画像）を管理します。
+ * センサ情報のスナップショットの保持機能と形式変換機能を提供します。
  * 管理している情報は、元画像（カラー）、グレースケール画像、ヒストグラムです。
- * このインスタンスは{@link NyARMarkerSystem#update(NyARSensor)}関数により、{@link NyARMarkerSystem}に入力します。
  */
 public class NyARSensor
 {
@@ -54,6 +52,11 @@ public class NyARSensor
 	protected long _src_ts;
 	protected long _gs_id_ts;
 	protected long _gs_hist_ts;
+	/**
+	 * 画像サイズ（スクリーンサイズ）を指定して、インスタンスを生成します。
+	 * @param i_size
+	 * 入力画像のサイズ
+	 */
 	public NyARSensor(NyARIntSize i_size)
 	{
 		this(i_size.w,i_size.h);
@@ -63,7 +66,6 @@ public class NyARSensor
 	 * 画像サイズ（スクリーンサイズ）を指定して、インスタンスを生成します。
 	 * @param i_size
 	 * 画像のサイズ。
-	 * @throws NyARRuntimeException
 	 */
 	public NyARSensor(int i_w,int i_h)
 	{
@@ -89,12 +91,11 @@ public class NyARSensor
 	private INyARPerspectiveCopy _pcopy;
 	private INyARRgb2GsFilter _rgb2gs=null;
 	/**
-	 * この関数は、入力画像を元に、インスタンスの状態を更新します。
-	 * この関数は、タイムスタンプをインクリメントします。
+	 * この関数は、入力画像を元にインスタンスの状態を更新します。
+	 * 関数はタイムスタンプをインクリメントします。
 	 * @param i_input
 	 * カラー画像。画像のサイズは、コンストラクタに設定したスクリーンサイズと同じである必要があります。
 	 * この画像は、次回の{@link #update}まで、インスタンスから参照されます。
-	 * @throws NyARRuntimeException 
 	 */
 	public void update(INyARRgbRaster i_input)
 	{
@@ -130,7 +131,6 @@ public class NyARSensor
 	 * @return
 	 * [readonly]
 	 * グレースケールに変換した現在の画像
-	 * @throws NyARRuntimeException 
 	 */
 	public INyARGrayscaleRaster getGsImage()
 	{
@@ -147,7 +147,6 @@ public class NyARSensor
 	 * @return
 	 * [readonly]
 	 * 256スケールのヒストグラム。
-	 * @throws NyARRuntimeException 
 	 */
 	public NyARHistogram getGsHistogram()
 	{
@@ -162,7 +161,7 @@ public class NyARSensor
 	 * この関数は、現在の入力画像の参照値を返します。
 	 * @return
 	 * [readonly]
-	 * {@link #update}に最後に入力した画像。一度も{@link #update}をコールしなかったときは未定。
+	 * {@link #update}に最後に入力した画像。一度も{@link #update}をコールしなかったときは未定です。
 	 */
 	public INyARRgbRaster getSourceImage()
 	{
@@ -170,20 +169,29 @@ public class NyARSensor
 	}
 	
 	/**
-	 * この関数は、RGB画像の任意の4頂点領域を、射影変換してi_raster取得します。
+	 * この関数は、RGB画像の任意の4頂点領域を射影変換してi_raster取得します。
 	 * {@link #getPerspectiveImage(double, double, double, double, double, double, double, double, INyARRgbRaster)}
 	 * のint引数版です。
 	 * @param i_x1
+	 * 頂点1[pixel]
 	 * @param i_y1
+	 * 頂点1[pixel]
 	 * @param i_x2
+	 * 頂点2[pixel]
 	 * @param i_y2
+	 * 頂点2[pixel]
 	 * @param i_x3
+	 * 頂点3[pixel]
 	 * @param i_y3
+	 * 頂点3[pixel]
 	 * @param i_x4
+	 * 頂点$[pixel]
 	 * @param i_y4
+	 * 頂点4[pixel]
 	 * @param i_raster
+	 * 出力先のラスタオブジェクト
 	 * @return
-	 * @throws NyARRuntimeException 
+	 * 結果を格納したi_rasterオブジェクト
 	 */
 	public INyARRgbRaster getPerspectiveImage(
 	    int i_x1,int i_y1,
@@ -217,8 +225,7 @@ public class NyARSensor
 	 * @param i_raster
 	 * 射影変換した画像を受け取るオブジェクト
 	 * @return
-	 * 結果を格納したi_rasterオブジェクト。
-	 * @throws NyARRuntimeException 
+	 * 結果を格納したi_rasterオブジェクト
 	 */
 	public INyARRgbRaster getPerspectiveImage(
 		    double i_x1,double i_y1,

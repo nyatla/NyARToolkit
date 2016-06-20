@@ -25,14 +25,13 @@
  */
 package jp.nyatla.nyartoolkit.markersystem;
 
-import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.histogram.algo.INyARHistogramAnalyzer_Threshold;
 import jp.nyatla.nyartoolkit.core.transmat.INyARTransMat;
 import jp.nyatla.nyartoolkit.core.types.NyARIntSize;
 
 /**
- * このインタフェイスは、NyARMarkerSystemのコンフィギュレーションオブジェクトに使用します。
- * {@link NyARMarkerSystem}は、このインタフェイスを継承したクラスから、動作に必要なオブジェクトや定数を取得します。
+ * このインタフェイスは、ARマーカ検出器のコンフィギュレーションクラスのベースクラスです。
+ * 検出クラスの動作に必要なオブジェクトや定数を提供します。
  */
 public interface INyARMarkerSystemConfig
 {
@@ -40,13 +39,11 @@ public interface INyARMarkerSystemConfig
 	 * 姿勢行列計算クラスを生成して返します。
 	 * @return
 	 * 新しいオブジェクト。
-	 * @throws NyARRuntimeException
 	 */
 	public INyARTransMat createTransmatAlgorism();
 	/**
 	 * 敷居値決定クラスを生成して返します。
 	 * @return
-	 * 新しいオブジェクト
 	 */
 	public INyARHistogramAnalyzer_Threshold createAutoThresholdArgorism();
 

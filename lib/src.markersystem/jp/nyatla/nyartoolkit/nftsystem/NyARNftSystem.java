@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 import jp.nyatla.nyartoolkit.core.kpm.matcher.FreakKeypointMatching;
 import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftDataSet;
-import jp.nyatla.nyartoolkit.core.marker.nft.NyARNftDataSetFile;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
 import jp.nyatla.nyartoolkit.core.raster.gs.INyARGrayscaleRaster;
 import jp.nyatla.nyartoolkit.core.raster.rgb.INyARRgbRaster;
@@ -26,16 +25,15 @@ import jp.nyatla.nyartoolkit.markersystem.NyARSensor;
 import jp.nyatla.nyartoolkit.markersystem.NyARSingleCameraSystem;
 
 /**
- * NFTの自然特徴点マーカの管理クラスです。
- * ARToolKit version5互換のNFTマーカをトラッキングできます。
+ * このクラスは、NFTマーカ(自然特徴点マーカ)の検出・トラッキングクラスです。
+ * ARToolKit version5互換の異種NFTマーカを複数同時にトラッキングできます。
  */
 public class NyARNftSystem extends NyARSingleCameraSystem
 {
-
 	/**
 	 * コンストラクタです。
 	 * @param i_config
-	 * NFTのコンフィギュレーションオブジェクトを指定します。
+	 * コンフィギュレーションを格納したオブジェクト。
 	 */
 	public NyARNftSystem(INyARNftSystemConfig i_config) {
 		super(i_config.getNyARSingleCameraView());
@@ -46,6 +44,9 @@ public class NyARNftSystem extends NyARSingleCameraSystem
 		this._kpm_thread.start();
 	}
 	private long _last_time_stamp=-1;
+	/**
+	 * NFTターゲット1個の状態を管理するクラスです。
+	 */
 	private class NftTarget{
 		/** KPMによる初期検出対象*/
 		final private static int ST_KPM_SEARCH	=1;
@@ -70,7 +71,6 @@ public class NyARNftSystem extends NyARSingleCameraSystem
 			this.back_has_result=false;
 		}
 	}
-
 	private class NyARNftTargetList extends ArrayList<NftTarget>{
 		private static final long serialVersionUID = 2150347966734138642L;	
 	}
@@ -86,10 +86,9 @@ public class NyARNftSystem extends NyARSingleCameraSystem
 	final private NyARTransMatResultParam result_param=new NyARTransMatResultParam();
 	
 	/**
-	 * この関数は、入力した画像でインスタンスの状態を更新します。
-	 * 関数は、入力画像を処理して検出、一致判定、トラッキング処理を実行します。
+	 * この関数は入力画像でインスタンスの状態を更新します。
 	 * @param i_sensor
-	 * 画像を含むセンサオブジェクト
+	 * 新しい入力画像を格納したオブジェクト
 	 */
 	public void update(NyARSensor i_sensor)
 	{
@@ -145,27 +144,31 @@ public class NyARNftSystem extends NyARSingleCameraSystem
 		}
 	}
 	/**
-	 * NFTファイルセットのプレフィックスを指定して、NFTターゲットをインスタンスに登録します。
-	 * 登録される画像のサイズはNFTターゲットファイルの値です。
+	 * ファイルから、検出対象のNFTデータセットをインスタンスに登録します。
+	 * {@link #addNftTarget(i_filepath,Double.NaN)}と同じです。
 	 * @param i_filepath
-	 * NFTターゲットを指定します。
-	 * 拡張子が.nftdatasetの場合は、nftdataset形式のファイルを登録します。
-	 * それ以外の場合は、ファイルパスに.iset,.fset,.fset3を加えたファイルをセットにして登録します。
+	 * ファイルパスを指定します。
 	 * @return
-	 * 特徴点セットのID値
+	 * 登録した検出対象のID値
 	 */
 	public int addNftTarget(String i_filepath)
 	{
 		return this.addNftTarget(i_filepath,Double.NaN);
 	}
 	/**
-	 * 画像のサイズを指定できる{@link #addNftTarget}です。
-	 * @param i_fileset_prefix
-	 * {@link #addNftTarget(String)}を参照してください。
+	 * ファイルから、検出対象のNFTデータセットをインスタンスに登録します。
+	 * {@link #addNftTarget(i_filepath,Double.NaN)}と同じです。
+	 * @param i_filepath
+	 * 拡張子の種類に応じて２種類の動作をします。
+	 * <div>
+	 * <p>*.nftdataset - NyARToolKitの独自形式を、[NAME].nftdatasetのファイルを読み出します。</p>
+	 * <p>拡張子無し - [NAME].iset,[NAME].fset,[NAME].fset3から読み出します。</p>
+	 * </div>
 	 * @param i_width_in_msec
 	 * 画像サイズの横幅をmm単位で指定します。立幅は横幅に応じてスケーリングされます。
+	 * NaNを指定した場合には、isetファイルの固有値(width*dpi)が指定されたものとします。
 	 * @return
-	 * 特徴点セットのID値
+	 * 登録した検出対象のID値
 	 */
 	public int addNftTarget(String i_filepath,double i_width_in_msec)
 	{
@@ -176,11 +179,11 @@ public class NyARNftSystem extends NyARSingleCameraSystem
 		}
 	}
 	/**
-	 * NFTの特徴点データセットをインスタンスに登録します。
+	 * NFTの特徴点データセットオブジェクトをインスタンスに登録します。
 	 * @param i_dataset
 	 * 登録する特徴点データセット
 	 * @return
-	 * 特徴点セットのID値
+	 * 登録した検出対象のID値
 	 */
 	public int addNftTarget(NyARNftDataSet i_dataset)
 	{
@@ -196,10 +199,14 @@ public class NyARNftSystem extends NyARSingleCameraSystem
 		return this._nftdatalist.size()-1;
 	}
 	/**
-	 * InputStreamから.nftdatasetを読みだして登録します。
+	 * {@link InputStream}からnftdataset形式のファイルを読みだしてインスタンスに登録します。
 	 * @param i_stream
+	 * データを読み出すストリーム。
 	 * @param i_width_in_msec
+	 * NFTターゲットの横幅。
+	 * NaNを指定した場合には、isetデータの固有値(width*dpi)が指定されたものとします。
 	 * @return
+	 * 登録した検出対象のID値
 	 */
 	public int addNftTarget(InputStream i_stream,double i_width_in_msec)
 	{
@@ -223,9 +230,9 @@ public class NyARNftSystem extends NyARSingleCameraSystem
 	/**
 	 * 特徴点セットのID値に対応したターゲットを検出しているかを返します。
 	 * @param i_id
-	 * 特徴点セットのID値
+	 * 検出対象のID値
 	 * @return
-	 * 
+	 * 現在のフレームでNFTマーカを検出していればTRUE
 	 */
 	public boolean isExist(int i_id)
 	{
@@ -385,7 +392,6 @@ public class NyARNftSystem extends NyARSingleCameraSystem
 	 * 取得した画像を格納するオブジェクト
 	 * @return
 	 * 結果を格納したi_rasterオブジェクト
-	 * @throws NyARRuntimeException
 	 */
 	public INyARRgbRaster getPlaneImage(
 		int i_id,
@@ -427,7 +433,6 @@ public class NyARNftSystem extends NyARSingleCameraSystem
 	 * 出力先のオブジェクト
 	 * @return
 	 * 結果を格納したi_rasterオブジェクト
-	 * @throws NyARRuntimeException
 	 */
 	public INyARRgbRaster getPlaneImage(int i_id,NyARSensor i_sensor,double i_l,double i_t,double i_w,double i_h,INyARRgbRaster i_raster)
     {

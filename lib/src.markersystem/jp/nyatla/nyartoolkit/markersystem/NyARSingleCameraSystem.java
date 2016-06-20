@@ -27,6 +27,10 @@ package jp.nyatla.nyartoolkit.markersystem;
 
 import jp.nyatla.nyartoolkit.core.param.NyARFrustum;
 import jp.nyatla.nyartoolkit.core.param.NyARParam;
+
+/**
+ * 1カメラビューを対象とする検出システムの基本クラスです。
+ */
 public class NyARSingleCameraSystem
 {
 	protected NyARSingleCameraSystem(NyARSingleCameraView i_ref_view)
@@ -56,13 +60,17 @@ public class NyARSingleCameraSystem
     {
         return this._view.getARParam();
     }
+    /**
+     * [readonly]
+     * 参照しているシングルカメラビューオブジェクトを返します。
+     * @return
+     */
     public NyARSingleCameraView getSingleView()
     {
     	return this._view;
     }
 	/**
 	 * 視錐台パラメータをViewに設定します。
-	 * この関数は、値を更新後、登録済の{@link IObserver}オブジェクトへ、{@link #EV_UPDATE}通知を送信します。
 	 * @param i_near
 	 * 新しいNEARパラメータ
 	 * @param i_far
