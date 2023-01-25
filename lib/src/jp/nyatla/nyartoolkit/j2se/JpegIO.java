@@ -15,7 +15,9 @@ import java.io.IOException;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
 import javax.imageio.ImageTypeSpecifier;
+import javax.imageio.ImageWriter;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import javax.imageio.stream.MemoryCacheImageInputStream;
@@ -25,8 +27,7 @@ import jp.nyatla.nyartoolkit.core.NyARRuntimeException;
 
 import org.w3c.dom.Element;
 
-import com.sun.imageio.plugins.jpeg.JPEGImageReader;
-import com.sun.imageio.plugins.jpeg.JPEGImageWriter;
+
 
 /**
  * プラットフォーム依存のJpegデータIOを実装します。
@@ -52,7 +53,7 @@ public class JpegIO {
 	}
 	public static DecodeResult decode(byte[] i_src) throws IOException
 	{
-		JPEGImageReader jr=(JPEGImageReader)ImageIO.getImageReadersBySuffix("jpeg").next();
+		ImageReader jr=ImageIO.getImageReadersBySuffix("jpeg").next();
 		jr.setInput(new MemoryCacheImageInputStream(new ByteArrayInputStream(i_src)));
 		IIOMetadata data = jr.getImageMetadata(0);
 		Element tree = (Element)data.getAsTree("javax_imageio_jpeg_image_1.0");
@@ -100,7 +101,7 @@ public class JpegIO {
 		System.arraycopy(i_src, 0, buf.getData(),0,w*h);
 
 		ByteArrayOutputStream bout=new ByteArrayOutputStream();
-		JPEGImageWriter jw=(JPEGImageWriter)ImageIO.getImageWritersBySuffix("jpeg").next();
+		ImageWriter jw=ImageIO.getImageWritersBySuffix("jpeg").next();
 		jw.setOutput(new MemoryCacheImageOutputStream(bout));
 
 		// Compression
